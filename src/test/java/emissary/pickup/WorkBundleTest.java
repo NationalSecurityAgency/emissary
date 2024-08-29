@@ -293,11 +293,11 @@ class WorkBundleTest extends UnitTest {
             wul.add(new WorkUnit(fileName));
         }
 
-        WorkBundle.writeUTFOrNull(wb1.bundleId, out);
-        WorkBundle.writeUTFOrNull(wb1.outputRoot, out);
-        WorkBundle.writeUTFOrNull(wb1.eatPrefix, out);
-        WorkBundle.writeUTFOrNull(wb1.caseId, out);
-        WorkBundle.writeUTFOrNull(wb1.sentTo, out);
+        WorkBundle.writeUtfOrNull(wb1.bundleId, out);
+        WorkBundle.writeUtfOrNull(wb1.outputRoot, out);
+        WorkBundle.writeUtfOrNull(wb1.eatPrefix, out);
+        WorkBundle.writeUtfOrNull(wb1.caseId, out);
+        WorkBundle.writeUtfOrNull(wb1.sentTo, out);
         out.writeInt(wb1.errorCount);
         out.writeInt(wb1.priority);
         out.writeBoolean(wb1.simpleMode);

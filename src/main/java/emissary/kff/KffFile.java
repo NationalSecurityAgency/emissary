@@ -35,7 +35,7 @@ public class KffFile implements KffFilter {
     protected ByteBuffer mappedBuf;
 
     /** Initial value of high index for binary search */
-    private long bSearchInitHigh;
+    private final long bSearchInitHigh;
 
     public static final int DEFAULT_RECORD_LENGTH = 24;
     protected final int recordLength;
@@ -43,7 +43,7 @@ public class KffFile implements KffFilter {
     /** String logical name for this filter */
     protected String filterName = "UNKNOWN";
 
-    protected FilterType ftype = FilterType.Unknown;
+    protected FilterType ftype = FilterType.UNKNOWN;
 
     protected String myPreferredAlgorithm = "SHA-1";
 

@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
+@Deprecated(forRemoval = true)
 public class HtmlEscape {
 
     /* our logger */
@@ -298,7 +299,7 @@ public class HtmlEscape {
                     }
                 }
 
-                String val = HTML_ENTITY_MAP.getValueForHTMLEntity(new String(s, spos + 1, epos - (spos + 1)));
+                String val = HTML_ENTITY_MAP.getValueForHtmlEntity(new String(s, spos + 1, epos - (spos + 1)));
                 if (val != null) {
                     try {
                         baos.write(val.getBytes());
@@ -328,7 +329,7 @@ public class HtmlEscape {
 
     @Nullable
     private static String getValueForHtmlEntity(String entity) {
-        String s = HTML_ENTITY_MAP.getValueForHTMLEntity(entity);
+        String s = HTML_ENTITY_MAP.getValueForHtmlEntity(entity);
         if (s != null) {
             return s;
         }
@@ -338,6 +339,7 @@ public class HtmlEscape {
     /** This class is not meant to be instantiated. */
     private HtmlEscape() {}
 
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws Exception {
         boolean useString = false;
         int i = 0;

@@ -38,7 +38,7 @@ public class WorkSpaceAdapter extends EmissaryClient {
     public EmissaryResponse outboundOpenWorkSpace(final String place, final String space) {
 
         final String placeUrl = KeyManipulator.getServiceHostUrl(place);
-        final HttpPost method = createHttpPost(placeUrl, CONTEXT, "/WorkSpaceClientOpenWorkSpace.action");
+        final HttpPost method = createHttpPost(placeUrl, context, "/WorkSpaceClientOpenWorkSpace.action");
 
         final List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair(CLIENT_NAME, place));
@@ -59,7 +59,7 @@ public class WorkSpaceAdapter extends EmissaryClient {
     public WorkBundle outboundWorkSpaceTake(final String space, final String place) {
 
         final String placeUrl = KeyManipulator.getServiceHostUrl(space);
-        final HttpPost method = createHttpPost(placeUrl, CONTEXT, "/WorkSpaceClientSpaceTake.action");
+        final HttpPost method = createHttpPost(placeUrl, context, "/WorkSpaceClientSpaceTake.action");
 
         final List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair(CLIENT_NAME, place));
@@ -89,7 +89,7 @@ public class WorkSpaceAdapter extends EmissaryClient {
      */
     public boolean outboundBundleCompletion(final String space, final String place, final String bundleId, final boolean itWorked) {
         final String placeUrl = KeyManipulator.getServiceHostUrl(space);
-        final HttpPost method = createHttpPost(placeUrl, CONTEXT, "/WorkBundleCompleted.action");
+        final HttpPost method = createHttpPost(placeUrl, context, "/WorkBundleCompleted.action");
 
         final List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair(CLIENT_NAME, place));

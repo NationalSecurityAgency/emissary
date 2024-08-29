@@ -46,8 +46,8 @@ public class KffChainLoader {
             try {
                 Configurator configG = ConfigUtil.getConfigInfo(KffChain.class);
                 classes = configG.findStringMatchMap("KFF_IMPL_");
-                loadFrom(chain, configG.findStringMatchMap("KFF_FILE_KNOWN_"), FilterType.Ignore);
-                loadFrom(chain, configG.findStringMatchMap("KFF_FILE_DUPE_"), FilterType.Duplicate);
+                loadFrom(chain, configG.findStringMatchMap("KFF_FILE_KNOWN_"), FilterType.IGNORE);
+                loadFrom(chain, configG.findStringMatchMap("KFF_FILE_DUPE_"), FilterType.DUPLICATE);
 
                 chain.setMinDataSize(configG.findIntEntry("KFF_MIN_SIZE", 0));
                 Set<String> algs = configG.findEntriesAsSet("KFF_ALG");
@@ -105,6 +105,7 @@ public class KffChainLoader {
     /**
      * Load the configured chain and run some data
      */
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws Exception {
         KffChain kff = getChainInstance();
 

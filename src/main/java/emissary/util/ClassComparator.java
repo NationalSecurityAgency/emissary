@@ -10,6 +10,7 @@ public class ClassComparator {
     /** This class is not meant to be instantiated. */
     private ClassComparator() {}
 
+    @SuppressWarnings("SystemOut")
     public static void main(final String[] args) {
 
         if (args.length < 2) {

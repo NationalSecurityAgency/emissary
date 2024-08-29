@@ -48,7 +48,7 @@ public class Emissary {
     private final CommandLine cli = new CommandLine(EmissaryCommand.class);
     private final Map<String, EmissaryCommand> commands;
 
-    public static Map<String, EmissaryCommand> EMISSARY_COMMANDS = new HashMap<>();
+    public static final Map<String, EmissaryCommand> EMISSARY_COMMANDS;
 
     private boolean bannerDumped = false;
 

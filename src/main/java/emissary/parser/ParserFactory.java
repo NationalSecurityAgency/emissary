@@ -35,13 +35,14 @@ public class ParserFactory {
 
     // Map of dataType to FileChannel parser implementation class name
     // Read from config file
-    protected Map<String, String> NIO_TYPE_MAP = new HashMap<>();
+    protected Map<String, String> nioTypeMap = new HashMap<>();
 
     // For channel sizes larger than this no fallback to a byte[]
     // parser is attempted.
     protected long nioFallbackMax = 1024L * 1024L * 100L; // 100 Mb
 
-    protected String DEFAULT_NIO_PARSER = "emissary.parser.SimpleNioParser";
+    protected static final String DEFAULT_NIO_PARSER = "emissary.parser.SimpleNioParser";
+    protected String nioParser = DEFAULT_NIO_PARSER;
 
 
     // Data type identification engine
@@ -89,13 +90,13 @@ public class ParserFactory {
 
             nioFallbackMax = config.findSizeEntry("MAX_NIO_FALLBACK_SIZE", nioFallbackMax);
 
-            NIO_TYPE_MAP.clear();
-            NIO_TYPE_MAP.putAll(m);
+            nioTypeMap.clear();
+            nioTypeMap.putAll(m);
 
-            logger.debug("Loaded {} nio parsers with fallback size {}", NIO_TYPE_MAP.size(), nioFallbackMax);
+            logger.debug("Loaded {} nio parsers with fallback size {}", nioTypeMap.size(), nioFallbackMax);
 
             // change this to "DEFAULT_PARSER"
-            DEFAULT_NIO_PARSER = config.findStringEntry("DEFAULT_NIO_PARSER", DEFAULT_NIO_PARSER);
+            nioParser = config.findStringEntry("DEFAULT_NIO_PARSER", DEFAULT_NIO_PARSER);
 
             String idEngineClass = config.findStringEntry("ID_ENGINE_CLASS", null);
 
@@ -132,10 +133,10 @@ public class ParserFactory {
     public SessionParser makeSessionParser(String type, SeekableByteChannel channel) {
         SessionParser sp;
 
-        if (NIO_TYPE_MAP.containsKey(type)) {
-            sp = makeSessionParserClass(NIO_TYPE_MAP.get(type), channel);
+        if (nioTypeMap.containsKey(type)) {
+            sp = makeSessionParserClass(nioTypeMap.get(type), channel);
         } else {
-            sp = makeSessionParserClass(DEFAULT_NIO_PARSER, channel);
+            sp = makeSessionParserClass(nioParser, channel);
         }
         return sp;
     }

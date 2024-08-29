@@ -42,9 +42,9 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     protected List<String> binFileExt = null;
     @Nullable
     protected List<String> outDirs = null;
-    protected String SINGLE_CHILD_FILETYPE = Form.UNKNOWN;
-    protected boolean KEEP_PARENT_HASHES_FOR_SINGLE_CHILD = false;
-    protected boolean KEEP_PARENT_FILETYPE_FOR_SINGLE_CHILD = false;
+    protected String singleChildFiletype = Form.UNKNOWN;
+    protected boolean keepParentHashesForSingleChild = false;
+    protected boolean keepParentFiletypeForSingleChild = false;
     protected static final String DEFAULT_NEW_PARENT_FORM = "SAFE_HTML";
     protected static final String DEFAULT_NEW_CHILD_FORM = Form.UNKNOWN;
     protected static final String DEFAULT_NEW_ERROR_FORM = Form.ERROR;
@@ -137,10 +137,9 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
             newParentForm = null;
         }
         newChildForms = configG.findEntries("NEW_CHILD_FORM", DEFAULT_NEW_CHILD_FORM);
-        SINGLE_CHILD_FILETYPE = configG.findStringEntry("SINGLE_CHILD_FILETYPE", SINGLE_CHILD_FILETYPE);
-        KEEP_PARENT_HASHES_FOR_SINGLE_CHILD = configG.findBooleanEntry("KEEP_PARENT_HASHES_FOR_SINGLE_CHILD", KEEP_PARENT_HASHES_FOR_SINGLE_CHILD);
-        KEEP_PARENT_FILETYPE_FOR_SINGLE_CHILD =
-                configG.findBooleanEntry("KEEP_PARENT_FILETYPE_FOR_SINGLE_CHILD", KEEP_PARENT_FILETYPE_FOR_SINGLE_CHILD);
+        singleChildFiletype = configG.findStringEntry("SINGLE_CHILD_FILETYPE", Form.UNKNOWN);
+        keepParentHashesForSingleChild = configG.findBooleanEntry("KEEP_PARENT_HASHES_FOR_SINGLE_CHILD", false);
+        keepParentFiletypeForSingleChild = configG.findBooleanEntry("KEEP_PARENT_FILETYPE_FOR_SINGLE_CHILD", false);
 
         setTitleToFile = configG.findBooleanEntry("SET_TITLE_TO_FILENAME", true);
         placeDisplayName = configG.findStringEntry("SERVICE_DISPLAY_NAME", placeName);
@@ -500,7 +499,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         for (String tmpForm : tmpForms) {
             d.pushCurrentForm(tmpForm);
         }
-        d.setFileType(SINGLE_CHILD_FILETYPE);
+        d.setFileType(singleChildFiletype);
         return 0;
     }
 
@@ -550,12 +549,12 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         if (executrix.getOutput().equals("FILE") && entries.size() == 1 && contentFile == null && !singleOutputAsChild) {
             IBaseDataObject d = entries.get(0);
             tData.setData(d.data());
-            if (KEEP_PARENT_HASHES_FOR_SINGLE_CHILD) {
+            if (keepParentHashesForSingleChild) {
                 KffDataObjectHandler.removeHash(d);
             }
             tData.putUniqueParameters(d.getParameters());
             tData.setCurrentForm(d.currentForm());
-            if (!KEEP_PARENT_FILETYPE_FOR_SINGLE_CHILD) {
+            if (!keepParentFiletypeForSingleChild) {
                 tData.setFileType(d.getFileType());
             }
             return Collections.emptyList(); // so we just continue with current

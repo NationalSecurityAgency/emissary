@@ -3,14 +3,19 @@ package emissary.core;
 import emissary.directory.KeyManipulator;
 import emissary.place.IServiceProviderPlace;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+
+import static emissary.place.IServiceProviderPlace.SPROUT_KEY;
 
 public class TransformHistory implements Serializable {
 
@@ -72,7 +77,15 @@ public class TransformHistory implements Serializable {
      * @param coordinated true if history entry is for informational purposes only
      */
     public void append(String key, boolean coordinated) {
-        history.add(new History(key, coordinated));
+        if (coordinated) {
+            History last = lastVisit();
+            if (last != null) {
+                last.addCoordinated(key);
+            }
+        } else {
+            history.add(new History(key));
+        }
+
     }
 
     /**
@@ -97,10 +110,18 @@ public class TransformHistory implements Serializable {
      * @return List of places visited
      */
     public List<String> get(boolean includeCoordinated) {
-        return history.stream()
-                .filter(x -> includeCoordinated || !x.wasCoordinated())
-                .map(History::getKey)
-                .collect(Collectors.toList());
+        if (includeCoordinated) {
+            List<String> keys = new ArrayList<>();
+            history.forEach(k -> {
+                keys.add(k.getKey());
+                keys.addAll(k.getCoordinated());
+            });
+            return keys;
+        } else {
+            return history.stream()
+                    .map(History::getKey)
+                    .collect(Collectors.toList());
+        }
     }
 
     /**
@@ -118,13 +139,11 @@ public class TransformHistory implements Serializable {
      * @return last place visited
      */
     @Nullable
-    public String lastVisit() {
-        List<String> historyList = get();
-        final int sz = historyList.size();
-        if (sz == 0) {
+    public History lastVisit() {
+        if (CollectionUtils.isEmpty(history)) {
             return null;
         }
-        return historyList.get(sz - 1);
+        return history.get(history.size() - 1);
     }
 
     /**
@@ -133,13 +152,11 @@ public class TransformHistory implements Serializable {
      * @return second-to-last place visited
      */
     @Nullable
-    public String penultimateVisit() {
-        List<String> historyList = get();
-        final int sz = historyList.size();
-        if (sz < 2) {
+    public History penultimateVisit() {
+        if (CollectionUtils.isEmpty(history) || history.size() < 2) {
             return null;
         }
-        return historyList.get(sz - 2);
+        return history.get(history.size() - 2);
     }
 
     /**
@@ -148,8 +165,8 @@ public class TransformHistory implements Serializable {
      * @return true is place has been visited
      */
     public boolean hasVisited(final String pattern) {
-        for (final String historyValue : get()) {
-            if (KeyManipulator.gmatch(historyValue, pattern)) {
+        for (final History hist : history) {
+            if (KeyManipulator.gmatch(hist.getKey(), pattern)) {
                 return true;
             }
         }
@@ -162,26 +179,77 @@ public class TransformHistory implements Serializable {
      * @return true if not yet started
      */
     public boolean beforeStart() {
-        List<String> historyList = get();
-        if (historyList.isEmpty()) {
+        if (history.isEmpty()) {
             return true;
         }
-        final String s = historyList.get(historyList.size() - 1);
+        final String s = history.get(history.size() - 1).getKey();
         return s.contains(IServiceProviderPlace.SPROUT_KEY);
+    }
+
+    public int size() {
+        return size(false);
+    }
+
+    public int size(boolean includeCoordinated) {
+        int size = history.size();
+        if (includeCoordinated) {
+            size += (int) history.stream().mapToLong(h -> h.coordinated.size()).sum();
+        }
+        return size;
+    }
+
+    public Deque<String> format() {
+        Deque<String> formattedHistory = new ArrayDeque<>();
+
+        String prevDataAndServiceType = "";
+        for (final History h : this.history) {
+            String key = h.getKey();
+            String currentDataAndServiceType = "";
+            StringBuilder displayStrings = new StringBuilder();
+
+            if (key.contains(SPROUT_KEY)) {
+                displayStrings.append(StringUtils.substringBefore(formattedHistory.removeLast(), ".")).append(".")
+                        .append(KeyManipulator.getServiceType(key)).append(": ");
+                while (!formattedHistory.isEmpty()) {
+                    String last = formattedHistory.removeLast();
+                    if (last.contains(SPROUT_KEY)) {
+                        formattedHistory.add(last);
+                        break;
+                    }
+                }
+            } else {
+                currentDataAndServiceType = KeyManipulator.getDataType(key) + "." + KeyManipulator.getServiceType(key);
+                if (currentDataAndServiceType.equals(prevDataAndServiceType)) {
+                    displayStrings.append(formattedHistory.removeLast()).append(", ");
+                } else {
+                    displayStrings.append(currentDataAndServiceType).append(": ");
+                }
+            }
+
+            displayStrings.append(KeyManipulator.getServiceClassname(key));
+            if (CollectionUtils.isNotEmpty(h.getCoordinated())) {
+                displayStrings
+                        .append(h.getCoordinated().stream().map(KeyManipulator::getServiceClassname).collect(Collectors.joining(", ", "(", ")")));
+            }
+
+            formattedHistory.add(displayStrings.toString());
+            prevDataAndServiceType = currentDataAndServiceType;
+        }
+        return formattedHistory;
     }
 
     @Override
     public String toString() {
         final StringBuilder myOutput = new StringBuilder();
-        final String ls = System.getProperty("line.separator");
-        myOutput.append("transform history (").append(this.history.size()).append(") :").append(ls);
+        final String ls = System.lineSeparator();
+        myOutput.append("transform history (").append(size(true)).append(") :").append(ls);
         history.forEach(x -> myOutput.append(x.toString()).append(ls));
         return myOutput.toString();
     }
 
     public static class History {
         String key;
-        boolean coordinated;
+        List<String> coordinated = new ArrayList<>();
 
         /**
          * Needed to support Kryo deserialization
@@ -189,35 +257,41 @@ public class TransformHistory implements Serializable {
         private History() {}
 
         public History(String key) {
-            this(key, false);
-        }
-
-        public History(String key, boolean coordinated) {
             this.key = key;
-            this.coordinated = coordinated;
         }
 
         public String getKey() {
-            return key;
+            return getKey(false);
         }
 
-        public String getKeyNoUrl() {
+        public String getKey(boolean stripUrl) {
+            return stripUrl ? stripUrl(key) : key;
+        }
+
+        public List<String> getCoordinated() {
+            return getCoordinated(false);
+        }
+
+        public List<String> getCoordinated(boolean stripUrl) {
+            return stripUrl ? coordinated.stream().map(History::stripUrl).collect(Collectors.toUnmodifiableList())
+                    : Collections.unmodifiableList(coordinated);
+        }
+
+        public void addCoordinated(String key) {
+            coordinated.add(key);
+        }
+
+        protected static String stripUrl(String key) {
             return StringUtils.substringBefore(key, ".http");
-        }
-
-        public boolean wasCoordinated() {
-            return coordinated;
         }
 
         @Override
         public String toString() {
-            String start;
-            if (wasCoordinated()) {
-                start = "           +--> ";
-            } else {
-                start = "        -> ";
+            StringBuilder hist = new StringBuilder("        -> " + getKey());
+            for (String coord : coordinated) {
+                hist.append(System.lineSeparator()).append("           +--> ").append(coord);
             }
-            return start + getKey();
+            return hist.toString();
         }
     }
 }

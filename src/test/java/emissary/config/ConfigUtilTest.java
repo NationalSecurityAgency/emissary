@@ -43,14 +43,14 @@ class ConfigUtilTest extends UnitTest {
 
     private static String configDir;
     @Nullable
-    private Path CDIR;
+    private Path configPath;
 
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         configDir = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY, ".");
         testFilesAndDirectories = new ArrayList<>();
-        CDIR = Paths.get(configDir);
+        configPath = Paths.get(configDir);
 
         appender = new ListAppender<>();
         appender.start();
@@ -70,7 +70,7 @@ class ConfigUtilTest extends UnitTest {
                 }
             }
         }
-        CDIR = null;
+        configPath = null;
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
         ConfigUtil.initialize();
     }
@@ -271,7 +271,7 @@ class ConfigUtilTest extends UnitTest {
         final Path configDir1 = createTmpSubDir("config1A");
         final String cfgName1 = "emissary.grapes.Monkey.cfg";
         createFileAndPopulate(configDir1, cfgName1, "BOO = \"HOO\"\n");
-        final Path cfgName2 = Paths.get(CDIR.toString(), "configgone", "emissary.grapes.Panda.cfg");
+        final Path cfgName2 = Paths.get(configPath.toString(), "configgone", "emissary.grapes.Panda.cfg");
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, configDir1 + "," + cfgName2.getParent());
 
@@ -394,14 +394,14 @@ class ConfigUtilTest extends UnitTest {
     @Test
     void testClassNameInventoryMultipleFiles() throws IOException, EmissaryException {
         final String contents1 = "DevNullPlace         = \"emissary.place.sample.DevNullPlace\"\n";
-        createFileAndPopulate(CDIR, "emissary.admin.ClassNameInventory-core.cfg", contents1);
+        createFileAndPopulate(configPath, "emissary.admin.ClassNameInventory-core.cfg", contents1);
 
         final String one = "Dev2NullPlace         = \"emissary.place.donotpickme.DevNullPlace\"\n";
         final String two = "DirectoryPlace       = \"emissary.directory.DirectoryPlace\"";
-        createFileAndPopulate(CDIR, "emissary.admin.ClassNameInventory-modeone.cfg", one + two);
+        createFileAndPopulate(configPath, "emissary.admin.ClassNameInventory-modeone.cfg", one + two);
 
         final String three = "Dev3NullPlace         = \"emissary.place.iamtheone.DevNullPlace\"\n";
-        createFileAndPopulate(CDIR, "emissary.admin.ClassNameInventory-modetwo.cfg", three);
+        createFileAndPopulate(configPath, "emissary.admin.ClassNameInventory-modetwo.cfg", three);
 
         ConfigUtil.initialize();
 
@@ -537,7 +537,7 @@ class ConfigUtilTest extends UnitTest {
     @Test
     void testClassNameInventoryWarnsOnFlavor() throws IOException, EmissaryException {
         final String contents2 = "DevNullPlace         = \"emissary.place.second.DevNullPlace\"\n";
-        createFileAndPopulate(CDIR, "emissary.admin.ClassNameInventory-NORM.cfg", contents2);
+        createFileAndPopulate(configPath, "emissary.admin.ClassNameInventory-NORM.cfg", contents2);
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "NORM");
 
         ConfigUtil.initialize();
@@ -555,32 +555,33 @@ class ConfigUtilTest extends UnitTest {
 
     @Test
     void testGetFlavorFromFile() {
-        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString() + "emissary.admin.ClassNameInventory-flavor1.cfg").toFile());
+        final String flavor =
+                ConfigUtil.getFlavorsFromCfgFile(Paths.get(configPath.toString() + "emissary.admin.ClassNameInventory-flavor1.cfg").toFile());
         assertEquals("flavor1", flavor, "Flavors didn't match");
     }
 
     @Test
     void testGetMultipleFlavorFromFile() {
-        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString(), "emissary.junk.TrunkPlace-f1,f2,f3.cfg").toFile());
+        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(configPath.toString(), "emissary.junk.TrunkPlace-f1,f2,f3.cfg").toFile());
         assertEquals("f1,f2,f3", flavor, "Flavors didn't match");
     }
 
     @Test
     void testGetFlavorsNotACfgFile() {
-        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString(), "emissary.util.JunkPlace-f1.config").toFile());
+        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(configPath.toString(), "emissary.util.JunkPlace-f1.config").toFile());
         assertEquals("", flavor, "Should have been empty, not a cfg file");
     }
 
     @Test
     void testGetNoFlavor() {
-        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString(), "emissary.util.PepperPlace.config").toFile());
+        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(configPath.toString(), "emissary.util.PepperPlace.config").toFile());
         assertEquals("", flavor, "Should have been empty, no flavor");
     }
 
     @Test
     void testGetFlavorMultipleHyphens() {
         final String flavor =
-                ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString(), "emissary.util.DrPibbPlace-flavor1-flavor2-flavor3.cfg").toFile());
+                ConfigUtil.getFlavorsFromCfgFile(Paths.get(configPath.toString(), "emissary.util.DrPibbPlace-flavor1-flavor2-flavor3.cfg").toFile());
         assertEquals("flavor3", flavor, "Should have been the last flavor");
 
     }
@@ -643,7 +644,7 @@ class ConfigUtilTest extends UnitTest {
     }
 
     private Path createTmpSubDir(final String name) throws IOException {
-        final Path dir = Paths.get(CDIR.toString(), name);
+        final Path dir = Paths.get(configPath.toString(), name);
         Files.createDirectory(dir);
         testFilesAndDirectories.add(dir);
         return dir;

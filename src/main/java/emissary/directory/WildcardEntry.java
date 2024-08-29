@@ -154,16 +154,16 @@ public class WildcardEntry {
     /**
      * Select an entry from the map
      *
-     * @param dataID the string to wildcard
+     * @param dataId the string to wildcard
      * @param map the map to choose from
      * @return the found entry
      */
-    public static DirectoryEntryList getWildcardedEntry(final String dataID, final DirectoryEntryMap map) {
+    public static DirectoryEntryList getWildcardedEntry(final String dataId, final DirectoryEntryMap map) {
 
         final DirectoryEntryList matches = new DirectoryEntryList();
 
-        final WildcardEntry we = new WildcardEntry(dataID);
-        logger.debug("Got a set of size {} from {}", we.size(), dataID);
+        final WildcardEntry we = new WildcardEntry(dataId);
+        logger.debug("Got a set of size {} from {}", we.size(), dataId);
 
         for (final String w : we.asSet()) {
             final DirectoryEntryList found = map.get(w);

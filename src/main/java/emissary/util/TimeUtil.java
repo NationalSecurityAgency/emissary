@@ -137,6 +137,7 @@ public class TimeUtil {
      * @return String in the format yyyy-MM-dd HH:mm:ss
      * @throws DateTimeException if an error occurs during formatting
      */
+    @SuppressWarnings("MemberName")
     public static String getCurrentDateISO8601() {
         return getDateAsISO8601(ZonedDateTime.now(GMT));
     }
@@ -147,6 +148,7 @@ public class TimeUtil {
      * @return String in the format yyyy-MM-dd HH:mm:ss
      * @throws DateTimeException if an error occurs during formatting
      */
+    @SuppressWarnings("MemberName")
     public static String getDateAsISO8601(final long time) {
         return getDateAsISO8601(ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), GMT));
     }
@@ -159,6 +161,7 @@ public class TimeUtil {
      * @throws DateTimeException if an error occurs during formatting
      */
     @Nullable
+    @SuppressWarnings("MemberName")
     public static String getDateAsISO8601(@Nullable final TemporalAccessor date) {
         return date == null ? null : DATE_ISO_8601.format(date);
     }
@@ -169,6 +172,7 @@ public class TimeUtil {
      * @return String in the format yyyy-MM-dd'T'HH:mm:ss'Z'
      * @throws DateTimeException if an error occurs during formatting
      */
+    @SuppressWarnings("MemberName")
     public static String getCurrentDateFullISO8601() {
         return getDateAsFullISO8601(ZonedDateTime.now(GMT));
     }
@@ -181,6 +185,7 @@ public class TimeUtil {
      * @throws DateTimeException if an error occurs during formatting
      */
     @Nullable
+    @SuppressWarnings("MemberName")
     public static String getDateAsFullISO8601(@Nullable final TemporalAccessor date) {
         return date == null ? null : DATE_FULL_ISO_8601.format(date);
     }
@@ -196,6 +201,7 @@ public class TimeUtil {
      */
     @Nullable
     @Deprecated
+    @SuppressWarnings("MemberName")
     public static ZonedDateTime getZonedDateFromISO8601(@Nullable final String dateString) throws DateTimeParseException {
         return dateString == null ? null : ZonedDateTime.parse(dateString, DATE_ISO_8601);
     }
@@ -236,10 +242,10 @@ public class TimeUtil {
         throw new IllegalArgumentException(msg);
     }
 
+    @SuppressWarnings("MemberName")
     public static String getISO8601DateFormatString() {
         return ISO_8601_TIME_DATE_STRING;
     }
-
 
     public static String getDateOrdinalWithTime(final Instant d) {
         return DATE_ORDINAL_WITH_TIME.format(d.atZone(ZoneId.systemDefault()));

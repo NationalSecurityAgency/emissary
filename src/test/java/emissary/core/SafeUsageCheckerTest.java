@@ -13,7 +13,7 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class SafeUsageCheckerTest extends UnitTest {
+class SafeUsageCheckerTest extends UnitTest {
     @Test
     void testDifferentConfigs() {
         assertTrue(SafeUsageChecker.ENABLED_FROM_CONFIGURATION, "Enabled from config file should be true");
