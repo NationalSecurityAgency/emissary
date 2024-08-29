@@ -53,10 +53,10 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     protected static final String NULL_VALUE = "<null>";
 
     // Hold all service specific parameters in a list
-    protected List<ConfigEntry> p_service_parameters = new ArrayList<>();
+    protected List<ConfigEntry> serviceParameters = new ArrayList<>();
 
     // Hold all remove config entries, operator of !=
-    protected List<ConfigEntry> p_remove_parameters = new ArrayList<>();
+    protected List<ConfigEntry> removeParameters = new ArrayList<>();
 
     protected String operator;
 
@@ -282,13 +282,13 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                     this.values.remove(parmName);
                 }
             }
-            this.p_remove_parameters.add(anEntry);
+            this.removeParameters.add(anEntry);
         } else {
             // Save the entry in the list
             if (merge) {
-                this.p_service_parameters.add(0, anEntry);
+                this.serviceParameters.add(0, anEntry);
             } else {
-                this.p_service_parameters.add(anEntry);
+                this.serviceParameters.add(anEntry);
             }
 
             // Save this pair in the map
@@ -365,12 +365,12 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         // This is obsolete
         if (sval != null && sval.contains(ENVSTART)) {
-            sval = substEnvProps(sval, filename, lineno);
+            sval = substituteEnvProps(sval, filename, lineno);
         }
 
         // Do unicode stuff
         if (sval != null && (sval.contains("\\u") || sval.contains("\\U"))) {
-            sval = substUTFChars(sval, filename, lineno);
+            sval = substituteUtfChars(sval, filename, lineno);
         }
 
         // This is obsolete
@@ -389,7 +389,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @param lnum the current line number for error reporting
      * @return string with character values replaced
      */
-    protected String substUTFChars(final String s, final String filename, final int lnum) throws IOException {
+    protected String substituteUtfChars(final String s, final String filename, final int lnum) throws IOException {
         final int slen = s.length();
         final StringBuilder sb = new StringBuilder(slen);
         for (int i = 0; i < slen; i++) {
@@ -431,7 +431,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @param lnum the current line number for error reporting
      * @return string with env values replaced
      */
-    protected String substEnvProps(final String str, final String filename, final int lnum) throws IOException {
+    protected String substituteEnvProps(final String str, final String filename, final int lnum) throws IOException {
         int lastPos = -1;
         int thisPos = 0;
         int count = 0;
@@ -525,7 +525,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     @Override
     public Set<String> entryKeys() {
         final Set<String> set = new HashSet<>();
-        for (final ConfigEntry curEntry : this.p_service_parameters) {
+        for (final ConfigEntry curEntry : this.serviceParameters) {
             set.add(curEntry.getKey());
         }
         return set;
@@ -536,7 +536,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public List<ConfigEntry> getEntries() {
-        return new ArrayList<>(this.p_service_parameters);
+        return new ArrayList<>(this.serviceParameters);
     }
 
     /**
@@ -544,7 +544,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * not part of the Configurator interface.
      */
     protected List<ConfigEntry> getRemoveEntries() {
-        return new ArrayList<>(this.p_remove_parameters);
+        return new ArrayList<>(this.removeParameters);
     }
 
     /**
@@ -609,7 +609,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     public void removeEntry(final ConfigEntry anEntry) {
         // NB: enhanced for loop does not support remove
-        for (final Iterator<ConfigEntry> i = this.p_service_parameters.iterator(); i.hasNext();) {
+        for (final Iterator<ConfigEntry> i = this.serviceParameters.iterator(); i.hasNext();) {
             final ConfigEntry curEntry = i.next();
             if (anEntry.getKey().equals(curEntry.getKey())
                     && ((anEntry.getValue() == null && curEntry.getValue() == null) || (anEntry.getValue() != null && anEntry.getValue().equals(
@@ -646,7 +646,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     public List<String> findEntries(final String theParameter) {
         final List<String> matchingEntries = new ArrayList<>();
 
-        for (final ConfigEntry curEntry : this.p_service_parameters) {
+        for (final ConfigEntry curEntry : this.serviceParameters) {
             if (theParameter.equals(curEntry.getKey())) {
                 matchingEntries.add(curEntry.getValue());
             }
@@ -661,7 +661,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     public void removeAllEntries(final String theParameter) {
         // NB: enhanced for loop does not support remove
-        for (final Iterator<ConfigEntry> i = this.p_service_parameters.iterator(); i.hasNext();) {
+        for (final Iterator<ConfigEntry> i = this.serviceParameters.iterator(); i.hasNext();) {
             final ConfigEntry curEntry = i.next();
             if (theParameter.equals(curEntry.getKey())) {
                 logger.debug("Removing {} = {}", curEntry.getKey(), curEntry.getValue());
@@ -681,7 +681,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         final Set<String> matchingEntries = new HashSet<>();
 
-        for (final ConfigEntry curEntry : this.p_service_parameters) {
+        for (final ConfigEntry curEntry : this.serviceParameters) {
             if (theParameter.equals(curEntry.getKey())) {
                 matchingEntries.add(curEntry.getValue());
             }
@@ -700,7 +700,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         final List<ConfigEntry> matchingEntries = new ArrayList<>();
 
-        for (final ConfigEntry curEntry : this.p_service_parameters) {
+        for (final ConfigEntry curEntry : this.serviceParameters) {
             if (curEntry.getKey().startsWith(theParameter)) {
                 matchingEntries.add(curEntry);
             }
@@ -899,7 +899,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     @Override
     public String findLastStringEntry(final String theParameter) {
         String result = "";
-        for (final ConfigEntry curEntry : this.p_service_parameters) {
+        for (final ConfigEntry curEntry : this.serviceParameters) {
             if (theParameter.equals(curEntry.getKey())) {
                 result = curEntry.getValue();
             }
@@ -1146,8 +1146,8 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             try {
                 final ServiceConfigGuide sc = new ServiceConfigGuide(arg);
                 logger.info("Config File:{} ", arg);
-                for (int i = 0; i < sc.p_service_parameters.size(); i++) {
-                    final ConfigEntry c = sc.p_service_parameters.get(i);
+                for (int i = 0; i < sc.serviceParameters.size(); i++) {
+                    final ConfigEntry c = sc.serviceParameters.get(i);
                     logger.info("{}: {}", c.getKey(), c.getValue());
                 }
                 logger.info("---");
