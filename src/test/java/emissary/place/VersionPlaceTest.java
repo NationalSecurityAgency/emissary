@@ -2,6 +2,7 @@ package emissary.place;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
+import emissary.core.ResourceException;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.GitRepositoryState;
 import emissary.util.Version;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,7 +47,7 @@ class VersionPlaceTest extends UnitTest {
     }
 
     @Test
-    void testAddVersionToPayload() throws Exception {
+    void testAddVersionToPayload() throws ResourceException, IOException {
         // create the place, using the normal class cfg
         place = new MyVersionPlace();
 
@@ -55,7 +57,7 @@ class VersionPlaceTest extends UnitTest {
     }
 
     @Test
-    void testAddVersionWithoutDate() throws Exception {
+    void testAddVersionWithoutDate() throws ResourceException, IOException {
         // create the place with the test cfg, having INCLUDE_DATE = "false"
         InputStream is = new ResourceReader().getConfigDataAsStream(this.getClass());
         place = new MyVersionPlace(is);
@@ -66,7 +68,7 @@ class VersionPlaceTest extends UnitTest {
     }
 
     @Test
-    void testAddVersionHash() throws Exception {
+    void testAddVersionHash() throws ResourceException, IOException {
         // create the place, using the normal class cfg
         place = new MyVersionPlace();
 
@@ -77,11 +79,11 @@ class VersionPlaceTest extends UnitTest {
     }
 
     class MyVersionPlace extends VersionPlace {
-        MyVersionPlace() throws Exception {
+        MyVersionPlace() throws IOException {
             super(new ResourceReader().getConfigDataAsStream(VersionPlace.class));
         }
 
-        MyVersionPlace(InputStream is) throws Exception {
+        MyVersionPlace(InputStream is) throws IOException {
             super(is);
         }
 

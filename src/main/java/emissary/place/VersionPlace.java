@@ -66,7 +66,7 @@ public class VersionPlace extends ServiceProviderPlace {
         this.gitRepositoryState = initGitRepositoryState();
 
         includeDate = configG.findBooleanEntry("INCLUDE_DATE", true);
-        useAbbrevHash = configG.findBooleanEntry("USE_ABBREV_HASH", false);
+        useAbbrevHash = configG.findBooleanEntry("USE_ABBREV_HASH", true);
         formattedVersion = getEmissaryVersion();
         versionHash = getEmissaryVersionHash();
     }
@@ -93,7 +93,7 @@ public class VersionPlace extends ServiceProviderPlace {
 
     private String getEmissaryVersionHash() {
         if (useAbbrevHash) {
-            // first 8 chars of commit hash
+            // first 7 chars of commit hash
             return gitRepositoryState.getCommitIdAbbrev();
         } else {
             // full commit hash (default option)
