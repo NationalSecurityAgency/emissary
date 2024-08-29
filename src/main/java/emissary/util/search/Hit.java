@@ -29,7 +29,7 @@ public class Hit {
         this.hit[OFFSET] = i;
     }
 
-    public void setID(final int i) {
+    public void setId(final int i) {
         this.hit[ID] = i;
     }
 
@@ -37,7 +37,7 @@ public class Hit {
         return this.hit[OFFSET];
     }
 
-    public int getID() {
+    public int getId() {
         return this.hit[ID];
     }
 
