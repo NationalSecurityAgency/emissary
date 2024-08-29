@@ -4,6 +4,7 @@ import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.core.ResourceException;
 import emissary.test.core.junit5.UnitTest;
+import emissary.util.GitRepositoryState;
 import emissary.util.Version;
 import emissary.util.io.ResourceReader;
 
@@ -60,5 +61,15 @@ class VersionPlaceTest extends UnitTest {
         place.process(payload);
         assertFalse(payload.getStringParameter("EMISSARY_VERSION").contains(versionDate), "the date should not be added to the version");
         assertEquals(payload.getStringParameter("EMISSARY_VERSION"), version.getVersion(), "the version should be added");
+    }
+
+    @Test
+    void testAddVersionHash() throws ResourceException, IOException {
+        // create the place, using the normal class cfg
+        place = new VersionPlace();
+
+        place.process(payload);
+        assertEquals(payload.getStringParameter("EMISSARY_VERSION_HASH").substring(0, 7), GitRepositoryState.getRepositoryState().getCommitIdAbbrev(),
+                "EMISSARY_VERSION_HASH should contain (at least) the abbreviated hash");
     }
 }

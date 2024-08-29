@@ -2,6 +2,7 @@ package emissary.place;
 
 import emissary.core.IBaseDataObject;
 import emissary.core.ResourceException;
+import emissary.util.GitRepositoryState;
 import emissary.util.Version;
 
 import java.io.IOException;
@@ -10,9 +11,12 @@ import java.io.InputStream;
 public class VersionPlace extends ServiceProviderPlace {
 
     private static final String EMISSARY_VERSION = "EMISSARY_VERSION";
+    private static final String EMISSARY_VERSION_HASH = "EMISSARY_VERSION_HASH";
     private boolean includeDate;
+    private boolean useAbbrevHash;
     private final Version version = new Version();
     private String formattedVersion;
+    private String versionHash;
 
     /**
      * Create the place from the specified config file or resource
@@ -58,12 +62,15 @@ public class VersionPlace extends ServiceProviderPlace {
 
     private void configurePlace() {
         includeDate = configG.findBooleanEntry("INCLUDE_DATE", true);
+        useAbbrevHash = configG.findBooleanEntry("USE_ABBREV_HASH", false);
         formattedVersion = getEmissaryVersion();
+        versionHash = getEmissaryVersionHash();
     }
 
     @Override
     public void process(IBaseDataObject payload) throws ResourceException {
         payload.putParameter(EMISSARY_VERSION, formattedVersion);
+        payload.putParameter(EMISSARY_VERSION_HASH, versionHash);
     }
 
     private String getEmissaryVersion() {
@@ -73,6 +80,16 @@ public class VersionPlace extends ServiceProviderPlace {
         } else {
             // adds just version
             return version.getVersion();
+        }
+    }
+
+    private String getEmissaryVersionHash() {
+        if (useAbbrevHash) {
+            // first 8 chars of commit hash
+            return GitRepositoryState.getRepositoryState().getCommitIdAbbrev();
+        } else {
+            // full commit hash (default option)
+            return GitRepositoryState.getRepositoryState().getCommitId();
         }
     }
 }

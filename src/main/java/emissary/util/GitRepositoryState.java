@@ -20,6 +20,7 @@ public class GitRepositoryState {
     private final String dirty;
     private final String remoteOriginUrl;
     private final String commitIdAbbrev;
+    private final String commitId;
     private final String describe;
     private final String describeShort;
     private final String commitUserName;
@@ -43,6 +44,7 @@ public class GitRepositoryState {
         this.remoteOriginUrl = properties.get("git.remote.origin.url").toString();
 
         this.commitIdAbbrev = properties.get("git.commit.id.abbrev").toString();
+        this.commitId = properties.get("git.commit.id.full").toString();
         this.describe = properties.get("git.commit.id.describe").toString();
         this.describeShort = properties.get("git.commit.id.describe-short").toString();
         this.commitUserName = properties.get("git.commit.user.name").toString();
@@ -97,6 +99,10 @@ public class GitRepositoryState {
 
     public String getCommitIdAbbrev() {
         return commitIdAbbrev;
+    }
+
+    public String getCommitId() {
+        return commitId;
     }
 
     public String getDescribe() {
