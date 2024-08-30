@@ -179,7 +179,7 @@ jobs:
           mvn -B -V -e -ntp versions:set -DnewVersion=${{ env.NEXT_DEV_VERSION }} -DgenerateBackupPoms=false
           mvn -B -V -e -ntp versions:commit
           git add .
-          git commit -m "[github-actions](${{ github.actor }}) next development iteration"
+          git commit -m "[github-actions](${{ github.actor }}) next development iteration ${{ env.NEXT_DEV_VERSION }}"
           git push -u origin ${{ env.PR_BRANCH }}
 
       - name: Create pull request
