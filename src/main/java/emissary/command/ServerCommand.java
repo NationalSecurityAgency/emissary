@@ -3,7 +3,6 @@ package emissary.command;
 import emissary.client.EmissaryResponse;
 import emissary.command.converter.ProjectBaseConverter;
 import emissary.command.converter.ServerModeConverter;
-import emissary.core.EmissaryException;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
 import emissary.server.api.Pause;
@@ -112,12 +111,12 @@ public class ServerCommand extends ServiceCommand {
 
     @Override
     protected void startService() {
-        try {
-            LOG.info("Running Emissary Server");
-            new EmissaryServer(this).startServer();
-        } catch (EmissaryException e) {
-            LOG.error("Unable to start server", e);
-        }
+        // try {
+        LOG.info("Running Emissary Server");
+        EmissaryServer.init(this).startServer();
+        // } catch (EmissaryException e) {
+        // LOG.error("Unable to start server", e);
+        // }
     }
 
     @Override

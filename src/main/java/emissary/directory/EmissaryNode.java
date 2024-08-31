@@ -200,14 +200,14 @@ public class EmissaryNode {
     }
 
     /**
-     * Get the peer configuration stream for this noed
+     * Get the peer configuration stream for this node
      */
     public Configurator getPeerConfigurator() throws IOException {
         if (isStandalone()) {
             // return a configurator here with just standalone, don't actually read the peer.cfg
             // This is a hack until we can TODO: refactor all this so standalone doesn't need peers
             // maybe even warn if there is a peer.cfg
-            logger.debug("Node is standalone, ignoring any peer.cfg and only constructing one rendevous peer with the local node");
+            logger.debug("Node is standalone, ignoring any peer.cfg and only constructing one rendezvous peer with the local node");
             Configurator cfg = new ServiceConfigGuide();
             cfg.addEntry("RENDEZVOUS_PEER", this.asUrlKey());
             return cfg;

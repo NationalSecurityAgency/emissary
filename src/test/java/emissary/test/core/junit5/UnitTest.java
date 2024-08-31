@@ -3,6 +3,7 @@ package emissary.test.core.junit5;
 import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
 import emissary.core.EmissaryException;
+import emissary.server.EmissaryServer;
 import emissary.util.ThreadDump;
 import emissary.util.io.ResourceReader;
 
@@ -109,7 +110,9 @@ public abstract class UnitTest {
         }
         // setup the environment stuff
         try {
-            ServerCommand.parse(ServerCommand.class, "-m", "cluster").setupCommand();
+            ServerCommand command = ServerCommand.parse(ServerCommand.class, "-m", "cluster");
+            command.setupCommand();
+            EmissaryServer.init(command);
         } catch (EmissaryException e) {
             fail("Unable to setup Emissary environment", e);
         }

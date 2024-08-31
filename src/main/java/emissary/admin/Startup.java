@@ -14,6 +14,7 @@ import emissary.directory.KeyManipulator;
 import emissary.pickup.PickUpPlace;
 import emissary.place.CoordinationPlace;
 import emissary.place.IServiceProviderPlace;
+import emissary.server.EmissaryServer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -287,7 +288,7 @@ public class Startup {
 
         final long start = System.currentTimeMillis();
         final Map<String, String> dirStarts = new HashMap<>();
-        EmissaryNode emissaryNode = new EmissaryNode();
+        EmissaryNode emissaryNode = EmissaryServer.getInstance().getNode();
         for (final String thePlaceLocation : hostParameters) {
 
             final String host = placeHost(thePlaceLocation);
