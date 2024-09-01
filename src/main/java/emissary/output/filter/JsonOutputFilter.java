@@ -102,7 +102,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         protected final boolean denylistStar;
         protected final boolean emptyAllowlist;
         protected final boolean allowlistStar;
-        private final char keyReplacement = '_';
+        private static final char KEY_REPLACEMENT = '_';
 
         public IbdoParameterFilter() {
             // if all collections are empty, then output everything
@@ -198,7 +198,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
             char[] ch = name.toCharArray();
             for (int i = 0; i < ch.length; i++) {
                 if (!Character.isLetterOrDigit(ch[i]) && Character.compare(ch[i], '_') != 0 && Character.compare(ch[i], '.') != 0) {
-                    ch[i] = keyReplacement;
+                    ch[i] = KEY_REPLACEMENT;
                     changed = true;
                 }
             }
