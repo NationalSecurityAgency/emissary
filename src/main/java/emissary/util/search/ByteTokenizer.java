@@ -1,8 +1,3 @@
-/*
-  $Id$
- */
-
-
 package emissary.util.search;
 
 import org.slf4j.Logger;
@@ -15,7 +10,7 @@ import java.util.NoSuchElementException;
 
 /**
  * The byte tokenizer class allows an application to break a byte buffer into tokens. This was modified from the
- * java.util.StringTokenizer implementation. Note that all characters in the deliminter set are considered to be
+ * java.util.StringTokenizer implementation. Note that all characters in the delimiter set are considered to be
  * characters in the range 0 - 255. In other words the ISO8859-1 encoding is used to match the delimiters to the byte
  * array.
  */
@@ -257,6 +252,7 @@ public class ByteTokenizer implements Iterator<String> {
      * @return <code>true</code> if and only if there is at least one token in the string after the current position;
      *         <code>false</code> otherwise.
      */
+    @Override
     public boolean hasNext() {
         /*
          * Temporary store this position and use it in the following next() method only if the delimiters haven't been changed
@@ -272,6 +268,7 @@ public class ByteTokenizer implements Iterator<String> {
      * @return the next token from this string tokenizer.
      * @exception NoSuchElementException if there are no more tokens in this tokenizer's string.
      */
+    @Override
     public String next() {
         /*
          * If next position already computed in hasMoreElements() and delimiters have changed between the computation and this
@@ -298,7 +295,7 @@ public class ByteTokenizer implements Iterator<String> {
                 token = new String(data, start, currentPosition - start);
             }
         } catch (UnsupportedEncodingException uee) {
-            // cannot happen...we already verified in constructer
+            // cannot happen...we already verified in constructor
         }
         return token;
     }
