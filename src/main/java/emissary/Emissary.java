@@ -42,6 +42,7 @@ import javax.annotation.Nullable;
  * 
  * Parses command line arguments and delegates commands
  */
+@SuppressWarnings("ImmutableMemberCollection")
 public class Emissary {
     private static final Logger LOG = LoggerFactory.getLogger(Emissary.class);
 
@@ -53,17 +54,15 @@ public class Emissary {
     private boolean bannerDumped = false;
 
     static {
-        List<Class<? extends EmissaryCommand>> cmds =
+        List<Class<? extends EmissaryCommand>> commandClasses =
                 Arrays.asList(ServerCommand.class, HelpCommand.class, TopologyCommand.class, FeedCommand.class,
                         AgentsCommand.class, PoolCommand.class, VersionCommand.class, EnvCommand.class,
                         PeersCommand.class, ConfigCommand.class, DirectoryCommand.class);
         Map<String, EmissaryCommand> staticCopy = new HashMap<>();
-        for (Class<? extends EmissaryCommand> clz : cmds) {
-            EmissaryCommand cmd;
+        for (Class<? extends EmissaryCommand> commandClass : commandClasses) {
             try {
-                cmd = clz.getDeclaredConstructor().newInstance();
-                String name = cmd.getCommandName();
-                staticCopy.put(name, cmd);
+                EmissaryCommand command = commandClass.getDeclaredConstructor().newInstance();
+                staticCopy.put(command.getCommandName(), command);
             } catch (ReflectiveOperationException e) {
                 LOG.error("Couldn't make EMISSARY_COMMANDS", e);
                 System.exit(1);
