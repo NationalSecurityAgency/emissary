@@ -1,4 +1,4 @@
-package emissary.util;
+package emissary.test.core.junit5.extensions;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
@@ -34,6 +34,7 @@ public class EmissaryIsolatedClassLoaderExtension implements InvocationIntercept
 
         // get the original and isolated class loaders
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        @SuppressWarnings("BanClassLoader")
         URLClassLoader isolatedClassLoader = new TestClassLoader();
 
         // set the isolated class loader
@@ -51,6 +52,7 @@ public class EmissaryIsolatedClassLoaderExtension implements InvocationIntercept
         }
     }
 
+    @SuppressWarnings("BanClassLoader")
     public static class TestClassLoader extends URLClassLoader {
         public TestClassLoader() {
             super(getUrlsFromSystemClassLoader());

@@ -3,7 +3,7 @@ package emissary.roll;
 import emissary.config.ConfigUtil;
 import emissary.core.EmissaryRuntimeException;
 import emissary.test.core.junit5.UnitTest;
-import emissary.util.EmissaryIsolatedClassLoaderExtension;
+import emissary.test.core.junit5.extensions.EmissaryIsolatedClassLoaderExtension;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
