@@ -824,6 +824,6 @@ public final class IBaseDataObjectXmlCodecs {
      */
     public static Method getIbdoMethod(final String methodName, final Class<?>... parameterTypes)
             throws NoSuchMethodException {
-        return IBaseDataObject.class.getDeclaredMethod(methodName, parameterTypes);
+        return IBaseDataObject.class.getMethod(methodName, parameterTypes);
     }
 }

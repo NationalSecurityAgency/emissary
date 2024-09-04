@@ -1168,7 +1168,7 @@ class BaseDataObjectTest extends UnitTest {
         final BaseDataObject bdo = new BaseDataObject();
         final String testData = "This is a test";
         bdo.setChannelFactory(SeekableByteChannelHelper.memory(testData.getBytes()));
-        Field theData = bdo.getClass().getDeclaredField("theData");
+        Field theData = ExtractedRecord.class.getDeclaredField("theData");
         theData.set(bdo, testData.getBytes());
 
         final String msg = "Should throw an error when trying to access data on a BDO where we have a byte array and a channel";
