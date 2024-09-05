@@ -200,6 +200,7 @@ public class Emissary {
         return lc;
     }
 
+    @SuppressWarnings("SystemOut")
     static void redirectStdOutStdErr() {
         // no need for sysout-over-slf4j anymore, which as need for any calls, like jni, which only
         // output to stdout/stderr Last none logback message
