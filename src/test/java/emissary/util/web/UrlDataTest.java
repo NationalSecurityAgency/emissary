@@ -4,6 +4,9 @@ import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -30,8 +33,7 @@ class UrlDataTest extends UnitTest {
         assertEquals("password", urlData.getPassword());
 
         final UrlRequestProperty property = new UrlRequestProperty("KEY", "VALUE");
-        final UrlRequestProperty[] properties = new UrlRequestProperty[1];
-        properties[0] = property;
+        final List<UrlRequestProperty> properties = List.of(property);
         urlData.setProps(properties);
         assertEquals(1, urlData.getNumberOfProperties());
 
@@ -75,7 +77,7 @@ class UrlDataTest extends UnitTest {
     void testConstructor() {
         final byte[] theContent = new byte[0];
         final int responseCode = 0;
-        final UrlRequestProperty[] properties = new UrlRequestProperty[0];
+        final List<UrlRequestProperty> properties = List.of();
         final UrlData urlData = new UrlData("http://www.example.com", theContent, responseCode, properties);
         assertNull(urlData.getPassword());
         assertEquals(0, urlData.getNumberOfProperties());
@@ -91,14 +93,13 @@ class UrlDataTest extends UnitTest {
     @Test
     void testConstructorCopiesRequestProperties() {
         final UrlRequestProperty property = new UrlRequestProperty("KEY", "VALUE");
-        UrlRequestProperty[] properties = new UrlRequestProperty[1];
-        properties[0] = property;
+        List<UrlRequestProperty> properties = List.of(property);
 
         final UrlData urlData = new UrlData("http://www.example.com", new byte[0], 0, properties);
         // nullify the properties array to show that the UrlData object holds its
         // own list.
         properties = null;
-        assertEquals("VALUE", urlData.getProps()[0].getValue());
+        assertEquals("VALUE", urlData.getProps().get(0).getValue());
     }
 
     @Test
@@ -125,16 +126,14 @@ class UrlDataTest extends UnitTest {
     @Test
     void testAddZeroLengthPropertyList() {
         final UrlData urlData = new UrlData();
-        urlData.addProps(new UrlRequestProperty[0]);
+        urlData.addProps(new ArrayList<>());
         assertEquals(0, urlData.getNumberOfProperties());
     }
 
     @Test
     void testAddPropertyListToEmptyList() {
         final UrlRequestProperty property = new UrlRequestProperty("KEY", "VALUE");
-        final UrlRequestProperty[] properties = new UrlRequestProperty[2];
-        properties[0] = property;
-        properties[1] = property;
+        final List<UrlRequestProperty> properties = List.of(property, property);
         final UrlData urlData = new UrlData();
         urlData.addProps(properties);
         assertEquals(2, urlData.getNumberOfProperties());
@@ -143,9 +142,7 @@ class UrlDataTest extends UnitTest {
     @Test
     void testAddPropertyList() {
         final UrlRequestProperty property = new UrlRequestProperty("KEY", "VALUE");
-        final UrlRequestProperty[] properties = new UrlRequestProperty[2];
-        properties[0] = property;
-        properties[1] = property;
+        final List<UrlRequestProperty> properties = List.of(property, property);
         final UrlData urlData = new UrlData();
         urlData.setProps(properties);
         urlData.addProps(properties);
