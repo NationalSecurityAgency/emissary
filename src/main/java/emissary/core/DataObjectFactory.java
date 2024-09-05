@@ -14,13 +14,11 @@ import java.io.IOException;
  */
 public class DataObjectFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataObjectFactory.class);
-
     public static final String DEFAULT_CLASS = BaseDataObject.class.getName();
-    public static final String DEFAULT_EXTRACT_CLASS = ExtractedRecord.class.getName();
 
     private static String clazz;
-    private static String extractedClazz;
+
+    private static final Logger logger = LoggerFactory.getLogger(DataObjectFactory.class);
 
     /*
      * Initialize our implementation details
@@ -29,11 +27,9 @@ public class DataObjectFactory {
         try {
             final Configurator c = ConfigUtil.getConfigInfo(AgentPool.class);
             clazz = c.findStringEntry("payload.class", DEFAULT_CLASS);
-            extractedClazz = c.findStringEntry("payload.extracted.class", DEFAULT_EXTRACT_CLASS);
         } catch (IOException ioe) {
             logger.warn("Unable to configure DataObjectFactory", ioe);
             clazz = DEFAULT_CLASS;
-            extractedClazz = DEFAULT_EXTRACT_CLASS;
         }
     }
 
@@ -46,8 +42,6 @@ public class DataObjectFactory {
 
     /**
      * Override implementation details
-     *
-     * @param clazz {@link IBaseDataObject} implementation
      */
     public static void setImplementingClass(final String clazz) {
         DataObjectFactory.clazz = clazz;
@@ -55,76 +49,32 @@ public class DataObjectFactory {
 
     /**
      * Get the name of the impl we are using
-     *
-     * @return {@link IBaseDataObject} implementation
      */
     public static String getImplementingClass() {
         return clazz;
     }
 
     /**
-     * Override implementation details
-     *
-     * @param clazz {@link IBaseDataObject} implementation
-     */
-    public static void setImplementingExtractClass(final String clazz) {
-        DataObjectFactory.extractedClazz = clazz;
-    }
-
-    /**
-     * Get the name of the impl we are using
-     *
-     * @return {@link IBaseDataObject} implementation
-     */
-    public static String getImplementingExtractClass() {
-        return extractedClazz;
-    }
-
-    /**
      * Get an instance of the configured DataObject impl
-     *
-     * @return {@link IBaseDataObject} implementation
      */
     public static IBaseDataObject getInstance() {
-        return getInstance(false);
-    }
-
-    /**
-     * Get an instance of the configured DataObject impl
-     *
-     * @param isExtracted true to return extracted record implementation, false otherwise
-     * @return {@link IBaseDataObject} implementation
-     */
-    public static IBaseDataObject getInstance(boolean isExtracted) {
-        final Object o = Factory.create(isExtracted ? extractedClazz : clazz);
+        final Object o = Factory.create(clazz);
         return (IBaseDataObject) o;
     }
 
     /**
      * Get an instance of the configured DataObject impl with pretty much arbitrary arguments to the constructor
-     * 
-     * @param args the arguments to the BaseDataObject constructor
-     * @return {@link IBaseDataObject} implementation
-     */
-    public static IBaseDataObject getInstance(final Object... args) {
-        return getInstance(false, args);
-    }
-
-    /**
-     * Get an instance of the configured DataObject impl with pretty much arbitrary arguments to the constructor
      *
      * @param args the arguments to the BaseDataObject constructor
-     * @param isExtracted true to return extracted record implementation, false otherwise
-     * @return {@link IBaseDataObject} implementation
      */
-    public static IBaseDataObject getInstance(boolean isExtracted, final Object... args) {
-        final Object o = Factory.create(isExtracted ? extractedClazz : clazz, args);
+    public static IBaseDataObject getInstance(final Object... args) {
+        final Object o = Factory.create(clazz, args);
         return (IBaseDataObject) o;
     }
 
     /**
      * Get an instance of the configured DataObject impl with filename, form, and file type set
-     * 
+     *
      * @param payload the payload data
      * @param filename the filename
      * @param fileTypeAndForm the form and filetype to set on the IBDO
@@ -139,40 +89,12 @@ public class DataObjectFactory {
      *
      * @param payload the payload data
      * @param filename the filename
-     * @param fileTypeAndForm the form and filetype to set on the IBDO
-     * @param isExtracted true to return extracted record implementation, false otherwise
-     * @return an IBDO with the payload, filename, set with the file type and form set to the same value
-     */
-    public static IBaseDataObject getInstance(final byte[] payload, final String filename, final String fileTypeAndForm, boolean isExtracted) {
-        return getInstance(payload, filename, fileTypeAndForm, fileTypeAndForm, isExtracted);
-    }
-
-    /**
-     * Get an instance of the configured DataObject impl with filename, form, and file type set
-     * 
-     * @param payload the payload data
-     * @param filename the filename
      * @param form the form to set on the IBDO
      * @param fileType the file type to set on the IBDO
      * @return an IBDO with the payload, filename, file type, and form set
      */
     public static IBaseDataObject getInstance(final byte[] payload, final String filename, final String form, final String fileType) {
-        return getInstance(payload, filename, form, fileType, false);
-    }
-
-    /**
-     * Get an instance of the configured DataObject impl with filename, form, and file type set
-     *
-     * @param payload the payload data
-     * @param filename the filename
-     * @param form the form to set on the IBDO
-     * @param fileType the file type to set on the IBDO
-     * @param isExtracted true to return extracted record implementation, false otherwise
-     * @return an IBDO with the payload, filename, file type, and form set
-     */
-    public static IBaseDataObject getInstance(final byte[] payload, final String filename, final String form, final String fileType,
-            boolean isExtracted) {
-        final Object o = Factory.create(isExtracted ? extractedClazz : clazz, payload, filename, form, fileType);
+        final Object o = Factory.create(clazz, payload, filename, form, fileType);
         return (IBaseDataObject) o;
     }
 }

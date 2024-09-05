@@ -1,6 +1,6 @@
 package emissary.core.channels;
 
-import emissary.core.IBaseDataObject;
+import emissary.core.IBaseRecord;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
@@ -81,7 +81,7 @@ public final class SeekableByteChannelHelper {
      * @param maxSize to limit the byte array to
      * @return a byte array of the data from the BDO sized up to maxSize (so could truncate data)
      */
-    public static byte[] getByteArrayFromBdo(final IBaseDataObject ibdo, final int maxSize) {
+    public static byte[] getByteArrayFromBdo(final IBaseRecord ibdo, final int maxSize) {
         try (final SeekableByteChannel sbc = ibdo.getChannelFactory().create()) {
             final long truncatedBy = sbc.size() - maxSize;
             if (truncatedBy > 0 && logger.isWarnEnabled()) {

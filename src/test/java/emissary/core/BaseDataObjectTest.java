@@ -24,7 +24,6 @@ import org.mockito.Mockito;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
@@ -1168,8 +1167,7 @@ class BaseDataObjectTest extends UnitTest {
         final BaseDataObject bdo = new BaseDataObject();
         final String testData = "This is a test";
         bdo.setChannelFactory(SeekableByteChannelHelper.memory(testData.getBytes()));
-        Field theData = bdo.getClass().getDeclaredField("theData");
-        theData.set(bdo, testData.getBytes());
+        bdo.theData = testData.getBytes();
 
         final String msg = "Should throw an error when trying to access data on a BDO where we have a byte array and a channel";
 

@@ -102,14 +102,12 @@ public final class IBaseDataObjectXmlHelper {
         ibdoFromXmlMainElements(answersElement, parentIbdo, decoders);
 
         for (final Element answerChild : answerChildren) {
-            final IBaseDataObject childIbdo;
+            final IBaseDataObject childIbdo = DataObjectFactory.getInstance();
             final String childName = answerChild.getName();
 
             if (childName.startsWith(EXTRACTED_RECORD_ELEMENT_PREFIX)) {
-                childIbdo = DataObjectFactory.getInstance(true);
                 parentIbdo.addExtractedRecord(ibdoFromXmlMainElements(answerChild, childIbdo, decoders));
             } else if (childName.startsWith(ATTACHMENT_ELEMENT_PREFIX)) {
-                childIbdo = DataObjectFactory.getInstance();
                 children.add(ibdoFromXmlMainElements(answerChild, childIbdo, decoders));
             }
         }

@@ -4,6 +4,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
+import emissary.core.IBaseRecord;
 import emissary.core.TransformHistory;
 import emissary.util.xml.JDOMUtil;
 
@@ -290,7 +291,7 @@ public class PayloadUtil {
      */
     private static final String SEP = ": ";
 
-    public static String printFormattedMetadata(final IBaseDataObject payload) {
+    public static String printFormattedMetadata(final IBaseRecord payload) {
         final StringBuilder out = new StringBuilder();
         out.append(LS);
         for (final Map.Entry<String, Collection<Object>> entry : payload.getParameters().entrySet()) {
