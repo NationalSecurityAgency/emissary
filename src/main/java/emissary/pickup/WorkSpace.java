@@ -697,7 +697,7 @@ public class WorkSpace implements Runnable {
                     i.remove(); // remove from pending
                     wb.setSentTo(null); // clear in progress indicator
                     this.retryCount++;
-                    if (wb.incrementErrorCount() <= this.MAX_BUNDLE_RETRIES) {
+                    if (wb.incrementErrorCount() <= MAX_BUNDLE_RETRIES) {
                         logger.debug("Removing pending bundle {} from pending pool, re-adding to outbound with errorCount={}", wb.getBundleId(),
                                 wb.getErrorCount());
                         addOutboundBundle(wb); // send to outbound again
@@ -830,7 +830,7 @@ public class WorkSpace implements Runnable {
             logger.info("Unknown bundle completed: {}", bundleId);
         } else if (!itWorked) {
             item.setSentTo(null); // clear in progress indicator
-            if (item.incrementErrorCount() > this.MAX_BUNDLE_RETRIES) {
+            if (item.incrementErrorCount() > MAX_BUNDLE_RETRIES) {
                 logger.error("Bundle {} has too many errors, permanently discarded", item);
             } else {
                 addOutboundBundle(item); // send to outbound again
@@ -1083,7 +1083,7 @@ public class WorkSpace implements Runnable {
                 }
 
                 try {
-                    Thread.sleep(WorkSpace.this.NOTIFIER_PAUSE_TIME);
+                    Thread.sleep(NOTIFIER_PAUSE_TIME);
                     rotatePickUps();
                 } catch (InterruptedException ignore) {
                     Thread.currentThread().interrupt();
@@ -1342,7 +1342,7 @@ public class WorkSpace implements Runnable {
             final MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
             MemoryUsage heap = mbean.getHeapMemoryUsage();
             int count = 0;
-            while ((((double) heap.getUsed() / (double) heap.getCommitted()) > WorkSpace.this.MEM_THRESHOLD) && (getOutboundQueueSize() > 500)) {
+            while ((((double) heap.getUsed() / (double) heap.getCommitted()) > MEM_THRESHOLD) && (getOutboundQueueSize() > 500)) {
                 logger.debug("Collection memory threshold exceeded {}", heap);
                 try {
                     Thread.sleep(intv);
@@ -1356,7 +1356,7 @@ public class WorkSpace implements Runnable {
             if (count > 0 && logger.isDebugEnabled()) {
                 logger.debug(
                         "Paused collector {} times for {}s waiting for memory usage to go below threshold {} resuming at {}, queueSize was/is={}/{}",
-                        count, (intv / 1000), WorkSpace.this.MEM_THRESHOLD, heap, initialQueueSize, getOutboundQueueSize());
+                        count, (intv / 1000), MEM_THRESHOLD, heap, initialQueueSize, getOutboundQueueSize());
             }
         }
     }
