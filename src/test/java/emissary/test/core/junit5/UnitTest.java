@@ -3,7 +3,7 @@ package emissary.test.core.junit5;
 import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
 import emissary.core.EmissaryException;
-import emissary.util.ThreadDump;
+import emissary.test.util.ThreadDump;
 import emissary.util.io.ResourceReader;
 
 import org.apache.commons.io.FilenameUtils;
