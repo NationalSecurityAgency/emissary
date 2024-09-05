@@ -1,9 +1,3 @@
-/*
- * NameSpace.java
- *
- * Created on December 20, 2002, 10:48 AM
- */
-
 package emissary.core;
 
 import com.google.common.collect.Sets;
@@ -138,12 +132,12 @@ public class Namespace {
     }
 
     public static void dump() {
-        System.out.println("dumping Namespace");
+        logger.info("dumping Namespace");
         for (String key : keySet()) {
             try {
-                System.out.println("Key: " + key + " -> Value: " + lookup(key));
+                logger.info("Key: {} -> Value: {}", key, lookup(key));
             } catch (NamespaceException e) {
-                System.out.println("Couldn't find key: " + key);
+                logger.info("Couldn't find key: {}", key);
             }
         }
     }
