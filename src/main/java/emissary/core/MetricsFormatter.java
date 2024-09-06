@@ -7,8 +7,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Formatter for metrics data, following the existing format emissary format, established previously. Employs the
- * builder pattern of the Reporters from coda hale's metrics package. Currently supports Timers, but could be expanded
- * to support any number of metrics classes.
+ * builder pattern of the Reporters from the coda hale metrics package. This currently supports Timers, but could be
+ * expanded to support any number of metrics classes.
  */
 public class MetricsFormatter {
     /** Create a builder */
@@ -45,6 +45,7 @@ public class MetricsFormatter {
         this.durationFactor = 1.0 / durationUnit.toNanos(1);
     }
 
+    @SuppressWarnings("LongDoubleConversion")
     public String formatTimer(final String name, final Timer timer) {
         final Snapshot snapshot = timer.getSnapshot();
         return String.format("STAT: %s => min=%2.2f,  max=%2.2f, avg=%2.2f, events=%d", name, convertDuration(snapshot.getMin()),
