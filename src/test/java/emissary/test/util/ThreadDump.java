@@ -4,21 +4,21 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-@SuppressWarnings("AvoidObjectArrays")
 public class ThreadDump {
-    public static final String[] SYSTEM_THREADS = {"Reference Handler", "Finalizer", "Signal Dispatcher"};
+    public static final List<String> SYSTEM_THREADS = List.of("Reference Handler", "Finalizer", "Signal Dispatcher");
 
     ThreadMXBean tmbean = ManagementFactory.getThreadMXBean();
 
-    public ThreadInfo[] getThreadInfo() {
+    public List<ThreadInfo> getThreadInfo() {
         final long[] tids = this.tmbean.getAllThreadIds();
-        return this.tmbean.getThreadInfo(tids, Integer.MAX_VALUE);
+        return Arrays.asList(this.tmbean.getThreadInfo(tids, Integer.MAX_VALUE));
     }
 
-    public ThreadInfo[] getThreadInfo(final boolean excludeSystem) {
-        final ThreadInfo[] t = getThreadInfo();
+    public List<ThreadInfo> getThreadInfo(final boolean excludeSystem) {
+        final List<ThreadInfo> t = getThreadInfo();
         final List<ThreadInfo> l = new ArrayList<>();
         if (excludeSystem) {
             for (final ThreadInfo ti : t) {
@@ -37,7 +37,7 @@ public class ThreadDump {
                     l.add(ti);
                 }
             }
-            return l.toArray(new ThreadInfo[0]);
+            return l;
         }
         return t;
     }

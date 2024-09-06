@@ -117,13 +117,13 @@ public abstract class UnitTest {
 
     public void assertMaxNonSystemThreadCount(int max) {
         ThreadDump td = new ThreadDump();
-        ThreadInfo[] ti = td.getThreadInfo(true);
-        if (ti.length > max) {
+        List<ThreadInfo> ti = td.getThreadInfo(true);
+        if (ti.size() > max) {
             StringBuilder sb = new StringBuilder();
             for (ThreadInfo t : ti) {
                 sb.append(t.getThreadName()).append(" ");
             }
-            assertTrue(max <= ti.length, "Not expecting " + ti.length + " threads from " + this.getClass().getName() + ": " + sb);
+            assertTrue(max <= ti.size(), "Not expecting " + ti.size() + " threads from " + this.getClass().getName() + ": " + sb);
         }
     }
 
