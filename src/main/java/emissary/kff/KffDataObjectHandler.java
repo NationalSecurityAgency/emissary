@@ -186,22 +186,28 @@ public class KffDataObjectHandler {
      * @throws NoSuchAlgorithmException if the checksum can't be computed
      */
     public void hash(@Nullable final IBaseDataObject d, final boolean useSbc) throws NoSuchAlgorithmException, IOException {
-        if (d != null) {
-            preserveOriginalMD5BeforeRehashing(d);
-            removeHash(d);
-        }
 
         if (d == null) {
             return;
         }
 
-        // Compute and add the hashes
-        if (useSbc && d.getChannelSize() > 0) {
-            d.putParameters(hashData(d.getChannelFactory(), d.shortName(), ""), MergePolicy.DROP_EXISTING);
-        } else if (!useSbc && d.dataLength() > 0) {
-            d.putParameters(hashData(d.data(), d.shortName()), MergePolicy.DROP_EXISTING);
-        } else {
-            return;
+        String originalMD5 = captureOriginalMD5BeforeRehashing(d);
+        try {
+            removeHash(d);
+
+            // Compute and add the hashes
+            if (useSbc && d.getChannelSize() > 0) {
+                d.putParameters(hashData(d.getChannelFactory(), d.shortName(), ""), MergePolicy.DROP_EXISTING);
+            } else if (!useSbc && d.dataLength() > 0) {
+                d.putParameters(hashData(d.data(), d.shortName()), MergePolicy.DROP_EXISTING);
+            } else {
+                return; // NOSONAR
+            }
+        } finally {
+            // preserve the original MD5 only if 1) we hadn't already done so and 2) rehashing produced a new MD5 value
+            if (!d.hasParameter(MD5_ORIGINAL) && previouslyComputedMd5HasChanged(d, originalMD5)) {
+                d.setParameter(MD5_ORIGINAL, originalMD5);
+            }
         }
 
         // Set params if we have a hit
@@ -219,28 +225,43 @@ public class KffDataObjectHandler {
     }
 
     /**
-     * Preserve the MD5 checksum value with key MD5_ORIGINAL. If the IBDO already has a parameter with that key, do not
-     * overwrite it.
+     * Capture the current CHECKSUM_MD5 parameter value, unless we've already preserved one in the MD5_ORIGINAL parameter
      *
      * @param d IBaseDataObject being processed
      */
-    static void preserveOriginalMD5BeforeRehashing(IBaseDataObject d) {
-        // If the IBDO already has an MD5_ORIGINAL parameter, do not overwrite it.
+    static String captureOriginalMD5BeforeRehashing(IBaseDataObject d) {
+        // If the IBDO already has an MD5_ORIGINAL parameter, return null.
         if (d.hasParameter(MD5_ORIGINAL)) {
-            return;
+            return null;
         }
 
         if (d.hasParameter(KFF_PARAM_MD5)) {
             var paramValue = d.getParameter(KFF_PARAM_MD5);
             if (!paramValue.isEmpty() && paramValue.get(0) != null) {
                 String originalMD5 = paramValue.get(0).toString();
-
                 // only preserve the KFF_PARAM_MD5 value if it's not blank
-                if (StringUtils.isNotBlank(originalMD5)) {
-                    d.setParameter(MD5_ORIGINAL, originalMD5);
-                }
+                return StringUtils.trimToNull(originalMD5);
             }
         }
+        return null;
+    }
+
+    /**
+     * Returns true if the original MD5 is non-blank and is different from the current MD5 value
+     * 
+     * @param d IBaseDataObject being processed
+     * @param originalMD5 previously computed MD5 checksum
+     * @return true if the original MD5 is non-blank and is different from the current MD5 value
+     */
+    static boolean previouslyComputedMd5HasChanged(IBaseDataObject d, String originalMD5) {
+        if (StringUtils.isNotBlank(originalMD5) && d.hasParameter(KFF_PARAM_MD5)) {
+            var paramValue = d.getParameter(KFF_PARAM_MD5);
+            if (!paramValue.isEmpty() && paramValue.get(0) != null) {
+                String currentMD5 = paramValue.get(0).toString();
+                return originalMD5.equals(currentMD5);
+            }
+        }
+        return false;
     }
 
     /**
