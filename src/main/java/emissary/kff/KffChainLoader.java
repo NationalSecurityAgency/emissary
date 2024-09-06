@@ -70,7 +70,7 @@ public class KffChainLoader {
      * @param filterType either IGNORE, KNOWN, or DUPE filter
      * @return number of filter loaded onto chain
      */
-    private static int loadFrom(KffChain chain, Map<String, String> m, KffFilter.FilterType filterType) {
+    private static int loadFrom(KffChain chain, Map<String, String> m, FilterType filterType) {
         int countLoaded = 0;
 
         // Load KFF File filter

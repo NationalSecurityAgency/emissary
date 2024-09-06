@@ -431,11 +431,11 @@ public class EmissaryServer {
             sb.append("\nThread count: current=" + threadcount.get("current") + " max=" + threadcount.get("max") + " daemon="
                     + threadcount.get("daemon"));
             sb.append("\nDeadlocked Threads:");
-            for (ThreadDumpAction.ThreadDumpInfo tdi : (Set<ThreadDumpInfo>) dumps.get("deadlocks")) {
+            for (ThreadDumpInfo tdi : (Set<ThreadDumpInfo>) dumps.get("deadlocks")) {
                 sb.append("\n" + tdi.stack);
             }
             sb.append("\nThread dump:");
-            for (ThreadDumpAction.ThreadDumpInfo tdi : (Set<ThreadDumpInfo>) dumps.get("threads")) {
+            for (ThreadDumpInfo tdi : (Set<ThreadDumpInfo>) dumps.get("threads")) {
                 sb.append("\n" + tdi.stack);
             }
             LOG.trace(sb.toString());
