@@ -1,7 +1,3 @@
-/*
-  $Id$
- */
-
 package emissary.util.web;
 
 import org.slf4j.Logger;
@@ -14,7 +10,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
@@ -76,7 +74,7 @@ public class Url {
      * @param urlString the URL resource
      * @param props properties to use on the connection
      */
-    public static UrlData getUrl(final String urlString, @Nullable final UrlRequestProperty[] props) {
+    public static UrlData getUrl(final String urlString, @Nullable final List<UrlRequestProperty> props) {
         return processUrl(urlString, props, null, Url.GET);
     }
 
@@ -115,7 +113,7 @@ public class Url {
      * @param props array of properties to use
      * @param parms the POST data
      */
-    public static UrlData postUrl(final String urlString, @Nullable final UrlRequestProperty[] props, @Nullable final HttpPostParameters parms) {
+    public static UrlData postUrl(final String urlString, @Nullable final List<UrlRequestProperty> props, @Nullable final HttpPostParameters parms) {
 
         // props.addProp(new UrlRequestProperty("Content-length",parms.length()));
 
@@ -139,7 +137,8 @@ public class Url {
      * @param parms parameters to use when POSTing
      * @param method GET, HEAD, POST
      */
-    private static UrlData processUrl(final String urlString, @Nullable final UrlRequestProperty[] props, @Nullable final HttpPostParameters parms,
+    private static UrlData processUrl(final String urlString, @Nullable final List<UrlRequestProperty> props,
+            @Nullable final HttpPostParameters parms,
             final int method) {
         final UrlData response = new UrlData(urlString);
 
@@ -189,11 +188,9 @@ public class Url {
             }
 
             // Load headers into properties array
-            final UrlRequestProperty[] theProps = new UrlRequestProperty[headers.size()];
-            hdr = 0;
-
+            final List<UrlRequestProperty> theProps = new ArrayList<>(headers.size());
             for (final Map.Entry<String, String> entry : headers.entrySet()) {
-                theProps[hdr] = new UrlRequestProperty(entry.getKey(), entry.getValue());
+                theProps.add(new UrlRequestProperty(entry.getKey(), entry.getValue()));
             }
             response.setProps(theProps);
 

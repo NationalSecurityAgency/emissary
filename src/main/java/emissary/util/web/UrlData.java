@@ -1,10 +1,8 @@
 package emissary.util.web;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nullable;
-
-/*
- $Id$
- */
 
 /**
  * The consolidated output from a web page retrieval
@@ -14,7 +12,7 @@ import javax.annotation.Nullable;
 public class UrlData {
 
     String password;
-    UrlRequestProperty[] props;
+    List<UrlRequestProperty> props;
     String referer;
     int responseCode;
     byte[] theContent;
@@ -27,13 +25,12 @@ public class UrlData {
      * The request properties array sent into this constructor is copied. Note that a deep copy is not performed. If the
      * properties inside the list are changed, this class will see the changes.
      */
-    public UrlData(final String theUrl, final byte[] theContent, final int responseCode, final UrlRequestProperty[] props) {
+    public UrlData(final String theUrl, final byte[] theContent, final int responseCode, final List<UrlRequestProperty> props) {
         this.theUrl = theUrl;
         this.theContent = theContent;
         this.responseCode = responseCode;
         this.theMethod = Url.GET;
-        this.props = new UrlRequestProperty[props.length];
-        System.arraycopy(props, 0, this.props, 0, props.length);
+        this.props = new ArrayList<>(props);
     }
 
     public UrlData() {}
@@ -186,12 +183,13 @@ public class UrlData {
      * 
      * @return Value of props.
      */
-    public UrlRequestProperty[] getProps() {
-        return this.props;
+    @Nullable
+    public List<UrlRequestProperty> getProps() {
+        return this.props == null ? null : new ArrayList<>(this.props);
     }
 
     public int getNumberOfProperties() {
-        return (this.props == null) ? 0 : this.props.length;
+        return (this.props == null) ? 0 : this.props.size();
     }
 
     /**
@@ -199,8 +197,8 @@ public class UrlData {
      * 
      * @param v Value to assign to props.
      */
-    public void setProps(final UrlRequestProperty[] v) {
-        this.props = v;
+    public void setProps(final List<UrlRequestProperty> v) {
+        this.props = new ArrayList<>(v);
     }
 
     /**
@@ -215,15 +213,10 @@ public class UrlData {
         }
 
         if (this.props == null) {
-            this.props = new UrlRequestProperty[1];
-            this.props[0] = v;
-            return;
+            this.props = new ArrayList<>();
         }
 
-        final UrlRequestProperty[] np = new UrlRequestProperty[this.props.length + 1];
-        System.arraycopy(this.props, 0, np, 0, this.props.length);
-        np[np.length] = v;
-        this.props = np;
+        this.props.add(v);
     }
 
     /**
@@ -231,22 +224,19 @@ public class UrlData {
      * 
      * @param v array of new UrlRequestProperty to add
      */
-    public void addProps(@Nullable final UrlRequestProperty[] v) {
+    public void addProps(@Nullable final List<UrlRequestProperty> v) {
         if (v == null) {
             return;
         }
-        if (v.length == 0) {
+        if (v.isEmpty()) {
             return;
         }
 
-        final int plen = (this.props == null) ? 0 : this.props.length;
-
-        final UrlRequestProperty[] np = new UrlRequestProperty[plen + v.length];
-        if (this.props != null) {
-            System.arraycopy(this.props, 0, np, 0, plen);
+        if (this.props == null) {
+            this.props = new ArrayList<>();
         }
-        System.arraycopy(v, 0, np, plen, v.length);
-        this.props = np;
+
+        this.props.addAll(v);
     }
 
     /**
@@ -266,8 +256,8 @@ public class UrlData {
         sb.append(Url.theMethodString[this.theMethod]).append(": ").append(this.theUrl).append(" ").append(this.responseCode).append("/")
                 .append(this.theContent.length);
         if (headers && (this.props != null)) {
-            for (int i = 0; i < this.props.length; i++) {
-                sb.append(this.props[i].toString());
+            for (UrlRequestProperty prop : this.props) {
+                sb.append(prop.toString());
             }
         }
         sb.append("\n\n").append(new String(this.theContent)).append("\n");
