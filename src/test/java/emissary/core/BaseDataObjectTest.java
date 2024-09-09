@@ -254,6 +254,7 @@ class BaseDataObjectTest extends UnitTest {
     }
 
     @Test
+    @SuppressWarnings("ByteBufferBackingArray")
     void testByteArrays() {
         this.b.setHeader("A fine header".getBytes());
         this.b.setFooter("A good footer".getBytes());
@@ -263,6 +264,7 @@ class BaseDataObjectTest extends UnitTest {
         assertEquals("A good footer", new String(this.b.footer()), "Footer bytes");
         assertEquals("alternate view", new String(this.b.getAlternateView("TESTVIEW")), "Alt view bytes");
 
+        // remove @SuppressWarnings("ByteBufferBackingArray") when these deprecated calls are removed/updated
         final ByteBuffer hb = this.b.headerBuffer();
         final ByteBuffer fb = this.b.footerBuffer();
         final ByteBuffer db = this.b.dataBuffer();
