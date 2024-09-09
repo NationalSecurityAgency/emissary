@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * Factory implementation to provide an instance of whichever BaseDataObject implementation is configured for the system
@@ -84,6 +85,12 @@ public class DataObjectFactory {
         return getInstance(payload, filename, fileTypeAndForm, fileTypeAndForm);
     }
 
+    public static IBaseDataObject getInstance(final byte[] payload, final String filename, final String fileTypeAndForm, IBaseDataObject parent,
+            Set<String> inheritedFields) {
+        final Object o = Factory.create(clazz, payload, filename, fileTypeAndForm, parent, inheritedFields);
+        return (IBaseDataObject) o;
+    }
+
     /**
      * Get an instance of the configured DataObject impl with filename, form, and file type set
      * 
@@ -95,6 +102,12 @@ public class DataObjectFactory {
      */
     public static IBaseDataObject getInstance(final byte[] payload, final String filename, final String form, final String fileType) {
         final Object o = Factory.create(clazz, payload, filename, form, fileType);
+        return (IBaseDataObject) o;
+    }
+
+    public static IBaseDataObject getInstance(final byte[] payload, final String filename, final String form, final String fileType,
+            IBaseDataObject parent, Set<String> inheritedFields) {
+        final Object o = Factory.create(clazz, payload, filename, form, fileType, parent, inheritedFields);
         return (IBaseDataObject) o;
     }
 }

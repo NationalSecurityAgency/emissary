@@ -5,6 +5,7 @@ import emissary.kff.KffDataObjectHandler;
 import emissary.parser.SessionParser;
 import emissary.test.core.junit5.UnitTest;
 
+import com.google.common.collect.LinkedListMultimap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -425,5 +426,63 @@ class IBaseDataObjectHelperTest extends UnitTest {
         ibdo1.addAlternateView("notpreferred", "test bytes".getBytes(StandardCharsets.UTF_8));
 
         assertEquals(view1Bytes, IBaseDataObjectHelper.findPreferredData(ibdo1, preferredViews));
+    }
+
+    @Test
+    void getParametersWithInheritance() {
+        // No inheritance
+        IBaseDataObject child = new BaseDataObject(new byte[0], "foo", "UNKNOWN");
+        child.putParameter("k1", "v1");
+        child.putParameter("k2", "v2");
+
+        LinkedListMultimap<String, Object> expected = LinkedListMultimap.create();
+        expected.put("k1", "v1");
+        expected.put("k2", "v2");
+
+        assertEquals(expected.asMap(), IBaseDataObjectHelper.getParametersWithInheritance(child));
+
+
+        // Null key set (inherit all params)
+        IBaseDataObject parent = new BaseDataObject();
+        parent.putParameter("k1", "p1");
+        parent.putParameter("k2", "p2");
+        parent.putParameter("k3", "p3");
+
+        child = new BaseDataObject(new byte[0], "foo", "UNKNOWN", parent, null);
+        child.putParameter("k1", "v1");
+        child.putParameter("k2", "v2");
+        child.putParameter("k4", "v4");
+
+        expected = LinkedListMultimap.create();
+        expected.put("k1", "p1");
+        expected.put("k2", "p2");
+        expected.put("k3", "p3");
+        expected.put("k4", "v4");
+
+        assertEquals(expected.asMap(), IBaseDataObjectHelper.getParametersWithInheritance(child));
+
+
+        // Limit the keys that are inherited
+        parent = new BaseDataObject();
+        parent.putParameter("k1", "p1");
+        parent.putParameter("k2", "p2");
+        parent.putParameter("k3", "p3");
+
+        Set<String> inheritedParams = new HashSet<>();
+        inheritedParams.add("k2");
+
+        child = new BaseDataObject(new byte[0], "foo", "UNKNOWN", parent, inheritedParams);
+        child.putParameter("k1", "v1");
+        child.putParameter("k2", "v2");
+        child.putParameter("k4", "v4");
+
+        expected = LinkedListMultimap.create();
+        expected.put("k1", "v1");
+        expected.put("k2", "p2");
+        expected.put("k4", "v4");
+
+        assertEquals(expected.asMap(), IBaseDataObjectHelper.getParametersWithInheritance(child));
+
+
     }
 }

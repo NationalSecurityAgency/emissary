@@ -928,4 +928,18 @@ public interface IBaseDataObject {
      * @param transactionId the unique identifier of the transaction
      */
     void setTransactionId(String transactionId);
+
+    /**
+     * Return the parent or null if there is none
+     * 
+     * @return The parent IBaseDataObject
+     */
+    IBaseDataObject getParent();
+
+    /**
+     * Return the set of parameters inherited from the parent or null if there are none.
+     * 
+     * @return The set of inherited parameters
+     */
+    Set<String> getInheritedParameters();
 }

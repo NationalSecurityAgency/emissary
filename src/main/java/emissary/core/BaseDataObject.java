@@ -194,6 +194,10 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     final SafeUsageChecker safeUsageChecker = new SafeUsageChecker();
 
+    protected final IBaseDataObject parent;
+
+    protected final Set<String> inheritedKeys;
+
     protected enum DataState {
         NO_DATA, CHANNEL_ONLY, BYTE_ARRAY_ONLY, BYTE_ARRAY_AND_CHANNEL
     }
@@ -251,6 +255,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public BaseDataObject() {
         this.theData = null;
         setCreationTimestamp(Instant.now());
+        parent = null;
+        inheritedKeys = null;
     }
 
     /**
@@ -264,6 +270,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         setData(newData);
         setFilename(name);
         setCreationTimestamp(Instant.now());
+        parent = null;
+        inheritedKeys = null;
     }
 
     /**
@@ -286,6 +294,30 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         if (fileType != null) {
             this.setFileType(fileType);
         }
+    }
+
+    public BaseDataObject(final byte[] newData, final String name, @Nullable final String form, IBaseDataObject parent, Set<String> inheritedKeys) {
+        setData(newData);
+        setFilename(name);
+        if (form != null) {
+            pushCurrentForm(form);
+        }
+        this.parent = parent;
+        this.inheritedKeys = inheritedKeys;
+    }
+
+    public BaseDataObject(final byte[] newData, final String name, @Nullable final String form, @Nullable final String fileType,
+            IBaseDataObject parent, Set<String> inheritedKeys) {
+        setData(newData);
+        setFilename(name);
+        if (form != null) {
+            pushCurrentForm(form);
+        }
+        if (fileType != null) {
+            this.setFileType(fileType);
+        }
+        this.parent = parent;
+        this.inheritedKeys = inheritedKeys;
     }
 
     /**
@@ -1508,5 +1540,15 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
+    }
+
+    @Override
+    public IBaseDataObject getParent() {
+        return parent;
+    }
+
+    @Override
+    public Set<String> getInheritedParameters() {
+        return inheritedKeys;
     }
 }

@@ -11,7 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -259,5 +261,26 @@ public final class IBaseDataObjectHelper {
         }
 
         return payload.data();
+    }
+
+    /**
+     * Get the effective parameters for a given payload, considering parameters inherited from the parents
+     * 
+     * @param payload Get parameters from this IBaseDataObject
+     * @return The full set parameters including inherited ones
+     */
+    public static Map<String, Collection<Object>> getParametersWithInheritance(IBaseDataObject payload) {
+        IBaseDataObject parent = payload.getParent();
+        Set<String> inheritedParameters = payload.getInheritedParameters();
+        Map<String, Collection<Object>> effectiveParams = new HashMap<>(payload.getParameters());
+        if (parent != null) {
+            for (String key : parent.getParameterKeys()) {
+                if (inheritedParameters == null || inheritedParameters.contains(key)) {
+                    effectiveParams.put(key, parent.getParameter(key));
+                }
+            }
+        }
+
+        return effectiveParams;
     }
 }
