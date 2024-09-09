@@ -51,8 +51,9 @@ public abstract class UnitTest {
     protected final AtomicReference<Class<?>> answerFileClassRef = new AtomicReference<>(getClass());
 
     @TempDir
+    @SuppressWarnings("NonFinalStaticField")
     public static File temporaryDirectory;
-    @SuppressWarnings("ConstantField")
+    @SuppressWarnings({"ConstantField", "NonFinalStaticField"})
     protected static String TMPDIR = "/tmp";
     @Nullable
     protected Package thisPackage = null;
@@ -155,12 +156,12 @@ public abstract class UnitTest {
         answerFileClassRef.set(ansClz);
     }
 
-    private List<String> getMyTestAnswerFiles(Class<?> ansClz) {
+    private static List<String> getMyTestAnswerFiles(Class<?> ansClz) {
         ResourceReader rr = new ResourceReader();
-        return getMyTestAnswerFiles(rr, ansClz);
+        return getMyTestAnswerFiles(ansClz, rr);
     }
 
-    private List<String> getMyTestAnswerFiles(ResourceReader resourceReader, Class<?> ansClz) {
+    private static List<String> getMyTestAnswerFiles(Class<?> ansClz, ResourceReader resourceReader) {
         return resourceReader.findXmlResourcesFor(ansClz);
     }
 
