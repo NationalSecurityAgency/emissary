@@ -2,6 +2,7 @@ package emissary.output.filter;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.core.EmissaryRuntimeException;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffUtil;
 import emissary.util.JavaCharSet;
@@ -20,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 /**
@@ -80,7 +82,8 @@ public abstract class AbstractFilter implements IDropOffFilter {
     public static final String METADATA_VIEW = "." + METADATA_VIEW_NAME;
 
     /* alternate views to NOT output if only a file type/form is specified */
-    protected Set<String> denylist = Collections.emptySet();
+    protected Set<String> denylist = new HashSet<>();
+    protected Set<String> wildCardDenylist = new HashSet<>();
 
     @Nullable
     protected DropOffUtil dropOffUtil = null;
@@ -168,11 +171,70 @@ public abstract class AbstractFilter implements IDropOffFilter {
         if (config != null) {
             this.outputTypes = config.findEntriesAsSet("OUTPUT_TYPE");
             this.logger.debug("Loaded {} output types for filter {}", this.outputTypes.size(), this.outputTypes);
-            this.denylist = config.findEntriesAsSet("DENYLIST");
-            this.logger.debug("Loaded {} ignorelist types for filter {}", this.denylist.size(), this.denylist);
+            this.initializeDenylist(config);
         } else {
             this.logger.debug("InitializeCustom has null filter config");
         }
+    }
+
+    protected void initializeDenylist(final Configurator config) {
+        Pattern charSetOrdering = Pattern.compile("^[\\w*]+(\\.[\\w*]+)*$"); // Match if acceptable characters are in correct order
+        Pattern viewNameFormat = Pattern.compile("^\\w+(\\.\\w+)?\\*?$"); // Match if String is word sequence with optional `*` suffix
+
+        for (String entry : config.findEntriesAsSet("DENYLIST")) {
+            if (charSetOrdering.matcher(entry).matches()) {
+                String viewName = validateAndRemoveDenylistFiletype(entry);
+
+                if (viewName.chars().filter(ch -> ch == '.').count() > 0) {
+                    logger.warn("`DENYLIST = \"{}\"` viewName `{}` should not contain any `.` characters", entry, viewName);
+                }
+                if (viewNameFormat.matcher(viewName).matches()) {
+                    if (viewName.endsWith("*")) {
+                        String strippedEntry = entry.substring(0, entry.length() - 1);
+                        this.wildCardDenylist.add(strippedEntry);
+                    } else {
+                        this.denylist.add(entry);
+                    }
+                } else {
+                    throw new EmissaryRuntimeException(String.format(
+                            "Invalid filter configuration: `DENYLIST = \"%s\"` " +
+                                    "viewName `%s` must be a sequence of [A-Z, a-z, 0-9, _] with optional wildcard `*` suffix.",
+                            entry, viewName));
+                }
+
+            } else {
+                throw new EmissaryRuntimeException(String.format(
+                        "Invalid filter configuration: `DENYLIST = \"%s\"` " +
+                                "must be one sequence of [A-Z, a-z, 0-9, _] or two sequences separated with `.` delimiter.",
+                        entry));
+            }
+        }
+
+        this.logger.debug("Loaded {} ignorelist types for filter {}", this.denylist.size(), this.denylist);
+        this.logger.debug("Loaded {} wildcard suffix ignorelist types for filter {}", this.wildCardDenylist.size(), this.wildCardDenylist);
+    }
+
+    protected String validateAndRemoveDenylistFiletype(final String entry) {
+        String[] names = entry.split("\\.", 2);
+
+        if (names.length > 1) {
+            String filetype = names[0];
+            String viewName = names[1];
+
+            if (filetype.equals("*")) { // DENYLIST = "*.<viewName>" not allowed
+                throw new EmissaryRuntimeException(String.format(
+                        "Invalid filter configuration: `DENYLIST = \"%s\"` " +
+                                "wildcarded filetypes not allowed in denylist - Did you mean `DENYLIST = \"%s\"`?",
+                        entry, viewName));
+            } else if (!filetype.chars().allMatch(ch -> Character.isLetterOrDigit(ch) || ch == '_')) { // DENYLIST = "<type>*.<viewName>" not allowed
+                throw new EmissaryRuntimeException(String.format(
+                        "Invalid filter configuration: `DENYLIST = \"%s\"` " +
+                                "filetype `%s` must be a sequence of [A-Z, a-z, 0-9, _]",
+                        entry, filetype));
+            }
+            return viewName;
+        }
+        return entry;
     }
 
     /**
@@ -447,7 +509,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
         final String currentForm = d.currentForm();
 
         // skip over denylisted alt views
-        if (this.denylist.contains(viewName) || this.denylist.contains(fileType + "." + viewName)) {
+        if (denyListContains(fileType, viewName)) {
             return checkTypes;
         }
 
@@ -472,6 +534,14 @@ public abstract class AbstractFilter implements IDropOffFilter {
         }
         this.logger.debug("Types to be checked for named view {}: {}", viewName, checkTypes);
         return checkTypes;
+    }
+
+    protected boolean denyListContains(final String fileType, final String viewName) {
+        String fullName = fileType + "." + viewName;
+        if (this.denylist.contains(viewName) || this.denylist.contains(fullName)) {
+            return true;
+        }
+        return this.wildCardDenylist.stream().anyMatch(i -> viewName.startsWith(i) || fullName.startsWith(i));
     }
 
     /**
