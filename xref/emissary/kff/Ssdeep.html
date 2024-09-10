@@ -39,7 +39,7 @@
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> SPAMSUM_LENGTH = 64;
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> MIN_BLOCKSIZE = 3;
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> FUZZY_MAX_RESULT = (SPAMSUM_LENGTH + (SPAMSUM_LENGTH / 2 + 20));
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> FUZZY_MAX_RESULT = (SPAMSUM_LENGTH + (SPAMSUM_LENGTH / 2 + 20));
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>      <em class="jxr_javadoccomment">/** The window size for the rolling hash. */</em>
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> ROLLING_WINDOW_SIZE = 7;
@@ -60,7 +60,7 @@
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment">     * Base64 encoding table. Given a 5-bit value {@code n}, position {@code n} in the array is the code point (expressed as</em>
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment">     * a byte) that should appear.</em>
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> byte[] b64Table = SpamSumSignature.GetBytes(<span class="jxr_string">"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"</span>);
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> byte[] b64Table = SpamSumSignature.getBytes(<span class="jxr_string">"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"</span>);
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">     * Get the base64 encoding of the low 6 bits of the given value.</em>
@@ -408,7 +408,7 @@
 <a class="jxr_linenumber" name="L400" href="#L400">400</a> <em class="jxr_javadoccomment">     * @param data The bytes to be hashed.</em>
 <a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">     * @return The SpamSum signature for the bytes.</em>
 <a class="jxr_linenumber" name="L402" href="#L402">402</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L403" href="#L403">403</a>     <strong class="jxr_keyword">public</strong> String fuzzy_hash(<strong class="jxr_keyword">final</strong> byte[] data) {
+<a class="jxr_linenumber" name="L403" href="#L403">403</a>     <strong class="jxr_keyword">public</strong> String fuzzyHash(<strong class="jxr_keyword">final</strong> byte[] data) {
 <a class="jxr_linenumber" name="L404" href="#L404">404</a>         <strong class="jxr_keyword">final</strong> SsContext ctx = <strong class="jxr_keyword">new</strong> SsContext(data);
 <a class="jxr_linenumber" name="L405" href="#L405">405</a>         <strong class="jxr_keyword">while</strong> (<strong class="jxr_keyword">true</strong>) {
 <a class="jxr_linenumber" name="L406" href="#L406">406</a>             <strong class="jxr_keyword">final</strong> <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a> signature = ctx.generateHash(data);
@@ -423,7 +423,7 @@
 <a class="jxr_linenumber" name="L415" href="#L415">415</a>         }
 <a class="jxr_linenumber" name="L416" href="#L416">416</a>     }
 <a class="jxr_linenumber" name="L417" href="#L417">417</a> 
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>     <strong class="jxr_keyword">public</strong> String fuzzy_hash(<strong class="jxr_keyword">final</strong> <a name="SeekableByteChannelFactory" href="../../emissary/core/channels/SeekableByteChannelFactory.html#SeekableByteChannelFactory">SeekableByteChannelFactory</a> sbcf) {
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>     <strong class="jxr_keyword">public</strong> String fuzzyHash(<strong class="jxr_keyword">final</strong> <a name="SeekableByteChannelFactory" href="../../emissary/core/channels/SeekableByteChannelFactory.html#SeekableByteChannelFactory">SeekableByteChannelFactory</a> sbcf) {
 <a class="jxr_linenumber" name="L419" href="#L419">419</a>         <strong class="jxr_keyword">final</strong> SsContext ctx = <strong class="jxr_keyword">new</strong> SsContext(sbcf);
 <a class="jxr_linenumber" name="L420" href="#L420">420</a>         <strong class="jxr_keyword">while</strong> (<strong class="jxr_keyword">true</strong>) {
 <a class="jxr_linenumber" name="L421" href="#L421">421</a>             <strong class="jxr_keyword">final</strong> <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a> signature = ctx.generateHash(sbcf);
@@ -445,7 +445,7 @@
 <a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">     * @return The SpamSum signature for the file.</em>
 <a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     * @throws IOException If there is some I/O problem accessing the file.</em>
 <a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>     <strong class="jxr_keyword">public</strong> String fuzzy_hash_file(<strong class="jxr_keyword">final</strong> File file) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L440" href="#L440">440</a>     <strong class="jxr_keyword">public</strong> String fuzzyHashFile(<strong class="jxr_keyword">final</strong> File file) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L441" href="#L441">441</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> RandomAccessFile stream = <strong class="jxr_keyword">new</strong> RandomAccessFile(file, <span class="jxr_string">"r"</span>)) {
 <a class="jxr_linenumber" name="L442" href="#L442">442</a>             <strong class="jxr_keyword">final</strong> SsContext ctx = <strong class="jxr_keyword">new</strong> SsContext(file);
 <a class="jxr_linenumber" name="L443" href="#L443">443</a>             <strong class="jxr_keyword">while</strong> (<strong class="jxr_keyword">true</strong>) {
@@ -470,8 +470,8 @@
 <a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">     * @return The SpamSum signature for the file.</em>
 <a class="jxr_linenumber" name="L463" href="#L463">463</a> <em class="jxr_javadoccomment">     * @throws IOException If there is some I/O problem accessing the file.</em>
 <a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L465" href="#L465">465</a>     <strong class="jxr_keyword">public</strong> String fuzzy_hash_file(<strong class="jxr_keyword">final</strong> String fileName) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.fuzzy_hash_file(<strong class="jxr_keyword">new</strong> File(fileName));
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>     <strong class="jxr_keyword">public</strong> String fuzzyHashFile(<strong class="jxr_keyword">final</strong> String fileName) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L466" href="#L466">466</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.fuzzyHashFile(<strong class="jxr_keyword">new</strong> File(fileName));
 <a class="jxr_linenumber" name="L467" href="#L467">467</a>     }
 <a class="jxr_linenumber" name="L468" href="#L468">468</a> 
 <a class="jxr_linenumber" name="L469" href="#L469">469</a>     <em class="jxr_javadoccomment">/**</em>
@@ -618,7 +618,7 @@
 <a class="jxr_linenumber" name="L610" href="#L610">610</a>         <em class="jxr_comment">// Compute the edit distance between the two strings. The edit</em>
 <a class="jxr_linenumber" name="L611" href="#L611">611</a>         <em class="jxr_comment">// distance gives us a pretty good idea of how closely related</em>
 <a class="jxr_linenumber" name="L612" href="#L612">612</a>         <em class="jxr_comment">// the two strings are.</em>
-<a class="jxr_linenumber" name="L613" href="#L613">613</a>         <strong class="jxr_keyword">long</strong> score = EditDistance.edit_distn(s1, len1, s2, len2);
+<a class="jxr_linenumber" name="L613" href="#L613">613</a>         <strong class="jxr_keyword">long</strong> score = EditDistance.calculateEditDistance(s1, len1, s2, len2);
 <a class="jxr_linenumber" name="L614" href="#L614">614</a>         <strong class="jxr_keyword">if</strong> (logger.isDebugEnabled()) {
 <a class="jxr_linenumber" name="L615" href="#L615">615</a>             logger.debug(<span class="jxr_string">"edit_dist: {}"</span>, score);
 <a class="jxr_linenumber" name="L616" href="#L616">616</a>         }
@@ -662,7 +662,7 @@
 <a class="jxr_linenumber" name="L654" href="#L654">654</a> <em class="jxr_javadoccomment">     * @return The score for the two signatures. The value is in the range 0..100, where 0 is a terrible match and 100 is a</em>
 <a class="jxr_linenumber" name="L655" href="#L655">655</a> <em class="jxr_javadoccomment">     *         great match.</em>
 <a class="jxr_linenumber" name="L656" href="#L656">656</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L657" href="#L657">657</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> Compare(@Nullable <strong class="jxr_keyword">final</strong> <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumS<a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>mSignature</a> signature1, @Nullable <strong class="jxr_keyword">final</strong> <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a> signature2) {
+<a class="jxr_linenumber" name="L657" href="#L657">657</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> compare(@Nullable <strong class="jxr_keyword">final</strong> <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumS<a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>mSignature</a> signature1, @Nullable <strong class="jxr_keyword">final</strong> <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a> signature2) {
 <a class="jxr_linenumber" name="L658" href="#L658">658</a>         <strong class="jxr_keyword">if</strong> ((<strong class="jxr_keyword">null</strong> == signature1) || (<strong class="jxr_keyword">null</strong> == signature2)) {
 <a class="jxr_linenumber" name="L659" href="#L659">659</a>             <strong class="jxr_keyword">return</strong> -1;
 <a class="jxr_linenumber" name="L660" href="#L660">660</a>         }
@@ -717,7 +717,7 @@
 <a class="jxr_linenumber" name="L709" href="#L709">709</a>             <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> InputStream is = Files.newInputStream(Paths.get(f))) {
 <a class="jxr_linenumber" name="L710" href="#L710">710</a>                 <strong class="jxr_keyword">final</strong> byte[] buffer = IOUtils.toByteArray(is);
 <a class="jxr_linenumber" name="L711" href="#L711">711</a>                 <em class="jxr_comment">// output format matches the original ssdeep program</em>
-<a class="jxr_linenumber" name="L712" href="#L712">712</a>                 System.out.println(ss.fuzzy_hash(buffer) + <span class="jxr_string">",\&quot;"</span> + f + <span class="jxr_string">"\&quot;"</span>);
+<a class="jxr_linenumber" name="L712" href="#L712">712</a>                 System.out.println(ss.fuzzyHash(buffer) + <span class="jxr_string">",\&quot;"</span> + f + <span class="jxr_string">"\&quot;"</span>);
 <a class="jxr_linenumber" name="L713" href="#L713">713</a>             }
 <a class="jxr_linenumber" name="L714" href="#L714">714</a>         }
 <a class="jxr_linenumber" name="L715" href="#L715">715</a>     }

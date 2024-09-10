@@ -61,15 +61,15 @@
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>      @Override
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>      @BeforeEach
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setUp() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          kffFile = <strong class="jxr_keyword">new</strong> KffFile(resourcePath, <span class="jxr_string">"testFilter"</span>, KffFilter.FilterType.Unknown);
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          kffFile = <strong class="jxr_keyword">new</strong> KffFile(resourcePath, <span class="jxr_string">"testFilter"</span>, KffFilter.FilterType.UNKNOWN);
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>          kffFile.setPreferredAlgorithm(<span class="jxr_string">"SHA-1"</span>);
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>      }
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>      @Test
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>      <strong class="jxr_keyword">void</strong> testKffFileCreation() {
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>          assertEquals(<span class="jxr_string">"testFilter"</span>, kffFile.getName());
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          kffFile.setFilterType(KffFilter.FilterType.Ignore);
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          assertEquals(KffFilter.FilterType.Ignore, kffFile.getFilterType());
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          kffFile.setFilterType(KffFilter.FilterType.IGNORE);
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          assertEquals(KffFilter.FilterType.IGNORE, kffFile.getFilterType());
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>          assertEquals(<span class="jxr_string">"SHA-1"</span>, kffFile.getPreferredAlgorithm());
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>      }
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  

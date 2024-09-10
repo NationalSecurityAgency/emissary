@@ -16,7 +16,7 @@
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_javadoccomment"> * Provides the ability to find specified {@code byte[]} patterns inside a larger {@code byte[]}.</em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="KeywordScanner" href="../../../emissary/util/search/KeywordScanner.html#KeywordScanner">KeywordScanner</a> {
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong>[] skip = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[256];
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] skip = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[256];
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> dataLength = -1;
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>      <strong class="jxr_keyword">private</strong> byte[] data;
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>      <strong class="jxr_keyword">private</strong> byte[] pattern;

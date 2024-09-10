@@ -50,84 +50,84 @@
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment"> * </em>
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment"> * Parses command line arguments and delegates commands</em>
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="Emissary" href="../emissary/Emissary.html#Emissary">Emissary</a> {
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOG = LoggerFactory.getLogger(Emissary.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> CommandLine cli = <strong class="jxr_keyword">new</strong> CommandLine(EmissaryCommand.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Map&lt;String, EmissaryCommand&gt; commands;
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Map&lt;String, EmissaryCommand&gt; EMISSARY_COMMANDS = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> bannerDumped = false;
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>      <strong class="jxr_keyword">static</strong> {
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          List&lt;Class&lt;? <strong class="jxr_keyword">extends</strong> EmissaryCommand&gt;&gt; cmds =
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>                  Arrays.asList(ServerCommand.<strong class="jxr_keyword">class</strong>, HelpCommand.<strong class="jxr_keyword">class</strong>, TopologyCommand.<strong class="jxr_keyword">class</strong>, FeedCommand.<strong class="jxr_keyword">class</strong>,
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>                          AgentsCommand.<strong class="jxr_keyword">class</strong>, PoolCommand.<strong class="jxr_keyword">class</strong>, VersionCommand.<strong class="jxr_keyword">class</strong>, EnvCommand.<strong class="jxr_keyword">class</strong>,
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>                          PeersCommand.<strong class="jxr_keyword">class</strong>, ConfigCommand.<strong class="jxr_keyword">class</strong>, DirectoryCommand.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          Map&lt;String, EmissaryCommand&gt; staticCopy = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">for</strong> (Class&lt;? <strong class="jxr_keyword">extends</strong> EmissaryCommand&gt; clz : cmds) {
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>              <a name="EmissaryCommand" href="../emissary/command/EmissaryCommand.html#EmissaryCommand">EmissaryCommand</a> cmd;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  @SuppressWarnings(<span class="jxr_string">"ImmutableMemberCollection"</span>)
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="Emissary" href="../emissary/Emissary.html#Emissary">Emissary</a> {
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOG = LoggerFactory.getLogger(Emissary.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> CommandLine cli = <strong class="jxr_keyword">new</strong> CommandLine(EmissaryCommand.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Map&lt;String, EmissaryCommand&gt; commands;
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Map&lt;String, EmissaryCommand&gt; EMISSARY_COMMANDS;
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> bannerDumped = false;
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>      <strong class="jxr_keyword">static</strong> {
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>          List&lt;Class&lt;? <strong class="jxr_keyword">extends</strong> EmissaryCommand&gt;&gt; commandClasses =
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>                  Arrays.asList(ServerCommand.<strong class="jxr_keyword">class</strong>, HelpCommand.<strong class="jxr_keyword">class</strong>, TopologyCommand.<strong class="jxr_keyword">class</strong>, FeedCommand.<strong class="jxr_keyword">class</strong>,
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>                          AgentsCommand.<strong class="jxr_keyword">class</strong>, PoolCommand.<strong class="jxr_keyword">class</strong>, VersionCommand.<strong class="jxr_keyword">class</strong>, EnvCommand.<strong class="jxr_keyword">class</strong>,
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>                          PeersCommand.<strong class="jxr_keyword">class</strong>, ConfigCommand.<strong class="jxr_keyword">class</strong>, DirectoryCommand.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          Map&lt;String, EmissaryCommand&gt; staticCopy = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          <strong class="jxr_keyword">for</strong> (Class&lt;? <strong class="jxr_keyword">extends</strong> EmissaryCommand&gt; commandClass : commandClasses) {
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>              <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>                  cmd = clz.getDeclaredConstructor().newInstance();
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>                  String name = cmd.getCommandName();
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>                  staticCopy.put(name, cmd);
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>              } <strong class="jxr_keyword">catch</strong> (ReflectiveOperationException e) {
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>                  LOG.error(<span class="jxr_string">"Couldn't make EMISSARY_COMMANDS"</span>, e);
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>                  System.exit(1);
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>              }
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>          }
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          EMISSARY_COMMANDS = Collections.unmodifiableMap(staticCopy);
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>      }
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>      @VisibleForTesting
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>      <strong class="jxr_keyword">protected</strong> CommandLine getCommand() {
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">return</strong> cli;
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>      }
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>      <strong class="jxr_keyword">protected</strong> <a name="Emissary" href="../emissary/Emissary.html#Emissary">Emissary</a>() {
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          <strong class="jxr_keyword">this</strong>(EMISSARY_COMMANDS);
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>      }
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>  
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>      <strong class="jxr_keyword">protected</strong> <a name="Emissary" href="../emissary/Emissary.html#Emissary">Emissary</a>(Map&lt;String, EmissaryCommand&gt; cmds) {
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>          commands = Collections.unmodifiableMap(cmds);
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>          <em class="jxr_comment">// sort by command name and then add to Picocli</em>
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>          <strong class="jxr_keyword">for</strong> (String key : <strong class="jxr_keyword">new</strong> TreeSet&lt;&gt;(commands.keySet())) {
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>              cli.addSubcommand(key, commands.get(key));
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>          }
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>      }
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> execute(String[] args) {
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          reconfigureLogHook(); <em class="jxr_comment">// so we can capture everything for test, like the verbose output</em>
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>          String shouldSetVerbose = System.getProperty(<span class="jxr_string">"set.picocli.debug"</span>);
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>          <strong class="jxr_keyword">if</strong> (shouldSetVerbose != <strong class="jxr_keyword">null</strong> &amp;&amp; shouldSetVerbose.equals(<span class="jxr_string">"true"</span>)) {
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>              CommandLine.tracer().setLevel(CommandLine.TraceLevel.INFO);
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>          }
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>          <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>              cli.parseArgs(args);
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>             List&lt;String&gt; commandNames = cli.getParseResult().originalArgs();
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>             <strong class="jxr_keyword">if</strong> (commandNames.isEmpty()) {
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>                 dumpBanner();
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>                 LOG.error(<span class="jxr_string">"One command is required"</span>);
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>                 HelpCommand.dumpCommands(cli);
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>                 exit(1);
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>             }
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>             String commandName = commandNames.get(0);
-<a class="jxr_linenumber" name="L108" href="#L108">108</a>             <a name="EmissaryCommand" href="../emissary/command/EmissaryCommand.html#EmissaryCommand">EmissaryCommand</a> cmd = commands.get(commandName);
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>             dumpBanner(cmd);
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>             <strong class="jxr_keyword">if</strong> (Arrays.asList(args).contains(ServerCommand.COMMAND_NAME)) {
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>                 dumpVersionInfo();
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>             }
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>             cmd.run(cli);
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>             <em class="jxr_comment">// don't exit(0) here or things like server will not continue to run</em>
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>         } <strong class="jxr_keyword">catch</strong> (MissingParameterException e) {
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>             dumpBanner();
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>             LOG.error(e.getMessage());
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>             HelpCommand.dumpHelp(cli, args[0]);
-<a class="jxr_linenumber" name="L119" href="#L119">119</a>             exit(1);
-<a class="jxr_linenumber" name="L120" href="#L120">120</a>         } <strong class="jxr_keyword">catch</strong> (UnmatchedArgumentException e) {
-<a class="jxr_linenumber" name="L121" href="#L121">121</a>             dumpBanner();
-<a class="jxr_linenumber" name="L122" href="#L122">122</a>             LOG.error(<span class="jxr_string">"Undefined command: {}"</span>, Arrays.toString(args));
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>                  <a name="EmissaryCommand" href="../emissary/command/EmissaryCommand.html#EmissaryCommand">EmissaryCommand</a> command = commandClass.getDeclaredConstructor().newInstance();
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>                  staticCopy.put(command.getCommandName(), command);
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>              } <strong class="jxr_keyword">catch</strong> (ReflectiveOperationException e) {
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>                  LOG.error(<span class="jxr_string">"Couldn't make EMISSARY_COMMANDS"</span>, e);
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>                  System.exit(1);
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>              }
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          }
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          EMISSARY_COMMANDS = Collections.unmodifiableMap(staticCopy);
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>      }
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>      @VisibleForTesting
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">protected</strong> CommandLine getCommand() {
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">return</strong> cli;
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>      }
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>      <strong class="jxr_keyword">protected</strong> <a name="Emissary" href="../emissary/Emissary.html#Emissary">Emissary</a>() {
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          <strong class="jxr_keyword">this</strong>(EMISSARY_COMMANDS);
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      }
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>      <strong class="jxr_keyword">protected</strong> <a name="Emissary" href="../emissary/Emissary.html#Emissary">Emissary</a>(Map&lt;String, EmissaryCommand&gt; cmds) {
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>          commands = Collections.unmodifiableMap(cmds);
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>          <em class="jxr_comment">// sort by command name and then add to Picocli</em>
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>          <strong class="jxr_keyword">for</strong> (String key : <strong class="jxr_keyword">new</strong> TreeSet&lt;&gt;(commands.keySet())) {
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>              cli.addSubcommand(key, commands.get(key));
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>          }
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>      }
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> execute(String[] args) {
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          reconfigureLogHook(); <em class="jxr_comment">// so we can capture everything for test, like the verbose output</em>
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>          String shouldSetVerbose = System.getProperty(<span class="jxr_string">"set.picocli.debug"</span>);
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>          <strong class="jxr_keyword">if</strong> (shouldSetVerbose != <strong class="jxr_keyword">null</strong> &amp;&amp; shouldSetVerbose.equals(<span class="jxr_string">"true"</span>)) {
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>              CommandLine.tracer().setLevel(CommandLine.TraceLevel.INFO);
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>          }
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>              cli.parseArgs(args);
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>              List&lt;String&gt; commandNames = cli.getParseResult().originalArgs();
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>             <strong class="jxr_keyword">if</strong> (commandNames.isEmpty()) {
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>                 dumpBanner();
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>                 LOG.error(<span class="jxr_string">"One command is required"</span>);
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>                 HelpCommand.dumpCommands(cli);
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>                 exit(1);
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>             }
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>             String commandName = commandNames.get(0);
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>             <a name="EmissaryCommand" href="../emissary/command/EmissaryCommand.html#EmissaryCommand">EmissaryCommand</a> cmd = commands.get(commandName);
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>             dumpBanner(cmd);
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>             <strong class="jxr_keyword">if</strong> (Arrays.asList(args).contains(ServerCommand.COMMAND_NAME)) {
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>                 dumpVersionInfo();
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>             }
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>             cmd.run(cli);
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>             <em class="jxr_comment">// don't exit(0) here or things like server will not continue to run</em>
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>         } <strong class="jxr_keyword">catch</strong> (MissingParameterException e) {
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>             dumpBanner();
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>             LOG.error(e.getMessage());
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>             HelpCommand.dumpHelp(cli, args[0]);
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>             exit(1);
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>         } <strong class="jxr_keyword">catch</strong> (UnmatchedArgumentException e) {
+<a class="jxr_linenumber" name="L120" href="#L120">120</a>             dumpBanner();
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>             LOG.error(<span class="jxr_string">"Undefined command: {}"</span>, Arrays.toString(args));
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>             LOG.error(<span class="jxr_string">"\t {}"</span>, e.getLocalizedMessage());
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>             HelpCommand.dumpCommands(cli);
 <a class="jxr_linenumber" name="L124" href="#L124">124</a>             exit(1);
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
@@ -208,16 +208,17 @@
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>         <strong class="jxr_keyword">return</strong> lc;
 <a class="jxr_linenumber" name="L201" href="#L201">201</a>     }
 <a class="jxr_linenumber" name="L202" href="#L202">202</a> 
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> redirectStdOutStdErr() {
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>         <em class="jxr_comment">// no need for sysout-over-slf4j anymore, which as need for any calls, like jni, which only</em>
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>         <em class="jxr_comment">// output to stdout/stderr Last none logback message</em>
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>         LOG.trace(<span class="jxr_string">"Redefining stdout so logback and capture the output"</span>);
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>         System.setOut(<strong class="jxr_keyword">new</strong> <a name="LoggingPrintStream" href="../emissary/util/io/LoggingPrintStream.html#LoggingPrintStream">LoggingPrintStream</a>(System.out, <span class="jxr_string">"STDOUT"</span>, LOG, org.slf4j.event.Level.INFO, 30, TimeUnit.SECONDS));
-<a class="jxr_linenumber" name="L208" href="#L208">208</a> 
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>         LOG.trace(<span class="jxr_string">"Redefining stderr so logback and capture the output"</span>);
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>         System.setErr(<strong class="jxr_keyword">new</strong> <a name="LoggingPrintStream" href="../emissary/util/io/LoggingPrintStream.html#LoggingPrintStream">LoggingPrintStream</a>(System.err, <span class="jxr_string">"STDERR"</span>, LOG, org.slf4j.event.Level.ERROR, 30, TimeUnit.SECONDS));
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>     }
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> }
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>     @SuppressWarnings(<span class="jxr_string">"SystemOut"</span>)
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> redirectStdOutStdErr() {
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>         <em class="jxr_comment">// no need for sysout-over-slf4j anymore, which as need for any calls, like jni, which only</em>
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>         <em class="jxr_comment">// output to stdout/stderr Last none logback message</em>
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>         LOG.trace(<span class="jxr_string">"Redefining stdout so logback and capture the output"</span>);
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>         System.setOut(<strong class="jxr_keyword">new</strong> <a name="LoggingPrintStream" href="../emissary/util/io/LoggingPrintStream.html#LoggingPrintStream">LoggingPrintStream</a>(System.out, <span class="jxr_string">"STDOUT"</span>, LOG, org.slf4j.event.Level.INFO, 30, TimeUnit.SECONDS));
+<a class="jxr_linenumber" name="L209" href="#L209">209</a> 
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>         LOG.trace(<span class="jxr_string">"Redefining stderr so logback and capture the output"</span>);
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>         System.setErr(<strong class="jxr_keyword">new</strong> <a name="LoggingPrintStream" href="../emissary/util/io/LoggingPrintStream.html#LoggingPrintStream">LoggingPrintStream</a>(System.err, <span class="jxr_string">"STDERR"</span>, LOG, org.slf4j.event.Level.ERROR, 30, TimeUnit.SECONDS));
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>     }
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

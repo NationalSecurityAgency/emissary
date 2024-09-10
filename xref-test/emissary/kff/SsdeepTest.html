@@ -41,7 +41,7 @@
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> assertHash(<strong class="jxr_keyword">final</strong> String text, <strong class="jxr_keyword">final</strong> String expectedHash) {
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>          <strong class="jxr_keyword">final</strong> byte[] input = getStringAsUtf8(text);
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>          <strong class="jxr_keyword">final</strong> String hash = ss.fuzzy_hash(input);
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>          <strong class="jxr_keyword">final</strong> String hash = ss.fuzzyHash(input);
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>          <strong class="jxr_keyword">if</strong> (!expectedHash.equals(hash)) {
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>              fail(<span class="jxr_string">"input \&quot;"</span> + text + <span class="jxr_string">"\&quot; hashed to "</span> + hash + <span class="jxr_string">" instead of the expected "</span> + expectedHash);
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>          }
@@ -88,7 +88,7 @@
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>          <em class="jxr_comment">// NOTE: Java guarantees that Random is deterministic for a</em>
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>          <em class="jxr_comment">// given seed and consistent across all implementations.</em>
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>          <strong class="jxr_keyword">new</strong> Random(BIG_RANDOM_ARRAY_SEED).nextBytes(input);
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>          <strong class="jxr_keyword">final</strong> String hash = ss.fuzzy_hash(input);
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>          <strong class="jxr_keyword">final</strong> String hash = ss.fuzzyHash(input);
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>          assertEquals(BIG_RANDOM_EXPECTED_HASH, hash,
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>                  <span class="jxr_string">"Hashes do not match for random array (length="</span> + BIG_RANDOM_ARRAY_LENGTH + <span class="jxr_string">", seed="</span> + BIG_RANDOM_ARRAY_SEED + <span class="jxr_string">")"</span>);
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>      }
@@ -124,7 +124,7 @@
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>             <strong class="jxr_keyword">final</strong> byte[] input = <strong class="jxr_keyword">new</strong> byte[len];
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>             totalInputBytes += len;
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>             rng.nextBytes(input);
-<a class="jxr_linenumber" name="L119" href="#L119">119</a>             <strong class="jxr_keyword">final</strong> String hash = ss.fuzzy_hash(input);
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>             <strong class="jxr_keyword">final</strong> String hash = ss.fuzzyHash(input);
 <a class="jxr_linenumber" name="L120" href="#L120">120</a>             totalHashChars += hash.length();
 <a class="jxr_linenumber" name="L121" href="#L121">121</a>             <strong class="jxr_keyword">final</strong> byte[] hashBytes = getStringAsUtf8(hash);
 <a class="jxr_linenumber" name="L122" href="#L122">122</a>             digest.update(hashBytes);
@@ -140,16 +140,16 @@
 <a class="jxr_linenumber" name="L132" href="#L132">132</a> 
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>     @Test
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>     <strong class="jxr_keyword">void</strong> testCompareEqualHashes() {
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>         <strong class="jxr_keyword">final</strong> SpamSumSignature hash1 = <strong class="jxr_keyword">new</strong> SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM)));
-<a class="jxr_linenumber" name="L136" href="#L136">136</a>         <strong class="jxr_keyword">final</strong> SpamSumSignature hash2 = <strong class="jxr_keyword">new</strong> SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM)));
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>         assertEquals(100, ss.Compare(hash1, hash2), <span class="jxr_string">"signatures from identical strings should produce a perfect score"</span>);
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>         <strong class="jxr_keyword">final</strong> SpamSumSignature hash1 = <strong class="jxr_keyword">new</strong> SpamSumSignature(ss.fuzzyHash(getStringAsUtf8(LOREM_IPSUM)));
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>         <strong class="jxr_keyword">final</strong> SpamSumSignature hash2 = <strong class="jxr_keyword">new</strong> SpamSumSignature(ss.fuzzyHash(getStringAsUtf8(LOREM_IPSUM)));
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>         assertEquals(100, ss.compare(hash1, hash2), <span class="jxr_string">"signatures from identical strings should produce a perfect score"</span>);
 <a class="jxr_linenumber" name="L138" href="#L138">138</a>     }
 <a class="jxr_linenumber" name="L139" href="#L139">139</a> 
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>     @Test
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>     <strong class="jxr_keyword">void</strong> testCompareCommutative() {
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>         <strong class="jxr_keyword">final</strong> SpamSumSignature hash1 = <strong class="jxr_keyword">new</strong> SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM)));
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>         <strong class="jxr_keyword">final</strong> SpamSumSignature hash2 = <strong class="jxr_keyword">new</strong> SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM + <span class="jxr_string">"x"</span>)));
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>         assertEquals(ss.Compare(hash1, hash2), ss.Compare(hash2, hash1), <span class="jxr_string">"signature comparisons should not depend on the order"</span>);
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>         <strong class="jxr_keyword">final</strong> SpamSumSignature hash1 = <strong class="jxr_keyword">new</strong> SpamSumSignature(ss.fuzzyHash(getStringAsUtf8(LOREM_IPSUM)));
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>         <strong class="jxr_keyword">final</strong> SpamSumSignature hash2 = <strong class="jxr_keyword">new</strong> SpamSumSignature(ss.fuzzyHash(getStringAsUtf8(LOREM_IPSUM + <span class="jxr_string">"x"</span>)));
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>         assertEquals(ss.compare(hash1, hash2), ss.compare(hash2, hash1), <span class="jxr_string">"signature comparisons should not depend on the order"</span>);
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>     }
 <a class="jxr_linenumber" name="L146" href="#L146">146</a> 
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>     <em class="jxr_comment">// Changing the parameters will require a corresponding update in the expected scores.</em>
@@ -170,7 +170,7 @@
 <a class="jxr_linenumber" name="L162" href="#L162">162</a>         <strong class="jxr_keyword">final</strong> Random rng = <strong class="jxr_keyword">new</strong> Random(RANDOM_COMPARE_SEED);
 <a class="jxr_linenumber" name="L163" href="#L163">163</a>         <strong class="jxr_keyword">final</strong> byte[] input = <strong class="jxr_keyword">new</strong> byte[RANDOM_COMPARE_LENGTH];
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>         rng.nextBytes(input);
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>         SpamSumSignature prevHash = <strong class="jxr_keyword">new</strong> SpamSumSignature(ss.fuzzy_hash(input));
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>         SpamSumSignature prevHash = <strong class="jxr_keyword">new</strong> SpamSumSignature(ss.fuzzyHash(input));
 <a class="jxr_linenumber" name="L166" href="#L166">166</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> scoreIdx = 0; scoreIdx &lt; scores.length; scoreIdx++) {
 <a class="jxr_linenumber" name="L167" href="#L167">167</a>             <em class="jxr_comment">// Generate the next input by adjusting some bytes in the</em>
 <a class="jxr_linenumber" name="L168" href="#L168">168</a>             <em class="jxr_comment">// previous input. We want the inputs to be relatively</em>
@@ -180,8 +180,8 @@
 <a class="jxr_linenumber" name="L172" href="#L172">172</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; changeCount; i++) {
 <a class="jxr_linenumber" name="L173" href="#L173">173</a>                 input[rng.nextInt(input.length)] = (byte) rng.nextInt();
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>             }
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>             <strong class="jxr_keyword">final</strong> SpamSumSignature hash = <strong class="jxr_keyword">new</strong> SpamSumSignature(ss.fuzzy_hash(input));
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>             scores[scoreIdx] = ss.Compare(prevHash, hash);
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>             <strong class="jxr_keyword">final</strong> SpamSumSignature hash = <strong class="jxr_keyword">new</strong> SpamSumSignature(ss.fuzzyHash(input));
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>             scores[scoreIdx] = ss.compare(prevHash, hash);
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>             prevHash = hash;
 <a class="jxr_linenumber" name="L178" href="#L178">178</a>         }
 <a class="jxr_linenumber" name="L179" href="#L179">179</a> 

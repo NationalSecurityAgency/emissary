@@ -21,8 +21,8 @@
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_javadoccomment">     * FIELDS</em>
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_javadoccomment">     *****************************************************/</em>
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>      <strong class="jxr_keyword">private</strong><em class="jxr_comment">/* uint */</em><strong class="jxr_keyword">long</strong> blockSize;
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>      <strong class="jxr_keyword">private</strong> byte[] hash1;
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>      <strong class="jxr_keyword">private</strong> byte[] hash2;
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> byte[] hash1;
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> byte[] hash2;
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>      <em class="jxr_javadoccomment">/*****************************************************</em>
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment">     * UTILS</em>
@@ -31,7 +31,7 @@
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment">     * Change a string into an array of bytes</em>
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> byte[] GetBytes(String str) {
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> byte[] getBytes(String str) {
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>          byte[] r = <strong class="jxr_keyword">new</strong> byte[str.length()];
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; r.length; i++) {
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>              r[i] = (byte) str.charAt(i);
@@ -43,7 +43,7 @@
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">     * Change a string into an array of bytes</em>
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String GetString(byte[] hsh) {
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String getString(byte[] hsh) {
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>          String r = <span class="jxr_string">""</span>;
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; hsh.length; i++) {
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>              r += (<strong class="jxr_keyword">char</strong>) hsh[i];
@@ -78,8 +78,8 @@
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>          }
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>          blockSize = Integer.parseInt(signature.substring(0, 0 + idx1));
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          hash1 = GetBytes(signature.substring(idx1 + 1, idx1 + 1 + idx2 - idx1 - 1));
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          hash2 = GetBytes(signature.substring(idx2 + 1));
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          hash1 = getBytes(signature.substring(idx1 + 1, idx1 + 1 + idx2 - idx1 - 1));
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>          hash2 = getBytes(signature.substring(idx2 + 1));
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>      }
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">public</strong> <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>(<strong class="jxr_keyword">long</strong> blockSize, byte[] hash1, byte[] hash2) {
@@ -136,8 +136,8 @@
 <a class="jxr_linenumber" name="L128" href="#L128">128</a> 
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>     @Override
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>     <strong class="jxr_keyword">public</strong> String toString() {
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>         String hashText1 = GetString(hash1);
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>         String hashText2 = GetString(hash2);
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>         String hashText1 = getString(hash1);
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>         String hashText2 = getString(hash2);
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>         <strong class="jxr_keyword">return</strong> blockSize + <span class="jxr_string">":"</span> + hashText1 + <span class="jxr_string">":"</span> + hashText2;
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>     }
 <a class="jxr_linenumber" name="L135" href="#L135">135</a> 
@@ -179,7 +179,7 @@
 <a class="jxr_linenumber" name="L171" href="#L171">171</a>         <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignat<a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>Signature">SpamSumSignature</a> sss1 = <strong class="jxr_keyword">new</strong> <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>(args[0]);
 <a class="jxr_linenumber" name="L172" href="#L172">172</a>         <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignat<a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>Signature">SpamSumSignature</a> sss2 = <strong class="jxr_keyword">new</strong> <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>(args[1]);
 <a class="jxr_linenumber" name="L173" href="#L173">173</a>         <a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssd<a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssdeep">Ssdeep</a>sdeep</a> ssdeep = <strong class="jxr_keyword">new</strong> <a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssdeep">Ssdeep</a>();
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>         System.out.println(<span class="jxr_string">""</span> + ssdeep.Compare(sss1, sss2));
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>         System.out.println(<span class="jxr_string">""</span> + ssdeep.compare(sss1, sss2));
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>     }
 <a class="jxr_linenumber" name="L176" href="#L176">176</a> }
 </pre>

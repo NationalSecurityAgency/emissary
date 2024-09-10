@@ -439,11 +439,11 @@
 <a class="jxr_linenumber" name="L431" href="#L431">431</a>             sb.append(<span class="jxr_string">"\nThread count: current="</span> + threadcount.get(<span class="jxr_string">"current"</span>) + <span class="jxr_string">" max="</span> + threadcount.get(<span class="jxr_string">"max"</span>) + <span class="jxr_string">" daemon="</span>
 <a class="jxr_linenumber" name="L432" href="#L432">432</a>                     + threadcount.get(<span class="jxr_string">"daemon"</span>));
 <a class="jxr_linenumber" name="L433" href="#L433">433</a>             sb.append(<span class="jxr_string">"\nDeadlocked Threads:"</span>);
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>             <strong class="jxr_keyword">for</strong> (ThreadDumpAction.ThreadDumpInfo tdi : (Set&lt;ThreadDumpInfo&gt;) dumps.get(<span class="jxr_string">"deadlocks"</span>)) {
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>             <strong class="jxr_keyword">for</strong> (ThreadDumpInfo tdi : (Set&lt;ThreadDumpInfo&gt;) dumps.get(<span class="jxr_string">"deadlocks"</span>)) {
 <a class="jxr_linenumber" name="L435" href="#L435">435</a>                 sb.append(<span class="jxr_string">"\n"</span> + tdi.stack);
 <a class="jxr_linenumber" name="L436" href="#L436">436</a>             }
 <a class="jxr_linenumber" name="L437" href="#L437">437</a>             sb.append(<span class="jxr_string">"\nThread dump:"</span>);
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>             <strong class="jxr_keyword">for</strong> (ThreadDumpAction.ThreadDumpInfo tdi : (Set&lt;ThreadDumpInfo&gt;) dumps.get(<span class="jxr_string">"threads"</span>)) {
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>             <strong class="jxr_keyword">for</strong> (ThreadDumpInfo tdi : (Set&lt;ThreadDumpInfo&gt;) dumps.get(<span class="jxr_string">"threads"</span>)) {
 <a class="jxr_linenumber" name="L439" href="#L439">439</a>                 sb.append(<span class="jxr_string">"\n"</span> + tdi.stack);
 <a class="jxr_linenumber" name="L440" href="#L440">440</a>             }
 <a class="jxr_linenumber" name="L441" href="#L441">441</a>             LOG.trace(sb.toString());

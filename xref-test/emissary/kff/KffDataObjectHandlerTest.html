@@ -123,47 +123,54 @@
 <a class="jxr_linenumber" name="L115" href="#L115">115</a>         payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, <span class="jxr_string">"test.filter"</span>);
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>         kff.hash(payload);
 <a class="jxr_linenumber" name="L117" href="#L117">117</a> 
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>         <em class="jxr_comment">// hash again, to see the effect on the hash-related params.</em>
-<a class="jxr_linenumber" name="L119" href="#L119">119</a>         <em class="jxr_comment">// none of the parameters should have a duplicated value</em>
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>         assertNull(payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL),
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>                 <span class="jxr_string">"MD5_ORIGINAL should only be populated if hashing more than once"</span>);
 <a class="jxr_linenumber" name="L120" href="#L120">120</a> 
-<a class="jxr_linenumber" name="L121" href="#L121">121</a>         kff.hash(payload);
-<a class="jxr_linenumber" name="L122" href="#L122">122</a>         assertEquals(<span class="jxr_string">"test.filter"</span>, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
-<a class="jxr_linenumber" name="L123" href="#L123">123</a>         assertTrue(KffDataObjectHandler.hashPresent(payload));
-<a class="jxr_linenumber" name="L124" href="#L124">124</a>         assertEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>         assertEquals(DATA_CRC32, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_CRC32));
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>         assertEquals(DATA_SSDEEP, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>         assertEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>         assertEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>         assertEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>     }
-<a class="jxr_linenumber" name="L131" href="#L131">131</a> 
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>     @Test
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>     <strong class="jxr_keyword">void</strong> testParentToChildMethod() {
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>         payload.setParameter(KffDataObjectHandler.KFF_PARAM_DUPE_HIT, payload);
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>         KffDataObjectHandler.parentToChild(payload);
-<a class="jxr_linenumber" name="L136" href="#L136">136</a>         assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_DUPE_HIT));
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>         <em class="jxr_comment">// hash again, to see the effect on the hash-related params.</em>
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>         <em class="jxr_comment">// none of the parameters should have a duplicated value</em>
+<a class="jxr_linenumber" name="L123" href="#L123">123</a> 
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>         kff.hash(payload);
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>         assertEquals(<span class="jxr_string">"test.filter"</span>, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>         assertTrue(KffDataObjectHandler.hashPresent(payload));
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>         assertEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>         assertEquals(DATA_CRC32, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_CRC32));
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>         assertEquals(DATA_SSDEEP, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>         assertEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>         assertEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>         assertEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>         assertNotNull(payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL),
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>                 <span class="jxr_string">"MD5_ORIGINAL should be populated if hash called more than once"</span>);
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>         assertEquals(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5),
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>                 payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL));
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>     }
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> 
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>     @Test
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>     <strong class="jxr_keyword">void</strong> testSetAndGetHash() {
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>         KffDataObjectHandler.setHashValue(payload, DATA_MD5);
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>         assertEquals(DATA_MD5, KffDataObjectHandler.getMd5Value(payload));
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>         KffDataObjectHandler.setHashValue(payload, DATA_SHA1);
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>         assertEquals(DATA_SHA1, KffDataObjectHandler.getHashValue(payload));
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>         KffDataObjectHandler.setHashValue(payload, DATA_SSDEEP);
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>         assertEquals(DATA_SSDEEP, KffDataObjectHandler.getSsdeepValue(payload));
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>         KffDataObjectHandler.setHashValue(payload, DATA_SHA256);
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>         assertEquals(DATA_SHA256, KffDataObjectHandler.getSha256Value(payload));
-<a class="jxr_linenumber" name="L149" href="#L149">149</a>         KffDataObjectHandler.setHashValue(payload, DATA_SHA384);
-<a class="jxr_linenumber" name="L150" href="#L150">150</a>         assertEquals(DATA_SHA384, KffDataObjectHandler.getSha384Value(payload));
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>         KffDataObjectHandler.setHashValue(payload, DATA_SHA512);
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>         assertEquals(DATA_SHA512, KffDataObjectHandler.getSha512Value(payload));
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> 
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>         assertEquals(DATA_SHA512, KffDataObjectHandler.getBestAvailableHash(payload));
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>         payload.deleteParameter(KffDataObjectHandler.KFF_PARAM_SHA512);
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>         assertEquals(DATA_SHA384, KffDataObjectHandler.getBestAvailableHash(payload));
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>     }
-<a class="jxr_linenumber" name="L158" href="#L158">158</a> }
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>     <strong class="jxr_keyword">void</strong> testParentToChildMethod() {
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>         payload.setParameter(KffDataObjectHandler.KFF_PARAM_DUPE_HIT, payload);
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>         KffDataObjectHandler.parentToChild(payload);
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>         assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_DUPE_HIT));
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>     }
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> 
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>     @Test
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>     <strong class="jxr_keyword">void</strong> testSetAndGetHash() {
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>         KffDataObjectHandler.setHashValue(payload, DATA_MD5);
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>         assertEquals(DATA_MD5, KffDataObjectHandler.getMd5Value(payload));
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>         KffDataObjectHandler.setHashValue(payload, DATA_SHA1);
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>         assertEquals(DATA_SHA1, KffDataObjectHandler.getHashValue(payload));
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>         KffDataObjectHandler.setHashValue(payload, DATA_SSDEEP);
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>         assertEquals(DATA_SSDEEP, KffDataObjectHandler.getSsdeepValue(payload));
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>         KffDataObjectHandler.setHashValue(payload, DATA_SHA256);
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>         assertEquals(DATA_SHA256, KffDataObjectHandler.getSha256Value(payload));
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>         KffDataObjectHandler.setHashValue(payload, DATA_SHA384);
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>         assertEquals(DATA_SHA384, KffDataObjectHandler.getSha384Value(payload));
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>         KffDataObjectHandler.setHashValue(payload, DATA_SHA512);
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>         assertEquals(DATA_SHA512, KffDataObjectHandler.getSha512Value(payload));
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> 
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>         assertEquals(DATA_SHA512, KffDataObjectHandler.getBestAvailableHash(payload));
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>         payload.deleteParameter(KffDataObjectHandler.KFF_PARAM_SHA512);
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>         assertEquals(DATA_SHA384, KffDataObjectHandler.getBestAvailableHash(payload));
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>     }
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

@@ -54,7 +54,7 @@
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> directoryAction = DIRECTORYADD;
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>      <em class="jxr_comment">// If we are an emissary node these will be present</em>
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">private</strong> <a name="EmissaryNode" href="../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a> node;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="EmissaryNode" href="../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a> node;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>      <em class="jxr_comment">// Our logger</em>
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger logger = LoggerFactory.getLogger(Startup.<strong class="jxr_keyword">class</strong>);
@@ -411,197 +411,194 @@
 <a class="jxr_linenumber" name="L403" href="#L403">403</a>                         <strong class="jxr_keyword">return</strong>;
 <a class="jxr_linenumber" name="L404" href="#L404">404</a>                     }
 <a class="jxr_linenumber" name="L405" href="#L405">405</a> 
-<a class="jxr_linenumber" name="L406" href="#L406">406</a>                     <em class="jxr_comment">// logger.debug("Doing local startup on place {}", thePlaceLocation);</em>
-<a class="jxr_linenumber" name="L407" href="#L407">407</a>                     <strong class="jxr_keyword">final</strong> String thePlaceClassStr = PlaceStarter.getClassString(thePlaceLocation);
-<a class="jxr_linenumber" name="L408" href="#L408">408</a> 
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>                     <strong class="jxr_keyword">final</strong> <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> p = PlaceStarter.createPlace(thePlaceLocation, <strong class="jxr_keyword">null</strong>, thePlaceClassStr, localDirectory);
-<a class="jxr_linenumber" name="L410" href="#L410">410</a>                     <strong class="jxr_keyword">if</strong> (p != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>                         placesArg.put(thePlaceLocation, thePlaceLocation);
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>                         startupBuilder.append(<span class="jxr_string">"done!"</span>);
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>                         logger.info(startupBuilder.toString());
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>                     } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>                         <em class="jxr_comment">// logger.error("{} failed to start!", thePlaceLocation);</em>
-<a class="jxr_linenumber" name="L416" href="#L416">416</a>                         failedPlaces.add(thePlaceLocation);
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>                         placesToStart.remove(thePlaceLocation);
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>                         startupBuilder.append(<span class="jxr_string">"FAILED!!"</span>);
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>                         logger.error(startupBuilder.toString());
-<a class="jxr_linenumber" name="L420" href="#L420">420</a>                     }
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>                 }
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>             });
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>         });
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>         t.start();
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>     }
-<a class="jxr_linenumber" name="L427" href="#L427">427</a> 
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L429" href="#L429">429</a> <em class="jxr_javadoccomment">     * Check to see if all the places have started and been registered in the directory. This doesn't account for</em>
-<a class="jxr_linenumber" name="L430" href="#L430">430</a> <em class="jxr_javadoccomment">     * directories, just things started with a "PLACE" tag</em>
-<a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> stopAndWaitForPlaceCreation() {
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>         <strong class="jxr_keyword">int</strong> numPlacesExpected = <strong class="jxr_keyword">this</strong>.placesToStart.size();
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>         <strong class="jxr_keyword">int</strong> numPlacesFound;
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>         <strong class="jxr_keyword">int</strong> numPlacesFoundPreviously = 0;
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> 
-<a class="jxr_linenumber" name="L437" href="#L437">437</a>         logger.info(<span class="jxr_string">"Waiting for {} places to start {}"</span>, placesToStart.size(),
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>                 placesToStart.stream().map(s -&gt; StringUtils.substringAfterLast(s, <span class="jxr_string">"/"</span>)).sorted().collect(Collectors.toList()));
-<a class="jxr_linenumber" name="L439" href="#L439">439</a>         <strong class="jxr_keyword">do</strong> {
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>             <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.placesToStart.size() != numPlacesExpected) {
-<a class="jxr_linenumber" name="L441" href="#L441">441</a>                 logger.info(<span class="jxr_string">"Now waiting for {} places to start. (originally {} places)"</span>, <strong class="jxr_keyword">this</strong>.placesToStart.size(), numPlacesExpected);
-<a class="jxr_linenumber" name="L442" href="#L442">442</a>                 numPlacesExpected = <strong class="jxr_keyword">this</strong>.placesToStart.size();
-<a class="jxr_linenumber" name="L443" href="#L443">443</a>             }
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> 
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>             numPlacesFound = places.size();
+<a class="jxr_linenumber" name="L406" href="#L406">406</a>                     <strong class="jxr_keyword">final</strong> <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> p = PlaceStarter.createPlace(thePlaceLocation, <strong class="jxr_keyword">null</strong>, thePlaceClassString, localDirectory);
+<a class="jxr_linenumber" name="L407" href="#L407">407</a>                     <strong class="jxr_keyword">if</strong> (p != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>                         placesArg.put(thePlaceLocation, thePlaceLocation);
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>                         startupBuilder.append(<span class="jxr_string">"done!"</span>);
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>                         logger.info(startupBuilder.toString());
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>                     } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>                         <em class="jxr_comment">// logger.error("{} failed to start!", thePlaceLocation);</em>
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>                         failedPlaces.add(thePlaceLocation);
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>                         placesToStart.remove(thePlaceLocation);
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>                         startupBuilder.append(<span class="jxr_string">"FAILED!!"</span>);
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>                         logger.error(startupBuilder.toString());
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>                     }
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>                 }
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>             });
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>         });
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>         t.start();
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>     }
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> 
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> <em class="jxr_javadoccomment">     * Check to see if all the places have started and been registered in the directory. This doesn't account for</em>
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> <em class="jxr_javadoccomment">     * directories, just things started with a "PLACE" tag</em>
+<a class="jxr_linenumber" name="L428" href="#L428">428</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L429" href="#L429">429</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> stopAndWaitForPlaceCreation() {
+<a class="jxr_linenumber" name="L430" href="#L430">430</a>         <strong class="jxr_keyword">int</strong> numPlacesExpected = <strong class="jxr_keyword">this</strong>.placesToStart.size();
+<a class="jxr_linenumber" name="L431" href="#L431">431</a>         <strong class="jxr_keyword">int</strong> numPlacesFound;
+<a class="jxr_linenumber" name="L432" href="#L432">432</a>         <strong class="jxr_keyword">int</strong> numPlacesFoundPreviously = 0;
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> 
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>         logger.info(<span class="jxr_string">"Waiting for {} places to start {}"</span>, placesToStart.size(),
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>                 placesToStart.stream().map(s -&gt; StringUtils.substringAfterLast(s, <span class="jxr_string">"/"</span>)).sorted().collect(Collectors.toList()));
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>         <strong class="jxr_keyword">do</strong> {
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>             <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.placesToStart.size() != numPlacesExpected) {
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>                 logger.info(<span class="jxr_string">"Now waiting for {} places to start. (originally {} places)"</span>, <strong class="jxr_keyword">this</strong>.placesToStart.size(), numPlacesExpected);
+<a class="jxr_linenumber" name="L439" href="#L439">439</a>                 numPlacesExpected = <strong class="jxr_keyword">this</strong>.placesToStart.size();
+<a class="jxr_linenumber" name="L440" href="#L440">440</a>             }
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> 
+<a class="jxr_linenumber" name="L442" href="#L442">442</a>             numPlacesFound = places.size();
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> 
+<a class="jxr_linenumber" name="L444" href="#L444">444</a>             <strong class="jxr_keyword">if</strong> (numPlacesFound &gt;= numPlacesExpected) {
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>                 <strong class="jxr_keyword">boolean</strong> failedPlaceStartups = false;
 <a class="jxr_linenumber" name="L446" href="#L446">446</a> 
-<a class="jxr_linenumber" name="L447" href="#L447">447</a>             <strong class="jxr_keyword">if</strong> (numPlacesFound &gt;= numPlacesExpected) {
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>                 <strong class="jxr_keyword">boolean</strong> failedPlaceStartups = false;
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> 
-<a class="jxr_linenumber" name="L450" href="#L450">450</a>                 <strong class="jxr_keyword">if</strong> (!<strong class="jxr_keyword">this</strong>.failedPlaces.isEmpty()) {
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>                     failedPlaceStartups = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>                     String failedPlaceList = String.join(<span class="jxr_string">"; "</span>, <strong class="jxr_keyword">this</strong>.failedPlaces);
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>                     logger.warn(<span class="jxr_string">"The following places have failed to start: {}"</span>, failedPlaceList);
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>                 }
-<a class="jxr_linenumber" name="L455" href="#L455">455</a>                 <strong class="jxr_keyword">if</strong> (!CoordinationPlace.getFailedCoordinationPlaces().isEmpty()) {
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>                     failedPlaceStartups = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>                     String failedCoordPlaceList = String.join(<span class="jxr_string">"; "</span>, CoordinationPlace.getFailedCoordinationPlaces());
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>                     logger.warn(<span class="jxr_string">"The following coordination places have failed to start: {}"</span>, failedCoordPlaceList);
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>                 }
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> 
-<a class="jxr_linenumber" name="L461" href="#L461">461</a>                 <em class="jxr_comment">// check if strict startup &amp; places/coordination places failed, if yes, shut down server</em>
-<a class="jxr_linenumber" name="L462" href="#L462">462</a>                 <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.node.isStrictStartupMode() &amp;&amp; failedPlaceStartups) {
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>                     logger.error(<span class="jxr_string">"Server failed to start due to Strict mode being enabled.  To disable strict mode, "</span> +
-<a class="jxr_linenumber" name="L464" href="#L464">464</a>                             <span class="jxr_string">"run server start command without the --strict flag"</span>);
-<a class="jxr_linenumber" name="L465" href="#L465">465</a>                     logger.error(<span class="jxr_string">"Server shutting down"</span>);
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>                     System.exit(1);
-<a class="jxr_linenumber" name="L467" href="#L467">467</a>                 }
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> 
-<a class="jxr_linenumber" name="L469" href="#L469">469</a>                 <em class="jxr_comment">// normal termination of the loop</em>
-<a class="jxr_linenumber" name="L470" href="#L470">470</a>                 logger.debug(<span class="jxr_string">"Woohoo! {} of {} places are up and running."</span>, numPlacesFound, numPlacesExpected);
-<a class="jxr_linenumber" name="L471" href="#L471">471</a>                 <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L472" href="#L472">472</a>             }
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> 
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>                 Thread.sleep(500);
-<a class="jxr_linenumber" name="L476" href="#L476">476</a>             } <strong class="jxr_keyword">catch</strong> (InterruptedException e) {
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>                 Thread.currentThread().interrupt();
-<a class="jxr_linenumber" name="L478" href="#L478">478</a>             }
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>                 <strong class="jxr_keyword">if</strong> (!<strong class="jxr_keyword">this</strong>.failedPlaces.isEmpty()) {
+<a class="jxr_linenumber" name="L448" href="#L448">448</a>                     failedPlaceStartups = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>                     String failedPlaceList = String.join(<span class="jxr_string">"; "</span>, <strong class="jxr_keyword">this</strong>.failedPlaces);
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>                     logger.warn(<span class="jxr_string">"The following places have failed to start: {}"</span>, failedPlaceList);
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>                 }
+<a class="jxr_linenumber" name="L452" href="#L452">452</a>                 <strong class="jxr_keyword">if</strong> (!CoordinationPlace.getFailedCoordinationPlaces().isEmpty()) {
+<a class="jxr_linenumber" name="L453" href="#L453">453</a>                     failedPlaceStartups = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>                     String failedCoordPlaceList = String.join(<span class="jxr_string">"; "</span>, CoordinationPlace.getFailedCoordinationPlaces());
+<a class="jxr_linenumber" name="L455" href="#L455">455</a>                     logger.warn(<span class="jxr_string">"The following coordination places have failed to start: {}"</span>, failedCoordPlaceList);
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>                 }
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> 
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>                 <em class="jxr_comment">// check if strict startup &amp; places/coordination places failed, if yes, shut down server</em>
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>                 <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.node.isStrictStartupMode() &amp;&amp; failedPlaceStartups) {
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>                     logger.error(<span class="jxr_string">"Server failed to start due to Strict mode being enabled.  To disable strict mode, "</span> +
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>                             <span class="jxr_string">"run server start command without the --strict flag"</span>);
+<a class="jxr_linenumber" name="L462" href="#L462">462</a>                     logger.error(<span class="jxr_string">"Server shutting down"</span>);
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>                     System.exit(1);
+<a class="jxr_linenumber" name="L464" href="#L464">464</a>                 }
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> 
+<a class="jxr_linenumber" name="L466" href="#L466">466</a>                 <em class="jxr_comment">// normal termination of the loop</em>
+<a class="jxr_linenumber" name="L467" href="#L467">467</a>                 logger.debug(<span class="jxr_string">"Woohoo! {} of {} places are up and running."</span>, numPlacesFound, numPlacesExpected);
+<a class="jxr_linenumber" name="L468" href="#L468">468</a>                 <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L469" href="#L469">469</a>             }
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> 
+<a class="jxr_linenumber" name="L471" href="#L471">471</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>                 Thread.sleep(500);
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>             } <strong class="jxr_keyword">catch</strong> (InterruptedException e) {
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>                 Thread.currentThread().interrupt();
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>             }
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> 
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>             <strong class="jxr_keyword">if</strong> (numPlacesFound != numPlacesFoundPreviously) {
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>                 numPlacesFoundPreviously = numPlacesFound;
 <a class="jxr_linenumber" name="L479" href="#L479">479</a> 
-<a class="jxr_linenumber" name="L480" href="#L480">480</a>             <strong class="jxr_keyword">if</strong> (numPlacesFound != numPlacesFoundPreviously) {
-<a class="jxr_linenumber" name="L481" href="#L481">481</a>                 numPlacesFoundPreviously = numPlacesFound;
-<a class="jxr_linenumber" name="L482" href="#L482">482</a> 
-<a class="jxr_linenumber" name="L483" href="#L483">483</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> percentageUp = (<strong class="jxr_keyword">float</strong>) numPlacesFound / (<strong class="jxr_keyword">float</strong>) numPlacesExpected;
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>                 <strong class="jxr_keyword">final</strong> String leadString;
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>                 <strong class="jxr_keyword">if</strong> (percentageUp &lt; 0.20) {
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>                     leadString = <span class="jxr_string">"Hmmm... only "</span>;
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (percentageUp &lt; 0.40) {
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>                     leadString = <span class="jxr_string">"Ok, now "</span>;
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (percentageUp &lt; 0.60) {
-<a class="jxr_linenumber" name="L490" href="#L490">490</a>                     leadString = <span class="jxr_string">"Making progress, "</span>;
-<a class="jxr_linenumber" name="L491" href="#L491">491</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (percentageUp &lt; 0.80) {
-<a class="jxr_linenumber" name="L492" href="#L492">492</a>                     leadString = <span class="jxr_string">"Over half way there! "</span>;
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (percentageUp &lt; 0.95) {
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>                     leadString = <span class="jxr_string">"Almost ready! "</span>;
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (numPlacesFound + 1 == numPlacesExpected) {
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>                     leadString = <span class="jxr_string">"One more to go... "</span>;
-<a class="jxr_linenumber" name="L497" href="#L497">497</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L498" href="#L498">498</a>                     leadString = <span class="jxr_string">"Yeah! "</span>;
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>                 }
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">float</strong> percentageUp = (<strong class="jxr_keyword">float</strong>) numPlacesFound / (<strong class="jxr_keyword">float</strong>) numPlacesExpected;
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>                 <strong class="jxr_keyword">final</strong> String leadString;
+<a class="jxr_linenumber" name="L482" href="#L482">482</a>                 <strong class="jxr_keyword">if</strong> (percentageUp &lt; 0.20) {
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>                     leadString = <span class="jxr_string">"Hmmm... only "</span>;
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (percentageUp &lt; 0.40) {
+<a class="jxr_linenumber" name="L485" href="#L485">485</a>                     leadString = <span class="jxr_string">"Ok, now "</span>;
+<a class="jxr_linenumber" name="L486" href="#L486">486</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (percentageUp &lt; 0.60) {
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>                     leadString = <span class="jxr_string">"Making progress, "</span>;
+<a class="jxr_linenumber" name="L488" href="#L488">488</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (percentageUp &lt; 0.80) {
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>                     leadString = <span class="jxr_string">"Over half way there! "</span>;
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (percentageUp &lt; 0.95) {
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>                     leadString = <span class="jxr_string">"Almost ready! "</span>;
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (numPlacesFound + 1 == numPlacesExpected) {
+<a class="jxr_linenumber" name="L493" href="#L493">493</a>                     leadString = <span class="jxr_string">"One more to go... "</span>;
+<a class="jxr_linenumber" name="L494" href="#L494">494</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L495" href="#L495">495</a>                     leadString = <span class="jxr_string">"Yeah! "</span>;
+<a class="jxr_linenumber" name="L496" href="#L496">496</a>                 }
+<a class="jxr_linenumber" name="L497" href="#L497">497</a> 
+<a class="jxr_linenumber" name="L498" href="#L498">498</a>                 logger.debug(<span class="jxr_string">"{}{} of {} places are up and running."</span>, leadString, numPlacesFound, numPlacesExpected);
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>             }
 <a class="jxr_linenumber" name="L500" href="#L500">500</a> 
-<a class="jxr_linenumber" name="L501" href="#L501">501</a>                 logger.debug(<span class="jxr_string">"{}{} of {} places are up and running."</span>, leadString, numPlacesFound, numPlacesExpected);
-<a class="jxr_linenumber" name="L502" href="#L502">502</a>             }
+<a class="jxr_linenumber" name="L501" href="#L501">501</a>         } <strong class="jxr_keyword">while</strong> (<strong class="jxr_keyword">true</strong>); <em class="jxr_comment">// break terminated loop</em>
+<a class="jxr_linenumber" name="L502" href="#L502">502</a>     }
 <a class="jxr_linenumber" name="L503" href="#L503">503</a> 
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>         } <strong class="jxr_keyword">while</strong> (<strong class="jxr_keyword">true</strong>); <em class="jxr_comment">// break terminated loop</em>
-<a class="jxr_linenumber" name="L505" href="#L505">505</a>     }
-<a class="jxr_linenumber" name="L506" href="#L506">506</a> 
-<a class="jxr_linenumber" name="L507" href="#L507">507</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L508" href="#L508">508</a> <em class="jxr_javadoccomment">     * sort all the PLACE entries into either a processing place or a pickup place</em>
-<a class="jxr_linenumber" name="L509" href="#L509">509</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L510" href="#L510">510</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> sortPlaces(<strong class="jxr_keyword">final</strong> List&lt;String&gt; placeList) {
-<a class="jxr_linenumber" name="L511" href="#L511">511</a> 
-<a class="jxr_linenumber" name="L512" href="#L512">512</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> String location : placeList) {
-<a class="jxr_linenumber" name="L513" href="#L513">513</a>             <strong class="jxr_keyword">final</strong> String placeName = Startup.placeName(location);
-<a class="jxr_linenumber" name="L514" href="#L514">514</a>             <strong class="jxr_keyword">final</strong> String className = PlaceStarter.getClassString(location);
-<a class="jxr_linenumber" name="L515" href="#L515">515</a>             <strong class="jxr_keyword">if</strong> (className == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L516" href="#L516">516</a>                 <strong class="jxr_keyword">continue</strong>;
-<a class="jxr_linenumber" name="L517" href="#L517">517</a>             }
-<a class="jxr_linenumber" name="L518" href="#L518">518</a> 
-<a class="jxr_linenumber" name="L519" href="#L519">519</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L520" href="#L520">520</a>                 sortPickupOrPlace(location, PickUpPlace.implementsPickUpPlace(Class.forName(className)) ? <strong class="jxr_keyword">this</strong>.pickupLists : <strong class="jxr_keyword">this</strong>.placeLists);
-<a class="jxr_linenumber" name="L521" href="#L521">521</a>             } <strong class="jxr_keyword">catch</strong> (ClassNotFoundException e) {
-<a class="jxr_linenumber" name="L522" href="#L522">522</a>                 logger.error(<span class="jxr_string">"Could not create place {}"</span>, className, e);
-<a class="jxr_linenumber" name="L523" href="#L523">523</a>             }
-<a class="jxr_linenumber" name="L524" href="#L524">524</a>         }
-<a class="jxr_linenumber" name="L525" href="#L525">525</a>     }
-<a class="jxr_linenumber" name="L526" href="#L526">526</a> 
-<a class="jxr_linenumber" name="L527" href="#L527">527</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> sortPickupOrPlace(String theLocation, Map&lt;String, Set&lt;String&gt;&gt; placeList) {
-<a class="jxr_linenumber" name="L528" href="#L528">528</a>         <strong class="jxr_keyword">final</strong> String host = placeHost(theLocation);
-<a class="jxr_linenumber" name="L529" href="#L529">529</a>         Set&lt;String&gt; l = placeList.computeIfAbsent(host, k -&gt; <strong class="jxr_keyword">new</strong> LinkedHashSet&lt;&gt;());
-<a class="jxr_linenumber" name="L530" href="#L530">530</a>         <strong class="jxr_keyword">if</strong> (l.contains(theLocation)) {
-<a class="jxr_linenumber" name="L531" href="#L531">531</a>             logger.warn(<span class="jxr_string">"Sorting places found duplicate {}({}), skipping!"</span>, getLocationName(theLocation), PlaceStarter.getClassString(theLocation));
-<a class="jxr_linenumber" name="L532" href="#L532">532</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L533" href="#L533">533</a>             l.add(theLocation);
-<a class="jxr_linenumber" name="L534" href="#L534">534</a>         }
-<a class="jxr_linenumber" name="L535" href="#L535">535</a>     }
-<a class="jxr_linenumber" name="L536" href="#L536">536</a> 
-<a class="jxr_linenumber" name="L537" href="#L537">537</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> String getLocationName(String location) {
-<a class="jxr_linenumber" name="L538" href="#L538">538</a>         <strong class="jxr_keyword">return</strong> StringUtils.substringAfterLast(location, <span class="jxr_string">"/"</span>);
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>     }
-<a class="jxr_linenumber" name="L540" href="#L540">540</a> 
-<a class="jxr_linenumber" name="L541" href="#L541">541</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L542" href="#L542">542</a> <em class="jxr_javadoccomment">     * Verifies the active directory places vs places started up. Log if any places are started without being announced in</em>
-<a class="jxr_linenumber" name="L543" href="#L543">543</a> <em class="jxr_javadoccomment">     * start-up.</em>
-<a class="jxr_linenumber" name="L544" href="#L544">544</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L545" href="#L545">545</a> <em class="jxr_javadoccomment">     * @return true if no invisible places started, false if yes</em>
-<a class="jxr_linenumber" name="L546" href="#L546">546</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L547" href="#L547">547</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> verifyNoInvisiblePlacesStarted() {
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L549" href="#L549">549</a>             <a name="IDirectoryPlace" href="../../emissary/directory/IDirectoryPlace.html#IDirectoryPlace">IDirectoryPlace</a> dirPlace = DirectoryPlace.lookup();
-<a class="jxr_linenumber" name="L550" href="#L550">550</a>             List&lt;DirectoryEntry&gt; dirEntries = dirPlace.getEntries();
-<a class="jxr_linenumber" name="L551" href="#L551">551</a>             <strong class="jxr_keyword">for</strong> (<a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> entry : dirEntries) {
-<a class="jxr_linenumber" name="L552" href="#L552">552</a>                 <em class="jxr_comment">// add place names of active places. getLocalPlace() returns null for any place that failed to start</em>
-<a class="jxr_linenumber" name="L553" href="#L553">553</a>                 <strong class="jxr_keyword">if</strong> (entry.getLocalPlace() != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L554" href="#L554">554</a>                     activeDirPlaces.add(entry.getLocalPlace().getPlaceName());
-<a class="jxr_linenumber" name="L555" href="#L555">555</a>                 }
-<a class="jxr_linenumber" name="L556" href="#L556">556</a>             }
-<a class="jxr_linenumber" name="L557" href="#L557">557</a> 
-<a class="jxr_linenumber" name="L558" href="#L558">558</a>             <em class="jxr_comment">// remove DirectoryPlace from activeDirPlaces. DirectoryPlace is started up automatically in order to</em>
-<a class="jxr_linenumber" name="L559" href="#L559">559</a>             <em class="jxr_comment">// start all other places, so it isn't per se "announced", but it is known and logged</em>
-<a class="jxr_linenumber" name="L560" href="#L560">560</a>             activeDirPlaces.removeIf(dir -&gt; dir.equalsIgnoreCase(<span class="jxr_string">"DirectoryPlace"</span>));
-<a class="jxr_linenumber" name="L561" href="#L561">561</a>         } <strong class="jxr_keyword">catch</strong> (<a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> e) {
-<a class="jxr_linenumber" name="L562" href="#L562">562</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="EmissaryRuntimeException" href="../../emissary/core/EmissaryRuntimeException.html#EmissaryRuntimeException">EmissaryRuntimeException</a>(e);
-<a class="jxr_linenumber" name="L563" href="#L563">563</a>         }
-<a class="jxr_linenumber" name="L564" href="#L564">564</a> 
-<a class="jxr_linenumber" name="L565" href="#L565">565</a>         <em class="jxr_comment">// compares place names in active dirs and active places, removes them from set if found</em>
-<a class="jxr_linenumber" name="L566" href="#L566">566</a>         <strong class="jxr_keyword">for</strong> (String thePlaceLocation : places.values()) {
-<a class="jxr_linenumber" name="L567" href="#L567">567</a>             activeDirPlaces.removeIf(dir -&gt; dir.equalsIgnoreCase(placeName(thePlaceLocation)));
-<a class="jxr_linenumber" name="L568" href="#L568">568</a>         }
-<a class="jxr_linenumber" name="L569" href="#L569">569</a> 
-<a class="jxr_linenumber" name="L570" href="#L570">570</a>         <em class="jxr_comment">// places that are attempted to startup but are already up are added to separate list</em>
-<a class="jxr_linenumber" name="L571" href="#L571">571</a>         <em class="jxr_comment">// this will only check if places are added to that list</em>
-<a class="jxr_linenumber" name="L572" href="#L572">572</a>         <strong class="jxr_keyword">if</strong> (!placeAlreadyStarted.isEmpty()) {
-<a class="jxr_linenumber" name="L573" href="#L573">573</a>             <strong class="jxr_keyword">for</strong> (String thePlaceLocation : placeAlreadyStarted) {
-<a class="jxr_linenumber" name="L574" href="#L574">574</a>                 activeDirPlaces.removeIf(dir -&gt; dir.equalsIgnoreCase(thePlaceLocation));
-<a class="jxr_linenumber" name="L575" href="#L575">575</a>             }
-<a class="jxr_linenumber" name="L576" href="#L576">576</a>         }
-<a class="jxr_linenumber" name="L577" href="#L577">577</a> 
-<a class="jxr_linenumber" name="L578" href="#L578">578</a>         <em class="jxr_comment">// if any places are left in active dir keys, they are places not announced on startup</em>
-<a class="jxr_linenumber" name="L579" href="#L579">579</a>         <strong class="jxr_keyword">if</strong> (!activeDirPlaces.isEmpty()) {
-<a class="jxr_linenumber" name="L580" href="#L580">580</a>             logger.warn(<span class="jxr_string">"{} place(s) started up without being announced! {}"</span>, activeDirPlaces.size(), activeDirPlaces);
-<a class="jxr_linenumber" name="L581" href="#L581">581</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L582" href="#L582">582</a>         }
+<a class="jxr_linenumber" name="L504" href="#L504">504</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L505" href="#L505">505</a> <em class="jxr_javadoccomment">     * sort all the PLACE entries into either a processing place or a pickup place</em>
+<a class="jxr_linenumber" name="L506" href="#L506">506</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L507" href="#L507">507</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> sortPlaces(<strong class="jxr_keyword">final</strong> List&lt;String&gt; placeList) {
+<a class="jxr_linenumber" name="L508" href="#L508">508</a> 
+<a class="jxr_linenumber" name="L509" href="#L509">509</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> String location : placeList) {
+<a class="jxr_linenumber" name="L510" href="#L510">510</a>             <strong class="jxr_keyword">final</strong> String placeName = Startup.placeName(location);
+<a class="jxr_linenumber" name="L511" href="#L511">511</a>             <strong class="jxr_keyword">final</strong> String className = PlaceStarter.getClassString(location);
+<a class="jxr_linenumber" name="L512" href="#L512">512</a>             <strong class="jxr_keyword">if</strong> (className == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L513" href="#L513">513</a>                 <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="L514" href="#L514">514</a>             }
+<a class="jxr_linenumber" name="L515" href="#L515">515</a> 
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L517" href="#L517">517</a>                 sortPickupOrPlace(location, PickUpPlace.implementsPickUpPlace(Class.forName(className)) ? <strong class="jxr_keyword">this</strong>.pickupLists : <strong class="jxr_keyword">this</strong>.placeLists);
+<a class="jxr_linenumber" name="L518" href="#L518">518</a>             } <strong class="jxr_keyword">catch</strong> (ClassNotFoundException e) {
+<a class="jxr_linenumber" name="L519" href="#L519">519</a>                 logger.error(<span class="jxr_string">"Could not create place {}"</span>, className, e);
+<a class="jxr_linenumber" name="L520" href="#L520">520</a>             }
+<a class="jxr_linenumber" name="L521" href="#L521">521</a>         }
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>     }
+<a class="jxr_linenumber" name="L523" href="#L523">523</a> 
+<a class="jxr_linenumber" name="L524" href="#L524">524</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> sortPickupOrPlace(String theLocation, Map&lt;String, Set&lt;String&gt;&gt; placeList) {
+<a class="jxr_linenumber" name="L525" href="#L525">525</a>         <strong class="jxr_keyword">final</strong> String host = placeHost(theLocation);
+<a class="jxr_linenumber" name="L526" href="#L526">526</a>         Set&lt;String&gt; l = placeList.computeIfAbsent(host, k -&gt; <strong class="jxr_keyword">new</strong> LinkedHashSet&lt;&gt;());
+<a class="jxr_linenumber" name="L527" href="#L527">527</a>         <strong class="jxr_keyword">if</strong> (l.contains(theLocation)) {
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>             logger.warn(<span class="jxr_string">"Sorting places found duplicate {}({}), skipping!"</span>, getLocationName(theLocation), PlaceStarter.getClassString(theLocation));
+<a class="jxr_linenumber" name="L529" href="#L529">529</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L530" href="#L530">530</a>             l.add(theLocation);
+<a class="jxr_linenumber" name="L531" href="#L531">531</a>         }
+<a class="jxr_linenumber" name="L532" href="#L532">532</a>     }
+<a class="jxr_linenumber" name="L533" href="#L533">533</a> 
+<a class="jxr_linenumber" name="L534" href="#L534">534</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> String getLocationName(String location) {
+<a class="jxr_linenumber" name="L535" href="#L535">535</a>         <strong class="jxr_keyword">return</strong> StringUtils.substringAfterLast(location, <span class="jxr_string">"/"</span>);
+<a class="jxr_linenumber" name="L536" href="#L536">536</a>     }
+<a class="jxr_linenumber" name="L537" href="#L537">537</a> 
+<a class="jxr_linenumber" name="L538" href="#L538">538</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L539" href="#L539">539</a> <em class="jxr_javadoccomment">     * Verifies the active directory places vs places started up. Log if any places are started without being announced in</em>
+<a class="jxr_linenumber" name="L540" href="#L540">540</a> <em class="jxr_javadoccomment">     * start-up.</em>
+<a class="jxr_linenumber" name="L541" href="#L541">541</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L542" href="#L542">542</a> <em class="jxr_javadoccomment">     * @return true if no invisible places started, false if yes</em>
+<a class="jxr_linenumber" name="L543" href="#L543">543</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L544" href="#L544">544</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> verifyNoInvisiblePlacesStarted() {
+<a class="jxr_linenumber" name="L545" href="#L545">545</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L546" href="#L546">546</a>             <a name="IDirectoryPlace" href="../../emissary/directory/IDirectoryPlace.html#IDirectoryPlace">IDirectoryPlace</a> dirPlace = DirectoryPlace.lookup();
+<a class="jxr_linenumber" name="L547" href="#L547">547</a>             List&lt;DirectoryEntry&gt; dirEntries = dirPlace.getEntries();
+<a class="jxr_linenumber" name="L548" href="#L548">548</a>             <strong class="jxr_keyword">for</strong> (<a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> entry : dirEntries) {
+<a class="jxr_linenumber" name="L549" href="#L549">549</a>                 <em class="jxr_comment">// add place names of active places. getLocalPlace() returns null for any place that failed to start</em>
+<a class="jxr_linenumber" name="L550" href="#L550">550</a>                 <strong class="jxr_keyword">if</strong> (entry.getLocalPlace() != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L551" href="#L551">551</a>                     activeDirPlaces.add(entry.getLocalPlace().getPlaceName());
+<a class="jxr_linenumber" name="L552" href="#L552">552</a>                 }
+<a class="jxr_linenumber" name="L553" href="#L553">553</a>             }
+<a class="jxr_linenumber" name="L554" href="#L554">554</a> 
+<a class="jxr_linenumber" name="L555" href="#L555">555</a>             <em class="jxr_comment">// remove DirectoryPlace from activeDirPlaces. DirectoryPlace is started up automatically in order to</em>
+<a class="jxr_linenumber" name="L556" href="#L556">556</a>             <em class="jxr_comment">// start all other places, so it isn't per se "announced", but it is known and logged</em>
+<a class="jxr_linenumber" name="L557" href="#L557">557</a>             activeDirPlaces.removeIf(dir -&gt; dir.equalsIgnoreCase(<span class="jxr_string">"DirectoryPlace"</span>));
+<a class="jxr_linenumber" name="L558" href="#L558">558</a>         } <strong class="jxr_keyword">catch</strong> (<a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> e) {
+<a class="jxr_linenumber" name="L559" href="#L559">559</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="EmissaryRuntimeException" href="../../emissary/core/EmissaryRuntimeException.html#EmissaryRuntimeException">EmissaryRuntimeException</a>(e);
+<a class="jxr_linenumber" name="L560" href="#L560">560</a>         }
+<a class="jxr_linenumber" name="L561" href="#L561">561</a> 
+<a class="jxr_linenumber" name="L562" href="#L562">562</a>         <em class="jxr_comment">// compares place names in active dirs and active places, removes them from set if found</em>
+<a class="jxr_linenumber" name="L563" href="#L563">563</a>         <strong class="jxr_keyword">for</strong> (String thePlaceLocation : places.values()) {
+<a class="jxr_linenumber" name="L564" href="#L564">564</a>             activeDirPlaces.removeIf(dir -&gt; dir.equalsIgnoreCase(placeName(thePlaceLocation)));
+<a class="jxr_linenumber" name="L565" href="#L565">565</a>         }
+<a class="jxr_linenumber" name="L566" href="#L566">566</a> 
+<a class="jxr_linenumber" name="L567" href="#L567">567</a>         <em class="jxr_comment">// places that are attempted to startup but are already up are added to separate list</em>
+<a class="jxr_linenumber" name="L568" href="#L568">568</a>         <em class="jxr_comment">// this will only check if places are added to that list</em>
+<a class="jxr_linenumber" name="L569" href="#L569">569</a>         <strong class="jxr_keyword">if</strong> (!placeAlreadyStarted.isEmpty()) {
+<a class="jxr_linenumber" name="L570" href="#L570">570</a>             <strong class="jxr_keyword">for</strong> (String thePlaceLocation : placeAlreadyStarted) {
+<a class="jxr_linenumber" name="L571" href="#L571">571</a>                 activeDirPlaces.removeIf(dir -&gt; dir.equalsIgnoreCase(thePlaceLocation));
+<a class="jxr_linenumber" name="L572" href="#L572">572</a>             }
+<a class="jxr_linenumber" name="L573" href="#L573">573</a>         }
+<a class="jxr_linenumber" name="L574" href="#L574">574</a> 
+<a class="jxr_linenumber" name="L575" href="#L575">575</a>         <em class="jxr_comment">// if any places are left in active dir keys, they are places not announced on startup</em>
+<a class="jxr_linenumber" name="L576" href="#L576">576</a>         <strong class="jxr_keyword">if</strong> (!activeDirPlaces.isEmpty()) {
+<a class="jxr_linenumber" name="L577" href="#L577">577</a>             logger.warn(<span class="jxr_string">"{} place(s) started up without being announced! {}"</span>, activeDirPlaces.size(), activeDirPlaces);
+<a class="jxr_linenumber" name="L578" href="#L578">578</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L579" href="#L579">579</a>         }
+<a class="jxr_linenumber" name="L580" href="#L580">580</a> 
+<a class="jxr_linenumber" name="L581" href="#L581">581</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L582" href="#L582">582</a>     }
 <a class="jxr_linenumber" name="L583" href="#L583">583</a> 
-<a class="jxr_linenumber" name="L584" href="#L584">584</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L585" href="#L585">585</a>     }
-<a class="jxr_linenumber" name="L586" href="#L586">586</a> 
-<a class="jxr_linenumber" name="L587" href="#L587">587</a>     <em class="jxr_comment">// get invisibly started places</em>
-<a class="jxr_linenumber" name="L588" href="#L588">588</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Set&lt;String&gt; getInvisPlaces() {
-<a class="jxr_linenumber" name="L589" href="#L589">589</a>         <strong class="jxr_keyword">return</strong> activeDirPlaces;
-<a class="jxr_linenumber" name="L590" href="#L590">590</a>     }
-<a class="jxr_linenumber" name="L591" href="#L591">591</a> 
-<a class="jxr_linenumber" name="L592" href="#L592">592</a>     <em class="jxr_comment">// get if invisible places are started while in strict mode</em>
-<a class="jxr_linenumber" name="L593" href="#L593">593</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isInvisPlacesStartedInStrictMode() {
-<a class="jxr_linenumber" name="L594" href="#L594">594</a>         <strong class="jxr_keyword">return</strong> invisPlacesStartedInStrictMode;
-<a class="jxr_linenumber" name="L595" href="#L595">595</a>     }
-<a class="jxr_linenumber" name="L596" href="#L596">596</a> }
+<a class="jxr_linenumber" name="L584" href="#L584">584</a>     <em class="jxr_comment">// get invisibly started places</em>
+<a class="jxr_linenumber" name="L585" href="#L585">585</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Set&lt;String&gt; getInvisPlaces() {
+<a class="jxr_linenumber" name="L586" href="#L586">586</a>         <strong class="jxr_keyword">return</strong> activeDirPlaces;
+<a class="jxr_linenumber" name="L587" href="#L587">587</a>     }
+<a class="jxr_linenumber" name="L588" href="#L588">588</a> 
+<a class="jxr_linenumber" name="L589" href="#L589">589</a>     <em class="jxr_comment">// get if invisible places are started while in strict mode</em>
+<a class="jxr_linenumber" name="L590" href="#L590">590</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isInvisPlacesStartedInStrictMode() {
+<a class="jxr_linenumber" name="L591" href="#L591">591</a>         <strong class="jxr_keyword">return</strong> invisPlacesStartedInStrictMode;
+<a class="jxr_linenumber" name="L592" href="#L592">592</a>     }
+<a class="jxr_linenumber" name="L593" href="#L593">593</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

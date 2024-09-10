@@ -29,26 +29,24 @@
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>          args.add(System.getenv(ConfigUtil.PROJECT_BASE_ENV));
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>          args.add(<span class="jxr_string">"--flavor"</span>);
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>          args.add(flavorString);
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>          <a name="TestBaseCommand" href="../../emissary/command/BaseCommandTest.html#TestBaseCommand">TestBaseCommand</a> cmd = TestBaseCommand.parse(TestBaseCommand.<strong class="jxr_keyword">class</strong>, args);
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>          TestBaseCommand cmd = TestBaseCommand.parse(TestBaseCommand.<strong class="jxr_keyword">class</strong>, args);
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>          assertEquals(cmd.getFlavor(), flavorString);
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>      }
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  }
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> TestBaseCommand <strong class="jxr_keyword">extends</strong> BaseCommand {
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">class</strong> <a name="TestBaseCommand" href="../../emissary/command/BaseCommandTest.html#TestBaseCommand">TestBaseCommand</a> <strong class="jxr_keyword">extends</strong> BaseCommand {
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">public</strong> <a name="TestBaseCommand" href="../../emissary/command/BaseCommandTest.html#TestBaseCommand">TestBaseCommand</a>() {}
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>      @Override
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>      <strong class="jxr_keyword">public</strong> String getCommandName() {
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>          <strong class="jxr_keyword">return</strong> <span class="jxr_string">"GOAWAY"</span>;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>      }
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>      @Override
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run(CommandLine c) {
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>          setup();
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>      }
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  }
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>          @Override
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>          <strong class="jxr_keyword">public</strong> String getCommandName() {
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>              <strong class="jxr_keyword">return</strong> <span class="jxr_string">"GOAWAY"</span>;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>          }
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>          @Override
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>          <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run(CommandLine c) {
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>              setup();
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>          }
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>      }
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  }
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

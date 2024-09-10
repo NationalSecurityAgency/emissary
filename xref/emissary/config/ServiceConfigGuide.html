@@ -61,10 +61,10 @@
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String NULL_VALUE = <span class="jxr_string">"&lt;null&gt;"</span>;
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>      <em class="jxr_comment">// Hold all service specific parameters in a list</em>
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>      <strong class="jxr_keyword">protected</strong> List&lt;ConfigEntry&gt; p_service_parameters = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>      <strong class="jxr_keyword">protected</strong> List&lt;ConfigEntry&gt; serviceParameters = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>      <em class="jxr_comment">// Hold all remove config entries, operator of !=</em>
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">protected</strong> List&lt;ConfigEntry&gt; p_remove_parameters = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">protected</strong> List&lt;ConfigEntry&gt; removeParameters = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>      <strong class="jxr_keyword">protected</strong> String <strong class="jxr_keyword">operator</strong>;
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  
@@ -290,13 +290,13 @@
 <a class="jxr_linenumber" name="L282" href="#L282">282</a>                     <strong class="jxr_keyword">this</strong>.values.remove(parmName);
 <a class="jxr_linenumber" name="L283" href="#L283">283</a>                 }
 <a class="jxr_linenumber" name="L284" href="#L284">284</a>             }
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>             <strong class="jxr_keyword">this</strong>.p_remove_parameters.add(anEntry);
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>             <strong class="jxr_keyword">this</strong>.removeParameters.add(anEntry);
 <a class="jxr_linenumber" name="L286" href="#L286">286</a>         } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L287" href="#L287">287</a>             <em class="jxr_comment">// Save the entry in the list</em>
 <a class="jxr_linenumber" name="L288" href="#L288">288</a>             <strong class="jxr_keyword">if</strong> (merge) {
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>                 <strong class="jxr_keyword">this</strong>.p_service_parameters.add(0, anEntry);
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>                 <strong class="jxr_keyword">this</strong>.serviceParameters.add(0, anEntry);
 <a class="jxr_linenumber" name="L290" href="#L290">290</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>                 <strong class="jxr_keyword">this</strong>.p_service_parameters.add(anEntry);
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>                 <strong class="jxr_keyword">this</strong>.serviceParameters.add(anEntry);
 <a class="jxr_linenumber" name="L292" href="#L292">292</a>             }
 <a class="jxr_linenumber" name="L293" href="#L293">293</a> 
 <a class="jxr_linenumber" name="L294" href="#L294">294</a>             <em class="jxr_comment">// Save this pair in the map</em>
@@ -373,12 +373,12 @@
 <a class="jxr_linenumber" name="L365" href="#L365">365</a> 
 <a class="jxr_linenumber" name="L366" href="#L366">366</a>         <em class="jxr_comment">// This is obsolete</em>
 <a class="jxr_linenumber" name="L367" href="#L367">367</a>         <strong class="jxr_keyword">if</strong> (sval != <strong class="jxr_keyword">null</strong> &amp;&amp; sval.contains(ENVSTART)) {
-<a class="jxr_linenumber" name="L368" href="#L368">368</a>             sval = substEnvProps(sval, filename, lineno);
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>             sval = substituteEnvProps(sval, filename, lineno);
 <a class="jxr_linenumber" name="L369" href="#L369">369</a>         }
 <a class="jxr_linenumber" name="L370" href="#L370">370</a> 
 <a class="jxr_linenumber" name="L371" href="#L371">371</a>         <em class="jxr_comment">// Do unicode stuff</em>
 <a class="jxr_linenumber" name="L372" href="#L372">372</a>         <strong class="jxr_keyword">if</strong> (sval != <strong class="jxr_keyword">null</strong> &amp;&amp; (sval.contains(<span class="jxr_string">"&#92;&#92;u"</span>) || sval.contains(<span class="jxr_string">"&#92;&#92;U"</span>))) {
-<a class="jxr_linenumber" name="L373" href="#L373">373</a>             sval = substUTFChars(sval, filename, lineno);
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>             sval = substituteUtfChars(sval, filename, lineno);
 <a class="jxr_linenumber" name="L374" href="#L374">374</a>         }
 <a class="jxr_linenumber" name="L375" href="#L375">375</a> 
 <a class="jxr_linenumber" name="L376" href="#L376">376</a>         <em class="jxr_comment">// This is obsolete</em>
@@ -397,7 +397,7 @@
 <a class="jxr_linenumber" name="L389" href="#L389">389</a> <em class="jxr_javadoccomment">     * @param lnum the current line number for error reporting</em>
 <a class="jxr_linenumber" name="L390" href="#L390">390</a> <em class="jxr_javadoccomment">     * @return string with character values replaced</em>
 <a class="jxr_linenumber" name="L391" href="#L391">391</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>     <strong class="jxr_keyword">protected</strong> String substUTFChars(<strong class="jxr_keyword">final</strong> String s, <strong class="jxr_keyword">final</strong> String filename, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> lnum) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>     <strong class="jxr_keyword">protected</strong> String substituteUtfChars(<strong class="jxr_keyword">final</strong> String s, <strong class="jxr_keyword">final</strong> String filename, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> lnum) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L393" href="#L393">393</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> slen = s.length();
 <a class="jxr_linenumber" name="L394" href="#L394">394</a>         <strong class="jxr_keyword">final</strong> StringBuilder sb = <strong class="jxr_keyword">new</strong> StringBuilder(slen);
 <a class="jxr_linenumber" name="L395" href="#L395">395</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; slen; i++) {
@@ -439,7 +439,7 @@
 <a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">     * @param lnum the current line number for error reporting</em>
 <a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">     * @return string with env values replaced</em>
 <a class="jxr_linenumber" name="L433" href="#L433">433</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>     <strong class="jxr_keyword">protected</strong> String substEnvProps(<strong class="jxr_keyword">final</strong> String str, <strong class="jxr_keyword">final</strong> String filename, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> lnum) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>     <strong class="jxr_keyword">protected</strong> String substituteEnvProps(<strong class="jxr_keyword">final</strong> String str, <strong class="jxr_keyword">final</strong> String filename, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> lnum) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L435" href="#L435">435</a>         <strong class="jxr_keyword">int</strong> lastPos = -1;
 <a class="jxr_linenumber" name="L436" href="#L436">436</a>         <strong class="jxr_keyword">int</strong> thisPos = 0;
 <a class="jxr_linenumber" name="L437" href="#L437">437</a>         <strong class="jxr_keyword">int</strong> count = 0;
@@ -533,7 +533,7 @@
 <a class="jxr_linenumber" name="L525" href="#L525">525</a>     @Override
 <a class="jxr_linenumber" name="L526" href="#L526">526</a>     <strong class="jxr_keyword">public</strong> Set&lt;String&gt; entryKeys() {
 <a class="jxr_linenumber" name="L527" href="#L527">527</a>         <strong class="jxr_keyword">final</strong> Set&lt;String&gt; set = <strong class="jxr_keyword">new</strong> HashSet&lt;&gt;();
-<a class="jxr_linenumber" name="L528" href="#L528">528</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> curEntry : <strong class="jxr_keyword">this</strong>.p_service_parameters) {
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> curEntry : <strong class="jxr_keyword">this</strong>.serviceParameters) {
 <a class="jxr_linenumber" name="L529" href="#L529">529</a>             set.add(curEntry.getKey());
 <a class="jxr_linenumber" name="L530" href="#L530">530</a>         }
 <a class="jxr_linenumber" name="L531" href="#L531">531</a>         <strong class="jxr_keyword">return</strong> set;
@@ -544,7 +544,7 @@
 <a class="jxr_linenumber" name="L536" href="#L536">536</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L537" href="#L537">537</a>     @Override
 <a class="jxr_linenumber" name="L538" href="#L538">538</a>     <strong class="jxr_keyword">public</strong> List&lt;ConfigEntry&gt; getEntries() {
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(<strong class="jxr_keyword">this</strong>.p_service_parameters);
+<a class="jxr_linenumber" name="L539" href="#L539">539</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(<strong class="jxr_keyword">this</strong>.serviceParameters);
 <a class="jxr_linenumber" name="L540" href="#L540">540</a>     }
 <a class="jxr_linenumber" name="L541" href="#L541">541</a> 
 <a class="jxr_linenumber" name="L542" href="#L542">542</a>     <em class="jxr_javadoccomment">/**</em>
@@ -552,7 +552,7 @@
 <a class="jxr_linenumber" name="L544" href="#L544">544</a> <em class="jxr_javadoccomment">     * not part of the Configurator interface.</em>
 <a class="jxr_linenumber" name="L545" href="#L545">545</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L546" href="#L546">546</a>     <strong class="jxr_keyword">protected</strong> List&lt;ConfigEntry&gt; getRemoveEntries() {
-<a class="jxr_linenumber" name="L547" href="#L547">547</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(<strong class="jxr_keyword">this</strong>.p_remove_parameters);
+<a class="jxr_linenumber" name="L547" href="#L547">547</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(<strong class="jxr_keyword">this</strong>.removeParameters);
 <a class="jxr_linenumber" name="L548" href="#L548">548</a>     }
 <a class="jxr_linenumber" name="L549" href="#L549">549</a> 
 <a class="jxr_linenumber" name="L550" href="#L550">550</a>     <em class="jxr_javadoccomment">/**</em>
@@ -617,7 +617,7 @@
 <a class="jxr_linenumber" name="L609" href="#L609">609</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L610" href="#L610">610</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> removeEntry(<strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> anEntry) {
 <a class="jxr_linenumber" name="L611" href="#L611">611</a>         <em class="jxr_comment">// NB: enhanced for loop does not support remove</em>
-<a class="jxr_linenumber" name="L612" href="#L612">612</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Iterator&lt;ConfigEntry&gt; i = <strong class="jxr_keyword">this</strong>.p_service_parameters.iterator(); i.hasNext();) {
+<a class="jxr_linenumber" name="L612" href="#L612">612</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Iterator&lt;ConfigEntry&gt; i = <strong class="jxr_keyword">this</strong>.serviceParameters.iterator(); i.hasNext();) {
 <a class="jxr_linenumber" name="L613" href="#L613">613</a>             <strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> curEntry = i.next();
 <a class="jxr_linenumber" name="L614" href="#L614">614</a>             <strong class="jxr_keyword">if</strong> (anEntry.getKey().equals(curEntry.getKey())
 <a class="jxr_linenumber" name="L615" href="#L615">615</a>                     &amp;&amp; ((anEntry.getValue() == <strong class="jxr_keyword">null</strong> &amp;&amp; curEntry.getValue() == <strong class="jxr_keyword">null</strong>) || (anEntry.getValue() != <strong class="jxr_keyword">null</strong> &amp;&amp; anEntry.getValue().equals(
@@ -654,7 +654,7 @@
 <a class="jxr_linenumber" name="L646" href="#L646">646</a>     <strong class="jxr_keyword">public</strong> List&lt;String&gt; findEntries(<strong class="jxr_keyword">final</strong> String theParameter) {
 <a class="jxr_linenumber" name="L647" href="#L647">647</a>         <strong class="jxr_keyword">final</strong> List&lt;String&gt; matchingEntries = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L648" href="#L648">648</a> 
-<a class="jxr_linenumber" name="L649" href="#L649">649</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> curEntry : <strong class="jxr_keyword">this</strong>.p_service_parameters) {
+<a class="jxr_linenumber" name="L649" href="#L649">649</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> curEntry : <strong class="jxr_keyword">this</strong>.serviceParameters) {
 <a class="jxr_linenumber" name="L650" href="#L650">650</a>             <strong class="jxr_keyword">if</strong> (theParameter.equals(curEntry.getKey())) {
 <a class="jxr_linenumber" name="L651" href="#L651">651</a>                 matchingEntries.add(curEntry.getValue());
 <a class="jxr_linenumber" name="L652" href="#L652">652</a>             }
@@ -669,7 +669,7 @@
 <a class="jxr_linenumber" name="L661" href="#L661">661</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L662" href="#L662">662</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> removeAllEntries(<strong class="jxr_keyword">final</strong> String theParameter) {
 <a class="jxr_linenumber" name="L663" href="#L663">663</a>         <em class="jxr_comment">// NB: enhanced for loop does not support remove</em>
-<a class="jxr_linenumber" name="L664" href="#L664">664</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Iterator&lt;ConfigEntry&gt; i = <strong class="jxr_keyword">this</strong>.p_service_parameters.iterator(); i.hasNext();) {
+<a class="jxr_linenumber" name="L664" href="#L664">664</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Iterator&lt;ConfigEntry&gt; i = <strong class="jxr_keyword">this</strong>.serviceParameters.iterator(); i.hasNext();) {
 <a class="jxr_linenumber" name="L665" href="#L665">665</a>             <strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> curEntry = i.next();
 <a class="jxr_linenumber" name="L666" href="#L666">666</a>             <strong class="jxr_keyword">if</strong> (theParameter.equals(curEntry.getKey())) {
 <a class="jxr_linenumber" name="L667" href="#L667">667</a>                 logger.debug(<span class="jxr_string">"Removing {} = {}"</span>, curEntry.getKey(), curEntry.getValue());
@@ -689,7 +689,7 @@
 <a class="jxr_linenumber" name="L681" href="#L681">681</a> 
 <a class="jxr_linenumber" name="L682" href="#L682">682</a>         <strong class="jxr_keyword">final</strong> Set&lt;String&gt; matchingEntries = <strong class="jxr_keyword">new</strong> HashSet&lt;&gt;();
 <a class="jxr_linenumber" name="L683" href="#L683">683</a> 
-<a class="jxr_linenumber" name="L684" href="#L684">684</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> curEntry : <strong class="jxr_keyword">this</strong>.p_service_parameters) {
+<a class="jxr_linenumber" name="L684" href="#L684">684</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> curEntry : <strong class="jxr_keyword">this</strong>.serviceParameters) {
 <a class="jxr_linenumber" name="L685" href="#L685">685</a>             <strong class="jxr_keyword">if</strong> (theParameter.equals(curEntry.getKey())) {
 <a class="jxr_linenumber" name="L686" href="#L686">686</a>                 matchingEntries.add(curEntry.getValue());
 <a class="jxr_linenumber" name="L687" href="#L687">687</a>             }
@@ -708,7 +708,7 @@
 <a class="jxr_linenumber" name="L700" href="#L700">700</a> 
 <a class="jxr_linenumber" name="L701" href="#L701">701</a>         <strong class="jxr_keyword">final</strong> List&lt;ConfigEntry&gt; matchingEntries = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L702" href="#L702">702</a> 
-<a class="jxr_linenumber" name="L703" href="#L703">703</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> curEntry : <strong class="jxr_keyword">this</strong>.p_service_parameters) {
+<a class="jxr_linenumber" name="L703" href="#L703">703</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> curEntry : <strong class="jxr_keyword">this</strong>.serviceParameters) {
 <a class="jxr_linenumber" name="L704" href="#L704">704</a>             <strong class="jxr_keyword">if</strong> (curEntry.getKey().startsWith(theParameter)) {
 <a class="jxr_linenumber" name="L705" href="#L705">705</a>                 matchingEntries.add(curEntry);
 <a class="jxr_linenumber" name="L706" href="#L706">706</a>             }
@@ -907,7 +907,7 @@
 <a class="jxr_linenumber" name="L899" href="#L899">899</a>     @Override
 <a class="jxr_linenumber" name="L900" href="#L900">900</a>     <strong class="jxr_keyword">public</strong> String findLastStringEntry(<strong class="jxr_keyword">final</strong> String theParameter) {
 <a class="jxr_linenumber" name="L901" href="#L901">901</a>         String result = <span class="jxr_string">""</span>;
-<a class="jxr_linenumber" name="L902" href="#L902">902</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> curEntry : <strong class="jxr_keyword">this</strong>.p_service_parameters) {
+<a class="jxr_linenumber" name="L902" href="#L902">902</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> curEntry : <strong class="jxr_keyword">this</strong>.serviceParameters) {
 <a class="jxr_linenumber" name="L903" href="#L903">903</a>             <strong class="jxr_keyword">if</strong> (theParameter.equals(curEntry.getKey())) {
 <a class="jxr_linenumber" name="L904" href="#L904">904</a>                 result = curEntry.getValue();
 <a class="jxr_linenumber" name="L905" href="#L905">905</a>             }
@@ -1154,8 +1154,8 @@
 <a class="jxr_linenumber" name="L1146" href="#L1146">1146</a>             <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L1147" href="#L1147">1147</a>                 <strong class="jxr_keyword">final</strong> <a name="ServiceConfigGuide" href="../../emissary/config/ServiceC<a name="ServiceConfigGuide" href="../../emissary/config/ServiceConfigGuide.html#ServiceConfigGuide">ServiceConfigGuide</a>rviceConfigGuide">ServiceConfigGuide</a> sc = <strong class="jxr_keyword">new</strong> <a name="ServiceConfigGuide" href="../../emissary/config/ServiceConfigGuide.html#ServiceConfigGuide">ServiceConfigGuide</a>(arg);
 <a class="jxr_linenumber" name="L1148" href="#L1148">1148</a>                 logger.info(<span class="jxr_string">"Config File:{} "</span>, arg);
-<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a>                 <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; sc.p_service_parameters.size(); i++) {
-<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a>                     <strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> c = sc.p_service_parameters.get(i);
+<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a>                 <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; sc.serviceParameters.size(); i++) {
+<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a>                     <strong class="jxr_keyword">final</strong> <a name="ConfigEntry" href="../../emissary/config/ConfigEntry.html#ConfigEntry">ConfigEntry</a> c = sc.serviceParameters.get(i);
 <a class="jxr_linenumber" name="L1151" href="#L1151">1151</a>                     logger.info(<span class="jxr_string">"{}: {}"</span>, c.getKey(), c.getValue());
 <a class="jxr_linenumber" name="L1152" href="#L1152">1152</a>                 }
 <a class="jxr_linenumber" name="L1153" href="#L1153">1153</a>                 logger.info(<span class="jxr_string">"---"</span>);

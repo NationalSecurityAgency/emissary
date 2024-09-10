@@ -54,8 +54,8 @@
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>              <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>                  <a name="Configurator" href="../../emissary/config/Configurator.html#Configurator">Configurator</a> configG = ConfigUtil.getConfigInfo(KffChain.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>                  classes = configG.findStringMatchMap(<span class="jxr_string">"KFF_IMPL_"</span>);
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>                  loadFrom(chain, configG.findStringMatchMap(<span class="jxr_string">"KFF_FILE_KNOWN_"</span>), FilterType.Ignore);
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>                  loadFrom(chain, configG.findStringMatchMap(<span class="jxr_string">"KFF_FILE_DUPE_"</span>), FilterType.Duplicate);
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>                  loadFrom(chain, configG.findStringMatchMap(<span class="jxr_string">"KFF_FILE_KNOWN_"</span>), FilterType.IGNORE);
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>                  loadFrom(chain, configG.findStringMatchMap(<span class="jxr_string">"KFF_FILE_DUPE_"</span>), FilterType.DUPLICATE);
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>                  chain.setMinDataSize(configG.findIntEntry(<span class="jxr_string">"KFF_MIN_SIZE"</span>, 0));
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>                  Set&lt;String&gt; algs = configG.findEntriesAsSet(<span class="jxr_string">"KFF_ALG"</span>);
@@ -78,7 +78,7 @@
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">     * @param filterType either IGNORE, KNOWN, or DUPE filter</em>
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">     * @return number of filter loaded onto chain</em>
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> loadFrom(<a name="KffChain" href="../../emissary/kff/KffChain.html#KffChain">KffChain</a> chain, Map&lt;String, String&gt; m, KffFilter.FilterType filterType) {
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> loadFrom(<a name="KffChain" href="../../emissary/kff/KffChain.html#KffChain">KffChain</a> chain, Map&lt;String, String&gt; m, FilterType filterType) {
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>          <strong class="jxr_keyword">int</strong> countLoaded = 0;
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>          <em class="jxr_comment">// Load KFF File filter</em>

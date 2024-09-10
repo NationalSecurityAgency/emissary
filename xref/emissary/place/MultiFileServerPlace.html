@@ -25,7 +25,7 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a name="MultiFileServerPlace" href="../../emissary/place/MultiFileServerPlace.html#MultiFileServerPlace">MultiFileServerPlace</a> <strong class="jxr_keyword">extends</strong> <a name="PickUpPlace" href="../../emissary/pickup/PickUpPlace.html#PickUpPlace">PickUpPlace</a> <strong class="jxr_keyword">implements</strong> <a name="IMultiFileServerPlace" href="../../emissary/place/IMultiFileServerPlace.html#IMultiFileServerPlace">IMultiFileServerPlace</a> {
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>      <strong class="jxr_keyword">protected</strong> <a name="TypeEngine" href="../../emissary/util/TypeEngine.html#TypeEngine">TypeEngine</a> typeEngine;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>      <strong class="jxr_keyword">protected</strong> Set&lt;?&gt; NON_PROPAGATING_METADATA_VALS;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>      <strong class="jxr_keyword">protected</strong> Set&lt;?&gt; nonPropagatingMetadataValues;
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>      <strong class="jxr_keyword">public</strong> <a name="MultiFileServerPlace" href="../../emissary/place/MultiFileServerPlace.html#MultiFileServerPlace">MultiFileServerPlace</a>() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>          <strong class="jxr_keyword">super</strong>();
@@ -66,7 +66,7 @@
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> configureAbstractPlace() {
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>          typeEngine = <strong class="jxr_keyword">new</strong> <a name="TypeEngine" href="../../emissary/util/TypeEngine.html#TypeEngine">TypeEngine</a>(configG);
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          NON_PROPAGATING_METADATA_VALS = configG.findEntriesAsSet(<span class="jxr_string">"NON_PROPAGATING_METADATA"</span>);
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          nonPropagatingMetadataValues = configG.findEntriesAsSet(<span class="jxr_string">"NON_PROPAGATING_METADATA"</span>);
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>      }
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>      <em class="jxr_javadoccomment">/**</em>

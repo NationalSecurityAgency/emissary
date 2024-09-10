@@ -110,7 +110,7 @@
 <a class="jxr_linenumber" name="L102" href="#L102">102</a>         <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> denylistStar;
 <a class="jxr_linenumber" name="L103" href="#L103">103</a>         <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> emptyAllowlist;
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>         <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> allowlistStar;
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">char</strong> keyReplacement = '_';
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">char</strong> KEY_REPLACEMENT = '_';
 <a class="jxr_linenumber" name="L106" href="#L106">106</a> 
 <a class="jxr_linenumber" name="L107" href="#L107">107</a>         <strong class="jxr_keyword">public</strong> IbdoParameterFilter() {
 <a class="jxr_linenumber" name="L108" href="#L108">108</a>             <em class="jxr_comment">// if all collections are empty, then output everything</em>
@@ -206,7 +206,7 @@
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>             <strong class="jxr_keyword">char</strong>[] ch = name.toCharArray();
 <a class="jxr_linenumber" name="L199" href="#L199">199</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; ch.length; i++) {
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>                 <strong class="jxr_keyword">if</strong> (!Character.isLetterOrDigit(ch[i]) &amp;&amp; Character.compare(ch[i], '_') != 0 &amp;&amp; Character.compare(ch[i], '.') != 0) {
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>                     ch[i] = keyReplacement;
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>                     ch[i] = KEY_REPLACEMENT;
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>                     changed = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>                 }
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>             }

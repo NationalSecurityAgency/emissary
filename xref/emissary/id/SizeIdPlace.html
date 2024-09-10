@@ -18,7 +18,7 @@
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_javadoccomment"> * Id place that sets the current form based on size of the data</em>
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="SizeIdPlace" href="../../emissary/id/SizeIdPlace.html#SizeIdPlace">SizeIdPlace</a> <strong class="jxr_keyword">extends</strong> <a name="IdPlace" href="../../emissary/id/IdPlace.html#IdPlace">IdPlace</a> {
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong>[] SIZES = {0, <em class="jxr_comment">// ZERO</em>
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] SIZES = {0, <em class="jxr_comment">// ZERO</em>
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>              200, <em class="jxr_comment">// TINY</em>
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>              3000, <em class="jxr_comment">// SMALL</em>
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>              40000, <em class="jxr_comment">// MEDIUM</em>
@@ -28,14 +28,14 @@
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>              900000000 <em class="jxr_comment">// ASTRONOMICAL</em>
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>      };
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>      <strong class="jxr_keyword">protected</strong> String[] LABELS = {<span class="jxr_string">"SIZE_ZERO"</span>, <span class="jxr_string">"SIZE_TINY"</span>, <span class="jxr_string">"SIZE_SMALL"</span>, <span class="jxr_string">"SIZE_MEDIUM"</span>, <span class="jxr_string">"SIZE_LARGE"</span>, <span class="jxr_string">"SIZE_HUGE"</span>, <span class="jxr_string">"SIZE_ENORMOUS"</span>,
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String[] LABELS = {<span class="jxr_string">"SIZE_ZERO"</span>, <span class="jxr_string">"SIZE_TINY"</span>, <span class="jxr_string">"SIZE_SMALL"</span>, <span class="jxr_string">"SIZE_MEDIUM"</span>, <span class="jxr_string">"SIZE_LARGE"</span>, <span class="jxr_string">"SIZE_HUGE"</span>, <span class="jxr_string">"SIZE_ENORMOUS"</span>,
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>              <span class="jxr_string">"SIZE_ASTRONOMICAL"</span>};
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>      <em class="jxr_javadoccomment">/** True iff the Filetype should be set */</em>
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> SETFT = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> setFileType = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>      <em class="jxr_javadoccomment">/** True iff the current form should be set */</em>
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> SETCF = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> setCurrentForm = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment">     * Create the place</em>
@@ -75,10 +75,10 @@
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>      @Override
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>      <strong class="jxr_keyword">public</strong> List&lt;IBaseDataObject&gt; processHeavyDuty(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload) {
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>          String szType = fileTypeBySize(payload.dataLength());
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          <strong class="jxr_keyword">if</strong> (SETFT) {
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          <strong class="jxr_keyword">if</strong> (setFileType) {
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>              payload.setFileType(szType);
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>          }
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          <strong class="jxr_keyword">if</strong> (SETCF) {
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          <strong class="jxr_keyword">if</strong> (setCurrentForm) {
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>              payload.setCurrentForm(szType);
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>          }
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  

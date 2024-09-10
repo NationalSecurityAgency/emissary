@@ -135,8 +135,8 @@
 <a class="jxr_linenumber" name="L127" href="#L127">127</a> <em class="jxr_javadoccomment">     * @throws GeneralSecurityException If there is some security problem.</em>
 <a class="jxr_linenumber" name="L128" href="#L128">128</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>     SSLContext build(<strong class="jxr_keyword">final</strong> <a name="Configurator" href="../../emissary/config/Configurator.html#Configurator">Configurator</a> cfg) <strong class="jxr_keyword">throws</strong> IOException, GeneralSecurityException {
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">char</strong>[] kpChar = PkiUtil.loadPW(cfg.findStringEntry(CFG_KEY_STORE_PW));
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">char</strong>[] tsChar = PkiUtil.loadPW(cfg.findStringEntry(CFG_TRUST_STORE_PW));
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">char</strong>[] kpChar = PkiUtil.loadPassword(cfg.findStringEntry(CFG_KEY_STORE_PW));
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">char</strong>[] tsChar = PkiUtil.loadPassword(cfg.findStringEntry(CFG_TRUST_STORE_PW));
 <a class="jxr_linenumber" name="L132" href="#L132">132</a> 
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>         <strong class="jxr_keyword">final</strong> KeyStore keyStore =
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>                 PkiUtil.buildStore(cfg.findStringEntry(CFG_KEY_STORE), kpChar, cfg.findStringEntry(CFG_KEY_STORE_TYPE, DFLT_STORE_TYPE));

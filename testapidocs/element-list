@@ -32,6 +32,7 @@ emissary.server.mvc.internal
 emissary.spi
 emissary.test.core.junit5
 emissary.test.core.junit5.extensions
+emissary.test.util
 emissary.transform
 emissary.transform.decode
 emissary.util
