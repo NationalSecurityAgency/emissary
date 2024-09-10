@@ -50,7 +50,7 @@ public final class IBaseDataObjectHelper {
     public static IBaseDataObject clone(final IBaseDataObject iBaseDataObject, final boolean fullClone) {
         Validate.notNull(iBaseDataObject, "Required: iBaseDataObject not null");
 
-        final BaseDataObject bdo = fullClone ? new InternalIdBaseDataObject(iBaseDataObject.getInternalId()) : new BaseDataObject();
+        final IBaseDataObject bdo = fullClone ? new InternalIdBaseDataObject(iBaseDataObject.getInternalId()) : DataObjectFactory.getInstance();
 
         final SeekableByteChannelFactory sbcf = iBaseDataObject.getChannelFactory();
         if (sbcf != null) {
