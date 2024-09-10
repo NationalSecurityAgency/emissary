@@ -3,7 +3,7 @@ package emissary.test.core.junit5;
 import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
 import emissary.core.EmissaryException;
-import emissary.util.ThreadDump;
+import emissary.test.util.ThreadDump;
 import emissary.util.io.ResourceReader;
 
 import org.apache.commons.io.FilenameUtils;
@@ -118,13 +118,13 @@ public abstract class UnitTest {
 
     public void assertMaxNonSystemThreadCount(int max) {
         ThreadDump td = new ThreadDump();
-        ThreadInfo[] ti = td.getThreadInfo(true);
-        if (ti.length > max) {
+        List<ThreadInfo> ti = td.getThreadInfo(true);
+        if (ti.size() > max) {
             StringBuilder sb = new StringBuilder();
             for (ThreadInfo t : ti) {
                 sb.append(t.getThreadName()).append(" ");
             }
-            assertTrue(max <= ti.length, "Not expecting " + ti.length + " threads from " + this.getClass().getName() + ": " + sb);
+            assertTrue(max <= ti.size(), "Not expecting " + ti.size() + " threads from " + this.getClass().getName() + ": " + sb);
         }
     }
 
