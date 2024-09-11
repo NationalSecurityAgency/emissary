@@ -267,16 +267,17 @@ public final class IBaseDataObjectHelper {
      * Get the effective parameters for a given payload, considering parameters inherited from the parents
      * 
      * @param payload Get parameters from this IBaseDataObject
-     * @return The full set parameters including inherited ones
+     * @param tldKeys A set of keys to inherit from the top level document if not already present in the child metadata
+     * @return The new Map containing the full set of parameters including ones inherited from the top level document
      */
-    public static Map<String, Collection<Object>> getParametersWithInheritance(IBaseDataObject payload) {
-        IBaseDataObject parent = payload.getParent();
-        Set<String> inheritedParameters = payload.getInheritedParameters();
+    public static Map<String, Collection<Object>> getCombinedTldParameters(IBaseDataObject payload, Set<String> tldKeys) {
+        IBaseDataObject tld = payload.getTld();
         Map<String, Collection<Object>> effectiveParams = new HashMap<>(payload.getParameters());
-        if (parent != null) {
-            for (String key : parent.getParameterKeys()) {
-                if (inheritedParameters == null || inheritedParameters.contains(key)) {
-                    effectiveParams.put(key, parent.getParameter(key));
+        if (tld != null && tldKeys != null) {
+            for (String key : tld.getParameterKeys()) {
+                // Set the specified parameter from the TLD if it's not already set in the child metadata
+                if (!effectiveParams.containsKey(key)) {
+                    effectiveParams.put(key, tld.getParameter(key));
                 }
             }
         }

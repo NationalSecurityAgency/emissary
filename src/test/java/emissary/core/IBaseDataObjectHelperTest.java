@@ -429,8 +429,7 @@ class IBaseDataObjectHelperTest extends UnitTest {
     }
 
     @Test
-    void getParametersWithInheritance() {
-        // No inheritance
+    void testGetCombinedTldParameters() {
         IBaseDataObject child = new BaseDataObject(new byte[0], "foo", "UNKNOWN");
         child.putParameter("k1", "v1");
         child.putParameter("k2", "v2");
@@ -439,50 +438,49 @@ class IBaseDataObjectHelperTest extends UnitTest {
         expected.put("k1", "v1");
         expected.put("k2", "v2");
 
-        assertEquals(expected.asMap(), IBaseDataObjectHelper.getParametersWithInheritance(child));
+        // Null TLD and null key set
+        assertEquals(expected.asMap(), IBaseDataObjectHelper.getCombinedTldParameters(child, null));
+        // Null TLD with keyset
+        assertEquals(expected.asMap(), IBaseDataObjectHelper.getCombinedTldParameters(child, new HashSet<>(Arrays.asList("foo", "bar", "baz"))));
 
 
-        // Null key set (inherit all params)
-        IBaseDataObject parent = new BaseDataObject();
-        parent.putParameter("k1", "p1");
-        parent.putParameter("k2", "p2");
-        parent.putParameter("k3", "p3");
+        IBaseDataObject tld = new BaseDataObject();
+        tld.putParameter("k1", "p1");
+        tld.putParameter("k2", "p2");
+        tld.putParameter("k3", "p3");
 
-        child = new BaseDataObject(new byte[0], "foo", "UNKNOWN", parent, null);
-        child.putParameter("k1", "v1");
-        child.putParameter("k2", "v2");
-        child.putParameter("k4", "v4");
-
-        expected = LinkedListMultimap.create();
-        expected.put("k1", "p1");
-        expected.put("k2", "p2");
-        expected.put("k3", "p3");
-        expected.put("k4", "v4");
-
-        assertEquals(expected.asMap(), IBaseDataObjectHelper.getParametersWithInheritance(child));
-
-
-        // Limit the keys that are inherited
-        parent = new BaseDataObject();
-        parent.putParameter("k1", "p1");
-        parent.putParameter("k2", "p2");
-        parent.putParameter("k3", "p3");
-
-        Set<String> inheritedParams = new HashSet<>();
-        inheritedParams.add("k2");
-
-        child = new BaseDataObject(new byte[0], "foo", "UNKNOWN", parent, inheritedParams);
+        child = new BaseDataObject(new byte[0], "foo", "UNKNOWN", tld);
         child.putParameter("k1", "v1");
         child.putParameter("k2", "v2");
         child.putParameter("k4", "v4");
 
         expected = LinkedListMultimap.create();
         expected.put("k1", "v1");
-        expected.put("k2", "p2");
+        expected.put("k2", "v2");
         expected.put("k4", "v4");
 
-        assertEquals(expected.asMap(), IBaseDataObjectHelper.getParametersWithInheritance(child));
+        // Null key set so inherit nothing
+        assertEquals(expected.asMap(), IBaseDataObjectHelper.getCombinedTldParameters(child, null));
 
 
+        tld = new BaseDataObject();
+        tld.putParameter("k1", "p1");
+        tld.putParameter("k2", "p2");
+        tld.putParameter("k3", "p3");
+
+        child = new BaseDataObject(new byte[0], "foo", "UNKNOWN", tld);
+        child.putParameter("k1", "v1");
+        child.putParameter("k2", "v2");
+        child.putParameter("k4", "v4");
+
+        expected = LinkedListMultimap.create();
+        expected.put("k1", "v1");
+        expected.put("k2", "v2");
+        expected.put("k3", "p3");
+        expected.put("k4", "v4");
+
+        // TLD linked and subset of keys specified including some that don't exist in the TLD
+        assertEquals(expected.asMap(),
+                IBaseDataObjectHelper.getCombinedTldParameters(child, new HashSet<>(Arrays.asList("k1", "k2", "k3", "k4", "k5"))));
     }
 }

@@ -930,16 +930,10 @@ public interface IBaseDataObject {
     void setTransactionId(String transactionId);
 
     /**
-     * Return the parent or null if there is none
+     * Return the Top level document or null if there is none for this IBaseDataObject
      * 
-     * @return The parent IBaseDataObject
+     * @return The TLD IBaseDataObject
      */
-    IBaseDataObject getParent();
+    IBaseDataObject getTld();
 
-    /**
-     * Return the set of parameters inherited from the parent or null if there are none.
-     * 
-     * @return The set of inherited parameters
-     */
-    Set<String> getInheritedParameters();
 }

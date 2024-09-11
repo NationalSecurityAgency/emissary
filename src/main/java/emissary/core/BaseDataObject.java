@@ -194,9 +194,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     final SafeUsageChecker safeUsageChecker = new SafeUsageChecker();
 
-    protected final IBaseDataObject parent;
-
-    protected final Set<String> inheritedKeys;
+    protected final IBaseDataObject tld;
 
     protected enum DataState {
         NO_DATA, CHANNEL_ONLY, BYTE_ARRAY_ONLY, BYTE_ARRAY_AND_CHANNEL
@@ -255,8 +253,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public BaseDataObject() {
         this.theData = null;
         setCreationTimestamp(Instant.now());
-        parent = null;
-        inheritedKeys = null;
+        tld = null;
     }
 
     /**
@@ -270,8 +267,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         setData(newData);
         setFilename(name);
         setCreationTimestamp(Instant.now());
-        parent = null;
-        inheritedKeys = null;
+        tld = null;
     }
 
     /**
@@ -296,18 +292,17 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         }
     }
 
-    public BaseDataObject(final byte[] newData, final String name, @Nullable final String form, IBaseDataObject parent, Set<String> inheritedKeys) {
+    public BaseDataObject(final byte[] newData, final String name, @Nullable final String form, IBaseDataObject tld) {
         setData(newData);
         setFilename(name);
         if (form != null) {
             pushCurrentForm(form);
         }
-        this.parent = parent;
-        this.inheritedKeys = inheritedKeys;
+        this.tld = tld;
     }
 
     public BaseDataObject(final byte[] newData, final String name, @Nullable final String form, @Nullable final String fileType,
-            IBaseDataObject parent, Set<String> inheritedKeys) {
+            IBaseDataObject tld) {
         setData(newData);
         setFilename(name);
         if (form != null) {
@@ -316,8 +311,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         if (fileType != null) {
             this.setFileType(fileType);
         }
-        this.parent = parent;
-        this.inheritedKeys = inheritedKeys;
+        this.tld = tld;
     }
 
     /**
@@ -1543,12 +1537,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    public IBaseDataObject getParent() {
-        return parent;
+    public IBaseDataObject getTld() {
+        return tld;
     }
 
-    @Override
-    public Set<String> getInheritedParameters() {
-        return inheritedKeys;
-    }
 }
