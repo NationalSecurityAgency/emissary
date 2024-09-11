@@ -58,6 +58,8 @@ jobs:
             java_version=${{ matrix.java-version }}
             java_compiler=${{ matrix.java-compiler }}
             verify_build=false
+          cache-from: type=gha
+          cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max' || '' }}
 
   centos7-build:
     name: Centos7 legacy build on Java 11 with compiler target 11
