@@ -88,6 +88,15 @@ public abstract class AbstractFilter implements IDropOffFilter {
     @Nullable
     protected DropOffUtil dropOffUtil = null;
 
+    protected String allowedNameChars = "a-zA-Z0-9_\\-";
+    protected Pattern allowedNameCharsPattern;
+    // Match if acceptable characters of denylist items are in correct order
+    protected String denylistCharSetOrdering = "^[%s*]+(\\.[%s*]+)*$"; // %s = allowed name characters
+    protected Pattern denylistCharSetOrderingPattern;
+    // Match if viewname in denylist is formatted correctly
+    protected String viewNameFormat = "^[%s]+(\\.[%s]+)?\\*?$"; // %s = allowed name characters
+    protected Pattern viewNameFormatPattern;
+
     /**
      * Initialization phase hook for the filter with default preferences for the runtime configuration of the filter
      */
@@ -169,6 +178,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
      */
     protected void initializeOutputTypes(@Nullable final Configurator config) {
         if (config != null) {
+            this.loadNameValidationPatterns(config);
             this.outputTypes = config.findEntriesAsSet("OUTPUT_TYPE");
             this.logger.debug("Loaded {} output types for filter {}", this.outputTypes.size(), this.outputTypes);
             this.initializeDenylist(config);
@@ -177,18 +187,25 @@ public abstract class AbstractFilter implements IDropOffFilter {
         }
     }
 
-    protected void initializeDenylist(final Configurator config) {
-        Pattern charSetOrdering = Pattern.compile("^[\\w*]+(\\.[\\w*]+)*$"); // Match if acceptable characters are in correct order
-        Pattern viewNameFormat = Pattern.compile("^\\w+(\\.\\w+)?\\*?$"); // Match if String is word sequence with optional `*` suffix
+    protected void loadNameValidationPatterns(final Configurator config) {
+        allowedNameChars = config.findStringEntry("ALLOWED_NAME_CHARS", allowedNameChars);
+        allowedNameCharsPattern = Pattern.compile(String.format("[%s]+", allowedNameChars));
+        denylistCharSetOrdering = config.findStringEntry("DENYLIST_CHARSET_ORDERING", denylistCharSetOrdering);
+        denylistCharSetOrderingPattern = Pattern.compile(denylistCharSetOrdering.replace("%s", allowedNameChars));
+        viewNameFormat = config.findStringEntry("VIEWNAME_FORMAT", viewNameFormat);
+        viewNameFormatPattern = Pattern.compile(viewNameFormat.replace("%s", allowedNameChars));
+    }
 
+    protected void initializeDenylist(final Configurator config) {
         for (String entry : config.findEntriesAsSet("DENYLIST")) {
-            if (charSetOrdering.matcher(entry).matches()) {
+            if (denylistCharSetOrderingPattern.matcher(entry).matches()) {
                 String viewName = validateAndRemoveDenylistFiletype(entry);
 
                 if (viewName.chars().filter(ch -> ch == '.').count() > 0) {
                     logger.warn("`DENYLIST = \"{}\"` viewName `{}` should not contain any `.` characters", entry, viewName);
                 }
-                if (viewNameFormat.matcher(viewName).matches()) {
+
+                if (viewNameFormatPattern.matcher(viewName).matches()) {
                     if (viewName.endsWith("*")) {
                         String strippedEntry = entry.substring(0, entry.length() - 1);
                         this.wildCardDenylist.add(strippedEntry);
@@ -198,15 +215,15 @@ public abstract class AbstractFilter implements IDropOffFilter {
                 } else {
                     throw new EmissaryRuntimeException(String.format(
                             "Invalid filter configuration: `DENYLIST = \"%s\"` " +
-                                    "viewName `%s` must be a sequence of [A-Z, a-z, 0-9, _] with optional wildcard `*` suffix.",
-                            entry, viewName));
+                                    "viewName `%s` must be a sequence of [%s]+ with optional wildcard `*` suffix.",
+                            entry, viewName, allowedNameChars));
                 }
 
             } else {
                 throw new EmissaryRuntimeException(String.format(
                         "Invalid filter configuration: `DENYLIST = \"%s\"` " +
-                                "must be one sequence of [A-Z, a-z, 0-9, _] or two sequences separated with `.` delimiter.",
-                        entry));
+                                "must be one sequence of [%s]+ or two sequences separated with `.` delimiter.",
+                        entry, allowedNameChars));
             }
         }
 
@@ -226,11 +243,11 @@ public abstract class AbstractFilter implements IDropOffFilter {
                         "Invalid filter configuration: `DENYLIST = \"%s\"` " +
                                 "wildcarded filetypes not allowed in denylist - Did you mean `DENYLIST = \"%s\"`?",
                         entry, viewName));
-            } else if (!filetype.chars().allMatch(ch -> Character.isLetterOrDigit(ch) || ch == '_')) { // DENYLIST = "<type>*.<viewName>" not allowed
+            } else if (!allowedNameCharsPattern.matcher(filetype).matches()) { // DENYLIST = "<type>*.<viewName>" not allowed
                 throw new EmissaryRuntimeException(String.format(
                         "Invalid filter configuration: `DENYLIST = \"%s\"` " +
-                                "filetype `%s` must be a sequence of [A-Z, a-z, 0-9, _]",
-                        entry, filetype));
+                                "filetype `%s` must be a sequence of [%s]+",
+                        entry, filetype, allowedNameChars));
             }
             return viewName;
         }
