@@ -127,7 +127,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
         initializeOutputTypes(this.filterConfig);
     }
 
-    private final void loadFilterCondition(final Configurator parentConfig) {
+    private void loadFilterCondition(final Configurator parentConfig) {
         this.filterConditionSpec = parentConfig.findStringEntry("FILTER_CONDITION_" + getFilterName(), null);
 
         // format FILTER_CONDITION_<filtername> = profilename:clazz just like dropoff filter config
@@ -215,15 +215,15 @@ public abstract class AbstractFilter implements IDropOffFilter {
                 } else {
                     throw new EmissaryRuntimeException(String.format(
                             "Invalid filter configuration: `DENYLIST = \"%s\"` " +
-                                    "viewName `%s` must be a sequence of [%s]+ with optional wildcard `*` suffix.",
-                            entry, viewName, allowedNameChars));
+                                    "viewName `%s` must match pattern `%s`.",
+                            entry, viewName, viewNameFormatPattern.pattern()));
                 }
 
             } else {
                 throw new EmissaryRuntimeException(String.format(
                         "Invalid filter configuration: `DENYLIST = \"%s\"` " +
-                                "must be one sequence of [%s]+ or two sequences separated with `.` delimiter.",
-                        entry, allowedNameChars));
+                                "entry `%s` must match pattern `%s`.",
+                        entry, entry, denylistCharSetOrderingPattern.pattern()));
             }
         }
 
@@ -246,8 +246,8 @@ public abstract class AbstractFilter implements IDropOffFilter {
             } else if (!allowedNameCharsPattern.matcher(filetype).matches()) { // DENYLIST = "<type>*.<viewName>" not allowed
                 throw new EmissaryRuntimeException(String.format(
                         "Invalid filter configuration: `DENYLIST = \"%s\"` " +
-                                "filetype `%s` must be a sequence of [%s]+",
-                        entry, filetype, allowedNameChars));
+                                "filetype `%s` must match pattern `%s`",
+                        entry, filetype, allowedNameCharsPattern.pattern()));
             }
             return viewName;
         }
