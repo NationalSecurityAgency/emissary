@@ -104,7 +104,7 @@ public class DataObjectFactory {
     }
 
     public static IBaseDataObject getInstance(final byte[] payload, final String filename, final String form, final String fileType,
-            IBaseDataObject parent) {
+            IBaseDataObject tld) {
         final Object o = Factory.create(clazz, payload, filename, form, fileType, parent);
         return (IBaseDataObject) o;
     }
