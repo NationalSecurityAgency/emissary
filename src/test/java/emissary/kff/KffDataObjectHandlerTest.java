@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -130,10 +131,50 @@ class KffDataObjectHandlerTest extends UnitTest {
         assertEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
+        assertNull(payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL),
+                "MD5_ORIGINAL should not be populated if hash called more than once but data hasn't changed");
+    }
+
+    @Test
+    void testHashMethodAgainAfterModifyingData() {
+        // don't truncate known data or the second call will be made with an empty payload
+        kff = new KffDataObjectHandler(KffDataObjectHandler.KEEP_KNOWN_DATA, true, true);
+        payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, "test.filter");
+        kff.hash(payload);
+
+        assertEquals("test.filter", payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
+        assertTrue(KffDataObjectHandler.hashPresent(payload));
+        assertEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
+        assertEquals(DATA_CRC32, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_CRC32));
+        assertEquals(DATA_SSDEEP, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
+        assertEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
+        assertEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL),
+                "MD5_ORIGINAL should only be populated if hashing more than once and data has changed");
+
+        payload.setData("This is a changed data".getBytes());
+        // hash again, to see the effect on the hash-related params.
+        // none of the parameters should have a duplicated value
+
+        kff.hash(payload);
+        assertEquals("test.filter", payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
+        assertTrue(KffDataObjectHandler.hashPresent(payload));
+        assertNotNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
+        assertNotNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_CRC32));
+        assertNotNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
+        assertNotNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
+        assertNotNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
+        assertNotEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
+        assertNotEquals(DATA_CRC32, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_CRC32));
+        assertNotEquals(DATA_SSDEEP, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
+        assertNotEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
+        assertNotEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
+        assertEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
+
+        // make sure we've correctly populated MD5_ORIGINAL
         assertNotNull(payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL),
                 "MD5_ORIGINAL should be populated if hash called more than once");
-        assertEquals(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5),
-                payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL));
+        assertEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL));
     }
 
     @Test
