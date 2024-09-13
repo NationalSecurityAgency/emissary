@@ -34,7 +34,6 @@ jobs:
       matrix:
         java-compiler: ['11', '17']
         java-version: ['17']
-        experimental: [true]
     continue-on-error: true
 
     steps:
