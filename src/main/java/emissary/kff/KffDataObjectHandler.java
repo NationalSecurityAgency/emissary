@@ -258,7 +258,7 @@ public class KffDataObjectHandler {
             var paramValue = d.getParameter(KFF_PARAM_MD5);
             if (!paramValue.isEmpty() && paramValue.get(0) != null) {
                 String currentMD5 = paramValue.get(0).toString();
-                return originalMD5.equals(currentMD5);
+                return !originalMD5.equals(currentMD5);
             }
         }
         return false;
