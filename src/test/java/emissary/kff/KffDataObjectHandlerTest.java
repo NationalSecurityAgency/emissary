@@ -2,6 +2,9 @@ package emissary.kff;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
+import emissary.core.channels.AbstractSeekableByteChannel;
+import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.core.channels.SeekableByteChannelHelper;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 
@@ -12,11 +15,15 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -25,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class KffDataObjectHandlerTest extends UnitTest {
     static final byte[] DATA = "This is a test".getBytes();
+    static final SeekableByteChannelFactory SBC_DATA = SeekableByteChannelHelper.memory("This is a test".getBytes());
 
     // echo -n "This is a test" | openssl sha1
     static final String DATA_SHA1 = "a54d88e06612d820bc3be72877c74f257b561b19";
@@ -47,7 +55,6 @@ class KffDataObjectHandlerTest extends UnitTest {
 
     static final String DATA_CRC32 = "33323239323631363138";
 
-
     @Nullable
     protected KffDataObjectHandler kff;
     @Nullable
@@ -56,7 +63,7 @@ class KffDataObjectHandlerTest extends UnitTest {
 
     @Override
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         kff = new KffDataObjectHandler();
         try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
             byte[] data = IOUtils.toByteArray(doc);
@@ -79,17 +86,32 @@ class KffDataObjectHandlerTest extends UnitTest {
     void testMapWithEmptyPrefix() {
         Map<String, String> m = kff.hashData(DATA, "junk");
         assertNotNull(m.get(KffDataObjectHandler.KFF_PARAM_MD5), "Empty prefix returns normal values");
+
+        m.clear();
+
+        m = kff.hashData(SBC_DATA, "junk");
+        assertNotNull(m.get(KffDataObjectHandler.KFF_PARAM_MD5), "Empty prefix returns normal values");
     }
 
     @Test
     void testMapWithNullPrefix() {
         Map<String, String> m = kff.hashData(DATA, "junk", null);
         assertNotNull(m.get(KffDataObjectHandler.KFF_PARAM_MD5), "Null prefix returns normal values");
+
+        m.clear();
+
+        m = kff.hashData(SBC_DATA, "junk", null);
+        assertNotNull(m.get(KffDataObjectHandler.KFF_PARAM_MD5), "Null prefix returns normal values");
     }
 
     @Test
     void testMapWithPrefix() {
         Map<String, String> m = kff.hashData(DATA, "name", "foo");
+        assertNotNull(m.get("foo" + KffDataObjectHandler.KFF_PARAM_MD5), "Prefix prepends on normal key names but we got " + m.keySet());
+
+        m.clear();
+
+        m = kff.hashData(SBC_DATA, "name", "foo");
         assertNotNull(m.get("foo" + KffDataObjectHandler.KFF_PARAM_MD5), "Prefix prepends on normal key names but we got " + m.keySet());
     }
 
@@ -203,4 +225,99 @@ class KffDataObjectHandlerTest extends UnitTest {
         payload.deleteParameter(KffDataObjectHandler.KFF_PARAM_SHA512);
         assertEquals(DATA_SHA384, KffDataObjectHandler.getBestAvailableHash(payload));
     }
+
+    @Test
+    void testWithChannelFactory() {
+        kff = new KffDataObjectHandler(true, true, true);
+        payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, "test.filter");
+        payload.setChannelFactory(SBC_DATA);
+        kff.hash(payload);
+        assertEquals("test.filter", payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
+        assertTrue(KffDataObjectHandler.hashPresent(payload));
+        assertEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
+        assertEquals(DATA_CRC32, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
+        assertEquals(DATA_SSDEEP, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
+        assertEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
+        assertEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
+        assertEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
+        assertArrayEquals(new byte[0], payload.data());
+    }
+
+    @Test
+    void testWithEmptyChannelFactory() {
+        kff = new KffDataObjectHandler(true, true, true);
+        payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, "test.filter");
+        payload.setChannelFactory(SeekableByteChannelHelper.EMPTY_CHANNEL_FACTORY);
+        kff.hash(payload);
+        assertEquals("test.filter", payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
+        assertFalse(KffDataObjectHandler.hashPresent(payload));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
+        assertEquals("test", payload.getFileType());
+        assertArrayEquals(new byte[0], payload.data());
+        assertEquals(SeekableByteChannelHelper.EMPTY_CHANNEL_FACTORY, payload.getChannelFactory());
+    }
+
+    @Test
+    void testNullPayload() {
+        assertDoesNotThrow(() -> kff.hash(null));
+    }
+
+    @Test
+    void testRemovingHash() {
+        final SeekableByteChannelFactory exceptionSbcf = () -> new AbstractSeekableByteChannel() {
+            @Override
+            protected void closeImpl() {
+                // Do nothing
+            }
+
+            @Override
+            protected int readImpl(ByteBuffer byteBuffer) throws IOException {
+                throw new IOException("Test exception");
+            }
+
+            @Override
+            protected long sizeImpl() throws IOException {
+                throw new IOException("Test exception");
+            }
+        };
+
+        payload.setChannelFactory(exceptionSbcf);
+        kff.hash(payload);
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
+        assertFalse(KffDataObjectHandler.hashPresent(payload));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
+        assertNotEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
+
+        payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, "test.filter");
+        payload.setChannelFactory(SBC_DATA);
+        kff.hash(payload);
+        assertEquals("test.filter", payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
+        assertTrue(KffDataObjectHandler.hashPresent(payload));
+        assertEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
+        assertEquals(DATA_CRC32, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
+        assertEquals(DATA_SSDEEP, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
+        assertEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
+        assertEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
+        assertEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
+
+    }
+
+    @Test
+    void testNullHashData() {
+        assertEquals(new HashMap<>(), kff.hashData((SeekableByteChannelFactory) null, null));
+    }
+
+    @Test
+    void testEmptySbcf() {
+        assertEquals(new HashMap<>(), kff.hashData(SeekableByteChannelHelper.EMPTY_CHANNEL_FACTORY, null));
+    }
+
 }
