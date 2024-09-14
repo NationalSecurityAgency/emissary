@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nullable;
 
@@ -92,16 +93,16 @@ public class TypeEngine {
         // Look up an override mapping
         Map<String, String> extra = extraMapping.get(engine);
         if (extra != null) {
-            ret = extra.get(label.toUpperCase());
+            ret = extra.get(label.toUpperCase(Locale.getDefault()));
         }
 
         // Grab the specified engine and do the default lookup
         if (ret == null) {
             Configurator c = contextMapping.get(engine);
             if (c != null) {
-                ret = c.findStringEntry(label.toUpperCase(), null);
+                ret = c.findStringEntry(label.toUpperCase(Locale.getDefault()), null);
                 if (logger.isDebugEnabled() && ret != null) {
-                    logger.debug("Found {} while looking up type for {}", ret, label.toUpperCase());
+                    logger.debug("Found {} while looking up type for {}", ret, label.toUpperCase(Locale.getDefault()));
                 }
             }
         }

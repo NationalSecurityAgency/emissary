@@ -14,6 +14,7 @@ import picocli.CommandLine.Option;
 
 import java.io.File;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -101,7 +102,7 @@ public abstract class HttpCommand extends BaseCommand {
             // Must maintain insertion order
             Set<String> flavorSet = new LinkedHashSet<>();
             for (String f : flavorMode.split(",")) {
-                flavorSet.add(f.toUpperCase());
+                flavorSet.add(f.toUpperCase(Locale.getDefault()));
             }
             overrideFlavor(String.join(",", flavorSet));
 

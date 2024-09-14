@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -405,13 +406,13 @@ public abstract class AbstractFilter implements IDropOffFilter {
      */
     protected String getCharset(final IBaseDataObject d, final String defaultCharset) {
         String lang = d.getFontEncoding();
-        if (lang == null || lang.toUpperCase().indexOf("ASCII") != -1 || lang.toUpperCase().indexOf("8859-1") != -1) {
+        if (lang == null || lang.toUpperCase(Locale.getDefault()).contains("ASCII") || lang.toUpperCase(Locale.getDefault()).contains("8859-1")) {
             final String s = d.getStringParameter("HTML_CHARSET");
             if (s != null) {
                 lang = s;
             }
         }
-        if (lang == null || lang.toUpperCase().indexOf("ASCII") != -1 || lang.toUpperCase().indexOf("8859-1") != -1) {
+        if (lang == null || lang.toUpperCase(Locale.getDefault()).contains("ASCII") || lang.toUpperCase(Locale.getDefault()).contains("8859-1")) {
             final String s = d.getStringParameter("MIME_CHARSET");
             if (s != null) {
                 lang = s;

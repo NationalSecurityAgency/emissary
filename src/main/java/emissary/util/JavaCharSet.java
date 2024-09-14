@@ -1,6 +1,7 @@
 package emissary.util;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nullable;
 
@@ -40,7 +41,7 @@ public class JavaCharSet {
         }
 
         // Look up in the hash
-        String s = cs.toUpperCase();
+        String s = cs.toUpperCase(Locale.getDefault());
         String charSet = charsets.get(s);
 
         String enc = null;

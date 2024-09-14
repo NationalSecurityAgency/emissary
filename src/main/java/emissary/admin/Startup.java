@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -141,7 +142,7 @@ public class Startup {
         final String startupConfigFile;
         if (args.length == 1) {
             directoryAction = setAction(ACTIONSTART);
-            if (args[0].startsWith("/") || args[0].toUpperCase().startsWith("HTTP")) {
+            if (args[0].startsWith("/") || args[0].toUpperCase(Locale.getDefault()).startsWith("HTTP")) {
                 startupConfigFile = args[0];
             } else {
                 startupConfigFile = ConfigUtil.getConfigFile(args[0]);

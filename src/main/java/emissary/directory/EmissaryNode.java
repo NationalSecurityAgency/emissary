@@ -23,6 +23,7 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import javax.annotation.Nullable;
 
 /**
@@ -102,8 +103,8 @@ public class EmissaryNode {
         }
         this.nodeScheme = System.getProperty(NODE_SCHEME_PROPERTY, "http");
         this.nodePort = Integer.getInteger(NODE_PORT_PROPERTY, -1).intValue();
-        this.nodeType = System.getProperty("os.name", DEFAULT_NODE_TYPE).toLowerCase().replace(' ', '_');
-        this.nodeMode = System.getProperty("node.mode", DEFAULT_NODE_MODE).toLowerCase();
+        this.nodeType = System.getProperty("os.name", DEFAULT_NODE_TYPE).toLowerCase(Locale.getDefault()).replace(' ', '_');
+        this.nodeMode = System.getProperty("node.mode", DEFAULT_NODE_MODE).toLowerCase(Locale.getDefault());
         this.nodeServiceType = System.getProperty(NODE_SERVICE_TYPE_PROPERTY, DEFAULT_NODE_SERVICE_TYPE);
         this.strictStartupMode = Boolean.parseBoolean(System.getProperty(STRICT_STARTUP_MODE, String.valueOf(false)));
     }

@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -181,7 +182,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         }
 
         protected String transform(String name) {
-            return normalize(strip(name.toUpperCase()));
+            return normalize(strip(name.toUpperCase(Locale.getDefault())));
         }
 
         protected String strip(String name) {
