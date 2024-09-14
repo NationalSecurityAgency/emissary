@@ -27,9 +27,8 @@ class FlexibleDateTimeParserTest extends UnitTest {
     @BeforeAll
     public static void setupClass() {
         // "warm-up" the class, but this runs before UnitTest has
-        // a chance to setup, so do that first
+        // a chance to set up, so do that first
         UnitTest.setupSystemProperties();
-        FlexibleDateTimeParser.getTimezone();
     }
 
     @Test
@@ -47,6 +46,24 @@ class FlexibleDateTimeParserTest extends UnitTest {
     private static void test(@Nullable String date, long expected, String msg) {
         ZonedDateTime unknownParse = FlexibleDateTimeParser.parse(date);
         Assertions.assertEquals(expected, unknownParse == null ? 0L : unknownParse.toEpochSecond(), "Error on: " + msg);
+    }
+
+    /**
+     * Test the date string against the expected output
+     *
+     * @param date the string representation of a date
+     * @param expected the expected parsed and formatted date
+     * @param formatter run a date format manually and compare the output to the unknown parser
+     */
+    private static void test(String date, long expected, DateTimeFormatter formatter) {
+        long unknownParse = FlexibleDateTimeParser.parse(date).toEpochSecond();
+        assertEquals(expected, unknownParse, "Flexible parse failed for " + formatter);
+
+        long knownParse = FlexibleDateTimeParser.parse(date, formatter).toEpochSecond();
+        assertEquals(expected, knownParse, "Manual parse failed for " + formatter);
+
+        // this is as close as I can get to testing the expected date format
+        assertEquals(unknownParse, knownParse, "Parsed date/times are not the same");
     }
 
     /**
@@ -84,24 +101,6 @@ class FlexibleDateTimeParserTest extends UnitTest {
             String dateAndOffset = dateString + " " + offset;
             testExtensiveParsing(dateAndOffset, expected, "Did not parse this string correctly: " + dateAndOffset);
         }
-    }
-
-    /**
-     * Test the date string against the expected output
-     *
-     * @param date the string representation of a date
-     * @param expected the expected parsed and formatted date
-     * @param formatter run a date format manually and compare the output to the unknown parser
-     */
-    private static void test(String date, long expected, DateTimeFormatter formatter) {
-        long unknownParse = FlexibleDateTimeParser.parse(date).toEpochSecond();
-        assertEquals(expected, unknownParse, "Flexible parse failed for " + formatter);
-
-        long knownParse = FlexibleDateTimeParser.parse(date, formatter).toEpochSecond();
-        assertEquals(expected, knownParse, "Manual parse failed for " + formatter);
-
-        // this is as close as I can get to testing the expected date format
-        assertEquals(unknownParse, knownParse, "Parsed date/times are not the same");
     }
 
     /**
@@ -190,7 +189,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
 
     /**
      * Test to make sure our code can successfully handle dates with shorter offsets because this bug in java 8 was
-     * resolved: https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8032051
+     * resolved: <a href="https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8032051">view_bug</a>
      */
     @Test
     void parseShortOffsets() {

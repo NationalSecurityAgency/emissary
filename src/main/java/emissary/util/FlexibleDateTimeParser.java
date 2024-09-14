@@ -20,7 +20,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -60,25 +59,45 @@ public final class FlexibleDateTimeParser {
      * Remove other junk -- anything in an html tag, all parenthesis and quotes, and any non-word characters at the
      * beginning or end
      */
-    private static Pattern remove;
+    private static final Pattern remove;
+
     /*
      * This is our last ditch parsing effort if we failed to parse the string - remove all extra text after the numeric time
      * zone offset
      */
-    private static Pattern extraTextRemove;
+    private static final Pattern extraTextRemove;
 
     /* timezone - config var: TIMEZONE */
-    private static ZoneId timezone = ZoneId.of(DEFAULT_TIMEZONE);
+    private static final ZoneId timezone;
 
     /* date time formats - vars: FORMAT_DATETIME_MAIN */
-    private static List<DateTimeFormatter> dateFormatsMain = new ArrayList<>();
+    private static final List<DateTimeFormatter> dateFormatsMain;
 
     /* Extra date time formats - list to try if our main list has failed - vars: FORMAT_DATETIME_EXTRA */
-    private static List<DateTimeFormatter> dateFormatsExtra = new ArrayList<>();
+    private static final List<DateTimeFormatter> dateFormatsExtra;
 
     /* init */
     static {
-        configure();
+        try {
+            // fire up the configurator
+            Configurator configurator = ConfigUtil.getConfigInfo(FlexibleDateTimeParser.class);
+            timezone = setupTimezone(configurator.findStringEntry(CFG_TIMEZONE, DEFAULT_TIMEZONE));
+
+            List<ConfigEntry> configEntriesMain = configurator.findStringMatchEntries(CFG_FORMAT_MAIN);
+            dateFormatsMain = setupDateFormats(configEntriesMain, getConfigFormats(configEntriesMain));
+
+            List<ConfigEntry> configEntriesExtra = configurator.findStringMatchEntries(CFG_FORMAT_EXTRA);
+            dateFormatsExtra = setupDateFormats(configEntriesExtra, getConfigFormats(configEntriesExtra));
+
+            String removeRegex = configurator.findStringEntry(CFG_REMOVE_REGEX, "<.+?>$|=0D$|\\(|\\)|\"|\\[|]|\\W+$|^\\W+");
+            remove = Pattern.compile(removeRegex, Pattern.DOTALL);
+
+            // last ditch parsing effort if we failed to parse the string - remove all extra text after the numeric timezone offset
+            String extraTextRemoveRegex = configurator.findStringEntry(CFG_EXTRA_TEXT_REMOVE_REGEX, "((\\+|-)\\d{4}).*$");
+            extraTextRemove = Pattern.compile(extraTextRemoveRegex);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not configure parser!!", e);
+        }
     }
 
     /**
@@ -117,48 +136,6 @@ public final class FlexibleDateTimeParser {
             // if that all failed and we want to attempt extensive parsing, attempt the last ditch efforts we can try
             return lastDitchParsingEffort(dateString);
         }
-    }
-
-    /**
-     * If all our formats failed to parse a date string, give it one last try to parse it. Look for a numeric offset (e.g.
-     * +0000) and remove all text afterwards. This should cover another set of cases where there is random text appended to
-     * the end of the string, as well as removing invalid non-numeric time zone offsets while still picking up the numeric
-     * offset Assumption - that tryExtensiveParsing is true - we should only get to this point if we want to try our best to
-     * parse
-     * 
-     * @param date The date string to parse
-     * @return the ZonedDateTime object if removing text at the end was successful, or null otherwise
-     */
-    static ZonedDateTime lastDitchParsingEffort(final String date) {
-
-        // Attempt to remove all text after the numeric offset and try again - this should give us a valid date string
-        // to work with
-        Matcher matcher = extraTextRemove.matcher(date);
-        if (matcher.find()) {
-            String secondChanceDate = matcher.replaceAll(matcher.group(1));
-            // if we removed text, attempt to parse again to see if we are more successful this time
-            return parsingHelper(secondChanceDate, true);
-        }
-        return null;
-    }
-
-    /**
-     * Created to help against code duplication. Calls parse with the standard set of date formats, and then if that fails,
-     * attempt the extra set of date formats if tryExtensiveParsing is set to true.
-     * 
-     * @param dateString The string we are attempting to parse
-     * @param tryExtensiveParsing Whether or not to use the extensive set of date formats
-     * @return The ZonedDateTime object if our parsing was successful, or null if not
-     */
-    private static ZonedDateTime parsingHelper(final String dateString, boolean tryExtensiveParsing) {
-        ZonedDateTime zdt = parse(dateString, dateFormatsMain);
-
-        // if we got a successful parse or we don't want to attempt "extensive parsing", return here
-        if (!tryExtensiveParsing || zdt != null) {
-            return zdt;
-        }
-        zdt = parse(dateString, dateFormatsExtra);
-        return zdt;
     }
 
     /**
@@ -217,70 +194,80 @@ public final class FlexibleDateTimeParser {
     /* Private Methods */
 
     /**
-     * Setup and configure
+     * If all our formats failed to parse a date string, give it one last try to parse it. Look for a numeric offset (e.g.
+     * +0000) and remove all text afterward. This should cover another set of cases where there is random text appended to
+     * the end of the string, as well as removing invalid non-numeric time zone offsets while still picking up the numeric
+     * offset Assumption - that tryExtensiveParsing is true - we should only get to this point if we want to try our best to
+     * parse
+     *
+     * @param date The date string to parse
+     * @return the ZonedDateTime object if removing text at the end was successful, or null otherwise
      */
-    private static void configure() {
-        try {
-            // fire up the configurator
-            Configurator configurator = ConfigUtil.getConfigInfo(FlexibleDateTimeParser.class);
-            setupTimezone(configurator.findStringEntry(CFG_TIMEZONE, DEFAULT_TIMEZONE));
-            setupDateFormats(configurator.findStringMatchEntries(CFG_FORMAT_MAIN), configurator.findStringMatchEntries(CFG_FORMAT_EXTRA));
+    @Nullable
+    static ZonedDateTime lastDitchParsingEffort(final String date) {
 
-            setupRemoveRegex(configurator);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Could not configure parser!!", e);
+        // Attempt to remove all text after the numeric offset and try again - this should give us a valid date string
+        // to work with
+        Matcher matcher = extraTextRemove.matcher(date);
+        if (matcher.find()) {
+            String secondChanceDate = matcher.replaceAll(matcher.group(1));
+            // if we removed text, attempt to parse again to see if we are more successful this time
+            return parsingHelper(secondChanceDate, true);
         }
-    }
-
-    private static void setupRemoveRegex(Configurator configurator) {
-        String removeRegex = configurator.findStringEntry(CFG_REMOVE_REGEX, "<.+?>$|=0D$|\\(|\\)|\"|\\[|]|\\W+$|^\\W+");
-        remove = Pattern.compile(removeRegex, Pattern.DOTALL);
-        /*
-         * This is our last ditch parsing effort if we failed to parse the string - remove all extra text after the numeric time
-         * zone offset
-         */
-        String extraTextRemoveRegex = configurator.findStringEntry(CFG_EXTRA_TEXT_REMOVE_REGEX, "((\\+|-)\\d{4}).*$");
-        extraTextRemove = Pattern.compile(extraTextRemoveRegex);
+        return null;
     }
 
     /**
-     * Set the timezone to use for parsing (needed for DateTimes that do not have timezone information)
+     * Created to help against code duplication. Calls parse with the standard set of date formats, and then if that fails,
+     * attempt the extra set of date formats if tryExtensiveParsing is set to true.
+     *
+     * @param dateString The string we are attempting to parse
+     * @param tryExtensiveParsing Whether to use the extensive set of date formats
+     * @return The ZonedDateTime object if our parsing was successful, or null if not
+     */
+    private static ZonedDateTime parsingHelper(final String dateString, boolean tryExtensiveParsing) {
+        ZonedDateTime zdt = parse(dateString, dateFormatsMain);
+
+        // if we got a successful parse or we don't want to attempt "extensive parsing", return here
+        if (!tryExtensiveParsing || zdt != null) {
+            return zdt;
+        }
+        zdt = parse(dateString, dateFormatsExtra);
+        return zdt;
+    }
+
+    /**
+     * Get the timezone to use for parsing (needed for DateTimes that do not have timezone information)
      *
      * @param configTimezone timezone string ["GMT" or "UTC" or "+0000" or "+00:00" ...]
+     * @return timezone
      */
-    private static void setupTimezone(final String configTimezone) {
-        if (StringUtils.isBlank(configTimezone)) {
-            return;
+    private static ZoneId setupTimezone(final String configTimezone) {
+        try {
+            if (StringUtils.isNotBlank(configTimezone)) {
+                // parse the timezone from the config
+                return ZoneId.of(configTimezone);
+            }
+        } catch (DateTimeException e) {
+            logger.error("Error parsing timezone {}, using default {}", configTimezone, timezone, e);
         }
 
-        try {
-            // parse the timezone from the config
-            timezone = ZoneId.of(configTimezone);
-        } catch (DateTimeException e) {
-            logger.error("Error parsing timezone {}, using default {}", configTimezone, timezone.toString(), e);
-        }
+        return ZoneId.of(DEFAULT_TIMEZONE);
     }
 
     /**
-     * Override the default date formats
+     * Get the overrides for the default date formats
      *
-     * @param configEntriesMain the list of main override formats from the config file
-     * @param configEntriesExtra the list of extra override formats from the config file
+     * @param configEntries the list of main override formats from the config file
+     * @param dateTimeFormats the list of datetime formats
+     * @return a list of {@link DateTimeFormatter}s
      */
-    private static void setupDateFormats(final List<ConfigEntry> configEntriesMain, final List<ConfigEntry> configEntriesExtra) {
-        List<DateTimeFormatter> dateTimeFormatsMain = getConfigFormats(configEntriesMain);
-        if (CollectionUtils.isNotEmpty(dateTimeFormatsMain)) {
-            dateFormatsMain = Collections.unmodifiableList(dateTimeFormatsMain);
-            logger.debug("Created successfully. Created {} of {} formats from config", dateFormatsMain.size(), configEntriesMain.size());
-        } else {
-            logger.error("Could not create with configured variables");
-            throw new IllegalArgumentException("No date/time formats configured!!");
-        }
-
-        List<DateTimeFormatter> dateTimeFormatsExtra = getConfigFormats(configEntriesExtra);
-        if (CollectionUtils.isNotEmpty(dateTimeFormatsExtra)) {
-            dateFormatsExtra = Collections.unmodifiableList(dateTimeFormatsExtra);
-            logger.debug("Created successfully. Created {} of {} formats from config", dateFormatsExtra.size(), configEntriesExtra.size());
+    private static List<DateTimeFormatter> setupDateFormats(final List<ConfigEntry> configEntries, final List<DateTimeFormatter> dateTimeFormats) {
+        List<DateTimeFormatter> dateFormats;
+        if (CollectionUtils.isNotEmpty(dateTimeFormats)) {
+            dateFormats = Collections.unmodifiableList(dateTimeFormats);
+            logger.debug("Created successfully. Created {} of {} formats from config", dateFormats.size(), configEntries.size());
+            return dateFormats;
         } else {
             logger.error("Could not create with configured variables");
             throw new IllegalArgumentException("No date/time formats configured!!");
