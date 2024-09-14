@@ -144,6 +144,7 @@ class PeersCommandIT extends UnitTest {
         });
     }
 
+    @SuppressWarnings("SystemOut")
     private void captureStdOutAndStdErrAndRunCommand(PeersCommand cmd) {
         PrintStream origOut = System.out;
         PrintStream origErr = System.err;
