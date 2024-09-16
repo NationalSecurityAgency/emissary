@@ -9,23 +9,32 @@ on: # yamllint disable-line rule:truthy
 
 jobs:
   build:
-    name: RHEL8 ${{ matrix.build-type }} build on Java ${{ matrix.java-version }} with compiler target ${{ matrix.java-compiler }}
+    name: RHEL8 standard build on Java 11 with compiler target 11
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build
+        run: |
+          docker compose -f contrib/docker/docker-compose.ci.yml up --exit-code-from emissary-ci
+          docker compose -f contrib/docker/docker-compose.ci.yml down
+
+  matrix-build:
+    name: RHEL8 experimental build on Java ${{ matrix.java-version }} with compiler target ${{ matrix.java-compiler }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         java-compiler: ['11', '17']
         java-version: ['17']
-        experimental: [false]
-        build-type: ["experimental"]
-        verify-build: [false]
-        include:
-          - java-compiler: '11'
-            java-version: '11'
-            experimental: false
-            build-type: "standard"
-            verify-build: true
-    continue-on-error: ${{ matrix.experimental }}
+    continue-on-error: true
 
     steps:
       - name: Checkout
@@ -46,7 +55,7 @@ jobs:
           build-args: |
             java_version=${{ matrix.java-version }}
             java_compiler=${{ matrix.java-compiler }}
-            verify_build=${{ matrix.verify-build }}
+            verify_build=false
           cache-from: type=gha
           cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max' || '' }}
 
