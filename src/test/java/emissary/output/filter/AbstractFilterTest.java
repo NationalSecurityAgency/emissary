@@ -7,13 +7,16 @@ import emissary.core.EmissaryRuntimeException;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.junit5.UnitTest;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,6 +49,75 @@ public class AbstractFilterTest extends UnitTest {
         payload.setFilename("");
         altViews.forEach(viewName -> payload.addAlternateView(viewName, "".getBytes()));
         return payload;
+    }
+
+    @Nested
+    class DefaultRegexPatternTests {
+        AbstractFilter f = getDenylistFilter(Collections.emptyList());
+
+        @Test
+        void testDefaultDenylistFiletypeFormat() {
+            String pattern = f.getDenylistFiletypeFormat();
+            assertEquals("^[a-zA-Z0-9_\\-]+$", pattern);
+
+            assertFalse(f.matchesDenylistFiletypeFormatPattern(""),
+                    String.format("Unexpected match [empty string] for Pattern %s", pattern));
+
+            String formatString = "Fi1e%sTyp3";
+
+            String noMatchChars = " !@#$%^&*()+=\\/.,";
+            for (char noMatchChar : noMatchChars.toCharArray()) {
+                String noMatch = String.format(formatString, noMatchChar);
+                assertFalse(f.matchesDenylistFiletypeFormatPattern(noMatch),
+                        String.format("Unexpected match %s for Pattern %s", noMatch, pattern));
+            }
+
+            String nullInsert = String.format(formatString, "");
+            assertTrue(f.matchesDenylistFiletypeFormatPattern(nullInsert),
+                    String.format("Expected match %s for Pattern %s", nullInsert, pattern));
+
+            String matchChars = "-_";
+            for (char matchChar : matchChars.toCharArray()) {
+                String match = String.format(formatString, matchChar);
+                assertTrue(f.matchesDenylistFiletypeFormatPattern(match),
+                        String.format("Expected match %s for Pattern %s", match, pattern));
+            }
+        }
+
+        @Test
+        void testDefaultDenylistViewNameFormat() {
+            String pattern = f.getDenylistViewNameFormat();
+            assertEquals("^[a-zA-Z0-9_\\-]+(\\.[a-zA-Z0-9_\\-]+)?\\*?$", pattern);
+
+            assertFalse(f.matchesDenylistViewNameFormatPattern(""),
+                    String.format("Unexpected match [empty string] for Pattern %s", pattern));
+
+            assertFalse(f.matchesDenylistViewNameFormatPattern("pt1.PT2.pt3"),
+                    String.format("Unexpected match pt1.PT2.pt3 for Pattern %s", pattern));
+
+            List<String> formatStrings = Arrays.asList("view%sN4ME", "view%sN4ME*", "pt1.PT2%spt3", "pt1.PT2%spt3*");
+            for (String formatString : formatStrings) {
+
+                String noMatchChars = " !@#$%^&*()+=\\/,";
+                for (char noMatchChar : noMatchChars.toCharArray()) {
+                    String noMatch = String.format(formatString, noMatchChar);
+                    assertFalse(f.matchesDenylistViewNameFormatPattern(noMatch),
+                            String.format("Unexpected match %s for Pattern %s", noMatch, pattern));
+                }
+
+                String nullInsert = String.format(formatString, "");
+                assertTrue(f.matchesDenylistViewNameFormatPattern(nullInsert),
+                        String.format("Expected match %s for Pattern %s", nullInsert, pattern));
+
+                String matchChars = "-_";
+                for (char matchChar : matchChars.toCharArray()) {
+                    String match = String.format(formatString, matchChar);
+                    assertTrue(f.matchesDenylistViewNameFormatPattern(match),
+                            String.format("Expected match %s for Pattern %s", match, pattern));
+                }
+            }
+        }
+
     }
 
     @Test
