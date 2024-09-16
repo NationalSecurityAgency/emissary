@@ -10,6 +10,8 @@ import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,6 +61,8 @@ class ServiceProviderPlaceGetTLDTest extends UnitTest {
 
     private static final class PlaceTest extends ServiceProviderPlace {
 
+        private static final Logger logger = LoggerFactory.getLogger(PlaceTest.class);
+
         public PlaceTest() throws IOException {
             super();
         }
@@ -69,7 +73,7 @@ class ServiceProviderPlaceGetTLDTest extends UnitTest {
             if (p != null && p.hasParameter("PARENT_INFO")) {
                 d.putParameter("CHILD_INFO", p.getStringParameter("PARENT_INFO").toUpperCase(Locale.getDefault()));
             } else {
-                System.err.println("COuld not get parent " + p);
+                logger.warn("Could not get parent {}", p);
             }
         }
     }
