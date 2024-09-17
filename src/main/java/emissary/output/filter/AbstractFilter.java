@@ -88,6 +88,12 @@ public abstract class AbstractFilter implements IDropOffFilter {
     @Nullable
     protected DropOffUtil dropOffUtil = null;
 
+    protected String denylistAllowedNameChars = "a-zA-Z0-9_\\-";
+    protected String denylistFiletypeFormat = "^[%s]+$";
+    protected Pattern denylistFiletypeFormatPattern;
+    protected String denylistViewNameFormat = "^[%s]+(\\.[%s]+)?\\*?$";
+    protected Pattern denylistViewNameFormatPattern;
+
     /**
      * Initialization phase hook for the filter with default preferences for the runtime configuration of the filter
      */
@@ -118,7 +124,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
         initializeOutputTypes(this.filterConfig);
     }
 
-    private final void loadFilterCondition(final Configurator parentConfig) {
+    private void loadFilterCondition(final Configurator parentConfig) {
         this.filterConditionSpec = parentConfig.findStringEntry("FILTER_CONDITION_" + getFilterName(), null);
 
         // format FILTER_CONDITION_<filtername> = profilename:clazz just like dropoff filter config
@@ -169,6 +175,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
      */
     protected void initializeOutputTypes(@Nullable final Configurator config) {
         if (config != null) {
+            this.loadNameValidationPatterns(config);
             this.outputTypes = config.findEntriesAsSet("OUTPUT_TYPE");
             this.logger.debug("Loaded {} output types for filter {}", this.outputTypes.size(), this.outputTypes);
             this.initializeDenylist(config);
@@ -177,36 +184,34 @@ public abstract class AbstractFilter implements IDropOffFilter {
         }
     }
 
+    protected void loadNameValidationPatterns(final Configurator config) {
+        denylistAllowedNameChars = config.findStringEntry("DENYLIST_ALLOWED_NAME_CHARS", denylistAllowedNameChars);
+        denylistFiletypeFormat = config.findStringEntry("DENYLIST_FILETYPE_FORMAT", denylistFiletypeFormat);
+        denylistFiletypeFormatPattern = Pattern.compile(denylistFiletypeFormat.replace("%s", denylistAllowedNameChars));
+        denylistViewNameFormat = config.findStringEntry("DENYLIST_VIEW_NAME_FORMAT", denylistViewNameFormat);
+        denylistViewNameFormatPattern = Pattern.compile(denylistViewNameFormat.replace("%s", denylistAllowedNameChars));
+    }
+
     protected void initializeDenylist(final Configurator config) {
-        Pattern charSetOrdering = Pattern.compile("^[\\w*]+(\\.[\\w*]+)*$"); // Match if acceptable characters are in correct order
-        Pattern viewNameFormat = Pattern.compile("^\\w+(\\.\\w+)?\\*?$"); // Match if String is word sequence with optional `*` suffix
-
         for (String entry : config.findEntriesAsSet("DENYLIST")) {
-            if (charSetOrdering.matcher(entry).matches()) {
-                String viewName = validateAndRemoveDenylistFiletype(entry);
-
+            String viewName = validateAndRemoveDenylistFiletype(entry);
+            if (matchesDenylistViewNameFormatPattern(viewName)) {
                 if (viewName.chars().filter(ch -> ch == '.').count() > 0) {
                     logger.warn("`DENYLIST = \"{}\"` viewName `{}` should not contain any `.` characters", entry, viewName);
                 }
-                if (viewNameFormat.matcher(viewName).matches()) {
-                    if (viewName.endsWith("*")) {
-                        String strippedEntry = entry.substring(0, entry.length() - 1);
-                        this.wildCardDenylist.add(strippedEntry);
-                    } else {
-                        this.denylist.add(entry);
-                    }
+
+                if (viewName.endsWith("*")) {
+                    String strippedEntry = entry.substring(0, entry.length() - 1);
+                    this.wildCardDenylist.add(strippedEntry);
                 } else {
-                    throw new EmissaryRuntimeException(String.format(
-                            "Invalid filter configuration: `DENYLIST = \"%s\"` " +
-                                    "viewName `%s` must be a sequence of [A-Z, a-z, 0-9, _] with optional wildcard `*` suffix.",
-                            entry, viewName));
+                    this.denylist.add(entry);
                 }
 
             } else {
                 throw new EmissaryRuntimeException(String.format(
                         "Invalid filter configuration: `DENYLIST = \"%s\"` " +
-                                "must be one sequence of [A-Z, a-z, 0-9, _] or two sequences separated with `.` delimiter.",
-                        entry));
+                                "entry `%s` must match pattern `%s`.",
+                        entry, entry, getDenylistViewNameFormat()));
             }
         }
 
@@ -226,11 +231,11 @@ public abstract class AbstractFilter implements IDropOffFilter {
                         "Invalid filter configuration: `DENYLIST = \"%s\"` " +
                                 "wildcarded filetypes not allowed in denylist - Did you mean `DENYLIST = \"%s\"`?",
                         entry, viewName));
-            } else if (!filetype.chars().allMatch(ch -> Character.isLetterOrDigit(ch) || ch == '_')) { // DENYLIST = "<type>*.<viewName>" not allowed
+            } else if (!matchesDenylistFiletypeFormatPattern(filetype)) {
                 throw new EmissaryRuntimeException(String.format(
                         "Invalid filter configuration: `DENYLIST = \"%s\"` " +
-                                "filetype `%s` must be a sequence of [A-Z, a-z, 0-9, _]",
-                        entry, filetype));
+                                "filetype `%s` must match pattern `%s`",
+                        entry, filetype, getDenylistFiletypeFormat()));
             }
             return viewName;
         }
@@ -572,5 +577,21 @@ public abstract class AbstractFilter implements IDropOffFilter {
     @Override
     public Collection<String> getOutputTypes() {
         return new HashSet<>(this.outputTypes);
+    }
+
+    public boolean matchesDenylistFiletypeFormatPattern(String str) {
+        return denylistFiletypeFormatPattern.matcher(str).matches();
+    }
+
+    public String getDenylistFiletypeFormat() {
+        return denylistFiletypeFormatPattern.pattern();
+    }
+
+    public boolean matchesDenylistViewNameFormatPattern(String str) {
+        return denylistViewNameFormatPattern.matcher(str).matches();
+    }
+
+    public String getDenylistViewNameFormat() {
+        return denylistViewNameFormatPattern.pattern();
     }
 }
