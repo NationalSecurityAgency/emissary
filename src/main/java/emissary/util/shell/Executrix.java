@@ -861,9 +861,9 @@ public class Executrix {
             stdErrThread.finish();
             exitValue = p.exitValue();
         } catch (IOException e) {
-            logger.warn("Exec exception, args={}", Arrays.asList(eConfig.getCmd()), e);
+            logger.warn("Failure during execution: {}, external command={}", e, Arrays.asList(eConfig.getCmd()));
         } catch (InterruptedException e) {
-            logger.warn("Interrupted exception, args={}", Arrays.asList(eConfig.getCmd()), e);
+            logger.warn("Interrupted during execution: {}, external command={}", e, Arrays.asList(eConfig.getCmd()));
             Thread.currentThread().interrupt();
         } finally {
             if (dog != null) {
