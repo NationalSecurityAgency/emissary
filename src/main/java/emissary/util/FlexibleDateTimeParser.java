@@ -128,7 +128,7 @@ public final class FlexibleDateTimeParser {
      * @return the parsed immutable and thread-safe zoned-date, or null if it failed to parse
      */
     public static ZonedDateTime parse(final String dateString, boolean tryExtensiveParsing) {
-        ZonedDateTime zdt = parsingHelper(dateString, tryExtensiveParsing);
+        ZonedDateTime zdt = parseToZonedDateTime(dateString, tryExtensiveParsing);
 
         if (zdt != null || !tryExtensiveParsing) {
             return zdt;
@@ -212,7 +212,7 @@ public final class FlexibleDateTimeParser {
         if (matcher.find()) {
             String secondChanceDate = matcher.replaceAll(matcher.group(1));
             // if we removed text, attempt to parse again to see if we are more successful this time
-            return parsingHelper(secondChanceDate, true);
+            return parseToZonedDateTime(secondChanceDate, true);
         }
         return null;
     }
@@ -225,7 +225,7 @@ public final class FlexibleDateTimeParser {
      * @param tryExtensiveParsing Whether to use the extensive set of date formats
      * @return The ZonedDateTime object if our parsing was successful, or null if not
      */
-    private static ZonedDateTime parsingHelper(final String dateString, boolean tryExtensiveParsing) {
+    private static ZonedDateTime parseToZonedDateTime(final String dateString, boolean tryExtensiveParsing) {
         ZonedDateTime zdt = parse(dateString, dateFormatsMain);
 
         // if we got a successful parse or we don't want to attempt "extensive parsing", return here
