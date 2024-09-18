@@ -2,7 +2,6 @@ package emissary.core.channels;
 
 import org.apache.commons.lang3.Validate;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
@@ -70,17 +69,17 @@ public class FillChannelFactory {
         }
 
         @Override
-        protected long sizeImpl() throws IOException {
+        protected long sizeImpl() {
             return size;
         }
 
         @Override
-        protected void closeImpl() throws IOException {
+        protected void closeImpl() {
             // Nothing to do.
         }
 
         @Override
-        protected int readImpl(final ByteBuffer byteBuffer) throws IOException {
+        protected int readImpl(final ByteBuffer byteBuffer) {
             final int bytesToFill = byteBuffer.remaining();
 
             if (byteBuffer.hasArray()) {
