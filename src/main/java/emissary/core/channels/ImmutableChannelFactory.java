@@ -106,12 +106,12 @@ public final class ImmutableChannelFactory {
         }
 
         @Override
-        public int write(final ByteBuffer src) throws IOException {
+        public int write(final ByteBuffer src) {
             throw new NonWritableChannelException();
         }
 
         @Override
-        public SeekableByteChannel truncate(final long size) throws IOException {
+        public SeekableByteChannel truncate(final long size) {
             throw new NonWritableChannelException();
         }
     }
