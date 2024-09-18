@@ -62,8 +62,7 @@ public class WorkBundleCompletedAction {
         }
     }
 
-    private static Response workBundleCompleted(String spaceName, String placeName, String bundleId, boolean itWorked) throws NamespaceException,
-            IllegalArgumentException {
+    private static Response workBundleCompleted(String spaceName, String placeName, String bundleId, boolean itWorked) throws NamespaceException {
         // Look up the place reference
         // TODO Figure out why we have to remove the key prefix now
         final String workspaceNamespaceKey = spaceName.substring("WORKSPACE.WORK_SPACE.INPUT.".length());

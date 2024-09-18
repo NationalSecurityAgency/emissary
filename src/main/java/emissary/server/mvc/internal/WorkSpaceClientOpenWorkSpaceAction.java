@@ -46,7 +46,7 @@ public class WorkSpaceClientOpenWorkSpaceAction {
         }
     }
 
-    private Response openTheSpace(String placeName, String spaceName) throws IllegalArgumentException, NamespaceException {
+    private Response openTheSpace(String placeName, String spaceName) throws NamespaceException {
         // TODO Figure out why we have to remove the key prefix now
         // INITIAL.FILE_PICK_UP_CLIENT.INPUT.http://localhost:8001/FilePickUpClient
         String placeKey = placeName.substring("INITIAL.FILE_PICK_UP_CLIENT.INPUT.".length());
