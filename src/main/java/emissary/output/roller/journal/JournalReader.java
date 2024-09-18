@@ -93,7 +93,7 @@ public class JournalReader implements Closeable {
     }
 
     // read long followed by null sep. return -1 if any issues
-    private long getSequence() throws IOException {
+    private long getSequence() {
         long seq = b.getLong();
         if (b.get() != SEP) {
             return -1;
