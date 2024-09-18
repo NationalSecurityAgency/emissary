@@ -192,6 +192,7 @@ class FTestMultipleWorkSpaces extends FunctionalTest {
     }
 
     @Test
+    @SuppressWarnings("ThreadPriorityCheck")
     void testAll() {
 
         assertTrue(Namespace.exists("http://localhost:8005/WorkSpace1"), "First WorkSpace should exist in namespace");
