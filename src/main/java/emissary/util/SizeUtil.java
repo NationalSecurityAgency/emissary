@@ -16,12 +16,12 @@ public class SizeUtil {
     /**
      * A flag to indicate whether we are running 32 or 64 bit JVM. Note that this is the JVM bits and not the OS bits
      */
-    private static boolean arch64 = false;
+    private static final boolean arch64;
 
     /**
      * A reference/pointer size in a non-compressed Ops JVM. Default is 32-bit = 4 bytes
      */
-    private static long refSize = 4L;
+    private static final long refSize;
 
     /**
      * Object overhead
@@ -32,6 +32,9 @@ public class SizeUtil {
         if (System.getProperty("os.arch").contains("64")) {
             arch64 = true;
             refSize = 8L;
+        } else {
+            arch64 = false;
+            refSize = 4L;
         }
     }
 
