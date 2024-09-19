@@ -656,7 +656,6 @@ class DropOffUtilTest extends UnitTest {
         assertTrue(util.isValidFileName("file-name-with-dashes.txt"));
         assertTrue(util.isValidFileName("valid/fileName.txt"));
 
-
         // Invalid file names:
         assertFalse(util.isValidFileName("../invalidFileName.txt"));
         assertFalse(util.isValidFileName("invalid\\fileName.txt"));
