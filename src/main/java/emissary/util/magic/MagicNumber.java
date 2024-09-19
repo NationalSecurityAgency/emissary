@@ -3,11 +3,13 @@ package emissary.util.magic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 
 public class MagicNumber {
@@ -15,7 +17,7 @@ public class MagicNumber {
     private static final Logger log = LoggerFactory.getLogger(MagicNumber.class);
 
     /** The default charset used when loading the config file and when sampling data */
-    public static final String DEFAULT_CHARSET = "ISO-8859-1";
+    public static final Charset DEFAULT_CHARSET = StandardCharsets.ISO_8859_1;
     /** Byte data type */
     public static final String TYPE_KEY_BYTE = "BYTE"; //
     /** Short data type */
@@ -139,16 +141,16 @@ public class MagicNumber {
      * Private formatting method for escaping backspaces
      */
     private static String escapeBackspace(String desc) {
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < desc.length(); i++) {
             if (desc.charAt(i) == '\\' && (i + 1) < desc.length() && desc.charAt(i + 1) == 'b') {
-                s = s.substring(0, s.length() - 1);
+                s = new StringBuilder(s.substring(0, s.length() - 1));
                 i++;
                 continue;
             }
-            s += desc.charAt(i);
+            s.append(desc.charAt(i));
         }
-        return s;
+        return s.toString();
     }
 
     /**
@@ -178,34 +180,31 @@ public class MagicNumber {
 
         while (!chars.isEmpty()) {
             Character next = chars.pop();
-            if (!chars.isEmpty() && next.charValue() == '%') {
-                Character subType = chars.pop();
-                try {
-                    if (dataType == TYPE_STRING) {
-                        if (offset < (data.length - 2)) {
-                            String sub = new String(getElement(data, offset, 1), DEFAULT_CHARSET);
-                            sb.append(sub);
-                        }
-                    } else if (subType.charValue() == 'c' || subType.charValue() == 's') {
-
-                        byte[] subData = getElement(data, offset, dataTypeLength);
-                        if (subData != null) {
-                            String sub = new String(subData, DEFAULT_CHARSET);
-                            sb.append(sub);
-                        }
-
-                    } else {
-
-                        byte[] subData = getElement(data, offset, dataTypeLength);
-                        if (subData != null) {
-                            String sub = MagicMath.byteArrayToString(subData, 10);
-                            sb.append(sub);
-                        }
+            if (!chars.isEmpty() && next == '%') {
+                char subType = chars.pop();
+                if (dataType == TYPE_STRING) {
+                    if (offset < (data.length - 2)) {
+                        String sub = new String(Objects.requireNonNull(getElement(data, offset, 1)), DEFAULT_CHARSET);
+                        sb.append(sub);
                     }
-                } catch (UnsupportedEncodingException e) {
-                    throw new IllegalArgumentException(e);
+                } else if (subType == 'c' || subType == 's') {
+
+                    byte[] subData = getElement(data, offset, dataTypeLength);
+                    if (subData != null) {
+                        String sub = new String(subData, DEFAULT_CHARSET);
+                        sb.append(sub);
+                    }
+
+                } else {
+
+                    byte[] subData = getElement(data, offset, dataTypeLength);
+                    if (subData != null) {
+                        String sub = MagicMath.byteArrayToString(subData, 10);
+                        sb.append(sub);
+                    }
                 }
-                if (subType.charValue() == 'l' && !chars.isEmpty() && chars.peek().charValue() == 'd') {
+
+                if (subType == 'l' && !chars.isEmpty() && chars.peek() == 'd') {
                     chars.pop();
                 }
                 continue;
@@ -228,8 +227,8 @@ public class MagicNumber {
         boolean shouldContinue = false;
         MagicNumber[] dependentItems = dependencies.get(layer);
         log.debug("Found {} items at layer {}", dependentItems.length, layer);
-        for (int i = 0; i < dependentItems.length; i++) {
-            String s = dependentItems[i].describeSelf(data);
+        for (MagicNumber dependentItem : dependentItems) {
+            String s = dependentItem.describeSelf(data);
 
             if (s != null) {
                 if (sb.length() > 0) {
@@ -247,20 +246,6 @@ public class MagicNumber {
     }
 
     /**
-     * Debugging method
-     */
-    private static void printByteSample(byte[] data, String prefix) {
-        if (log.isDebugEnabled()) {
-            String debug = prefix;
-            for (int i = 0; i < data.length; i++) {
-                debug += '\t';
-                debug += Byte.toString(data[i]);
-            }
-            log.debug(debug);
-        }
-    }
-
-    /**
      * Tests this magic number against the given data
      */
     public boolean test(byte[] data) {
@@ -268,7 +253,6 @@ public class MagicNumber {
         if (subject == null) {
             return false;
         }
-        // printByteSample(subject, "DATA SAMPLE: ");
         return testNumeric(subject);
     }
 
@@ -282,11 +266,11 @@ public class MagicNumber {
         byte[] mValues = value;
 
         log.debug("Unary Operator: {}", unaryOperator);
-        // printByteSample(mValues, "MAGIC VALUE: ");
 
         int end = mValues.length;
         switch (unaryOperator) {
             case MAGICOPERATOR_AND:
+            case MAGICOPERATOR_BWAND:
                 for (int i = 0; i < end; i++) {
                     if (data[i] != mValues[i]) {
                         return false;
@@ -320,20 +304,7 @@ public class MagicNumber {
                     }
                 }
                 return false;
-            case MAGICOPERATOR_BWAND:
-                for (int i = 0; i < end; i++) {
-                    if (data[i] != mValues[i]) {
-                        return false;
-                    }
-                }
-                return true;
             case MAGICOPERATOR_BWNOT:
-                for (int i = 0; i < end; i++) {
-                    if (data[i] != mValues[i]) {
-                        return true;
-                    }
-                }
-                return false;
             case MAGICOPERATOR_NOT:
                 for (int i = 0; i < end; i++) {
                     if (data[i] != mValues[i]) {
@@ -373,11 +344,8 @@ public class MagicNumber {
         if (data.length < (offset + length)) {
             return null;
         }
-        // log.info ("SAMPLE STATS - offset: {}, length: {}", offset, length);
         byte[] subject = new byte[length];
-        for (int i = 0; i < subject.length; i++) {
-            subject[i] = data[i + offset];
-        }
+        System.arraycopy(data, offset, subject, 0, subject.length);
         return subject;
     }
 
@@ -400,9 +368,7 @@ public class MagicNumber {
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < depth; i++) {
-            sb.append('>');
-        }
+        sb.append(">".repeat(Math.max(0, depth)));
         if (offsetUnary > 0) {
             sb.append(offsetUnary);
         }
@@ -449,9 +415,9 @@ public class MagicNumber {
             return sb.toString();
         }
         MagicNumber[] dependentItems = dependencies.get(d);
-        for (int i = 0; i < dependentItems.length; i++) {
+        for (MagicNumber dependentItem : dependentItems) {
             sb.append('\n');
-            sb.append(dependentItems[i].toString());
+            sb.append(dependentItem.toString());
         }
         return toString(sb, d + 1);
     }
