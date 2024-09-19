@@ -421,11 +421,6 @@
       <artifactId>httpclient5</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.janino</groupId>
-      <artifactId>janino</artifactId>
-      <version>3.1.7</version>
-    </dependency>
-    <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
     </dependency>
