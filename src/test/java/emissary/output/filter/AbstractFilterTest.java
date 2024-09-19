@@ -66,7 +66,8 @@ public class AbstractFilterTest extends UnitTest {
             String formatString = "Fi1e%sTyp3";
 
             String noMatchChars = " !@#$%^&*()+=\\/.,";
-            for (char noMatchChar : noMatchChars.toCharArray()) {
+            for (int i = 0; i < noMatchChars.length(); i++) {
+                char noMatchChar = noMatchChars.charAt(i);
                 String noMatch = String.format(formatString, noMatchChar);
                 assertFalse(f.matchesDenylistFiletypeFormatPattern(noMatch),
                         String.format("Unexpected match %s for Pattern %s", noMatch, pattern));
@@ -77,7 +78,8 @@ public class AbstractFilterTest extends UnitTest {
                     String.format("Expected match %s for Pattern %s", nullInsert, pattern));
 
             String matchChars = "-_";
-            for (char matchChar : matchChars.toCharArray()) {
+            for (int i = 0; i < matchChars.length(); i++) {
+                char matchChar = matchChars.charAt(i);
                 String match = String.format(formatString, matchChar);
                 assertTrue(f.matchesDenylistFiletypeFormatPattern(match),
                         String.format("Expected match %s for Pattern %s", match, pattern));
@@ -99,7 +101,8 @@ public class AbstractFilterTest extends UnitTest {
             for (String formatString : formatStrings) {
 
                 String noMatchChars = " !@#$%^&*()+=\\/,";
-                for (char noMatchChar : noMatchChars.toCharArray()) {
+                for (int i = 0; i < noMatchChars.length(); i++) {
+                    char noMatchChar = noMatchChars.charAt(i);
                     String noMatch = String.format(formatString, noMatchChar);
                     assertFalse(f.matchesDenylistViewNameFormatPattern(noMatch),
                             String.format("Unexpected match %s for Pattern %s", noMatch, pattern));
@@ -110,7 +113,8 @@ public class AbstractFilterTest extends UnitTest {
                         String.format("Expected match %s for Pattern %s", nullInsert, pattern));
 
                 String matchChars = "-_";
-                for (char matchChar : matchChars.toCharArray()) {
+                for (int i = 0; i < matchChars.length(); i++) {
+                    char matchChar = matchChars.charAt(i);
                     String match = String.format(formatString, matchChar);
                     assertTrue(f.matchesDenylistViewNameFormatPattern(match),
                             String.format("Expected match %s for Pattern %s", match, pattern));
