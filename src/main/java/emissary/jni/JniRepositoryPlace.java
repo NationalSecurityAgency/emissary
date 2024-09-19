@@ -44,7 +44,7 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
         // Set libraryDirectory from JniRepositoryPlace.cfg
         this.libraryDirectoryString = configG.findEntries("LIBRARY_DIRECTORY");
         if (this.libraryDirectoryString.isEmpty()) {
-            System.err.println("JniRepository: No LIBRARY_DIRECTORY indicators.");
+            logger.warn("JniRepository: No LIBRARY_DIRECTORY indicators.");
         }
 
         for (int i = 0; i < this.libraryDirectoryString.size(); i++) {
