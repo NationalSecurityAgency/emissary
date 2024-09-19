@@ -643,4 +643,27 @@ class DropOffUtilTest extends UnitTest {
         String fileType = DropOffUtil.getAndPutFileType(bdo, metadata, formsArg);
         assertEquals(expectedResults, fileType);
     }
+
+    @Test
+    void testIsFileNameValid() {
+        assert util != null;
+
+        // Valid file names:
+        assertTrue(util.isValidFileName("validFileName.txt"));
+        assertTrue(util.isValidFileName("another_valid-file.name"));
+        assertTrue(util.isValidFileName("file@name#with$special%chars^&.txt"));
+        assertTrue(util.isValidFileName("file_name_with_underscores.txt"));
+        assertTrue(util.isValidFileName("file-name-with-dashes.txt"));
+        assertTrue(util.isValidFileName("valid/fileName.txt"));
+
+
+        // Invalid file names:
+        assertFalse(util.isValidFileName("../invalidFileName.txt"));
+        assertFalse(util.isValidFileName("invalid\\fileName.txt"));
+        assertFalse(util.isValidFileName("..\\invalidFileName.txt"));
+
+        // Empty file name:
+        assertTrue(util.isValidFileName(""));
+    }
+
 }

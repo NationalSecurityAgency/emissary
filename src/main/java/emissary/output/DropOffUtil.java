@@ -221,6 +221,12 @@ public class DropOffUtil {
      * @return true iff it works
      */
     public boolean setupPath(final String fileName) {
+
+        if (!isValidFileName(fileName)) {
+            logger.error("Invalid file name: {}", fileName);
+            return false;
+        }
+
         final String pathName = fileName.substring(0, fileName.lastIndexOf(SEPARATOR));
         final Path thePath = Paths.get(pathName);
 
@@ -1062,5 +1068,16 @@ public class DropOffUtil {
                 }
             }
         }
+    }
+
+    /**
+     * Checks if the provided file name is valid. A valid file name does not contain any path traversal characters: ".." or
+     * "\\".
+     *
+     * @param fileName the file name to check
+     * @return true if the file name is valid, false otherwise
+     */
+    protected boolean isValidFileName(String fileName) {
+        return !fileName.contains("..") && !fileName.contains("\\");
     }
 }
