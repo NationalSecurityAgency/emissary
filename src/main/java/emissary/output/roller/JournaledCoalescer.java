@@ -132,7 +132,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
      * coalesced successfully but cleanup failed. If there are not any files with the same name, just rename the rolled
      * file. Otherwise, the rolled file will get cleaned up with the normal process.
      */
-    private void cleanupOrphanedRolledFiles() throws IOException {
+    private void cleanupOrphanedRolledFiles() {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(outputPath, "*" + ROLLED_EXT)) {
             for (Path entry : stream) {
                 String finalOutputFilename = FilenameUtils.getBaseName(entry.toString());
