@@ -125,6 +125,7 @@ class FTestSpacePlaceInteraction extends FunctionalTest {
 
     }
 
+    @SuppressWarnings("ThreadPriorityCheck")
     private void detachWorkspace(String threadName) {
         // Create a thread and run the workspace detached
         Thread tspacethr = new Thread(space, threadName);
