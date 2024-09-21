@@ -82,7 +82,7 @@ public class RollManager implements PropertyChangeListener {
             if (log.isInfoEnabled()) {
                 log.info("Scheduling Rollable {} at {} {}", r.getRollable().getClass(), r.getPeriod(), r.getTimeUnit().name());
             }
-            exec.scheduleAtFixedRate(r, r.getPeriod(), r.getPeriod(), r.getTimeUnit());
+            var unused = exec.scheduleAtFixedRate(r, r.getPeriod(), r.getPeriod(), r.getTimeUnit());
         }
         if (progress) {
             r.addPropertyChangeListener(this);

@@ -118,7 +118,7 @@ public class LoggingPrintStream extends PrintStream {
         if (linesToSkip == 0) {
             final Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
 
-            executorService.submit(() -> log(logger, mdcContextMap, level, NORMAL_LOG_FORMAT, streamName, string));
+            var unused = executorService.submit(() -> log(logger, mdcContextMap, level, NORMAL_LOG_FORMAT, streamName, string));
         }
 
         super.print(string);
@@ -152,7 +152,7 @@ public class LoggingPrintStream extends PrintStream {
 
             final Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
 
-            executorService.submit(() -> log(logger, mdcContextMap, level, THROWABLE_LOG_FORMAT, streamName, throwable));
+            var unused = executorService.submit(() -> log(logger, mdcContextMap, level, THROWABLE_LOG_FORMAT, streamName, throwable));
         }
 
         super.println(object);

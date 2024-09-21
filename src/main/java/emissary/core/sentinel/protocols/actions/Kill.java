@@ -14,6 +14,6 @@ public class Kill extends Action {
     @Override
     public void trigger(Map<String, Sentinel.Tracker> trackers) {
         logger.error("Sentinel detected unrecoverable agents, initiating forceful shutdown -- {}", format(trackers));
-        CompletableFuture.runAsync(EmissaryServer::stopServerForce);
+        var unused = CompletableFuture.runAsync(EmissaryServer::stopServerForce);
     }
 }
