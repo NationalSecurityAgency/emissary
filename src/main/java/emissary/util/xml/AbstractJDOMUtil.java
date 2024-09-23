@@ -66,8 +66,16 @@ public abstract class AbstractJDOMUtil {
         }
     }
 
+    @Deprecated
+    @SuppressWarnings("InconsistentOverloads")
     protected static Document createDocument(final byte[] xml, @Nullable final XMLFilter filter, @Nullable final String charset,
             final SAXBuilder builder)
+            throws JDOMException {
+        return createDocument(xml, filter, builder, charset);
+    }
+
+    protected static Document createDocument(final byte[] xml, @Nullable final XMLFilter filter, final SAXBuilder builder,
+            @Nullable final String charset)
             throws JDOMException {
         if (filter != null) {
             builder.setXMLFilter(filter);

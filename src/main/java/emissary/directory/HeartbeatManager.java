@@ -84,16 +84,23 @@ public class HeartbeatManager {
         this(directoryKey, null, initialDelaySeconds, intervalSeconds);
     }
 
+    @Deprecated
+    @SuppressWarnings("InconsistentOverloads")
+    public HeartbeatManager(final String directoryKey, @Nullable final List<String> dirList, final int initialDelaySeconds,
+            final int intervalSeconds) {
+        this(directoryKey, initialDelaySeconds, intervalSeconds, dirList);
+    }
+
     /**
      * Setup to manage heartbeats to remote directories
      *
      * @param directoryKey Key for directory I act on behalf of
-     * @param dirList list of directory keys for remote directories
      * @param initialDelaySeconds seconds to wait before initial timer task
      * @param intervalSeconds how often the timeer task kicks off
+     * @param dirList list of directory keys for remote directories
      */
-    public HeartbeatManager(final String directoryKey, @Nullable final List<String> dirList, final int initialDelaySeconds,
-            final int intervalSeconds) {
+    public HeartbeatManager(final String directoryKey, final int initialDelaySeconds, final int intervalSeconds,
+            @Nullable final List<String> dirList) {
         this.initialDelaySeconds = initialDelaySeconds;
         this.intervalSeconds = intervalSeconds;
 
