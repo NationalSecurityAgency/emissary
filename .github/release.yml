@@ -1,5 +1,8 @@
 ---
 changelog:
+  exclude:
+    authors:
+      - github-actions[bot]
   categories:
     - title: New Features
       labels:
