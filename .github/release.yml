@@ -10,7 +10,7 @@ changelog:
         - integration
     - title: Bug Fixes
       labels:
-        - bug        
+        - bug
     - title: New Features
       labels:
         - feature
