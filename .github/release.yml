@@ -4,6 +4,13 @@ changelog:
     authors:
       - github-actions[bot]
   categories:
+    - title: Breaking Changes
+      labels:
+        - major
+        - integration
+    - title: Bug Fixes
+      labels:
+        - bug
     - title: New Features
       labels:
         - feature
@@ -14,23 +21,17 @@ changelog:
     - title: Security
       labels:
         - security
-    - title: Bug Fixes
-      labels:
-        - bug
-    - title: Dependencies
-      labels:
-        - dependencies
     - title: Documentation
       labels:
         - documentation
+    - title: Build, Package, Deploy
+      labels:
+        - dependencies
+        - BPD
     - title: Automation and Testing
       labels:
         - CI/CD
         - test-only
-    - title: Breaking Changes
-      labels:
-        - major
-        - integration
     - title: Other Changes
       labels:
         - "*"
