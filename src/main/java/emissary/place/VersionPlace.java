@@ -3,7 +3,6 @@ package emissary.place;
 import emissary.core.IBaseDataObject;
 import emissary.core.ResourceException;
 import emissary.util.GitRepositoryState;
-import emissary.util.Version;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,11 +13,8 @@ public class VersionPlace extends ServiceProviderPlace {
     private static final String EMISSARY_VERSION_HASH = "EMISSARY_VERSION_HASH";
     private boolean includeDate;
     private boolean useAbbrevHash;
-    private final Version version = new Version();
     private String formattedVersion;
     private String versionHash;
-
-    private GitRepositoryState gitRepositoryState;
 
     /**
      * Create the place from the specified config file or resource
@@ -63,12 +59,12 @@ public class VersionPlace extends ServiceProviderPlace {
     }
 
     private void configurePlace() {
-        this.gitRepositoryState = initGitRepositoryState();
+        GitRepositoryState gitRepositoryState = initGitRepositoryState();
 
         includeDate = configG.findBooleanEntry("INCLUDE_DATE", true);
         useAbbrevHash = configG.findBooleanEntry("USE_ABBREV_HASH", true);
-        formattedVersion = getEmissaryVersion();
-        versionHash = getEmissaryVersionHash();
+        formattedVersion = getVersion(gitRepositoryState);
+        versionHash = getVersionHash(gitRepositoryState);
     }
 
     @Override
@@ -81,17 +77,21 @@ public class VersionPlace extends ServiceProviderPlace {
         return GitRepositoryState.getRepositoryState();
     }
 
-    private String getEmissaryVersion() {
+    protected String getVersion(GitRepositoryState gitRepositoryState) {
         if (includeDate) {
             // version with date & time information
-            return version.getVersion() + "-" + version.getTimestamp().replaceAll("\\D", "");
+            // changes format of date from 2024-09-23T10:41:18-0400, to 20240923104118
+            String buildTime = gitRepositoryState.getBuildTime();
+            int cutEndMark = buildTime.lastIndexOf(":") + 3;
+            String formattedDate = buildTime.substring(0, cutEndMark).replaceAll("\\D", "");
+            return gitRepositoryState.getBuildVersion() + "-" + formattedDate;
         } else {
             // adds just version
-            return version.getVersion();
+            return gitRepositoryState.getBuildVersion();
         }
     }
 
-    private String getEmissaryVersionHash() {
+    protected String getVersionHash(GitRepositoryState gitRepositoryState) {
         if (useAbbrevHash) {
             // first 7 chars of commit hash
             return gitRepositoryState.getCommitIdAbbrev();
@@ -99,5 +99,13 @@ public class VersionPlace extends ServiceProviderPlace {
             // full commit hash (default option)
             return gitRepositoryState.getCommitId();
         }
+    }
+
+    public void setIncludeDate(Boolean includeDate) {
+        this.includeDate = includeDate;
+    }
+
+    public void setAbbrevHash(Boolean useAbbrevHash) {
+        this.useAbbrevHash = useAbbrevHash;
     }
 }
