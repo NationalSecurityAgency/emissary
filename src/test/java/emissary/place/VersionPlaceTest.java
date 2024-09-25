@@ -15,12 +15,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class VersionPlaceTest extends UnitTest {
+    @Nullable
     private IBaseDataObject payload;
+    @Nullable
     private VersionPlace place;
     private Path gitRepositoryFile;
     private GitRepositoryState testGitRepoState;
