@@ -4,34 +4,34 @@ changelog:
     authors:
       - github-actions[bot]
   categories:
-    - title: Breaking Changes
+    - title: Breaking Changes 🚨
       labels:
         - major
         - integration
-    - title: Bug Fixes
+    - title: Bug Fixes 🐞
       labels:
         - bug
-    - title: New Features
+    - title: New Features ✨
       labels:
         - feature
-    - title: Improvements
+    - title: Improvements 🛠
       labels:
         - enhancement
         - framework
-    - title: Security
+    - title: Security 🔒
       labels:
         - security
-    - title: Documentation
+    - title: Documentation 📚
       labels:
         - documentation
-    - title: Build, Package, Deploy
+    - title: Build, Package, Deploy 📦
       labels:
         - dependencies
         - BPD
-    - title: Automation and Testing
+    - title: Automation and Testing 🚦
       labels:
         - CI/CD
         - test-only
-    - title: Other Changes
+    - title: Other Changes ⚙️
       labels:
         - "*"
