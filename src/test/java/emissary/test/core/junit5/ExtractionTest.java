@@ -48,9 +48,6 @@ public abstract class ExtractionTest extends UnitTest {
     private static final List<IBaseDataObject> NO_ATTACHMENTS = Collections.emptyList();
     private static final byte[] INCORRECT_VIEW_MESSAGE = "This is the incorrect view, the place should not have processed this view".getBytes();
 
-    private boolean skipAttCountValidation = false;
-    private boolean skipExtractCountValidation = false;
-
     protected KffDataObjectHandler kff =
             new KffDataObjectHandler(KffDataObjectHandler.TRUNCATE_KNOWN_DATA, KffDataObjectHandler.SET_FORM_WHEN_KNOWN,
                     KffDataObjectHandler.SET_FILE_TYPE);
@@ -177,19 +174,25 @@ public abstract class ExtractionTest extends UnitTest {
 
         int numAtt = JDOMUtil.getChildIntValue(el, "numAttachments");
         long numAttElements = el.getChildren().stream().filter(c -> c.getName().startsWith("att")).count();
-        if (numAtt > -1 || numAttElements > 0) {
-            if (!skipAttCountValidation) {
-                assertEquals(Math.max(numAtt, 0), Math.toIntExact(numAttElements),
-                        "Expected numAttachments in " + tname + " not equal to number of <att#> elements");
-            } else {
-                if (Math.toIntExact(numAttElements) != numAtt) {
-                    logger.warn("Expected numAttachments and actual <att#> count in {} not equal. Expected: {} Actual: {}", tname,
-                            Math.max(numAtt, 0), numAttElements);
-                }
+        // check attachments answer file count against payload count
+        if (numAtt > -1) {
+            assertEquals(numAtt, attachments != null ? attachments.size() : 0,
+                    String.format("Expected <numAttachments> in %s not equal to number of att in payload.", tname));
+        } else if (numAtt == -1 && numAttElements > 0) {
+            assertEquals(numAttElements, attachments != null ? attachments.size() : 0,
+                    String.format("Expected <att#> in %s not equal to number of att in payload.", tname));
+        } else {
+            if (attachments != null && !attachments.isEmpty()) {
+                fail(String.format("%d attachments in payload with no count in answer xml, add matching <numAttachments> count for %s",
+                        attachments.size(), tname));
             }
         }
-        if (numAtt > -1) {
-            assertEquals(numAtt, attachments != null ? attachments.size() : 0, "Number of attachments in " + tname);
+        // log if <numAttachments> and <att#> don't match in answer file
+        if (numAtt > -1 || numAttElements > 0) {
+            if (Math.toIntExact(numAttElements) != numAtt) {
+                logger.warn("Expected and actual attachment counts in {} not equal. <numAttachments>: {} <att#>: {}", tname,
+                        Math.max(numAtt, 0), numAttElements);
+            }
         }
 
         for (Element currentForm : el.getChildren("currentForm")) {
@@ -293,31 +296,23 @@ public abstract class ExtractionTest extends UnitTest {
             assertNull(viewData, String.format("Alternate View '%s' is present, but should not be, in %s", viewName, tname));
         }
 
-
         // Check each extract
         int extractCount = JDOMUtil.getChildIntValue(el, "extractCount");
         long numExtractElements =
                 el.getChildren().stream().filter(c -> c.getName().startsWith("extract") && !c.getName().startsWith("extractCount")).count();
-        if (extractCount > -1 || numExtractElements > 0) {
-            if (!skipExtractCountValidation) {
-                assertEquals(Math.max(extractCount, 0), Math.toIntExact(numExtractElements),
-                        "Expected extractCount in " + tname + " not equal to number of <extract#> elements");
-            } else {
-                if (Math.toIntExact(numExtractElements) != extractCount) {
-                    logger.warn("Expected extractCount and actual <extract#> count in {} not equal. Expected: {} Actual: {}", tname,
-                            Math.max(extractCount, 0), numExtractElements);
-                }
-            }
-        }
-
         if (payload.hasExtractedRecords()) {
             List<IBaseDataObject> extractedChildren = payload.getExtractedRecords();
             int foundCount = extractedChildren.size();
-
+            // check extracted records answer file count against payload count
             if (extractCount > -1) {
                 assertEquals(extractCount, foundCount,
-                        String.format("Number of extracted children in '%s' is %s, not expected %s", tname, foundCount,
-                                extractCount));
+                        String.format("Expected <extractCount> in %s not equal to number of extracts in payload.", tname));
+            } else if (extractCount == -1 && numExtractElements > 0) {
+                assertEquals(numExtractElements, foundCount,
+                        String.format("Expected <extract#> in %s not equal to number of extracts in payload.", tname));
+            } else {
+                fail(String.format("%d extracts in payload with no count in answer xml, add matching <extractCount> count for %s",
+                        foundCount, tname));
             }
 
             int attNum = 1;
@@ -331,7 +326,17 @@ public abstract class ExtractionTest extends UnitTest {
         } else {
             if (extractCount > -1) {
                 assertEquals(0, extractCount,
-                        String.format("No extracted children in '%s' when expecting %s", tname, extractCount));
+                        String.format("No extracted children in '%s' when <extractCount> is %d", tname, extractCount));
+            } else if (numExtractElements > 0) {
+                assertEquals(0, numExtractElements,
+                        String.format("No extracted children in '%s' when <extract#> is %d", tname, numExtractElements));
+            }
+        }
+        // log if <extractCount> and <extract#> don't match in answer file
+        if (extractCount > -1 || numExtractElements > 0) {
+            if (Math.toIntExact(numExtractElements) != extractCount) {
+                logger.warn("Expected and actual extract counts in {} not equal. <extractCount>: {} <extract#>: {}", tname,
+                        Math.max(extractCount, 0), numExtractElements);
             }
         }
     }
@@ -447,14 +452,5 @@ public abstract class ExtractionTest extends UnitTest {
         if (!didSetFiletype) {
             payload.setFileType(payload.currentForm());
         }
-    }
-
-    // allow the validation of att and ext counts to be skipped/not logged in tests
-    protected void setAttachmentCountValidation(boolean value) {
-        this.skipAttCountValidation = !value;
-    }
-
-    protected void setExtractCountValidation(boolean value) {
-        this.skipExtractCountValidation = !value;
     }
 }
