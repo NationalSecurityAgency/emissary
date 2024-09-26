@@ -108,4 +108,12 @@ public class VersionPlace extends ServiceProviderPlace {
     public void setAbbrevHash(Boolean useAbbrevHash) {
         this.useAbbrevHash = useAbbrevHash;
     }
+
+    public boolean isIncludeDate() {
+        return includeDate;
+    }
+
+    public boolean isUseAbbrevHash() {
+        return useAbbrevHash;
+    }
 }
