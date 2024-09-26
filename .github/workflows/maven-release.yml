@@ -105,6 +105,7 @@ jobs:
         run: |
           mvn -V -B -e versions:set -DnewVersion=${{ env.RELEASE_VERSION }} -DprocessAllModules -DgenerateBackupPoms=false
           mvn -V -B -e versions:set-scm-tag -DnewTag=${{ env.RELEASE_VERSION }} -DgenerateBackupPoms=false
+          mvn -V -B -e clean formatter:format sortpom:sort impsort:sort -Pautoformat
           git commit -am "[github-actions](${{ github.actor }}) release ${{ env.RELEASE_VERSION }}"
           git tag -a ${{ env.RELEASE_VERSION }} -m "${{ env.RELEASE_VERSION }}"
           git push origin release/${{ env.RELEASE_VERSION }}
