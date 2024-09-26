@@ -129,8 +129,24 @@ public class ParserFactory {
      * @param type the type of data
      * @param channel the data to be parsed
      * @return SessionParser implementation
+     * @deprecated use {@link #makeSessionParser(SeekableByteChannel, String)}
      */
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("InconsistentOverloads")
     public SessionParser makeSessionParser(String type, SeekableByteChannel channel) {
+        return makeSessionParser(channel, type);
+    }
+
+    /**
+     * Make a session parser with the data in channel. If no NIO parser is configured for the type of this data, a standard
+     * byte[] parser will be produced if there is one available and the size of the data in the channel is less than the
+     * configured MAX_NIO_FALLBACK_SIZE. Otherwise the default NIO parser will be used.
+     *
+     * @param channel the data to be parsed
+     * @param type the type of data
+     * @return SessionParser implementation
+     */
+    public SessionParser makeSessionParser(SeekableByteChannel channel, String type) {
         SessionParser sp;
 
         if (nioTypeMap.containsKey(type)) {

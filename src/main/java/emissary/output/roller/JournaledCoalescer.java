@@ -325,8 +325,9 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
 
     /** @deprecated replaced by {@link #finalizeRoll(Collection, Path, Path)} */
     @Deprecated(since = "8.1.0")
+    @SuppressWarnings("InconsistentOverloads")
     protected void finalize(Collection<Journal> journals, Path rolledOutputPath, Path finalOutputPath) throws IOException { // NOSONAR
-        finalizeRoll(journals, rolledOutputPath, finalOutputPath);
+        finalizeRoll(rolledOutputPath, finalOutputPath, journals);
     }
 
     /** @deprecated replaced by {@link #finalizeRoll(Path, Path)} */
@@ -335,7 +336,13 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
         finalizeRoll(rolledOutputPath, finalOutputPath);
     }
 
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("InconsistentOverloads")
     protected void finalizeRoll(Collection<Journal> journals, Path rolledOutputPath, Path finalOutputPath) throws IOException {
+        finalizeRoll(rolledOutputPath, finalOutputPath, journals);
+    }
+
+    protected void finalizeRoll(Path rolledOutputPath, Path finalOutputPath, Collection<Journal> journals) throws IOException {
         cleanupFiles(journals);
         finalizeRoll(rolledOutputPath, finalOutputPath);
     }
