@@ -187,13 +187,6 @@ public abstract class ExtractionTest extends UnitTest {
                         attachments.size(), tname));
             }
         }
-        // log if <numAttachments> and <att#> don't match in answer file
-        if (numAtt > -1 || numAttElements > 0) {
-            if (Math.toIntExact(numAttElements) != numAtt) {
-                logger.warn("Expected and actual attachment counts in {} not equal. <numAttachments>: {} <att#>: {}", tname,
-                        Math.max(numAtt, 0), numAttElements);
-            }
-        }
 
         for (Element currentForm : el.getChildren("currentForm")) {
             String cf = currentForm.getTextTrim();
@@ -330,13 +323,6 @@ public abstract class ExtractionTest extends UnitTest {
             } else if (numExtractElements > 0) {
                 assertEquals(0, numExtractElements,
                         String.format("No extracted children in '%s' when <extract#> is %d", tname, numExtractElements));
-            }
-        }
-        // log if <extractCount> and <extract#> don't match in answer file
-        if (extractCount > -1 || numExtractElements > 0) {
-            if (Math.toIntExact(numExtractElements) != extractCount) {
-                logger.warn("Expected and actual extract counts in {} not equal. <extractCount>: {} <extract#>: {}", tname,
-                        Math.max(extractCount, 0), numExtractElements);
             }
         }
     }
