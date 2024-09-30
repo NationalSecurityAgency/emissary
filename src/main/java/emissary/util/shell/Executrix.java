@@ -910,13 +910,13 @@ public class Executrix {
 
     /**
      * Write data out for processing into a new subdir under our configured temp area
-     * 
-     * @param dirn the string name of a new tmp directory to use
+     *
      * @param data the bytes to write
+     * @param dirn the string name of a new tmp directory to use
      * @return the file that was created
      */
     @Nullable
-    public File writeDataToNewTempDir(final String dirn, final byte[] data) {
+    public File writeDataToNewTempDir(final byte[] data, final String dirn) {
         final File dir = new File(dirn);
         if (!dir.mkdirs()) {
             logger.warn("Unable to create directory path for file {}", dirn);
@@ -930,6 +930,21 @@ public class Executrix {
         writeDataToFile(data, 0, data.length, inputFileName, false);
 
         return new File(inputFileName);
+    }
+
+    /**
+     * Write data out for processing into a new subdir under our configured temp area
+     *
+     * @param dirn the string name of a new tmp directory to use
+     * @param data the bytes to write
+     * @return the file that was created
+     * @deprecated use {@link #writeDataToNewTempDir(byte[], String)}
+     */
+    @Nullable
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("InconsistentOverloads")
+    public File writeDataToNewTempDir(final String dirn, final byte[] data) {
+        return writeDataToNewTempDir(data, dirn);
     }
 
     /**
@@ -950,19 +965,19 @@ public class Executrix {
      * @return the value of command
      */
     public String[] getCommand(final String[] tmpNames) {
-        return getCommand(getCommand(), tmpNames, this.cpuTimeLimit, this.vmSizeLimit);
+        return getCommand(tmpNames, getCommand(), this.cpuTimeLimit, this.vmSizeLimit);
     }
 
     /**
      * Gets the value of a command that can be executed adding configured limits and supplied paths to the configuration
      * value
-     * 
-     * @param commandArg a command string to work with
+     *
      * @param tmpNames set of input/output directory names
+     * @param commandArg a command string to work with
      * @return the value of command
      */
-    public String[] getCommand(final String commandArg, final String[] tmpNames) {
-        return getCommand(commandArg, tmpNames, this.cpuTimeLimit, this.vmSizeLimit);
+    public String[] getCommand(final String[] tmpNames, final String commandArg) {
+        return getCommand(tmpNames, commandArg, this.cpuTimeLimit, this.vmSizeLimit);
     }
 
     /**
@@ -971,13 +986,13 @@ public class Executrix {
      * &lt;INPUT_NAME&gt;, and &lt;OUTPUT_NAME&gt;. On unix systems it is wrapped like
      * <code>/bin/sh -c ulimit -c 0; ulimit -v val; your command</code>
      * 
-     * @param commandArg a command string to work with
      * @param tmpNames set of input/output directory names
+     * @param commandArg a command string to work with
      * @param cpuLimit the cpu limit for the ulimit command
      * @param vmSzLimit for the ulimit command
      * @return the value of command
      */
-    public String[] getCommand(final String commandArg, final String[] tmpNames, final int cpuLimit, final int vmSzLimit) {
+    public String[] getCommand(final String[] tmpNames, final String commandArg, final int cpuLimit, final int vmSzLimit) {
         String c = commandArg;
         c = c.replaceAll("<INPUT_PATH>", tmpNames[INPATH]);
         c = c.replaceAll("<OUTPUT_PATH>", tmpNames[OUTPATH]);
@@ -990,6 +1005,40 @@ public class Executrix {
             ulimitv = "ulimit -v " + vmSzLimit + "; ";
         }
         return new String[] {"/bin/sh", "-c", "ulimit -c 0; " + ulimitv + "cd " + tmpNames[DIR] + "; " + c};
+    }
+
+    /**
+     * Gets the value of a command that can be executed adding configured limits and supplied paths to the configuration
+     * value
+     *
+     * @param commandArg a command string to work with
+     * @param tmpNames set of input/output directory names
+     * @return the value of command
+     * @deprecated use {@link #getCommand(String[], String)}
+     */
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("InconsistentOverloads")
+    public String[] getCommand(final String commandArg, final String[] tmpNames) {
+        return getCommand(tmpNames, commandArg);
+    }
+
+    /**
+     * Gets the value of a command that can be executed adding supplied limits and supplied paths to the configuration value
+     * The values in the command string that can be replaced are &lt;INPUT_PATH&gt;, &lt;OUTPUT_PATH&gt;,
+     * &lt;INPUT_NAME&gt;, and &lt;OUTPUT_NAME&gt;. On unix systems it is wrapped like
+     * <code>/bin/sh -c ulimit -c 0; ulimit -v val; your command</code>
+     *
+     * @param commandArg a command string to work with
+     * @param tmpNames set of input/output directory names
+     * @param cpuLimit the cpu limit for the ulimit command
+     * @param vmSzLimit for the ulimit command
+     * @return the value of command
+     * @deprecated use {@link #getCommand(String[], String, int, int)}
+     */
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("InconsistentOverloads")
+    public String[] getCommand(final String commandArg, final String[] tmpNames, final int cpuLimit, final int vmSzLimit) {
+        return getCommand(tmpNames, commandArg, cpuLimit, vmSzLimit);
     }
 
     /**

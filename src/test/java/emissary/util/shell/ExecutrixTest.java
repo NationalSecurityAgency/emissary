@@ -274,7 +274,7 @@ class ExecutrixTest extends UnitTest {
         assertNotNull(data, "Data must be read from " + names[Executrix.INPATH]);
 
         final String cmd = "cp <INPUT_NAME> <OUTPUT_NAME>";
-        String[] c = e.getCommand(cmd, names);
+        String[] c = e.getCommand(names, cmd);
         assertNotNull(c, "Command returned");
         assertEquals("/bin/sh", c[0], "Command runner");
 

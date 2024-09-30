@@ -477,7 +477,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      */
     protected int processSingleChild(IBaseDataObject d, File f) {
         byte[] theData = Executrix.readDataFromFile(f.getAbsolutePath());
-        return processSingleChild(d, theData, f);
+        return processSingleChild(d, f, theData);
     }
 
 
@@ -489,7 +489,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * @param f the file the data comes from
      * @return 0 when it works
      */
-    protected int processSingleChild(IBaseDataObject d, byte[] theData, File f) {
+    protected int processSingleChild(IBaseDataObject d, File f, byte[] theData) {
         String filename = f.getName();
         d.setData(theData);
         if (setTitleToFile) {
@@ -501,6 +501,21 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         }
         d.setFileType(singleChildFiletype);
         return 0;
+    }
+
+    /**
+     * Process in a custom way when there is only one file result
+     *
+     * @param d the parent payload
+     * @param theData the bytes to process
+     * @param f the file the data comes from
+     * @return 0 when it works
+     * @deprecated use {@link #processSingleChild(IBaseDataObject, File, byte[])}
+     */
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("InconsistentOverloads")
+    protected int processSingleChild(IBaseDataObject d, byte[] theData, File f) {
+        return processSingleChild(d, f, theData);
     }
 
     /**
