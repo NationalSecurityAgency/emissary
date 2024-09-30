@@ -18,6 +18,7 @@ import picocli.CommandLine.Spec;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 @Command(description = "Start the feeder process given a particular WorkSpace implementation to distribute work to peer nodes",
@@ -127,7 +128,7 @@ public class FeedCommand extends ServiceCommand {
         // Must maintain insertion order
         Set<String> flavorSet = new LinkedHashSet<>();
         for (String f : flavorMode.split(",")) {
-            flavorSet.add(f.toUpperCase());
+            flavorSet.add(f.toUpperCase(Locale.getDefault()));
         }
 
         overrideFlavor(String.join(",", flavorSet));

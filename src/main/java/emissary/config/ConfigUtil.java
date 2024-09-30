@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -445,13 +446,13 @@ public class ConfigUtil {
      */
     private static List<String> toResourceName(final String name) {
         String r = name.replace('.', '/');
-        if (r.toUpperCase().endsWith("/CFG")) {
+        if (r.toUpperCase(Locale.getDefault()).endsWith("/CFG")) {
             r = r.substring(0, r.length() - CONFIG_FILE_ENDING.length()) + CONFIG_FILE_ENDING;
-        } else if (r.toUpperCase().endsWith("/XML")) {
+        } else if (r.toUpperCase(Locale.getDefault()).endsWith("/XML")) {
             r = r.substring(0, r.length() - XML_FILE_ENDING.length()) + XML_FILE_ENDING;
-        } else if (r.toUpperCase().endsWith("/PROPERTIES")) {
+        } else if (r.toUpperCase(Locale.getDefault()).endsWith("/PROPERTIES")) {
             r = r.substring(0, r.length() - PROP_FILE_ENDING.length()) + PROP_FILE_ENDING;
-        } else if (r.toUpperCase().endsWith("/JS")) {
+        } else if (r.toUpperCase(Locale.getDefault()).endsWith("/JS")) {
             r = r.substring(0, r.length() - JS_FILE_ENDING.length()) + JS_FILE_ENDING;
         }
         final List<String> prefs = new ArrayList<>();

@@ -1,6 +1,7 @@
 package emissary.util;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -49,7 +50,7 @@ public class CaseInsensitiveMap<K, V> extends HashMap<K, V> {
     // @SuppressWarnings("unchecked")
     public V put(K key, V value) {
         if (key instanceof String) {
-            String uckey = ((String) key).toLowerCase();
+            String uckey = ((String) key).toLowerCase(Locale.getDefault());
             if (remap.containsKey(uckey)) {
                 this.remove(uckey);
             }
@@ -68,7 +69,7 @@ public class CaseInsensitiveMap<K, V> extends HashMap<K, V> {
         Object realkey = key;
 
         if (key instanceof String) {
-            String strkey = remap.get(((String) key).toLowerCase());
+            String strkey = remap.get(((String) key).toLowerCase(Locale.getDefault()));
             if (strkey != null) {
                 realkey = strkey;
             }
@@ -95,7 +96,7 @@ public class CaseInsensitiveMap<K, V> extends HashMap<K, V> {
         Object realkey = key;
 
         if (key instanceof String) {
-            String strkey = remap.get(((String) key).toLowerCase());
+            String strkey = remap.get(((String) key).toLowerCase(Locale.getDefault()));
             if (strkey != null) {
                 realkey = strkey;
             }
@@ -112,7 +113,7 @@ public class CaseInsensitiveMap<K, V> extends HashMap<K, V> {
         Object realkey = key;
 
         if (key instanceof String) {
-            String uckey = ((String) key).toLowerCase();
+            String uckey = ((String) key).toLowerCase(Locale.getDefault());
             String strkey = remap.get(uckey);
             if (strkey != null) {
                 realkey = strkey;

@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.Nullable;
@@ -385,7 +386,7 @@ public class MagicNumberFactory {
     }
 
     private static int lookupDataType(String arg) {
-        int dataTypeIdInt = typeMap.get(arg.toUpperCase());
+        int dataTypeIdInt = typeMap.get(arg.toUpperCase(Locale.getDefault()));
         switch (dataTypeIdInt) {
             case MagicNumber.TYPE_DATE:
                 return -1;
@@ -427,7 +428,7 @@ public class MagicNumberFactory {
         if (unaryLen > 0) {
             subject = subject.substring(unaryLen);
         }
-        if (subject.toUpperCase().endsWith("L")) {
+        if (subject.toUpperCase(Locale.getDefault()).endsWith("L")) {
             subject = subject.substring(0, subject.length() - 1);
         }
         byte[] valueArray = MagicMath.stringToByteArray(subject);

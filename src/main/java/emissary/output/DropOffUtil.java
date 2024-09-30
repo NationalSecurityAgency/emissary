@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -48,7 +49,7 @@ public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);
 
     protected static final String SEPARATOR = FileSystems.getDefault().getSeparator();
-    protected static final String OS_NAME = System.getProperty("os.name").toUpperCase();
+    protected static final String OS_NAME = System.getProperty("os.name").toUpperCase(Locale.getDefault());
 
     protected String unixRoot;
 
@@ -916,7 +917,7 @@ public class DropOffUtil {
             // add the file extension if it is smaller than maxFilextLen
             final String fext = FilenameUtils.getExtension(filename);
             if (StringUtils.isNotBlank(fext) && fext.length() <= maxFilextLen) {
-                extensions.add(fext.toLowerCase());
+                extensions.add(fext.toLowerCase(Locale.getDefault()));
             }
         }
         return extensions;

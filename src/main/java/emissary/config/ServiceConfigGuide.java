@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -794,7 +795,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             String key = el.getKey();
             key = key.substring(theParameter.length());
             if (!preserveCase) {
-                key = key.toUpperCase();
+                key = key.toUpperCase(Locale.getDefault());
             }
             theHash.put(key, el.getValue());
         }
@@ -834,7 +835,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         final List<ConfigEntry> parameters = this.findStringMatchEntries(param);
 
         for (final ConfigEntry el : parameters) {
-            final String key = el.getKey().substring(param.length()).toUpperCase();
+            final String key = el.getKey().substring(param.length()).toUpperCase(Locale.getDefault());
 
             if (theHash.containsKey(key)) {
                 theHash.get(key).add(el.getValue());
@@ -1061,7 +1062,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         if (!matchingEntries.isEmpty()) {
             String el = matchingEntries.get(0);
-            el = el.toUpperCase();
+            el = el.toUpperCase(Locale.getDefault());
             if (el.startsWith("F")) {
                 return false;
             } else if (el.startsWith("T")) {

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -128,7 +129,7 @@ public class UnixFilePlace extends IdPlace {
                 }
 
                 if (this.upcase && currentForm.length() > 0) {
-                    currentForm = currentForm.toUpperCase();
+                    currentForm = currentForm.toUpperCase(Locale.getDefault());
                 }
 
                 if (this.removeCommas && currentForm.indexOf(",") > 0) {

@@ -15,6 +15,7 @@ import picocli.CommandLine.Option;
 
 import java.nio.file.Path;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import static emissary.directory.EmissaryNode.STRICT_STARTUP_MODE;
@@ -98,9 +99,9 @@ public class ServerCommand extends ServiceCommand {
     public void setupServer() throws EmissaryException {
         String flavorMode;
         if (getFlavor() == null) {
-            flavorMode = getMode().toUpperCase();
+            flavorMode = getMode().toUpperCase(Locale.getDefault());
         } else {
-            flavorMode = getMode().toUpperCase() + "," + getFlavor();
+            flavorMode = getMode().toUpperCase(Locale.getDefault()) + "," + getFlavor();
         }
 
         if (shouldStrictMode()) {
@@ -110,7 +111,7 @@ public class ServerCommand extends ServiceCommand {
         // Must maintain insertion order
         Set<String> flavorSet = new LinkedHashSet<>();
         for (String f : flavorMode.split(",")) {
-            flavorSet.add(f.toUpperCase());
+            flavorSet.add(f.toUpperCase(Locale.getDefault()));
         }
 
         if (flavorSet.contains("STANDALONE") && flavorSet.contains("CLUSTER")) {

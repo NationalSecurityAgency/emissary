@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -85,7 +86,8 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
      * Initialize a file name generator
      */
     protected void initFilenameGenerator() {
-        this.fileNameGenerator = new DateStampFilenameGenerator(StringUtils.isNotBlank(filterName) ? "." + filterName.toLowerCase() : "");
+        this.fileNameGenerator =
+                new DateStampFilenameGenerator(StringUtils.isNotBlank(filterName) ? "." + filterName.toLowerCase(Locale.getDefault()) : "");
     }
 
     /**
