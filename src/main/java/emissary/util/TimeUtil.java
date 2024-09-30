@@ -202,7 +202,7 @@ public class TimeUtil {
     @Nullable
     @Deprecated
     @SuppressWarnings("MemberName")
-    public static ZonedDateTime getZonedDateFromISO8601(@Nullable final String dateString) throws DateTimeParseException {
+    public static ZonedDateTime getZonedDateFromISO8601(@Nullable final String dateString) {
         return dateString == null ? null : ZonedDateTime.parse(dateString, DATE_ISO_8601);
     }
 

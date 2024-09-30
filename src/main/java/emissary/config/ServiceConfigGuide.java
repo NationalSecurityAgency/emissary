@@ -856,7 +856,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @throws IllegalArgumentException if no non-blank value is found
      */
     @Override
-    public String findRequiredStringEntry(final String theParameter) throws IllegalArgumentException {
+    public String findRequiredStringEntry(final String theParameter) {
         String value = findStringEntry(theParameter, null);
         Validate.notBlank(value, "Missing required parameter [%s]", theParameter);
         return value;
