@@ -323,7 +323,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
         return this.rolling;
     }
 
-    /** @deprecated replaced by {@link #finalizeRoll(Collection, Path, Path)} */
+    /** @deprecated replaced by {@link #finalizeRoll(Path, Path, Collection)} */
     @Deprecated(since = "8.1.0")
     @SuppressWarnings("InconsistentOverloads")
     protected void finalize(Collection<Journal> journals, Path rolledOutputPath, Path finalOutputPath) throws IOException { // NOSONAR
