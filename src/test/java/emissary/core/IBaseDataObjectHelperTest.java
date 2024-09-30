@@ -5,6 +5,7 @@ import emissary.kff.KffDataObjectHandler;
 import emissary.parser.SessionParser;
 import emissary.test.core.junit5.UnitTest;
 
+import com.google.common.collect.LinkedListMultimap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -425,5 +426,61 @@ class IBaseDataObjectHelperTest extends UnitTest {
         ibdo1.addAlternateView("notpreferred", "test bytes".getBytes(StandardCharsets.UTF_8));
 
         assertEquals(view1Bytes, IBaseDataObjectHelper.findPreferredData(ibdo1, preferredViews));
+    }
+
+    @Test
+    void testGetCombinedTldParameters() {
+        IBaseDataObject child = new BaseDataObject(new byte[0], "foo", "UNKNOWN");
+        child.putParameter("k1", "v1");
+        child.putParameter("k2", "v2");
+
+        LinkedListMultimap<String, Object> expected = LinkedListMultimap.create();
+        expected.put("k1", "v1");
+        expected.put("k2", "v2");
+
+        // Null TLD and null key set
+        assertEquals(expected.asMap(), IBaseDataObjectHelper.getCombinedTldParameters(child, null));
+        // Null TLD with keyset
+        assertEquals(expected.asMap(), IBaseDataObjectHelper.getCombinedTldParameters(child, new HashSet<>(Arrays.asList("foo", "bar", "baz"))));
+
+
+        IBaseDataObject tld = new BaseDataObject();
+        tld.putParameter("k1", "p1");
+        tld.putParameter("k2", "p2");
+        tld.putParameter("k3", "p3");
+
+        child = new BaseDataObject(new byte[0], "foo", "UNKNOWN", tld);
+        child.putParameter("k1", "v1");
+        child.putParameter("k2", "v2");
+        child.putParameter("k4", "v4");
+
+        expected = LinkedListMultimap.create();
+        expected.put("k1", "v1");
+        expected.put("k2", "v2");
+        expected.put("k4", "v4");
+
+        // Null key set so inherit nothing
+        assertEquals(expected.asMap(), IBaseDataObjectHelper.getCombinedTldParameters(child, null));
+
+
+        tld = new BaseDataObject();
+        tld.putParameter("k1", "p1");
+        tld.putParameter("k2", "p2");
+        tld.putParameter("k3", "p3");
+
+        child = new BaseDataObject(new byte[0], "foo", "UNKNOWN", tld);
+        child.putParameter("k1", "v1");
+        child.putParameter("k2", "v2");
+        child.putParameter("k4", "v4");
+
+        expected = LinkedListMultimap.create();
+        expected.put("k1", "v1");
+        expected.put("k2", "v2");
+        expected.put("k3", "p3");
+        expected.put("k4", "v4");
+
+        // TLD linked and subset of keys specified including some that don't exist in the TLD
+        assertEquals(expected.asMap(),
+                IBaseDataObjectHelper.getCombinedTldParameters(child, new HashSet<>(Arrays.asList("k1", "k2", "k3", "k4", "k5"))));
     }
 }
