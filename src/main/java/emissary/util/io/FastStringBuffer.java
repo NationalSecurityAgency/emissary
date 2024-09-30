@@ -242,6 +242,7 @@ public class FastStringBuffer extends OutputStream {
     /**
      * Write UTF8 data to the output page buffer Pass in 0 and -1 for start and end to do the whole thing
      */
+    @SuppressWarnings("InconsistentOverloads")
     public FastStringBuffer appendUtf8(final byte[] data, @Nullable final String charset, final int start, final int end) throws IOException {
         final int actualEnd;
         if (end < 0) {

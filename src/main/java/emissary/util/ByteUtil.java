@@ -200,6 +200,7 @@ public class ByteUtil {
      * @param bend ending position in b
      * @return the whole
      */
+    @SuppressWarnings("InconsistentOverloads")
     public static byte[] glue(byte[] a, int astart, int aend, byte[] b, int bstart, int bend) {
         int alen = aend - astart + 1;
         int blen = bend - bstart + 1;
@@ -224,6 +225,7 @@ public class ByteUtil {
      * @param cend ending position in c
      * @return the whole
      */
+    @SuppressWarnings("InconsistentOverloads")
     public static byte[] glue(byte[] a, int astart, int aend, byte[] b, int bstart, int bend, byte[] c, int cstart, int cend) {
         int alen = aend - astart + 1;
         int blen = bend - bstart + 1;

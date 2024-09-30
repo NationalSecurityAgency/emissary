@@ -31,6 +31,8 @@ public class Roller implements Runnable {
     private long lastRun;
     private final AtomicBoolean progressSchedule = new AtomicBoolean(false);
 
+    @Deprecated
+    @SuppressWarnings("InconsistentOverloads")
     public Roller(long max, TimeUnit t, long period, Rollable r) {
         this.max = max;
         this.t = t;
@@ -40,7 +42,15 @@ public class Roller implements Runnable {
     }
 
     public Roller(TimeUnit t, long period, Rollable r) {
-        this(0, t, period, r);
+        this(t, period, r, 0);
+    }
+
+    public Roller(TimeUnit t, long period, Rollable r, long max) {
+        this.t = t;
+        this.period = period;
+        this.r = r;
+        this.max = max;
+        this.support = new PropertyChangeSupport(this);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
