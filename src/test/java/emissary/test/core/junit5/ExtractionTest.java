@@ -78,7 +78,7 @@ public abstract class ExtractionTest extends UnitTest {
 
     /**
      * Allow overriding the initial form in extensions to this test.
-     * 
+     *
      * By default, get the initial form from the filename in the form {@code INITIAL_FORM@2.dat} where {@code INITIAL_FORM}
      * will be the initial form.
      *
@@ -173,8 +173,19 @@ public abstract class ExtractionTest extends UnitTest {
             throws DataConversionException {
 
         int numAtt = JDOMUtil.getChildIntValue(el, "numAttachments");
+        long numAttElements = el.getChildren().stream().filter(c -> c.getName().startsWith("att")).count();
+        // check attachments answer file count against payload count
         if (numAtt > -1) {
-            assertEquals(numAtt, attachments != null ? attachments.size() : 0, "Number of attachments in " + tname);
+            assertEquals(numAtt, attachments != null ? attachments.size() : 0,
+                    String.format("Expected <numAttachments> in %s not equal to number of att in payload.", tname));
+        } else if (numAtt == -1 && numAttElements > 0) {
+            assertEquals(numAttElements, attachments != null ? attachments.size() : 0,
+                    String.format("Expected <att#> in %s not equal to number of att in payload.", tname));
+        } else {
+            if (attachments != null && !attachments.isEmpty()) {
+                fail(String.format("%d attachments in payload with no count in answer xml, add matching <numAttachments> count for %s",
+                        attachments.size(), tname));
+            }
         }
 
         for (Element currentForm : el.getChildren("currentForm")) {
@@ -278,17 +289,23 @@ public abstract class ExtractionTest extends UnitTest {
             assertNull(viewData, String.format("Alternate View '%s' is present, but should not be, in %s", viewName, tname));
         }
 
-
         // Check each extract
-        String extractCountStr = el.getChildTextTrim("extractCount");
-
+        int extractCount = JDOMUtil.getChildIntValue(el, "extractCount");
+        long numExtractElements =
+                el.getChildren().stream().filter(c -> c.getName().startsWith("extract") && !c.getName().startsWith("extractCount")).count();
         if (payload.hasExtractedRecords()) {
             List<IBaseDataObject> extractedChildren = payload.getExtractedRecords();
             int foundCount = extractedChildren.size();
-
-            if (extractCountStr != null) {
-                assertEquals(Integer.parseInt(extractCountStr), foundCount,
-                        String.format("Number of extracted children in '%s' is %s, not expected %s", tname, foundCount, extractCountStr));
+            // check extracted records answer file count against payload count
+            if (extractCount > -1) {
+                assertEquals(extractCount, foundCount,
+                        String.format("Expected <extractCount> in %s not equal to number of extracts in payload.", tname));
+            } else if (extractCount == -1 && numExtractElements > 0) {
+                assertEquals(numExtractElements, foundCount,
+                        String.format("Expected <extract#> in %s not equal to number of extracts in payload.", tname));
+            } else {
+                fail(String.format("%d extracts in payload with no count in answer xml, add matching <extractCount> count for %s",
+                        foundCount, tname));
             }
 
             int attNum = 1;
@@ -300,9 +317,12 @@ public abstract class ExtractionTest extends UnitTest {
                 attNum++;
             }
         } else {
-            if (extractCountStr != null) {
-                assertEquals(0, Integer.parseInt(extractCountStr),
-                        String.format("No extracted children in '%s' when expecting %s", tname, extractCountStr));
+            if (extractCount > -1) {
+                assertEquals(0, extractCount,
+                        String.format("No extracted children in '%s' when <extractCount> is %d", tname, extractCount));
+            } else if (numExtractElements > 0) {
+                assertEquals(0, numExtractElements,
+                        String.format("No extracted children in '%s' when <extract#> is %d", tname, numExtractElements));
             }
         }
     }
