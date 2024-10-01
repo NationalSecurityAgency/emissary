@@ -3,6 +3,7 @@ package emissary.kff;
 import emissary.core.IBaseDataObject;
 import emissary.core.IBaseDataObject.MergePolicy;
 import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.core.channels.SeekableByteChannelHelper;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -71,7 +72,7 @@ public class KffDataObjectHandler {
     }
 
     /**
-     * Compute the configure hashes and return as a map Also include entries indicating the know file or duplicate file
+     * Compute the configured hashes and return as a map. Also include entries indicating the known file or duplicate file
      * status if so configured
      * 
      * @param data the bytes to hash
@@ -83,81 +84,88 @@ public class KffDataObjectHandler {
     }
 
     /**
-     * Compute the configure hashes and return as a map Also include entries indicating the know file or duplicate file
+     * Compute the configured hashes and return as a map. Also include entries indicating the known file or duplicate file
      * status if so configured
      * 
      * @param data the bytes to hash
-     * @param name th name of the data (for reporting)
+     * @param name the name of the data (for reporting)
      * @param prefix prepended to hash name entries
      * @return parameter entries suitable for a BaseDataObject
      */
     public Map<String, String> hashData(@Nullable byte[] data, String name, @Nullable String prefix) {
-        Map<String, String> results = new HashMap<>();
 
         if (prefix == null) {
             prefix = "";
         }
 
+        KffResult kffCheck = null;
         if (data != null && data.length > 0) {
             try {
-                KffResult kffCheck = kff.check(name, data);
-
-                // Store all computed results in data object params
-                for (String alg : kffCheck.getResultNames()) {
-                    results.put(prefix + KFF_PARAM_BASE + alg, kffCheck.getResultString(alg));
-                }
-
-                // Set params if we have a hit
-                if (kffCheck.isKnown()) {
-                    results.put(prefix + KFF_PARAM_KNOWN_FILTER_NAME, kffCheck.getFilterName());
-                }
-                if (kffCheck.isDupe()) {
-                    results.put(prefix + KFF_PARAM_DUPE_FILTER_NAME, kffCheck.getFilterName());
-                }
-            } catch (Exception kffex) {
+                kffCheck = kff.check(name, data);
+            } catch (NoSuchAlgorithmException kffex) {
                 logger.warn("Unable to compute kff on " + name, kffex);
             }
         }
-        return results;
+
+        return processKffResult(kffCheck, prefix);
     }
 
     /**
-     * Compute the configure hashes and return as a map Also include entries indicating the know file or duplicate file
+     * Compute the configured hashes and return as a map. Also include entries indicating the known file or duplicate file
      * status if so configured
+     *
+     * @param sbcf the data to hash
+     * @param name the name of the data (for reporting)
+     * @return parameter entries suitable for a BaseDataObject
+     */
+    public Map<String, String> hashData(final SeekableByteChannelFactory sbcf, final String name) {
+        return hashData(sbcf, name, "");
+    }
+
+    /**
+     * Compute the configured hashes and return as a map. Also include entries indicating the known file or duplicate file
+     * status if so configured.
      * 
      * @param sbcf the data to hash
-     * @param name th name of the data (for reporting)
+     * @param name the name of the data (for reporting)
      * @param prefix prepended to hash name entries
      * @return parameter entries suitable for a BaseDataObject
-     * @throws IOException if the data can't be read
-     * @throws NoSuchAlgorithmException if the checksum can't be computed
      */
-    public Map<String, String> hashData(final SeekableByteChannelFactory sbcf, final String name, String prefix)
-            throws IOException, NoSuchAlgorithmException {
-        final Map<String, String> results = new HashMap<>();
+    public Map<String, String> hashData(final SeekableByteChannelFactory sbcf, final String name, String prefix) {
 
         if (prefix == null) {
             prefix = "";
         }
 
+        KffResult kffCheck = null;
         if (sbcf != null) {
             try (final SeekableByteChannel sbc = sbcf.create()) {
                 if (sbc.size() > 0) {
-                    final KffResult kffCheck = kff.check(name, sbcf);
-
-                    // Store all computed results in data object params
-                    for (String alg : kffCheck.getResultNames()) {
-                        results.put(prefix + KFF_PARAM_BASE + alg, kffCheck.getResultString(alg));
-                    }
-
-                    // Set params if we have a hit
-                    if (kffCheck.isKnown()) {
-                        results.put(prefix + KFF_PARAM_KNOWN_FILTER_NAME, kffCheck.getFilterName());
-                    }
-                    if (kffCheck.isDupe()) {
-                        results.put(prefix + KFF_PARAM_DUPE_FILTER_NAME, kffCheck.getFilterName());
-                    }
+                    kffCheck = kff.check(name, sbcf);
                 }
+            } catch (NoSuchAlgorithmException | IOException kffex) {
+                logger.warn("Unable to compute kff on " + name, kffex);
+            }
+        }
+
+        return processKffResult(kffCheck, prefix);
+    }
+
+    private static Map<String, String> processKffResult(KffResult result, String prefix) {
+        Map<String, String> results = new HashMap<>();
+
+        if (result != null) {
+            // Store all computed results in data object params
+            for (String alg : result.getResultNames()) {
+                results.put(prefix + KFF_PARAM_BASE + alg, result.getResultString(alg));
+            }
+
+            // Set params if we have a hit
+            if (result.isKnown()) {
+                results.put(prefix + KFF_PARAM_KNOWN_FILTER_NAME, result.getFilterName());
+            }
+            if (result.isDupe()) {
+                results.put(prefix + KFF_PARAM_DUPE_FILTER_NAME, result.getFilterName());
             }
         }
 
@@ -170,11 +178,7 @@ public class KffDataObjectHandler {
      * @param d the data object
      */
     public void hash(@Nullable final IBaseDataObject d) {
-        try {
-            hash(d, false);
-        } catch (NoSuchAlgorithmException | IOException e) {
-            // Do nothing
-        }
+        hash(d, false);
     }
 
     /**
@@ -182,10 +186,8 @@ public class KffDataObjectHandler {
      * 
      * @param d the data object
      * @param useSbc use the {@link SeekableByteChannel} interface
-     * @throws IOException if the data can't be read
-     * @throws NoSuchAlgorithmException if the checksum can't be computed
      */
-    public void hash(@Nullable final IBaseDataObject d, final boolean useSbc) throws NoSuchAlgorithmException, IOException {
+    public void hash(@Nullable final IBaseDataObject d, final boolean useSbc) {
 
         if (d == null) {
             return;
@@ -203,6 +205,8 @@ public class KffDataObjectHandler {
             } else {
                 return; // NOSONAR
             }
+        } catch (IOException e) {
+            logger.error("Couldn't hash data {}", d.shortName());
         } finally {
             // preserve the original MD5 only if 1) we hadn't already done so and 2) rehashing produced a new MD5 value
             if (!d.hasParameter(MD5_ORIGINAL) && previouslyComputedMd5HasChanged(d, originalMD5)) {
@@ -219,6 +223,9 @@ public class KffDataObjectHandler {
                 d.replaceCurrentForm(KFF_DUPE_CURRENT_FORM);
             }
             if (truncateKnownData) {
+                if (useSbc) {
+                    d.setChannelFactory(SeekableByteChannelHelper.EMPTY_CHANNEL_FACTORY);
+                }
                 d.setData(null);
             }
         }
@@ -229,6 +236,7 @@ public class KffDataObjectHandler {
      *
      * @param d IBaseDataObject being processed
      */
+    @Nullable
     static String captureOriginalMD5BeforeRehashing(IBaseDataObject d) {
         // If the IBDO already has an MD5_ORIGINAL parameter, return null.
         if (d.hasParameter(MD5_ORIGINAL)) {

@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -314,7 +313,6 @@ class IBaseDataObjectHelperTest extends UnitTest {
         final IBaseDataObject childIbdo1 = new BaseDataObject();
 
         childIbdo1.setChannelFactory(InMemoryChannelFactory.create("0123456789".getBytes(StandardCharsets.US_ASCII)));
-        Mockito.doThrow(NoSuchAlgorithmException.class).when(mockKffDataObjectHandler1).hash(Mockito.any(BaseDataObject.class), Mockito.anyBoolean());
         IBaseDataObjectHelper.addParentInformationToChild(parentIbdo, childIbdo1,
                 true, alwaysCopyMetadataKeys, placeKey, mockKffDataObjectHandler1);
         assertFalse(KffDataObjectHandler.hashPresent(childIbdo1));
@@ -351,7 +349,7 @@ class IBaseDataObjectHelperTest extends UnitTest {
     }
 
     @Test
-    void testAddParentInformationToChildExcluding() throws Exception {
+    void testAddParentInformationToChildExcluding() {
         final IBaseDataObject parentIbdo = ibdo1;
         final IBaseDataObject childIbdo = ibdo2;
 

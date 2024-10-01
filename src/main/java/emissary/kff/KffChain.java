@@ -120,7 +120,7 @@ public class KffChain {
      *
      * @return result of check
      */
-    public KffResult check(final String itemName, final byte[] content) throws Exception {
+    public KffResult check(final String itemName, final byte[] content) throws NoSuchAlgorithmException {
         final ChecksumResults sums = computeSums(content);
         KffResult answer = null;
         if (content.length < kffMinDataSize || list.isEmpty()) {
