@@ -52,7 +52,7 @@
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>          <em class="jxr_comment">// Set libraryDirectory from JniRepositoryPlace.cfg</em>
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>          <strong class="jxr_keyword">this</strong>.libraryDirectoryString = configG.findEntries(<span class="jxr_string">"LIBRARY_DIRECTORY"</span>);
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>          <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.libraryDirectoryString.isEmpty()) {
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>              System.err.println(<span class="jxr_string">"JniRepository: No LIBRARY_DIRECTORY indicators."</span>);
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>              logger.warn(<span class="jxr_string">"JniRepository: No LIBRARY_DIRECTORY indicators."</span>);
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>          }
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; <strong class="jxr_keyword">this</strong>.libraryDirectoryString.size(); i++) {

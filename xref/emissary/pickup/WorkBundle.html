@@ -104,7 +104,7 @@
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  <em class="jxr_javadoccomment">     * @param that the work bundle to copy</em>
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>      <strong class="jxr_keyword">public</strong> <a name="Wo<a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>(<a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a> that) {
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>      <strong class="jxr_keyword">public</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>(<a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a> that) {
 <a class="jxr_linenumber" name="L100" href="#L100">100</a>         <strong class="jxr_keyword">this</strong>.bundleId = that.bundleId;
 <a class="jxr_linenumber" name="L101" href="#L101">101</a>         <strong class="jxr_keyword">this</strong>.outputRoot = that.getOutputRoot();
 <a class="jxr_linenumber" name="L102" href="#L102">102</a>         <strong class="jxr_keyword">this</strong>.eatPrefix = that.getEatPrefix();
@@ -131,7 +131,7 @@
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> <em class="jxr_javadoccomment">     *         units.</em>
 <a class="jxr_linenumber" name="L124" href="#L124">124</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a> readFromStream(DataInputStream in) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>         <a name="WorkBundle" href="../../emissary/pickup/WorkBund<a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>rkBundle">WorkBundle</a> wb = <strong class="jxr_keyword">new</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>();
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>         <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a> wb = <strong class="jxr_keyword">new</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>();
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>         wb.bundleId = readUtfOrNull(in);
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>         wb.outputRoot = readUtfOrNull(in);
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>         wb.eatPrefix = readUtfOrNull(in);
@@ -636,7 +636,7 @@
 <a class="jxr_linenumber" name="L628" href="#L628">628</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L629" href="#L629">629</a>         }
 <a class="jxr_linenumber" name="L630" href="#L630">630</a> 
-<a class="jxr_linenumber" name="L631" href="#L631">631</a>         <a name="WorkBundle" href="../../emissary/pickup/WorkBund<a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>rkBundle">WorkBundle</a> wb = <strong class="jxr_keyword">new</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>();
+<a class="jxr_linenumber" name="L631" href="#L631">631</a>         <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a> wb = <strong class="jxr_keyword">new</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>();
 <a class="jxr_linenumber" name="L632" href="#L632">632</a>         wb.setBundleId(root.getChildTextTrim(<span class="jxr_string">"bundleId"</span>));
 <a class="jxr_linenumber" name="L633" href="#L633">633</a>         String s = root.getChildTextTrim(<span class="jxr_string">"outputRoot"</span>);
 <a class="jxr_linenumber" name="L634" href="#L634">634</a>         <strong class="jxr_keyword">if</strong> (s != <strong class="jxr_keyword">null</strong> &amp;&amp; s.length() &gt; 0) {

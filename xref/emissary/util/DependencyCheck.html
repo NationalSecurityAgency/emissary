@@ -47,7 +47,7 @@
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> executableExists(String executable) {
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>          <strong class="jxr_keyword">boolean</strong> exists = false;
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>          String[] command = <strong class="jxr_keyword">new</strong> String[] {<span class="jxr_string">"which"</span>, executable};
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>          <a name="Executrix" href="../../emissary/util/shell/Execut<a name="Executrix" href="../../emissary/util/shell/Executrix.html#Executrix">Executrix</a>Executrix">Executrix</a> exec = <strong class="jxr_keyword">new</strong> <a name="Executrix" href="../../emissary/util/shell/Executrix.html#Executrix">Executrix</a>();
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>          <a name="Executrix" href="../../emissary/util/shell/Executrix.html#Executrix">Executrix</a> exec = <strong class="jxr_keyword">new</strong> <a name="Executrix" href="../../emissary/util/shell/Executrix.html#Executrix">Executrix</a>();
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>          <strong class="jxr_keyword">int</strong> returnVal = exec.execute(command);
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>          <strong class="jxr_keyword">if</strong> (returnVal == 0) {
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>              exists = <strong class="jxr_keyword">true</strong>;
@@ -130,7 +130,7 @@
 <a class="jxr_linenumber" name="L122" href="#L122">122</a>     }
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> 
 <a class="jxr_linenumber" name="L124" href="#L124">124</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>         <a name="DependencyCheck" href="../../emissary/util/DependencyCheck.html#De<a name="DependencyCheck" href="../../emissary/util/DependencyCheck.html#DependencyCheck">DependencyCheck</a>DependencyCheck</a> dependencyCheck = <strong class="jxr_keyword">new</strong> <a name="DependencyCheck" href="../../emissary/util/DependencyCheck.html#DependencyCheck">DependencyCheck</a>();
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>         <a name="DependencyCheck" href="../../emissary/util/DependencyCheck.html#DependencyCheck">DependencyCheck</a> dependencyCheck = <strong class="jxr_keyword">new</strong> <a name="DependencyCheck" href="../../emissary/util/DependencyCheck.html#DependencyCheck">DependencyCheck</a>();
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>         dependencyCheck.printDependencyReport();
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>     }
 <a class="jxr_linenumber" name="L128" href="#L128">128</a> 

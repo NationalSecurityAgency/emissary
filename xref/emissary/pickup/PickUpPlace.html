@@ -72,7 +72,7 @@
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>      <strong class="jxr_keyword">protected</strong> String doneArea;
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>      <em class="jxr_comment">// Our parser factory</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">protected</strong> <a name="ParserFactory" href="../../emissary/parser/ParserFactory.html#<a name="ParserFactory" href="../../emissary/parser/ParserFactory.html#ParserFactory">ParserFactory</a>">ParserFactory</a> parserFactory = <strong class="jxr_keyword">new</strong> <a name="ParserFactory" href="../../emissary/parser/ParserFactory.html#ParserFactory">ParserFactory</a>();
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">protected</strong> <a name="ParserFactory" href="../../emissary/parser/ParserFactory.html#ParserFactory">ParserFactory</a> parserFactory = <strong class="jxr_keyword">new</strong> <a name="ParserFactory" href="../../emissary/parser/ParserFactory.html#ParserFactory">ParserFactory</a>();
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>      <em class="jxr_comment">// True turns off data identification engine to just favor</em>
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>      <em class="jxr_comment">// the simple parsers</em>
@@ -593,7 +593,7 @@
 <a class="jxr_linenumber" name="L585" href="#L585">585</a>             logger.debug(<span class="jxr_string">"Using session parser from raf ident {}"</span>, sp.getClass().getName());
 <a class="jxr_linenumber" name="L586" href="#L586">586</a> 
 <a class="jxr_linenumber" name="L587" href="#L587">587</a>             <em class="jxr_comment">// ... and a session producer to crank out the data objects...</em>
-<a class="jxr_linenumber" name="L588" href="#L588">588</a>             <a name="SessionProducer" href="../../emissary/parser/SessionPr<a name="SessionProducer" href="../../emissary/parser/SessionProducer.html#SessionProducer">SessionProducer</a>sionProducer">SessionProducer</a> dof = <strong class="jxr_keyword">new</strong> <a name="SessionProducer" href="../../emissary/parser/SessionProducer.html#SessionProducer">SessionProducer</a>(sp, myKey, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L588" href="#L588">588</a>             <a name="SessionProducer" href="../../emissary/parser/SessionProducer.html#SessionProducer">SessionProducer</a> dof = <strong class="jxr_keyword">new</strong> <a name="SessionProducer" href="../../emissary/parser/SessionProducer.html#SessionProducer">SessionProducer</a>(sp, myKey, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L589" href="#L589">589</a> 
 <a class="jxr_linenumber" name="L590" href="#L590">590</a>             <strong class="jxr_keyword">long</strong> fileStart = System.currentTimeMillis();
 <a class="jxr_linenumber" name="L591" href="#L591">591</a>             <strong class="jxr_keyword">long</strong> totalSize = 0;
@@ -648,7 +648,7 @@
 <a class="jxr_linenumber" name="L640" href="#L640">640</a>         <a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a> sp = parserFactory.makeSessionParser(InMemoryChannelFactory.create(data).create());
 <a class="jxr_linenumber" name="L641" href="#L641">641</a> 
 <a class="jxr_linenumber" name="L642" href="#L642">642</a>         <em class="jxr_comment">// .. and a session producer to crank out the data objects...</em>
-<a class="jxr_linenumber" name="L643" href="#L643">643</a>         <a name="SessionProducer" href="../../emissary/parser/SessionPr<a name="SessionProducer" href="../../emissary/parser/SessionProducer.html#SessionProducer">SessionProducer</a>sionProducer">SessionProducer</a> dof = <strong class="jxr_keyword">new</strong> <a name="SessionProducer" href="../../emissary/parser/SessionProducer.html#SessionProducer">SessionProducer</a>(sp, myKey, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L643" href="#L643">643</a>         <a name="SessionProducer" href="../../emissary/parser/SessionProducer.html#SessionProducer">SessionProducer</a> dof = <strong class="jxr_keyword">new</strong> <a name="SessionProducer" href="../../emissary/parser/SessionProducer.html#SessionProducer">SessionProducer</a>(sp, myKey, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L644" href="#L644">644</a> 
 <a class="jxr_linenumber" name="L645" href="#L645">645</a>         <em class="jxr_comment">// For each session get a data object from the producer</em>
 <a class="jxr_linenumber" name="L646" href="#L646">646</a>         <strong class="jxr_keyword">boolean</strong> isParserComplete = false;

@@ -485,7 +485,7 @@
 <a class="jxr_linenumber" name="L477" href="#L477">477</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L478" href="#L478">478</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> processSingleChild(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d, File f) {
 <a class="jxr_linenumber" name="L479" href="#L479">479</a>         byte[] theData = Executrix.readDataFromFile(f.getAbsolutePath());
-<a class="jxr_linenumber" name="L480" href="#L480">480</a>         <strong class="jxr_keyword">return</strong> processSingleChild(d, theData, f);
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>         <strong class="jxr_keyword">return</strong> processSingleChild(d, f, theData);
 <a class="jxr_linenumber" name="L481" href="#L481">481</a>     }
 <a class="jxr_linenumber" name="L482" href="#L482">482</a> 
 <a class="jxr_linenumber" name="L483" href="#L483">483</a> 
@@ -497,7 +497,7 @@
 <a class="jxr_linenumber" name="L489" href="#L489">489</a> <em class="jxr_javadoccomment">     * @param f the file the data comes from</em>
 <a class="jxr_linenumber" name="L490" href="#L490">490</a> <em class="jxr_javadoccomment">     * @return 0 when it works</em>
 <a class="jxr_linenumber" name="L491" href="#L491">491</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L492" href="#L492">492</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> processSingleChild(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d, byte[] theData, File f) {
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> processSingleChild(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d, File f, byte[] theData) {
 <a class="jxr_linenumber" name="L493" href="#L493">493</a>         String filename = f.getName();
 <a class="jxr_linenumber" name="L494" href="#L494">494</a>         d.setData(theData);
 <a class="jxr_linenumber" name="L495" href="#L495">495</a>         <strong class="jxr_keyword">if</strong> (setTitleToFile) {
@@ -512,223 +512,238 @@
 <a class="jxr_linenumber" name="L504" href="#L504">504</a>     }
 <a class="jxr_linenumber" name="L505" href="#L505">505</a> 
 <a class="jxr_linenumber" name="L506" href="#L506">506</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L507" href="#L507">507</a> <em class="jxr_javadoccomment">     * Process an incoming payload in synchronized fashion</em>
-<a class="jxr_linenumber" name="L508" href="#L508">508</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L509" href="#L509">509</a> <em class="jxr_javadoccomment">     * @param theDataObject the payload to process</em>
-<a class="jxr_linenumber" name="L510" href="#L510">510</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L511" href="#L511">511</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> List&lt;IBaseDataObject&gt; synchronizedProcess(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> theDataObject) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
-<a class="jxr_linenumber" name="L512" href="#L512">512</a>         <strong class="jxr_keyword">return</strong> processData(theDataObject);
-<a class="jxr_linenumber" name="L513" href="#L513">513</a>     }
-<a class="jxr_linenumber" name="L514" href="#L514">514</a> 
-<a class="jxr_linenumber" name="L515" href="#L515">515</a> 
-<a class="jxr_linenumber" name="L516" href="#L516">516</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L517" href="#L517">517</a> <em class="jxr_javadoccomment">     * Process an incoming payload in non-synchronized fashion</em>
-<a class="jxr_linenumber" name="L518" href="#L518">518</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L519" href="#L519">519</a> <em class="jxr_javadoccomment">     * @param theDataObject the payload to process</em>
-<a class="jxr_linenumber" name="L520" href="#L520">520</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L521" href="#L521">521</a>     <strong class="jxr_keyword">protected</strong> List&lt;IBaseDataObject&gt; unSynchronizedProcess(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> theDataObject) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
-<a class="jxr_linenumber" name="L522" href="#L522">522</a>         <strong class="jxr_keyword">return</strong> processData(theDataObject);
-<a class="jxr_linenumber" name="L523" href="#L523">523</a>     }
-<a class="jxr_linenumber" name="L524" href="#L524">524</a> 
-<a class="jxr_linenumber" name="L525" href="#L525">525</a> 
-<a class="jxr_linenumber" name="L526" href="#L526">526</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L527" href="#L527">527</a> <em class="jxr_javadoccomment">     * Process an incoming payload returning a list of attachments</em>
-<a class="jxr_linenumber" name="L528" href="#L528">528</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L529" href="#L529">529</a> <em class="jxr_javadoccomment">     * @param tData the payload to process</em>
-<a class="jxr_linenumber" name="L530" href="#L530">530</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L531" href="#L531">531</a>     @Override
-<a class="jxr_linenumber" name="L532" href="#L532">532</a>     <strong class="jxr_keyword">public</strong> List&lt;IBaseDataObject&gt; processHeavyDuty(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> tData) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
-<a class="jxr_linenumber" name="L533" href="#L533">533</a>         List&lt;IBaseDataObject&gt; entries;
-<a class="jxr_linenumber" name="L534" href="#L534">534</a> 
-<a class="jxr_linenumber" name="L535" href="#L535">535</a>         <strong class="jxr_keyword">if</strong> (doSynchronized) {
-<a class="jxr_linenumber" name="L536" href="#L536">536</a>             entries = synchronizedProcess(tData);
-<a class="jxr_linenumber" name="L537" href="#L537">537</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L538" href="#L538">538</a>             entries = unSynchronizedProcess(tData);
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>         }
+<a class="jxr_linenumber" name="L507" href="#L507">507</a> <em class="jxr_javadoccomment">     * Process in a custom way when there is only one file result</em>
+<a class="jxr_linenumber" name="L508" href="#L508">508</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L509" href="#L509">509</a> <em class="jxr_javadoccomment">     * @param d the parent payload</em>
+<a class="jxr_linenumber" name="L510" href="#L510">510</a> <em class="jxr_javadoccomment">     * @param theData the bytes to process</em>
+<a class="jxr_linenumber" name="L511" href="#L511">511</a> <em class="jxr_javadoccomment">     * @param f the file the data comes from</em>
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> <em class="jxr_javadoccomment">     * @return 0 when it works</em>
+<a class="jxr_linenumber" name="L513" href="#L513">513</a> <em class="jxr_javadoccomment">     * @deprecated use {@link #processSingleChild(IBaseDataObject, File, byte[])}</em>
+<a class="jxr_linenumber" name="L514" href="#L514">514</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L515" href="#L515">515</a>     @Deprecated(forRemoval = <strong class="jxr_keyword">true</strong>)
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>     @SuppressWarnings(<span class="jxr_string">"InconsistentOverloads"</span>)
+<a class="jxr_linenumber" name="L517" href="#L517">517</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> processSingleChild(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d, byte[] theData, File f) {
+<a class="jxr_linenumber" name="L518" href="#L518">518</a>         <strong class="jxr_keyword">return</strong> processSingleChild(d, f, theData);
+<a class="jxr_linenumber" name="L519" href="#L519">519</a>     }
+<a class="jxr_linenumber" name="L520" href="#L520">520</a> 
+<a class="jxr_linenumber" name="L521" href="#L521">521</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L522" href="#L522">522</a> <em class="jxr_javadoccomment">     * Process an incoming payload in synchronized fashion</em>
+<a class="jxr_linenumber" name="L523" href="#L523">523</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L524" href="#L524">524</a> <em class="jxr_javadoccomment">     * @param theDataObject the payload to process</em>
+<a class="jxr_linenumber" name="L525" href="#L525">525</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L526" href="#L526">526</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> List&lt;IBaseDataObject&gt; synchronizedProcess(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> theDataObject) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
+<a class="jxr_linenumber" name="L527" href="#L527">527</a>         <strong class="jxr_keyword">return</strong> processData(theDataObject);
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>     }
+<a class="jxr_linenumber" name="L529" href="#L529">529</a> 
+<a class="jxr_linenumber" name="L530" href="#L530">530</a> 
+<a class="jxr_linenumber" name="L531" href="#L531">531</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L532" href="#L532">532</a> <em class="jxr_javadoccomment">     * Process an incoming payload in non-synchronized fashion</em>
+<a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">     * @param theDataObject the payload to process</em>
+<a class="jxr_linenumber" name="L535" href="#L535">535</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L536" href="#L536">536</a>     <strong class="jxr_keyword">protected</strong> List&lt;IBaseDataObject&gt; unSynchronizedProcess(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> theDataObject) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
+<a class="jxr_linenumber" name="L537" href="#L537">537</a>         <strong class="jxr_keyword">return</strong> processData(theDataObject);
+<a class="jxr_linenumber" name="L538" href="#L538">538</a>     }
+<a class="jxr_linenumber" name="L539" href="#L539">539</a> 
 <a class="jxr_linenumber" name="L540" href="#L540">540</a> 
-<a class="jxr_linenumber" name="L541" href="#L541">541</a>         <strong class="jxr_keyword">if</strong> (entries == <strong class="jxr_keyword">null</strong> || entries.isEmpty()) {
-<a class="jxr_linenumber" name="L542" href="#L542">542</a>             logger.debug(<span class="jxr_string">"no messages found in file."</span>);
-<a class="jxr_linenumber" name="L543" href="#L543">543</a>             <strong class="jxr_keyword">return</strong> Collections.emptyList();
-<a class="jxr_linenumber" name="L544" href="#L544">544</a>         }
-<a class="jxr_linenumber" name="L545" href="#L545">545</a> 
-<a class="jxr_linenumber" name="L546" href="#L546">546</a>         addParentInformation(tData, entries);
-<a class="jxr_linenumber" name="L547" href="#L547">547</a> 
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>         <em class="jxr_comment">// Replace parent if single child and singleOutputAsChild is false</em>
-<a class="jxr_linenumber" name="L549" href="#L549">549</a>         <strong class="jxr_keyword">if</strong> (executrix.getOutput().equals(<span class="jxr_string">"FILE"</span>) &amp;&amp; entries.size() == 1 &amp;&amp; contentFile == <strong class="jxr_keyword">null</strong> &amp;&amp; !singleOutputAsChild) {
-<a class="jxr_linenumber" name="L550" href="#L550">550</a>             <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d = entries.get(0);
-<a class="jxr_linenumber" name="L551" href="#L551">551</a>             tData.setData(d.data());
-<a class="jxr_linenumber" name="L552" href="#L552">552</a>             <strong class="jxr_keyword">if</strong> (keepParentHashesForSingleChild) {
-<a class="jxr_linenumber" name="L553" href="#L553">553</a>                 KffDataObjectHandler.removeHash(d);
-<a class="jxr_linenumber" name="L554" href="#L554">554</a>             }
-<a class="jxr_linenumber" name="L555" href="#L555">555</a>             tData.putUniqueParameters(d.getParameters());
-<a class="jxr_linenumber" name="L556" href="#L556">556</a>             tData.setCurrentForm(d.currentForm());
-<a class="jxr_linenumber" name="L557" href="#L557">557</a>             <strong class="jxr_keyword">if</strong> (!keepParentFiletypeForSingleChild) {
-<a class="jxr_linenumber" name="L558" href="#L558">558</a>                 tData.setFileType(d.getFileType());
-<a class="jxr_linenumber" name="L559" href="#L559">559</a>             }
-<a class="jxr_linenumber" name="L560" href="#L560">560</a>             <strong class="jxr_keyword">return</strong> Collections.emptyList(); <em class="jxr_comment">// so we just continue with current</em>
-<a class="jxr_linenumber" name="L561" href="#L561">561</a>         }
+<a class="jxr_linenumber" name="L541" href="#L541">541</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L542" href="#L542">542</a> <em class="jxr_javadoccomment">     * Process an incoming payload returning a list of attachments</em>
+<a class="jxr_linenumber" name="L543" href="#L543">543</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L544" href="#L544">544</a> <em class="jxr_javadoccomment">     * @param tData the payload to process</em>
+<a class="jxr_linenumber" name="L545" href="#L545">545</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L546" href="#L546">546</a>     @Override
+<a class="jxr_linenumber" name="L547" href="#L547">547</a>     <strong class="jxr_keyword">public</strong> List&lt;IBaseDataObject&gt; processHeavyDuty(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> tData) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
+<a class="jxr_linenumber" name="L548" href="#L548">548</a>         List&lt;IBaseDataObject&gt; entries;
+<a class="jxr_linenumber" name="L549" href="#L549">549</a> 
+<a class="jxr_linenumber" name="L550" href="#L550">550</a>         <strong class="jxr_keyword">if</strong> (doSynchronized) {
+<a class="jxr_linenumber" name="L551" href="#L551">551</a>             entries = synchronizedProcess(tData);
+<a class="jxr_linenumber" name="L552" href="#L552">552</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L553" href="#L553">553</a>             entries = unSynchronizedProcess(tData);
+<a class="jxr_linenumber" name="L554" href="#L554">554</a>         }
+<a class="jxr_linenumber" name="L555" href="#L555">555</a> 
+<a class="jxr_linenumber" name="L556" href="#L556">556</a>         <strong class="jxr_keyword">if</strong> (entries == <strong class="jxr_keyword">null</strong> || entries.isEmpty()) {
+<a class="jxr_linenumber" name="L557" href="#L557">557</a>             logger.debug(<span class="jxr_string">"no messages found in file."</span>);
+<a class="jxr_linenumber" name="L558" href="#L558">558</a>             <strong class="jxr_keyword">return</strong> Collections.emptyList();
+<a class="jxr_linenumber" name="L559" href="#L559">559</a>         }
+<a class="jxr_linenumber" name="L560" href="#L560">560</a> 
+<a class="jxr_linenumber" name="L561" href="#L561">561</a>         addParentInformation(tData, entries);
 <a class="jxr_linenumber" name="L562" href="#L562">562</a> 
-<a class="jxr_linenumber" name="L563" href="#L563">563</a>         <em class="jxr_comment">// Set the parent form after the addParentInformation call</em>
-<a class="jxr_linenumber" name="L564" href="#L564">564</a>         <strong class="jxr_keyword">if</strong> (newParentForm != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L565" href="#L565">565</a>             logger.debug(<span class="jxr_string">"Pushing new parent form {}"</span>, newParentForm);
-<a class="jxr_linenumber" name="L566" href="#L566">566</a>             tData.pushCurrentForm(newParentForm);
-<a class="jxr_linenumber" name="L567" href="#L567">567</a>         }
-<a class="jxr_linenumber" name="L568" href="#L568">568</a> 
-<a class="jxr_linenumber" name="L569" href="#L569">569</a>         <strong class="jxr_keyword">return</strong> entries;
-<a class="jxr_linenumber" name="L570" href="#L570">570</a>     }
-<a class="jxr_linenumber" name="L571" href="#L571">571</a> 
-<a class="jxr_linenumber" name="L572" href="#L572">572</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L573" href="#L573">573</a> <em class="jxr_javadoccomment">     * Process an incoming payload returning attachments This entry point is shared among all synchronized, unsynchronized,</em>
-<a class="jxr_linenumber" name="L574" href="#L574">574</a> <em class="jxr_javadoccomment">     * normal and heavy-duty processing entry points.</em>
-<a class="jxr_linenumber" name="L575" href="#L575">575</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L576" href="#L576">576</a> <em class="jxr_javadoccomment">     * @param tData the payload to process</em>
-<a class="jxr_linenumber" name="L577" href="#L577">577</a> <em class="jxr_javadoccomment">     * @return attachments</em>
-<a class="jxr_linenumber" name="L578" href="#L578">578</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L579" href="#L579">579</a>     <strong class="jxr_keyword">protected</strong> List&lt;IBaseDataObject&gt; processData(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> tData) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
-<a class="jxr_linenumber" name="L580" href="#L580">580</a>         <strong class="jxr_keyword">return</strong> processData(tData, 0, tData.dataLength());
-<a class="jxr_linenumber" name="L581" href="#L581">581</a>     }
-<a class="jxr_linenumber" name="L582" href="#L582">582</a> 
+<a class="jxr_linenumber" name="L563" href="#L563">563</a>         <em class="jxr_comment">// Replace parent if single child and singleOutputAsChild is false</em>
+<a class="jxr_linenumber" name="L564" href="#L564">564</a>         <strong class="jxr_keyword">if</strong> (executrix.getOutput().equals(<span class="jxr_string">"FILE"</span>) &amp;&amp; entries.size() == 1 &amp;&amp; contentFile == <strong class="jxr_keyword">null</strong> &amp;&amp; !singleOutputAsChild) {
+<a class="jxr_linenumber" name="L565" href="#L565">565</a>             <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d = entries.get(0);
+<a class="jxr_linenumber" name="L566" href="#L566">566</a>             tData.setData(d.data());
+<a class="jxr_linenumber" name="L567" href="#L567">567</a>             <strong class="jxr_keyword">if</strong> (keepParentHashesForSingleChild) {
+<a class="jxr_linenumber" name="L568" href="#L568">568</a>                 KffDataObjectHandler.removeHash(d);
+<a class="jxr_linenumber" name="L569" href="#L569">569</a>             }
+<a class="jxr_linenumber" name="L570" href="#L570">570</a>             tData.putUniqueParameters(d.getParameters());
+<a class="jxr_linenumber" name="L571" href="#L571">571</a>             tData.setCurrentForm(d.currentForm());
+<a class="jxr_linenumber" name="L572" href="#L572">572</a>             <strong class="jxr_keyword">if</strong> (!keepParentFiletypeForSingleChild) {
+<a class="jxr_linenumber" name="L573" href="#L573">573</a>                 tData.setFileType(d.getFileType());
+<a class="jxr_linenumber" name="L574" href="#L574">574</a>             }
+<a class="jxr_linenumber" name="L575" href="#L575">575</a>             <strong class="jxr_keyword">return</strong> Collections.emptyList(); <em class="jxr_comment">// so we just continue with current</em>
+<a class="jxr_linenumber" name="L576" href="#L576">576</a>         }
+<a class="jxr_linenumber" name="L577" href="#L577">577</a> 
+<a class="jxr_linenumber" name="L578" href="#L578">578</a>         <em class="jxr_comment">// Set the parent form after the addParentInformation call</em>
+<a class="jxr_linenumber" name="L579" href="#L579">579</a>         <strong class="jxr_keyword">if</strong> (newParentForm != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L580" href="#L580">580</a>             logger.debug(<span class="jxr_string">"Pushing new parent form {}"</span>, newParentForm);
+<a class="jxr_linenumber" name="L581" href="#L581">581</a>             tData.pushCurrentForm(newParentForm);
+<a class="jxr_linenumber" name="L582" href="#L582">582</a>         }
 <a class="jxr_linenumber" name="L583" href="#L583">583</a> 
-<a class="jxr_linenumber" name="L584" href="#L584">584</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L585" href="#L585">585</a> <em class="jxr_javadoccomment">     * Process an incoming payload returning attachments, using only some of the data This entry point is shared among all</em>
-<a class="jxr_linenumber" name="L586" href="#L586">586</a> <em class="jxr_javadoccomment">     * synchronized, unsynchronized, normal and heavy-duty processing entry points.</em>
-<a class="jxr_linenumber" name="L587" href="#L587">587</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L588" href="#L588">588</a> <em class="jxr_javadoccomment">     * @param tData the payload to process</em>
-<a class="jxr_linenumber" name="L589" href="#L589">589</a> <em class="jxr_javadoccomment">     * @param start offset in data to start</em>
-<a class="jxr_linenumber" name="L590" href="#L590">590</a> <em class="jxr_javadoccomment">     * @param len length of data to use</em>
-<a class="jxr_linenumber" name="L591" href="#L591">591</a> <em class="jxr_javadoccomment">     * @return attachments</em>
-<a class="jxr_linenumber" name="L592" href="#L592">592</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L593" href="#L593">593</a>     <strong class="jxr_keyword">protected</strong> List&lt;IBaseDataObject&gt; processData(@Nullable <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> tData, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> len) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
-<a class="jxr_linenumber" name="L594" href="#L594">594</a>         List&lt;IBaseDataObject&gt; sprouts = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L595" href="#L595">595</a> 
-<a class="jxr_linenumber" name="L596" href="#L596">596</a>         <em class="jxr_comment">// Validate parameters</em>
-<a class="jxr_linenumber" name="L597" href="#L597">597</a>         <strong class="jxr_keyword">if</strong> (tData == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L598" href="#L598">598</a>             logger.debug(<span class="jxr_string">"Received null data object!"</span>);
-<a class="jxr_linenumber" name="L599" href="#L599">599</a>             <strong class="jxr_keyword">return</strong> sprouts;
-<a class="jxr_linenumber" name="L600" href="#L600">600</a>         }
-<a class="jxr_linenumber" name="L601" href="#L601">601</a> 
-<a class="jxr_linenumber" name="L602" href="#L602">602</a>         <em class="jxr_comment">// Validate data</em>
-<a class="jxr_linenumber" name="L603" href="#L603">603</a>         <strong class="jxr_keyword">if</strong> (tData.data() == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L604" href="#L604">604</a>             logger.debug(<span class="jxr_string">"Received null data: {}"</span>, tData);
-<a class="jxr_linenumber" name="L605" href="#L605">605</a>             tData.addProcessingError(<span class="jxr_string">"NULL data in "</span> + placeName + <span class="jxr_string">".process"</span>);
-<a class="jxr_linenumber" name="L606" href="#L606">606</a>             tData.pushCurrentForm(newErrorForm);
-<a class="jxr_linenumber" name="L607" href="#L607">607</a>             <strong class="jxr_keyword">return</strong> sprouts;
-<a class="jxr_linenumber" name="L608" href="#L608">608</a>         }
-<a class="jxr_linenumber" name="L609" href="#L609">609</a> 
-<a class="jxr_linenumber" name="L610" href="#L610">610</a>         <em class="jxr_comment">// Validate start and len</em>
-<a class="jxr_linenumber" name="L611" href="#L611">611</a>         <strong class="jxr_keyword">if</strong> (start &lt; 0 || len &lt;= 0 || (start + len) &gt; tData.dataLength()) {
-<a class="jxr_linenumber" name="L612" href="#L612">612</a>             logger.debug(<span class="jxr_string">"Invalid start/len for data {}/{}"</span>, start, len);
-<a class="jxr_linenumber" name="L613" href="#L613">613</a>             tData.addProcessingError(<span class="jxr_string">"Invalid data "</span> + start + <span class="jxr_string">"/"</span> + len);
-<a class="jxr_linenumber" name="L614" href="#L614">614</a>             tData.pushCurrentForm(newErrorForm);
-<a class="jxr_linenumber" name="L615" href="#L615">615</a>             <strong class="jxr_keyword">return</strong> sprouts;
-<a class="jxr_linenumber" name="L616" href="#L616">616</a>         }
-<a class="jxr_linenumber" name="L617" href="#L617">617</a> 
-<a class="jxr_linenumber" name="L618" href="#L618">618</a>         <em class="jxr_comment">// make the directory and write the input file.</em>
-<a class="jxr_linenumber" name="L619" href="#L619">619</a>         String[] names;
-<a class="jxr_linenumber" name="L620" href="#L620">620</a>         File f = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L621" href="#L621">621</a>         <strong class="jxr_keyword">int</strong> result = -1;
-<a class="jxr_linenumber" name="L622" href="#L622">622</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L623" href="#L623">623</a>             names = executrix.writeDataToNewTempDir(tData.data(), start, len);
-<a class="jxr_linenumber" name="L624" href="#L624">624</a>             f = <strong class="jxr_keyword">new</strong> File(names[Executrix.INPATH]);
-<a class="jxr_linenumber" name="L625" href="#L625">625</a>             logger.debug(<span class="jxr_string">"Wrote file out to {}"</span>, f.getPath());
-<a class="jxr_linenumber" name="L626" href="#L626">626</a> 
-<a class="jxr_linenumber" name="L627" href="#L627">627</a>             <em class="jxr_comment">// Create the command string and run it</em>
-<a class="jxr_linenumber" name="L628" href="#L628">628</a>             String[] cmd = executrix.getCommand(names);
-<a class="jxr_linenumber" name="L629" href="#L629">629</a>             StringBuilder parentData = <strong class="jxr_keyword">new</strong> StringBuilder();
-<a class="jxr_linenumber" name="L630" href="#L630">630</a> 
-<a class="jxr_linenumber" name="L631" href="#L631">631</a>             logger.debug(<span class="jxr_string">"Generated command {}"</span>, Arrays.asList(cmd));
+<a class="jxr_linenumber" name="L584" href="#L584">584</a>         <strong class="jxr_keyword">return</strong> entries;
+<a class="jxr_linenumber" name="L585" href="#L585">585</a>     }
+<a class="jxr_linenumber" name="L586" href="#L586">586</a> 
+<a class="jxr_linenumber" name="L587" href="#L587">587</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L588" href="#L588">588</a> <em class="jxr_javadoccomment">     * Process an incoming payload returning attachments This entry point is shared among all synchronized, unsynchronized,</em>
+<a class="jxr_linenumber" name="L589" href="#L589">589</a> <em class="jxr_javadoccomment">     * normal and heavy-duty processing entry points.</em>
+<a class="jxr_linenumber" name="L590" href="#L590">590</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L591" href="#L591">591</a> <em class="jxr_javadoccomment">     * @param tData the payload to process</em>
+<a class="jxr_linenumber" name="L592" href="#L592">592</a> <em class="jxr_javadoccomment">     * @return attachments</em>
+<a class="jxr_linenumber" name="L593" href="#L593">593</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L594" href="#L594">594</a>     <strong class="jxr_keyword">protected</strong> List&lt;IBaseDataObject&gt; processData(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> tData) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
+<a class="jxr_linenumber" name="L595" href="#L595">595</a>         <strong class="jxr_keyword">return</strong> processData(tData, 0, tData.dataLength());
+<a class="jxr_linenumber" name="L596" href="#L596">596</a>     }
+<a class="jxr_linenumber" name="L597" href="#L597">597</a> 
+<a class="jxr_linenumber" name="L598" href="#L598">598</a> 
+<a class="jxr_linenumber" name="L599" href="#L599">599</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L600" href="#L600">600</a> <em class="jxr_javadoccomment">     * Process an incoming payload returning attachments, using only some of the data This entry point is shared among all</em>
+<a class="jxr_linenumber" name="L601" href="#L601">601</a> <em class="jxr_javadoccomment">     * synchronized, unsynchronized, normal and heavy-duty processing entry points.</em>
+<a class="jxr_linenumber" name="L602" href="#L602">602</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L603" href="#L603">603</a> <em class="jxr_javadoccomment">     * @param tData the payload to process</em>
+<a class="jxr_linenumber" name="L604" href="#L604">604</a> <em class="jxr_javadoccomment">     * @param start offset in data to start</em>
+<a class="jxr_linenumber" name="L605" href="#L605">605</a> <em class="jxr_javadoccomment">     * @param len length of data to use</em>
+<a class="jxr_linenumber" name="L606" href="#L606">606</a> <em class="jxr_javadoccomment">     * @return attachments</em>
+<a class="jxr_linenumber" name="L607" href="#L607">607</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L608" href="#L608">608</a>     <strong class="jxr_keyword">protected</strong> List&lt;IBaseDataObject&gt; processData(@Nullable <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> tData, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> len) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
+<a class="jxr_linenumber" name="L609" href="#L609">609</a>         List&lt;IBaseDataObject&gt; sprouts = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L610" href="#L610">610</a> 
+<a class="jxr_linenumber" name="L611" href="#L611">611</a>         <em class="jxr_comment">// Validate parameters</em>
+<a class="jxr_linenumber" name="L612" href="#L612">612</a>         <strong class="jxr_keyword">if</strong> (tData == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L613" href="#L613">613</a>             logger.debug(<span class="jxr_string">"Received null data object!"</span>);
+<a class="jxr_linenumber" name="L614" href="#L614">614</a>             <strong class="jxr_keyword">return</strong> sprouts;
+<a class="jxr_linenumber" name="L615" href="#L615">615</a>         }
+<a class="jxr_linenumber" name="L616" href="#L616">616</a> 
+<a class="jxr_linenumber" name="L617" href="#L617">617</a>         <em class="jxr_comment">// Validate data</em>
+<a class="jxr_linenumber" name="L618" href="#L618">618</a>         <strong class="jxr_keyword">if</strong> (tData.data() == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L619" href="#L619">619</a>             logger.debug(<span class="jxr_string">"Received null data: {}"</span>, tData);
+<a class="jxr_linenumber" name="L620" href="#L620">620</a>             tData.addProcessingError(<span class="jxr_string">"NULL data in "</span> + placeName + <span class="jxr_string">".process"</span>);
+<a class="jxr_linenumber" name="L621" href="#L621">621</a>             tData.pushCurrentForm(newErrorForm);
+<a class="jxr_linenumber" name="L622" href="#L622">622</a>             <strong class="jxr_keyword">return</strong> sprouts;
+<a class="jxr_linenumber" name="L623" href="#L623">623</a>         }
+<a class="jxr_linenumber" name="L624" href="#L624">624</a> 
+<a class="jxr_linenumber" name="L625" href="#L625">625</a>         <em class="jxr_comment">// Validate start and len</em>
+<a class="jxr_linenumber" name="L626" href="#L626">626</a>         <strong class="jxr_keyword">if</strong> (start &lt; 0 || len &lt;= 0 || (start + len) &gt; tData.dataLength()) {
+<a class="jxr_linenumber" name="L627" href="#L627">627</a>             logger.debug(<span class="jxr_string">"Invalid start/len for data {}/{}"</span>, start, len);
+<a class="jxr_linenumber" name="L628" href="#L628">628</a>             tData.addProcessingError(<span class="jxr_string">"Invalid data "</span> + start + <span class="jxr_string">"/"</span> + len);
+<a class="jxr_linenumber" name="L629" href="#L629">629</a>             tData.pushCurrentForm(newErrorForm);
+<a class="jxr_linenumber" name="L630" href="#L630">630</a>             <strong class="jxr_keyword">return</strong> sprouts;
+<a class="jxr_linenumber" name="L631" href="#L631">631</a>         }
 <a class="jxr_linenumber" name="L632" href="#L632">632</a> 
-<a class="jxr_linenumber" name="L633" href="#L633">633</a>             <strong class="jxr_keyword">if</strong> (executrix.getOutput().equals(<span class="jxr_string">"FILE"</span>)) {
-<a class="jxr_linenumber" name="L634" href="#L634">634</a>                 result = processCommand(cmd);
-<a class="jxr_linenumber" name="L635" href="#L635">635</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (executrix.getOutput().equals(<span class="jxr_string">"STD"</span>)) {
-<a class="jxr_linenumber" name="L636" href="#L636">636</a>                 StringBuilder errbuf = <strong class="jxr_keyword">new</strong> StringBuilder();
-<a class="jxr_linenumber" name="L637" href="#L637">637</a>                 result = processCommand(cmd, parentData, errbuf);
-<a class="jxr_linenumber" name="L638" href="#L638">638</a>                 <strong class="jxr_keyword">if</strong> (errbuf.length() &gt; 0) {
-<a class="jxr_linenumber" name="L639" href="#L639">639</a>                     tData.addProcessingError(errbuf.toString());
-<a class="jxr_linenumber" name="L640" href="#L640">640</a>                 }
-<a class="jxr_linenumber" name="L641" href="#L641">641</a>             }
-<a class="jxr_linenumber" name="L642" href="#L642">642</a> 
-<a class="jxr_linenumber" name="L643" href="#L643">643</a>             <em class="jxr_comment">// Clean out any proxies that would cause an infinite loop.</em>
-<a class="jxr_linenumber" name="L644" href="#L644">644</a>             <em class="jxr_comment">// we will add new forms later.</em>
-<a class="jxr_linenumber" name="L645" href="#L645">645</a>             <strong class="jxr_keyword">if</strong> (nukeMyProxies) {
-<a class="jxr_linenumber" name="L646" href="#L646">646</a>                 nukeMyProxies(tData);
-<a class="jxr_linenumber" name="L647" href="#L647">647</a>             }
-<a class="jxr_linenumber" name="L648" href="#L648">648</a>             logger.debug(<span class="jxr_string">"Parent forms {}, nuke={}"</span>, tData.getAllCurrentForms(), nukeMyProxies);
-<a class="jxr_linenumber" name="L649" href="#L649">649</a> 
-<a class="jxr_linenumber" name="L650" href="#L650">650</a>             <em class="jxr_comment">// Generate the list of resulting files in the directory(s)</em>
-<a class="jxr_linenumber" name="L651" href="#L651">651</a>             List&lt;File&gt; files = getFileList(f.getParentFile(), f.getName());
-<a class="jxr_linenumber" name="L652" href="#L652">652</a> 
-<a class="jxr_linenumber" name="L653" href="#L653">653</a>             <strong class="jxr_keyword">if</strong> (files != <strong class="jxr_keyword">null</strong> &amp;&amp; !files.isEmpty()) {
-<a class="jxr_linenumber" name="L654" href="#L654">654</a>                 sprouts = sproutResults(tData, files, f.getParent(), parentData);
-<a class="jxr_linenumber" name="L655" href="#L655">655</a>             }
-<a class="jxr_linenumber" name="L656" href="#L656">656</a>         } <strong class="jxr_keyword">catch</strong> (Exception ex) {
-<a class="jxr_linenumber" name="L657" href="#L657">657</a>             logger.error(<span class="jxr_string">"Problem in command execution"</span>, ex);
-<a class="jxr_linenumber" name="L658" href="#L658">658</a>             <strong class="jxr_keyword">if</strong> (ex instanceof InterruptedException) {
-<a class="jxr_linenumber" name="L659" href="#L659">659</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a>(ex); <em class="jxr_comment">// framework notification to stop</em>
-<a class="jxr_linenumber" name="L660" href="#L660">660</a>             }
-<a class="jxr_linenumber" name="L661" href="#L661">661</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L662" href="#L662">662</a>             <em class="jxr_comment">// Delete the temporary directory and all of its contents.</em>
-<a class="jxr_linenumber" name="L663" href="#L663">663</a>             <strong class="jxr_keyword">if</strong> (f != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L664" href="#L664">664</a>                 cleanupFiles(f.getParentFile());
-<a class="jxr_linenumber" name="L665" href="#L665">665</a>             }
-<a class="jxr_linenumber" name="L666" href="#L666">666</a>         }
+<a class="jxr_linenumber" name="L633" href="#L633">633</a>         <em class="jxr_comment">// make the directory and write the input file.</em>
+<a class="jxr_linenumber" name="L634" href="#L634">634</a>         String[] names;
+<a class="jxr_linenumber" name="L635" href="#L635">635</a>         File f = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L636" href="#L636">636</a>         <strong class="jxr_keyword">int</strong> result = -1;
+<a class="jxr_linenumber" name="L637" href="#L637">637</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L638" href="#L638">638</a>             names = executrix.writeDataToNewTempDir(tData.data(), start, len);
+<a class="jxr_linenumber" name="L639" href="#L639">639</a>             f = <strong class="jxr_keyword">new</strong> File(names[Executrix.INPATH]);
+<a class="jxr_linenumber" name="L640" href="#L640">640</a>             logger.debug(<span class="jxr_string">"Wrote file out to {}"</span>, f.getPath());
+<a class="jxr_linenumber" name="L641" href="#L641">641</a> 
+<a class="jxr_linenumber" name="L642" href="#L642">642</a>             <em class="jxr_comment">// Create the command string and run it</em>
+<a class="jxr_linenumber" name="L643" href="#L643">643</a>             String[] cmd = executrix.getCommand(names);
+<a class="jxr_linenumber" name="L644" href="#L644">644</a>             StringBuilder parentData = <strong class="jxr_keyword">new</strong> StringBuilder();
+<a class="jxr_linenumber" name="L645" href="#L645">645</a> 
+<a class="jxr_linenumber" name="L646" href="#L646">646</a>             logger.debug(<span class="jxr_string">"Generated command {}"</span>, Arrays.asList(cmd));
+<a class="jxr_linenumber" name="L647" href="#L647">647</a> 
+<a class="jxr_linenumber" name="L648" href="#L648">648</a>             <strong class="jxr_keyword">if</strong> (executrix.getOutput().equals(<span class="jxr_string">"FILE"</span>)) {
+<a class="jxr_linenumber" name="L649" href="#L649">649</a>                 result = processCommand(cmd);
+<a class="jxr_linenumber" name="L650" href="#L650">650</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (executrix.getOutput().equals(<span class="jxr_string">"STD"</span>)) {
+<a class="jxr_linenumber" name="L651" href="#L651">651</a>                 StringBuilder errbuf = <strong class="jxr_keyword">new</strong> StringBuilder();
+<a class="jxr_linenumber" name="L652" href="#L652">652</a>                 result = processCommand(cmd, parentData, errbuf);
+<a class="jxr_linenumber" name="L653" href="#L653">653</a>                 <strong class="jxr_keyword">if</strong> (errbuf.length() &gt; 0) {
+<a class="jxr_linenumber" name="L654" href="#L654">654</a>                     tData.addProcessingError(errbuf.toString());
+<a class="jxr_linenumber" name="L655" href="#L655">655</a>                 }
+<a class="jxr_linenumber" name="L656" href="#L656">656</a>             }
+<a class="jxr_linenumber" name="L657" href="#L657">657</a> 
+<a class="jxr_linenumber" name="L658" href="#L658">658</a>             <em class="jxr_comment">// Clean out any proxies that would cause an infinite loop.</em>
+<a class="jxr_linenumber" name="L659" href="#L659">659</a>             <em class="jxr_comment">// we will add new forms later.</em>
+<a class="jxr_linenumber" name="L660" href="#L660">660</a>             <strong class="jxr_keyword">if</strong> (nukeMyProxies) {
+<a class="jxr_linenumber" name="L661" href="#L661">661</a>                 nukeMyProxies(tData);
+<a class="jxr_linenumber" name="L662" href="#L662">662</a>             }
+<a class="jxr_linenumber" name="L663" href="#L663">663</a>             logger.debug(<span class="jxr_string">"Parent forms {}, nuke={}"</span>, tData.getAllCurrentForms(), nukeMyProxies);
+<a class="jxr_linenumber" name="L664" href="#L664">664</a> 
+<a class="jxr_linenumber" name="L665" href="#L665">665</a>             <em class="jxr_comment">// Generate the list of resulting files in the directory(s)</em>
+<a class="jxr_linenumber" name="L666" href="#L666">666</a>             List&lt;File&gt; files = getFileList(f.getParentFile(), f.getName());
 <a class="jxr_linenumber" name="L667" href="#L667">667</a> 
-<a class="jxr_linenumber" name="L668" href="#L668">668</a>         <em class="jxr_comment">// If there was not result, then report it in 2 places.</em>
-<a class="jxr_linenumber" name="L669" href="#L669">669</a>         <strong class="jxr_keyword">if</strong> (sprouts.isEmpty()) {
-<a class="jxr_linenumber" name="L670" href="#L670">670</a>             logger.debug(<span class="jxr_string">"Command failed. nothing to sprout for file: result={}"</span>, result);
-<a class="jxr_linenumber" name="L671" href="#L671">671</a>             tData.addProcessingError(<span class="jxr_string">"ERROR in "</span> + placeName + <span class="jxr_string">". Exec returned errno "</span> + result);
-<a class="jxr_linenumber" name="L672" href="#L672">672</a>             tData.pushCurrentForm(newErrorForm);
-<a class="jxr_linenumber" name="L673" href="#L673">673</a>         }
-<a class="jxr_linenumber" name="L674" href="#L674">674</a>         <strong class="jxr_keyword">return</strong> sprouts;
-<a class="jxr_linenumber" name="L675" href="#L675">675</a>     }
-<a class="jxr_linenumber" name="L676" href="#L676">676</a> 
-<a class="jxr_linenumber" name="L677" href="#L677">677</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L678" href="#L678">678</a> <em class="jxr_javadoccomment">     * Execute the command and args in the array</em>
-<a class="jxr_linenumber" name="L679" href="#L679">679</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L680" href="#L680">680</a> <em class="jxr_javadoccomment">     * @param cmd the command and args to execute</em>
-<a class="jxr_linenumber" name="L681" href="#L681">681</a> <em class="jxr_javadoccomment">     * @return the process errno status value</em>
-<a class="jxr_linenumber" name="L682" href="#L682">682</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L683" href="#L683">683</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> processCommand(String[] cmd) {
-<a class="jxr_linenumber" name="L684" href="#L684">684</a>         <strong class="jxr_keyword">return</strong> processCommand(cmd, <strong class="jxr_keyword">new</strong> StringBuilder(), <strong class="jxr_keyword">new</strong> StringBuilder());
-<a class="jxr_linenumber" name="L685" href="#L685">685</a>     }
-<a class="jxr_linenumber" name="L686" href="#L686">686</a> 
-<a class="jxr_linenumber" name="L687" href="#L687">687</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L688" href="#L688">688</a> <em class="jxr_javadoccomment">     * Execute the command and args in the array</em>
-<a class="jxr_linenumber" name="L689" href="#L689">689</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L690" href="#L690">690</a> <em class="jxr_javadoccomment">     * @param cmd the command and args to execute</em>
-<a class="jxr_linenumber" name="L691" href="#L691">691</a> <em class="jxr_javadoccomment">     * @param stdout builder to append stdout from process</em>
-<a class="jxr_linenumber" name="L692" href="#L692">692</a> <em class="jxr_javadoccomment">     * @param stderr builder to append stderr from process</em>
-<a class="jxr_linenumber" name="L693" href="#L693">693</a> <em class="jxr_javadoccomment">     * @return the process errno status value</em>
-<a class="jxr_linenumber" name="L694" href="#L694">694</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L695" href="#L695">695</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> processCommand(String[] cmd, StringBuilder stdout, StringBuilder stderr) {
-<a class="jxr_linenumber" name="L696" href="#L696">696</a>         <strong class="jxr_keyword">return</strong> executrix.execute(cmd, stdout, stderr, charset);
-<a class="jxr_linenumber" name="L697" href="#L697">697</a>     }
-<a class="jxr_linenumber" name="L698" href="#L698">698</a> 
-<a class="jxr_linenumber" name="L699" href="#L699">699</a> 
-<a class="jxr_linenumber" name="L700" href="#L700">700</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L701" href="#L701">701</a> <em class="jxr_javadoccomment">     * API Compatibility wrapper for Executrix cleanup method</em>
-<a class="jxr_linenumber" name="L702" href="#L702">702</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L703" href="#L703">703</a> <em class="jxr_javadoccomment">     * @param tempDir the directory to remove</em>
-<a class="jxr_linenumber" name="L704" href="#L704">704</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L705" href="#L705">705</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> cleanupFiles(File tempDir) {
-<a class="jxr_linenumber" name="L706" href="#L706">706</a>         <strong class="jxr_keyword">if</strong> (!keepFilesDebug) {
-<a class="jxr_linenumber" name="L707" href="#L707">707</a>             cleanupDirectory(tempDir);
-<a class="jxr_linenumber" name="L708" href="#L708">708</a>         }
-<a class="jxr_linenumber" name="L709" href="#L709">709</a>     }
-<a class="jxr_linenumber" name="L710" href="#L710">710</a> 
-<a class="jxr_linenumber" name="L711" href="#L711">711</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L712" href="#L712">712</a> <em class="jxr_javadoccomment">     * API Compatibility wrapper for Executrix cleanup method</em>
-<a class="jxr_linenumber" name="L713" href="#L713">713</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L714" href="#L714">714</a> <em class="jxr_javadoccomment">     * @param dir the directory to remove</em>
-<a class="jxr_linenumber" name="L715" href="#L715">715</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L716" href="#L716">716</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> cleanupDirectory(File dir) {
-<a class="jxr_linenumber" name="L717" href="#L717">717</a>         <strong class="jxr_keyword">boolean</strong> status = Executrix.cleanupDirectory(dir);
-<a class="jxr_linenumber" name="L718" href="#L718">718</a>         <strong class="jxr_keyword">if</strong> (!status) {
-<a class="jxr_linenumber" name="L719" href="#L719">719</a>             logger.debug(<span class="jxr_string">"Could not remove temp directory {}"</span>, dir);
-<a class="jxr_linenumber" name="L720" href="#L720">720</a>         }
-<a class="jxr_linenumber" name="L721" href="#L721">721</a>     }
-<a class="jxr_linenumber" name="L722" href="#L722">722</a> 
-<a class="jxr_linenumber" name="L723" href="#L723">723</a> }
+<a class="jxr_linenumber" name="L668" href="#L668">668</a>             <strong class="jxr_keyword">if</strong> (files != <strong class="jxr_keyword">null</strong> &amp;&amp; !files.isEmpty()) {
+<a class="jxr_linenumber" name="L669" href="#L669">669</a>                 sprouts = sproutResults(tData, files, f.getParent(), parentData);
+<a class="jxr_linenumber" name="L670" href="#L670">670</a>             }
+<a class="jxr_linenumber" name="L671" href="#L671">671</a>         } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L672" href="#L672">672</a>             logger.error(<span class="jxr_string">"Problem in command execution"</span>, ex);
+<a class="jxr_linenumber" name="L673" href="#L673">673</a>             <strong class="jxr_keyword">if</strong> (ex instanceof InterruptedException) {
+<a class="jxr_linenumber" name="L674" href="#L674">674</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a>(ex); <em class="jxr_comment">// framework notification to stop</em>
+<a class="jxr_linenumber" name="L675" href="#L675">675</a>             }
+<a class="jxr_linenumber" name="L676" href="#L676">676</a>         } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L677" href="#L677">677</a>             <em class="jxr_comment">// Delete the temporary directory and all of its contents.</em>
+<a class="jxr_linenumber" name="L678" href="#L678">678</a>             <strong class="jxr_keyword">if</strong> (f != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L679" href="#L679">679</a>                 cleanupFiles(f.getParentFile());
+<a class="jxr_linenumber" name="L680" href="#L680">680</a>             }
+<a class="jxr_linenumber" name="L681" href="#L681">681</a>         }
+<a class="jxr_linenumber" name="L682" href="#L682">682</a> 
+<a class="jxr_linenumber" name="L683" href="#L683">683</a>         <em class="jxr_comment">// If there was not result, then report it in 2 places.</em>
+<a class="jxr_linenumber" name="L684" href="#L684">684</a>         <strong class="jxr_keyword">if</strong> (sprouts.isEmpty()) {
+<a class="jxr_linenumber" name="L685" href="#L685">685</a>             logger.debug(<span class="jxr_string">"Command failed. nothing to sprout for file: result={}"</span>, result);
+<a class="jxr_linenumber" name="L686" href="#L686">686</a>             tData.addProcessingError(<span class="jxr_string">"ERROR in "</span> + placeName + <span class="jxr_string">". Exec returned errno "</span> + result);
+<a class="jxr_linenumber" name="L687" href="#L687">687</a>             tData.pushCurrentForm(newErrorForm);
+<a class="jxr_linenumber" name="L688" href="#L688">688</a>         }
+<a class="jxr_linenumber" name="L689" href="#L689">689</a>         <strong class="jxr_keyword">return</strong> sprouts;
+<a class="jxr_linenumber" name="L690" href="#L690">690</a>     }
+<a class="jxr_linenumber" name="L691" href="#L691">691</a> 
+<a class="jxr_linenumber" name="L692" href="#L692">692</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L693" href="#L693">693</a> <em class="jxr_javadoccomment">     * Execute the command and args in the array</em>
+<a class="jxr_linenumber" name="L694" href="#L694">694</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L695" href="#L695">695</a> <em class="jxr_javadoccomment">     * @param cmd the command and args to execute</em>
+<a class="jxr_linenumber" name="L696" href="#L696">696</a> <em class="jxr_javadoccomment">     * @return the process errno status value</em>
+<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L698" href="#L698">698</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> processCommand(String[] cmd) {
+<a class="jxr_linenumber" name="L699" href="#L699">699</a>         <strong class="jxr_keyword">return</strong> processCommand(cmd, <strong class="jxr_keyword">new</strong> StringBuilder(), <strong class="jxr_keyword">new</strong> StringBuilder());
+<a class="jxr_linenumber" name="L700" href="#L700">700</a>     }
+<a class="jxr_linenumber" name="L701" href="#L701">701</a> 
+<a class="jxr_linenumber" name="L702" href="#L702">702</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L703" href="#L703">703</a> <em class="jxr_javadoccomment">     * Execute the command and args in the array</em>
+<a class="jxr_linenumber" name="L704" href="#L704">704</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L705" href="#L705">705</a> <em class="jxr_javadoccomment">     * @param cmd the command and args to execute</em>
+<a class="jxr_linenumber" name="L706" href="#L706">706</a> <em class="jxr_javadoccomment">     * @param stdout builder to append stdout from process</em>
+<a class="jxr_linenumber" name="L707" href="#L707">707</a> <em class="jxr_javadoccomment">     * @param stderr builder to append stderr from process</em>
+<a class="jxr_linenumber" name="L708" href="#L708">708</a> <em class="jxr_javadoccomment">     * @return the process errno status value</em>
+<a class="jxr_linenumber" name="L709" href="#L709">709</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L710" href="#L710">710</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> processCommand(String[] cmd, StringBuilder stdout, StringBuilder stderr) {
+<a class="jxr_linenumber" name="L711" href="#L711">711</a>         <strong class="jxr_keyword">return</strong> executrix.execute(cmd, stdout, stderr, charset);
+<a class="jxr_linenumber" name="L712" href="#L712">712</a>     }
+<a class="jxr_linenumber" name="L713" href="#L713">713</a> 
+<a class="jxr_linenumber" name="L714" href="#L714">714</a> 
+<a class="jxr_linenumber" name="L715" href="#L715">715</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L716" href="#L716">716</a> <em class="jxr_javadoccomment">     * API Compatibility wrapper for Executrix cleanup method</em>
+<a class="jxr_linenumber" name="L717" href="#L717">717</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L718" href="#L718">718</a> <em class="jxr_javadoccomment">     * @param tempDir the directory to remove</em>
+<a class="jxr_linenumber" name="L719" href="#L719">719</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L720" href="#L720">720</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> cleanupFiles(File tempDir) {
+<a class="jxr_linenumber" name="L721" href="#L721">721</a>         <strong class="jxr_keyword">if</strong> (!keepFilesDebug) {
+<a class="jxr_linenumber" name="L722" href="#L722">722</a>             cleanupDirectory(tempDir);
+<a class="jxr_linenumber" name="L723" href="#L723">723</a>         }
+<a class="jxr_linenumber" name="L724" href="#L724">724</a>     }
+<a class="jxr_linenumber" name="L725" href="#L725">725</a> 
+<a class="jxr_linenumber" name="L726" href="#L726">726</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L727" href="#L727">727</a> <em class="jxr_javadoccomment">     * API Compatibility wrapper for Executrix cleanup method</em>
+<a class="jxr_linenumber" name="L728" href="#L728">728</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L729" href="#L729">729</a> <em class="jxr_javadoccomment">     * @param dir the directory to remove</em>
+<a class="jxr_linenumber" name="L730" href="#L730">730</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L731" href="#L731">731</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> cleanupDirectory(File dir) {
+<a class="jxr_linenumber" name="L732" href="#L732">732</a>         <strong class="jxr_keyword">boolean</strong> status = Executrix.cleanupDirectory(dir);
+<a class="jxr_linenumber" name="L733" href="#L733">733</a>         <strong class="jxr_keyword">if</strong> (!status) {
+<a class="jxr_linenumber" name="L734" href="#L734">734</a>             logger.debug(<span class="jxr_string">"Could not remove temp directory {}"</span>, dir);
+<a class="jxr_linenumber" name="L735" href="#L735">735</a>         }
+<a class="jxr_linenumber" name="L736" href="#L736">736</a>     }
+<a class="jxr_linenumber" name="L737" href="#L737">737</a> 
+<a class="jxr_linenumber" name="L738" href="#L738">738</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

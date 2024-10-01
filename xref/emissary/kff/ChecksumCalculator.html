@@ -150,7 +150,7 @@
 <a class="jxr_linenumber" name="L142" href="#L142">142</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>     <strong class="jxr_keyword">public</strong> <a name="ChecksumResults" href="../../emissary/kff/ChecksumResults.html#ChecksumResults">ChecksumResults</a> digest(byte[] buffer) {
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>         <em class="jxr_comment">// return object to hold results</em>
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>         <a name="ChecksumResults" href="../../emissary/kff/ChecksumResu<a name="ChecksumResults" href="../../emissary/kff/ChecksumResults.html#ChecksumResults">ChecksumResults</a>umResults">ChecksumResults</a> res = <strong class="jxr_keyword">new</strong> <a name="ChecksumResults" href="../../emissary/kff/ChecksumResults.html#ChecksumResults">ChecksumResults</a>();
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>         <a name="ChecksumResults" href="../../emissary/kff/ChecksumResults.html#ChecksumResults">ChecksumResults</a> res = <strong class="jxr_keyword">new</strong> <a name="ChecksumResults" href="../../emissary/kff/ChecksumResults.html#ChecksumResults">ChecksumResults</a>();
 <a class="jxr_linenumber" name="L146" href="#L146">146</a> 
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>         <em class="jxr_comment">// Reset and compute</em>
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>         <strong class="jxr_keyword">for</strong> (MessageDigest d : digest) {
@@ -181,7 +181,7 @@
 <a class="jxr_linenumber" name="L173" href="#L173">173</a> <em class="jxr_javadoccomment">     * @return results of computing the requested hashes on the data</em>
 <a class="jxr_linenumber" name="L174" href="#L174">174</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>     <strong class="jxr_keyword">public</strong> <a name="ChecksumResults" href="../../emissary/kff/ChecksumResults.html#ChecksumResults">ChecksumResults</a> digest(<strong class="jxr_keyword">final</strong> <a name="SeekableByteChannelFactory" href="../../emissary/core/channels/SeekableByteChannelFactory.html#SeekableByteChannelFactory">SeekableByteChannelFactory</a> sbcf) {
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>         <strong class="jxr_keyword">final</strong> <a name="ChecksumResults" href="../../emissary/kff/ChecksumResu<a name="ChecksumResults" href="../../emissary/kff/ChecksumResults.html#ChecksumResults">ChecksumResults</a>umResults">ChecksumResults</a> res = <strong class="jxr_keyword">new</strong> <a name="ChecksumResults" href="../../emissary/kff/ChecksumResults.html#ChecksumResults">ChecksumResults</a>();
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>         <strong class="jxr_keyword">final</strong> <a name="ChecksumResults" href="../../emissary/kff/ChecksumResults.html#ChecksumResults">ChecksumResults</a> res = <strong class="jxr_keyword">new</strong> <a name="ChecksumResults" href="../../emissary/kff/ChecksumResults.html#ChecksumResults">ChecksumResults</a>();
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>         <strong class="jxr_keyword">final</strong> byte[] b = <strong class="jxr_keyword">new</strong> byte[1024];
 <a class="jxr_linenumber" name="L178" href="#L178">178</a> 
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> MessageDigest d : digest) {

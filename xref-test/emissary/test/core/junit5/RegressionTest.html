@@ -296,7 +296,7 @@
 <a class="jxr_linenumber" name="L288" href="#L288">288</a>             finalResults = place.agentProcessHeavyDuty(finalIbdo);
 <a class="jxr_linenumber" name="L289" href="#L289">289</a>             finalLogEvents = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L290" href="#L290">290</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>             <strong class="jxr_keyword">try</strong> (<a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logbackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(getLogbackLoggerName())) {
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>             <strong class="jxr_keyword">try</strong> (<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a> logbackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(getLogbackLoggerName())) {
 <a class="jxr_linenumber" name="L292" href="#L292">292</a>                 finalResults = place.agentProcessHeavyDuty(finalIbdo);
 <a class="jxr_linenumber" name="L293" href="#L293">293</a>                 finalLogEvents = logbackTester.getSimplifiedLogEvents();
 <a class="jxr_linenumber" name="L294" href="#L294">294</a>             }
@@ -321,7 +321,7 @@
 <a class="jxr_linenumber" name="L313" href="#L313">313</a> 
 <a class="jxr_linenumber" name="L314" href="#L314">314</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.processHeavyDutyHook(place, payload);
 <a class="jxr_linenumber" name="L315" href="#L315">315</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>             <strong class="jxr_keyword">try</strong> (<a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logbackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(getLogbackLoggerName())) {
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>             <strong class="jxr_keyword">try</strong> (<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a> logbackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(getLogbackLoggerName())) {
 <a class="jxr_linenumber" name="L317" href="#L317">317</a>                 <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; attachments = <strong class="jxr_keyword">super</strong>.processHeavyDutyHook(place, payload);
 <a class="jxr_linenumber" name="L318" href="#L318">318</a> 
 <a class="jxr_linenumber" name="L319" href="#L319">319</a>                 actualSimplifiedLogEvents = logbackTester.getSimplifiedLogEvents();

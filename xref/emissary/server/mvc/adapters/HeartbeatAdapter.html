@@ -43,7 +43,7 @@
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>          logger.debug(<span class="jxr_string">"Servicing inbound heartbeat for {} to {}"</span>, fromName, toName);
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>          <strong class="jxr_keyword">final</strong> <a name="DirectoryPl<a name="DirectoryPlace" href="../../../../emissary/directory/DirectoryPlace.html#DirectoryPlace">DirectoryPlace</a>../../../emissary/directory/DirectoryPlace.html#DirectoryPlace">DirectoryPlace</a> d = (<a name="DirectoryPlace" href="../../../../emissary/directory/DirectoryPlace.html#DirectoryPlace">DirectoryPlace</a>) Namespace.lookup(toName);
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>          <strong class="jxr_keyword">final</strong> <a name="DirectoryPlace" href="../../../../emissary/directory/DirectoryPlace.html#DirectoryPlace">DirectoryPlace</a> d = (<a name="DirectoryPlace" href="../../../../emissary/directory/DirectoryPlace.html#DirectoryPlace">DirectoryPlace</a>) Namespace.lookup(toName);
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>          <strong class="jxr_keyword">if</strong> (!d.isStaticPeer(KeyManipulator.getDefaultDirectoryKey(fromName))) {
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>              logger.warn(<span class="jxr_string">"Contact attempted from {} but it is not a configured peer"</span>, fromName);
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>              <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;

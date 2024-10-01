@@ -90,7 +90,7 @@
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>              <strong class="jxr_keyword">if</strong> (log.isInfoEnabled()) {
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>                  log.info(<span class="jxr_string">"Scheduling Rollable {} at {} {}"</span>, r.getRollable().getClass(), r.getPeriod(), r.getTimeUnit().name());
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>              }
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>              exec.scheduleAtFixedRate(r, r.getPeriod(), r.getPeriod(), r.getTimeUnit());
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>              <strong class="jxr_keyword">var</strong> unused = exec.scheduleAtFixedRate(r, r.getPeriod(), r.getPeriod(), r.getTimeUnit());
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>          }
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>          <strong class="jxr_keyword">if</strong> (progress) {
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>              r.addPropertyChangeListener(<strong class="jxr_keyword">this</strong>);
@@ -106,7 +106,7 @@
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>      @Override
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> propertyChange(PropertyChangeEvent evt) {
 <a class="jxr_linenumber" name="L100" href="#L100">100</a>         <strong class="jxr_keyword">if</strong> (rollers.contains((<a name="Roller" href="../../emissary/roll/Roller.html#Roller">Roller</a>) evt.getNewValue())) {
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>             <a name="Rol<a name="Roller" href="../../emissary/roll/Roller.html#Roller">Roller</a>ref="../../emissary/roll/Roller.html#Roller">Roller</a> r = (<a name="Roller" href="../../emissary/roll/Roller.html#Roller">Roller</a>) evt.getNewValue();
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>             <a name="Roller" href="../../emissary/roll/Roller.html#Roller">Roller</a> r = (<a name="Roller" href="../../emissary/roll/Roller.html#Roller">Roller</a>) evt.getNewValue();
 <a class="jxr_linenumber" name="L102" href="#L102">102</a>             <em class="jxr_comment">// only schedule one time when we're notified</em>
 <a class="jxr_linenumber" name="L103" href="#L103">103</a>             <strong class="jxr_keyword">if</strong> (r.setProgressScheduled()) {
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>                 exec.execute((<a name="Roller" href="../../emissary/roll/Roller.html#Roller">Roller</a>) evt.getNewValue());

@@ -282,7 +282,7 @@
 <a class="jxr_linenumber" name="L274" href="#L274">274</a>         assertNotNull(data, <span class="jxr_string">"Data must be read from "</span> + names[Executrix.INPATH]);
 <a class="jxr_linenumber" name="L275" href="#L275">275</a> 
 <a class="jxr_linenumber" name="L276" href="#L276">276</a>         <strong class="jxr_keyword">final</strong> String cmd = <span class="jxr_string">"cp &lt;INPUT_NAME&gt; &lt;OUTPUT_NAME&gt;"</span>;
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>         String[] c = e.getCommand(cmd, names);
+<a class="jxr_linenumber" name="L277" href="#L277">277</a>         String[] c = e.getCommand(names, cmd);
 <a class="jxr_linenumber" name="L278" href="#L278">278</a>         assertNotNull(c, <span class="jxr_string">"Command returned"</span>);
 <a class="jxr_linenumber" name="L279" href="#L279">279</a>         assertEquals(<span class="jxr_string">"/bin/sh"</span>, c[0], <span class="jxr_string">"Command runner"</span>);
 <a class="jxr_linenumber" name="L280" href="#L280">280</a> 

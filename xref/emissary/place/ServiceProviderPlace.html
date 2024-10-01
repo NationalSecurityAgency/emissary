@@ -292,7 +292,7 @@
 <a class="jxr_linenumber" name="L284" href="#L284">284</a>         configureServicePlace(placeLocation);
 <a class="jxr_linenumber" name="L285" href="#L285">285</a> 
 <a class="jxr_linenumber" name="L286" href="#L286">286</a>         <em class="jxr_comment">// Backwards compatibility setup items</em>
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>         <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntr<a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>ryEntry">DirectoryEntry</a> firstentry = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(keys.get(0));
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>         <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> firstentry = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(keys.get(0));
 <a class="jxr_linenumber" name="L288" href="#L288">288</a>         myKey = firstentry.getKey();
 <a class="jxr_linenumber" name="L289" href="#L289">289</a>         serviceCost = firstentry.getCost();
 <a class="jxr_linenumber" name="L290" href="#L290">290</a>         serviceQuality = firstentry.getQuality();
@@ -430,7 +430,7 @@
 <a class="jxr_linenumber" name="L422" href="#L422">422</a>             keys.add(placeLocation); <em class="jxr_comment">// save as first in list</em>
 <a class="jxr_linenumber" name="L423" href="#L423">423</a>             locationPart = KeyManipulator.getServiceLocation(placeLocation);
 <a class="jxr_linenumber" name="L424" href="#L424">424</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (!placeLocation.contains(<span class="jxr_string">"://"</span>)) {
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>             <a name="EmissaryNode" href="../../emissary/directory/Emissar<a name="EmissaryNode" href="../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a>missaryNode">EmissaryNode</a> node = <strong class="jxr_keyword">new</strong> <a name="EmissaryNode" href="../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a>();
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>             <a name="EmissaryNode" href="../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a> node = <strong class="jxr_keyword">new</strong> <a name="EmissaryNode" href="../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a>();
 <a class="jxr_linenumber" name="L426" href="#L426">426</a>             locationPart = <span class="jxr_string">"http://"</span> + node.getNodeName() + <span class="jxr_string">":"</span> + node.getNodePort() + <span class="jxr_string">"/"</span> + placeLocation;
 <a class="jxr_linenumber" name="L427" href="#L427">427</a>         }
 <a class="jxr_linenumber" name="L428" href="#L428">428</a> 
@@ -456,12 +456,12 @@
 <a class="jxr_linenumber" name="L448" href="#L448">448</a>         <strong class="jxr_keyword">if</strong> (placeName != <strong class="jxr_keyword">null</strong> &amp;&amp; serviceName != <strong class="jxr_keyword">null</strong> &amp;&amp; serviceType != <strong class="jxr_keyword">null</strong> &amp;&amp; serviceCost &gt; -1 &amp;&amp; serviceQuality &gt; -1) {
 <a class="jxr_linenumber" name="L449" href="#L449">449</a>             <em class="jxr_comment">// pick up the proxies(save full 4-tuple keys!)</em>
 <a class="jxr_linenumber" name="L450" href="#L450">450</a>             <strong class="jxr_keyword">for</strong> (String sp : configG.findEntries(SERVICE_PROXY)) {
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>                 <a name="DirectoryEntry" href="../../emissary/directory/Direc<a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>#DirectoryEntry">DirectoryEntry</a> de = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(sp, serviceName, serviceType, locationPart, serviceDescription, serviceCost, serviceQuality);
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>                 <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> de = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(sp, serviceName, serviceType, locationPart, serviceDescription, serviceCost, serviceQuality);
 <a class="jxr_linenumber" name="L452" href="#L452">452</a>                 keys.add(de.getFullKey());
 <a class="jxr_linenumber" name="L453" href="#L453">453</a>             }
 <a class="jxr_linenumber" name="L454" href="#L454">454</a>             <em class="jxr_comment">// pick up the denied proxies(save full 4-tuple keys!)</em>
 <a class="jxr_linenumber" name="L455" href="#L455">455</a>             <strong class="jxr_keyword">for</strong> (String sp : configG.findEntries(SERVICE_PROXY_DENY)) {
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>                 <a name="DirectoryEntry" href="../../emissary/directory/Direc<a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>#DirectoryEntry">DirectoryEntry</a> de = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(sp, serviceName, serviceType, locationPart, serviceDescription, serviceCost, serviceQuality);
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>                 <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> de = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(sp, serviceName, serviceType, locationPart, serviceDescription, serviceCost, serviceQuality);
 <a class="jxr_linenumber" name="L457" href="#L457">457</a>                 denyList.add(de.getDataType());
 <a class="jxr_linenumber" name="L458" href="#L458">458</a>             }
 <a class="jxr_linenumber" name="L459" href="#L459">459</a>         } <strong class="jxr_keyword">else</strong> {
@@ -715,7 +715,7 @@
 <a class="jxr_linenumber" name="L707" href="#L707">707</a>                 nukem.add(form);
 <a class="jxr_linenumber" name="L708" href="#L708">708</a>             } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L709" href="#L709">709</a>                 <em class="jxr_comment">// cardem</em>
-<a class="jxr_linenumber" name="L710" href="#L710">710</a>                 <a name="WildcardEntry" href="../../emissary/directory/Wildc<a name="WildcardEntry" href="../../emissary/directory/WildcardEntry.html#WildcardEntry">WildcardEntry</a>#WildcardEntry">WildcardEntry</a> wc = <strong class="jxr_keyword">new</strong> <a name="WildcardEntry" href="../../emissary/directory/WildcardEntry.html#WildcardEntry">WildcardEntry</a>(form);
+<a class="jxr_linenumber" name="L710" href="#L710">710</a>                 <a name="WildcardEntry" href="../../emissary/directory/WildcardEntry.html#WildcardEntry">WildcardEntry</a> wc = <strong class="jxr_keyword">new</strong> <a name="WildcardEntry" href="../../emissary/directory/WildcardEntry.html#WildcardEntry">WildcardEntry</a>(form);
 <a class="jxr_linenumber" name="L711" href="#L711">711</a>                 <strong class="jxr_keyword">if</strong> (!Collections.disjoint(wc.asSet(), serviceProxies)) {
 <a class="jxr_linenumber" name="L712" href="#L712">712</a>                     nukem.add(form);
 <a class="jxr_linenumber" name="L713" href="#L713">713</a>                 }
@@ -801,7 +801,7 @@
 <a class="jxr_linenumber" name="L793" href="#L793">793</a>     @Override
 <a class="jxr_linenumber" name="L794" href="#L794">794</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addServiceProxy(String serviceProxy) {
 <a class="jxr_linenumber" name="L795" href="#L795">795</a>         <em class="jxr_comment">// Add new one to the top key in the list</em>
-<a class="jxr_linenumber" name="L796" href="#L796">796</a>         <a name="DirectoryEntry" href="../../emissary/directory/Direc<a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>#DirectoryEntry">DirectoryEntry</a> de = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(keys.get(0));
+<a class="jxr_linenumber" name="L796" href="#L796">796</a>         <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> de = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(keys.get(0));
 <a class="jxr_linenumber" name="L797" href="#L797">797</a>         <strong class="jxr_keyword">boolean</strong> keyAdded = false;
 <a class="jxr_linenumber" name="L798" href="#L798">798</a>         <strong class="jxr_keyword">if</strong> (!de.getDataType().equals(serviceProxy)) {
 <a class="jxr_linenumber" name="L799" href="#L799">799</a>             <em class="jxr_comment">// Clear out the placeholder</em>
@@ -834,7 +834,7 @@
 <a class="jxr_linenumber" name="L826" href="#L826">826</a>     @Override
 <a class="jxr_linenumber" name="L827" href="#L827">827</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addKey(String key) {
 <a class="jxr_linenumber" name="L828" href="#L828">828</a>         <strong class="jxr_keyword">if</strong> (KeyManipulator.isValid(key)) {
-<a class="jxr_linenumber" name="L829" href="#L829">829</a>             <a name="DirectoryEntry" href="../../emissary/directory/Direc<a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>#DirectoryEntry">DirectoryEntry</a> de = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(keys.get(0));
+<a class="jxr_linenumber" name="L829" href="#L829">829</a>             <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> de = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(keys.get(0));
 <a class="jxr_linenumber" name="L830" href="#L830">830</a>             <strong class="jxr_keyword">if</strong> (de.getDataType().equals(UNUSED_PROXY)) {
 <a class="jxr_linenumber" name="L831" href="#L831">831</a>                 keys.remove(0);
 <a class="jxr_linenumber" name="L832" href="#L832">832</a>             }
@@ -923,7 +923,7 @@
 <a class="jxr_linenumber" name="L915" href="#L915">915</a>                 <em class="jxr_comment">// This should never happen, we require a local</em>
 <a class="jxr_linenumber" name="L916" href="#L916">916</a>                 <em class="jxr_comment">// directory on every JVM...</em>
 <a class="jxr_linenumber" name="L917" href="#L917">917</a>                 logger.debug(<span class="jxr_string">"Deregistering my {} proxies {} from remote dir {}"</span>, keys.size(), keys, dirPlace);
-<a class="jxr_linenumber" name="L918" href="#L918">918</a>                 <a name="DirectoryAdapter" href="../../emissary/server/mvc/adap<a name="DirectoryAdapter" href="../../emissary/server/mvc/adapters/DirectoryAdapter.html#DirectoryAdapter">DirectoryAdapter</a>apter.html#DirectoryAdapter">DirectoryAdapter</a> da = <strong class="jxr_keyword">new</strong> <a name="DirectoryAdapter" href="../../emissary/directory/DirectoryAdapter.html#DirectoryAdapter">DirectoryAdapter</a>();
+<a class="jxr_linenumber" name="L918" href="#L918">918</a>                 <a name="DirectoryAdapter" href="../../emissary/server/mvc/adapters/DirectoryAdapter.html#DirectoryAdapter">DirectoryAdapter</a> da = <strong class="jxr_keyword">new</strong> <a name="DirectoryAdapter" href="../../emissary/server/mvc/adapters/DirectoryAdapter.html#DirectoryAdapter">DirectoryAdapter</a>();
 <a class="jxr_linenumber" name="L919" href="#L919">919</a>                 da.outboundRemovePlaces(dirPlace, keys, false);
 <a class="jxr_linenumber" name="L920" href="#L920">920</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (localDirPlace != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L921" href="#L921">921</a>                 logger.debug(<span class="jxr_string">"Deregistering my {} proxies {}"</span>, keys.size(), keys);
@@ -963,7 +963,7 @@
 <a class="jxr_linenumber" name="L955" href="#L955">955</a> 
 <a class="jxr_linenumber" name="L956" href="#L956">956</a>         <em class="jxr_comment">// Make sure we leave something on the keys list</em>
 <a class="jxr_linenumber" name="L957" href="#L957">957</a>         <strong class="jxr_keyword">if</strong> (keys.isEmpty() &amp;&amp; !keylist.isEmpty()) {
-<a class="jxr_linenumber" name="L958" href="#L958">958</a>             <a name="DirectoryEntry" href="../../emissary/directory/Direc<a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>#DirectoryEntry">DirectoryEntry</a> de = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(keylist.get(0));
+<a class="jxr_linenumber" name="L958" href="#L958">958</a>             <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> de = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(keylist.get(0));
 <a class="jxr_linenumber" name="L959" href="#L959">959</a>             de.setCost(serviceCost);
 <a class="jxr_linenumber" name="L960" href="#L960">960</a>             de.setQuality(serviceQuality);
 <a class="jxr_linenumber" name="L961" href="#L961">961</a>             de.setDataType(UNUSED_PROXY);
@@ -986,7 +986,7 @@
 <a class="jxr_linenumber" name="L978" href="#L978">978</a>             deregisterFromDirectory(keylist);
 <a class="jxr_linenumber" name="L979" href="#L979">979</a> 
 <a class="jxr_linenumber" name="L980" href="#L980">980</a>             <strong class="jxr_keyword">if</strong> (keys.isEmpty()) {
-<a class="jxr_linenumber" name="L981" href="#L981">981</a>                 <a name="DirectoryEntry" href="../../emissary/directory/Direc<a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>#DirectoryEntry">DirectoryEntry</a> de = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(key);
+<a class="jxr_linenumber" name="L981" href="#L981">981</a>                 <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> de = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(key);
 <a class="jxr_linenumber" name="L982" href="#L982">982</a>                 de.setDataType(UNUSED_PROXY);
 <a class="jxr_linenumber" name="L983" href="#L983">983</a>                 keys.add(de.getFullKey());
 <a class="jxr_linenumber" name="L984" href="#L984">984</a>             }
@@ -1107,7 +1107,7 @@
 <a class="jxr_linenumber" name="L1099" href="#L1099">1099</a>                     List&lt;?&gt; familyTree = (List&lt;?&gt;) payload;
 <a class="jxr_linenumber" name="L1100" href="#L1100">1100</a>                     <strong class="jxr_keyword">for</strong> (Object familyMember : familyTree) {
 <a class="jxr_linenumber" name="L1101" href="#L1101">1101</a>                         <strong class="jxr_keyword">if</strong> (familyMember instanceof <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a>) {
-<a class="jxr_linenumber" name="L1102" href="#L1102">1102</a>                             <a name="IBaseDataObject" <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a>ssary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> member = (<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a>) familyMember;
+<a class="jxr_linenumber" name="L1102" href="#L1102">1102</a>                             <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> member = (<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a>) familyMember;
 <a class="jxr_linenumber" name="L1103" href="#L1103">1103</a>                             <strong class="jxr_keyword">if</strong> (!member.shortName().contains(Family.SEP)) {
 <a class="jxr_linenumber" name="L1104" href="#L1104">1104</a>                                 <strong class="jxr_keyword">return</strong> member;
 <a class="jxr_linenumber" name="L1105" href="#L1105">1105</a>                             }

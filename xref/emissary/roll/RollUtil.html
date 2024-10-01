@@ -51,7 +51,7 @@
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="Roller" href="../../emissary/roll/Roller.html#Roller">Roller</a> buildRoller(Map&lt;String, String&gt; config) {
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>          String clz = config.get(<span class="jxr_string">"CLASS"</span>);
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>          <em class="jxr_comment">// assumes a no-arg constructor and a Rollable instance</em>
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>          <a name="Rolla<a name="Rollable" href="../../emissary/roll/Rollable.html#Rollable">Rollable</a>f="../../emissary/roll/Rollable.html#Rollable">Rollable</a> r = (<a name="Rollable" href="../../emissary/roll/Rollable.html#Rollable">Rollable</a>) Factory.create(clz);
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          <a name="Rollable" href="../../emissary/roll/Rollable.html#Rollable">Rollable</a> r = (<a name="Rollable" href="../../emissary/roll/Rollable.html#Rollable">Rollable</a>) Factory.create(clz);
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>          TimeUnit t = getUnit(config.get(<span class="jxr_string">"TIME_UNIT"</span>));
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>          <strong class="jxr_keyword">long</strong> period = getLong(config.get(<span class="jxr_string">"TIME_PERIOD"</span>));
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>          <strong class="jxr_keyword">long</strong> max = getLong(config.get(<span class="jxr_string">"PROGRESS_MAX"</span>));

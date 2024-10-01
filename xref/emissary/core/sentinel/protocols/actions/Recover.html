@@ -31,7 +31,7 @@
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>          <strong class="jxr_keyword">for</strong> (String agentName : agentNames) {
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>              <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>                  <a name="IMobileAgent" href=<a name="IMobileAgent" href="../../../../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a>/../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a> mobileAgent = (<a name="IMobileAgent" href="../../../../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a>) Namespace.lookup(agentName);
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>                  <a name="IMobileAgent" href="../../../../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a> mobileAgent = (<a name="IMobileAgent" href="../../../../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a>) Namespace.lookup(agentName);
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>                  logger.warn(<span class="jxr_string">"Sentinel attempting recovery for {}"</span>, agentName);
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>                  mobileAgent.interrupt();
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>              } <strong class="jxr_keyword">catch</strong> (Exception e) {

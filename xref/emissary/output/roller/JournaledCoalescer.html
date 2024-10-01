@@ -140,7 +140,7 @@
 <a class="jxr_linenumber" name="L132" href="#L132">132</a> <em class="jxr_javadoccomment">     * coalesced successfully but cleanup failed. If there are not any files with the same name, just rename the rolled</em>
 <a class="jxr_linenumber" name="L133" href="#L133">133</a> <em class="jxr_javadoccomment">     * file. Otherwise, the rolled file will get cleaned up with the normal process.</em>
 <a class="jxr_linenumber" name="L134" href="#L134">134</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> cleanupOrphanedRolledFiles() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> cleanupOrphanedRolledFiles() {
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>         <strong class="jxr_keyword">try</strong> (DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(outputPath, <span class="jxr_string">"*"</span> + ROLLED_EXT)) {
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>             <strong class="jxr_keyword">for</strong> (Path entry : stream) {
 <a class="jxr_linenumber" name="L138" href="#L138">138</a>                 String finalOutputFilename = FilenameUtils.getBaseName(entry.toString());
@@ -232,7 +232,7 @@
 <a class="jxr_linenumber" name="L224" href="#L224">224</a>     }
 <a class="jxr_linenumber" name="L225" href="#L225">225</a> 
 <a class="jxr_linenumber" name="L226" href="#L226">226</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> loadJournal(Path path, Map&lt;String, Collection&lt;Journal&gt;&gt; outputMap) {
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>         <strong class="jxr_keyword">try</strong> (<a name="JournalReader" href="../../../emissary/output/rolle<a name="JournalReader" href="../../../emissary/output/roller/journal/JournalReader.html#JournalReader">JournalReader</a>rnalReader.html#JournalReader">JournalReader</a> jr = <strong class="jxr_keyword">new</strong> <a name="JournalReader" href="../../../emissary/output/roller/journal/JournalReader.html#JournalReader">JournalReader</a>(path)) {
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>         <strong class="jxr_keyword">try</strong> (<a name="JournalReader" href="../../../emissary/output/roller/journal/JournalReader.html#JournalReader">JournalReader</a> jr = <strong class="jxr_keyword">new</strong> <a name="JournalReader" href="../../../emissary/output/roller/journal/JournalReader.html#JournalReader">JournalReader</a>(path)) {
 <a class="jxr_linenumber" name="L228" href="#L228">228</a>             <a name="Journal" href="../../../emissary/output/roller/journal/Journal.html#Journal">Journal</a> j = jr.getJournal();
 <a class="jxr_linenumber" name="L229" href="#L229">229</a>             outputMap.computeIfAbsent(j.getKey(), k -&gt; <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;()).add(j);
 <a class="jxr_linenumber" name="L230" href="#L230">230</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
@@ -331,75 +331,82 @@
 <a class="jxr_linenumber" name="L323" href="#L323">323</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.rolling;
 <a class="jxr_linenumber" name="L324" href="#L324">324</a>     }
 <a class="jxr_linenumber" name="L325" href="#L325">325</a> 
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>     <em class="jxr_javadoccomment">/** @deprecated replaced by {@link #finalizeRoll(Collection, Path, Path)} */</em>
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>     <em class="jxr_javadoccomment">/** @deprecated replaced by {@link #finalizeRoll(Path, Path, Collection)} */</em>
 <a class="jxr_linenumber" name="L327" href="#L327">327</a>     @Deprecated(since = <span class="jxr_string">"8.1.0"</span>)
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> finalize(Collection&lt;Journal&gt; journals, Path rolledOutputPath, Path finalOutputPath) <strong class="jxr_keyword">throws</strong> IOException { <em class="jxr_comment">// NOSONAR</em>
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>         finalizeRoll(journals, rolledOutputPath, finalOutputPath);
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>     }
-<a class="jxr_linenumber" name="L331" href="#L331">331</a> 
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>     <em class="jxr_javadoccomment">/** @deprecated replaced by {@link #finalizeRoll(Path, Path)} */</em>
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>     @Deprecated(since = <span class="jxr_string">"8.1.0"</span>)
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> finalize(Path rolledOutputPath, Path finalOutputPath) <strong class="jxr_keyword">throws</strong> IOException { <em class="jxr_comment">// NOSONAR</em>
-<a class="jxr_linenumber" name="L335" href="#L335">335</a>         finalizeRoll(rolledOutputPath, finalOutputPath);
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>     }
-<a class="jxr_linenumber" name="L337" href="#L337">337</a> 
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> finalizeRoll(Collection&lt;Journal&gt; journals, Path rolledOutputPath, Path finalOutputPath) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>         cleanupFiles(journals);
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>         finalizeRoll(rolledOutputPath, finalOutputPath);
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>     }
-<a class="jxr_linenumber" name="L342" href="#L342">342</a> 
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> finalizeRoll(Path rolledOutputPath, Path finalOutputPath) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>         <strong class="jxr_keyword">if</strong> (!Files.exists(rolledOutputPath)) {
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L346" href="#L346">346</a>         }
-<a class="jxr_linenumber" name="L347" href="#L347">347</a> 
-<a class="jxr_linenumber" name="L348" href="#L348">348</a>         <strong class="jxr_keyword">if</strong> (Files.size(rolledOutputPath) &gt; 0) {
-<a class="jxr_linenumber" name="L349" href="#L349">349</a>             Files.move(rolledOutputPath, finalOutputPath);
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>             LOG.info(<span class="jxr_string">"Cleaned part files and moved rolled file to {}"</span>, finalOutputPath);
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>             <em class="jxr_comment">// delete the rolled file if it is empty</em>
-<a class="jxr_linenumber" name="L353" href="#L353">353</a>             Files.delete(rolledOutputPath);
-<a class="jxr_linenumber" name="L354" href="#L354">354</a>         }
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>     }
-<a class="jxr_linenumber" name="L356" href="#L356">356</a> 
-<a class="jxr_linenumber" name="L357" href="#L357">357</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> renameToError(Path path) {
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L359" href="#L359">359</a>             Path errorPath = Paths.get(path.toString() + ERROR_EXT);
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>             Files.move(path, errorPath);
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>             LOG.warn(<span class="jxr_string">"Unable to rename file {}."</span>, path.toString(), ex);
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>         }
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>     }
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> 
-<a class="jxr_linenumber" name="L366" href="#L366">366</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     * Test to see if a rolled file is orphaned</em>
-<a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L369" href="#L369">369</a> <em class="jxr_javadoccomment">     * @param startsWith the name of the rolled file</em>
-<a class="jxr_linenumber" name="L370" href="#L370">370</a> <em class="jxr_javadoccomment">     * @return true if no part/journal files exist, false otherwise</em>
-<a class="jxr_linenumber" name="L371" href="#L371">371</a> <em class="jxr_javadoccomment">     * @throws IOException if there is an issue</em>
-<a class="jxr_linenumber" name="L372" href="#L372">372</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L373" href="#L373">373</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isOrphanedFile(String startsWith) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L374" href="#L374">374</a>         <strong class="jxr_keyword">try</strong> (DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(outputPath, startsWith + PART_GLOB)) {
-<a class="jxr_linenumber" name="L375" href="#L375">375</a>             <strong class="jxr_keyword">return</strong> !stream.iterator().hasNext();
-<a class="jxr_linenumber" name="L376" href="#L376">376</a>         }
-<a class="jxr_linenumber" name="L377" href="#L377">377</a>     }
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> 
-<a class="jxr_linenumber" name="L379" href="#L379">379</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> cleanupFiles(Collection&lt;Journal&gt; journals) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>         <strong class="jxr_keyword">for</strong> (<a name="Journal" href="../../../emissary/output/roller/journal/Journal.html#Journal">Journal</a> journal : journals) {
-<a class="jxr_linenumber" name="L381" href="#L381">381</a>             Path jpath = journal.getJournalPath();
-<a class="jxr_linenumber" name="L382" href="#L382">382</a>             deleteParts(journal.getEntries());
-<a class="jxr_linenumber" name="L383" href="#L383">383</a>             Files.deleteIfExists(jpath);
-<a class="jxr_linenumber" name="L384" href="#L384">384</a>         }
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>     }
-<a class="jxr_linenumber" name="L386" href="#L386">386</a> 
-<a class="jxr_linenumber" name="L387" href="#L387">387</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> deleteParts(Collection&lt;JournalEntry&gt; entries) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>         <strong class="jxr_keyword">for</strong> (<a name="JournalEntry" href="../../../emissary/output/roller/journal/JournalEntry.html#JournalEntry">JournalEntry</a> entry : entries) {
-<a class="jxr_linenumber" name="L389" href="#L389">389</a>             Path p = Paths.get(entry.getVal());
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>             Files.deleteIfExists(p);
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>     @SuppressWarnings(<span class="jxr_string">"InconsistentOverloads"</span>)
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> finalize(Collection&lt;Journal&gt; journals, Path rolledOutputPath, Path finalOutputPath) <strong class="jxr_keyword">throws</strong> IOException { <em class="jxr_comment">// NOSONAR</em>
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>         finalizeRoll(rolledOutputPath, finalOutputPath, journals);
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>     }
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> 
+<a class="jxr_linenumber" name="L333" href="#L333">333</a>     <em class="jxr_javadoccomment">/** @deprecated replaced by {@link #finalizeRoll(Path, Path)} */</em>
+<a class="jxr_linenumber" name="L334" href="#L334">334</a>     @Deprecated(since = <span class="jxr_string">"8.1.0"</span>)
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> finalize(Path rolledOutputPath, Path finalOutputPath) <strong class="jxr_keyword">throws</strong> IOException { <em class="jxr_comment">// NOSONAR</em>
+<a class="jxr_linenumber" name="L336" href="#L336">336</a>         finalizeRoll(rolledOutputPath, finalOutputPath);
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>     }
+<a class="jxr_linenumber" name="L338" href="#L338">338</a> 
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>     @Deprecated(forRemoval = <strong class="jxr_keyword">true</strong>)
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>     @SuppressWarnings(<span class="jxr_string">"InconsistentOverloads"</span>)
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> finalizeRoll(Collection&lt;Journal&gt; journals, Path rolledOutputPath, Path finalOutputPath) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>         finalizeRoll(rolledOutputPath, finalOutputPath, journals);
+<a class="jxr_linenumber" name="L343" href="#L343">343</a>     }
+<a class="jxr_linenumber" name="L344" href="#L344">344</a> 
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> finalizeRoll(Path rolledOutputPath, Path finalOutputPath, Collection&lt;Journal&gt; journals) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>         cleanupFiles(journals);
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>         finalizeRoll(rolledOutputPath, finalOutputPath);
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>     }
+<a class="jxr_linenumber" name="L349" href="#L349">349</a> 
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> finalizeRoll(Path rolledOutputPath, Path finalOutputPath) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>         <strong class="jxr_keyword">if</strong> (!Files.exists(rolledOutputPath)) {
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>         }
+<a class="jxr_linenumber" name="L354" href="#L354">354</a> 
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>         <strong class="jxr_keyword">if</strong> (Files.size(rolledOutputPath) &gt; 0) {
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>             Files.move(rolledOutputPath, finalOutputPath);
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>             LOG.info(<span class="jxr_string">"Cleaned part files and moved rolled file to {}"</span>, finalOutputPath);
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>             <em class="jxr_comment">// delete the rolled file if it is empty</em>
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>             Files.delete(rolledOutputPath);
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>         }
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>     }
+<a class="jxr_linenumber" name="L363" href="#L363">363</a> 
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> renameToError(Path path) {
+<a class="jxr_linenumber" name="L365" href="#L365">365</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>             Path errorPath = Paths.get(path.toString() + ERROR_EXT);
+<a class="jxr_linenumber" name="L367" href="#L367">367</a>             Files.move(path, errorPath);
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>             LOG.warn(<span class="jxr_string">"Unable to rename file {}."</span>, path.toString(), ex);
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>         }
+<a class="jxr_linenumber" name="L371" href="#L371">371</a>     }
+<a class="jxr_linenumber" name="L372" href="#L372">372</a> 
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> <em class="jxr_javadoccomment">     * Test to see if a rolled file is orphaned</em>
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     * @param startsWith the name of the rolled file</em>
+<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     * @return true if no part/journal files exist, false otherwise</em>
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     * @throws IOException if there is an issue</em>
+<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isOrphanedFile(String startsWith) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>         <strong class="jxr_keyword">try</strong> (DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(outputPath, startsWith + PART_GLOB)) {
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>             <strong class="jxr_keyword">return</strong> !stream.iterator().hasNext();
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>         }
+<a class="jxr_linenumber" name="L384" href="#L384">384</a>     }
+<a class="jxr_linenumber" name="L385" href="#L385">385</a> 
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> cleanupFiles(Collection&lt;Journal&gt; journals) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L387" href="#L387">387</a>         <strong class="jxr_keyword">for</strong> (<a name="Journal" href="../../../emissary/output/roller/journal/Journal.html#Journal">Journal</a> journal : journals) {
+<a class="jxr_linenumber" name="L388" href="#L388">388</a>             Path jpath = journal.getJournalPath();
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>             deleteParts(journal.getEntries());
+<a class="jxr_linenumber" name="L390" href="#L390">390</a>             Files.deleteIfExists(jpath);
 <a class="jxr_linenumber" name="L391" href="#L391">391</a>         }
 <a class="jxr_linenumber" name="L392" href="#L392">392</a>     }
 <a class="jxr_linenumber" name="L393" href="#L393">393</a> 
-<a class="jxr_linenumber" name="L394" href="#L394">394</a> }
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> deleteParts(Collection&lt;JournalEntry&gt; entries) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>         <strong class="jxr_keyword">for</strong> (<a name="JournalEntry" href="../../../emissary/output/roller/journal/JournalEntry.html#JournalEntry">JournalEntry</a> entry : entries) {
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>             Path p = Paths.get(entry.getVal());
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>             Files.deleteIfExists(p);
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>         }
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>     }
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> 
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

@@ -96,7 +96,7 @@
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>      <strong class="jxr_keyword">protected</strong> PriorityQueue&lt;PriorityDirectory&gt; myDirectories = <strong class="jxr_keyword">new</strong> PriorityQueue&lt;&gt;();
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>      <em class="jxr_comment">// Stats tracking, map of stats per remote pick up place</em>
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>      <strong class="jxr_keyword">protected</strong> <a name="WorkSpaceStats" href="../../emissary/pickup/WorkSpace.h<a name="WorkSpaceStats" href="../../emissary/pickup/WorkSpace.html#WorkSpaceStats">WorkSpaceStats</a>tats">WorkSpaceStats</a> stats = <strong class="jxr_keyword">new</strong> <a name="WorkSpaceStats" href="../../emissary/pickup/WorkSpace.html#WorkSpaceStats">WorkSpaceStats</a>();
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>      <strong class="jxr_keyword">protected</strong> <a name="WorkSpaceStats" href="../../emissary/pickup/WorkSpace.html#WorkSpaceStats">WorkSpaceStats</a> stats = <strong class="jxr_keyword">new</strong> <a name="WorkSpaceStats" href="../../emissary/pickup/WorkSpace.html#WorkSpaceStats">WorkSpaceStats</a>();
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>      <em class="jxr_comment">// Thread to notify clients that there is work to do</em>
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>      @Nullable
@@ -162,7 +162,7 @@
 <a class="jxr_linenumber" name="L154" href="#L154">154</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L155" href="#L155">155</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(<strong class="jxr_keyword">final</strong> String[] args) {
 <a class="jxr_linenumber" name="L156" href="#L156">156</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>             <strong class="jxr_keyword">final</strong> <a name="WorkSpace" href="../../emissary/pickup/WorkSpac<a name="WorkSpace" href="../../emissary/pickup/WorkSpace.html#WorkSpace">WorkSpace</a>rkSpace">WorkSpace</a> ws = <strong class="jxr_keyword">new</strong> <a name="WorkSpace" href="../../emissary/pickup/WorkSpace.html#WorkSpace">WorkSpace</a>(BaseCommand.parse(FeedCommand.<strong class="jxr_keyword">class</strong>, args));
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>             <strong class="jxr_keyword">final</strong> <a name="WorkSpace" href="../../emissary/pickup/WorkSpace.html#WorkSpace">WorkSpace</a> ws = <strong class="jxr_keyword">new</strong> <a name="WorkSpace" href="../../emissary/pickup/WorkSpace.html#WorkSpace">WorkSpace</a>(BaseCommand.parse(FeedCommand.<strong class="jxr_keyword">class</strong>, args));
 <a class="jxr_linenumber" name="L158" href="#L158">158</a>             ws.run();
 <a class="jxr_linenumber" name="L159" href="#L159">159</a>             logger.info(<span class="jxr_string">"Workspace has completed the mission [ +1 health ]."</span>);
 <a class="jxr_linenumber" name="L160" href="#L160">160</a>             ws.shutDown();
@@ -302,7 +302,7 @@
 <a class="jxr_linenumber" name="L294" href="#L294">294</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> shutDown() {
 <a class="jxr_linenumber" name="L295" href="#L295">295</a>         stop();
 <a class="jxr_linenumber" name="L296" href="#L296">296</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.jettyStartedHere) {
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>             <strong class="jxr_keyword">final</strong> <a name="EmissaryNode" href="../../emissary/directory/Emissar<a name="EmissaryNode" href="../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a>missaryNode">EmissaryNode</a> node = <strong class="jxr_keyword">new</strong> <a name="EmissaryNode" href="../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a>();
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>             <strong class="jxr_keyword">final</strong> <a name="EmissaryNode" href="../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a> node = <strong class="jxr_keyword">new</strong> <a name="EmissaryNode" href="../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a>();
 <a class="jxr_linenumber" name="L298" href="#L298">298</a>             <strong class="jxr_keyword">if</strong> (node.isValid()) {
 <a class="jxr_linenumber" name="L299" href="#L299">299</a>                 <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L300" href="#L300">300</a>                     <strong class="jxr_keyword">final</strong> <a name="EmissaryServer" href="../../emissary/server/EmissaryServer.html#EmissaryServer">EmissaryServer</a> s = EmissaryServer.lookup();
@@ -400,7 +400,7 @@
 <a class="jxr_linenumber" name="L392" href="#L392">392</a> 
 <a class="jxr_linenumber" name="L393" href="#L393">393</a>     <strong class="jxr_keyword">public</strong> List&lt;String&gt; getDirectories() {
 <a class="jxr_linenumber" name="L394" href="#L394">394</a>         <strong class="jxr_keyword">final</strong> List&lt;String&gt; l = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L395" href="#L395">395</a>         <strong class="jxr_keyword">final</strong> <a name="PriorityDirectory" href="../../emissary/pickup/PriorityDirectory.html#PriorityDirectory">PriorityDirectory</a>[] pds = <st<a name="PriorityDirectory" href="../../emissary/pickup/PriorityDirectory.html#PriorityDirectory">PriorityDirectory</a>eyword">this</strong>.myDirectories.toArray(<strong class="jxr_keyword">new</strong> <a name="PriorityDirectory" href="../../emissary/pickup/PriorityDirectory.html#PriorityDirectory">PriorityDirectory</a>[0]);
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>         <strong class="jxr_keyword">final</strong> <a name="PriorityDirectory" href="../../emissary/pickup/PriorityDirectory.html#PriorityDirectory">PriorityDirectory</a>[] pds = <strong class="jxr_keyword">this</strong>.myDirectories.toArray(<strong class="jxr_keyword">new</strong> <a name="PriorityDirectory" href="../../emissary/pickup/PriorityDirectory.html#PriorityDirectory">PriorityDirectory</a>[0]);
 <a class="jxr_linenumber" name="L396" href="#L396">396</a>         Arrays.sort(pds);
 <a class="jxr_linenumber" name="L397" href="#L397">397</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="PriorityDirectory" href="../../emissary/pickup/PriorityDirectory.html#PriorityDirectory">PriorityDirectory</a> pd : pds) {
 <a class="jxr_linenumber" name="L398" href="#L398">398</a>             l.add(pd.toString());
@@ -533,7 +533,7 @@
 <a class="jxr_linenumber" name="L525" href="#L525">525</a> <em class="jxr_javadoccomment">     * Configure the Processor. The *.cfg file is optional</em>
 <a class="jxr_linenumber" name="L526" href="#L526">526</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L527" href="#L527">527</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> configure() {
-<a class="jxr_linenumber" name="L528" href="#L528">528</a>         <strong class="jxr_keyword">final</strong> <a name="EmissaryNode" href="../../emissary/directory/Emissar<a name="EmissaryNode" href="../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a>missaryNode">EmissaryNode</a> node = <strong class="jxr_keyword">new</strong> <a name="EmissaryNode" href="../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a>();
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>         <strong class="jxr_keyword">final</strong> <a name="EmissaryNode" href="../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a> node = <strong class="jxr_keyword">new</strong> <a name="EmissaryNode" href="../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a>();
 <a class="jxr_linenumber" name="L529" href="#L529">529</a>         <strong class="jxr_keyword">if</strong> (node.isValid()) {
 <a class="jxr_linenumber" name="L530" href="#L530">530</a>             <strong class="jxr_keyword">this</strong>.workSpaceUrl = node.getNodeScheme() + <span class="jxr_string">"://"</span> + node.getNodeName() + <span class="jxr_string">":"</span> + node.getNodePort() + <span class="jxr_string">"/"</span> + <strong class="jxr_keyword">this</strong>.workSpaceName;
 <a class="jxr_linenumber" name="L531" href="#L531">531</a>         } <strong class="jxr_keyword">else</strong> {
@@ -640,7 +640,7 @@
 <a class="jxr_linenumber" name="L632" href="#L632">632</a> <em class="jxr_javadoccomment">     * @param pup the key of the one to notify</em>
 <a class="jxr_linenumber" name="L633" href="#L633">633</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L634" href="#L634">634</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> notifyPickUp(<strong class="jxr_keyword">final</strong> String pup) {
-<a class="jxr_linenumber" name="L635" href="#L635">635</a>         <strong class="jxr_keyword">final</strong> <a name="WorkSpaceAdapter" href="../../emissary/server/mvc/adapt<a name="WorkSpaceAdapter" href="../../emissary/server/mvc/adapters/WorkSpaceAdapter.html#WorkSpaceAdapter">WorkSpaceAdapter</a>pter.html#WorkSpaceAdapter">WorkSpaceAdapter</a> tpa = <strong class="jxr_keyword">new</strong> <a name="WorkSpaceAdapter" href="../../emissary/server/mvc/adapters/WorkSpaceAdapter.html#WorkSpaceAdapter">WorkSpaceAdapter</a>();
+<a class="jxr_linenumber" name="L635" href="#L635">635</a>         <strong class="jxr_keyword">final</strong> <a name="WorkSpaceAdapter" href="../../emissary/server/mvc/adapters/WorkSpaceAdapter.html#WorkSpaceAdapter">WorkSpaceAdapter</a> tpa = <strong class="jxr_keyword">new</strong> <a name="WorkSpaceAdapter" href="../../emissary/server/mvc/adapters/WorkSpaceAdapter.html#WorkSpaceAdapter">WorkSpaceAdapter</a>();
 <a class="jxr_linenumber" name="L636" href="#L636">636</a>         logger.debug(<span class="jxr_string">"Sending notice to {}"</span>, pup);
 <a class="jxr_linenumber" name="L637" href="#L637">637</a> 
 <a class="jxr_linenumber" name="L638" href="#L638">638</a>         <strong class="jxr_keyword">boolean</strong> notified = false;
@@ -1147,7 +1147,7 @@
 <a class="jxr_linenumber" name="L1139" href="#L1139">1139</a>                     versionOutputTime = start;
 <a class="jxr_linenumber" name="L1140" href="#L1140">1140</a>                 }
 <a class="jxr_linenumber" name="L1141" href="#L1141">1141</a> 
-<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a>                 <strong class="jxr_keyword">final</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.<a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>undle">WorkBundle</a> paths = <strong class="jxr_keyword">new</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>(WorkSpace.<strong class="jxr_keyword">this</strong>.outputRootPath, WorkSpace.<strong class="jxr_keyword">this</strong>.eatPrefix);
+<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a>                 <strong class="jxr_keyword">final</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a> paths = <strong class="jxr_keyword">new</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>(WorkSpace.<strong class="jxr_keyword">this</strong>.outputRootPath, WorkSpace.<strong class="jxr_keyword">this</strong>.eatPrefix);
 <a class="jxr_linenumber" name="L1143" href="#L1143">1143</a>                 paths.setCaseId(WorkSpace.<strong class="jxr_keyword">this</strong>.dataCaseId);
 <a class="jxr_linenumber" name="L1144" href="#L1144">1144</a>                 paths.setSimpleMode(getSimpleMode());
 <a class="jxr_linenumber" name="L1145" href="#L1145">1145</a> 
@@ -1209,10 +1209,10 @@
 <a class="jxr_linenumber" name="L1201" href="#L1201">1201</a>                 <strong class="jxr_keyword">if</strong> (wantDirectories) {
 <a class="jxr_linenumber" name="L1202" href="#L1202">1202</a>                     ffOptions |= FileFind.DIRECTORIES_FLAG;
 <a class="jxr_linenumber" name="L1203" href="#L1203">1203</a>                 }
-<a class="jxr_linenumber" name="L1204" href="#L1204">1204</a>                 <strong class="jxr_keyword">final</strong> <a name="FileFind" href="../../emissary/util/io/FileFin<a name="FileFind" href="../../emissary/util/io/FileFind.html#FileFind">FileFind</a>ileFind">FileFind</a> ff = <strong class="jxr_keyword">new</strong> <a name="FileFind" href="../../emissary/util/io/FileFind.html#FileFind">FileFind</a>(ffOptions);
+<a class="jxr_linenumber" name="L1204" href="#L1204">1204</a>                 <strong class="jxr_keyword">final</strong> <a name="FileFind" href="../../emissary/util/io/FileFind.html#FileFind">FileFind</a> ff = <strong class="jxr_keyword">new</strong> <a name="FileFind" href="../../emissary/util/io/FileFind.html#FileFind">FileFind</a>(ffOptions);
 <a class="jxr_linenumber" name="L1205" href="#L1205">1205</a>                 <strong class="jxr_keyword">final</strong> Iterator&lt;?&gt; f = ff.find(dir.getDirectoryName());
 <a class="jxr_linenumber" name="L1206" href="#L1206">1206</a> 
-<a class="jxr_linenumber" name="L1207" href="#L1207">1207</a>                 <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.<a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>undle">WorkBundle</a> paths = <strong class="jxr_keyword">new</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>(basePath);
+<a class="jxr_linenumber" name="L1207" href="#L1207">1207</a>                 <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a> paths = <strong class="jxr_keyword">new</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>(basePath);
 <a class="jxr_linenumber" name="L1208" href="#L1208">1208</a>                 paths.setPriority(dir.getPriority());
 <a class="jxr_linenumber" name="L1209" href="#L1209">1209</a>                 paths.setSimpleMode(getSimpleMode());
 <a class="jxr_linenumber" name="L1210" href="#L1210">1210</a> 

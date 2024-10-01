@@ -91,7 +91,7 @@
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_javadoccomment">     * A travelogue built up as the agent moves about. Appended to by the agent as it goes from place to place.</em>
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>      <strong class="jxr_keyword">protected</strong> <a name="TransformHistory" href="../../emissary/core/TransformHistor<a name="TransformHistory" href="../../emissary/core/TransformHistory.html#TransformHistory">TransformHistory</a>History">TransformHistory</a> history = <strong class="jxr_keyword">new</strong> <a name="TransformHistory" href="../../emissary/core/TransformHistory.html#TransformHistory">TransformHistory</a>();
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>      <strong class="jxr_keyword">protected</strong> <a name="TransformHistory" href="../../emissary/core/TransformHistory.html#TransformHistory">TransformHistory</a> history = <strong class="jxr_keyword">new</strong> <a name="TransformHistory" href="../../emissary/core/TransformHistory.html#TransformHistory">TransformHistory</a>();
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     * The last determined language(characterset) of the data.</em>
@@ -200,7 +200,7 @@
 <a class="jxr_linenumber" name="L192" href="#L192">192</a>     @Nullable
 <a class="jxr_linenumber" name="L193" href="#L193">193</a>     <strong class="jxr_keyword">protected</strong> <a name="SeekableByteChannelFactory" href="../../emissary/core/channels/SeekableByteChannelFactory.html#SeekableByteChannelFactory">SeekableByteChannelFactory</a> seekableByteChannelFactory;
 <a class="jxr_linenumber" name="L194" href="#L194">194</a> 
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>     <strong class="jxr_keyword">final</strong> <a name="SafeUsageChecker" href="../../emissary/core/SafeUsageChecker.html#Sa<a name="SafeUsageChecker" href="../../emissary/core/SafeUsageChecker.html#SafeUsageChecker">SafeUsageChecker</a>SafeUsageChecker</a> safeUsageChecker = <strong class="jxr_keyword">new</strong> <a name="SafeUsageChecker" href="../../emissary/core/SafeUsageChecker.html#SafeUsageChecker">SafeUsageChecker</a>();
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>     <strong class="jxr_keyword">final</strong> <a name="SafeUsageChecker" href="../../emissary/core/SafeUsageChecker.html#SafeUsageChecker">SafeUsageChecker</a> safeUsageChecker = <strong class="jxr_keyword">new</strong> <a name="SafeUsageChecker" href="../../emissary/core/SafeUsageChecker.html#SafeUsageChecker">SafeUsageChecker</a>();
 <a class="jxr_linenumber" name="L196" href="#L196">196</a> 
 <a class="jxr_linenumber" name="L197" href="#L197">197</a>     <strong class="jxr_keyword">protected</strong> enum DataState {
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>         NO_DATA, CHANNEL_ONLY, BYTE_ARRAY_ONLY, BYTE_ARRAY_AND_CHANNEL
@@ -1359,7 +1359,7 @@
 <a class="jxr_linenumber" name="L1351" href="#L1351">1351</a>     @Deprecated
 <a class="jxr_linenumber" name="L1352" href="#L1352">1352</a>     @Override
 <a class="jxr_linenumber" name="L1353" href="#L1353">1353</a>     <strong class="jxr_keyword">public</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> clone() <strong class="jxr_keyword">throws</strong> CloneNotSupportedException {
-<a class="jxr_linenumber" name="L1354" href="#L1354">1354</a>         <strong class="jxr_keyword">final</strong> <a name="BaseDataObj<a name="BaseDataObject" href="../../emissary/core/BaseDataObject.html#BaseDataObject">BaseDataObject</a>../emissary/core/BaseDataObject.html#BaseDataObject">BaseDataObject</a> c = (<a name="BaseDataObject" href="../../emissary/core/BaseDataObject.html#BaseDataObject">BaseDataObject</a>) <strong class="jxr_keyword">super</strong>.clone();
+<a class="jxr_linenumber" name="L1354" href="#L1354">1354</a>         <strong class="jxr_keyword">final</strong> <a name="BaseDataObject" href="../../emissary/core/BaseDataObject.html#BaseDataObject">BaseDataObject</a> c = (<a name="BaseDataObject" href="../../emissary/core/BaseDataObject.html#BaseDataObject">BaseDataObject</a>) <strong class="jxr_keyword">super</strong>.clone();
 <a class="jxr_linenumber" name="L1355" href="#L1355">1355</a>         <strong class="jxr_keyword">if</strong> ((<strong class="jxr_keyword">this</strong>.theData != <strong class="jxr_keyword">null</strong>) &amp;&amp; (<strong class="jxr_keyword">this</strong>.theData.length &gt; 0)) {
 <a class="jxr_linenumber" name="L1356" href="#L1356">1356</a>             c.setData(<strong class="jxr_keyword">this</strong>.theData, 0, <strong class="jxr_keyword">this</strong>.theData.length);
 <a class="jxr_linenumber" name="L1357" href="#L1357">1357</a>         }

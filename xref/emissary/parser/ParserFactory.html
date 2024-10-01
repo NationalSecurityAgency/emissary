@@ -137,78 +137,94 @@
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     * @param type the type of data</em>
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     * @param channel the data to be parsed</em>
 <a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     * @return SessionParser implementation</em>
-<a class="jxr_linenumber" name="L132" href="#L132">132</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>     <strong class="jxr_keyword">public</strong> <a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a> makeSessionParser(String type, SeekableByteChannel channel) {
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>         <a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a> sp;
-<a class="jxr_linenumber" name="L135" href="#L135">135</a> 
-<a class="jxr_linenumber" name="L136" href="#L136">136</a>         <strong class="jxr_keyword">if</strong> (nioTypeMap.containsKey(type)) {
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>             sp = makeSessionParserClass(nioTypeMap.get(type), channel);
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L139" href="#L139">139</a>             sp = makeSessionParserClass(nioParser, channel);
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>         }
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>         <strong class="jxr_keyword">return</strong> sp;
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>     }
-<a class="jxr_linenumber" name="L143" href="#L143">143</a> 
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L145" href="#L145">145</a> <em class="jxr_javadoccomment">     * Make a session parser for the specified data type with the args</em>
-<a class="jxr_linenumber" name="L146" href="#L146">146</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L147" href="#L147">147</a> <em class="jxr_javadoccomment">     * @param clazz the class name of the parser to create</em>
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">     * @param args arguments to the parser constructor</em>
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     * @return SessionParser implementation</em>
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>     @Nullable
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>     <strong class="jxr_keyword">protected</strong> <a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a> makeSessionParserClass(@Nullable String clazz, Object... args) {
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>         <em class="jxr_comment">// Choose implementation class based on data type</em>
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>         <strong class="jxr_keyword">if</strong> (clazz == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>             logger.warn(<span class="jxr_string">"Cannot make a session parser for a null class"</span>);
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>         }
-<a class="jxr_linenumber" name="L158" href="#L158">158</a> 
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>         <a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a> sp = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L160" href="#L160">160</a> 
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>             sp = (<a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a>) Factory.create(clazz, args);
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>             logger.error(<span class="jxr_string">"Unable to instantiate {}"</span>, clazz, e);
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>         }
-<a class="jxr_linenumber" name="L166" href="#L166">166</a> 
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>         <strong class="jxr_keyword">return</strong> sp;
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>     }
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> 
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L171" href="#L171">171</a> <em class="jxr_javadoccomment">     * Instantiate the specified DataIdentifier class for typing the data</em>
-<a class="jxr_linenumber" name="L172" href="#L172">172</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> makeIdEngine(String clazz) {
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>             <a name="DataIdentif<a name="DataIdentifier" href="../../emissary/parser/DataIdentifier.html#DataIdentifier">DataIdentifier</a>../emissary/parser/DataIdentifier.html#DataIdentifier">DataIdentifier</a> d = (<a name="DataIdentifier" href="../../emissary/parser/DataIdentifier.html#DataIdentifier">DataIdentifier</a>) Factory.create(clazz);
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>             idEngine = d;
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>         } <strong class="jxr_keyword">catch</strong> (Exception ex) {
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>             logger.warn(<span class="jxr_string">"Cannot make data identifier from "</span> + clazz, ex);
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>         }
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>     }
-<a class="jxr_linenumber" name="L181" href="#L181">181</a> 
+<a class="jxr_linenumber" name="L132" href="#L132">132</a> <em class="jxr_javadoccomment">     * @deprecated use {@link #makeSessionParser(SeekableByteChannel, String)}</em>
+<a class="jxr_linenumber" name="L133" href="#L133">133</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>     @Deprecated(forRemoval = <strong class="jxr_keyword">true</strong>)
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>     @SuppressWarnings(<span class="jxr_string">"InconsistentOverloads"</span>)
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>     <strong class="jxr_keyword">public</strong> <a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a> makeSessionParser(String type, SeekableByteChannel channel) {
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>         <strong class="jxr_keyword">return</strong> makeSessionParser(channel, type);
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>     }
+<a class="jxr_linenumber" name="L139" href="#L139">139</a> 
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     * Make a session parser with the data in channel. If no NIO parser is configured for the type of this data, a standard</em>
+<a class="jxr_linenumber" name="L142" href="#L142">142</a> <em class="jxr_javadoccomment">     * byte[] parser will be produced if there is one available and the size of the data in the channel is less than the</em>
+<a class="jxr_linenumber" name="L143" href="#L143">143</a> <em class="jxr_javadoccomment">     * configured MAX_NIO_FALLBACK_SIZE. Otherwise the default NIO parser will be used.</em>
+<a class="jxr_linenumber" name="L144" href="#L144">144</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> <em class="jxr_javadoccomment">     * @param channel the data to be parsed</em>
+<a class="jxr_linenumber" name="L146" href="#L146">146</a> <em class="jxr_javadoccomment">     * @param type the type of data</em>
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> <em class="jxr_javadoccomment">     * @return SessionParser implementation</em>
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>     <strong class="jxr_keyword">public</strong> <a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a> makeSessionParser(SeekableByteChannel channel, String type) {
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>         <a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a> sp;
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> 
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>         <strong class="jxr_keyword">if</strong> (nioTypeMap.containsKey(type)) {
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>             sp = makeSessionParserClass(nioTypeMap.get(type), channel);
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>             sp = makeSessionParserClass(nioParser, channel);
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>         }
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>         <strong class="jxr_keyword">return</strong> sp;
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>     }
+<a class="jxr_linenumber" name="L159" href="#L159">159</a> 
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L161" href="#L161">161</a> <em class="jxr_javadoccomment">     * Make a session parser for the specified data type with the args</em>
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> <em class="jxr_javadoccomment">     * @param clazz the class name of the parser to create</em>
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> <em class="jxr_javadoccomment">     * @param args arguments to the parser constructor</em>
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> <em class="jxr_javadoccomment">     * @return SessionParser implementation</em>
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>     @Nullable
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>     <strong class="jxr_keyword">protected</strong> <a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a> makeSessionParserClass(@Nullable String clazz, Object... args) {
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>         <em class="jxr_comment">// Choose implementation class based on data type</em>
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>         <strong class="jxr_keyword">if</strong> (clazz == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>             logger.warn(<span class="jxr_string">"Cannot make a session parser for a null class"</span>);
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>         }
+<a class="jxr_linenumber" name="L174" href="#L174">174</a> 
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>         <a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a> sp = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> 
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>             sp = (<a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a>) Factory.create(clazz, args);
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>             logger.error(<span class="jxr_string">"Unable to instantiate {}"</span>, clazz, e);
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>         }
 <a class="jxr_linenumber" name="L182" href="#L182">182</a> 
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L184" href="#L184">184</a> <em class="jxr_javadoccomment">     * Return the key identification type fo the data in the channel</em>
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">     * @param channel the channel containing bytes to identify</em>
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     * @return string matching the keys in ParserFactory.cfg</em>
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>         <strong class="jxr_keyword">return</strong> sp;
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>     }
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> 
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     * Instantiate the specified DataIdentifier class for typing the data</em>
 <a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>     <strong class="jxr_keyword">public</strong> String identify(SeekableByteChannel channel) {
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>         <strong class="jxr_keyword">if</strong> (idEngine != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>                 <strong class="jxr_keyword">long</strong> pos = channel.position();
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>                 byte[] buf = Executrix.readDataFromChannel(channel, pos, idEngine.DATA_ID_STR_SZ);
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>                 channel.position(pos);
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>                 <strong class="jxr_keyword">return</strong> idEngine.identify(buf);
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>             } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>                 logger.warn(<span class="jxr_string">"Unable to reposition file channel"</span>, e);
-<a class="jxr_linenumber" name="L198" href="#L198">198</a>             }
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>         }
-<a class="jxr_linenumber" name="L200" href="#L200">200</a>         <strong class="jxr_keyword">return</strong> DataIdentifier.UNKNOWN_TYPE;
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>     }
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> 
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> }
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> makeIdEngine(String clazz) {
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>             <a name="DataIdentifier" href="../../emissary/parser/DataIdentifier.html#DataIdentifier">DataIdentifier</a> d = (<a name="DataIdentifier" href="../../emissary/parser/DataIdentifier.html#DataIdentifier">DataIdentifier</a>) Factory.create(clazz);
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>             idEngine = d;
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>         } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>             logger.warn(<span class="jxr_string">"Cannot make data identifier from "</span> + clazz, ex);
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>         }
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>     }
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> 
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> 
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">     * Return the key identification type fo the data in the channel</em>
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> <em class="jxr_javadoccomment">     * @param channel the channel containing bytes to identify</em>
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_javadoccomment">     * @return string matching the keys in ParserFactory.cfg</em>
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>     <strong class="jxr_keyword">public</strong> String identify(SeekableByteChannel channel) {
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>         <strong class="jxr_keyword">if</strong> (idEngine != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>                 <strong class="jxr_keyword">long</strong> pos = channel.position();
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>                 byte[] buf = Executrix.readDataFromChannel(channel, pos, idEngine.DATA_ID_STR_SZ);
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>                 channel.position(pos);
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>                 <strong class="jxr_keyword">return</strong> idEngine.identify(buf);
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>             } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>                 logger.warn(<span class="jxr_string">"Unable to reposition file channel"</span>, e);
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>             }
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>         }
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>         <strong class="jxr_keyword">return</strong> DataIdentifier.UNKNOWN_TYPE;
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>     }
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> 
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

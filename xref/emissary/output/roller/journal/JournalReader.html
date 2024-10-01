@@ -101,7 +101,7 @@
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>      }
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>      <em class="jxr_comment">// read long followed by null sep. return -1 if any issues</em>
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">long</strong> getSequence() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">long</strong> getSequence() {
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>          <strong class="jxr_keyword">long</strong> seq = b.getLong();
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>          <strong class="jxr_keyword">if</strong> (b.get() != SEP) {
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>              <strong class="jxr_keyword">return</strong> -1;
@@ -209,7 +209,7 @@
 <a class="jxr_linenumber" name="L201" href="#L201">201</a>     @SuppressWarnings(<span class="jxr_string">"SystemOut"</span>)
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>         String path = args[0];
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>         <strong class="jxr_keyword">try</strong> (<a name="JournalReader" href="../../../../emissary/output/ro<a name="JournalReader" href="../../../../emissary/output/roller/journal/JournalReader.html#JournalReader">JournalReader</a>JournalReader.html#JournalReader">JournalReader</a> jr = <strong class="jxr_keyword">new</strong> <a name="JournalReader" href="../../../../emissary/output/roller/journal/JournalReader.html#JournalReader">JournalReader</a>(Paths.get(path))) {
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>         <strong class="jxr_keyword">try</strong> (<a name="JournalReader" href="../../../../emissary/output/roller/journal/JournalReader.html#JournalReader">JournalReader</a> jr = <strong class="jxr_keyword">new</strong> <a name="JournalReader" href="../../../../emissary/output/roller/journal/JournalReader.html#JournalReader">JournalReader</a>(Paths.get(path))) {
 <a class="jxr_linenumber" name="L205" href="#L205">205</a>             <a name="Journal" href="../../../../emissary/output/roller/journal/Journal.html#Journal">Journal</a> j = jr.getJournal();
 <a class="jxr_linenumber" name="L206" href="#L206">206</a>             System.out.println(<span class="jxr_string">"Journal File: "</span> + path);
 <a class="jxr_linenumber" name="L207" href="#L207">207</a>             System.out.println(<span class="jxr_string">"Journal Version: "</span> + j.getKey());

@@ -139,84 +139,85 @@
 <a class="jxr_linenumber" name="L131" href="#L131">131</a> 
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>     }
 <a class="jxr_linenumber" name="L133" href="#L133">133</a> 
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> detachWorkspace(String threadName) {
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>         <em class="jxr_comment">// Create a thread and run the workspace detached</em>
-<a class="jxr_linenumber" name="L136" href="#L136">136</a>         Thread tspacethr = <strong class="jxr_keyword">new</strong> Thread(space, threadName);
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>         tspacethr.setDaemon(false);
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>         tspacethr.start();
-<a class="jxr_linenumber" name="L139" href="#L139">139</a>         logger.debug(<span class="jxr_string">"WorkSpace is started and detached on thread "</span> + threadName);
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>         Thread.yield();
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>     }
-<a class="jxr_linenumber" name="L142" href="#L142">142</a> 
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>     @SuppressWarnings(<span class="jxr_string">"ThreadPriorityCheck"</span>)
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> detachWorkspace(String threadName) {
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>         <em class="jxr_comment">// Create a thread and run the workspace detached</em>
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>         Thread tspacethr = <strong class="jxr_keyword">new</strong> Thread(space, threadName);
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>         tspacethr.setDaemon(false);
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>         tspacethr.start();
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>         logger.debug(<span class="jxr_string">"WorkSpace is started and detached on thread "</span> + threadName);
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>         Thread.yield();
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>     }
 <a class="jxr_linenumber" name="L143" href="#L143">143</a> 
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>     @Test
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>     <strong class="jxr_keyword">void</strong> testMaxFiles() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>         createWorkspace(<span class="jxr_string">"testMaxFiles"</span>, 2, -1);
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>         detachWorkspace(<span class="jxr_string">"testMaxFiles"</span>);
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> 
-<a class="jxr_linenumber" name="L149" href="#L149">149</a>         pause(500);
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> 
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>         assertEquals(3, space.getFilesProcessed(), <span class="jxr_string">"files processed on "</span> + space.getKey());
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>         assertEquals(66, space.getBytesProcessed(), <span class="jxr_string">"bytes processed on "</span> + space.getKey());
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>         assertEquals(2, space.getBundlesProcessed(), <span class="jxr_string">"bundles processed on "</span> + space.getKey());
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>         assertEquals(2, space.getOutboundQueueSize(), <span class="jxr_string">"Outbound queue count in "</span> + space.getKey());
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>     }
-<a class="jxr_linenumber" name="L156" href="#L156">156</a> 
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>     @Test
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>     <strong class="jxr_keyword">void</strong> testMaxBytes() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>         createWorkspace(<span class="jxr_string">"testMaxBytes"</span>, -1, 10);
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>         detachWorkspace(<span class="jxr_string">"testMaxBytes"</span>);
-<a class="jxr_linenumber" name="L161" href="#L161">161</a> 
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>         pause(500);
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> 
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>         assertEquals(3, space.getFilesProcessed(), <span class="jxr_string">"files processed on "</span> + space.getKey());
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>         assertEquals(66, space.getBytesProcessed(), <span class="jxr_string">"bytes processed on "</span> + space.getKey());
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>         assertEquals(3, space.getBundlesProcessed(), <span class="jxr_string">"bundles processed on "</span> + space.getKey());
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>         assertEquals(3, space.getOutboundQueueSize(), <span class="jxr_string">"Outbound queue count in "</span> + space.getKey());
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>     }
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> 
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>     @Test
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>     <strong class="jxr_keyword">void</strong> testMaxBoth() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>         createWorkspace(<span class="jxr_string">"testMaxBoth"</span>, 3, 20);
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>         detachWorkspace(<span class="jxr_string">"testMaxBoth"</span>);
-<a class="jxr_linenumber" name="L174" href="#L174">174</a> 
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>         pause(1000);
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> 
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>         assertEquals(3, space.getFilesProcessed(), <span class="jxr_string">"files processed on "</span> + space.getKey());
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>         assertEquals(66, space.getBytesProcessed(), <span class="jxr_string">"bytes processed on "</span> + space.getKey());
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>         assertEquals(2, space.getBundlesProcessed(), <span class="jxr_string">"bundles processed on "</span> + space.getKey());
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>         assertEquals(2, space.getOutboundQueueSize(), <span class="jxr_string">"Outbound queue count in "</span> + space.getKey());
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>     }
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> 
+<a class="jxr_linenumber" name="L144" href="#L144">144</a> 
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>     @Test
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>     <strong class="jxr_keyword">void</strong> testMaxFiles() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>         createWorkspace(<span class="jxr_string">"testMaxFiles"</span>, 2, -1);
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>         detachWorkspace(<span class="jxr_string">"testMaxFiles"</span>);
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> 
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>         pause(500);
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> 
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>         assertEquals(3, space.getFilesProcessed(), <span class="jxr_string">"files processed on "</span> + space.getKey());
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>         assertEquals(66, space.getBytesProcessed(), <span class="jxr_string">"bytes processed on "</span> + space.getKey());
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>         assertEquals(2, space.getBundlesProcessed(), <span class="jxr_string">"bundles processed on "</span> + space.getKey());
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>         assertEquals(2, space.getOutboundQueueSize(), <span class="jxr_string">"Outbound queue count in "</span> + space.getKey());
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>     }
+<a class="jxr_linenumber" name="L157" href="#L157">157</a> 
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>     @Test
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>     <strong class="jxr_keyword">void</strong> testMaxBytes() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>         createWorkspace(<span class="jxr_string">"testMaxBytes"</span>, -1, 10);
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>         detachWorkspace(<span class="jxr_string">"testMaxBytes"</span>);
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> 
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>         pause(500);
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> 
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>         assertEquals(3, space.getFilesProcessed(), <span class="jxr_string">"files processed on "</span> + space.getKey());
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>         assertEquals(66, space.getBytesProcessed(), <span class="jxr_string">"bytes processed on "</span> + space.getKey());
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>         assertEquals(3, space.getBundlesProcessed(), <span class="jxr_string">"bundles processed on "</span> + space.getKey());
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>         assertEquals(3, space.getOutboundQueueSize(), <span class="jxr_string">"Outbound queue count in "</span> + space.getKey());
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>     }
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> 
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>     @Test
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>     <strong class="jxr_keyword">void</strong> testMaxBoth() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>         createWorkspace(<span class="jxr_string">"testMaxBoth"</span>, 3, 20);
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>         detachWorkspace(<span class="jxr_string">"testMaxBoth"</span>);
+<a class="jxr_linenumber" name="L175" href="#L175">175</a> 
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>         pause(1000);
+<a class="jxr_linenumber" name="L177" href="#L177">177</a> 
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>         assertEquals(3, space.getFilesProcessed(), <span class="jxr_string">"files processed on "</span> + space.getKey());
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>         assertEquals(66, space.getBytesProcessed(), <span class="jxr_string">"bytes processed on "</span> + space.getKey());
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>         assertEquals(2, space.getBundlesProcessed(), <span class="jxr_string">"bundles processed on "</span> + space.getKey());
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>         assertEquals(2, space.getOutboundQueueSize(), <span class="jxr_string">"Outbound queue count in "</span> + space.getKey());
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>     }
 <a class="jxr_linenumber" name="L183" href="#L183">183</a> 
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>     @SuppressWarnings(<span class="jxr_string">"unused"</span>)
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>     <em class="jxr_comment">// test class</em>
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> MyWorkSpace <strong class="jxr_keyword">extends</strong> WorkSpace {
-<a class="jxr_linenumber" name="L187" href="#L187">187</a>         <strong class="jxr_keyword">public</strong> MyWorkSpace() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>             <strong class="jxr_keyword">super</strong>();
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>         }
-<a class="jxr_linenumber" name="L190" href="#L190">190</a> 
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>         <strong class="jxr_keyword">public</strong> MyWorkSpace(FeedCommand command) {
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>             <strong class="jxr_keyword">super</strong>(command);
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>         }
-<a class="jxr_linenumber" name="L194" href="#L194">194</a> 
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setFpm(<strong class="jxr_keyword">int</strong> value) {
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>             <strong class="jxr_keyword">this</strong>.filesPerMessage = value;
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>         }
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> 
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setBpm(<strong class="jxr_keyword">long</strong> value) {
-<a class="jxr_linenumber" name="L200" href="#L200">200</a>             <strong class="jxr_keyword">this</strong>.maxBundleSize = value;
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>         }
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> 
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getFpm() {
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.filesPerMessage;
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>         }
-<a class="jxr_linenumber" name="L206" href="#L206">206</a> 
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">long</strong> getBpm() {
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.maxBundleSize;
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>         }
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>     }
-<a class="jxr_linenumber" name="L211" href="#L211">211</a> }
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> 
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>     @SuppressWarnings(<span class="jxr_string">"unused"</span>)
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>     <em class="jxr_comment">// test class</em>
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> MyWorkSpace <strong class="jxr_keyword">extends</strong> WorkSpace {
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>         <strong class="jxr_keyword">public</strong> MyWorkSpace() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>             <strong class="jxr_keyword">super</strong>();
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>         }
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> 
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>         <strong class="jxr_keyword">public</strong> MyWorkSpace(FeedCommand command) {
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>             <strong class="jxr_keyword">super</strong>(command);
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>         }
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> 
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setFpm(<strong class="jxr_keyword">int</strong> value) {
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>             <strong class="jxr_keyword">this</strong>.filesPerMessage = value;
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>         }
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> 
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setBpm(<strong class="jxr_keyword">long</strong> value) {
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>             <strong class="jxr_keyword">this</strong>.maxBundleSize = value;
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>         }
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> 
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getFpm() {
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.filesPerMessage;
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>         }
+<a class="jxr_linenumber" name="L207" href="#L207">207</a> 
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">long</strong> getBpm() {
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.maxBundleSize;
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>         }
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>     }
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

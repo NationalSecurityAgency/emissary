@@ -94,12 +94,12 @@
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Map&lt;String, Object&gt; PRIMITVE_NAME_DEFAULT_MAP = Collections
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>              .unmodifiableMap(<strong class="jxr_keyword">new</strong> ConcurrentHashMap&lt;&gt;(Stream.of(
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>                      <strong class="jxr_keyword">new</strong> AbstractMap.SimpleEntry&lt;&gt;(BIRTH_ORDER, <strong class="jxr_keyword">new</strong> <a name="BaseDataObject" href="../../emissary/core/BaseDataObject.html#BaseDataObject">BaseDataObject</a>().getBirthOrder()),
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>                      <strong class="jxr_keyword">new</strong> AbstractMap.SimpleEntry&lt;&gt;(BROKEN, <strong class="jxr_keyword">new</strong> <a name="BaseDataObject" href="../../emissary/core/BaseDataObject.html#BaseDataObject">BaseDataObject</a>().isBroken()),
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>                      <strong class="jxr_keyword">new</strong> AbstractMap.SimpleEntry&lt;&gt;(NUM_CHILDREN, <strong class="jxr_keyword">new</strong> <a name="BaseDataObject" href="../../emissary/core/BaseDataObject.html#BaseDataObject">BaseDataObject</a>().getNumChildren()),
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>                      <strong class="jxr_keyword">new</strong> AbstractMap.SimpleEntry&lt;&gt;(NUM_SIBLINGS, <strong class="jxr_keyword">new</strong> <a name="BaseDataObject" href="../../emissary/core/BaseDataObject.html#BaseDataObject">BaseDataObject</a>().getNumSiblings()),
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>                      <strong class="jxr_keyword">new</strong> AbstractMap.SimpleEntry&lt;&gt;(OUTPUTABLE, <strong class="jxr_keyword">new</strong> <a name="BaseDataObject" href="../../emissary/core/BaseDataObject.html#BaseDataObject">BaseDataObject</a>().isOutputable()),
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>                      <strong class="jxr_keyword">new</strong> AbstractMap.SimpleEntry&lt;&gt;(PRIORITY, <strong class="jxr_keyword">new</strong> <a name="BaseDataObject" href="../../emissary/core/BaseDataObject.html#BaseDataObject">BaseDataObject</a>().getPriority()))
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>                      <strong class="jxr_keyword">new</strong> AbstractMap.SimpleEntry&lt;&gt;(BIRTH_ORDER, DataObjectFactory.getInstance().getBirthOrder()),
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>                      <strong class="jxr_keyword">new</strong> AbstractMap.SimpleEntry&lt;&gt;(BROKEN, DataObjectFactory.getInstance().isBroken()),
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>                      <strong class="jxr_keyword">new</strong> AbstractMap.SimpleEntry&lt;&gt;(NUM_CHILDREN, DataObjectFactory.getInstance().getNumChildren()),
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>                      <strong class="jxr_keyword">new</strong> AbstractMap.SimpleEntry&lt;&gt;(NUM_SIBLINGS, DataObjectFactory.getInstance().getNumSiblings()),
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>                      <strong class="jxr_keyword">new</strong> AbstractMap.SimpleEntry&lt;&gt;(OUTPUTABLE, DataObjectFactory.getInstance().isOutputable()),
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>                      <strong class="jxr_keyword">new</strong> AbstractMap.SimpleEntry&lt;&gt;(PRIORITY, DataObjectFactory.getInstance().getPriority()))
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>                      .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue))));
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  <em class="jxr_javadoccomment">     * The XML namespace for "xml".</em>
@@ -832,7 +832,7 @@
 <a class="jxr_linenumber" name="L824" href="#L824">824</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L825" href="#L825">825</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Method getIbdoMethod(<strong class="jxr_keyword">final</strong> String methodName, <strong class="jxr_keyword">final</strong> Class&lt;?&gt;... parameterTypes)
 <a class="jxr_linenumber" name="L826" href="#L826">826</a>             <strong class="jxr_keyword">throws</strong> NoSuchMethodException {
-<a class="jxr_linenumber" name="L827" href="#L827">827</a>         <strong class="jxr_keyword">return</strong> IBaseDataObject.<strong class="jxr_keyword">class</strong>.getDeclaredMethod(methodName, parameterTypes);
+<a class="jxr_linenumber" name="L827" href="#L827">827</a>         <strong class="jxr_keyword">return</strong> IBaseDataObject.<strong class="jxr_keyword">class</strong>.getMethod(methodName, parameterTypes);
 <a class="jxr_linenumber" name="L828" href="#L828">828</a>     }
 <a class="jxr_linenumber" name="L829" href="#L829">829</a> }
 </pre>

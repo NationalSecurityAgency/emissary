@@ -254,7 +254,7 @@
 <a class="jxr_linenumber" name="L246" href="#L246">246</a>                 <strong class="jxr_keyword">if</strong> (!((String) result).equals(id)) {
 <a class="jxr_linenumber" name="L247" href="#L247">247</a>                     <em class="jxr_comment">// As long as the id is not the same as what was already stored, then</em>
 <a class="jxr_linenumber" name="L248" href="#L248">248</a>                     <em class="jxr_comment">// store it on its own</em>
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>                     client.set(id, ageoff, key);
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>                     <strong class="jxr_keyword">var</strong> unused = client.set(id, ageoff, key);
 <a class="jxr_linenumber" name="L250" href="#L250">250</a>                     <em class="jxr_comment">// logger.debug("Storing duplicate Id: {} with value (hash) {}", id, key);</em>
 <a class="jxr_linenumber" name="L251" href="#L251">251</a>                 }
 <a class="jxr_linenumber" name="L252" href="#L252">252</a>             }
@@ -264,7 +264,7 @@
 <a class="jxr_linenumber" name="L256" href="#L256">256</a>         }
 <a class="jxr_linenumber" name="L257" href="#L257">257</a>         <em class="jxr_comment">// logger.debug("Did not find key: {}", key);</em>
 <a class="jxr_linenumber" name="L258" href="#L258">258</a>         <em class="jxr_comment">// Did not find the key...store it and move on</em>
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>         client.set(key, ageoff, id);
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>         <strong class="jxr_keyword">var</strong> unused = client.set(key, ageoff, id);
 <a class="jxr_linenumber" name="L260" href="#L260">260</a>         <strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L261" href="#L261">261</a> 
 <a class="jxr_linenumber" name="L262" href="#L262">262</a> 

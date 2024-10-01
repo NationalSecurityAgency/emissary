@@ -70,26 +70,25 @@
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>          }
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>      }
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Response workBundleCompleted(String spaceName, String placeName, String bundleId, <strong class="jxr_keyword">boolean</strong> itWorked) <strong class="jxr_keyword">throws</strong> NamespaceException,
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>              IllegalArgumentException {
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          <em class="jxr_comment">// Look up the place reference</em>
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          <em class="jxr_comment">// TODO Figure out why we have to remove the key prefix now</em>
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          <strong class="jxr_keyword">final</strong> String workspaceNamespaceKey = spaceName.substring(<span class="jxr_string">"WORKSPACE.WORK_SPACE.INPUT."</span>.length());
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          <strong class="jxr_keyword">final</strong> <a name="WorkSpace"<a name="WorkSpace" href="../../../../emissary/pickup/WorkSpace.html#WorkSpace">WorkSpace</a>/../../../emissary/pickup/WorkSpace.html#WorkSpace">WorkSpace</a> space = (<a name="WorkSpace" href="../../../../emissary/pickup/WorkSpace.html#WorkSpace">WorkSpace</a>) Namespace.lookup(workspaceNamespaceKey);
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          <em class="jxr_comment">// TODO Figure out why we have to remove the key prefix now</em>
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          String pickupClientNamespaceKey = placeName.substring(<span class="jxr_string">"INITIAL.FILE_PICK_UP_CLIENT.INPUT."</span>.length());
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          <strong class="jxr_keyword">if</strong> (space.workCompleted(pickupClientNamespaceKey, bundleId, itWorked)) {
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>              <em class="jxr_comment">// old success from BundleCompletedWorker</em>
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>              <em class="jxr_comment">// return WORKER_SUCCESS;</em>
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>              <strong class="jxr_keyword">return</strong> Response.ok().entity(<span class="jxr_string">"Work Bundle Completed"</span>).build();
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>              <em class="jxr_comment">// old failure from BundleCompletedWorker</em>
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>              <em class="jxr_comment">// return new WorkerStatus(WorkerStatus.FAILURE, "BundleCompletedWorker exception", e);</em>
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>              <strong class="jxr_keyword">return</strong> Response.serverError().entity(<span class="jxr_string">"Work Bundle not completed"</span>).build();
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>          }
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>      }
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  }
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Response workBundleCompleted(String spaceName, String placeName, String bundleId, <strong class="jxr_keyword">boolean</strong> itWorked) <strong class="jxr_keyword">throws</strong> <a name="NamespaceException" href="../../../../emissary/core/NamespaceException.html#NamespaceException">NamespaceException</a> {
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          <em class="jxr_comment">// Look up the place reference</em>
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          <em class="jxr_comment">// TODO Figure out why we have to remove the key prefix now</em>
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          <strong class="jxr_keyword">final</strong> String workspaceNamespaceKey = spaceName.substring(<span class="jxr_string">"WORKSPACE.WORK_SPACE.INPUT."</span>.length());
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          <strong class="jxr_keyword">final</strong> <a name="WorkSpace" href="../../../../emissary/pickup/WorkSpace.html#WorkSpace">WorkSpace</a> space = (<a name="WorkSpace" href="../../../../emissary/pickup/WorkSpace.html#WorkSpace">WorkSpace</a>) Namespace.lookup(workspaceNamespaceKey);
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          <em class="jxr_comment">// TODO Figure out why we have to remove the key prefix now</em>
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          String pickupClientNamespaceKey = placeName.substring(<span class="jxr_string">"INITIAL.FILE_PICK_UP_CLIENT.INPUT."</span>.length());
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          <strong class="jxr_keyword">if</strong> (space.workCompleted(pickupClientNamespaceKey, bundleId, itWorked)) {
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>              <em class="jxr_comment">// old success from BundleCompletedWorker</em>
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>              <em class="jxr_comment">// return WORKER_SUCCESS;</em>
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>              <strong class="jxr_keyword">return</strong> Response.ok().entity(<span class="jxr_string">"Work Bundle Completed"</span>).build();
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>              <em class="jxr_comment">// old failure from BundleCompletedWorker</em>
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>              <em class="jxr_comment">// return new WorkerStatus(WorkerStatus.FAILURE, "BundleCompletedWorker exception", e);</em>
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>              <strong class="jxr_keyword">return</strong> Response.serverError().entity(<span class="jxr_string">"Work Bundle not completed"</span>).build();
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>          }
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>      }
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

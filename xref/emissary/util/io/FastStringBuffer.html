@@ -250,84 +250,85 @@
 <a class="jxr_linenumber" name="L242" href="#L242">242</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L243" href="#L243">243</a> <em class="jxr_javadoccomment">     * Write UTF8 data to the output page buffer Pass in 0 and -1 for start and end to do the whole thing</em>
 <a class="jxr_linenumber" name="L244" href="#L244">244</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendUtf8(<strong class="jxr_keyword">final</strong> byte[] data, @Nullable <strong class="jxr_keyword">final</strong> String charset, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> end) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> actualEnd;
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>         <strong class="jxr_keyword">if</strong> (end &lt; 0) {
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>             actualEnd = data.length;
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>             actualEnd = end;
-<a class="jxr_linenumber" name="L251" href="#L251">251</a>         }
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> 
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> actualStart;
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>         <strong class="jxr_keyword">if</strong> ((start &lt; 0) || (start &gt; actualEnd)) {
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>             actualStart = 0;
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L257" href="#L257">257</a>             actualStart = start;
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>         }
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> 
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>         String converted = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>         <strong class="jxr_keyword">if</strong> (charset != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>                 converted = <strong class="jxr_keyword">new</strong> String(data, actualStart, actualEnd - actualStart, charset);
-<a class="jxr_linenumber" name="L264" href="#L264">264</a>                 logger.debug(<span class="jxr_string">"Converted data from {} to utf-8"</span>, charset);
-<a class="jxr_linenumber" name="L265" href="#L265">265</a>             } <strong class="jxr_keyword">catch</strong> (UnsupportedEncodingException uee) {
-<a class="jxr_linenumber" name="L266" href="#L266">266</a>                 logger.warn(<span class="jxr_string">"Unable to convert from {}"</span>, charset);
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>                 converted = <strong class="jxr_keyword">null</strong>; <em class="jxr_comment">// make sure we write something below</em>
-<a class="jxr_linenumber" name="L268" href="#L268">268</a>             }
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>             logger.debug(<span class="jxr_string">"Not converting data because charset is null"</span>);
-<a class="jxr_linenumber" name="L271" href="#L271">271</a>         }
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> 
-<a class="jxr_linenumber" name="L273" href="#L273">273</a>         <strong class="jxr_keyword">if</strong> (converted != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>             <strong class="jxr_keyword">return</strong> append(converted, <span class="jxr_string">"UTF8"</span>);
-<a class="jxr_linenumber" name="L275" href="#L275">275</a>         }
-<a class="jxr_linenumber" name="L276" href="#L276">276</a>         <strong class="jxr_keyword">return</strong> append(data, actualStart, actualEnd - actualStart);
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>     }
-<a class="jxr_linenumber" name="L278" href="#L278">278</a> 
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendEscapedUtf8(<strong class="jxr_keyword">final</strong> byte[] data, @Nullable <strong class="jxr_keyword">final</strong> String charset, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> end) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> actualEnd;
-<a class="jxr_linenumber" name="L281" href="#L281">281</a>         <strong class="jxr_keyword">if</strong> (end &lt; 0) {
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>             actualEnd = data.length;
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L284" href="#L284">284</a>             actualEnd = end;
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>         }
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> 
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> actualStart;
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>         <strong class="jxr_keyword">if</strong> ((start &lt; 0) || (start &gt; actualEnd)) {
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>             actualStart = 0;
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>             actualStart = start;
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>         }
-<a class="jxr_linenumber" name="L293" href="#L293">293</a> 
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>         String converted;
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>         <strong class="jxr_keyword">if</strong> (charset != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>                 converted = <strong class="jxr_keyword">new</strong> String(data, actualStart, actualEnd - actualStart, charset);
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>                 logger.debug(<span class="jxr_string">"Converted data from {} to utf-8"</span>, charset);
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>             } <strong class="jxr_keyword">catch</strong> (UnsupportedEncodingException uee) {
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>                 logger.warn(<span class="jxr_string">"Unable to convert from {}"</span>, charset);
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>                 converted = <strong class="jxr_keyword">new</strong> String(data, actualStart, actualEnd - actualStart);
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>             }
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>             converted = <strong class="jxr_keyword">new</strong> String(data, actualStart, actualEnd - actualStart);
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>         }
-<a class="jxr_linenumber" name="L306" href="#L306">306</a> 
-<a class="jxr_linenumber" name="L307" href="#L307">307</a>         <em class="jxr_comment">// Escape the HTML in the converted string</em>
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>         converted = HtmlEscaper.escapeHtml(converted);
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>         <strong class="jxr_keyword">return</strong> append(converted, <span class="jxr_string">"UTF8"</span>);
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>     }
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> 
-<a class="jxr_linenumber" name="L312" href="#L312">312</a>     <strong class="jxr_keyword">protected</strong> byte[] stringToBytes(String s, String charset) {
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>         byte[] tmp;
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>             tmp = s.getBytes(charset);
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>         } <strong class="jxr_keyword">catch</strong> (UnsupportedEncodingException e) {
-<a class="jxr_linenumber" name="L317" href="#L317">317</a>             logger.warn(<span class="jxr_string">"Unsupported encoding:{}"</span>, e.getMessage());
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>             tmp = s.getBytes();
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>         }
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>         <strong class="jxr_keyword">return</strong> tmp;
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>     }
-<a class="jxr_linenumber" name="L322" href="#L322">322</a> }
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>     @SuppressWarnings(<span class="jxr_string">"InconsistentOverloads"</span>)
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendUtf8(<strong class="jxr_keyword">final</strong> byte[] data, @Nullable <strong class="jxr_keyword">final</strong> String charset, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> end) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> actualEnd;
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>         <strong class="jxr_keyword">if</strong> (end &lt; 0) {
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>             actualEnd = data.length;
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L251" href="#L251">251</a>             actualEnd = end;
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>         }
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> 
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> actualStart;
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>         <strong class="jxr_keyword">if</strong> ((start &lt; 0) || (start &gt; actualEnd)) {
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>             actualStart = 0;
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>             actualStart = start;
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>         }
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> 
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>         String converted = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>         <strong class="jxr_keyword">if</strong> (charset != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L263" href="#L263">263</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>                 converted = <strong class="jxr_keyword">new</strong> String(data, actualStart, actualEnd - actualStart, charset);
+<a class="jxr_linenumber" name="L265" href="#L265">265</a>                 logger.debug(<span class="jxr_string">"Converted data from {} to utf-8"</span>, charset);
+<a class="jxr_linenumber" name="L266" href="#L266">266</a>             } <strong class="jxr_keyword">catch</strong> (UnsupportedEncodingException uee) {
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>                 logger.warn(<span class="jxr_string">"Unable to convert from {}"</span>, charset);
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>                 converted = <strong class="jxr_keyword">null</strong>; <em class="jxr_comment">// make sure we write something below</em>
+<a class="jxr_linenumber" name="L269" href="#L269">269</a>             }
+<a class="jxr_linenumber" name="L270" href="#L270">270</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L271" href="#L271">271</a>             logger.debug(<span class="jxr_string">"Not converting data because charset is null"</span>);
+<a class="jxr_linenumber" name="L272" href="#L272">272</a>         }
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> 
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>         <strong class="jxr_keyword">if</strong> (converted != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L275" href="#L275">275</a>             <strong class="jxr_keyword">return</strong> append(converted, <span class="jxr_string">"UTF8"</span>);
+<a class="jxr_linenumber" name="L276" href="#L276">276</a>         }
+<a class="jxr_linenumber" name="L277" href="#L277">277</a>         <strong class="jxr_keyword">return</strong> append(data, actualStart, actualEnd - actualStart);
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>     }
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> 
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendEscapedUtf8(<strong class="jxr_keyword">final</strong> byte[] data, @Nullable <strong class="jxr_keyword">final</strong> String charset, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> end) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> actualEnd;
+<a class="jxr_linenumber" name="L282" href="#L282">282</a>         <strong class="jxr_keyword">if</strong> (end &lt; 0) {
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>             actualEnd = data.length;
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>             actualEnd = end;
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>         }
+<a class="jxr_linenumber" name="L287" href="#L287">287</a> 
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> actualStart;
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>         <strong class="jxr_keyword">if</strong> ((start &lt; 0) || (start &gt; actualEnd)) {
+<a class="jxr_linenumber" name="L290" href="#L290">290</a>             actualStart = 0;
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>             actualStart = start;
+<a class="jxr_linenumber" name="L293" href="#L293">293</a>         }
+<a class="jxr_linenumber" name="L294" href="#L294">294</a> 
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>         String converted;
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>         <strong class="jxr_keyword">if</strong> (charset != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>                 converted = <strong class="jxr_keyword">new</strong> String(data, actualStart, actualEnd - actualStart, charset);
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>                 logger.debug(<span class="jxr_string">"Converted data from {} to utf-8"</span>, charset);
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>             } <strong class="jxr_keyword">catch</strong> (UnsupportedEncodingException uee) {
+<a class="jxr_linenumber" name="L301" href="#L301">301</a>                 logger.warn(<span class="jxr_string">"Unable to convert from {}"</span>, charset);
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>                 converted = <strong class="jxr_keyword">new</strong> String(data, actualStart, actualEnd - actualStart);
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>             }
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>             converted = <strong class="jxr_keyword">new</strong> String(data, actualStart, actualEnd - actualStart);
+<a class="jxr_linenumber" name="L306" href="#L306">306</a>         }
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> 
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>         <em class="jxr_comment">// Escape the HTML in the converted string</em>
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>         converted = HtmlEscaper.escapeHtml(converted);
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>         <strong class="jxr_keyword">return</strong> append(converted, <span class="jxr_string">"UTF8"</span>);
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>     }
+<a class="jxr_linenumber" name="L312" href="#L312">312</a> 
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>     <strong class="jxr_keyword">protected</strong> byte[] stringToBytes(String s, String charset) {
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>         byte[] tmp;
+<a class="jxr_linenumber" name="L315" href="#L315">315</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>             tmp = s.getBytes(charset);
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>         } <strong class="jxr_keyword">catch</strong> (UnsupportedEncodingException e) {
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>             logger.warn(<span class="jxr_string">"Unsupported encoding:{}"</span>, e.getMessage());
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>             tmp = s.getBytes();
+<a class="jxr_linenumber" name="L320" href="#L320">320</a>         }
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>         <strong class="jxr_keyword">return</strong> tmp;
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>     }
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

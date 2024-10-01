@@ -15,140 +15,216 @@
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> emissary.core.IBaseDataObject;
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> emissary.test.core.junit5.UnitTest;
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> java.util.Arrays;
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertFalse;
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertThrows;
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="AbstractFilterTest" href="../../../emissary/output/filter/AbstractFilterTest.html#AbstractFilterTest">AbstractFilterTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>      AbstractFilter getAbstractFilterInstance() {
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> AbstractFilter() {
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>              @Override
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>              <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> filter(IBaseDataObject d, Map&lt;String, Object&gt; params) {
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>                  <strong class="jxr_keyword">return</strong> 0;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>              }
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>          };
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>      }
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>      AbstractFilter getDenylistFilter(<strong class="jxr_keyword">final</strong> List&lt;String&gt; denylist) {
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>          Configurator config = <strong class="jxr_keyword">new</strong> ServiceConfigGuide();
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>          config.addEntry(<span class="jxr_string">"OUTPUT_SPEC_FOO"</span>, <span class="jxr_string">"SPEC"</span>);
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>          config.addEntry(<span class="jxr_string">"OUTPUT_TYPE"</span>, <span class="jxr_string">"TYPE"</span>);
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>          denylist.forEach(entry -&gt; config.addEntry(<span class="jxr_string">"DENYLIST"</span>, entry));
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>          AbstractFilter f = getAbstractFilterInstance();
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>          f.initialize(<strong class="jxr_keyword">new</strong> ServiceConfigGuide(), <span class="jxr_string">"FOO"</span>, config);
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>          <strong class="jxr_keyword">return</strong> f;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>      }
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>      IBaseDataObject getTestPayload(<strong class="jxr_keyword">final</strong> String filetype, <strong class="jxr_keyword">final</strong> List&lt;String&gt; altViews) {
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>          IBaseDataObject payload = DataObjectFactory.getInstance();
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>          payload.setData(<span class="jxr_string">""</span>.getBytes());
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>          payload.setFileType(filetype);
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>          payload.setFilename(<span class="jxr_string">""</span>);
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>          altViews.forEach(viewName -&gt; payload.addAlternateView(viewName, <span class="jxr_string">""</span>.getBytes()));
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>          <strong class="jxr_keyword">return</strong> payload;
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>      }
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>      @Test
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">void</strong> testIncorrectConfigs() {
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>          List&lt;String&gt; invalidEntries = Arrays.asList(
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>                  <span class="jxr_string">"type*.view"</span>, <span class="jxr_string">"*type.view"</span>, <span class="jxr_string">"ty*pe.view"</span>, <span class="jxr_string">"*.view"</span>, <span class="jxr_string">".view"</span>,
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>                  <span class="jxr_string">"type*.*view"</span>, <span class="jxr_string">"*type.*view"</span>, <span class="jxr_string">"ty*pe.*view"</span>, <span class="jxr_string">"*.*view"</span>, <span class="jxr_string">".*view"</span>, <span class="jxr_string">"*view"</span>,
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>                  <span class="jxr_string">"type*.vi*ew"</span>, <span class="jxr_string">"*type.vi*ew"</span>, <span class="jxr_string">"ty*pe.vi*ew"</span>, <span class="jxr_string">"*.vi*ew"</span>, <span class="jxr_string">".vi*ew"</span>, <span class="jxr_string">"vi*ew"</span>,
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>                  <span class="jxr_string">"type*.view*"</span>, <span class="jxr_string">"*type.view*"</span>, <span class="jxr_string">"ty*pe.view*"</span>, <span class="jxr_string">"*.view*"</span>, <span class="jxr_string">".view*"</span>,
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>                  <span class="jxr_string">"type."</span>, <span class="jxr_string">"*"</span>, <span class="jxr_string">"type.*"</span>, <span class="jxr_string">"."</span>, <span class="jxr_string">"type.view."</span>, <span class="jxr_string">".type.view"</span>, <span class="jxr_string">".type.view."</span>,
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>                  <span class="jxr_string">"type..view"</span>, <span class="jxr_string">"type.view.view.view"</span>, <span class="jxr_string">"type.view*.view*"</span>, <span class="jxr_string">"type.view**"</span>, <span class="jxr_string">"view**"</span>);
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          <strong class="jxr_keyword">for</strong> (String entry : invalidEntries) {
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>              <strong class="jxr_keyword">final</strong> Configurator config = <strong class="jxr_keyword">new</strong> ServiceConfigGuide();
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>              config.addEntry(<span class="jxr_string">"DENYLIST"</span>, entry);
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>              AbstractFilter f = getAbstractFilterInstance();
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>              EmissaryRuntimeException e = assertThrows(
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>                      EmissaryRuntimeException.<strong class="jxr_keyword">class</strong>,
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>                      () -&gt; f.initialize(<strong class="jxr_keyword">new</strong> ServiceConfigGuide(), <span class="jxr_string">"FOO"</span>, config));
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>              assertTrue(e.getMessage().contains(String.format(<span class="jxr_string">"Invalid filter configuration: `DENYLIST = \&quot;%s\&quot;`"</span>, entry)));
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          }
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>      }
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>      @Test
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>      <strong class="jxr_keyword">void</strong> testDenyListContains() {
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          AbstractFilter f = getDenylistFilter(Arrays.asList(
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>                  <span class="jxr_string">"JSON_ML"</span>, <span class="jxr_string">"JSON_LANG_*"</span>,
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>                  <span class="jxr_string">"JSON.GeoJSON"</span>, <span class="jxr_string">"JSON.JSON_1_*"</span>));
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          String filetype1 = <span class="jxr_string">"JSON"</span>;
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          <strong class="jxr_keyword">for</strong> (String accepted : Arrays.asList(
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>                  <span class="jxr_string">"PrimaryView"</span>, <span class="jxr_string">"JSON_PRETTY"</span>, <span class="jxr_string">"JSON_LANG"</span>, <span class="jxr_string">"Geo"</span>, <span class="jxr_string">"JSON_1"</span>, <span class="jxr_string">"JSON_2_10"</span>, <span class="jxr_string">"JSON_2_10.1"</span>)) {
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>              assertFalse(f.denyListContains(filetype1, accepted), accepted + <span class="jxr_string">" should not be in denyList"</span>);
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          }
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>  
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>          <strong class="jxr_keyword">for</strong> (String denied : Arrays.asList(
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>                  <span class="jxr_string">"JSON_ML"</span>, <span class="jxr_string">"JSON_LANG_ENG"</span>, <span class="jxr_string">"JSON_LANG_RUS"</span>, <span class="jxr_string">"JSON_LANG_FRE"</span>,
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>                  <span class="jxr_string">"GeoJSON"</span>, <span class="jxr_string">"JSON_1_"</span>, <span class="jxr_string">"JSON_1_0"</span>, <span class="jxr_string">"JSON_1_2"</span>, <span class="jxr_string">"JSON_1_2.1"</span>)) {
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>              assertTrue(f.denyListContains(filetype1, denied), denied + <span class="jxr_string">" should be in denyList"</span>);
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Nested;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> java.util.Arrays;
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> java.util.Collections;
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertFalse;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertThrows;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="AbstractFilterTest" href="../../../emissary/output/filter/AbstractFilterTest.html#AbstractFilterTest">AbstractFilterTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>      AbstractFilter getAbstractFilterInstance() {
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> AbstractFilter() {
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>              @Override
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>              <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> filter(IBaseDataObject d, Map&lt;String, Object&gt; params) {
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>                  <strong class="jxr_keyword">return</strong> 0;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>              }
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>          };
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      }
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>      AbstractFilter getDenylistFilter(<strong class="jxr_keyword">final</strong> List&lt;String&gt; denylist) {
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>          Configurator config = <strong class="jxr_keyword">new</strong> ServiceConfigGuide();
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>          config.addEntry(<span class="jxr_string">"OUTPUT_SPEC_FOO"</span>, <span class="jxr_string">"SPEC"</span>);
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>          config.addEntry(<span class="jxr_string">"OUTPUT_TYPE"</span>, <span class="jxr_string">"TYPE"</span>);
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>          denylist.forEach(entry -&gt; config.addEntry(<span class="jxr_string">"DENYLIST"</span>, entry));
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>          AbstractFilter f = getAbstractFilterInstance();
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>          f.initialize(<strong class="jxr_keyword">new</strong> ServiceConfigGuide(), <span class="jxr_string">"FOO"</span>, config);
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>          <strong class="jxr_keyword">return</strong> f;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>      }
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>      IBaseDataObject getTestPayload(<strong class="jxr_keyword">final</strong> String filetype, <strong class="jxr_keyword">final</strong> List&lt;String&gt; altViews) {
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          IBaseDataObject payload = DataObjectFactory.getInstance();
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>          payload.setData(<span class="jxr_string">""</span>.getBytes());
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>          payload.setFileType(filetype);
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>          payload.setFilename(<span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          altViews.forEach(viewName -&gt; payload.addAlternateView(viewName, <span class="jxr_string">""</span>.getBytes()));
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          <strong class="jxr_keyword">return</strong> payload;
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>      }
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>      @Nested
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>      <strong class="jxr_keyword">class</strong> DefaultRegexPatternTests {
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          AbstractFilter f = getDenylistFilter(Collections.emptyList());
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          @Test
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          <strong class="jxr_keyword">void</strong> testDefaultDenylistFiletypeFormat() {
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>              String pattern = f.getDenylistFiletypeFormat();
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>              assertEquals(<span class="jxr_string">"^[a-zA-Z0-9_&#92;&#92;-]+$"</span>, pattern);
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>              assertFalse(f.matchesDenylistFiletypeFormatPattern(<span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>                      String.format(<span class="jxr_string">"Unexpected match [empty string] for Pattern %s"</span>, pattern));
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>              String formatString = <span class="jxr_string">"Fi1e%sTyp3"</span>;
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>              String noMatchChars = <span class="jxr_string">" !@#$%^&amp;*()+=&#92;&#92;/.,"</span>;
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>              <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; noMatchChars.length(); i++) {
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>                  <strong class="jxr_keyword">char</strong> noMatchChar = noMatchChars.charAt(i);
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>                  String noMatch = String.format(formatString, noMatchChar);
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>                  assertFalse(f.matchesDenylistFiletypeFormatPattern(noMatch),
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>                          String.format(<span class="jxr_string">"Unexpected match %s for Pattern %s"</span>, noMatch, pattern));
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>              }
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>              String nullInsert = String.format(formatString, <span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>              assertTrue(f.matchesDenylistFiletypeFormatPattern(nullInsert),
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>                      String.format(<span class="jxr_string">"Expected match %s for Pattern %s"</span>, nullInsert, pattern));
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>              String matchChars = <span class="jxr_string">"-_"</span>;
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>              <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; matchChars.length(); i++) {
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>                  <strong class="jxr_keyword">char</strong> matchChar = matchChars.charAt(i);
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>                  String match = String.format(formatString, matchChar);
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>                  assertTrue(f.matchesDenylistFiletypeFormatPattern(match),
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>                          String.format(<span class="jxr_string">"Expected match %s for Pattern %s"</span>, match, pattern));
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>              }
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>          }
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>          String filetype2 = <span class="jxr_string">"XML"</span>;
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>          <strong class="jxr_keyword">for</strong> (String accepted : Arrays.asList(
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>                  <span class="jxr_string">"PrimaryView"</span>, <span class="jxr_string">"JSON_PRETTY"</span>, <span class="jxr_string">"JSON_LANG"</span>, <span class="jxr_string">"Geo"</span>, <span class="jxr_string">"GeoJSON"</span>,
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>                  <span class="jxr_string">"JSON_1_"</span>, <span class="jxr_string">"JSON_1"</span>, <span class="jxr_string">"JSON_1_0"</span>, <span class="jxr_string">"JSON_1_2"</span>, <span class="jxr_string">"JSON_1_2.1"</span>, <span class="jxr_string">"JSON_2_10"</span>, <span class="jxr_string">"JSON_2_10.1"</span>)) {
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>              assertFalse(f.denyListContains(filetype2, accepted), accepted + <span class="jxr_string">" should not be in denyList"</span>);
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>          }
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>  
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>          <strong class="jxr_keyword">for</strong> (String denied : Arrays.asList(
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>                  <span class="jxr_string">"JSON_ML"</span>, <span class="jxr_string">"JSON_LANG_ENG"</span>, <span class="jxr_string">"JSON_LANG_RUS"</span>, <span class="jxr_string">"JSON_LANG_FRE"</span>)) {
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>              assertTrue(f.denyListContains(filetype2, denied), denied + <span class="jxr_string">" should be in denyList"</span>);
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>          }
-<a class="jxr_linenumber" name="L100" href="#L100">100</a> 
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>     }
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>          @Test
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          <strong class="jxr_keyword">void</strong> testDefaultDenylistViewNameFormat() {
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>              String pattern = f.getDenylistViewNameFormat();
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>              assertEquals(<span class="jxr_string">"^[a-zA-Z0-9_&#92;&#92;-]+(&#92;&#92;.[a-zA-Z0-9_&#92;&#92;-]+)?&#92;&#92;*?$"</span>, pattern);
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>              assertFalse(f.matchesDenylistViewNameFormatPattern(<span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>                      String.format(<span class="jxr_string">"Unexpected match [empty string] for Pattern %s"</span>, pattern));
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>              assertFalse(f.matchesDenylistViewNameFormatPattern(<span class="jxr_string">"pt1.PT2.pt3"</span>),
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>                      String.format(<span class="jxr_string">"Unexpected match pt1.PT2.pt3 for Pattern %s"</span>, pattern));
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>             List&lt;String&gt; formatStrings = Arrays.asList(<span class="jxr_string">"view%sN4ME"</span>, <span class="jxr_string">"view%sN4ME*"</span>, <span class="jxr_string">"pt1.PT2%spt3"</span>, <span class="jxr_string">"pt1.PT2%spt3*"</span>);
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>             <strong class="jxr_keyword">for</strong> (String formatString : formatStrings) {
 <a class="jxr_linenumber" name="L102" href="#L102">102</a> 
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>     @Test
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <strong class="jxr_keyword">void</strong> testGetTypesToCheck() {
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>         AbstractFilter f = getDenylistFilter(Arrays.asList(
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>                 <span class="jxr_string">"JSON_ML"</span>, <span class="jxr_string">"JSON_LANG_*"</span>,
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>                 <span class="jxr_string">"JSON.GeoJSON"</span>, <span class="jxr_string">"JSON.JSON_1_*"</span>));
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> 
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>         IBaseDataObject payload = getTestPayload(<span class="jxr_string">"JSON"</span>, Arrays.asList(
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>                 <span class="jxr_string">"JSON_PRETTY"</span>, <span class="jxr_string">"JSON_ML"</span>, <span class="jxr_string">"Geo"</span>, <span class="jxr_string">"GeoJSON"</span>,
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>                 <span class="jxr_string">"JSON_1_"</span>, <span class="jxr_string">"JSON_1"</span>, <span class="jxr_string">"JSON_1_0"</span>, <span class="jxr_string">"JSON_1_2"</span>, <span class="jxr_string">"JSON_1_2.1"</span>, <span class="jxr_string">"JSON_2_10"</span>, <span class="jxr_string">"JSON_2_10.1"</span>,
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>                 <span class="jxr_string">"JSON_LANG"</span>, <span class="jxr_string">"JSON_LANG_ENG"</span>, <span class="jxr_string">"JSON_LANG_RUS"</span>, <span class="jxr_string">"JSON_LANG_FRE"</span>));
-<a class="jxr_linenumber" name="L113" href="#L113">113</a> 
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>         Set&lt;String&gt; checkTypes = f.getTypesToCheck(payload);
-<a class="jxr_linenumber" name="L115" href="#L115">115</a> 
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>         <strong class="jxr_keyword">for</strong> (String checked : Arrays.asList(
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>                 <span class="jxr_string">"JSON.Geo"</span>, <span class="jxr_string">".Geo"</span>, <span class="jxr_string">"*.Geo"</span>,
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>                 <span class="jxr_string">"JSON.JSON_LANG"</span>, <span class="jxr_string">".JSON_LANG"</span>, <span class="jxr_string">"*.JSON_LANG"</span>,
-<a class="jxr_linenumber" name="L119" href="#L119">119</a>                 <span class="jxr_string">"JSON.JSON_PRETTY"</span>, <span class="jxr_string">".JSON_PRETTY"</span>, <span class="jxr_string">"*.JSON_PRETTY"</span>,
-<a class="jxr_linenumber" name="L120" href="#L120">120</a>                 <span class="jxr_string">"JSON.JSON_1"</span>, <span class="jxr_string">".JSON_1"</span>, <span class="jxr_string">"*.JSON_1"</span>,
-<a class="jxr_linenumber" name="L121" href="#L121">121</a>                 <span class="jxr_string">"JSON.JSON_2_10"</span>, <span class="jxr_string">".JSON_2_10"</span>, <span class="jxr_string">"*.JSON_2_10"</span>,
-<a class="jxr_linenumber" name="L122" href="#L122">122</a>                 <span class="jxr_string">"JSON.JSON_2_10.1"</span>, <span class="jxr_string">".JSON_2_10.1"</span>, <span class="jxr_string">"*.JSON_2_10.1"</span>,
-<a class="jxr_linenumber" name="L123" href="#L123">123</a>                 <span class="jxr_string">"JSON.PrimaryView"</span>, <span class="jxr_string">".PrimaryView"</span>, <span class="jxr_string">"*.PrimaryView"</span>,
-<a class="jxr_linenumber" name="L124" href="#L124">124</a>                 <span class="jxr_string">"JSON.Metadata"</span>, <span class="jxr_string">".Metadata"</span>, <span class="jxr_string">"*.Metadata"</span>,
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>                 <span class="jxr_string">"*.AlternateView"</span>, <span class="jxr_string">"NONE.Language"</span>, <span class="jxr_string">"*.Language"</span>, <span class="jxr_string">"JSON"</span>)) {
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>             assertTrue(checkTypes.contains(checked), checked + <span class="jxr_string">" should be a checked type"</span>);
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>         }
-<a class="jxr_linenumber" name="L128" href="#L128">128</a> 
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>         <strong class="jxr_keyword">for</strong> (String notChecked : Arrays.asList(
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>                 <span class="jxr_string">"JSON.JSON_ML"</span>, <span class="jxr_string">".JSON_ML"</span>, <span class="jxr_string">"*.JSON_ML"</span>,
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>                 <span class="jxr_string">"JSON.GeoJSON"</span>, <span class="jxr_string">".GeoJSON"</span>, <span class="jxr_string">"*.GeoJSON"</span>,
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>                 <span class="jxr_string">"JSON.JSON_LANG_ENG"</span>, <span class="jxr_string">".JSON_LANG_ENG"</span>, <span class="jxr_string">"*.JSON_LANG_ENG"</span>,
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>                 <span class="jxr_string">"JSON.JSON_LANG_FRE"</span>, <span class="jxr_string">".JSON_LANG_FRE"</span>, <span class="jxr_string">"*.JSON_LANG_FRE"</span>,
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>                 <span class="jxr_string">"JSON.JSON_LANG_RUS"</span>, <span class="jxr_string">".JSON_LANG_RUS"</span>, <span class="jxr_string">"*.JSON_LANG_RUS"</span>,
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>                 <span class="jxr_string">"JSON.JSON_1_"</span>, <span class="jxr_string">".JSON_1_"</span>, <span class="jxr_string">"*.JSON_1_"</span>,
-<a class="jxr_linenumber" name="L136" href="#L136">136</a>                 <span class="jxr_string">"JSON.JSON_1_0"</span>, <span class="jxr_string">".JSON_1_0"</span>, <span class="jxr_string">"*.JSON_1_0"</span>,
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>                 <span class="jxr_string">"JSON.JSON_1_2"</span>, <span class="jxr_string">".JSON_1_2"</span>, <span class="jxr_string">"*.JSON_1_2"</span>,
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>                 <span class="jxr_string">"JSON.JSON_1_2.1"</span>, <span class="jxr_string">".JSON_1_2.1"</span>, <span class="jxr_string">"*.JSON_1_2.1"</span>)) {
-<a class="jxr_linenumber" name="L139" href="#L139">139</a>             assertFalse(checkTypes.contains(notChecked), notChecked + <span class="jxr_string">" should not be a checked type"</span>);
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>         }
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>     }
-<a class="jxr_linenumber" name="L142" href="#L142">142</a> 
-<a class="jxr_linenumber" name="L143" href="#L143">143</a> }
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>                 String noMatchChars = <span class="jxr_string">" !@#$%^&amp;*()+=&#92;&#92;/,"</span>;
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>                 <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; noMatchChars.length(); i++) {
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>                     <strong class="jxr_keyword">char</strong> noMatchChar = noMatchChars.charAt(i);
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>                     String noMatch = String.format(formatString, noMatchChar);
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>                     assertFalse(f.matchesDenylistViewNameFormatPattern(noMatch),
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>                             String.format(<span class="jxr_string">"Unexpected match %s for Pattern %s"</span>, noMatch, pattern));
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>                 }
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> 
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>                 String nullInsert = String.format(formatString, <span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>                 assertTrue(f.matchesDenylistViewNameFormatPattern(nullInsert),
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>                         String.format(<span class="jxr_string">"Expected match %s for Pattern %s"</span>, nullInsert, pattern));
+<a class="jxr_linenumber" name="L114" href="#L114">114</a> 
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>                 String matchChars = <span class="jxr_string">"-_"</span>;
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>                 <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; matchChars.length(); i++) {
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>                     <strong class="jxr_keyword">char</strong> matchChar = matchChars.charAt(i);
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>                     String match = String.format(formatString, matchChar);
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>                     assertTrue(f.matchesDenylistViewNameFormatPattern(match),
+<a class="jxr_linenumber" name="L120" href="#L120">120</a>                             String.format(<span class="jxr_string">"Expected match %s for Pattern %s"</span>, match, pattern));
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>                 }
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>             }
+<a class="jxr_linenumber" name="L123" href="#L123">123</a>         }
+<a class="jxr_linenumber" name="L124" href="#L124">124</a> 
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>     }
+<a class="jxr_linenumber" name="L126" href="#L126">126</a> 
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>     @Test
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>     <strong class="jxr_keyword">void</strong> testIncorrectConfigs() {
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>         List&lt;String&gt; invalidEntries = Arrays.asList(
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>                 <span class="jxr_string">"type*.view"</span>, <span class="jxr_string">"*type.view"</span>, <span class="jxr_string">"ty*pe.view"</span>, <span class="jxr_string">"*.view"</span>, <span class="jxr_string">".view"</span>,
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>                 <span class="jxr_string">"type*.*view"</span>, <span class="jxr_string">"*type.*view"</span>, <span class="jxr_string">"ty*pe.*view"</span>, <span class="jxr_string">"*.*view"</span>, <span class="jxr_string">".*view"</span>, <span class="jxr_string">"*view"</span>,
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>                 <span class="jxr_string">"type*.vi*ew"</span>, <span class="jxr_string">"*type.vi*ew"</span>, <span class="jxr_string">"ty*pe.vi*ew"</span>, <span class="jxr_string">"*.vi*ew"</span>, <span class="jxr_string">".vi*ew"</span>, <span class="jxr_string">"vi*ew"</span>,
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>                 <span class="jxr_string">"type*.view*"</span>, <span class="jxr_string">"*type.view*"</span>, <span class="jxr_string">"ty*pe.view*"</span>, <span class="jxr_string">"*.view*"</span>, <span class="jxr_string">".view*"</span>,
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>                 <span class="jxr_string">"type."</span>, <span class="jxr_string">"*"</span>, <span class="jxr_string">"type.*"</span>, <span class="jxr_string">"."</span>, <span class="jxr_string">"type.view."</span>, <span class="jxr_string">".type.view"</span>, <span class="jxr_string">".type.view."</span>,
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>                 <span class="jxr_string">"type..view"</span>, <span class="jxr_string">"type.view.view.view"</span>, <span class="jxr_string">"type.view*.view*"</span>, <span class="jxr_string">"type.view**"</span>, <span class="jxr_string">"view**"</span>);
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>         <strong class="jxr_keyword">for</strong> (String entry : invalidEntries) {
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>             <strong class="jxr_keyword">final</strong> Configurator config = <strong class="jxr_keyword">new</strong> ServiceConfigGuide();
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>             config.addEntry(<span class="jxr_string">"DENYLIST"</span>, entry);
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>             AbstractFilter f = getAbstractFilterInstance();
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>             EmissaryRuntimeException e = assertThrows(
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>                     EmissaryRuntimeException.<strong class="jxr_keyword">class</strong>,
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>                     () -&gt; f.initialize(<strong class="jxr_keyword">new</strong> ServiceConfigGuide(), <span class="jxr_string">"FOO"</span>, config));
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>             assertTrue(e.getMessage().contains(String.format(<span class="jxr_string">"Invalid filter configuration: `DENYLIST = \&quot;%s\&quot;`"</span>, entry)));
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>         }
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>     }
+<a class="jxr_linenumber" name="L146" href="#L146">146</a> 
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>     @Test
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>     <strong class="jxr_keyword">void</strong> testDenyListContains() {
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>         AbstractFilter f = getDenylistFilter(Arrays.asList(
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>                 <span class="jxr_string">"JSON_ML"</span>, <span class="jxr_string">"JSON_LANG_*"</span>,
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>                 <span class="jxr_string">"JSON.GeoJSON"</span>, <span class="jxr_string">"JSON.JSON_1_*"</span>));
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> 
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>         String filetype1 = <span class="jxr_string">"JSON"</span>;
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>         <strong class="jxr_keyword">for</strong> (String accepted : Arrays.asList(
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>                 <span class="jxr_string">"PrimaryView"</span>, <span class="jxr_string">"JSON_PRETTY"</span>, <span class="jxr_string">"JSON_LANG"</span>, <span class="jxr_string">"Geo"</span>, <span class="jxr_string">"JSON_1"</span>, <span class="jxr_string">"JSON_2_10"</span>, <span class="jxr_string">"JSON_2_10.1"</span>)) {
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>             assertFalse(f.denyListContains(filetype1, accepted), accepted + <span class="jxr_string">" should not be in denyList"</span>);
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>         }
+<a class="jxr_linenumber" name="L158" href="#L158">158</a> 
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>         <strong class="jxr_keyword">for</strong> (String denied : Arrays.asList(
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>                 <span class="jxr_string">"JSON_ML"</span>, <span class="jxr_string">"JSON_LANG_ENG"</span>, <span class="jxr_string">"JSON_LANG_RUS"</span>, <span class="jxr_string">"JSON_LANG_FRE"</span>,
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>                 <span class="jxr_string">"GeoJSON"</span>, <span class="jxr_string">"JSON_1_"</span>, <span class="jxr_string">"JSON_1_0"</span>, <span class="jxr_string">"JSON_1_2"</span>, <span class="jxr_string">"JSON_1_2.1"</span>)) {
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>             assertTrue(f.denyListContains(filetype1, denied), denied + <span class="jxr_string">" should be in denyList"</span>);
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>         }
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> 
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>         String filetype2 = <span class="jxr_string">"XML"</span>;
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>         <strong class="jxr_keyword">for</strong> (String accepted : Arrays.asList(
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>                 <span class="jxr_string">"PrimaryView"</span>, <span class="jxr_string">"JSON_PRETTY"</span>, <span class="jxr_string">"JSON_LANG"</span>, <span class="jxr_string">"Geo"</span>, <span class="jxr_string">"GeoJSON"</span>,
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>                 <span class="jxr_string">"JSON_1_"</span>, <span class="jxr_string">"JSON_1"</span>, <span class="jxr_string">"JSON_1_0"</span>, <span class="jxr_string">"JSON_1_2"</span>, <span class="jxr_string">"JSON_1_2.1"</span>, <span class="jxr_string">"JSON_2_10"</span>, <span class="jxr_string">"JSON_2_10.1"</span>)) {
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>             assertFalse(f.denyListContains(filetype2, accepted), accepted + <span class="jxr_string">" should not be in denyList"</span>);
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>         }
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> 
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>         <strong class="jxr_keyword">for</strong> (String denied : Arrays.asList(
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>                 <span class="jxr_string">"JSON_ML"</span>, <span class="jxr_string">"JSON_LANG_ENG"</span>, <span class="jxr_string">"JSON_LANG_RUS"</span>, <span class="jxr_string">"JSON_LANG_FRE"</span>)) {
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>             assertTrue(f.denyListContains(filetype2, denied), denied + <span class="jxr_string">" should be in denyList"</span>);
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>         }
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> 
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>     }
+<a class="jxr_linenumber" name="L178" href="#L178">178</a> 
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>     @Test
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>     <strong class="jxr_keyword">void</strong> testGetTypesToCheck() {
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>         AbstractFilter f = getDenylistFilter(Arrays.asList(
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>                 <span class="jxr_string">"JSON_ML"</span>, <span class="jxr_string">"JSON_LANG_*"</span>,
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>                 <span class="jxr_string">"JSON.GeoJSON"</span>, <span class="jxr_string">"JSON.JSON_1_*"</span>));
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> 
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>         IBaseDataObject payload = getTestPayload(<span class="jxr_string">"JSON"</span>, Arrays.asList(
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>                 <span class="jxr_string">"JSON_PRETTY"</span>, <span class="jxr_string">"JSON_ML"</span>, <span class="jxr_string">"Geo"</span>, <span class="jxr_string">"GeoJSON"</span>,
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>                 <span class="jxr_string">"JSON_1_"</span>, <span class="jxr_string">"JSON_1"</span>, <span class="jxr_string">"JSON_1_0"</span>, <span class="jxr_string">"JSON_1_2"</span>, <span class="jxr_string">"JSON_1_2.1"</span>, <span class="jxr_string">"JSON_2_10"</span>, <span class="jxr_string">"JSON_2_10.1"</span>,
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>                 <span class="jxr_string">"JSON_LANG"</span>, <span class="jxr_string">"JSON_LANG_ENG"</span>, <span class="jxr_string">"JSON_LANG_RUS"</span>, <span class="jxr_string">"JSON_LANG_FRE"</span>));
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> 
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>         Set&lt;String&gt; checkTypes = f.getTypesToCheck(payload);
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> 
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>         <strong class="jxr_keyword">for</strong> (String checked : Arrays.asList(
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>                 <span class="jxr_string">"JSON.Geo"</span>, <span class="jxr_string">".Geo"</span>, <span class="jxr_string">"*.Geo"</span>,
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>                 <span class="jxr_string">"JSON.JSON_LANG"</span>, <span class="jxr_string">".JSON_LANG"</span>, <span class="jxr_string">"*.JSON_LANG"</span>,
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>                 <span class="jxr_string">"JSON.JSON_PRETTY"</span>, <span class="jxr_string">".JSON_PRETTY"</span>, <span class="jxr_string">"*.JSON_PRETTY"</span>,
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>                 <span class="jxr_string">"JSON.JSON_1"</span>, <span class="jxr_string">".JSON_1"</span>, <span class="jxr_string">"*.JSON_1"</span>,
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>                 <span class="jxr_string">"JSON.JSON_2_10"</span>, <span class="jxr_string">".JSON_2_10"</span>, <span class="jxr_string">"*.JSON_2_10"</span>,
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>                 <span class="jxr_string">"JSON.JSON_2_10.1"</span>, <span class="jxr_string">".JSON_2_10.1"</span>, <span class="jxr_string">"*.JSON_2_10.1"</span>,
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>                 <span class="jxr_string">"JSON.PrimaryView"</span>, <span class="jxr_string">".PrimaryView"</span>, <span class="jxr_string">"*.PrimaryView"</span>,
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>                 <span class="jxr_string">"JSON.Metadata"</span>, <span class="jxr_string">".Metadata"</span>, <span class="jxr_string">"*.Metadata"</span>,
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>                 <span class="jxr_string">"*.AlternateView"</span>, <span class="jxr_string">"NONE.Language"</span>, <span class="jxr_string">"*.Language"</span>, <span class="jxr_string">"JSON"</span>)) {
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>             assertTrue(checkTypes.contains(checked), checked + <span class="jxr_string">" should be a checked type"</span>);
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>         }
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> 
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>         <strong class="jxr_keyword">for</strong> (String notChecked : Arrays.asList(
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>                 <span class="jxr_string">"JSON.JSON_ML"</span>, <span class="jxr_string">".JSON_ML"</span>, <span class="jxr_string">"*.JSON_ML"</span>,
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>                 <span class="jxr_string">"JSON.GeoJSON"</span>, <span class="jxr_string">".GeoJSON"</span>, <span class="jxr_string">"*.GeoJSON"</span>,
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>                 <span class="jxr_string">"JSON.JSON_LANG_ENG"</span>, <span class="jxr_string">".JSON_LANG_ENG"</span>, <span class="jxr_string">"*.JSON_LANG_ENG"</span>,
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>                 <span class="jxr_string">"JSON.JSON_LANG_FRE"</span>, <span class="jxr_string">".JSON_LANG_FRE"</span>, <span class="jxr_string">"*.JSON_LANG_FRE"</span>,
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>                 <span class="jxr_string">"JSON.JSON_LANG_RUS"</span>, <span class="jxr_string">".JSON_LANG_RUS"</span>, <span class="jxr_string">"*.JSON_LANG_RUS"</span>,
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>                 <span class="jxr_string">"JSON.JSON_1_"</span>, <span class="jxr_string">".JSON_1_"</span>, <span class="jxr_string">"*.JSON_1_"</span>,
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>                 <span class="jxr_string">"JSON.JSON_1_0"</span>, <span class="jxr_string">".JSON_1_0"</span>, <span class="jxr_string">"*.JSON_1_0"</span>,
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>                 <span class="jxr_string">"JSON.JSON_1_2"</span>, <span class="jxr_string">".JSON_1_2"</span>, <span class="jxr_string">"*.JSON_1_2"</span>,
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>                 <span class="jxr_string">"JSON.JSON_1_2.1"</span>, <span class="jxr_string">".JSON_1_2.1"</span>, <span class="jxr_string">"*.JSON_1_2.1"</span>)) {
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>             assertFalse(checkTypes.contains(notChecked), notChecked + <span class="jxr_string">" should not be a checked type"</span>);
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>         }
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>     }
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> 
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
