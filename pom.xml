@@ -1501,6 +1501,7 @@
                   -Xep:BooleanParameter:OFF \
                   -Xep:CanIgnoreReturnValueSuggester:OFF \
                   -Xep:DefaultCharset:OFF \
+                  -Xep:InconsistentOverloads:OFF \
                   -Xep:InlineMeSuggester:OFF \
                   -Xep:InlineTrivialConstant:OFF \
                   -Xep:Java7ApiChecker:OFF \
@@ -1509,8 +1510,7 @@
                   -Xep:UnnecessaryFinal:OFF \
                   -Xep:Var:OFF \
                   -Xep:Varifier:OFF \
-                  -Xep:YodaCondition:OFF \
-                  -Xep:InconsistentOverloads:OFF</arg>
+                  -Xep:YodaCondition:OFF</arg>
               </compilerArgs>
               <annotationProcessorPaths>
                 <path>
