@@ -176,6 +176,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * Run the file process
      */
     @Nullable
+    @SuppressWarnings("AvoidObjectArrays")
     public byte[] fileProcess(String[] cmd, String outputFile) {
         logger.debug("fileProcess({})", Arrays.asList(cmd));
         StringBuilder errbuf = new StringBuilder();
@@ -195,6 +196,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @return bytes of output from command execution
      */
     @Nullable
+    @SuppressWarnings("AvoidObjectArrays")
     public byte[] stdOutProcess(String[] cmd, boolean chop) {
         logger.debug("stdOutProcess({},{}) with charset {}", Arrays.asList(cmd), chop, charset);
         StringBuilder outbuf = new StringBuilder();
@@ -274,6 +276,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param data the bytes to run the command on
      * @return byte array of output
      */
+    @SuppressWarnings("CatchingUnchecked")
     protected byte[] runCommandOn(byte[] data) throws ResourceException {
         String[] names = executrix.makeTempFilenames();
         String tempDirName = names[Executrix.DIR];
