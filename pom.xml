@@ -118,7 +118,7 @@
     <plugin.maven-source.version>3.2.1</plugin.maven-source.version>
     <!-- seems to have an impact with java 11 integration, update with caution -->
     <plugin.maven-surefire.version>3.1.0</plugin.maven-surefire.version>
-    <plugin.nexus-maven-staging.version>1.6.7</plugin.nexus-maven-staging.version>
+    <plugin.nexus-staging-maven.version>1.6.7</plugin.nexus-staging-maven.version>
     <plugin.sonar-maven.version>3.9.1.2184</plugin.sonar-maven.version>
     <plugin.sortpom-maven.version>2.15.0</plugin.sortpom-maven.version>
     <plugin.versions-maven.version>2.17.1</plugin.versions-maven.version>
