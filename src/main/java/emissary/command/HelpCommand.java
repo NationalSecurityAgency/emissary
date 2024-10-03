@@ -71,6 +71,7 @@ public class HelpCommand implements EmissaryCommand {
         LOG.info("Use 'help <command-name>' to see more detailed info about that command");
     }
 
+    @SuppressWarnings("SystemOut")
     public static void dumpHelp(CommandLine c, String subcommand) {
         LOG.info("Detailed help for: {}", subcommand);
         try {

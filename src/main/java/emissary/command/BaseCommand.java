@@ -153,6 +153,7 @@ public abstract class BaseCommand implements EmissaryCommand {
      * @param clazz the Class of return type class
      * @param args vararg of Strings
      */
+    @SuppressWarnings("SystemOut")
     public static <T extends EmissaryCommand> T parse(Class<T> clazz, String... args) throws EmissaryException {
         T cmd;
         try {

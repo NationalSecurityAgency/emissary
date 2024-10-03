@@ -49,6 +49,7 @@ class DependencyCheckTest extends UnitTest {
     }
 
     @Test
+    @SuppressWarnings("SystemOut")
     void testDependencyReport() {
         Configurator conf = new ServiceConfigGuide();
         conf.addEntry("REQUIRED_EXECUTABLE", "bash");
