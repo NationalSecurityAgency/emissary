@@ -1501,6 +1501,7 @@
                   -Xep:BooleanParameter:OFF \
                   -Xep:CanIgnoreReturnValueSuggester:OFF \
                   -Xep:DefaultCharset:OFF \
+                  -Xep:InconsistentOverloads:OFF \
                   -Xep:InlineMeSuggester:OFF \
                   -Xep:InlineTrivialConstant:OFF \
                   -Xep:Java7ApiChecker:OFF \
