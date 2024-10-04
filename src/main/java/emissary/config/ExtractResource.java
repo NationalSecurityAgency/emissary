@@ -111,7 +111,7 @@ public class ExtractResource {
             try {
                 ex.writeResource(args[i]);
             } catch (IOException iox) {
-                System.err.println(args[i] + ": " + iox);
+                logger.error("{}: {}", args[i], iox.toString());
             }
         }
     }

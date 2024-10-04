@@ -95,6 +95,7 @@ public abstract class MonitorCommand<T extends BaseResponseEntity> extends HttpC
     }
 
     // Here as a hook in case commands have summarize/custom display options
+    @SuppressWarnings("SystemOut")
     protected void displayEntityResults(T entity) {
         entity.dumpToConsole();
         for (String error : entity.getErrors()) {

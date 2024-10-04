@@ -4,6 +4,9 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.util.shell.Executrix;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
@@ -12,6 +15,8 @@ import java.util.Set;
  * Class that performs simple checks to determine if an executable, directory, and/or file exists on the host machine.
  */
 public class DependencyCheck {
+
+    private static final Logger logger = LoggerFactory.getLogger(DependencyCheck.class);
 
     Configurator config;
 
@@ -97,27 +102,27 @@ public class DependencyCheck {
 
         for (String reqExe : reqExeSet) {
             boolean exists = DependencyCheck.executableExists(reqExe);
-            System.out.println("RequiredExecutable: " + reqExe + " exists: " + exists);
+            logger.info("RequiredExecutable: {} exists: {}", reqExe, exists);
         }
         for (String reqDir : reqDirSet) {
             boolean exists = DependencyCheck.directoryExists(reqDir);
-            System.out.println("RequiredDirectory " + reqDir + " exists: " + exists);
+            logger.info("RequiredDirectory {} exists: {}", reqDir, exists);
         }
         for (String reqFile : reqFileSet) {
             boolean exists = DependencyCheck.fileExists(reqFile);
-            System.out.println("RequiredFile: " + reqFile + " exists: " + exists);
+            logger.info("RequiredFile: {} exists: {}", reqFile, exists);
         }
         for (String optExe : optExeSet) {
             boolean exists = DependencyCheck.executableExists(optExe);
-            System.out.println("OptionalExecutable: " + optExe + " exists: " + exists);
+            logger.info("OptionalExecutable: {} exists: {}", optExe, exists);
         }
         for (String optDir : optDirSet) {
             boolean exists = DependencyCheck.directoryExists(optDir);
-            System.out.println("OptionalDirectory " + optDir + " exists: " + exists);
+            logger.info("OptionalDirectory {} exists: {}", optDir, exists);
         }
         for (String optFile : optFileSet) {
             boolean exists = DependencyCheck.fileExists(optFile);
-            System.out.println("OptionalFile: " + optFile + " exists: " + exists);
+            logger.info("OptionalFile: {} exists: {}", optFile, exists);
         }
     }
 

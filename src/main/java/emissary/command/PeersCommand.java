@@ -36,6 +36,7 @@ public class PeersCommand extends HttpCommand {
     }
 
     @Override
+    @SuppressWarnings("SystemOut")
     public void run(CommandLine c) {
         setup();
         try {
