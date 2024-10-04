@@ -37,6 +37,7 @@ import static emissary.core.constants.Configurations.SERVICE_KEY;
 /**
  * This class wraps up things related to exec-ing of external processes and reading and writing disk files.
  */
+@SuppressWarnings("AvoidObjectArrays")
 public class Executrix {
     private static final Logger logger = LoggerFactory.getLogger(Executrix.class);
 
@@ -1248,6 +1249,7 @@ public class Executrix {
      * @param dir the directory to remove
      * @return true if it works, false otherwise
      */
+    @SuppressWarnings("CatchingUnchecked")
     public static boolean cleanupDirectory(final File dir) {
         if (!dir.exists()) {
             return true;
@@ -1363,6 +1365,7 @@ public class Executrix {
 
         }
 
+        @SuppressWarnings("MethodCanBeStatic")
         public ProcessReader getStdOutProcessReader(Process p) {
             return new ReadOutputLogger("stdOut", p.getInputStream());
         }
