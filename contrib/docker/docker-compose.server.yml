@@ -1,12 +1,11 @@
 ---
-version: "3"
-
 services:
   emissary-server:
     image: emissary
+    user: "${UID}:${GID}"
     build:
       context: ../../
-      dockerfile: contrib/docker/Dockerfile.ci
+      dockerfile: contrib/docker/Dockerfile
     environment:
       - PROJECT_BASE=/opt/emissary
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000 -Dfile.encoding=UTF8

@@ -51,7 +51,7 @@ jobs:
         with:
           context: .
           push: false
-          file: contrib/docker/Dockerfile.ci
+          file: contrib/docker/Dockerfile
           build-args: |
             java_version=${{ matrix.java-version }}
             java_compiler=${{ matrix.java-compiler }}
@@ -77,7 +77,7 @@ jobs:
         with:
           context: .
           push: false
-          file: contrib/docker/Dockerfile.ci
+          file: contrib/docker/Dockerfile
           build-args: |
             target_os=centos7
             verify_build=false

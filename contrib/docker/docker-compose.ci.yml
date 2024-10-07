@@ -4,7 +4,7 @@ services:
     image: emissary
     build:
       context: ../../
-      dockerfile: contrib/docker/Dockerfile.ci
+      dockerfile: contrib/docker/Dockerfile
     environment:
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000 -Dfile.encoding=UTF8
     network_mode: host
@@ -29,7 +29,7 @@ services:
     image: emissary
     build:
       context: ../../
-      dockerfile: contrib/docker/Dockerfile.ci
+      dockerfile: contrib/docker/Dockerfile
     environment:
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:7000 -Dfile.encoding=UTF8
     network_mode: host

@@ -615,12 +615,18 @@ Alternatively, we can use Docker directly. First run a full maven build and then
 mvn clean install -Pdist
 docker build -f contrib/docker/Dockerfile . -t emissary
 ```
+There are three os profiles in the Dockerfile that can be used to build Emissary docker
+ - default - ubi8 docker image
+ - centos7 - centos7 docker image
+ - alpine3 - alpine3 docker image
 
-For a lightweight emissary docker image the Dockerfile.alpine can be used. 
-This image is 1/3 of the size of the normal centOS 7 based image
+ centos7 and alpine images can be selected by using ```--build-arg target_os=[centos|apline3]``` in the ``docker build``` command
+
+For example, a lightweight emissary docker can use the alpine3 image from the Dockerfile. 
+This image is much smaller than the Dockerfile default ubi8 based image
 ```
 mvn clean install -Pdist
-docker build -f contrib/docker/Dockerfile.alpine . -t emissary-light
+docker build -f contrib/docker/Dockerfile . --build-arg target_os=alpine3 -t emissary-light
 ```
 
 ### Run Emissary with Docker
@@ -648,8 +654,13 @@ Emissary, run the sample command:
 docker run -it --rm -v ${PWD}/target/data:/opt/emissary/target/data:Z -v ${PWD}/target/localoutput:/opt/emissary/localoutput:Z --name emissary emissary
 ```
 
-If you are running into permission issues on Linux, an option is to run the container with your uid and gid by adding 
+If you are running into permission issues on Linux (which sometimes presents as an error related to moving files to the 'target/data/HoldData/' directory), an option is to run the container with your uid and gid by adding 
 ```--user $(id -u):$(id -g)``` to  the above command.
+
+So it looks like this:
+```
+docker run -it --rm --user $(id -u):$(id -g) -v ${PWD}/target/data:/opt/emissary/target/data:Z -v ${PWD}/target/localoutput:/opt/emissary/localoutput:Z --name emissary emissary 
+```
 
 Once Emissary starts up, we should see a log line that says: "Started EmissaryServer at http://localhost:8001." We now 
 can copy files into the input directory for Emissary to process:
@@ -690,36 +701,36 @@ docker run -it --rm --name emissary --hostname emissary-001 -p 8001:8001 emissar
 
 Then from a browser, assuming container is running locally, go to http://localhost:8001/ to see the endpoints.
 
-### Cluster Mode using Docker Compose
+### Run Emissary in Cluster Mode using Docker Compose
 We can use a Docker compose file to simulate cluster mode. We'll start a feeder and two workers by default. To start the
-cluster, run the sample docker-compose.yml file. From the root of the project, run:
+cluster, run the sample docker-compose.cluster.yml file. From the root of the project, run:
 
 ```
-docker-compose -f contrib/docker/docker-compose.yml up
+docker compose -f contrib/docker/docker-compose.cluster.yml up
 ```
 
 Use docker copy to run a file through Emissary:
 
 ```
-docker cp emissary-knight.png docker_emissary-feeder_1:/opt/emissary/target/data/InputData/
+docker cp emissary-knight.png docker-emissary-feeder-1:/opt/emissary/target/data/InputData/
 ```
 
-### Optionally Build and Test Emissary with a Docker Dev Image
+### Optionally Build and Test Emissary with a Docker Apline Image
 
-Let's use the dev image to build Emissary with Maven and Java:
+Let's use the alpine image to build Emissary with Maven and Java:
 ```
-docker build . -t emissary:test -f contrib/docker/Dockerfile.dev
+docker build . -t emissary:test --build-arg target_os=alpine3 -f contrib/docker/Dockerfile 
 ```
 Once the build succeeds, we can start a container:
 ```
 docker run -it --rm -p 8001:8001 --hostname emissary --name emissary emissary:test
 ```
 
-### Build and Run Emissary UBI8 Docker Image
+### Run Emissary server with default UBI8 Docker Image and Docker Compose
 
 From the root of the project, simply run:
 ```
-docker compose -f contrib/docker/docker-compose.ubi8.yml up --build
+docker compose -f contrib/docker/docker-compose.server.yml up --build
 ```
 Then from a browser, assuming container is running locally, go to http://localhost:8001/ to see the endpoints.
 
