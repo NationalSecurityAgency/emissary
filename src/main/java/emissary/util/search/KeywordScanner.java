@@ -162,7 +162,7 @@ public class KeywordScanner {
         this.pattern = patternArg;
         this.patternLength = patternArg.length;
 
-        while (newStart < this.dataLength) {
+        while (this.lastPosition >= -1) {
             final int actualStart = Math.max(newStart, 0);
             analyze();
             final int position = match(actualStart, stop);
