@@ -159,13 +159,15 @@ public class KeywordScanner {
             return matches;
         }
         int newStart = 0;
+        int actualStart;
+        int position = 0;
         this.pattern = patternArg;
         this.patternLength = patternArg.length;
 
-        while (this.lastPosition >= -1) {
-            final int actualStart = Math.max(newStart, 0);
+        while (position > -1) {
+            actualStart = Math.max(newStart, 0);
             analyze();
-            final int position = match(actualStart, stop);
+            position = match(actualStart, stop);
             this.lastPosition = position;
             if (position == -1) {
                 break;
