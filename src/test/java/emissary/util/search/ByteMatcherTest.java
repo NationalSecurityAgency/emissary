@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.ArrayList;
+import java.util.Collections;
 import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,13 +21,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ByteMatcherTest extends UnitTest {
 
     private static final String DATA = "The quick brown fox jumped over the lazy dog";
+    private static final String LIST_DATA = "This is a test. Is this a test? Yes, this is a test. TEST!";
     @Nullable
     private ByteMatcher b;
+    private ByteMatcher bl;
 
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         this.b = new ByteMatcher(DATA.getBytes());
+        this.bl = new ByteMatcher(LIST_DATA.getBytes());
     }
 
     @Override
@@ -84,6 +89,37 @@ class ByteMatcherTest extends UnitTest {
     @Test
     void testIndexOfBytes() {
         assertEquals(DATA.indexOf("fox"), this.b.indexOf("fox".getBytes()), "Match pos same as string");
+    }
+
+    @Test
+    void testListIndexOf() {
+        // Case Sensitive
+        ArrayList<Integer> findTestCaseSensitive = new ArrayList<>();
+        Collections.addAll(findTestCaseSensitive, 10, 26, 47);
+        // Byte pattern param test.
+        assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test".getBytes()));
+        assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test".getBytes(), 0));
+        assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test".getBytes(), 0, LIST_DATA.length()));
+
+        // String pattern param test
+        assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test"));
+        assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test", 0));
+        assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test", 0, LIST_DATA.length()));
+
+        // Case-insensitive
+        ArrayList<Integer> findTestCaseInsensitive = new ArrayList<>();
+        Collections.addAll(findTestCaseInsensitive, 10, 26, 47, 53);
+        // Byte pattern param test
+        assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test".getBytes()));
+        assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test".getBytes(), 0));
+        assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test".getBytes(), 0, LIST_DATA.length()));
+
+        // String pattern param test
+        assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test"));
+        assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test", 0));
+        assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test", 0, LIST_DATA.length()));
+
+        String stop = "Stop";
     }
 
     @Test
