@@ -25,6 +25,7 @@ public class SimpleNioParser extends NIOSessionParser {
     /**
      * Create a session parser on the data
      */
+    @SuppressWarnings("CheckedExceptionNotThrown")
     public SimpleNioParser(SeekableByteChannel channel) throws ParserException {
         super(channel);
     }

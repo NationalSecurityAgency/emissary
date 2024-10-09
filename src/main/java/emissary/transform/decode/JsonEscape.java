@@ -78,7 +78,7 @@ public class JsonEscape {
     private JsonEscape() {}
 
     @SuppressWarnings("SystemOut")
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         for (int i = 0; i < args.length; i++) {
             byte[] content = Executrix.readDataFromFile(args[i]);
             if (content == null) {

@@ -188,7 +188,7 @@ public class DataFilter extends AbstractFilter {
      * Main to test output types
      */
     @SuppressWarnings("SystemOut")
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String[] args) {
         final String name = args.length > 0 ? args[0] : null;
 
         final DataFilter filter = new DataFilter();

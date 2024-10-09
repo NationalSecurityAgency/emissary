@@ -190,6 +190,7 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
      * @throws IOException if an error occurs
      */
     @Override
+    @SuppressWarnings("CheckedExceptionNotThrown")
     public final SeekableByteChannel truncate(final long size) throws IOException {
         throw new NonWritableChannelException();
     }
@@ -200,6 +201,7 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
      * @param byteBuffer to write from
      */
     @Override
+    @SuppressWarnings("CheckedExceptionNotThrown")
     public final int write(final ByteBuffer byteBuffer) throws IOException {
         throw new NonWritableChannelException();
     }

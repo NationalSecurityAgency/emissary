@@ -167,6 +167,7 @@ public class WorkSpace implements Runnable {
     /**
      * Construct the space
      */
+    @SuppressWarnings("CheckedExceptionNotThrown")
     public WorkSpace() throws Exception {
 
     }

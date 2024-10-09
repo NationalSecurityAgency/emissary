@@ -412,7 +412,7 @@ public class MagicNumberFactory {
     // -----------------------------------------------------------------------
     // COLUMN C: [UNARY_OPERATOR][Some value like 0x00]
     // -----------------------------------------------------------------------
-    private static byte[] resolveValue(String[] columns, MagicNumber item) throws ParseException {
+    private static byte[] resolveValue(String[] columns, MagicNumber item) {
         String subject = columns[2];
 
         if (item.dataType == MagicNumber.TYPE_STRING && !(subject.length() == 1 && subject.charAt(0) == 'x')) {
