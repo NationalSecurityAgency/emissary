@@ -586,6 +586,7 @@ public class HDMobileAgent extends MobileAgent {
      * Interrupt the agent's thread Seems a little weird to be public, but there aren't a lot of choices.
      */
     @Override
+    @SuppressWarnings("Interruption")
     public void interrupt() {
         this.thread.interrupt();
     }

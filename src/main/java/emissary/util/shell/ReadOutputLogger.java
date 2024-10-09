@@ -51,6 +51,7 @@ public class ReadOutputLogger extends ProcessReader {
     }
 
     @Override
+    @SuppressWarnings("Interruption")
     public void finish() {
         this.finished = true;
         this.interrupt();
