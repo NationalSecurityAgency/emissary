@@ -68,6 +68,7 @@ class InterruptibleCharSequenceTest extends UnitTest {
     }
 
     @Test
+    @SuppressWarnings("Interruption")
     void testNoninterruptibleString() throws InterruptedException {
         BlockingQueue<Object> blockingQueue = new LinkedBlockingQueue<>();
         Thread t = tryMatchInThread(INPUT, BACKTRACKER, blockingQueue);
@@ -78,6 +79,7 @@ class InterruptibleCharSequenceTest extends UnitTest {
     }
 
     @Test
+    @SuppressWarnings("Interruption")
     void testInterruptibleCharSequence() throws InterruptedException {
         long sleepMillis = 32;
         String obnoxiousInput = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab";
