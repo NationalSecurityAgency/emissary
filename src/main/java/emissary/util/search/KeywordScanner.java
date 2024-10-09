@@ -2,6 +2,7 @@ package emissary.util.search;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import javax.annotation.Nullable;
 
 /**
@@ -67,6 +68,16 @@ public class KeywordScanner {
     }
 
     /**
+     * Returns a list of occurrences of the provided pattern in the data.
+     *
+     * @param patternArg the byte pattern to scan for, null returns empty list
+     * @return index list of positions in the data where the pattern begins, empty list if not found
+     */
+    public ArrayList<Integer> listIndexOf(final byte[] patternArg) {
+        return listIndexOf(patternArg, 0, this.dataLength);
+    }
+
+    /**
      * Returns the first occurrence of the provided pattern in the data, starting from the specified index.
      * <p>
      * There is no restriction on the value of {@code start}. If it is negative, it has the same effect as if it were zero:
@@ -79,6 +90,21 @@ public class KeywordScanner {
      */
     public int indexOf(final byte[] patternArg, final int start) {
         return indexOf(patternArg, start, this.dataLength);
+    }
+
+    /**
+     * Returns a list of occurrences of the provided pattern in the data, starting from the specified index.
+     * <p>
+     * There is no restriction on the value of {@code start}. If it is negative, it has the same effect as if it were zero:
+     * the entire data will be scanned. If it is greater than the length of the data, it has the same effect as if it were
+     * equal to the length of the data: empty list returned.
+     *
+     * @param patternArg the byte pattern to scan for, null returns empty list
+     * @param start the index to start searching from, negative values treated as 0
+     * @return index list of positions in the data where the pattern begins, empty list if not found
+     */
+    public ArrayList<Integer> listIndexOf(final byte[] patternArg, final int start) {
+        return listIndexOf(patternArg, start, this.dataLength);
     }
 
     /**
@@ -109,6 +135,47 @@ public class KeywordScanner {
         final int position = match(actualStart, stop);
         this.lastPosition = position;
         return position;
+    }
+
+    /**
+     * Returns a list of occurrences of the provided pattern in the data, starting from the specified index and stopping at
+     * the specified index.
+     * <p>
+     * There is no restriction on the value of {@code start}. If it is negative, it has the same effect as if it were zero:
+     * the entire data may be scanned. If it is greater than the length of the data, it has the same effect as if it were
+     * equal to the length of the data: an empty list is returned.
+     * <p>
+     * If the value of {@code stop} is negative, greater than the data length, or less than or equal to the start value, an
+     * empty list is returned
+     * 
+     * @param patternArg the byte pattern to scan for, null returns empty list
+     * @param start the index to start searching from, negative values treated as 0
+     * @param stop the index to stop searching at, exclusive, negative value returns empty list
+     * @return index list of positions in the data where the pattern begins, empty list if not found
+     */
+    public ArrayList<Integer> listIndexOf(@Nullable final byte[] patternArg, final int start, final int stop) {
+        ArrayList<Integer> matches = new ArrayList<>();
+        if ((start >= this.dataLength) || (stop > this.dataLength) || (patternArg == null)) {
+            return matches;
+        }
+        int newStart = 0;
+        this.pattern = patternArg;
+        this.patternLength = patternArg.length;
+
+        while (newStart < this.dataLength) {
+            final int actualStart = Math.max(newStart, 0);
+            analyze();
+            final int position = match(actualStart, stop);
+            this.lastPosition = position;
+            if (position == -1) {
+                break;
+            } else {
+                matches.add(position);
+                newStart = position + this.patternLength;
+            }
+        }
+
+        return matches;
     }
 
     /**
