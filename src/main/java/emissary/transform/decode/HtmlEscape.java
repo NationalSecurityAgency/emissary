@@ -340,7 +340,7 @@ public class HtmlEscape {
     private HtmlEscape() {}
 
     @SuppressWarnings("SystemOut")
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         boolean useString = false;
         int i = 0;
         if (args.length > 0 && args[i].equals("-s")) {
