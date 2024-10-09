@@ -33,8 +33,11 @@ class LoggingPrintStreamTest {
     private static final String LOG_MSG_1 = "Log message NUMBER 1";
     private static final String LOG_MSG_2 = "Log message NUMBER 2";
     private static final Object LOG_OBJ_1 = 1234567890;
+    @SuppressWarnings("StaticAssignmentOfThrowable")
     private static final Exception EXCEPTION_CAUSE = new Exception("Test Exception 'cause'");
+    @SuppressWarnings("StaticAssignmentOfThrowable")
     private static final Exception EXCEPTION_ONE = new Exception("Test Exception NUMBER 1", EXCEPTION_CAUSE);
+    @SuppressWarnings("StaticAssignmentOfThrowable")
     private static final Exception EXCEPTION_TWO = new Exception("Test Exception NUMBER 2", EXCEPTION_CAUSE);
 
     @Test

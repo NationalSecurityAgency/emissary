@@ -1312,6 +1312,7 @@ class BaseDataObjectTest extends UnitTest {
     static final Level LEVELS_ONE_WARN = Level.WARN;
 
     @Nullable
+    @SuppressWarnings("StaticAssignmentOfThrowable")
     static final Throwable NO_THROWABLES = null;
     List<LogbackTester.SimplifiedLogEvent> events = new ArrayList<>();
     LogbackTester.SimplifiedLogEvent event1 =
