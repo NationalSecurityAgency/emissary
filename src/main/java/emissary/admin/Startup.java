@@ -508,7 +508,6 @@ public class Startup {
     protected void sortPlaces(final List<String> placeList) {
 
         for (final String location : placeList) {
-            final String placeName = Startup.placeName(location);
             final String className = PlaceStarter.getClassString(location);
             if (className == null) {
                 continue;
