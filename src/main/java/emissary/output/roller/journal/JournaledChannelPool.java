@@ -33,6 +33,7 @@ public class JournaledChannelPool implements AutoCloseable {
     @Nullable
     private JournaledChannel[] allchannels;
 
+    @SuppressWarnings("CheckedExceptionNotThrown")
     public JournaledChannelPool(final Path directory, final String key, final int max) throws IOException {
         this.max = max;
         this.directory = directory;

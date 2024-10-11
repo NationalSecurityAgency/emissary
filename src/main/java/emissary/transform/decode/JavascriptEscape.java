@@ -44,7 +44,7 @@ public class JavascriptEscape {
     private JavascriptEscape() {}
 
     @SuppressWarnings("SystemOut")
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         int i = 0;
 
         for (; i < args.length; i++) {
