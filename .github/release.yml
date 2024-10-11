@@ -17,6 +17,7 @@ changelog:
     - title: Improvements 🛠
       labels:
         - enhancement
+        - improvement
         - framework
     - title: Security 🔒
       labels:
