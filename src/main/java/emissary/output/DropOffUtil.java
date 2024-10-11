@@ -884,7 +884,7 @@ public class DropOffUtil {
         }
 
         // Default to current system time if last resort
-        return lastResortDefault ? new Date() : null;
+        return lastResortDefault ? Date.from(Instant.now()) : null;
     }
 
     /**

@@ -12,8 +12,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -449,7 +449,7 @@ class DropOffUtilTest extends UnitTest {
         d.setParameter(EVENT_DATE, "2015-02-13 23:13:03");
         d.setParameter(FILE_DATE, "2015-01-05 17:45:53");
 
-        Date start = new Date(); // use this for relative comparison
+        Instant start = Instant.now(); // use this for relative comparison
 
         // hit on child EventDate
         assertEquals("2015-02-13 23:13:03", TimeUtil.getDateAsISO8601(this.util.getEventDate(d, tld).toInstant()));
@@ -469,7 +469,7 @@ class DropOffUtilTest extends UnitTest {
         // removing tld FILE_DATE should default to now as configured by default
         tld.deleteParameter(FILE_DATE);
         assertNotNull(this.util.getEventDate(d, tld));
-        assertNotEquals(-1, this.util.getEventDate(d, tld).compareTo(start));
+        assertTrue(this.util.getEventDate(d, tld).toInstant().compareTo(start) > 0);
 
         // changing the configuration to not default to now should return null
         Configurator cfg = new ServiceConfigGuide();
