@@ -180,6 +180,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * Kill asynchronously
      */
     @Override
+    @SuppressWarnings("Interruption")
     public void killAgentAsync() {
         logger.debug("killAgentAsync called on {}", getName());
         this.timeToQuit = true;
