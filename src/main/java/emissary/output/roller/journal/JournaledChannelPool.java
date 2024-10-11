@@ -67,8 +67,8 @@ public class JournaledChannelPool implements AutoCloseable {
      * @throws InterruptedException If interrupted.
      */
     public KeyedOutput getFree() throws InterruptedException, IOException {
-        this.lock.lock();
         JournaledChannel jc = null;
+        this.lock.lock();
         try {
             checkClosed();
             jc = findFree();

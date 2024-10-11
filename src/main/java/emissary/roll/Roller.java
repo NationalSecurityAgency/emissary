@@ -66,8 +66,8 @@ public class Roller implements Runnable {
     }
 
     public final long incrementProgress(long val) {
+        lock.lock();
         try {
-            lock.lock();
             long progressValue = progress.addAndGet(val);
             if (progressValue >= max) {
                 support.firePropertyChange("roll", null, this);
@@ -103,8 +103,8 @@ public class Roller implements Runnable {
      * roll. Places should control that behavior via internal locking if necessary to maintain exact progress.
      */
     protected void resetProgress(long start) {
+        lock.lock();
         try {
-            lock.lock();
             progress = new AtomicLong();
             lastRun = start;
         } finally {
