@@ -2,6 +2,7 @@ package emissary.util.search;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import javax.annotation.Nullable;
 
 /**
@@ -16,6 +17,7 @@ public class ByteMatcher {
     private KeywordScanner scanner = null;
 
     public static final int NOTFOUND = -1;
+    public static final ArrayList<Integer> EMPTYLIST = new ArrayList<>();
 
     public ByteMatcher() {
         this(new byte[0]);
@@ -86,6 +88,21 @@ public class ByteMatcher {
     }
 
     /**
+     * This method finds a pattern in the text from {@code startOfs} and returns a list of offsets
+     *
+     * @param pattern bytes to find
+     * @param startOfs start index
+     */
+    public ArrayList<Integer> listIndexOf(byte[] pattern, int startOfs) {
+
+        if (mydata == null) {
+            return EMPTYLIST;
+        }
+
+        return listIndexOf(pattern, startOfs, mydata.length);
+    }
+
+    /**
      * This method finds a pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset
      *
      * @param pattern bytes to find
@@ -107,12 +124,41 @@ public class ByteMatcher {
     }
 
     /**
+     * This method finds a pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset list
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return list of positions
+     */
+    public ArrayList<Integer> listIndexOf(byte[] pattern, int beginIndex, int endIndex) {
+
+        // Impossible to find under these conditions
+        if (mydata == null || beginIndex > (mydata.length - pattern.length) || endIndex > mydata.length) {
+            return EMPTYLIST;
+        }
+
+        return scanner.listIndexOf(pattern, beginIndex, endIndex);
+    }
+
+    /**
      * Match pattern in the text
      */
     public int indexOf(byte[] pattern) {
 
         return indexOf(pattern, 0);
 
+    }
+
+    /**
+     * Match pattern in the text
+     *
+     * @param pattern bytes to find
+     * @return list of positions
+     */
+    public ArrayList<Integer> listIndexOf(byte[] pattern) {
+        return listIndexOf(pattern, 0);
     }
 
     /**
@@ -131,6 +177,20 @@ public class ByteMatcher {
     }
 
     /**
+     * Match pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset list
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return list of positions
+     */
+    public ArrayList<Integer> listIndexOf(String pattern, int beginIndex, int endIndex) {
+
+        return listIndexOf(pattern.getBytes(), beginIndex, endIndex);
+    }
+
+    /**
      * Match pattern in the text beginning at startOfs
      */
     public int indexOf(String pattern, int startOfs) {
@@ -140,12 +200,35 @@ public class ByteMatcher {
     }
 
     /**
+     * Match pattern in the text beginning at {@code startOfs}
+     *
+     * @param pattern bytes to find
+     * @param startOfs start index
+     * @return list of positions
+     */
+    public ArrayList<Integer> listIndexOf(String pattern, int startOfs) {
+
+        return listIndexOf(pattern.getBytes(), startOfs);
+    }
+
+    /**
      * Match pattern in the text
      */
     public int indexOf(String pattern) {
 
         return indexOf(pattern.getBytes(), 0);
 
+    }
+
+    /**
+     * Match pattern in the text
+     *
+     * @param pattern bytes to find
+     * @return list of positions
+     */
+    public ArrayList<Integer> listIndexOf(String pattern) {
+
+        return listIndexOf(pattern.getBytes(), 0);
     }
 
     /**
@@ -253,6 +336,32 @@ public class ByteMatcher {
     }
 
     /**
+     * This method finds a pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset list
+     * ignoring upper/lower case
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return list of positions
+     */
+    public ArrayList<Integer> indexListIgnoreCase(byte[] pattern, int beginIndex, int endIndex) {
+
+        // Impossible to find under these conditions
+        if (mydata == null || beginIndex > (mydata.length - pattern.length) || endIndex > mydata.length) {
+            return EMPTYLIST;
+        }
+
+        scanner.setCaseSensitive(false);
+        ArrayList<Integer> matchPosList = scanner.listIndexOf(pattern, beginIndex, endIndex);
+
+        // Reset scanner to default state.
+        scanner.setCaseSensitive(true);
+
+        return matchPosList;
+    }
+
+    /**
      * This method finds a pattern in the text and returns the offset ignoring upper/lower case
      */
 
@@ -265,6 +374,21 @@ public class ByteMatcher {
         return indexIgnoreCase(pattern, startOfs, mydata.length);
     }
 
+    /**
+     * This method finds a pattern in the text and returns the offset list ignoring upper/lower case
+     *
+     * @param pattern bytes to find
+     * @param startOfs start index
+     * @return list of positions
+     */
+    public ArrayList<Integer> indexListIgnoreCase(byte[] pattern, int startOfs) {
+
+        if (mydata == null) {
+            return EMPTYLIST;
+        }
+
+        return indexListIgnoreCase(pattern, startOfs, mydata.length);
+    }
 
     public int indexIgnoreCase(String pattern) {
 
@@ -272,10 +396,33 @@ public class ByteMatcher {
 
     }
 
+    /**
+     * Match pattern in the text
+     *
+     * @param pattern bytes to find
+     * @return list of positions
+     */
+    public ArrayList<Integer> indexListIgnoreCase(String pattern) {
+
+        return indexListIgnoreCase(pattern.getBytes(), 0);
+    }
+
     public int indexIgnoreCase(String pattern, int startOfs) {
 
         return indexIgnoreCase(pattern.getBytes(), startOfs);
 
+    }
+
+    /**
+     * Match pattern in the text from {@code startOfs} and returns the offset list ignoring upper/lower case
+     *
+     * @param pattern bytes to find
+     * @param startOfs start index
+     * @return list of positions
+     */
+    public ArrayList<Integer> indexListIgnoreCase(String pattern, int startOfs) {
+
+        return indexListIgnoreCase(pattern.getBytes(), startOfs);
     }
 
     /**
@@ -294,10 +441,36 @@ public class ByteMatcher {
 
     }
 
+    /**
+     * Match pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset list ignoring
+     * upper/lower case
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return list of positions
+     */
+    public ArrayList<Integer> indexListIgnoreCase(String pattern, int beginIndex, int endIndex) {
+
+        return indexListIgnoreCase(pattern.getBytes(), beginIndex, endIndex);
+    }
+
     public int indexIgnoreCase(byte[] pattern) {
 
         return indexIgnoreCase(pattern, 0);
 
+    }
+
+    /**
+     * Match pattern in the test and returns the offset list ignoring upper/lower case
+     * 
+     * @param pattern bytes to find
+     * @return list of positions
+     */
+    public ArrayList<Integer> indexListIgnoreCase(byte[] pattern) {
+
+        return indexListIgnoreCase(pattern, 0);
     }
 
     /**
