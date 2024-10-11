@@ -620,7 +620,7 @@ There are three os profiles in the Dockerfile that can be used to build Emissary
  - centos7 - centos7 docker image
  - alpine3 - alpine3 docker image
 
- centos7 and alpine images can be selected by using ```--build-arg target_os=[centos|apline3]``` in the ``docker build``` command
+ centos7 and alpine images can be selected by using ```--build-arg target_os=[centos7|apline3]``` in the ``docker build``` command
 
 For example, a lightweight emissary docker can use the alpine3 image from the Dockerfile. 
 This image is much smaller than the Dockerfile default ubi8 based image
