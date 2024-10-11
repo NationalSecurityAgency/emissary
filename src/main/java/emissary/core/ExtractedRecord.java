@@ -36,6 +36,7 @@ public class ExtractedRecord extends BaseDataObject implements IExtractedRecord 
 
     @Override
     @Deprecated(forRemoval = true)
+    @Nullable
     public List<IBaseDataObject> getExtractedRecords() {
         return null;
     }

@@ -132,7 +132,7 @@ public class CharsetUtil {
      */
     public static String getUtfString(final String s, final String charSet) {
         try {
-            return new String(s.getBytes("ISO8859_1"), charSet);
+            return new String(s.getBytes(StandardCharsets.ISO_8859_1), charSet);
         } catch (UnsupportedEncodingException uue) {
             logger.warn("Unable to convert to " + charSet);
         }
