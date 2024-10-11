@@ -715,7 +715,7 @@ Use docker copy to run a file through Emissary:
 docker cp emissary-knight.png docker-emissary-feeder-1:/opt/emissary/target/data/InputData/
 ```
 
-### Optionally Build and Test Emissary with a Docker Apline Image
+### Optionally Build and Test Emissary with a Docker Alpine Image
 
 Let's use the alpine image to build Emissary with Maven and Java:
 ```
