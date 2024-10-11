@@ -232,6 +232,9 @@ public class DirectoryObserverManager {
                     matchcount++;
                     logger.debug("Match! Doing {} for {}", action, placeKey);
                     switch (action) {
+                        case PEER_GROUP_CHANGE:
+                            // TODO: remove this ordinal?
+                            break;
                         case PLACE_ADD:
                             p.placeRegistered(this.directoryKey, placeKey);
                             break;
