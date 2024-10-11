@@ -188,8 +188,15 @@ public class CoordinationPlace extends ServiceProviderPlace {
     /**
      * Classes can override this method to do anything to the list of sprouted data objects from this coordination
      */
-    protected void sproutHook(List<IBaseDataObject> sproutList, IBaseDataObject parent) {
-        logger.debug("In base sproutHook with {}", sproutList.size());
+    protected void sproutHook(List<IBaseDataObject> sproutCollection, IBaseDataObject d) {
+        logger.debug("In base sproutHook with {}", sproutCollection.size());
+    }
+
+    private void sproutHook(List<IBaseDataObject> sproutCollection, IBaseDataObject d, boolean hd) {
+        // Allow derived classes a shot at the sprouts
+        if (hd) {
+            sproutHook(sproutCollection, d);
+        }
     }
 
     /**
@@ -250,19 +257,12 @@ public class CoordinationPlace extends ServiceProviderPlace {
 
         applyForm(d, errorOccurred);
 
-        sproutHook(d, hd, sproutCollection);
+        sproutHook(sproutCollection, d, hd);
 
         // Allow derived classes a shot to clean up the parent
         cleanUpHook(d);
 
         return sproutCollection;
-    }
-
-    private void sproutHook(IBaseDataObject d, boolean hd, List<IBaseDataObject> sproutCollection) {
-        // Allow derived classes a shot at the sprouts
-        if (hd) {
-            sproutHook(sproutCollection, d);
-        }
     }
 
     /**
