@@ -57,25 +57,26 @@
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>      }
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>      @Test
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">void</strong> testDependencyReport() {
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>          Configurator conf = <strong class="jxr_keyword">new</strong> ServiceConfigGuide();
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>          conf.addEntry(<span class="jxr_string">"REQUIRED_EXECUTABLE"</span>, <span class="jxr_string">"bash"</span>);
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>          conf.addEntry(<span class="jxr_string">"REQUIRED_DIRECTORY"</span>, binDir);
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          conf.addEntry(<span class="jxr_string">"REQUIRED_FILE"</span>, <span class="jxr_string">"./scrips/run.sh"</span>);
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          conf.addEntry(<span class="jxr_string">"OPTIONAL_EXECUTABLE"</span>, <span class="jxr_string">"peterpan"</span>);
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          conf.addEntry(<span class="jxr_string">"OPTIONAL_DIRECTORY"</span>, <span class="jxr_string">"./captain-hook"</span>);
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>          conf.addEntry(<span class="jxr_string">"OPTIONAL_FILE"</span>, <span class="jxr_string">"./scrips/wendy-can-fly.sh"</span>);
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          DependencyCheck d = <strong class="jxr_keyword">new</strong> DependencyCheck(conf);
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          PrintStream originalOut = System.out;
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>          ByteArrayOutputStream baos = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          PrintStream myOut = <strong class="jxr_keyword">new</strong> PrintStream(baos);
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          System.setOut(myOut);
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          d.printDependencyReport();
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          System.setOut(originalOut);
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          myOut.close();
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          assertTrue(baos.size() &gt; 0, <span class="jxr_string">"Report must exist"</span>);
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>      }
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  }
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>      @SuppressWarnings(<span class="jxr_string">"SystemOut"</span>)
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">void</strong> testDependencyReport() {
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          Configurator conf = <strong class="jxr_keyword">new</strong> ServiceConfigGuide();
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>          conf.addEntry(<span class="jxr_string">"REQUIRED_EXECUTABLE"</span>, <span class="jxr_string">"bash"</span>);
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          conf.addEntry(<span class="jxr_string">"REQUIRED_DIRECTORY"</span>, binDir);
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>          conf.addEntry(<span class="jxr_string">"REQUIRED_FILE"</span>, <span class="jxr_string">"./scrips/run.sh"</span>);
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          conf.addEntry(<span class="jxr_string">"OPTIONAL_EXECUTABLE"</span>, <span class="jxr_string">"peterpan"</span>);
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          conf.addEntry(<span class="jxr_string">"OPTIONAL_DIRECTORY"</span>, <span class="jxr_string">"./captain-hook"</span>);
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          conf.addEntry(<span class="jxr_string">"OPTIONAL_FILE"</span>, <span class="jxr_string">"./scrips/wendy-can-fly.sh"</span>);
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          DependencyCheck d = <strong class="jxr_keyword">new</strong> DependencyCheck(conf);
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          PrintStream originalOut = System.out;
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          ByteArrayOutputStream baos = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          PrintStream myOut = <strong class="jxr_keyword">new</strong> PrintStream(baos);
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          System.setOut(myOut);
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          d.printDependencyReport();
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          System.setOut(originalOut);
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          myOut.close();
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          assertTrue(baos.size() &gt; 0, <span class="jxr_string">"Report must exist"</span>);
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>      }
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

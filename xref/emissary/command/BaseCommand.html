@@ -161,97 +161,98 @@
 <a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_javadoccomment">     * @param clazz the Class of return type class</em>
 <a class="jxr_linenumber" name="L154" href="#L154">154</a> <em class="jxr_javadoccomment">     * @param args vararg of Strings</em>
 <a class="jxr_linenumber" name="L155" href="#L155">155</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T <strong class="jxr_keyword">extends</strong> EmissaryCommand&gt; T parse(Class&lt;T&gt; clazz, String... args) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>         T cmd;
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>             cmd = clazz.<strong class="jxr_keyword">cast</strong>(Class.forName(clazz.getName()).getDeclaredConstructor().newInstance());
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>         } <strong class="jxr_keyword">catch</strong> (ReflectiveOperationException e) {
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a>(<span class="jxr_string">"Cannot construct command"</span>, e);
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>         }
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>         ByteArrayOutputStream baos = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>         PrintStream ps = <strong class="jxr_keyword">new</strong> PrintStream(baos);
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>         PrintStream old = System.out;
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>         System.setOut(ps);
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> 
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>         CommandLine cl;
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>         <strong class="jxr_keyword">int</strong> code;
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>             cl = <strong class="jxr_keyword">new</strong> CommandLine(cmd);
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>             code = cl.execute(args);
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>             System.out.flush();
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>             System.setOut(old);
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>         }
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>         <strong class="jxr_keyword">if</strong> (cl != <strong class="jxr_keyword">null</strong> &amp;&amp; code == 2) {
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> ParameterException(cl, baos.toString());
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>         }
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>         cmd.setup();
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>         <strong class="jxr_keyword">return</strong> cmd;
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>     }
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> 
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> <em class="jxr_javadoccomment">     * Create a new command and parse the args</em>
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     * Useful for testings</em>
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     * @param clazz the Class of return type class</em>
-<a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">     * @param args vararg of Strings</em>
-<a class="jxr_linenumber" name="L191" href="#L191">191</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T <strong class="jxr_keyword">extends</strong> EmissaryCommand&gt; T parse(Class&lt;T&gt; clazz, List&lt;String&gt; args) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>         <strong class="jxr_keyword">return</strong> parse(clazz, args.toArray(<strong class="jxr_keyword">new</strong> String[0]));
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>     }
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> 
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>     <em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L197" href="#L197">197</a> <em class="jxr_comment">     * Try to reinitialize the logback context with the configured file you may have 2 log files if anything logged before</em>
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> <em class="jxr_comment">     * we do this. Useful when you are running a server For troubleshooting, looking at the <a href="http://localhost:8001/lbConfig" target="alexandria_uri">http://localhost:8001/lbConfig</a></em>
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_comment">     * when this works, you will see the initial logger and then new one</em>
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_comment">     *</em>
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_comment">     * Need to reinit because logback config uses ${emissary.node.name}-${emissary.node.port} which are now set by the</em>
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> <em class="jxr_comment">     * commands after logback is initialized</em>
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_comment">     */</em>
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> reinitLogback() {
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>         URL logCfg = ConfigurationWatchListUtil.getMainWatchURL(loggerContext);
-<a class="jxr_linenumber" name="L207" href="#L207">207</a> 
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>         <strong class="jxr_keyword">if</strong> (logCfg != <strong class="jxr_keyword">null</strong> &amp;&amp; (logCfg.toString().endsWith(<span class="jxr_string">"logback-test.xml"</span>) || logCfg.toString().endsWith(<span class="jxr_string">"logback-test.groovy"</span>))) {
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>             <em class="jxr_comment">// logCfg can be null if Emissary.setupLogbackForConsole is called</em>
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>             LOG.warn(<span class="jxr_string">"Not using {}, staying with test config {}"</span>, getLogbackConfig(), logCfg);
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>             doLogbackReinit(loggerContext, logCfg.getPath());
-<a class="jxr_linenumber" name="L212" href="#L212">212</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (Files.exists(Paths.get(getLogbackConfig()))) {
-<a class="jxr_linenumber" name="L213" href="#L213">213</a>             doLogbackReinit(loggerContext, getLogbackConfig());
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>             LOG.warn(<span class="jxr_string">"logback configuration not found {}, not reconfiguring logging"</span>, getLogbackConfig());
-<a class="jxr_linenumber" name="L216" href="#L216">216</a>         }
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> 
-<a class="jxr_linenumber" name="L218" href="#L218">218</a>     }
-<a class="jxr_linenumber" name="L219" href="#L219">219</a> 
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> doLogbackReinit(LoggerContext loggerContext, String configFilePath) {
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>         System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, configFilePath);
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>         loggerContext.reset();
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>         ContextInitializer newContext = <strong class="jxr_keyword">new</strong> ContextInitializer(loggerContext);
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>             newContext.autoConfig();
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>         } <strong class="jxr_keyword">catch</strong> (JoranException e) {
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>             LOG.error(<span class="jxr_string">"Problem reconfiguring logback with {}"</span>, getLogbackConfig(), e);
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>         }
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>     }
-<a class="jxr_linenumber" name="L230" href="#L230">230</a> 
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> logInfo(String format, Object... args) {
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>         <strong class="jxr_keyword">if</strong> (isVerbose()) {
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>             LOG.info(format, args);
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>         }
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>     }
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> 
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>     @Override
-<a class="jxr_linenumber" name="L238" href="#L238">238</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> outputBanner() {
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>         <strong class="jxr_keyword">if</strong> (isVerbose()) {
-<a class="jxr_linenumber" name="L240" href="#L240">240</a>             <strong class="jxr_keyword">new</strong> <a name="Banner" href="../../emissary/command/Banner.html#Banner">Banner</a>().dump();
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>         }
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>     }
-<a class="jxr_linenumber" name="L243" href="#L243">243</a> 
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>     @Override
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run() {}
-<a class="jxr_linenumber" name="L246" href="#L246">246</a> }
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>     @SuppressWarnings(<span class="jxr_string">"SystemOut"</span>)
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T <strong class="jxr_keyword">extends</strong> EmissaryCommand&gt; T parse(Class&lt;T&gt; clazz, String... args) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>         T cmd;
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>             cmd = clazz.<strong class="jxr_keyword">cast</strong>(Class.forName(clazz.getName()).getDeclaredConstructor().newInstance());
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>         } <strong class="jxr_keyword">catch</strong> (ReflectiveOperationException e) {
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a>(<span class="jxr_string">"Cannot construct command"</span>, e);
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>         }
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>         ByteArrayOutputStream baos = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>         PrintStream ps = <strong class="jxr_keyword">new</strong> PrintStream(baos);
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>         PrintStream old = System.out;
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>         System.setOut(ps);
+<a class="jxr_linenumber" name="L168" href="#L168">168</a> 
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>         CommandLine cl;
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>         <strong class="jxr_keyword">int</strong> code;
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>             cl = <strong class="jxr_keyword">new</strong> CommandLine(cmd);
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>             code = cl.execute(args);
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>         } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>             System.out.flush();
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>             System.setOut(old);
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>         }
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>         <strong class="jxr_keyword">if</strong> (cl != <strong class="jxr_keyword">null</strong> &amp;&amp; code == 2) {
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> ParameterException(cl, baos.toString());
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>         }
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>         cmd.setup();
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>         <strong class="jxr_keyword">return</strong> cmd;
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>     }
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> 
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">     * Create a new command and parse the args</em>
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     * Useful for testings</em>
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">     * @param clazz the Class of return type class</em>
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> <em class="jxr_javadoccomment">     * @param args vararg of Strings</em>
+<a class="jxr_linenumber" name="L192" href="#L192">192</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T <strong class="jxr_keyword">extends</strong> EmissaryCommand&gt; T parse(Class&lt;T&gt; clazz, List&lt;String&gt; args) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>         <strong class="jxr_keyword">return</strong> parse(clazz, args.toArray(<strong class="jxr_keyword">new</strong> String[0]));
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>     }
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> 
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>     <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> <em class="jxr_comment">     * Try to reinitialize the logback context with the configured file you may have 2 log files if anything logged before</em>
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_comment">     * we do this. Useful when you are running a server For troubleshooting, looking at the <a href="http://localhost:8001/lbConfig" target="alexandria_uri">http://localhost:8001/lbConfig</a></em>
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_comment">     * when this works, you will see the initial logger and then new one</em>
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_comment">     *</em>
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> <em class="jxr_comment">     * Need to reinit because logback config uses ${emissary.node.name}-${emissary.node.port} which are now set by the</em>
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_comment">     * commands after logback is initialized</em>
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_comment">     */</em>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> reinitLogback() {
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>         URL logCfg = ConfigurationWatchListUtil.getMainWatchURL(loggerContext);
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> 
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>         <strong class="jxr_keyword">if</strong> (logCfg != <strong class="jxr_keyword">null</strong> &amp;&amp; (logCfg.toString().endsWith(<span class="jxr_string">"logback-test.xml"</span>) || logCfg.toString().endsWith(<span class="jxr_string">"logback-test.groovy"</span>))) {
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>             <em class="jxr_comment">// logCfg can be null if Emissary.setupLogbackForConsole is called</em>
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>             LOG.warn(<span class="jxr_string">"Not using {}, staying with test config {}"</span>, getLogbackConfig(), logCfg);
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>             doLogbackReinit(loggerContext, logCfg.getPath());
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (Files.exists(Paths.get(getLogbackConfig()))) {
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>             doLogbackReinit(loggerContext, getLogbackConfig());
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>             LOG.warn(<span class="jxr_string">"logback configuration not found {}, not reconfiguring logging"</span>, getLogbackConfig());
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>         }
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> 
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>     }
+<a class="jxr_linenumber" name="L220" href="#L220">220</a> 
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> doLogbackReinit(LoggerContext loggerContext, String configFilePath) {
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>         System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, configFilePath);
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>         loggerContext.reset();
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>         ContextInitializer newContext = <strong class="jxr_keyword">new</strong> ContextInitializer(loggerContext);
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>             newContext.autoConfig();
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>         } <strong class="jxr_keyword">catch</strong> (JoranException e) {
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>             LOG.error(<span class="jxr_string">"Problem reconfiguring logback with {}"</span>, getLogbackConfig(), e);
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>         }
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>     }
+<a class="jxr_linenumber" name="L231" href="#L231">231</a> 
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> logInfo(String format, Object... args) {
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>         <strong class="jxr_keyword">if</strong> (isVerbose()) {
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>             LOG.info(format, args);
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>         }
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>     }
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> 
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>     @Override
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> outputBanner() {
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>         <strong class="jxr_keyword">if</strong> (isVerbose()) {
+<a class="jxr_linenumber" name="L241" href="#L241">241</a>             <strong class="jxr_keyword">new</strong> <a name="Banner" href="../../emissary/command/Banner.html#Banner">Banner</a>().dump();
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>         }
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>     }
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> 
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>     @Override
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run() {}
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

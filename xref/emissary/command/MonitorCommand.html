@@ -103,22 +103,23 @@
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>      }
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>      <em class="jxr_comment">// Here as a hook in case commands have summarize/custom display options</em>
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> displayEntityResults(T entity) {
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>          entity.dumpToConsole();
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>         <strong class="jxr_keyword">for</strong> (String error : entity.getErrors()) {
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>             System.err.print(error);
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>         }
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>     }
-<a class="jxr_linenumber" name="L104" href="#L104">104</a> 
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>     <strong class="jxr_keyword">private</strong> String buildEndpoint(<strong class="jxr_keyword">final</strong> String host, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> port) {
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>         <strong class="jxr_keyword">return</strong> buildEndpoint(host + <span class="jxr_string">":"</span> + port);
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>     }
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> 
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>     <strong class="jxr_keyword">private</strong> String buildEndpoint(<strong class="jxr_keyword">final</strong> String hostAndPort) {
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>         <strong class="jxr_keyword">return</strong> getScheme() + <span class="jxr_string">"://"</span> + hostAndPort + <span class="jxr_string">"/"</span> + getTargetEndpoint();
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>     }
-<a class="jxr_linenumber" name="L112" href="#L112">112</a> 
-<a class="jxr_linenumber" name="L113" href="#L113">113</a> }
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>      @SuppressWarnings(<span class="jxr_string">"SystemOut"</span>)
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> displayEntityResults(T entity) {
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>         entity.dumpToConsole();
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>         <strong class="jxr_keyword">for</strong> (String error : entity.getErrors()) {
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>             System.err.print(error);
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>         }
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>     }
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> 
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>     <strong class="jxr_keyword">private</strong> String buildEndpoint(<strong class="jxr_keyword">final</strong> String host, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> port) {
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>         <strong class="jxr_keyword">return</strong> buildEndpoint(host + <span class="jxr_string">":"</span> + port);
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>     }
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> 
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>     <strong class="jxr_keyword">private</strong> String buildEndpoint(<strong class="jxr_keyword">final</strong> String hostAndPort) {
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>         <strong class="jxr_keyword">return</strong> getScheme() + <span class="jxr_string">"://"</span> + hostAndPort + <span class="jxr_string">"/"</span> + getTargetEndpoint();
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>     }
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> 
+<a class="jxr_linenumber" name="L114" href="#L114">114</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

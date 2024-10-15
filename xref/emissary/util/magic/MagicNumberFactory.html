@@ -420,7 +420,7 @@
 <a class="jxr_linenumber" name="L412" href="#L412">412</a>     <em class="jxr_comment">// -----------------------------------------------------------------------</em>
 <a class="jxr_linenumber" name="L413" href="#L413">413</a>     <em class="jxr_comment">// COLUMN C: [UNARY_OPERATOR][Some value like 0x00]</em>
 <a class="jxr_linenumber" name="L414" href="#L414">414</a>     <em class="jxr_comment">// -----------------------------------------------------------------------</em>
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> byte[] resolveValue(String[] columns, <a name="MagicNumber" href="../../../emissary/util/magic/MagicNumber.html#MagicNumber">MagicNumber</a> item) <strong class="jxr_keyword">throws</strong> <a name="ParseException" href="../../../emissary/util/magic/ParseException.html#ParseException">ParseException</a> {
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> byte[] resolveValue(String[] columns, <a name="MagicNumber" href="../../../emissary/util/magic/MagicNumber.html#MagicNumber">MagicNumber</a> item) {
 <a class="jxr_linenumber" name="L416" href="#L416">416</a>         String subject = columns[2];
 <a class="jxr_linenumber" name="L417" href="#L417">417</a> 
 <a class="jxr_linenumber" name="L418" href="#L418">418</a>         <strong class="jxr_keyword">if</strong> (item.dataType == MagicNumber.TYPE_STRING &amp;&amp; !(subject.length() == 1 &amp;&amp; subject.charAt(0) == 'x')) {
