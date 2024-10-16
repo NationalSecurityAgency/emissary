@@ -305,7 +305,7 @@ public class DirectoryAdapter extends EmissaryClient {
      *
      * @param name name of the local directory or null for default
      */
-    private IRemoteDirectory getLocalDirectory(final String name) {
+    private static IRemoteDirectory getLocalDirectory(final String name) {
         return new IRemoteDirectory.Lookup().getLocalDirectory(name);
     }
 }
