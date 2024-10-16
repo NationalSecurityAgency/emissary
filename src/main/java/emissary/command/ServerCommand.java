@@ -31,6 +31,7 @@ public class ServerCommand extends ServiceCommand {
     private String mode = "standalone";
 
     @Option(names = {"-m", "--mode"}, description = "mode: standalone or cluster\nDefault: ${DEFAULT-VALUE}", defaultValue = "standalone")
+    @SuppressWarnings("unused")
     private void setMode(String value) {
         ServerModeValidator smv = new ServerModeValidator();
         smv.validate("mode", value);
