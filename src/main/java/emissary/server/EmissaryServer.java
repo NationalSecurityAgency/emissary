@@ -557,7 +557,7 @@ public class EmissaryServer {
         return handler;
     }
 
-    private LoginService buildLoginService() {
+    private static LoginService buildLoginService() {
         String jettyUsersFile = ConfigUtil.getConfigFile("jetty-users.properties");
         System.setProperty("emissary.jetty.users.file", jettyUsersFile); // for EmissaryClient
         return new HashLoginService("EmissaryRealm", jettyUsersFile);
