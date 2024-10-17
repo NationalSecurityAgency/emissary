@@ -40,7 +40,7 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
      * If our que is a prime numbered size they cannot fill it completely, which will help prevent blocking maybe.
      */
     protected int pollingInterval = 500;
-    protected int MAX_QUE_SIZE = 5;
+    protected int maxQueSize = 5;
     protected QueServer queServer;
 
     // work bundle currently being processed
@@ -94,7 +94,7 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
      */
     protected void configurePlace() {
         pollingInterval = configG.findIntEntry("POLLING_INTERVAL", pollingInterval);
-        MAX_QUE_SIZE = configG.findIntEntry("MAX_QUE_SIZE", MAX_QUE_SIZE);
+        maxQueSize = configG.findIntEntry("MAX_QUE_SIZE", maxQueSize);
         unixInRoot = configG.findStringEntry("UNIX_IN_ROOT", null);
         unixOutRoot = configG.findStringEntry("UNIX_OUT_ROOT", null);
         digestHashType = configG.findStringEntry("DIGEST_HASH_TYPE", "SHA-256");
@@ -107,7 +107,7 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
     }
 
     protected void configureQueueServer() {
-        queServer = new FileQueServer(this, new PickupQueue(MAX_QUE_SIZE), pollingInterval);
+        queServer = new FileQueServer(this, new PickupQueue(maxQueSize), pollingInterval);
         queServer.start();
     }
 
