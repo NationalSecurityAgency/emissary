@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -84,7 +83,7 @@ public final class DisposeHelper {
     public static List<Runnable> get(final IBaseDataObject ibdo) {
         Validate.notNull(ibdo, VALIDATION_MSG_IBDO);
         if (!ibdo.hasParameter(KEY)) {
-            return Collections.emptyList();
+            return List.of();
         }
 
         final List<Runnable> validatedAsRunnables = new ArrayList<>();
