@@ -407,6 +407,7 @@ public interface IBaseDataObject {
      * @deprecated Use {@link #setFileType(String)} instead.
      */
     @Deprecated(forRemoval = true)
+    @SuppressWarnings("AvoidObjectArrays")
     boolean setFileTypeIfEmpty(String arg1, String[] arg2);
 
     /**
