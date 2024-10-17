@@ -24,7 +24,7 @@ public class PickupQueue {
      * MAX_QUE_SIZE huge because then we use too much memory. Some feeds put stuff on the Que in blocks. If our que is a
      * prime numbered size they cannot fill it completely, which will help prevent blocking maybe.
      */
-    private int MAX_QUE_SIZE = 19;
+    private int maxQueSize = 19;
 
     /**
      * Normal pickup queue creation
@@ -37,7 +37,7 @@ public class PickupQueue {
      * @param maxSize the maximum size the queue can grow to
      */
     public PickupQueue(int maxSize) {
-        MAX_QUE_SIZE = maxSize;
+        maxQueSize = maxSize;
     }
 
     /**
@@ -109,6 +109,6 @@ public class PickupQueue {
      * @return true iff there is room for num items
      */
     public boolean canHold(int num) {
-        return getQueSize() + num <= MAX_QUE_SIZE;
+        return getQueSize() + num <= maxQueSize;
     }
 }
