@@ -973,7 +973,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         // Nothing for the dataId or any wildcarded versions, we are done
         if ((currentList == null) || currentList.isEmpty()) {
             logger.debug("nextKey - nothing found here for {}", dataId);
-            return Collections.emptyList();
+            return List.of();
         }
 
         // remove denied entries
@@ -981,7 +981,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
         if (currentList.isEmpty()) {
             logger.debug("nextKeys - no non-DENIED entries found here for {}", dataId);
-            return Collections.emptyList();
+            return List.of();
         }
         // The list we are building for return to the caller
         final List<DirectoryEntry> keyList = new ArrayList<>();
