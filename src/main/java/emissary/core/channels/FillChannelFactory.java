@@ -79,6 +79,7 @@ public class FillChannelFactory {
         }
 
         @Override
+        @SuppressWarnings("ByteBufferBackingArray")
         protected int readImpl(final ByteBuffer byteBuffer) {
             final int bytesToFill = byteBuffer.remaining();
 
