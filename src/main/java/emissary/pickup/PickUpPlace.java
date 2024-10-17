@@ -77,7 +77,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
     protected List<String> initialFormValues = Collections.emptyList();
 
     // Metadata items that should always be copied to children
-    protected Set<String> ALWAYS_COPY_METADATA_VALS = new HashSet<>();
+    protected Set<String> alwaysCopyMetadataVals = new HashSet<>();
 
     protected boolean useObjectTraceLogger = false;
 
@@ -183,7 +183,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
             logger.warn("Cannot find agent pool!");
         }
 
-        ALWAYS_COPY_METADATA_VALS = configG.findEntriesAsSet("ALWAYS_COPY_METADATA");
+        alwaysCopyMetadataVals = configG.findEntriesAsSet("ALWAYS_COPY_METADATA");
 
         // Whether or not to use the objectTrace logger
         useObjectTraceLogger = configG.findBooleanEntry("USE_OBJECT_TRACE_LOGGER", useObjectTraceLogger);
