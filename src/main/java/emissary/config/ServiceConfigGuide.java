@@ -828,7 +828,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     public Map<String, Set<String>> findStringMatchMultiMap(@Nullable final String param) {
 
         if (param == null) {
-            return Collections.emptyMap();
+            return Map.of();
         }
 
         final Map<String, Set<String>> theHash = new HashMap<>();
