@@ -469,7 +469,7 @@ class DropOffUtilTest extends UnitTest {
         // removing tld FILE_DATE should default to now as configured by default
         tld.deleteParameter(FILE_DATE);
         assertNotNull(this.util.getEventDate(d, tld));
-        assertTrue(this.util.getEventDate(d, tld).toInstant().compareTo(start) >= 0);
+        assertTrue(this.util.getEventDate(d, tld).toInstant().isAfter(start));
 
         // changing the configuration to not default to now should return null
         Configurator cfg = new ServiceConfigGuide();
