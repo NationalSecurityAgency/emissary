@@ -5,7 +5,6 @@ import emissary.core.IBaseDataObject;
 import emissary.core.ResourceException;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.GitRepositoryState;
-import emissary.util.Version;
 import emissary.util.io.ResourceReader;
 
 import org.junit.jupiter.api.AfterEach;
@@ -26,18 +25,15 @@ class VersionPlaceTest extends UnitTest {
     private IBaseDataObject payload;
     @Nullable
     private VersionPlace place;
-    private Version version;
-    @Nullable
-    private String versionDate;
     private Path gitRepositoryFile;
+    private GitRepositoryState testGitRepoState;
 
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         payload = DataObjectFactory.getInstance();
-        version = new Version();
-        versionDate = version.getTimestamp().replaceAll("\\D", "");
         gitRepositoryFile = Paths.get(new ResourceReader().getResource("emissary/util/test.git.properties").toURI());
+        testGitRepoState = GitRepositoryState.getRepositoryState(gitRepositoryFile);
     }
 
     @Override
@@ -47,7 +43,6 @@ class VersionPlaceTest extends UnitTest {
         place.shutDown();
         place = null;
         payload = null;
-        versionDate = null;
     }
 
     @Test
@@ -56,7 +51,7 @@ class VersionPlaceTest extends UnitTest {
         place = new MyVersionPlace();
 
         place.process(payload);
-        assertEquals(payload.getStringParameter("EMISSARY_VERSION"), version.getVersion() + "-" + versionDate,
+        assertEquals(testGitRepoState.getBuildVersion() + "-20240828141716", payload.getStringParameter("EMISSARY_VERSION"),
                 "added version should contain the date.");
     }
 
@@ -67,8 +62,8 @@ class VersionPlaceTest extends UnitTest {
         place = new MyVersionPlace(is);
 
         place.process(payload);
-        assertFalse(payload.getStringParameter("EMISSARY_VERSION").contains(versionDate), "the date should not be added to the version");
-        assertEquals(payload.getStringParameter("EMISSARY_VERSION"), version.getVersion(), "the version should be added");
+        assertFalse(payload.getStringParameter("EMISSARY_VERSION").contains("-20240828141716"), "the date should not be added to the version");
+        assertEquals(testGitRepoState.getBuildVersion(), payload.getStringParameter("EMISSARY_VERSION"), "the version should be added");
     }
 
     @Test
@@ -77,8 +72,7 @@ class VersionPlaceTest extends UnitTest {
         place = new MyVersionPlace();
 
         place.process(payload);
-        assertEquals(payload.getStringParameter("EMISSARY_VERSION_HASH").substring(0, 7),
-                GitRepositoryState.getRepositoryState(gitRepositoryFile).getCommitIdAbbrev(),
+        assertEquals(testGitRepoState.getCommitIdAbbrev(), payload.getStringParameter("EMISSARY_VERSION_HASH").substring(0, 7),
                 "EMISSARY_VERSION_HASH should contain (at least) the abbreviated hash");
     }
 
