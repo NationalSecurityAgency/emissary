@@ -975,7 +975,7 @@
               <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
             </environmentVariables>
             <forkCount>${surefire.forkCount}</forkCount>
-            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+            <redirectTestOutputToFile>false</redirectTestOutputToFile>
             <reuseForks>true</reuseForks>
             <runOrder>random</runOrder>
           </configuration>

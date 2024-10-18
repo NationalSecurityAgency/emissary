@@ -469,6 +469,8 @@ class DropOffUtilTest extends UnitTest {
         // removing tld FILE_DATE should default to now as configured by default
         tld.deleteParameter(FILE_DATE);
         assertNotNull(this.util.getEventDate(d, tld));
+        System.out.println(start.getNano());
+        System.out.println(this.util.getEventDate(d, tld).toInstant().getNano());
         assertTrue(this.util.getEventDate(d, tld).toInstant().compareTo(start) > 0);
 
         // changing the configuration to not default to now should return null
