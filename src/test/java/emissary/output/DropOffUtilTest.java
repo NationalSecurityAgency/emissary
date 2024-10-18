@@ -449,7 +449,7 @@ class DropOffUtilTest extends UnitTest {
         d.setParameter(EVENT_DATE, "2015-02-13 23:13:03");
         d.setParameter(FILE_DATE, "2015-01-05 17:45:53");
 
-        Instant start = Instant.now(); // use this for relative comparison
+        long start = Instant.now().getEpochSecond() - 5; // use this for relative comparison
 
         // hit on child EventDate
         assertEquals("2015-02-13 23:13:03", TimeUtil.getDateAsISO8601(this.util.getEventDate(d, tld).toInstant()));
@@ -469,11 +469,11 @@ class DropOffUtilTest extends UnitTest {
         // removing tld FILE_DATE should default to now as configured by default
         tld.deleteParameter(FILE_DATE);
         assertNotNull(this.util.getEventDate(d, tld));
-        System.out.println(start.getEpochSecond());
+        System.out.println("Start: " + start);
         System.out.println(this.util.getEventDate(d, tld).toInstant().getEpochSecond());
-        System.out.println(start.getNano());
+        System.out.println(Instant.ofEpochSecond(start).getNano());
         System.out.println(this.util.getEventDate(d, tld).toInstant().getNano());
-        assertTrue(this.util.getEventDate(d, tld).toInstant().compareTo(start) > 0);
+        assertTrue(this.util.getEventDate(d, tld).toInstant().compareTo(Instant.ofEpochSecond(start)) > 0);
 
         // changing the configuration to not default to now should return null
         Configurator cfg = new ServiceConfigGuide();
