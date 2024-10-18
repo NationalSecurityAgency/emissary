@@ -521,7 +521,7 @@ public class Startup {
         }
     }
 
-    private void sortPickupOrPlace(String theLocation, Map<String, Set<String>> placeList) {
+    private static void sortPickupOrPlace(String theLocation, Map<String, Set<String>> placeList) {
         final String host = placeHost(theLocation);
         Set<String> l = placeList.computeIfAbsent(host, k -> new LinkedHashSet<>());
         if (l.contains(theLocation)) {
