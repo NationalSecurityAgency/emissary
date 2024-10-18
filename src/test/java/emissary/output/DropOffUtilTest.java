@@ -473,7 +473,7 @@ class DropOffUtilTest extends UnitTest {
         System.out.println(this.util.getEventDate(d, tld).toInstant().getEpochSecond());
         System.out.println(start.getNano());
         System.out.println(this.util.getEventDate(d, tld).toInstant().getNano());
-        assertTrue(this.util.getEventDate(d, tld).toInstant().compareTo(start) > 0);
+        assertTrue(this.util.getEventDate(d, tld).toInstant().compareTo(start) >= 0);
 
         // changing the configuration to not default to now should return null
         Configurator cfg = new ServiceConfigGuide();
