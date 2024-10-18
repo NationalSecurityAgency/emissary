@@ -219,15 +219,15 @@ public class MagicNumberFactory {
         try {
             // column A parsing
             item.depth = getEntryDepth(columns[0]);
-            item.offsetUnary = resolveOffsetUnary(columns, item);
+            item.offsetUnary = resolveOffsetUnary(columns);
             item.offset = resolveOffset(columns, item);
         } catch (Exception e) {
             throw new ParseException("Error on column 0:" + columns[0] + ". " + e.getMessage());
         }
         try {
             // columb B parsing
-            item.dataType = resolveDataType(columns, item);
-            item.dataTypeLength = getDataTypeByteLength(columns, item);
+            item.dataType = resolveDataType(columns);
+            item.dataTypeLength = getDataTypeByteLength(item);
             item.mask = resolveMask(columns, item);
         } catch (Exception e) {
             if (swallowParseException) {
@@ -336,7 +336,7 @@ public class MagicNumberFactory {
         }
     }
 
-    private static char resolveOffsetUnary(String[] columns, MagicNumber item) {
+    private static char resolveOffsetUnary(String[] columns) {
         if (columns[0].charAt(0) == '&') {
             return '&';
         }
@@ -359,7 +359,7 @@ public class MagicNumberFactory {
     // -----------------------------------------------------------------------
     // COLUMN B: BYTE&maskValue
     // -----------------------------------------------------------------------
-    private static int resolveDataType(String[] columns, MagicNumber item) throws ParseException {
+    private static int resolveDataType(String[] columns) throws ParseException {
         initTypeMap();
 
         String subject = columns[1];
@@ -404,7 +404,7 @@ public class MagicNumberFactory {
         int ix = columns[1].indexOf("&");
         if (ix > 0) {
             byte[] maskValues = MagicMath.stringToByteArray(columns[1].substring(ix + 1));
-            maskValues = MagicMath.setLength(maskValues, item.dataTypeLength);
+            MagicMath.setLength(maskValues, item.dataTypeLength);
         }
         return null;
     }
@@ -476,7 +476,7 @@ public class MagicNumberFactory {
         return 0;
     }
 
-    private static int getDataTypeByteLength(String[] columns, MagicNumber item) {
+    private static int getDataTypeByteLength(MagicNumber item) {
         int dataTypeId = item.dataType;
         switch (dataTypeId) {
             case MagicNumber.TYPE_STRING:

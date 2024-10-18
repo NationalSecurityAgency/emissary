@@ -2,6 +2,8 @@ package emissary.core;
 
 import com.codahale.metrics.Snapshot;
 import com.codahale.metrics.Timer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
@@ -11,6 +13,9 @@ import java.util.concurrent.TimeUnit;
  * expanded to support any number of metrics classes.
  */
 public class MetricsFormatter {
+
+    private static final Logger logger = LoggerFactory.getLogger(MetricsFormatter.class);
+
     /** Create a builder */
     public static Builder builder() {
         return new Builder();
@@ -43,6 +48,7 @@ public class MetricsFormatter {
     /** Use a builder to create MetricsFormatter instances */
     private MetricsFormatter(final TimeUnit rateUnit, final TimeUnit durationUnit) {
         this.durationFactor = 1.0 / durationUnit.toNanos(1);
+        logger.debug("Metrics formatter in {}", rateUnit);
     }
 
     @SuppressWarnings("LongDoubleConversion")
