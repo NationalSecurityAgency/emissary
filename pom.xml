@@ -1507,6 +1507,7 @@
                   -Xep:Java7ApiChecker:OFF \
                   -Xep:Java8ApiChecker:OFF \
                   -Xep:StringSplitter:OFF \
+                  -Xep:ThreadPriorityCheck:OFF \
                   -Xep:UnnecessaryFinal:OFF \
                   -Xep:Var:OFF \
                   -Xep:Varifier:OFF \
