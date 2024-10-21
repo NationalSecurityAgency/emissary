@@ -172,7 +172,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         logger.debug("Pickup Canonical HOLD => {}, Pickup Canonical DONE => {}, Pickup Canonical ERROR => {}", holdingArea, doneArea, errorArea);
 
         initialFormValues = configG.findEntries("INITIAL_FORM");
-        if (initialFormValues.size() < 1) {
+        if (initialFormValues.isEmpty()) {
             initialFormValues.add(Form.UNKNOWN);
         }
 

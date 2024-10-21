@@ -139,7 +139,7 @@ public class MultiKeywordScanner implements IMultiKeywordScanner {
         for (position = start + this.standardSkip - 1; position < stop; position += this.skipTable[get256Value(dataArg[position])]) {
             try {
                 this.treeScanner.scan(dataArg, position, hits);
-                if (hits.size() > 0) {
+                if (!hits.isEmpty()) {
                     break;
                 }
             } catch (Exception e) {

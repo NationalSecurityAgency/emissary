@@ -260,7 +260,7 @@ public class HDMobileAgent extends MobileAgent {
                     final List<IBaseDataObject> sprouts = atPlaceHD(currentPlace, toBeProcessed);
 
                     // Add any sprouts collected from the payloads
-                    if (sprouts.size() > 0) {
+                    if (!sprouts.isEmpty()) {
                         addPayload(sprouts);
                     }
                 }

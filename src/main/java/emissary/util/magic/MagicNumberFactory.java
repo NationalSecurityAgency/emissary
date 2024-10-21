@@ -81,7 +81,7 @@ public class MagicNumberFactory {
                     continue;
                 }
                 try {
-                    if (depth == 0 && extensions.size() > 0) {
+                    if (depth == 0 && !extensions.isEmpty()) {
                         if (finger == null) {
                             extensions = null;
                             extensions = new ArrayList<>();
@@ -111,7 +111,7 @@ public class MagicNumberFactory {
                         if (currentDepth == depth) {
                             parseAndStore(extensions, s, swallowParseException);
                         } else if (currentDepth < depth) {
-                            if (extensions.size() == 0) {
+                            if (extensions.isEmpty()) {
                                 finger = null;
                                 currentDepth = -1;
                                 continue;
@@ -150,7 +150,7 @@ public class MagicNumberFactory {
                     }
                 }
             }
-            if (finger != null && extensions.size() > 0) {
+            if (finger != null && !extensions.isEmpty()) {
                 addExtensionsLayer(extensions, finger);
             }
         } catch (IOException ioe) {
