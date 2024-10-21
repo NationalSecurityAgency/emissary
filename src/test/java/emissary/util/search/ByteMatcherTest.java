@@ -7,8 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.UnsupportedCharsetException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -94,8 +93,7 @@ class ByteMatcherTest extends UnitTest {
     @Test
     void testListIndexOf() {
         // Case Sensitive
-        ArrayList<Integer> findTestCaseSensitive = new ArrayList<>();
-        Collections.addAll(findTestCaseSensitive, 10, 26, 47);
+        List<Integer> findTestCaseSensitive = List.of(10, 26, 47);
         // Byte pattern param test.
         assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test".getBytes()));
         assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test".getBytes(), 0));
@@ -107,8 +105,7 @@ class ByteMatcherTest extends UnitTest {
         assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test", 0, LIST_DATA.length()));
 
         // Case-insensitive
-        ArrayList<Integer> findTestCaseInsensitive = new ArrayList<>();
-        Collections.addAll(findTestCaseInsensitive, 10, 26, 47, 53);
+        List<Integer> findTestCaseInsensitive = List.of(10, 26, 47, 53);
         // Byte pattern param test
         assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test".getBytes()));
         assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test".getBytes(), 0));
@@ -119,7 +116,6 @@ class ByteMatcherTest extends UnitTest {
         assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test", 0));
         assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test", 0, LIST_DATA.length()));
 
-        String stop = "Stop";
     }
 
     @Test
