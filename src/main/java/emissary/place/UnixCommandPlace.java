@@ -29,7 +29,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
     protected String alternateView = null;
     protected boolean addAsMetaData = false;
     protected boolean perlChop = false;
-    protected boolean NUKE_ALL_PROXIES = false;
+    protected boolean nukeAllProxies = false;
     protected boolean keepFilesDebug = false;
     protected String charset = "8859_1";
     protected String logfilename;
@@ -112,7 +112,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
             addAsMetaData = true;
         }
         perlChop = configG.findBooleanEntry("PERL_CHOP", false);
-        NUKE_ALL_PROXIES = configG.findBooleanEntry("NUKE_ALL_PROXIES", false);
+        nukeAllProxies = configG.findBooleanEntry("NUKE_ALL_PROXIES", false);
         keepFilesDebug = configG.findBooleanEntry("KEEP_FILES_DEBUG", false);
         charset = configG.findStringEntry("OUTPUT_CHARSET", charset);
         executrix = new Executrix(configG);
@@ -421,7 +421,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
                 asMetaDataHook(tData, metaDataTag, outputData);
             } else {
                 asDataHook(tData, outputData);
-                if (NUKE_ALL_PROXIES) {
+                if (nukeAllProxies) {
                     nukeMyProxies(tData);
                     if (newForm != null) {
                         tData.pushCurrentForm(newForm);
