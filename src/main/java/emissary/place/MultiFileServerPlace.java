@@ -88,7 +88,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
      * @param children the destination for parameters to be copied
      */
     protected void addParentInformation(IBaseDataObject parent, List<IBaseDataObject> children) {
-        IBaseDataObjectHelper.addParentInformationToChildren(parent, children, false, ALWAYS_COPY_METADATA_VALS, myKey, kff);
+        IBaseDataObjectHelper.addParentInformationToChildren(parent, children, false, alwaysCopyMetadataVals, myKey, kff);
     }
 
     /**
@@ -99,7 +99,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
      * @param nullifyFileType if true the child fileType is nullified after the copy
      */
     protected void addParentInformation(IBaseDataObject parent, @Nullable List<IBaseDataObject> children, boolean nullifyFileType) {
-        IBaseDataObjectHelper.addParentInformationToChildren(parent, children, nullifyFileType, ALWAYS_COPY_METADATA_VALS, myKey, kff);
+        IBaseDataObjectHelper.addParentInformationToChildren(parent, children, nullifyFileType, alwaysCopyMetadataVals, myKey, kff);
     }
 
     /**
@@ -109,7 +109,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
      * @param child the destination for parameters to be copied
      */
     protected void addParentInformation(IBaseDataObject parent, IBaseDataObject child) {
-        IBaseDataObjectHelper.addParentInformationToChild(parent, child, false, ALWAYS_COPY_METADATA_VALS, myKey, kff);
+        IBaseDataObjectHelper.addParentInformationToChild(parent, child, false, alwaysCopyMetadataVals, myKey, kff);
     }
 
     /**
@@ -120,6 +120,6 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
      * @param nullifyFileType if true the child fileType is nullified after the copy
      */
     protected void addParentInformation(@Nullable IBaseDataObject parent, @Nullable IBaseDataObject child, boolean nullifyFileType) {
-        IBaseDataObjectHelper.addParentInformationToChild(parent, child, nullifyFileType, ALWAYS_COPY_METADATA_VALS, myKey, kff);
+        IBaseDataObjectHelper.addParentInformationToChild(parent, child, nullifyFileType, alwaysCopyMetadataVals, myKey, kff);
     }
 }
