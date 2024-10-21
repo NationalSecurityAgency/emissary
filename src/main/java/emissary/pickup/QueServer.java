@@ -57,6 +57,7 @@ public abstract class QueServer extends Pausable {
      * @param pollingInterval value in millis
      * @param name value to supply to Thread name
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     public QueServer(IPickUpSpace space, PickupQueue queue, long pollingInterval, String name) {
         super(name);
         this.space = space;
@@ -116,6 +117,7 @@ public abstract class QueServer extends Pausable {
     /**
      * Check the queue for waiting objects and process them
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     public void checkQue() {
         WorkBundle paths = queue.deque();
         while (paths != null) {

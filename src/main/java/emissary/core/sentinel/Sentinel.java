@@ -55,6 +55,7 @@ public class Sentinel implements Runnable {
     /**
      * Create a Sentinel - set it running and bind into the {@link Namespace}
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     public Sentinel() {
         configure();
         if (this.enabled) {
