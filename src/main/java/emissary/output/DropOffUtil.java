@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -493,8 +494,21 @@ public class DropOffUtil {
      * shortname. An ID = AUTO_GENERATED_ID will be ignored. If no id value is found, returns empty array.
      *
      * @return id
+     * @deprecated use {@link #getExistingIdsList(IBaseDataObject)}
      */
+    @Deprecated
+    @SuppressWarnings("AvoidObjectArrays")
     public String[] getExistingIds(final IBaseDataObject d) {
+        return getExistingIdsList(d).toArray(new String[0]);
+    }
+
+    /**
+     * Extract the ID from the payload. The ID from the payload is specified in the cfg file. An ID = SHORTNAME will use the
+     * shortname. An ID = AUTO_GENERATED_ID will be ignored. If no id value is found, returns empty list.
+     *
+     * @return a list of id values
+     */
+    public List<String> getExistingIdsList(final IBaseDataObject d) {
         final List<String> values = new ArrayList<>();
         for (final String s : this.idTokens) {
             if (!StringUtils.isBlank(d.getStringParameter(s))) {
@@ -508,7 +522,7 @@ public class DropOffUtil {
                 }
             }
         }
-        return values.toArray(new String[0]);
+        return values;
     }
 
     public String getRootPath() {
@@ -941,8 +955,23 @@ public class DropOffUtil {
      * @param d The IBDO
      * @param filenameFields The list of fields on the IBDO to check
      * @return The list of filenames found in the list of fields on the IBDO
+     * @deprecated use {@link #getFullFilepathsFromParams(IBaseDataObject, List)}
      */
+    @Deprecated
+    @SuppressWarnings("AvoidObjectArrays")
     public static List<String> getFullFilepathsFromParams(IBaseDataObject d, String[] filenameFields) {
+        return getFullFilepathsFromParams(d, Arrays.asList(filenameFields));
+    }
+
+    /**
+     * Uses the specified list of fields to check for filenames of the object. Returns a list with the non-empty strings
+     * found in these fields. If nothing is found in either field, return an empty list.
+     *
+     * @param d The IBDO
+     * @param filenameFields The list of fields on the IBDO to check
+     * @return The list of filenames found in the list of fields on the IBDO
+     */
+    public static List<String> getFullFilepathsFromParams(IBaseDataObject d, List<String> filenameFields) {
 
         List<String> filenames = new ArrayList<>();
 

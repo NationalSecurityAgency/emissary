@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 /**
  * Utilities for dealing with request parameters
  */
+@SuppressWarnings("AvoidObjectArrays")
 public class RequestUtil {
     public static final int INT_PARAM_NOT_FOUND = -99;
     public static final float FLOAT_PARAM_NOT_FOUND = -99.99f;
