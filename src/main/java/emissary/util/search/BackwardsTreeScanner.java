@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
  * @author ce
  * @version 1.0
  */
+@SuppressWarnings("AvoidObjectArrays")
 public class BackwardsTreeScanner {
 
     // The internal structure of the offset-keyword id array

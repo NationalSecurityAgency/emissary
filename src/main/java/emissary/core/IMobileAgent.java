@@ -52,6 +52,7 @@ public interface IMobileAgent extends Serializable, Runnable {
      * 
      * @return array of DirectoryEntry
      */
+    @SuppressWarnings("AvoidObjectArrays")
     DirectoryEntry[] getItineraryQueueItems();
 
     /**

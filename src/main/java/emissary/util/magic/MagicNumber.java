@@ -352,6 +352,7 @@ public class MagicNumber {
     /**
      * Add child continuations
      */
+    @SuppressWarnings("AvoidObjectArrays")
     public void addDependencyLayer(MagicNumber[] dependencyLayer) {
         if (dependencies == null) {
             dependencies = new ArrayList<>();

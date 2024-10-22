@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
 
+@SuppressWarnings("AvoidObjectArrays")
 public class FastBoyerMoore {
     private static final Logger logger = LoggerFactory.getLogger(FastBoyerMoore.class);
     public byte[][] keywords;
