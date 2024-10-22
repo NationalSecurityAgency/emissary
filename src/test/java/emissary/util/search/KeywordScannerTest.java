@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class KeywordScannerTest extends UnitTest {
     private static final byte[] DATA = "THIS is a test of the Emergency broadcasting system.".getBytes();
+    private static final byte[] LIST_DATA = "This is a test. Is this a test? Yes, this is a test.".getBytes();
     private KeywordScanner ks;
 
     @Override
@@ -94,6 +96,21 @@ class KeywordScannerTest extends UnitTest {
         this.ks.setCaseSensitive(false);
         assertFalse(this.ks.isCaseSensitive());
         assertEquals(10, this.ks.indexOf("TEST".getBytes()), "Case insensitive");
+    }
+
+    @Test
+    void testListIndexOf() {
+        KeywordScanner lks = new KeywordScanner(LIST_DATA);
+        List<Integer> findTest = List.of(10, 26, 47);
+        assertEquals(findTest, lks.listIndexOf("test".getBytes()));
+        assertEquals(findTest, lks.listIndexOf("test".getBytes(), 0));
+        assertEquals(findTest, lks.listIndexOf("test".getBytes(), 0, LIST_DATA.length));
+
+        List<Integer> findIs = List.of(2, 5, 21, 39, 42);
+        assertEquals(findIs, lks.listIndexOf("is".getBytes()));
+        assertEquals(findIs, lks.listIndexOf("is".getBytes(), 0));
+        assertEquals(findIs, lks.listIndexOf("is".getBytes(), 0, LIST_DATA.length));
+
     }
 
     @Test
