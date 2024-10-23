@@ -29,7 +29,7 @@ public class FastStringBuffer extends OutputStream {
     private static final byte[] CRBYTES = "\n".getBytes();
     private static final byte[] CRLFBYTES = "\r\n".getBytes();
 
-    static Map<String, byte[]> strings = new HashMap<>(MAX_CACHE_SIZE * 3);
+    static final Map<String, byte[]> strings = new HashMap<>(MAX_CACHE_SIZE * 3);
 
     protected int curPos = 0;
     protected byte[] buffer;

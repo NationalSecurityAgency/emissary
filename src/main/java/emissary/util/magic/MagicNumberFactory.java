@@ -22,6 +22,7 @@ public class MagicNumberFactory {
     private static final Logger log = LoggerFactory.getLogger(MagicNumberFactory.class);
 
     @Nullable
+    @SuppressWarnings("NonFinalStaticField")
     private static Map<String, Integer> typeMap = null;
     public static final String EMPTYSTRING = "";
     public static final String ENTRY_NOT_NULL_RULE = "Entry cannot be null";

@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DependencyCheckTest extends UnitTest {
 
+    @SuppressWarnings("NonFinalStaticField")
     private static String binDir;
 
     @BeforeAll

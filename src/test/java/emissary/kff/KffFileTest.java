@@ -44,6 +44,7 @@ class KffFileTest extends UnitTest {
             (byte) -114, (byte) -35, (byte) -110, (byte) -60, (byte) -29, (byte) -46, (byte) -24, (byte) 35, (byte) -119,
             (byte) 103, (byte) 0, (byte) -8, (byte) 73};
     private static final byte[] expectedCrcBytes = {(byte) -21, (byte) -47, (byte) 5, (byte) -96};
+    @SuppressWarnings("NonFinalStaticField")
     private static KffFile kffFile;
     private static final String resourcePath = new ResourceReader()
             .getResource("emissary/kff/KffFileTest/tmp.bin").getPath();

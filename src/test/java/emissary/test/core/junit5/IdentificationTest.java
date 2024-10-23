@@ -27,9 +27,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class IdentificationTest extends UnitTest {
 
-    protected static Logger logger = LoggerFactory.getLogger(IdentificationTest.class);
+    protected static final Logger logger = LoggerFactory.getLogger(IdentificationTest.class);
 
     @Nullable
+    @SuppressWarnings("NonFinalStaticField")
     protected static IServiceProviderPlace place = null;
 
     @BeforeEach

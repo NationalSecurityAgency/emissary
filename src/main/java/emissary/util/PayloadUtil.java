@@ -30,11 +30,12 @@ public class PayloadUtil {
     private static final String LS = System.getProperty("line.separator");
     private static final Pattern validFormRegex = Pattern.compile("^[\\w-)(/+]+$");
 
-    protected static Map<String, String> historyPreference = new HashMap<>();
+    protected static final Map<String, String> historyPreference = new HashMap<>();
 
     protected static final String REDUCED_HISTORY = "REDUCED_HISTORY";
     protected static final String NO_URL = "NO_URL";
 
+    @SuppressWarnings("NonFinalStaticField")
     protected static boolean compactHistory;
 
     static {

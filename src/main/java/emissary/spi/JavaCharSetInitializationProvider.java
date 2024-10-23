@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class JavaCharSetInitializationProvider implements InitializationProvider {
-    protected static Logger logger = LoggerFactory.getLogger(JavaCharSetInitializationProvider.class);
+    protected static final Logger logger = LoggerFactory.getLogger(JavaCharSetInitializationProvider.class);
 
     @Override
     public void initialize() {

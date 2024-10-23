@@ -32,6 +32,7 @@ public class DateTimeFormatParser {
     protected static final List<DateTimeFormatter> dateTimeOffsetFormats = new ArrayList<>();
     protected static final List<DateTimeFormatter> dateTimeFormats = new ArrayList<>();
     protected static final List<DateTimeFormatter> dateFormats = new ArrayList<>();
+    @SuppressWarnings("NonFinalStaticField")
     protected static ZoneId zone;
 
     private static final String DATE_TIME_ZONE_FORMAT = "DATE_TIME_ZONE_FORMAT";

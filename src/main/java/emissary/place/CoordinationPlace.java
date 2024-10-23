@@ -49,7 +49,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
     protected boolean updateTransformHistory = false;
 
     // set of coordination places that failed to be created/did not exist
-    protected static Set<String> failedCoordPlaceCreation = new LinkedHashSet<>();
+    protected static final Set<String> failedCoordPlaceCreation = new LinkedHashSet<>();
 
     /**
      * Create the place using the supplied configuration and location

@@ -13,6 +13,8 @@ class KffQuincyFileTest extends UnitTest {
 
     private static final String resourcePath = new ResourceReader()
             .getResource("emissary/kff/test.dat").getPath();
+
+    @SuppressWarnings("NonFinalStaticField")
     private static KffQuincyFile kffQuincyFile;
 
     @Override
