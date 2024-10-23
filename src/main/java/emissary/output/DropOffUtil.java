@@ -506,7 +506,7 @@ public class DropOffUtil {
      * Extract the ID from the payload. The ID from the payload is specified in the cfg file. An ID = SHORTNAME will use the
      * shortname. An ID = AUTO_GENERATED_ID will be ignored. If no id value is found, returns empty list.
      *
-     * @return id
+     * @return a list of id values
      */
     public List<String> getExistingIdsList(final IBaseDataObject d) {
         final List<String> values = new ArrayList<>();
