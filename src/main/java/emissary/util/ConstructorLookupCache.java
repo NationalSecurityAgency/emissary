@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
  * cache does not <i>guarantee</i> that it will be indefinitely cached or that the cached value will be visible to other
  * threads.
  */
+@SuppressWarnings("AvoidObjectArrays")
 public final class ConstructorLookupCache {
 
     private static final Logger logger = LoggerFactory.getLogger(ConstructorLookupCache.class);

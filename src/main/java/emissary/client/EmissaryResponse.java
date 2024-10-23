@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import javax.annotation.Nullable;
 
+@SuppressWarnings("AvoidObjectArrays")
 public class EmissaryResponse {
 
     private static final Logger logger = LoggerFactory.getLogger(EmissaryResponse.class);

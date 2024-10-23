@@ -30,6 +30,7 @@ import javax.annotation.Nullable;
  * wishing to loadLibraries from the JniRepositoryPlace should include this class via composition and invoke
  * this.loadLibrary rather than System.loadLibrary()
  */
+@SuppressWarnings("AvoidObjectArrays")
 public class JNI implements Serializable {
 
     static final long serialVersionUID = 3037911106823343480L;
