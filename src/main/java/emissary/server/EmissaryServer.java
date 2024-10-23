@@ -658,7 +658,7 @@ public class EmissaryServer {
         return emissaryHolderContext;
     }
 
-    private ContextHandler buildLogbackConfigHandler() {
+    private static ContextHandler buildLogbackConfigHandler() {
         ServletHolder lbHolder = new ServletHolder("logback-config-holder", ViewStatusMessagesServlet.class);
         ServletContextHandler lbHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
         lbHolderContext.addServlet(lbHolder, "/*");
@@ -705,7 +705,7 @@ public class EmissaryServer {
      * @param server the Jetty HTTP Servlet Server
      * @return server connector that is the primary connector for the Jetty server over TCP/IP
      */
-    private ServerConnector createHttpConnector(Server server) {
+    private static ServerConnector createHttpConnector(Server server) {
         return new ServerConnector(server);
     }
 
@@ -754,7 +754,7 @@ public class EmissaryServer {
      * @return SslContextFactory that is used to configure SSL parameters to be used by server connectors
      * @throws IOException if there is an error getting the context factory
      */
-    private SslContextFactory.Server getSslContextFactory() throws IOException {
+    private static SslContextFactory.Server getSslContextFactory() throws IOException {
         Configurator httpConnFactCfg = ConfigUtil.getConfigInfo(HTTPConnectionFactory.class);
         String keystore = httpConnFactCfg.findStringEntry("javax.net.ssl.keyStore", "no-keystore");
         System.setProperty("javax.net.ssl.keyStore", keystore);
