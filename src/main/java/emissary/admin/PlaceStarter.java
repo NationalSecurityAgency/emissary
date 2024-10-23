@@ -116,7 +116,7 @@ public class PlaceStarter {
     }
 
     /**
-     * Create a place using generic List<Object> constructor args for maximum flexibility for finding any existing constructor.
+     * Create a place using generic List constructor args for maximum flexibility for finding any existing constructor.
      * Will check to see if the place already exists first and return the existing instance from the Namespace if it does.
      *
      * @param theLocation key for the new place
