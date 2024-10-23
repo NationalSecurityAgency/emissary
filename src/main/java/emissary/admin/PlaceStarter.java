@@ -31,19 +31,21 @@ import javax.annotation.Nullable;
 public class PlaceStarter {
     private static final Logger logger = LoggerFactory.getLogger(PlaceStarter.class);
 
-    @Nullable
-    private static Configurator classConf = null;
+    private static final Configurator classConf;
 
     protected static final String defaultClassName = "emissary.place.sample.DevNullPlace";
 
     static {
+        Configurator tmpCConfigurator;
         try {
-            classConf = ConfigUtil.getClassNameInventory();
+            tmpCConfigurator = ConfigUtil.getClassNameInventory();
         } catch (IOException | EmissaryException iox) {
+            tmpCConfigurator = null;
             logger.error("Missing ClassNameInventory.cfg: all places will become " + defaultClassName
                     + " which is probably not what you want. Config is now " + System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY), iox);
             System.exit(1);
         }
+        classConf = tmpCConfigurator;
     }
 
     /**

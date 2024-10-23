@@ -44,6 +44,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
 
     // Name for our threads
     public static final String AGENT_THREAD = "MobileAgent-";
+    @SuppressWarnings("NonFinalStaticField")
     private static int agentCounter = 0;
 
     // For tracking errors

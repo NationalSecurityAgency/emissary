@@ -15,6 +15,7 @@ import static net.logstash.logback.marker.Markers.appendEntries;
 public class ObjectTracingService {
 
     @Nullable
+    @SuppressWarnings("NonFinalStaticField")
     private static ServiceLoader<ObjectTracing> loader = null;
     private static final Logger objectTraceLogger = LoggerFactory.getLogger("objectTrace");
 

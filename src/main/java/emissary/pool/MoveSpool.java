@@ -50,6 +50,7 @@ public class MoveSpool implements Runnable {
 
     // Stats collection
     private int highWaterMark = 0;
+    @SuppressWarnings("NonFinalStaticField")
     private static long lookupCount = 0;
     private long enqueCount = 0;
     private long dequeCount = 0;

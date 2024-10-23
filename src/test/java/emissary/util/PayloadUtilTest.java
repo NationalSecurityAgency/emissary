@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PayloadUtilTest extends UnitTest {
 
+    @SuppressWarnings("NonFinalStaticField")
     private static String timezone = "GMT";
     private static final String validFormCharsString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-)(/+";
     private static final Set<Character> validFormChars = new HashSet<>();

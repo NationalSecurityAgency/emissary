@@ -23,6 +23,7 @@ class FileChannelFactoryTest extends UnitTest {
     private static final String TEST_STRING = "test data";
     private static final byte[] TEST_BYTES = TEST_STRING.getBytes(StandardCharsets.US_ASCII);
 
+    @SuppressWarnings("NonFinalStaticField")
     private static SeekableByteChannelFactory sbcf;
 
     @BeforeAll
