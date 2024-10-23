@@ -319,7 +319,7 @@ public class HeartbeatManager {
                     heartbeat(dir);
                 }
                 logger.debug("Ending the HeartbeatTask run method");
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 logger.error("Unexpected problem in heartbeat timer", e);
             }
         }
@@ -345,7 +345,7 @@ public class HeartbeatManager {
                 healthReport(key, false, response.getContentString());
                 isup = false;
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Cannot perform heartbeat", e);
             healthReport(key, false, e.getMessage());
             isup = false;

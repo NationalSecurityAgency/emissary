@@ -79,17 +79,12 @@ public class EmissaryResponse {
         if (content == null) {
             return null;
         }
-        try {
-            if (status == HttpStatus.SC_OK) {
-                return content.toString();
-            } else {
-                return "Bad request -> status: " + status + " message: " + content;
-            }
-        } catch (Exception e) {
-            logger.error("Error getting string content", e);
-            return e.getMessage();
-        }
 
+        if (status == HttpStatus.SC_OK) {
+            return content.toString();
+        } else {
+            return "Bad request -> status: " + status + " message: " + content;
+        }
     }
 
     public <T extends BaseEntity> T getContent(Class<T> mapper) {

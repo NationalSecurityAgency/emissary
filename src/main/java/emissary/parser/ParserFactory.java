@@ -176,7 +176,7 @@ public class ParserFactory {
 
         try {
             sp = (SessionParser) Factory.create(clazz, args);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Unable to instantiate {}", clazz, e);
         }
 
@@ -190,7 +190,7 @@ public class ParserFactory {
         try {
             DataIdentifier d = (DataIdentifier) Factory.create(clazz);
             idEngine = d;
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             logger.warn("Cannot make data identifier from " + clazz, ex);
         }
     }

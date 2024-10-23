@@ -117,13 +117,9 @@ public class UnixFile {
             return FILETYPE_EMPTY;
         }
 
-        for (int i = 0; i < bytes.length; i++) {
-            try {
-                if (bytes[i] < 32) {
-                    return FILETYPE_BINARY;
-                }
-            } catch (Exception ignore) {
-                log.error("Exception on evaulateBinaryProperty", ignore);
+        for (byte aByte : bytes) {
+            if (aByte < 32) {
+                return FILETYPE_BINARY;
             }
         }
         return FILETYPE_ASCII;

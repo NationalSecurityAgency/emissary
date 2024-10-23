@@ -122,7 +122,7 @@ public class Emissary {
             LOG.error("\t {}", e.getLocalizedMessage());
             HelpCommand.dumpCommands(cli);
             exit(1);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             dumpBanner();
             LOG.error("Command threw an exception: {}", Arrays.toString(args), e);
             exit(1);
