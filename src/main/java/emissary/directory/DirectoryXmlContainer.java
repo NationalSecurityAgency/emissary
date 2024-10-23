@@ -91,7 +91,7 @@ public class DirectoryXmlContainer {
             }
 
             // Add them to the xml
-            if (list.size() > 0) {
+            if (!list.isEmpty()) {
                 final Element listEl = list.getXml();
                 listEl.setAttribute(DATAID_ATTR, dataId);
                 root.addContent(listEl);

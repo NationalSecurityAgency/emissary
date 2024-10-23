@@ -103,7 +103,7 @@ public class MoveSpool implements Runnable {
     public void quit() {
         logger.warn("Purging the spool...");
         synchronized (spool) {
-            if (spool.size() > 0) {
+            if (!spool.isEmpty()) {
                 spool.clear();
             }
             spool.notifyAll();
@@ -157,7 +157,7 @@ public class MoveSpool implements Runnable {
                     logger.debug("Nothing in spool, time to wait...");
                     Thread.yield();
                     synchronized (spool) {
-                        if (spool.size() == 0) {
+                        if (spool.isEmpty()) {
                             spool.wait(60000);
                         }
                     }
