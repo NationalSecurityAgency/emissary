@@ -120,7 +120,7 @@ public class PlaceStarter {
      * Will check to see if the place already exists first and return the existing instance from the Namespace if it does.
      *
      * @param theLocation key for the new place
-     * @param constructorArgs array of args to pass to the place constructor
+     * @param constructorArgs list of args to pass to the place constructor
      * @param theClassStr string name of the class to instantiate
      * @return the place that was found or created, or null if it can't be done
      */
