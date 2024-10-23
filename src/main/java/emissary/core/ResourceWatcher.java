@@ -58,6 +58,7 @@ public class ResourceWatcher implements Runnable {
     /**
      * Create a resource watcher set it running and bind into the NamespaceException
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     public ResourceWatcher(final MetricsManager metricsManager) {
         this.metrics = metricsManager.getMetricRegistry();
         final Thread thread = new Thread(this, "ResourceWatcher");

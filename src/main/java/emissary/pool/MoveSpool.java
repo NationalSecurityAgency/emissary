@@ -76,6 +76,7 @@ public class MoveSpool implements Runnable {
     /**
      * Configure stuff
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     private void configure() {
         // Get the agent pool
         resetPool();
@@ -139,6 +140,7 @@ public class MoveSpool implements Runnable {
      * Run the thread to watch the spool
      */
     @Override
+    @SuppressWarnings("ThreadPriorityCheck")
     public void run() {
         int consecutiveSendCounter = 0;
 

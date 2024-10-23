@@ -102,6 +102,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param threadGroup group we operate it
      * @param threadName symbolic name for this agent thread
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     public MobileAgent(final ThreadGroup threadGroup, final String threadName) {
         logger.debug("Constructing agent {}", threadName);
         this.thread = new Thread(threadGroup, this, threadName);
@@ -180,7 +181,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * Kill asynchronously
      */
     @Override
-    @SuppressWarnings("Interruption")
+    @SuppressWarnings({"Interruption", "ThreadPriorityCheck"})
     public void killAgentAsync() {
         logger.debug("killAgentAsync called on {}", getName());
         this.timeToQuit = true;

@@ -713,6 +713,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
      * @return mobile agent assigned to pool
      * @throws EmissaryException when an agent cannot be obtained
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     public static IMobileAgent assignToPooledAgent(IBaseDataObject payload, @Nullable AgentPool agentPool, IServiceProviderPlace startingLocation,
             long timeoutMs) throws EmissaryException {
         IMobileAgent agent = null;
