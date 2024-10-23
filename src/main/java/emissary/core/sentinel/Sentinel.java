@@ -135,6 +135,7 @@ public class Sentinel implements Runnable {
     /**
      * Initialize Protocols
      */
+    @SuppressWarnings("CatchingUnchecked")
     protected void init() {
         this.enabled = config.findBooleanEntry("ENABLED", false);
         if (this.enabled) {

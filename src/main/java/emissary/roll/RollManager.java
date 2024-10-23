@@ -57,6 +57,7 @@ public class RollManager implements PropertyChangeListener {
         }
     }
 
+    @SuppressWarnings("CatchingUnchecked")
     protected void init(Configurator configG) {
         ArrayList<Roller> cfgRollers = new ArrayList<>();
         executorThreadCount = configG.findIntEntry(CFG_ROLL_MANAGER_THREADS, executorThreadCount);

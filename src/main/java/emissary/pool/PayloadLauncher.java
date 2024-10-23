@@ -21,6 +21,7 @@ public class PayloadLauncher {
     private static final Logger logger = LoggerFactory.getLogger(PayloadLauncher.class);
 
 
+    @SuppressWarnings("CatchingUnchecked")
     public static boolean launch(Object payload, IServiceProviderPlace place, int errorCount, List<DirectoryEntry> itineraryItems)
             throws EmissaryException {
         String payloadName = PayloadUtil.getName(payload);

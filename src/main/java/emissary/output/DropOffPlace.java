@@ -98,6 +98,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
      * 
      * @param filterClasses the name:class values of the configured filter for this drop off
      */
+    @SuppressWarnings("CatchingUnchecked")
     protected void initializeFilters(final List<String> filterClasses) {
         for (final String entry : filterClasses) {
             final String name;
@@ -184,6 +185,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
      * @param payloadList list of IBaseDataObject from an {@link emissary.core.HDMobileAgent}
      */
     @Override
+    @SuppressWarnings("CatchingUnchecked")
     public List<IBaseDataObject> agentProcessHeavyDuty(final List<IBaseDataObject> payloadList) throws Exception {
 
         logger.debug("Entering DropOffPlace.agentProcessHeavyDuty with {} payload items", payloadList.size());
@@ -404,7 +406,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
      * @param target either IBaseDataObject or List thereof
      * @param filterParams other parameters that filter need
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "CatchingUnchecked"})
     protected void runOutputFilters(final Object target, final Map<String, Object> filterParams) {
 
         IBaseDataObject doTarget = null;

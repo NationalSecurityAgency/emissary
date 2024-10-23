@@ -523,6 +523,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      * @param payload dataobject from a MobileAgent
      */
     @Override
+    @SuppressWarnings("CatchingUnchecked")
     public void agentProcessCall(IBaseDataObject payload) throws ResourceException {
         try {
             process(payload);
@@ -888,6 +889,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      *
      * @param keylist the keys to register
      */
+    @SuppressWarnings("CatchingUnchecked")
     protected void registerWithDirectory(List<String> keylist) {
         try {
             if (localDirPlace == null) {
@@ -909,6 +911,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      *
      * @param keys the keys to register
      */
+    @SuppressWarnings("CatchingUnchecked")
     protected void deregisterFromDirectory(List<String> keys) {
         try {
             if (localDirPlace == null && dirPlace != null) {

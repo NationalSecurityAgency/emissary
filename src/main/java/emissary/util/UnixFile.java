@@ -112,6 +112,7 @@ public class UnixFile {
      * Statically tests a byte array to determine if the file representation can be of type ASCII or is binary. Simply
      * checks each byte value to be less then greater/equal then 127.
      */
+    @SuppressWarnings("CatchingUnchecked")
     public static String evaluateBinaryProperty(@Nullable byte[] bytes) {
         if (bytes == null || bytes.length < 1) {
             return FILETYPE_EMPTY;

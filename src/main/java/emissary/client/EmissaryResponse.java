@@ -75,6 +75,7 @@ public class EmissaryResponse {
     }
 
     @Nullable
+    @SuppressWarnings("CatchingUnchecked")
     public String getContentString() {
         if (content == null) {
             return null;

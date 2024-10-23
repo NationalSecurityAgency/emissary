@@ -312,6 +312,7 @@ public class HeartbeatManager {
      */
     class HeartbeatTask extends TimerTask {
         @Override
+        @SuppressWarnings("CatchingUnchecked")
         public void run() {
             try {
                 logger.debug("Running timer task on {} directories", HeartbeatManager.this.directories.size());
@@ -333,6 +334,7 @@ public class HeartbeatManager {
      * @param key key representing the directory to heartbeat
      * @return true if the directory referenced by key is up
      */
+    @SuppressWarnings("CatchingUnchecked")
     public final boolean heartbeat(final String key) {
         boolean isup = false;
         try {

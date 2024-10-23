@@ -190,6 +190,7 @@ public class CharsetUtil {
      * @param s string to test
      * @return true if string is ascii
      */
+    @SuppressWarnings("CatchingUnchecked")
     public static boolean isAscii(final String s) {
         try {
             final int len = s.length();

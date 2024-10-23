@@ -88,6 +88,7 @@ public class Emissary {
         }
     }
 
+    @SuppressWarnings("CatchingUnchecked")
     protected void execute(String[] args) {
         reconfigureLogHook(); // so we can capture everything for test, like the verbose output
         String shouldSetVerbose = System.getProperty("set.picocli.debug");

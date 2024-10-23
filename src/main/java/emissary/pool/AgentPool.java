@@ -202,6 +202,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
         return getNumIdle() + getNumActive();
     }
 
+    @SuppressWarnings("CatchingUnchecked")
     protected void emptyPool() {
         int numberKilled = 0;
         int numberToKill = getCurrentPoolSize();

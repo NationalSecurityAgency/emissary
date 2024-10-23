@@ -29,6 +29,7 @@ public class TopologyCommand extends HttpCommand {
     }
 
     @Override
+    @SuppressWarnings("CatchingUnchecked")
     public void run(CommandLine c) {
         setup();
         String endpoint = getScheme() + "://" + getHost() + ":" + getPort() + "/api/cluster/peers";

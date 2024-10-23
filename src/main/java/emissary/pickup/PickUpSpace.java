@@ -140,6 +140,7 @@ public abstract class PickUpSpace extends PickUpPlace implements IPickUpSpace {
      * @return true if we got at least one
      */
     @Override
+    @SuppressWarnings("CatchingUnchecked")
     public boolean take() {
         if (openSpaceNames.size() == 0) {
             logger.debug("Cannot perform 'take' when no spaces are available");

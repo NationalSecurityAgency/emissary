@@ -77,6 +77,7 @@ public abstract class MonitorCommand<T extends BaseResponseEntity> extends HttpC
         displayEntityResults(entity);
     }
 
+    @SuppressWarnings("CatchingUnchecked")
     private void sendClusterRequests(final EmissaryClient client, final T entity) throws IOException {
         PeersCommand.getPeers(getHostAndPort(), true).parallelStream().forEach(hostAndPort -> {
             try {

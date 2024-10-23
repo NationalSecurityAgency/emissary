@@ -102,6 +102,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
      * already be constructed</li>
      * </ul>
      */
+    @SuppressWarnings("CatchingUnchecked")
     protected void configurePlace() {
         outputForm = configG.findStringEntry(OUTPUT_FORM, null);
         pushForm = configG.findBooleanEntry("PUSH_OUTPUT_FORM", true);

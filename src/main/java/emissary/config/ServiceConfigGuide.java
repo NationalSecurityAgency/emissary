@@ -390,6 +390,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @param lnum the current line number for error reporting
      * @return string with character values replaced
      */
+    @SuppressWarnings("CatchingUnchecked")
     protected String substituteUtfChars(final String s, final String filename, final int lnum) throws IOException {
         final int slen = s.length();
         final StringBuilder sb = new StringBuilder(slen);

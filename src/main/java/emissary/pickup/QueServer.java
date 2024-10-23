@@ -70,6 +70,7 @@ public abstract class QueServer extends Pausable {
      * Processing loop to monitor the queue
      */
     @Override
+    @SuppressWarnings("CatchingUnchecked")
     public void run() {
         logger.debug("Starting the QueServer run method");
         while (!timeToShutdown) {
@@ -116,6 +117,7 @@ public abstract class QueServer extends Pausable {
     /**
      * Check the queue for waiting objects and process them
      */
+    @SuppressWarnings("CatchingUnchecked")
     public void checkQue() {
         WorkBundle paths = queue.deque();
         while (paths != null) {

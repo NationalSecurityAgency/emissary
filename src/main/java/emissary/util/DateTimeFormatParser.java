@@ -47,6 +47,7 @@ public class DateTimeFormatParser {
 
     private DateTimeFormatParser() {}
 
+    @SuppressWarnings("CatchingUnchecked")
     protected static void configure() {
 
         Configurator configG;
@@ -78,6 +79,7 @@ public class DateTimeFormatParser {
      *        formats that need to be parsed differently
      * @param dateFormats the list of DateTimeFormatter objects that corresponds to the appropriate format
      */
+    @SuppressWarnings("CatchingUnchecked")
     private static void loadDateTimeEntries(Configurator configG, String entryType, List<DateTimeFormatter> dateFormats) {
         for (final String dateFormatEntry : configG.findEntries(entryType)) {
             try {

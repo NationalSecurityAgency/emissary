@@ -34,7 +34,7 @@ public class Shutdown {
         return shutdown(request, true);
     }
 
-    @SuppressWarnings("SystemExitOutsideMain")
+    @SuppressWarnings({"SystemExitOutsideMain", "CatchingUnchecked"})
     protected Response shutdown(HttpServletRequest request, boolean force) {
         try {
             LOG.debug("Calling the stop method");

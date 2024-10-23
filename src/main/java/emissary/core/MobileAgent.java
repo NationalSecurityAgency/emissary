@@ -180,7 +180,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * Kill asynchronously
      */
     @Override
-    @SuppressWarnings("Interruption")
+    @SuppressWarnings({"Interruption", "CatchingUnchecked"})
     public void killAgentAsync() {
         logger.debug("killAgentAsync called on {}", getName());
         this.timeToQuit = true;
@@ -603,6 +603,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * the first one will be returned to the caller. Caller knows to look on the internal queue for additional entries
      * before calling this method again.
      */
+    @SuppressWarnings("CatchingUnchecked")
     protected DirectoryEntry nextKeyFromDirectory(final String dataId, final IServiceProviderPlace place, final DirectoryEntry lastEntry,
             final IBaseDataObject payloadArg) {
 

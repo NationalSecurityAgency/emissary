@@ -61,6 +61,7 @@ public class TimedResource implements AutoCloseable {
     }
 
     // test visibility
+    @SuppressWarnings("CatchingUnchecked")
     void interruptAgent() {
         // don't grab the lock if we're done
         if (isClosed) {

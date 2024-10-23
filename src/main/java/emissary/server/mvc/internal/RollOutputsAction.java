@@ -26,6 +26,7 @@ public class RollOutputsAction {
     @GET
     @Path("/roll")
     @Produces(MediaType.TEXT_PLAIN)
+    @SuppressWarnings("CatchingUnchecked")
     public Response rollOutputs(@QueryParam("filter") List<String> outputFilterNames,
             @QueryParam("p") @DefaultValue("DropOffPlace") String namespaceName) {
         try {
