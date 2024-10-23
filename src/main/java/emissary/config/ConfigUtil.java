@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
  * a local file, many of these methods will try to retrieve config data from a resource stream (i.e. the classpath). The
  * package name to use can be prefixed with some package of your choosing by setting -Demissary.config.pkg=value.
  */
+@SuppressWarnings("NonFinalStaticField")
 public class ConfigUtil {
     /** Our logger */
     protected static final Logger logger = LoggerFactory.getLogger(ConfigUtil.class);

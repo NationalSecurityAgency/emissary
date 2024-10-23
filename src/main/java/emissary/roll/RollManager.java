@@ -29,6 +29,7 @@ public class RollManager implements PropertyChangeListener {
     final HashSet<Roller> rollers = new HashSet<>();
     // SINGLETON
     @Nullable
+    @SuppressWarnings("NonFinalStaticField")
     private static RollManager rollManager;
 
     protected RollManager() {

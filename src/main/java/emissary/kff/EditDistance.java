@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
  * 
  * A new ssdeep hash gets calculated and saved at each level of unwrapping.
  */
-
+@SuppressWarnings("NonFinalStaticField")
 public class EditDistance {
     /*
      * This edit distance code is taken from trn3.6. A few minor modifications have been made by Andrew Tridgell

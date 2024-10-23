@@ -29,7 +29,10 @@ public class KffChainLoader {
     private static final Logger logger = LoggerFactory.getLogger(KffChainLoader.class);
 
     @Nullable
+    @SuppressWarnings("NonFinalStaticField")
     private static KffChain theInstance = null;
+
+    @SuppressWarnings("NonFinalStaticField")
     private static Map<String, String> classes;
 
     /**

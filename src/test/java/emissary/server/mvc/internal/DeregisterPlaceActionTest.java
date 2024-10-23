@@ -33,6 +33,7 @@ class DeregisterPlaceActionTest extends EndpointTestBase {
     private static final String DEREGISTER_PLACE_ACTION = "DeregisterPlace.action";
     private static final ResourceReader rr = new ResourceReader();
     @Nullable
+    @SuppressWarnings("NonFinalStaticField")
     private static DirectoryPlace directory;
 
     @BeforeEach

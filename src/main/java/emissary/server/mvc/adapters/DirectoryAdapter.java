@@ -57,7 +57,9 @@ public class DirectoryAdapter extends EmissaryClient {
     public static final String FILE_PICKUP_KEY = "INITIAL::INPUT";
     // These two parameters will cause each node to only have copies of its own places.
     // Greatly speeds up performance when not using the moveTo() functionality.
+    @SuppressWarnings("NonFinalStaticField")
     private static boolean disableAddPlaces = true;
+    @SuppressWarnings("NonFinalStaticField")
     private static boolean filterDirectoryEntryMap = true;
 
 

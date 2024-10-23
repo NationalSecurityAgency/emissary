@@ -15,7 +15,7 @@ public class MagicMath {
     private static final String ZERO = "0";
     private static final String PRE_OCT = "0";
 
-    public static int[] literals = new int[] {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1 // 0
+    public static final int[] literals = new int[] {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1 // 0
             , -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 // 10
             , -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 // 20
             , -1, -1, 32, 33, -1, -1, -1, -1, 38, -1 // 30
