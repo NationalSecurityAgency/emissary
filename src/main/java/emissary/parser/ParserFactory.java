@@ -131,7 +131,7 @@ public class ParserFactory {
      * @return SessionParser implementation
      * @deprecated use {@link #makeSessionParser(SeekableByteChannel, String)}
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     @SuppressWarnings("InconsistentOverloads")
     public SessionParser makeSessionParser(String type, SeekableByteChannel channel) {
         return makeSessionParser(channel, type);

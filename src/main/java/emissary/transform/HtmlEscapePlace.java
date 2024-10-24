@@ -28,7 +28,7 @@ import static emissary.core.constants.Parameters.DOCUMENT_TITLE;
 import static emissary.core.constants.Parameters.SUFFIXES_HTML_ESCAPE;
 import static emissary.core.constants.Parameters.SUMMARY;
 
-@Deprecated(forRemoval = true)
+@Deprecated
 public class HtmlEscapePlace extends ServiceProviderPlace {
 
     /**
