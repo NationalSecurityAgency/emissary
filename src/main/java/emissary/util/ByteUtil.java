@@ -291,7 +291,7 @@ public class ByteUtil {
      * Scans a byte array looking for non-printable values.
      * 
      * @param utf8Bytes the bytes to be scanned.
-     * @return regardless of whether there were non-printable values.
+     * @return true if the byte array contains an invalid text character.
      */
     public static boolean hasNonPrintableValues(final byte[] utf8Bytes) {
         int i = 0;
@@ -379,7 +379,7 @@ public class ByteUtil {
      *
      * @param codePoint codePoint to check
      *
-     * @return if code-point is a printable character
+     * @return if code-point is a valid text character
      */
     private static boolean isPrintable(int codePoint) {
 
