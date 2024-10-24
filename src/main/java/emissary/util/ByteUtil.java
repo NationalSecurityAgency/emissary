@@ -383,7 +383,8 @@ public class ByteUtil {
      */
     private static boolean isPrintable(int codePoint) {
 
-        return codePoint >= 0x20 && codePoint <= 0x7E || // basic latin
+        return codePoint >= 0x09 && codePoint <= 0x0D ||
+                codePoint >= 0x20 && codePoint <= 0x7E || // basic latin
                 codePoint >= 0xA0 && codePoint <= 0xD7FF || // extended characters
                 codePoint >= 0xE000 && codePoint <= 0xFFFD ||
                 codePoint >= 0x10000 && codePoint <= 0x10FFFF;
