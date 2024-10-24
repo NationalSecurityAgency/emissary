@@ -411,7 +411,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                         final int digit = Integer.parseInt(s.substring(i + 2, epos), 16);
                         sb.appendCodePoint(digit);
                         i = epos - 1;
-                    } catch (Exception ex) {
+                    } catch (RuntimeException ex) {
                         throw new IOException("Unable to convert characters in " + s + ", from filename=" + filename + " line " + lnum, ex);
                     }
                 }

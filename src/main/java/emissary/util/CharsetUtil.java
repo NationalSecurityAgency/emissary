@@ -199,7 +199,7 @@ public class CharsetUtil {
                     return false;
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return false;
         }
         return true;

@@ -34,7 +34,6 @@ public class Shutdown {
         return shutdown(request, true);
     }
 
-    @SuppressWarnings("SystemExitOutsideMain")
     protected Response shutdown(HttpServletRequest request, boolean force) {
         try {
             LOG.debug("Calling the stop method");
@@ -46,13 +45,13 @@ public class Shutdown {
                     } else {
                         EmissaryServer.stopServer();
                     }
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     // swallow
                 }
                 System.exit(0);
             }).start();
             return Response.ok("Shutdown initiated. Come again soon!").build();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             LOG.warn("Exception trying to initiate shutdown: {}", e.getMessage());
             return Response.serverError().entity("Error trying to initiate shutdown").build();
         }

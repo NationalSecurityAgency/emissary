@@ -1,6 +1,7 @@
 package emissary.server.mvc.internal;
 
 import emissary.core.Namespace;
+import emissary.core.NamespaceException;
 import emissary.core.ResourceWatcher;
 import emissary.output.DropOffPlace;
 import emissary.output.filter.IDropOffFilter;
@@ -39,7 +40,7 @@ public class RollOutputsAction {
                         f.close();
                         outputNames.append(" ").append(filter);
                     }
-                } catch (Exception ex) {
+                } catch (RuntimeException ex) {
                     outputNames.append(" ").append(filter).append("-FAILED");
                     logger.error("Could not roll " + filter, ex);
                 }
@@ -53,7 +54,7 @@ public class RollOutputsAction {
             }
 
             return Response.ok().entity("Output Rolled: " + outputNames).build();
-        } catch (Exception ex) {
+        } catch (NamespaceException | RuntimeException ex) {
             logger.warn("Could not roll outputs", ex);
             return Response.ok().entity("Could not roll outputs: " + ex.toString()).build();
         }

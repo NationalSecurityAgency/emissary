@@ -605,6 +605,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * @param len length of data to use
      * @return attachments
      */
+    @SuppressWarnings("CatchingUnchecked")
     protected List<IBaseDataObject> processData(@Nullable IBaseDataObject tData, int start, int len) throws ResourceException {
         List<IBaseDataObject> sprouts = new ArrayList<>();
 

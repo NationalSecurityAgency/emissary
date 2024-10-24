@@ -120,7 +120,7 @@ public final class DisposeHelper {
         for (final Runnable runnable : DisposeHelper.get(ibdo)) {
             try {
                 runnable.run();
-            } catch (final Exception e) {
+            } catch (final RuntimeException e) {
                 LOGGER.warn("Exception while executing Runnable for {}", ibdo.shortName(), e);
             }
         }
