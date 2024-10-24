@@ -47,7 +47,6 @@ public class DateTimeFormatParser {
 
     private DateTimeFormatParser() {}
 
-    @SuppressWarnings("CatchingUnchecked")
     protected static void configure() {
 
         Configurator configG;
@@ -59,7 +58,7 @@ public class DateTimeFormatParser {
         }
         try {
             zone = ZoneId.of(configG.findStringEntry("TIME_ZONE"));
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("There was an issue reading the time zone from the config file");
             return;
         }

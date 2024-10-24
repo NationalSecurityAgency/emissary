@@ -140,7 +140,6 @@ public abstract class PickUpSpace extends PickUpPlace implements IPickUpSpace {
      * @return true if we got at least one
      */
     @Override
-    @SuppressWarnings("CatchingUnchecked")
     public boolean take() {
         if (openSpaceNames.size() == 0) {
             logger.debug("Cannot perform 'take' when no spaces are available");
@@ -156,7 +155,7 @@ public abstract class PickUpSpace extends PickUpPlace implements IPickUpSpace {
             WorkBundle path = null;
             try {
                 path = tpa.outboundWorkSpaceTake(openSpaceName, myKey);
-            } catch (Exception ex) {
+            } catch (RuntimeException ex) {
                 logger.error("Failed to take work from " + openSpaceName, ex);
             }
 

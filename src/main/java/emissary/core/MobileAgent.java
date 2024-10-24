@@ -180,14 +180,13 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * Kill asynchronously
      */
     @Override
-    @SuppressWarnings({"Interruption", "CatchingUnchecked"})
     public void killAgentAsync() {
         logger.debug("killAgentAsync called on {}", getName());
         this.timeToQuit = true;
         try {
             this.thread.setPriority(Thread.MIN_PRIORITY);
             this.thread.interrupt();
-        } catch (Exception ignored) {
+        } catch (RuntimeException ignored) {
             // empty catch block
         }
     }

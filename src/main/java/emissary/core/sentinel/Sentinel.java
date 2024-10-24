@@ -135,7 +135,6 @@ public class Sentinel implements Runnable {
     /**
      * Initialize Protocols
      */
-    @SuppressWarnings("CatchingUnchecked")
     protected void init() {
         this.enabled = config.findBooleanEntry("ENABLED", false);
         if (this.enabled) {
@@ -151,7 +150,7 @@ public class Sentinel implements Runnable {
                     } else {
                         logger.debug("Sentinel protocol disabled {}", protocol);
                     }
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     logger.warn("Unable to configure Sentinel Protocol[{}]: {}", protocolConfig, e.getMessage());
                 }
             }

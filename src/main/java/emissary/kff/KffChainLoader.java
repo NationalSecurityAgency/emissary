@@ -70,7 +70,6 @@ public class KffChainLoader {
      * @param filterType either IGNORE, KNOWN, or DUPE filter
      * @return number of filter loaded onto chain
      */
-    @SuppressWarnings("CatchingUnchecked")
     private static int loadFrom(KffChain chain, Map<String, String> m, FilterType filterType) {
         int countLoaded = 0;
 
@@ -89,7 +88,7 @@ public class KffChainLoader {
                 KffFilter k;
                 try {
                     k = (KffFilter) Factory.create(clazz, name, key, filterType);
-                } catch (Exception x) {
+                } catch (RuntimeException x) {
                     logger.warn("Cannot create KffFilter, using default", x);
                     k = new KffFile(name, key, filterType);
                 }

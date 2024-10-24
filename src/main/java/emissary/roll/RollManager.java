@@ -57,7 +57,6 @@ public class RollManager implements PropertyChangeListener {
         }
     }
 
-    @SuppressWarnings("CatchingUnchecked")
     protected void init(Configurator configG) {
         ArrayList<Roller> cfgRollers = new ArrayList<>();
         executorThreadCount = configG.findIntEntry(CFG_ROLL_MANAGER_THREADS, executorThreadCount);
@@ -65,7 +64,7 @@ public class RollManager implements PropertyChangeListener {
             try {
                 Map<String, String> map = configG.findStringMatchMap(roller + "_");
                 cfgRollers.add(RollUtil.buildRoller(map));
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 log.warn("Unable to configure Rollable for: {}", roller);
             }
         }

@@ -70,14 +70,13 @@ public abstract class QueServer extends Pausable {
      * Processing loop to monitor the queue
      */
     @Override
-    @SuppressWarnings("CatchingUnchecked")
     public void run() {
         logger.debug("Starting the QueServer run method");
         while (!timeToShutdown) {
             // Process something on the queue
             try {
                 checkQue();
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 logger.warn("Exception in checkQue():" + e, e);
             }
 
@@ -117,7 +116,6 @@ public abstract class QueServer extends Pausable {
     /**
      * Check the queue for waiting objects and process them
      */
-    @SuppressWarnings("CatchingUnchecked")
     public void checkQue() {
         WorkBundle paths = queue.deque();
         while (paths != null) {
@@ -131,7 +129,7 @@ public abstract class QueServer extends Pausable {
                 boolean status = processQueueItem(paths);
                 logger.debug("Initiating bundle completed msg for {}, status={}", paths.getBundleId(), status);
                 space.bundleCompleted(paths.getBundleId(), status);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 StringBuilder fnb = new StringBuilder();
                 // Report filenames on error
                 for (Iterator<String> i = paths.getFileNameIterator(); i.hasNext();) {

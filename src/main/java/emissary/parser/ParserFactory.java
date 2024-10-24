@@ -165,7 +165,6 @@ public class ParserFactory {
      * @return SessionParser implementation
      */
     @Nullable
-    @SuppressWarnings("CatchingUnchecked")
     protected SessionParser makeSessionParserClass(@Nullable String clazz, Object... args) {
         // Choose implementation class based on data type
         if (clazz == null) {
@@ -177,7 +176,7 @@ public class ParserFactory {
 
         try {
             sp = (SessionParser) Factory.create(clazz, args);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Unable to instantiate {}", clazz, e);
         }
 
@@ -187,12 +186,11 @@ public class ParserFactory {
     /**
      * Instantiate the specified DataIdentifier class for typing the data
      */
-    @SuppressWarnings("CatchingUnchecked")
     protected void makeIdEngine(String clazz) {
         try {
             DataIdentifier d = (DataIdentifier) Factory.create(clazz);
             idEngine = d;
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             logger.warn("Cannot make data identifier from " + clazz, ex);
         }
     }

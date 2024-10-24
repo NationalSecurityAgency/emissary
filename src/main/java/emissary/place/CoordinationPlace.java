@@ -102,7 +102,6 @@ public class CoordinationPlace extends ServiceProviderPlace {
      * already be constructed</li>
      * </ul>
      */
-    @SuppressWarnings("CatchingUnchecked")
     protected void configurePlace() {
         outputForm = configG.findStringEntry(OUTPUT_FORM, null);
         pushForm = configG.findBooleanEntry("PUSH_OUTPUT_FORM", true);
@@ -136,7 +135,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
                         failedCoordPlaceCreation.add(s + " in " + configG.findStringEntry("PLACE_NAME"));
                         logger.error("Place does not exist and cannot be created: {}", s);
                     }
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     failedCoordPlaceCreation.add(s + " in " + configG.findStringEntry("PLACE_NAME"));
                     logger.error("Place does not exist and cannot be created: {}", s, e);
                 }

@@ -114,14 +114,13 @@ public final class DisposeHelper {
      * 
      * @param ibdo to execute Runnables on
      */
-    @SuppressWarnings("CatchingUnchecked")
     public static void execute(final IBaseDataObject ibdo) {
         Validate.notNull(ibdo, VALIDATION_MSG_IBDO);
         // Can't be refactored to method::reference as we need to ensure exceptions are not swallowed
         for (final Runnable runnable : DisposeHelper.get(ibdo)) {
             try {
                 runnable.run();
-            } catch (final Exception e) {
+            } catch (final RuntimeException e) {
                 LOGGER.warn("Exception while executing Runnable for {}", ibdo.shortName(), e);
             }
         }

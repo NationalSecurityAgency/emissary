@@ -29,18 +29,13 @@ public class TopologyCommand extends HttpCommand {
     }
 
     @Override
-    @SuppressWarnings("CatchingUnchecked")
     public void run(CommandLine c) {
         setup();
         String endpoint = getScheme() + "://" + getHost() + ":" + getPort() + "/api/cluster/peers";
         LOG.info("Hitting " + endpoint);
         EmissaryClient client = new EmissaryClient();
-        try {
-            PeersResponseEntity entity = client.send(new HttpGet(endpoint)).getContent(PeersResponseEntity.class);
-            entity.dumpToConsole();
-        } catch (Exception e) {
-            LOG.error("Problem hitting peers endpoint: " + e.getMessage());
-        }
+        PeersResponseEntity entity = client.send(new HttpGet(endpoint)).getContent(PeersResponseEntity.class);
+        entity.dumpToConsole();
     }
 
 

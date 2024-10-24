@@ -312,7 +312,6 @@ public class HeartbeatManager {
      */
     class HeartbeatTask extends TimerTask {
         @Override
-        @SuppressWarnings("CatchingUnchecked")
         public void run() {
             try {
                 logger.debug("Running timer task on {} directories", HeartbeatManager.this.directories.size());
@@ -320,7 +319,7 @@ public class HeartbeatManager {
                     heartbeat(dir);
                 }
                 logger.debug("Ending the HeartbeatTask run method");
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 logger.error("Unexpected problem in heartbeat timer", e);
             }
         }
@@ -334,7 +333,6 @@ public class HeartbeatManager {
      * @param key key representing the directory to heartbeat
      * @return true if the directory referenced by key is up
      */
-    @SuppressWarnings("CatchingUnchecked")
     public final boolean heartbeat(final String key) {
         boolean isup = false;
         try {
@@ -347,7 +345,7 @@ public class HeartbeatManager {
                 healthReport(key, false, response.getContentString());
                 isup = false;
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Cannot perform heartbeat", e);
             healthReport(key, false, e.getMessage());
             isup = false;

@@ -202,7 +202,6 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
         return getNumIdle() + getNumActive();
     }
 
-    @SuppressWarnings("CatchingUnchecked")
     protected void emptyPool() {
         int numberKilled = 0;
         int numberToKill = getCurrentPoolSize();
@@ -234,7 +233,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
                     try {
                         // destroys the object, needed to decrement the numIdle
                         returnAgent(a);
-                    } catch (Exception e) {
+                    } catch (RuntimeException e) {
                         logger.error("Error trying to returnAgent: {}", a.getName(), e);
                     }
                 }

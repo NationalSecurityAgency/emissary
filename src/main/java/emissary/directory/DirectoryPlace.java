@@ -795,7 +795,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param failKey the key of the one that failed
      * @param permanent true if this is from normal deregistrtion
      */
-    @SuppressWarnings("CatchingUnchecked")
     protected void sendFailMessage(final DirectoryEntry directory, final String failKey, final boolean permanent) {
 
         if (this.emissaryNode.isStandalone()) {
@@ -805,7 +804,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
         try {
             new DirectoryAdapter().outboundFailDirectory(directory.getKey(), failKey, permanent);
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             logger.error("Problem talking to directory {} to fail {}", directory.getKey(), failKey, ex);
         }
     }
@@ -924,7 +923,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param entryList the new entries
      * @param propagating true if propagating back down from higher level directory
      */
-    @SuppressWarnings("CatchingUnchecked")
     protected void registerWith(final DirectoryEntry dir, final List<DirectoryEntry> entryList, final boolean propagating) {
         if (logger.isDebugEnabled()) {
             logger.debug("registerWith({},{},{})", dir.getKey(), entryList, propagating);
@@ -933,7 +931,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         try {
             new DirectoryAdapter().outboundAddPlaces(dir.getKey(), entryList, propagating);
             logger.debug("registration succeeded");
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             logger.warn("DirectoryPlace.registerWith: Problem talking to directory {} to add {} entries", dir.getKey(), entryList.size(), ex);
         }
     }
@@ -1267,12 +1265,11 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param keys the list of keys the place can handle (SERVICE_PROXY)
      * @param propagating true if propagating across levels
      */
-    @SuppressWarnings("CatchingUnchecked")
     protected void deregisterFrom(final DirectoryEntry dir, final List<String> keys, final boolean propagating) {
         try {
             // Follow the logic to irdRemovePlaces on the remote side
             new DirectoryAdapter().outboundRemovePlaces(dir.getKey(), keys, propagating);
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             logger.error("DirectoryPlace.deregisterFrom: " + "Problem talking to directory " + dir.getKey() + " to deregister keys", ex);
         }
     }
