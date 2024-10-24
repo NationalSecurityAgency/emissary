@@ -76,6 +76,7 @@ public class MoveSpool implements Runnable {
     /**
      * Configure stuff
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     private void configure() {
         // Get the agent pool
         resetPool();
@@ -103,7 +104,7 @@ public class MoveSpool implements Runnable {
     public void quit() {
         logger.warn("Purging the spool...");
         synchronized (spool) {
-            if (spool.size() > 0) {
+            if (!spool.isEmpty()) {
                 spool.clear();
             }
             spool.notifyAll();
@@ -139,7 +140,7 @@ public class MoveSpool implements Runnable {
      * Run the thread to watch the spool
      */
     @Override
-    @SuppressWarnings("CatchingUnchecked")
+    @SuppressWarnings("ThreadPriorityCheck")
     public void run() {
         int consecutiveSendCounter = 0;
 
@@ -158,7 +159,7 @@ public class MoveSpool implements Runnable {
                     logger.debug("Nothing in spool, time to wait...");
                     Thread.yield();
                     synchronized (spool) {
-                        if (spool.size() == 0) {
+                        if (spool.isEmpty()) {
                             spool.wait(60000);
                         }
                     }

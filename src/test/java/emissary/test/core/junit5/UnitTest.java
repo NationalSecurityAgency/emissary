@@ -178,6 +178,7 @@ public abstract class UnitTest {
      *
      * @param millis how long to pause
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     protected void pause(long millis) {
         Thread.yield();
         try {

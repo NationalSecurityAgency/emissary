@@ -45,6 +45,7 @@ public class FileDataServer extends Pausable {
      * @param parent the FPP that created me
      * @param pollingInterval how often to check for new files in millis
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     public FileDataServer(String inputDataDirectory, FilePickUpPlace parent, long pollingInterval) {
 
         // Name the thread

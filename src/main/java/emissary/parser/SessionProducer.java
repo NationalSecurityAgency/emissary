@@ -68,7 +68,7 @@ public class SessionProducer {
         IBaseDataObject dataObject = DataObjectFactory.getInstance(new Object[] {theData, sName});
 
         // Pop default form if we have something to say
-        if (initialForms != null && initialForms.size() > 0) {
+        if (initialForms != null && !initialForms.isEmpty()) {
             dataObject.popCurrentForm();
             // Add our stuff to the form stack
             for (int j = initialForms.size() - 1; j >= 0; j--) {
@@ -77,7 +77,7 @@ public class SessionProducer {
         }
 
         List<String> sessionForms = session.getInitialForms();
-        if (sessionForms != null && sessionForms.size() > 0) {
+        if (sessionForms != null && !sessionForms.isEmpty()) {
             dataObject.popCurrentForm();
             for (int j = sessionForms.size() - 1; j >= 0; j--) {
                 dataObject.pushCurrentForm(sessionForms.get(j));

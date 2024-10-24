@@ -112,6 +112,7 @@ public class FilePickUpPlace extends PickUpPlace implements IPickUp {
     /**
      * For each input directory start a new server thread.
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     public void startDataServer() {
         for (int i = 0; i < inputDataDirs.length; i++) {
             FileDataServer fds = new FileDataServer(inputDataDirs[i], this, pollingInterval);
