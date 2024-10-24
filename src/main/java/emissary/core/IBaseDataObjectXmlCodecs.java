@@ -785,7 +785,7 @@ public final class IBaseDataObjectXmlCodecs {
             element.setAttribute(ENCODING_ATTRIBUTE_NAME, BASE64);
             element.addContent(base64String);
         } else {
-            element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
+            element.addContent(new String(bytes, StandardCharsets.UTF_8));
         }
 
         return element;
