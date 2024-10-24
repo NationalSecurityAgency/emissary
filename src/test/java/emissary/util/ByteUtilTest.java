@@ -4,6 +4,7 @@ import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -207,5 +208,27 @@ class ByteUtilTest extends UnitTest {
         assertEquals("This is line two\n", ByteUtil.grabLine(data, 18), "Middle line extraction");
         assertEquals("This is line three", ByteUtil.grabLine(data, 35), "Last line extraction");
     }
+
+    @Test
+    void testHasnonPrintableValues() {
+        String newLineCarriageTab = "\tThis is line one\r\nThis is line two\nThis is line three\n\nEnding with a tab";
+        assertFalse(ByteUtil.hasNonPrintableValues(newLineCarriageTab.getBytes(StandardCharsets.UTF_8)));
+
+        // 2-byte character: € (Euro symbol)
+        String euro = "€";
+        assertEquals("€", euro);
+        assertFalse(ByteUtil.hasNonPrintableValues(euro.getBytes(StandardCharsets.UTF_8)));
+
+        // 3-byte character: (Chinese character for "hello")
+        String nihao = "你好";
+        assertEquals("你好", nihao);
+        assertFalse(ByteUtil.hasNonPrintableValues(nihao.getBytes(StandardCharsets.UTF_8)));
+
+        // 4-byte character: (Emoji: grinning face)
+        String emoji = "😁";
+        assertEquals("😁", emoji);
+        assertTrue(ByteUtil.hasNonPrintableValues(emoji.getBytes(StandardCharsets.UTF_8)));
+    }
+
 
 }
