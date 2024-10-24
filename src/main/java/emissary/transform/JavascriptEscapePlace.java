@@ -17,7 +17,7 @@ import java.io.IOException;
 
 import static emissary.core.constants.Configurations.OUTPUT_FORM;
 
-@Deprecated(forRemoval = true)
+@Deprecated
 public class JavascriptEscapePlace extends ServiceProviderPlace {
 
     /**

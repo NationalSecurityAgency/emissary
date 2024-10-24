@@ -1461,7 +1461,7 @@
       <activation>
         <jdk>[11,)</jdk>
         <property>
-          <name>errorProne</name>
+          <name>!errorProne</name>
         </property>
       </activation>
       <build>
@@ -1494,7 +1494,6 @@
                 <arg>-XDcompilePolicy=simple</arg>
                 <arg>-Xplugin:ErrorProne \
                   -XepAllDisabledChecksAsWarnings \
-                  -XepAllErrorsAsWarnings \
                   -XepAllSuggestionsAsWarnings \
                   -XepDisableWarningsInGeneratedCode \
                   -Xep:AndroidJdkLibsChecker:OFF \

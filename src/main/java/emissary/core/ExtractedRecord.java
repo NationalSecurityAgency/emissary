@@ -35,44 +35,44 @@ public class ExtractedRecord extends BaseDataObject implements IExtractedRecord 
     }
 
     @Override
-    @Deprecated(forRemoval = true)
+    @Deprecated
     @Nullable
     public List<IBaseDataObject> getExtractedRecords() {
         return null;
     }
 
     @Override
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public void setExtractedRecords(final List<? extends IBaseDataObject> extractedRecords) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public void addExtractedRecord(final IBaseDataObject extractedRecord) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public void addExtractedRecords(final List<? extends IBaseDataObject> extractedRecords) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public boolean hasExtractedRecords() {
         return false;
     }
 
     @Override
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public void clearExtractedRecords() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public int getExtractedRecordCount() {
         return 0;
     }

@@ -215,7 +215,7 @@ public interface IBaseDataObject {
      * 
      * @return buffer required by the HTML Velocity templates.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     ByteBuffer headerBuffer();
 
     /**
@@ -223,7 +223,7 @@ public interface IBaseDataObject {
      * 
      * @return buffer required by the HTML Velocity templates.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     ByteBuffer footerBuffer();
 
     /**
@@ -231,7 +231,7 @@ public interface IBaseDataObject {
      * 
      * @return buffer required by the HTML Velocity templates.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     ByteBuffer dataBuffer();
 
     /**
@@ -406,7 +406,7 @@ public interface IBaseDataObject {
      * @return true if it was empty and set
      * @deprecated Use {@link #setFileType(String)} instead.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     @SuppressWarnings("AvoidObjectArrays")
     boolean setFileTypeIfEmpty(String arg1, String[] arg2);
 
@@ -453,7 +453,7 @@ public interface IBaseDataObject {
      * @param arg1 the name of the view to retrieve
      * @return buffer of alternate view data
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     ByteBuffer getAlternateViewBuffer(String arg1);
 
     /**

@@ -336,7 +336,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
         finalizeRoll(rolledOutputPath, finalOutputPath);
     }
 
-    @Deprecated(forRemoval = true)
+    @Deprecated
     @SuppressWarnings("InconsistentOverloads")
     protected void finalizeRoll(Collection<Journal> journals, Path rolledOutputPath, Path finalOutputPath) throws IOException {
         finalizeRoll(rolledOutputPath, finalOutputPath, journals);

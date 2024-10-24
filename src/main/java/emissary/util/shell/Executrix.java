@@ -942,7 +942,7 @@ public class Executrix {
      * @deprecated use {@link #writeDataToNewTempDir(byte[], String)}
      */
     @Nullable
-    @Deprecated(forRemoval = true)
+    @Deprecated
     @SuppressWarnings("InconsistentOverloads")
     public File writeDataToNewTempDir(final String dirn, final byte[] data) {
         return writeDataToNewTempDir(data, dirn);
@@ -1017,7 +1017,7 @@ public class Executrix {
      * @return the value of command
      * @deprecated use {@link #getCommand(String[], String)}
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     @SuppressWarnings("InconsistentOverloads")
     public String[] getCommand(final String commandArg, final String[] tmpNames) {
         return getCommand(tmpNames, commandArg);
@@ -1036,7 +1036,7 @@ public class Executrix {
      * @return the value of command
      * @deprecated use {@link #getCommand(String[], String, int, int)}
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     @SuppressWarnings("InconsistentOverloads")
     public String[] getCommand(final String commandArg, final String[] tmpNames, final int cpuLimit, final int vmSzLimit) {
         return getCommand(tmpNames, commandArg, cpuLimit, vmSzLimit);
