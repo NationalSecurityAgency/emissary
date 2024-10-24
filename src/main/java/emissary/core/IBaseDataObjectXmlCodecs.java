@@ -539,7 +539,7 @@ public final class IBaseDataObjectXmlCodecs {
                 element.setAttribute(ENCODING_ATTRIBUTE_NAME, SHA256);
                 element.addContent(ByteUtil.sha256Bytes(bytes));
             } else {
-                element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
+                element.addContent(new String(bytes, StandardCharsets.UTF_8));
             }
 
             return element;
@@ -807,7 +807,7 @@ public final class IBaseDataObjectXmlCodecs {
             element.setAttribute(IBaseDataObjectXmlCodecs.ENCODING_ATTRIBUTE_NAME, IBaseDataObjectXmlCodecs.SHA256);
             element.addContent(ByteUtil.sha256Bytes(bytes));
         } else {
-            element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
+            element.addContent(new String(bytes, StandardCharsets.UTF_8));
         }
 
         return element;
