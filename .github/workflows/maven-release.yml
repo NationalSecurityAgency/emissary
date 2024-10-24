@@ -76,10 +76,11 @@ jobs:
     permissions:
       contents: write
       packages: write
+    env:
+      RELEASE_VERSION: ${{ needs.get_version.outputs.RELEASE_VERSION }}
     steps:
-      - name: Add RELEASE_VERSION to environment variable
-        run: echo "RELEASE_VERSION=${{ needs.get_version.outputs.RELEASE_VERSION }}" >> "$GITHUB_ENV"
-
+      - name: test outputs
+        run: echo ${{ needs.get_version.outputs.RELEASE_VERSION }}
       - name: Checkout repo
         uses: actions/checkout@v4
 
