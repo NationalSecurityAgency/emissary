@@ -523,14 +523,13 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      * @param payload dataobject from a MobileAgent
      */
     @Override
-    @SuppressWarnings("CatchingUnchecked")
     public void agentProcessCall(IBaseDataObject payload) throws ResourceException {
         try {
             process(payload);
             rehash(payload);
         } catch (ResourceException r) {
             throw r;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Place.process exception", e);
         }
     }
@@ -889,7 +888,6 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      *
      * @param keylist the keys to register
      */
-    @SuppressWarnings("CatchingUnchecked")
     protected void registerWithDirectory(List<String> keylist) {
         try {
             if (localDirPlace == null) {
@@ -900,7 +898,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
                 logger.debug("Registering my {} keys {}", keylist.size(), keylist);
                 localDirPlace.addPlaces(keylist);
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.warn("Register ERROR for keys {}", keylist, e);
         }
     }
@@ -911,7 +909,6 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      *
      * @param keys the keys to register
      */
-    @SuppressWarnings("CatchingUnchecked")
     protected void deregisterFromDirectory(List<String> keys) {
         try {
             if (localDirPlace == null && dirPlace != null) {
@@ -924,7 +921,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
                 logger.debug("Deregistering my {} proxies {}", keys.size(), keys);
                 localDirPlace.removePlaces(keys);
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.warn("Deregister ERROR keys={}", keys, e);
         }
     }

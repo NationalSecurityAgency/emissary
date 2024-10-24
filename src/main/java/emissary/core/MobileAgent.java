@@ -604,7 +604,6 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * the first one will be returned to the caller. Caller knows to look on the internal queue for additional entries
      * before calling this method again.
      */
-    @SuppressWarnings("CatchingUnchecked")
     protected DirectoryEntry nextKeyFromDirectory(final String dataId, final IServiceProviderPlace place, final DirectoryEntry lastEntry,
             final IBaseDataObject payloadArg) {
 
@@ -620,7 +619,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                 logger.debug("Added {} new key entries from the directory for {}", entries.size(), dataId);
             }
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.warn("cannot get key, I was working on: {}", payloadArg.shortName(), e);
             // Returning instead of throwing will allow
             // the next form to be tried.
