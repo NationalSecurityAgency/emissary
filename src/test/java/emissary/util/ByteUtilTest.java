@@ -210,8 +210,8 @@ class ByteUtilTest extends UnitTest {
     }
 
     @Test
-    void testHasnonPrintableValues() {
-        String newLineCarriageTab = "\tThis is line one\r\nThis is line two\nThis is line three\n\nEnding with a tab";
+    void testHasNonPrintableValues() {
+        String newLineCarriageTab = "This is line one\r\nThis is line two\nThis is line three\n\nEnding with a tab\t";
         assertFalse(ByteUtil.hasNonPrintableValues(newLineCarriageTab.getBytes(StandardCharsets.UTF_8)));
 
         // 2-byte character: € (Euro symbol)
