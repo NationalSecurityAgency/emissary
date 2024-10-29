@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class ExtractionTest extends UnitTest {
 
-    protected static Logger logger = LoggerFactory.getLogger(ExtractionTest.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ExtractionTest.class);
 
     private static final List<IBaseDataObject> NO_ATTACHMENTS = Collections.emptyList();
     private static final byte[] INCORRECT_VIEW_MESSAGE = "This is the incorrect view, the place should not have processed this view".getBytes();

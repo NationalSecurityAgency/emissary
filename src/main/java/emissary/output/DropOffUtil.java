@@ -70,7 +70,7 @@ public class DropOffUtil {
     protected Executrix executrix;
 
     // Items for generating random filenames
-    protected static SecureRandom prng = new SecureRandom();
+    protected static final SecureRandom prng = new SecureRandom();
     protected static final byte[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".getBytes();
     protected String prefix = "TXT";
     protected boolean uuidInOutputFilenames = true;

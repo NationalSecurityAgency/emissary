@@ -37,6 +37,7 @@ class FailDirectoryActionTest extends EndpointTestBase {
     private static final String FAIL_DIRECTORY_ACTION = "FailDirectory.action";
     private static final ResourceReader rr = new ResourceReader();
     @Nullable
+    @SuppressWarnings("NonFinalStaticField")
     private static DirectoryPlace directory;
 
     @BeforeEach

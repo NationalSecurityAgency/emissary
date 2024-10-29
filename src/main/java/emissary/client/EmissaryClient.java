@@ -41,6 +41,7 @@ import javax.annotation.Nullable;
 /**
  * Base class of all the actions that use HttpClient.
  */
+@SuppressWarnings("NonFinalStaticField")
 public class EmissaryClient {
 
     public static final String DEFAULT_CONTEXT = "emissary";

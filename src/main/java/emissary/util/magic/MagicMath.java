@@ -15,6 +15,7 @@ public class MagicMath {
     private static final String ZERO = "0";
     private static final String PRE_OCT = "0";
 
+    @SuppressWarnings("NonFinalStaticField")
     public static int[] literals = new int[] {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1 // 0
             , -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 // 10
             , -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 // 20

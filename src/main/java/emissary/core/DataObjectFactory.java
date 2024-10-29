@@ -19,7 +19,9 @@ public class DataObjectFactory {
     public static final String DEFAULT_CLASS = BaseDataObject.class.getName();
     public static final String DEFAULT_EXTRACT_CLASS = ExtractedRecord.class.getName();
 
+    @SuppressWarnings("NonFinalStaticField")
     private static String clazz;
+    @SuppressWarnings("NonFinalStaticField")
     private static String extractedClazz;
 
     /*
