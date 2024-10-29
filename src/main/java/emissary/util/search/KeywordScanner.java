@@ -3,7 +3,6 @@ package emissary.util.search;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -158,7 +157,7 @@ public class KeywordScanner {
     public List<Integer> listIndexOf(@Nullable final byte[] patternArg, final int start, final int stop) {
         List<Integer> matches = new ArrayList<>();
         if ((start >= this.dataLength) || (stop > this.dataLength) || (patternArg == null)) {
-            return Collections.emptyList();
+            return List.of();
         }
         int newStart = 0;
         int actualStart;

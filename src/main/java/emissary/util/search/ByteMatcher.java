@@ -72,6 +72,24 @@ public class ByteMatcher {
     }
 
     /**
+     * Match pattern in the text
+     */
+    public int indexOf(byte[] pattern) {
+
+        return indexOf(pattern, 0);
+
+    }
+
+    /**
+     * Match pattern in the text
+     */
+    public int indexOf(String pattern) {
+
+        return indexOf(pattern.getBytes(), 0);
+
+    }
+
+    /**
      * This method finds a pattern in the text and returns the offset
      *
      * @param pattern bytes to find
@@ -84,6 +102,15 @@ public class ByteMatcher {
         }
 
         return indexOf(pattern, startOfs, mydata.length);
+
+    }
+
+    /**
+     * Match pattern in the text beginning at startOfs
+     */
+    public int indexOf(String pattern, int startOfs) {
+
+        return indexOf(pattern.getBytes(), startOfs);
 
     }
 
@@ -109,12 +136,66 @@ public class ByteMatcher {
     }
 
     /**
-     * Match pattern in the text
+     * Match pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return position
      */
-    public int indexOf(byte[] pattern) {
+    public int indexOf(String pattern, int beginIndex, int endIndex) {
 
-        return indexOf(pattern, 0);
+        return indexOf(pattern.getBytes(), beginIndex, endIndex);
 
+    }
+
+    /**
+     * Match pattern in the text
+     *
+     * @param pattern bytes to find
+     * @return list of positions
+     */
+    public List<Integer> listIndexOf(byte[] pattern) {
+        return listIndexOf(pattern, 0);
+    }
+
+    /**
+     * Match pattern in the text
+     *
+     * @param pattern bytes to find
+     * @return list of positions
+     */
+    public List<Integer> listIndexOf(String pattern) {
+
+        return listIndexOf(pattern.getBytes(), 0);
+    }
+
+    /**
+     * This method finds a pattern in the text from {@code startOfs} and returns a list of offsets
+     *
+     * @param pattern bytes to find
+     * @param startOfs start index
+     */
+    public List<Integer> listIndexOf(byte[] pattern, int startOfs) {
+
+        if (mydata == null) {
+            return Collections.emptyList();
+        }
+
+        return listIndexOf(pattern, startOfs, mydata.length);
+    }
+
+    /**
+     * Match pattern in the text beginning at {@code startOfs}
+     *
+     * @param pattern bytes to find
+     * @param startOfs start index
+     * @return list of positions
+     */
+    public List<Integer> listIndexOf(String pattern, int startOfs) {
+
+        return listIndexOf(pattern.getBytes(), startOfs);
     }
 
     /**
@@ -138,64 +219,6 @@ public class ByteMatcher {
 
 
     /**
-     * This method finds a pattern in the text from {@code startOfs} and returns a list of offsets
-     *
-     * @param pattern bytes to find
-     * @param startOfs start index
-     */
-    public List<Integer> listIndexOf(byte[] pattern, int startOfs) {
-
-        if (mydata == null) {
-            return Collections.emptyList();
-        }
-
-        return listIndexOf(pattern, startOfs, mydata.length);
-    }
-
-    /**
-     * Match pattern in the text
-     *
-     * @param pattern bytes to find
-     * @return list of positions
-     */
-    public List<Integer> listIndexOf(byte[] pattern) {
-        return listIndexOf(pattern, 0);
-    }
-
-    /**
-     * Match pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset
-     *
-     * @param pattern bytes to find
-     * @param beginIndex start index
-     * @param endIndex the index to stop searching at, exclusive
-     *
-     * @return position
-     */
-    public int indexOf(String pattern, int beginIndex, int endIndex) {
-
-        return indexOf(pattern.getBytes(), beginIndex, endIndex);
-
-    }
-
-    /**
-     * Match pattern in the text beginning at startOfs
-     */
-    public int indexOf(String pattern, int startOfs) {
-
-        return indexOf(pattern.getBytes(), startOfs);
-
-    }
-
-    /**
-     * Match pattern in the text
-     */
-    public int indexOf(String pattern) {
-
-        return indexOf(pattern.getBytes(), 0);
-
-    }
-
-    /**
      * Match pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset list
      *
      * @param pattern bytes to find
@@ -207,29 +230,6 @@ public class ByteMatcher {
     public List<Integer> listIndexOf(String pattern, int beginIndex, int endIndex) {
 
         return listIndexOf(pattern.getBytes(), beginIndex, endIndex);
-    }
-
-    /**
-     * Match pattern in the text beginning at {@code startOfs}
-     *
-     * @param pattern bytes to find
-     * @param startOfs start index
-     * @return list of positions
-     */
-    public List<Integer> listIndexOf(String pattern, int startOfs) {
-
-        return listIndexOf(pattern.getBytes(), startOfs);
-    }
-
-    /**
-     * Match pattern in the text
-     *
-     * @param pattern bytes to find
-     * @return list of positions
-     */
-    public List<Integer> listIndexOf(String pattern) {
-
-        return listIndexOf(pattern.getBytes(), 0);
     }
 
     /**
