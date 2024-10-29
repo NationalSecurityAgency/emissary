@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
  * a local file, many of these methods will try to retrieve config data from a resource stream (i.e. the classpath). The
  * package name to use can be prefixed with some package of your choosing by setting -Demissary.config.pkg=value.
  */
+@SuppressWarnings("NonFinalStaticField")
 public class ConfigUtil {
     /** Our logger */
     protected static final Logger logger = LoggerFactory.getLogger(ConfigUtil.class);
@@ -299,7 +300,10 @@ public class ConfigUtil {
      * @param preferences array of string names to try
      * @return the configurator
      * @throws IOException if none of the prefs can be found
+     * @deprecated use {@link #getConfigInfo(List)}
      */
+    @Deprecated
+    @SuppressWarnings("AvoidObjectArrays")
     public static Configurator getConfigInfo(final String[] preferences) throws IOException {
         return getConfigInfo(Arrays.asList(preferences));
     }
@@ -510,6 +514,7 @@ public class ConfigUtil {
      * @param name the base resource or config name
      * @return the name with the flavor in it
      */
+    @SuppressWarnings("AvoidObjectArrays")
     public static String[] addFlavors(final String name) {
         if (configFlavors == null || configFlavors.length() == 0) {
             return new String[0];

@@ -50,6 +50,7 @@ public class MoveSpool implements Runnable {
 
     // Stats collection
     private int highWaterMark = 0;
+    @SuppressWarnings("NonFinalStaticField")
     private static long lookupCount = 0;
     private long enqueCount = 0;
     private long dequeCount = 0;
@@ -76,6 +77,7 @@ public class MoveSpool implements Runnable {
     /**
      * Configure stuff
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     private void configure() {
         // Get the agent pool
         resetPool();
@@ -103,7 +105,7 @@ public class MoveSpool implements Runnable {
     public void quit() {
         logger.warn("Purging the spool...");
         synchronized (spool) {
-            if (spool.size() > 0) {
+            if (!spool.isEmpty()) {
                 spool.clear();
             }
             spool.notifyAll();
@@ -139,6 +141,7 @@ public class MoveSpool implements Runnable {
      * Run the thread to watch the spool
      */
     @Override
+    @SuppressWarnings("ThreadPriorityCheck")
     public void run() {
         int consecutiveSendCounter = 0;
 
@@ -157,7 +160,7 @@ public class MoveSpool implements Runnable {
                     logger.debug("Nothing in spool, time to wait...");
                     Thread.yield();
                     synchronized (spool) {
-                        if (spool.size() == 0) {
+                        if (spool.isEmpty()) {
                             spool.wait(60000);
                         }
                     }
@@ -222,7 +225,7 @@ public class MoveSpool implements Runnable {
                     logger.error("Unable to start agent, payload " + itemName + " is irretrievably lost", t);
                     try {
                         pool.returnAgent(agent);
-                    } catch (Exception ex) {
+                    } catch (RuntimeException ex) {
                         logger.error("Unable to return agent to the pool", ex);
                     }
                 } else {

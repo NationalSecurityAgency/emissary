@@ -105,7 +105,10 @@ public class DataUtil {
      * @param source to copy from
      * @param target to copy to
      * @param keys array of metadata keys to copy
+     * @deprecated use {@link #copyParams(IBaseDataObject, IBaseDataObject, Collection)}
      */
+    @Deprecated
+    @SuppressWarnings("AvoidObjectArrays")
     public static void copyParams(final IBaseDataObject source, final IBaseDataObject target, final String[] keys) {
         for (final String k : keys) {
             copyParam(source, target, k);

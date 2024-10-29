@@ -57,6 +57,7 @@ public abstract class QueServer extends Pausable {
      * @param pollingInterval value in millis
      * @param name value to supply to Thread name
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     public QueServer(IPickUpSpace space, PickupQueue queue, long pollingInterval, String name) {
         super(name);
         this.space = space;
@@ -76,7 +77,7 @@ public abstract class QueServer extends Pausable {
             // Process something on the queue
             try {
                 checkQue();
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 logger.warn("Exception in checkQue():" + e, e);
             }
 
@@ -116,6 +117,7 @@ public abstract class QueServer extends Pausable {
     /**
      * Check the queue for waiting objects and process them
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     public void checkQue() {
         WorkBundle paths = queue.deque();
         while (paths != null) {
@@ -129,7 +131,7 @@ public abstract class QueServer extends Pausable {
                 boolean status = processQueueItem(paths);
                 logger.debug("Initiating bundle completed msg for {}, status={}", paths.getBundleId(), status);
                 space.bundleCompleted(paths.getBundleId(), status);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 StringBuilder fnb = new StringBuilder();
                 // Report filenames on error
                 for (Iterator<String> i = paths.getFileNameIterator(); i.hasNext();) {

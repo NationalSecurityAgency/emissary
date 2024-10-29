@@ -49,7 +49,7 @@ public class ChecksumCalculator {
      * @throws NoSuchAlgorithmException if the algorithm isn't available
      */
     public ChecksumCalculator(String alg, boolean useCrc) throws NoSuchAlgorithmException {
-        this(new String[] {alg});
+        this(List.of(alg));
         setUseCrc(useCrc);
     }
 
@@ -59,6 +59,8 @@ public class ChecksumCalculator {
      * @param algs array of String algorithm names, put CRC32 on list to enable
      * @throws NoSuchAlgorithmException if an algorithm isn't available
      */
+    @Deprecated
+    @SuppressWarnings("AvoidObjectArrays")
     public ChecksumCalculator(@Nullable String[] algs) throws NoSuchAlgorithmException {
         if (algs != null && algs.length > 0) {
             for (String alg : algs) {

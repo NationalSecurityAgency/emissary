@@ -668,11 +668,8 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
             if (files != null && !files.isEmpty()) {
                 sprouts = sproutResults(tData, files, f.getParent(), parentData);
             }
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             logger.error("Problem in command execution", ex);
-            if (ex instanceof InterruptedException) {
-                throw new ResourceException(ex); // framework notification to stop
-            }
         } finally {
             // Delete the temporary directory and all of its contents.
             if (f != null) {

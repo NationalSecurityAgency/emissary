@@ -110,7 +110,7 @@ public abstract class PickUpSpace extends PickUpPlace implements IPickUpSpace {
     @Override
     @Nullable
     public String getSpaceName() {
-        if (openSpaceNames.size() > 0) {
+        if (!openSpaceNames.isEmpty()) {
             return openSpaceNames.get(0);
         } else {
             return null;
@@ -141,7 +141,7 @@ public abstract class PickUpSpace extends PickUpPlace implements IPickUpSpace {
      */
     @Override
     public boolean take() {
-        if (openSpaceNames.size() == 0) {
+        if (openSpaceNames.isEmpty()) {
             logger.debug("Cannot perform 'take' when no spaces are available");
             return false;
         }
@@ -155,7 +155,7 @@ public abstract class PickUpSpace extends PickUpPlace implements IPickUpSpace {
             WorkBundle path = null;
             try {
                 path = tpa.outboundWorkSpaceTake(openSpaceName, myKey);
-            } catch (Exception ex) {
+            } catch (RuntimeException ex) {
                 logger.error("Failed to take work from " + openSpaceName, ex);
             }
 
@@ -200,7 +200,7 @@ public abstract class PickUpSpace extends PickUpPlace implements IPickUpSpace {
             closeSpace(s);
         }
 
-        if (closers.size() > 0) {
+        if (!closers.isEmpty()) {
             logger.debug("Cleaned up " + closers.size() + " workspace instances, " + openSpaceNames.size() + " remaining");
         }
     }

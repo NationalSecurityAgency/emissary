@@ -1,5 +1,6 @@
 package emissary.util.search;
 
+@SuppressWarnings("AvoidObjectArrays")
 public interface IMultiKeywordScanner {
 
     void loadKeywords(String[] keywords);

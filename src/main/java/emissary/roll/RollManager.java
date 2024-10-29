@@ -29,6 +29,7 @@ public class RollManager implements PropertyChangeListener {
     final HashSet<Roller> rollers = new HashSet<>();
     // SINGLETON
     @Nullable
+    @SuppressWarnings("NonFinalStaticField")
     private static RollManager rollManager;
 
     protected RollManager() {
@@ -64,7 +65,7 @@ public class RollManager implements PropertyChangeListener {
             try {
                 Map<String, String> map = configG.findStringMatchMap(roller + "_");
                 cfgRollers.add(RollUtil.buildRoller(map));
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 log.warn("Unable to configure Rollable for: {}", roller);
             }
         }

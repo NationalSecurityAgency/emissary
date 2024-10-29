@@ -77,15 +77,18 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     protected Map<String, String> values = new HashMap<>();
 
     // Get this once per jvm
-    private static String hostname = "localhost";
+    private static final String hostname;
 
     // Grab the hostname for @{HOST} replacement
     static {
+        String tmpHostname;
         try {
-            hostname = InetAddress.getLocalHost().getCanonicalHostName();
+            tmpHostname = InetAddress.getLocalHost().getCanonicalHostName();
         } catch (UnknownHostException e) {
             logger.error("Error getting host name", e);
+            tmpHostname = "localhost";
         }
+        hostname = tmpHostname;
     }
 
     /**
@@ -411,7 +414,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                         final int digit = Integer.parseInt(s.substring(i + 2, epos), 16);
                         sb.appendCodePoint(digit);
                         i = epos - 1;
-                    } catch (Exception ex) {
+                    } catch (RuntimeException ex) {
                         throw new IOException("Unable to convert characters in " + s + ", from filename=" + filename + " line " + lnum, ex);
                     }
                 }

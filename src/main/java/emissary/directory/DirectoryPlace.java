@@ -804,7 +804,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
         try {
             new DirectoryAdapter().outboundFailDirectory(directory.getKey(), failKey, permanent);
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             logger.error("Problem talking to directory {} to fail {}", directory.getKey(), failKey, ex);
         }
     }
@@ -931,7 +931,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         try {
             new DirectoryAdapter().outboundAddPlaces(dir.getKey(), entryList, propagating);
             logger.debug("registration succeeded");
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             logger.warn("DirectoryPlace.registerWith: Problem talking to directory {} to add {} entries", dir.getKey(), entryList.size(), ex);
         }
     }
@@ -1269,7 +1269,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         try {
             // Follow the logic to irdRemovePlaces on the remote side
             new DirectoryAdapter().outboundRemovePlaces(dir.getKey(), keys, propagating);
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             logger.error("DirectoryPlace.deregisterFrom: " + "Problem talking to directory " + dir.getKey() + " to deregister keys", ex);
         }
     }

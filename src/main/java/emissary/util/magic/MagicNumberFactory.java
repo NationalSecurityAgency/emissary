@@ -22,6 +22,7 @@ public class MagicNumberFactory {
     private static final Logger log = LoggerFactory.getLogger(MagicNumberFactory.class);
 
     @Nullable
+    @SuppressWarnings("NonFinalStaticField")
     private static Map<String, Integer> typeMap = null;
     public static final String EMPTYSTRING = "";
     public static final String ENTRY_NOT_NULL_RULE = "Entry cannot be null";
@@ -81,7 +82,7 @@ public class MagicNumberFactory {
                     continue;
                 }
                 try {
-                    if (depth == 0 && extensions.size() > 0) {
+                    if (depth == 0 && !extensions.isEmpty()) {
                         if (finger == null) {
                             extensions = null;
                             extensions = new ArrayList<>();
@@ -111,7 +112,7 @@ public class MagicNumberFactory {
                         if (currentDepth == depth) {
                             parseAndStore(extensions, s, swallowParseException);
                         } else if (currentDepth < depth) {
-                            if (extensions.size() == 0) {
+                            if (extensions.isEmpty()) {
                                 finger = null;
                                 currentDepth = -1;
                                 continue;
@@ -150,7 +151,7 @@ public class MagicNumberFactory {
                     }
                 }
             }
-            if (finger != null && extensions.size() > 0) {
+            if (finger != null && !extensions.isEmpty()) {
                 addExtensionsLayer(extensions, finger);
             }
         } catch (IOException ioe) {

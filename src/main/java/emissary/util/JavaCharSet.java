@@ -14,6 +14,7 @@ public class JavaCharSet {
 
     private static final Map<String, String> charsets = new HashMap<>();
 
+    @SuppressWarnings("NonFinalStaticField")
     private static boolean initialized = false;
 
     /**

@@ -55,6 +55,7 @@ public class Sentinel implements Runnable {
     /**
      * Create a Sentinel - set it running and bind into the {@link Namespace}
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     public Sentinel() {
         configure();
         if (this.enabled) {
@@ -150,7 +151,7 @@ public class Sentinel implements Runnable {
                     } else {
                         logger.debug("Sentinel protocol disabled {}", protocol);
                     }
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     logger.warn("Unable to configure Sentinel Protocol[{}]: {}", protocolConfig, e.getMessage());
                 }
             }

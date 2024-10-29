@@ -197,7 +197,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
             }
 
             // Remove the mapping if it is empty
-            if (list.size() == 0) {
+            if (list.isEmpty()) {
                 this.remove(key);
             }
         }
@@ -391,7 +391,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
         }
 
         // Put them back in order if something changed
-        if (ret.size() > 0) {
+        if (!ret.isEmpty()) {
             sort();
         }
 

@@ -29,7 +29,10 @@ public class KffChainLoader {
     private static final Logger logger = LoggerFactory.getLogger(KffChainLoader.class);
 
     @Nullable
+    @SuppressWarnings("NonFinalStaticField")
     private static KffChain theInstance = null;
+
+    @SuppressWarnings("NonFinalStaticField")
     private static Map<String, String> classes;
 
     /**
@@ -88,7 +91,7 @@ public class KffChainLoader {
                 KffFilter k;
                 try {
                     k = (KffFilter) Factory.create(clazz, name, key, filterType);
-                } catch (Exception x) {
+                } catch (RuntimeException x) {
                     logger.warn("Cannot create KffFilter, using default", x);
                     k = new KffFile(name, key, filterType);
                 }

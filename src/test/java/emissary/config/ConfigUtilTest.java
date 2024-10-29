@@ -36,12 +36,15 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class ConfigUtilTest extends UnitTest {
 
+    @SuppressWarnings("NonFinalStaticField")
     private static List<Path> testFilesAndDirectories;
 
     private ListAppender<ILoggingEvent> appender = new ListAppender<>();
     private final Logger configLogger = (Logger) LoggerFactory.getLogger(ConfigUtil.class);
 
+    @SuppressWarnings("NonFinalStaticField")
     private static String configDir;
+
     @Nullable
     private Path configPath;
 

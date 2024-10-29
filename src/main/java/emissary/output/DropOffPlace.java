@@ -130,7 +130,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
                 } else {
                     logger.error("Misconfigured filter {} is not an IDropOffFilter instance, ignoring it", clazz);
                 }
-            } catch (Exception ex) {
+            } catch (RuntimeException ex) {
                 logger.error("Unable to create or initialize {}", clazz, ex);
             }
         }
@@ -199,7 +199,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
 
                 // Process the payload item with HDcontext=true
                 processData(d, true);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 logger.error("Place.process threw:", e);
                 d.addProcessingError("agentProcessHD(" + myKey + "): " + e);
 
@@ -435,7 +435,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
                     filterStatus = IDropOffFilter.STATUS_SUCCESS;
                 }
                 logger.debug("Filter {} took {}s - {}", filter.getFilterName(), ((System.currentTimeMillis() - start) / 1000.0), filterStatus);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 logger.error("Filter {} failed", filter.getFilterName(), e);
             }
 
@@ -459,13 +459,25 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
      * Provide access to filter names
      * 
      * @return an array of filter names or an empty array if none
+     * @deprecated use {@link #getFilterNamesList()}
      */
+    @Deprecated
+    @SuppressWarnings("AvoidObjectArrays")
     public String[] getFilterNames() {
+        return getFilterNamesList().toArray(new String[0]);
+    }
+
+    /**
+     * Provide access to filter names
+     *
+     * @return a list of filter names or an empty list if none
+     */
+    public List<String> getFilterNamesList() {
         final List<String> fnames = new ArrayList<>();
         for (final IDropOffFilter f : this.outputFilters) {
             fnames.add(f.getFilterName());
         }
-        return fnames.toArray(new String[0]);
+        return fnames;
     }
 
     /**

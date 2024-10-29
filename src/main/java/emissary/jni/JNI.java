@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import javax.annotation.Nullable;
  * wishing to loadLibraries from the JniRepositoryPlace should include this class via composition and invoke
  * this.loadLibrary rather than System.loadLibrary()
  */
+@SuppressWarnings("AvoidObjectArrays")
 public class JNI implements Serializable {
 
     static final long serialVersionUID = 3037911106823343480L;
@@ -374,7 +376,7 @@ public class JNI implements Serializable {
             // We have a repository of some sort, try using it
             return returnFile(filename, errmsg, repositoryKey);
 
-        } catch (Exception ve) {
+        } catch (RuntimeException ve) {
             errmsg[0] = "JNI.returnFile: " + ve;
             return null;
         }
@@ -396,7 +398,7 @@ public class JNI implements Serializable {
             final String look = repositoryAddrString.substring(repositoryAddrString.indexOf("//"));
 
             repositoryProxy = (IJniRepositoryPlace) Namespace.lookup(look);
-        } catch (Exception e) {
+        } catch (NamespaceException | RuntimeException e) {
             errmsg[0] = "JNI.returnFile: " + e;
             return null;
         }
@@ -406,7 +408,7 @@ public class JNI implements Serializable {
         final byte[] libContents;
         try {
             libContents = repositoryProxy.nativeLibraryDeliver(filename);
-        } catch (Exception e) {
+        } catch (RemoteException | RuntimeException e) {
             errmsg[0] = "Error calling nativeLibraryDeliver: " + e;
             return null;
         }
@@ -452,7 +454,7 @@ public class JNI implements Serializable {
 
         try {
             stamp = repositoryProxy.lastModified(filename);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             errmsg[0] = "Error calling lastModified: " + e;
         }
 

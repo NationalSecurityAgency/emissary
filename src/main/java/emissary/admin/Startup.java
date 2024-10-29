@@ -44,6 +44,7 @@ public class Startup {
     public static final String ACTIONSTART = "-start";
 
     private static final String PARALLEL_PLACE_STARTUP_CONFIG = "PARALLEL_PLACE_STARTUP";
+    @SuppressWarnings("NonFinalStaticField")
     static int directoryAction = DIRECTORYADD;
 
     // If we are an emissary node these will be present
@@ -75,10 +76,11 @@ public class Startup {
     protected final Map<String, Set<String>> pickupLists = new ConcurrentHashMap<>();
 
     // sets to keep track of possible invisible place startup
-    protected static Set<String> activeDirPlaces = new LinkedHashSet<>();
-    protected static Set<String> placeAlreadyStarted = new LinkedHashSet<>();
+    protected static final Set<String> activeDirPlaces = new LinkedHashSet<>();
+    protected static final Set<String> placeAlreadyStarted = new LinkedHashSet<>();
 
     // invisible place startups occurred in strict mode
+    @SuppressWarnings("NonFinalStaticField")
     protected static boolean invisPlacesStartedInStrictMode = false;
 
     /**

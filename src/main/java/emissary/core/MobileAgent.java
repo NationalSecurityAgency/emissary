@@ -44,6 +44,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
 
     // Name for our threads
     public static final String AGENT_THREAD = "MobileAgent-";
+    @SuppressWarnings("NonFinalStaticField")
     private static int agentCounter = 0;
 
     // For tracking errors
@@ -102,6 +103,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param threadGroup group we operate it
      * @param threadName symbolic name for this agent thread
      */
+    @SuppressWarnings("ThreadPriorityCheck")
     public MobileAgent(final ThreadGroup threadGroup, final String threadName) {
         logger.debug("Constructing agent {}", threadName);
         this.thread = new Thread(threadGroup, this, threadName);
@@ -180,14 +182,14 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * Kill asynchronously
      */
     @Override
-    @SuppressWarnings("Interruption")
+    @SuppressWarnings({"Interruption", "ThreadPriorityCheck"})
     public void killAgentAsync() {
         logger.debug("killAgentAsync called on {}", getName());
         this.timeToQuit = true;
         try {
             this.thread.setPriority(Thread.MIN_PRIORITY);
             this.thread.interrupt();
-        } catch (Exception ignored) {
+        } catch (RuntimeException ignored) {
             // empty catch block
         }
     }
@@ -618,7 +620,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                 logger.debug("Added {} new key entries from the directory for {}", entries.size(), dataId);
             }
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.warn("cannot get key, I was working on: {}", payloadArg.shortName(), e);
             // Returning instead of throwing will allow
             // the next form to be tried.

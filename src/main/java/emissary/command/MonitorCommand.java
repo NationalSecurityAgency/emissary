@@ -85,7 +85,7 @@ public abstract class MonitorCommand<T extends BaseResponseEntity> extends HttpC
                 synchronized (lock) {
                     entity.append(response);
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 LOG.error("Problem hitting agents endpoint: {}\n{}", hostAndPort, e.getMessage());
                 synchronized (lock) {
                     entity.addError(e.getMessage());
