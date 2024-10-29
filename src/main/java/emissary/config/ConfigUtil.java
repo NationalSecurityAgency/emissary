@@ -300,7 +300,10 @@ public class ConfigUtil {
      * @param preferences array of string names to try
      * @return the configurator
      * @throws IOException if none of the prefs can be found
+     * @deprecated use {@link #getConfigInfo(List)}
      */
+    @Deprecated
+    @SuppressWarnings("AvoidObjectArrays")
     public static Configurator getConfigInfo(final String[] preferences) throws IOException {
         return getConfigInfo(Arrays.asList(preferences));
     }
@@ -511,6 +514,7 @@ public class ConfigUtil {
      * @param name the base resource or config name
      * @return the name with the flavor in it
      */
+    @SuppressWarnings("AvoidObjectArrays")
     public static String[] addFlavors(final String name) {
         if (configFlavors == null || configFlavors.length() == 0) {
             return new String[0];

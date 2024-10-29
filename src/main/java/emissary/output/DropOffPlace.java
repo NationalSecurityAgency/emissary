@@ -459,13 +459,25 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
      * Provide access to filter names
      * 
      * @return an array of filter names or an empty array if none
+     * @deprecated use {@link #getFilterNamesList()}
      */
+    @Deprecated
+    @SuppressWarnings("AvoidObjectArrays")
     public String[] getFilterNames() {
+        return getFilterNamesList().toArray(new String[0]);
+    }
+
+    /**
+     * Provide access to filter names
+     *
+     * @return a list of filter names or an empty list if none
+     */
+    public List<String> getFilterNamesList() {
         final List<String> fnames = new ArrayList<>();
         for (final IDropOffFilter f : this.outputFilters) {
             fnames.add(f.getFilterName());
         }
-        return fnames.toArray(new String[0]);
+        return fnames;
     }
 
     /**

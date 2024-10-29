@@ -775,15 +775,26 @@ public class WorkSpace implements Runnable {
 
     /**
      * Show items that are pending completion (debug)
+     *
+     * @deprecated use {@link #showPendingItemsList()}
      */
+    @Deprecated
+    @SuppressWarnings("AvoidObjectArrays")
     public String[] showPendingItems() {
+        return showPendingItemsList().toArray(new String[0]);
+    }
+
+    /**
+     * Show items that are pending completion (debug)
+     */
+    public List<String> showPendingItemsList() {
         final List<String> list = new ArrayList<>();
         synchronized (this.QLOCK) {
             for (final Map.Entry<String, WorkBundle> entry : this.pending.entrySet()) {
                 list.add(entry.getValue().toString());
             }
         }
-        return list.toArray(new String[0]);
+        return list;
     }
 
     /**

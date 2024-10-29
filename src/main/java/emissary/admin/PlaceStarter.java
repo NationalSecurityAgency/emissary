@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -98,6 +99,7 @@ public class PlaceStarter {
         return createPlace(theLocation, constructorArgs, theClassStr);
     }
 
+
     /**
      * Create a place using generic Object[] constructor args for maximum flexibility for finding any existing constructor.
      * Will check to see if the place already exists first and return the existing instance from the Namespace if it does.
@@ -106,9 +108,27 @@ public class PlaceStarter {
      * @param constructorArgs array of args to pass to the place constructor
      * @param theClassStr string name of the class to instantiate
      * @return the place that was found or created, or null if it can't be done
+     * @deprecated use {@link #createPlace(String, List, String)}
      */
     @Nullable
+    @Deprecated
+    @SuppressWarnings("AvoidObjectArrays")
     public static IServiceProviderPlace createPlace(final String theLocation, final Object[] constructorArgs, @Nullable final String theClassStr) {
+        return createPlace(theLocation, Arrays.asList(constructorArgs), theClassStr);
+    }
+
+    /**
+     * Create a place using generic List constructor args for maximum flexibility for finding any existing constructor. Will
+     * check to see if the place already exists first and return the existing instance from the Namespace if it does.
+     *
+     * @param theLocation key for the new place
+     * @param constructorArgs list of args to pass to the place constructor
+     * @param theClassStr string name of the class to instantiate
+     * @return the place that was found or created, or null if it can't be done
+     */
+    @Nullable
+    public static IServiceProviderPlace createPlace(final String theLocation, final List<Object> constructorArgs,
+            @Nullable final String theClassStr) {
         logger.debug("Ready to createPlace {} as {}", theLocation, theClassStr);
 
         final long t1 = System.currentTimeMillis();

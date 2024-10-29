@@ -115,12 +115,32 @@ public class Factory {
      * @param args the arguments to a public constructor of classname
      * @param location name used to bind into the namespace
      * @return the newly instantiated object
+     * @deprecated use {@link #create(String, List, String)}
      */
+    @Deprecated
+    @SuppressWarnings("AvoidObjectArrays")
     public static Object create(final String className, final Object[] args, final String location) {
         if (logger.isDebugEnabled()) {
             logger.debug("Factory.create(" + className + "," + Arrays.toString(args) + "," + location + ")");
         }
         final Object o = create(className, args);
+        Namespace.bind(location, o);
+        return o;
+    }
+
+    /**
+     * Create an object and bind it into the namespace
+     *
+     * @param className the string classname to get a new instance of
+     * @param args the arguments to a public constructor of classname
+     * @param location name used to bind into the namespace
+     * @return the newly instantiated object
+     */
+    public static Object create(final String className, final List<Object> args, final String location) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Factory.create({},{},{})", className, args, location);
+        }
+        final Object o = create(className, args.toArray());
         Namespace.bind(location, o);
         return o;
     }
