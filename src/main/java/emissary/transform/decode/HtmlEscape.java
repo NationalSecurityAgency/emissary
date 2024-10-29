@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 @Deprecated(forRemoval = true)
+@SuppressWarnings("all")
 public class HtmlEscape {
 
     /* our logger */

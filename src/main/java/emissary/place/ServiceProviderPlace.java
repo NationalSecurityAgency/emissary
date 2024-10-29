@@ -529,7 +529,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
             rehash(payload);
         } catch (ResourceException r) {
             throw r;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Place.process exception", e);
         }
     }
@@ -898,7 +898,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
                 logger.debug("Registering my {} keys {}", keylist.size(), keylist);
                 localDirPlace.addPlaces(keylist);
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.warn("Register ERROR for keys {}", keylist, e);
         }
     }
@@ -921,7 +921,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
                 logger.debug("Deregistering my {} proxies {}", keys.size(), keys);
                 localDirPlace.removePlaces(keys);
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.warn("Deregister ERROR keys={}", keys, e);
         }
     }

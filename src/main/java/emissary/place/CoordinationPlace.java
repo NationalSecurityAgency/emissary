@@ -135,7 +135,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
                         failedCoordPlaceCreation.add(s + " in " + configG.findStringEntry("PLACE_NAME"));
                         logger.error("Place does not exist and cannot be created: {}", s);
                     }
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     failedCoordPlaceCreation.add(s + " in " + configG.findStringEntry("PLACE_NAME"));
                     logger.error("Place does not exist and cannot be created: {}", s, e);
                 }

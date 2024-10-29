@@ -189,7 +189,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         try {
             this.thread.setPriority(Thread.MIN_PRIORITY);
             this.thread.interrupt();
-        } catch (Exception ignored) {
+        } catch (RuntimeException ignored) {
             // empty catch block
         }
     }
@@ -620,7 +620,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                 logger.debug("Added {} new key entries from the directory for {}", entries.size(), dataId);
             }
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.warn("cannot get key, I was working on: {}", payloadArg.shortName(), e);
             // Returning instead of throwing will allow
             // the next form to be tried.

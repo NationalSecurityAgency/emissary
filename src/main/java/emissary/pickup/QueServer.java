@@ -77,7 +77,7 @@ public abstract class QueServer extends Pausable {
             // Process something on the queue
             try {
                 checkQue();
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 logger.warn("Exception in checkQue():" + e, e);
             }
 
@@ -131,7 +131,7 @@ public abstract class QueServer extends Pausable {
                 boolean status = processQueueItem(paths);
                 logger.debug("Initiating bundle completed msg for {}, status={}", paths.getBundleId(), status);
                 space.bundleCompleted(paths.getBundleId(), status);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 StringBuilder fnb = new StringBuilder();
                 // Report filenames on error
                 for (Iterator<String> i = paths.getFileNameIterator(); i.hasNext();) {

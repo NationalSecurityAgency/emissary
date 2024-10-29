@@ -72,7 +72,7 @@ public class TimedResource implements AutoCloseable {
                 LOG.debug("Found agent that needs interrupting {} in place {}", agent.getName(), placeName);
                 agent.interrupt();
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             LOG.error("Unable to interrupt agent {}: {}", agent.getName(), e.getMessage(), e);
         } finally {
             lock.unlock();

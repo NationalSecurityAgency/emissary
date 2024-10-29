@@ -225,7 +225,7 @@ public class MoveSpool implements Runnable {
                     logger.error("Unable to start agent, payload " + itemName + " is irretrievably lost", t);
                     try {
                         pool.returnAgent(agent);
-                    } catch (Exception ex) {
+                    } catch (RuntimeException ex) {
                         logger.error("Unable to return agent to the pool", ex);
                     }
                 } else {

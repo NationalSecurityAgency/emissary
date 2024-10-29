@@ -59,7 +59,7 @@ public class DateTimeFormatParser {
         }
         try {
             zone = ZoneId.of(configG.findStringEntry("TIME_ZONE"));
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("There was an issue reading the time zone from the config file");
             return;
         }
@@ -89,7 +89,7 @@ public class DateTimeFormatParser {
                 }
                 final DateTimeFormatter dtf = initialDtf;
                 dateFormats.add(dtf);
-            } catch (Exception ex) {
+            } catch (RuntimeException ex) {
                 logger.debug("{} entry '{}' cannot be parsed", entryType, dateFormatEntry, ex);
             }
         }
