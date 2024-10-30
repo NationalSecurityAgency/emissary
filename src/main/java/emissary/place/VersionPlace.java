@@ -78,16 +78,22 @@ public class VersionPlace extends ServiceProviderPlace {
     }
 
     protected String getVersion(GitRepositoryState gitRepositoryState) {
+        String version = gitRepositoryState.getBuildVersion();
+        // if a release version, return just the version, even if includeDate is true
+        if (version.matches("^(\\d+\\.)?(\\d+\\.)?(\\d+)$")) {
+            return version;
+        }
+
         if (includeDate) {
             // version with date & time information
             // changes format of date from 2024-09-23T10:41:18-0400, to 20240923104118
             String buildTime = gitRepositoryState.getBuildTime();
             int cutEndMark = buildTime.lastIndexOf(":") + 3;
             String formattedDate = buildTime.substring(0, cutEndMark).replaceAll("\\D", "");
-            return gitRepositoryState.getBuildVersion() + "-" + formattedDate;
+            return version + "-" + formattedDate;
         } else {
             // adds just version
-            return gitRepositoryState.getBuildVersion();
+            return version;
         }
     }
 
