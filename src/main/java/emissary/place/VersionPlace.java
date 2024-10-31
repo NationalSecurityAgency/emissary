@@ -6,6 +6,8 @@ import emissary.util.GitRepositoryState;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class VersionPlace extends ServiceProviderPlace {
 
@@ -15,6 +17,7 @@ public class VersionPlace extends ServiceProviderPlace {
     private boolean useAbbrevHash;
     private String formattedVersion;
     private String versionHash;
+    protected Pattern regexPatternForVersion;
 
     /**
      * Create the place from the specified config file or resource
@@ -63,6 +66,10 @@ public class VersionPlace extends ServiceProviderPlace {
 
         includeDate = configG.findBooleanEntry("INCLUDE_DATE", true);
         useAbbrevHash = configG.findBooleanEntry("USE_ABBREV_HASH", true);
+
+        String cfgRegex = configG.findStringEntry("VERSION_REGEX_FOR_NO_DATE", "^(\\d+\\.)?(\\d+\\.)?(\\d+)$");
+        regexPatternForVersion = Pattern.compile(cfgRegex);
+
         formattedVersion = getVersion(gitRepositoryState);
         versionHash = getVersionHash(gitRepositoryState);
     }
@@ -79,8 +86,9 @@ public class VersionPlace extends ServiceProviderPlace {
 
     protected String getVersion(GitRepositoryState gitRepositoryState) {
         String version = gitRepositoryState.getBuildVersion();
+        Matcher matcher = regexPatternForVersion.matcher(version);
         // if a release version, return just the version, even if includeDate is true
-        if (version.matches("^(\\d+\\.)?(\\d+\\.)?(\\d+)$")) {
+        if (matcher.matches()) {
             return version;
         }
 

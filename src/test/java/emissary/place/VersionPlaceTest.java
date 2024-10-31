@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.annotation.Nullable;
@@ -74,6 +75,19 @@ class VersionPlaceTest extends UnitTest {
         place.process(payload);
         assertEquals(testGitRepoState.getCommitIdAbbrev(), payload.getStringParameter("EMISSARY_VERSION_HASH").substring(0, 7),
                 "EMISSARY_VERSION_HASH should contain (at least) the abbreviated hash");
+    }
+
+    @Test
+    void testVersionRegex() throws IOException, URISyntaxException {
+        // uses different test gitRepoState properties file with version number that matches default regex
+        // passes this file to getVersion() to verify version returned has no date
+        Path regexTestFile = Paths.get(new ResourceReader().getResource("emissary/util/test.version.regex.git.properties").toURI());
+        GitRepositoryState regexRepoState = GitRepositoryState.getRepositoryState(regexTestFile);
+
+        // create the place, using the normal class cfg
+        place = new MyVersionPlace();
+        assertFalse(place.getVersion(regexRepoState).contains("-20240828141716"),
+                "the date should not be added to the version due to the matching release (default) regex");
     }
 
     class MyVersionPlace extends VersionPlace {
