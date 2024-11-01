@@ -15,6 +15,7 @@ import org.jdom2.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -843,17 +844,19 @@ public final class IBaseDataObjectXmlCodecs {
 
     // https://stackoverflow.com/questions/3770117/what-is-the-range-of-unicode-printable-characters
     public static boolean requiresEncoding(final Reader reader) throws IOException {
-        int c;
-        while ((c = reader.read()) >= 0) {
-            if (('\u0000' <= c && c <= '\u0008') ||
-                    ('\u000E' <= c && c <= '\u001F') ||
-                    ('\u007F' <= c && c <= '\u009F') ||
-                    ('\u2000' <= c && c <= '\u200F') ||
-                    ('\u2028' <= c && c <= '\u202F') ||
-                    ('\u205F' <= c && c <= '\u206F') ||
-                    c == '\u3000' || c == '\uFEFF' ||
-                    c == '\uFFFD') { // UTF-8 Error Replacement Character
-                return true;
+        try (BufferedReader bufferedReader = new BufferedReader(reader)) {
+            int c;
+            while ((c = bufferedReader.read()) >= 0) {
+                if (('\u0000' <= c && c <= '\u0008') ||
+                        ('\u000E' <= c && c <= '\u001F') ||
+                        ('\u007F' <= c && c <= '\u009F') ||
+                        ('\u2000' <= c && c <= '\u200F') ||
+                        ('\u2028' <= c && c <= '\u202F') ||
+                        ('\u205F' <= c && c <= '\u206F') ||
+                        c == '\u3000' || c == '\uFEFF' ||
+                        c == '\uFFFD') { // UTF-8 Error Replacement Character
+                    return true;
+                }
             }
         }
 
