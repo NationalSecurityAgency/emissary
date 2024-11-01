@@ -15,7 +15,10 @@ import org.jdom2.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
@@ -827,13 +830,21 @@ public final class IBaseDataObjectXmlCodecs {
         return IBaseDataObject.class.getMethod(methodName, parameterTypes);
     }
 
-    // https://stackoverflow.com/questions/3770117/what-is-the-range-of-unicode-printable-characters
     public static boolean requiresEncoding(final byte[] utf8Bytes) {
-        final String string = new String(utf8Bytes, StandardCharsets.UTF_8);
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(utf8Bytes);
+                Reader r = new InputStreamReader(bais, StandardCharsets.UTF_8)) {
+            return requiresEncoding(r);
+        } catch (IOException e) {
+            // Should never happen given a byte array.
+        }
 
-        for (int i = 0; i < string.length(); i++) {
-            final char c = string.charAt(i);
+        return true;
+    }
 
+    // https://stackoverflow.com/questions/3770117/what-is-the-range-of-unicode-printable-characters
+    public static boolean requiresEncoding(final Reader reader) throws IOException {
+        int c;
+        while ((c = reader.read()) >= 0) {
             if (('\u0000' <= c && c <= '\u0008') ||
                     ('\u000E' <= c && c <= '\u001F') ||
                     ('\u007F' <= c && c <= '\u009F') ||
