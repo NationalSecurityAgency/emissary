@@ -69,8 +69,8 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         ibdo.setFilename("Filename");
         ibdo.setFileType("FileType");
         ibdo.setFontEncoding("FontEncoding");
-        ibdo.setFooter("Footer".getBytes(StandardCharsets.ISO_8859_1));
-        ibdo.setHeader("Header".getBytes(StandardCharsets.ISO_8859_1));
+        ibdo.setFooter("Footer".getBytes(StandardCharsets.UTF_8));
+        ibdo.setHeader("Header".getBytes(StandardCharsets.UTF_8));
         ibdo.setHeaderEncoding("HeaderEncoding");
         ibdo.setId("Id");
         ibdo.setNumChildren(9);
@@ -84,8 +84,8 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         ibdo.putParameter("Parameter1Key", "Parameter1Value");
         ibdo.putParameter("Parameter2Key", Arrays.asList("Parameter2Value1", "Parameter2Value2"));
         ibdo.putParameter("Parameter3Key", Arrays.asList(10L, 20L));
-        ibdo.addAlternateView("AlternateView1Key", "AlternateView1Value".getBytes(StandardCharsets.ISO_8859_1));
-        ibdo.addAlternateView("AlternateView11Key", "AlternateView11Value".getBytes(StandardCharsets.ISO_8859_1));
+        ibdo.addAlternateView("AlternateView1Key", "AlternateView1Value".getBytes(StandardCharsets.UTF_8));
+        ibdo.addAlternateView("AlternateView11Key", "AlternateView11Value".getBytes(StandardCharsets.UTF_8));
     }
 
     private static void setAllFieldsNonPrintable(final IBaseDataObject ibdo, final byte[] bytes) {
@@ -99,8 +99,8 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         ibdo.setFilename("\001Filename");
         ibdo.setFileType("\001FileType");
         ibdo.setFontEncoding("\001FontEncoding");
-        ibdo.setFooter("\001Footer".getBytes(StandardCharsets.ISO_8859_1));
-        ibdo.setHeader("\001Header".getBytes(StandardCharsets.ISO_8859_1));
+        ibdo.setFooter("\001Footer".getBytes(StandardCharsets.UTF_8));
+        ibdo.setHeader("\001Header".getBytes(StandardCharsets.UTF_8));
         ibdo.setHeaderEncoding("\001HeaderEncoding");
         ibdo.setId("\001Id");
         ibdo.setNumChildren(9);
@@ -114,9 +114,9 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         ibdo.putParameter("\020Parameter1Key", "\020Parameter1Value");
         ibdo.putParameter("\020Parameter2Key", "\020Parameter2Value");
         ibdo.addAlternateView("\200AlternateView1Key",
-                "\200AlternateView1Value".getBytes(StandardCharsets.ISO_8859_1));
+                "\200AlternateView1Value".getBytes(StandardCharsets.UTF_8));
         ibdo.addAlternateView("\200AlternateView11Key",
-                "\200AlternateView11Value".getBytes(StandardCharsets.ISO_8859_1));
+                "\200AlternateView11Value".getBytes(StandardCharsets.UTF_8));
     }
 
     @Test
@@ -125,7 +125,7 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         final IBaseDataObject expectedIbdo = new BaseDataObject();
         final List<IBaseDataObject> expectedChildren = new ArrayList<>();
         final List<IBaseDataObject> actualChildren = new ArrayList<>();
-        final byte[] bytes = "Data".getBytes(StandardCharsets.ISO_8859_1);
+        final byte[] bytes = "Data".getBytes(StandardCharsets.UTF_8);
 
         setAllFieldsPrintable(expectedIbdo, bytes);
 
@@ -150,7 +150,7 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         final IBaseDataObject expectedIbdo = new BaseDataObject();
         final List<IBaseDataObject> expectedChildren = new ArrayList<>();
         final List<IBaseDataObject> actualChildren = new ArrayList<>();
-        final byte[] bytes = "\001Data".getBytes(StandardCharsets.ISO_8859_1);
+        final byte[] bytes = "\001Data".getBytes(StandardCharsets.UTF_8);
 
         setAllFieldsNonPrintable(expectedIbdo, bytes);
 
@@ -164,10 +164,10 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         final IBaseDataObject sha256ActualIbdo = ibdoFromXmlFromIbdo(expectedIbdo, expectedChildren, initialIbdo,
                 actualChildren, SHA256_ELEMENT_ENCODERS);
 
-        expectedIbdo.setData(ByteUtil.sha256Bytes(bytes).getBytes(StandardCharsets.ISO_8859_1));
+        expectedIbdo.setData(ByteUtil.sha256Bytes(bytes).getBytes(StandardCharsets.UTF_8));
 
         for (Entry<String, byte[]> entry : new TreeMap<>(expectedIbdo.getAlternateViews()).entrySet()) {
-            expectedIbdo.addAlternateView(entry.getKey(), ByteUtil.sha256Bytes(entry.getValue()).getBytes(StandardCharsets.ISO_8859_1));
+            expectedIbdo.addAlternateView(entry.getKey(), ByteUtil.sha256Bytes(entry.getValue()).getBytes(StandardCharsets.UTF_8));
         }
 
         final String sha256Diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, sha256ActualIbdo, expectedChildren,
@@ -180,7 +180,7 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
     void testLengthAttributeDefault() throws Exception {
         final IBaseDataObject ibdo = new BaseDataObject();
         final List<IBaseDataObject> children = new ArrayList<>();
-        final byte[] bytes = "Data".getBytes(StandardCharsets.ISO_8859_1);
+        final byte[] bytes = "Data".getBytes(StandardCharsets.UTF_8);
 
         setAllFieldsPrintable(ibdo, bytes);
 
@@ -201,7 +201,7 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
     void testLengthAttributeHash() throws Exception {
         final IBaseDataObject ibdo = new BaseDataObject();
         final List<IBaseDataObject> children = new ArrayList<>();
-        final byte[] bytes = "Data".getBytes(StandardCharsets.ISO_8859_1);
+        final byte[] bytes = "Data".getBytes(StandardCharsets.UTF_8);
 
         setAllFieldsNonPrintable(ibdo, bytes);
 

@@ -535,11 +535,11 @@ public final class IBaseDataObjectXmlCodecs {
         private static Element protectedElementHash(final String name, final byte[] bytes) {
             final Element element = new Element(name);
 
-            if (ByteUtil.hasNonPrintableValues(bytes)) {
+            if (requiresEncoding(bytes)) {
                 element.setAttribute(ENCODING_ATTRIBUTE_NAME, SHA256);
                 element.addContent(ByteUtil.sha256Bytes(bytes));
             } else {
-                element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
+                element.addContent(new String(bytes, StandardCharsets.UTF_8));
             }
 
             return element;
@@ -777,7 +777,7 @@ public final class IBaseDataObjectXmlCodecs {
     public static Element protectedElementBase64(final String name, final byte[] bytes) {
         final Element element = new Element(name);
 
-        if (ByteUtil.hasNonPrintableValues(bytes)) {
+        if (requiresEncoding(bytes)) {
             String base64String = BASE64_NEW_LINE_STRING +
                     BASE64_ENCODER.encodeToString(bytes) +
                     BASE64_NEW_LINE_STRING;
@@ -785,7 +785,7 @@ public final class IBaseDataObjectXmlCodecs {
             element.setAttribute(ENCODING_ATTRIBUTE_NAME, BASE64);
             element.addContent(base64String);
         } else {
-            element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
+            element.addContent(new String(bytes, StandardCharsets.UTF_8));
         }
 
         return element;
@@ -803,11 +803,11 @@ public final class IBaseDataObjectXmlCodecs {
     public static Element protectedElementSha256(final String name, final byte[] bytes) {
         final Element element = new Element(name);
 
-        if (ByteUtil.hasNonPrintableValues(bytes)) {
+        if (requiresEncoding(bytes)) {
             element.setAttribute(IBaseDataObjectXmlCodecs.ENCODING_ATTRIBUTE_NAME, IBaseDataObjectXmlCodecs.SHA256);
             element.addContent(ByteUtil.sha256Bytes(bytes));
         } else {
-            element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
+            element.addContent(new String(bytes, StandardCharsets.UTF_8));
         }
 
         return element;
@@ -825,5 +825,27 @@ public final class IBaseDataObjectXmlCodecs {
     public static Method getIbdoMethod(final String methodName, final Class<?>... parameterTypes)
             throws NoSuchMethodException {
         return IBaseDataObject.class.getMethod(methodName, parameterTypes);
+    }
+
+    // https://stackoverflow.com/questions/3770117/what-is-the-range-of-unicode-printable-characters
+    public static boolean requiresEncoding(final byte[] utf8Bytes) {
+        final String string = new String(utf8Bytes, StandardCharsets.UTF_8);
+
+        for (int i = 0; i < string.length(); i++) {
+            final char c = string.charAt(i);
+
+            if (('\u0000' <= c && c <= '\u0008') ||
+                    ('\u000E' <= c && c <= '\u001F') ||
+                    ('\u007F' <= c && c <= '\u009F') ||
+                    ('\u2000' <= c && c <= '\u200F') ||
+                    ('\u2028' <= c && c <= '\u202F') ||
+                    ('\u205F' <= c && c <= '\u206F') ||
+                    c == '\u3000' || c == '\uFEFF' ||
+                    c == '\uFFFD') { // UTF-8 Error Replacement Character
+                return true;
+            }
+        }
+
+        return false;
     }
 }
