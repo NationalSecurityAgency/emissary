@@ -1096,7 +1096,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public ByteBuffer headerBuffer() {
         return ByteBuffer.wrap(header());
     }
@@ -1114,13 +1114,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
 
     @Override
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public ByteBuffer footerBuffer() {
         return ByteBuffer.wrap(footer());
     }
 
     @Override
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public ByteBuffer dataBuffer() {
         return ByteBuffer.wrap(data());
     }
@@ -1151,7 +1151,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public boolean setFileTypeIfEmpty(final String v, final String[] empties) {
         if (isFileTypeEmpty(empties)) {
             setFileType(v);
@@ -1239,7 +1239,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Nullable
     @Override
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public ByteBuffer getAlternateViewBuffer(final String s) {
         final byte[] viewdata = getAlternateView(s);
         if (viewdata == null) {

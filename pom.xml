@@ -1457,11 +1457,12 @@
       </build>
     </profile>
     <profile>
+      <!-- on by default, but disable with '-P !errorProne' or '-DskipErrorProne' -->
       <id>errorProne</id>
       <activation>
         <jdk>[11,)</jdk>
         <property>
-          <name>errorProne</name>
+          <name>!skipErrorProne</name>
         </property>
       </activation>
       <build>
@@ -1494,7 +1495,6 @@
                 <arg>-XDcompilePolicy=simple</arg>
                 <arg>-Xplugin:ErrorProne \
                   -XepAllDisabledChecksAsWarnings \
-                  -XepAllErrorsAsWarnings \
                   -XepAllSuggestionsAsWarnings \
                   -XepDisableWarningsInGeneratedCode \
                   -Xep:AndroidJdkLibsChecker:OFF \

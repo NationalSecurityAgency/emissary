@@ -5,7 +5,7 @@ import emissary.util.shell.Executrix;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-@Deprecated(forRemoval = true)
+@Deprecated
 public class JavascriptEscape {
 
     /**
