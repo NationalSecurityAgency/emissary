@@ -32,9 +32,13 @@ import ch.qos.logback.classic.ViewStatusMessagesServlet;
 import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.Nullable;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.eclipse.jetty.ee10.servlet.DefaultServlet;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.servlet.security.ConstraintMapping;
+import org.eclipse.jetty.ee10.servlet.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.http.HttpVersion;
-import org.eclipse.jetty.security.ConstraintMapping;
-import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.security.Constraint;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.LoginService;
 import org.eclipse.jetty.security.authentication.DigestAuthenticator;
@@ -46,11 +50,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.util.security.Constraint;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.util.resource.PathResourceFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -175,14 +176,14 @@ public class EmissaryServer {
             security.setLoginService(loginService);
 
             // secure some of the contexts
-            final HandlerList securedHandlers = new HandlerList();
+            ContextHandlerCollection securedHandlers = new ContextHandlerCollection();
             securedHandlers.addHandler(lbConfigHandler);
             securedHandlers.addHandler(apiHandler);
             securedHandlers.addHandler(mvcHandler);
             securedHandlers.addHandler(staticHandler);
             security.setHandler(securedHandlers);
 
-            final HandlerList handlers = new HandlerList();
+            ContextHandlerCollection handlers = new ContextHandlerCollection();
             handlers.addHandler(emissaryHandler); // not secured, no endpoints and must be loaded first
             handlers.addHandler(security);
 
@@ -615,22 +616,21 @@ public class EmissaryServer {
     }
 
     private static ConstraintSecurityHandler buildSecurityHandler() {
-        ConstraintSecurityHandler handler = new ConstraintSecurityHandler();
+        final ConstraintSecurityHandler handler = new ConstraintSecurityHandler();
 
-        Constraint authConstraint = new Constraint();
-        authConstraint.setName("auth");
-        authConstraint.setAuthenticate(true);
-        authConstraint.setRoles(new String[] {"everyone", "emissary", "admin", "support", "manager"});
+        final Constraint authConstraint = new Constraint.Builder()
+                .name("auth")
+                .authorization(Constraint.Authorization.SPECIFIC_ROLE)
+                .roles("everyone", "emissary", "admin", "support", "manager")
+                .build();
 
-        Constraint noAuthConstraint = new Constraint();
-        noAuthConstraint.setName("no_auth");
-        noAuthConstraint.setAuthenticate(false);
+        final Constraint noAuthConstraint = new Constraint.Builder().name("no_auth").authorization(Constraint.Authorization.ALLOWED).build();
 
-        ConstraintMapping mapping = new ConstraintMapping();
+        final ConstraintMapping mapping = new ConstraintMapping();
         mapping.setPathSpec("/*");
         mapping.setConstraint(authConstraint);
 
-        ConstraintMapping health = new ConstraintMapping();
+        final ConstraintMapping health = new ConstraintMapping();
         health.setPathSpec("/api/health");
         health.setConstraint(noAuthConstraint);
 
@@ -642,7 +642,7 @@ public class EmissaryServer {
     private static LoginService buildLoginService() {
         String jettyUsersFile = ConfigUtil.getConfigFile("jetty-users.properties");
         System.setProperty("emissary.jetty.users.file", jettyUsersFile); // for EmissaryClient
-        return new HashLoginService("EmissaryRealm", jettyUsersFile);
+        return new HashLoginService("EmissaryRealm", new PathResourceFactory().newResource(jettyUsersFile));
     }
 
     private void bindServer() throws AttributeInUseException {
