@@ -845,8 +845,10 @@ public final class IBaseDataObjectXmlCodecs {
     // https://stackoverflow.com/questions/3770117/what-is-the-range-of-unicode-printable-characters
     public static boolean requiresEncoding(final Reader reader) throws IOException {
         try (BufferedReader bufferedReader = new BufferedReader(reader)) {
-            int c;
-            while ((c = bufferedReader.read()) >= 0) {
+            int i;
+            while ((i = bufferedReader.read()) != -1) {
+                final char c = (char) i;
+
                 if (('\u0000' <= c && c <= '\u0008') ||
                         ('\u000E' <= c && c <= '\u001F') ||
                         ('\u007F' <= c && c <= '\u009F') ||
