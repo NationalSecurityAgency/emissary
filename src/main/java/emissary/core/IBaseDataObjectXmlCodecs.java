@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PushbackReader;
 import java.io.Reader;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -836,7 +837,7 @@ public final class IBaseDataObjectXmlCodecs {
                 Reader r = new InputStreamReader(bais, StandardCharsets.UTF_8)) {
             return requiresEncoding(r);
         } catch (IOException e) {
-            // Should never happen given a byte array.
+            LOGGER.warn("Could not read UTF-8 bytes!", e);
         }
 
         return true;
@@ -844,24 +845,41 @@ public final class IBaseDataObjectXmlCodecs {
 
     // https://stackoverflow.com/questions/3770117/what-is-the-range-of-unicode-printable-characters
     public static boolean requiresEncoding(final Reader reader) throws IOException {
-        try (BufferedReader bufferedReader = new BufferedReader(reader)) {
-            int i;
-            while ((i = bufferedReader.read()) != -1) {
-                final char c = (char) i;
-
-                if (('\u0000' <= c && c <= '\u0008') ||
-                        ('\u000E' <= c && c <= '\u001F') ||
-                        ('\u007F' <= c && c <= '\u009F') ||
-                        ('\u2000' <= c && c <= '\u200F') ||
-                        ('\u2028' <= c && c <= '\u202F') ||
-                        ('\u205F' <= c && c <= '\u206F') ||
-                        c == '\u3000' || c == '\uFEFF' ||
-                        c == '\uFFFD') { // UTF-8 Error Replacement Character
+        try (BufferedReader bufferedReader = new BufferedReader(reader);
+                PushbackReader pushbackReader = new PushbackReader(bufferedReader)) {
+            int codepoint;
+            while ((codepoint = nextCodepoint(pushbackReader)) != -1) {
+                if (('\u0000' <= codepoint && codepoint <= '\u0008') ||
+                        ('\u000E' <= codepoint && codepoint <= '\u001F') ||
+                        ('\u007F' <= codepoint && codepoint <= '\u009F') ||
+                        ('\u2000' <= codepoint && codepoint <= '\u200F') ||
+                        ('\u2028' <= codepoint && codepoint <= '\u202F') ||
+                        ('\u205F' <= codepoint && codepoint <= '\u206F') ||
+                        codepoint == '\u3000' || codepoint == '\uFEFF' ||
+                        codepoint == '\uFFFD') { // UTF-8 Error Replacement Character
                     return true;
                 }
             }
         }
 
         return false;
+    }
+
+    public static int nextCodepoint(final PushbackReader pushbackReader) throws IOException {
+        int c1 = -1;
+
+        if (((c1 = pushbackReader.read()) != -1) &&
+                (Character.isHighSurrogate((char) c1))) {
+            int c2;
+            if ((c2 = pushbackReader.read()) != -1) {
+                if (Character.isLowSurrogate((char) c2)) {
+                    return Character.toCodePoint((char) c1, (char) c2);
+                } else {
+                    pushbackReader.unread(c2);
+                }
+            }
+        }
+
+        return c1;
     }
 }
