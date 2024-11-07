@@ -159,7 +159,7 @@ public class KeywordScanner {
         if ((start >= this.dataLength) || (stop > this.dataLength) || (patternArg == null)) {
             return List.of();
         }
-        int newStart = 0;
+        int newStart = start;
         int actualStart;
         int position = 0;
         this.pattern = patternArg;

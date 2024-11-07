@@ -111,6 +111,12 @@ class KeywordScannerTest extends UnitTest {
         assertEquals(findIs, lks.listIndexOf("is".getBytes(), 0));
         assertEquals(findIs, lks.listIndexOf("is".getBytes(), 0, LIST_DATA.length));
 
+        List<Integer> startOffset = List.of(21, 39, 42);
+        assertEquals(startOffset, lks.listIndexOf("is".getBytes(), 6));
+        assertEquals(startOffset, lks.listIndexOf("is".getBytes(), 6, LIST_DATA.length));
+
+        List<Integer> endOffset = List.of(2, 5, 21);
+        assertEquals(endOffset, lks.listIndexOf("is".getBytes(), 0, 38));
     }
 
     @Test
