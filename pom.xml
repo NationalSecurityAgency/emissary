@@ -1457,8 +1457,8 @@
       </build>
     </profile>
     <profile>
-      <!-- on by default, but disable with '-P !errorProne' or '-DskipErrorProne' -->
-      <id>errorProne</id>
+      <!-- on by default, but disable with '-P !errorprone' or '-DskipErrorProne' -->
+      <id>errorprone</id>
       <activation>
         <jdk>[11,)</jdk>
         <property>
