@@ -58,7 +58,7 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         assertNull(sha256Diff);
     }
 
-    private static void setAllFieldsPrintable(final IBaseDataObject ibdo, final byte[] bytes) {
+    public static void setAllFieldsPrintable(final IBaseDataObject ibdo, final byte[] bytes) {
         ibdo.setData(bytes);
         ibdo.setBirthOrder(5);
         ibdo.setBroken("Broken1");
@@ -88,7 +88,7 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         ibdo.addAlternateView("AlternateView11Key", "AlternateView11Value".getBytes(StandardCharsets.ISO_8859_1));
     }
 
-    private static void setAllFieldsNonPrintable(final IBaseDataObject ibdo, final byte[] bytes) {
+    public static void setAllFieldsNonPrintable(final IBaseDataObject ibdo, final byte[] bytes) {
         ibdo.setData(bytes);
         ibdo.setBirthOrder(5);
         ibdo.setBroken("\001Broken1");

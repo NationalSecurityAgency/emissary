@@ -276,6 +276,36 @@ class IBaseDataObjectHelperTest extends UnitTest {
     }
 
     @Test
+    void testCopy() {
+        final BaseDataObject bdo = new BaseDataObject();
+        final BaseDataObject bdoDefault = new BaseDataObject();
+        final BaseDataObject bdoChanged = new BaseDataObject();
+        final List<String> differences = new ArrayList<>();
+        final DiffCheckConfiguration diffCheckConfiguration = DiffCheckConfiguration
+                .configure()
+                .enableData()
+                .enableTimestamp()
+                .enableTransformHistory()
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> IBaseDataObjectHelper.copy(null, bdo));
+        assertThrows(IllegalArgumentException.class, () -> IBaseDataObjectHelper.copy(bdo, null));
+
+        IBaseDataObjectXmlHelperTest.setAllFieldsPrintable(bdoChanged, "Data".getBytes(StandardCharsets.UTF_8));
+        bdoChanged.addExtractedRecord(new BaseDataObject("ER".getBytes(StandardCharsets.UTF_8), "ER_NAME", "ER_FORM", "ER_FILETYPE"));
+
+        IBaseDataObjectHelper.copy(bdoChanged, bdo);
+        IBaseDataObjectDiffHelper.diff(bdoChanged, bdo, differences, diffCheckConfiguration);
+
+        assertEquals(0, differences.size(), differences.toString());
+
+        IBaseDataObjectHelper.copy(bdoDefault, bdo);
+        IBaseDataObjectDiffHelper.diff(bdoDefault, bdo, differences, diffCheckConfiguration);
+
+        assertEquals(0, differences.size(), differences.toString());
+    }
+
+    @Test
     void testAddParentInformationToChild() throws Exception {
         final IBaseDataObject parentIbdo = ibdo1;
         final IBaseDataObject childIbdo = ibdo2;
