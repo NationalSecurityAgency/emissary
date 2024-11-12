@@ -198,7 +198,7 @@ public abstract class RegressionTest extends ExtractionTest {
 
         if (attachments != null) {
             for (final IBaseDataObject attachment : attachments) {
-                if (ByteUtil.hasNonPrintableValues(attachment.data())) {
+                if (ByteUtil.containsNonIndexableBytes(attachment.data())) {
                     Optional<String> attachmentSha256 = hashBytesIfNonPrintable(attachment.data());
                     attachmentSha256.ifPresent(s -> attachment.setData(s.getBytes(StandardCharsets.UTF_8)));
                 }
@@ -233,7 +233,7 @@ public abstract class RegressionTest extends ExtractionTest {
      * @return a value optionally containing the generated hash
      */
     protected Optional<String> hashBytesIfNonPrintable(byte[] bytes) {
-        if (ArrayUtils.isNotEmpty(bytes) && ByteUtil.hasNonPrintableValues(bytes)) {
+        if (ArrayUtils.isNotEmpty(bytes) && ByteUtil.containsNonIndexableBytes(bytes)) {
             return Optional.ofNullable(ByteUtil.sha256Bytes(bytes));
         }
 

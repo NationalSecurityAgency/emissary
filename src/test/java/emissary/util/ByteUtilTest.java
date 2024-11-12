@@ -212,22 +212,22 @@ class ByteUtilTest extends UnitTest {
     @Test
     void testHasNonPrintableValues() {
         String newLineCarriageTab = "This is line one\r\nThis is line two\nThis is line three\n\nEnding with a tab\t";
-        assertFalse(ByteUtil.hasNonPrintableValues(newLineCarriageTab.getBytes(StandardCharsets.UTF_8)));
+        assertFalse(ByteUtil.containsNonIndexableBytes(newLineCarriageTab.getBytes(StandardCharsets.UTF_8)));
 
         // 2-byte character: € (Euro symbol)
         String euro = "€";
         assertEquals("€", euro);
-        assertFalse(ByteUtil.hasNonPrintableValues(euro.getBytes(StandardCharsets.UTF_8)));
+        assertFalse(ByteUtil.containsNonIndexableBytes(euro.getBytes(StandardCharsets.UTF_8)));
 
         // 3-byte character: (Chinese character for "hello")
         String nihao = "你好";
         assertEquals("你好", nihao);
-        assertFalse(ByteUtil.hasNonPrintableValues(nihao.getBytes(StandardCharsets.UTF_8)));
+        assertFalse(ByteUtil.containsNonIndexableBytes(nihao.getBytes(StandardCharsets.UTF_8)));
 
         // 4-byte character: (Emoji: grinning face)
         String emoji = "😁";
         assertEquals("😁", emoji);
-        assertTrue(ByteUtil.hasNonPrintableValues(emoji.getBytes(StandardCharsets.UTF_8)));
+        assertTrue(ByteUtil.containsNonIndexableBytes(emoji.getBytes(StandardCharsets.UTF_8)));
     }
 
 

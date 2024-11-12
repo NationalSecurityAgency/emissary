@@ -1,5 +1,16 @@
 package emissary.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -287,13 +298,67 @@ public class ByteUtil {
         return ret;
     }
 
+    public static boolean containsNonIndexableBytes(byte[] utf8Bytes) {
+        // Wrap the byte array in a ByteArrayInputStream
+        InputStream inputStream = new ByteArrayInputStream(utf8Bytes);
+
+        return containsNonIndexableBytes(inputStream);
+
+    }
+    public static boolean containsNonIndexableBytes(InputStream inputStream) {
+        try {
+            // Create an InputStreamReader to read the bytes as characters
+            Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8); // Specify the character encoding
+            int codePoint;
+            // Use the read() method of the InputStreamReader to read code points.
+            // The read() method automatically handles surrogate pairs, returning a single code point even for characters represented by multiple code units.
+            while ((codePoint = reader.read()) != -1) {
+                // Check if the code point is printable
+                if (!isIndexable(codePoint)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (IOException e) {
+            return false;
+        }
+
+    }
+
+    public static boolean hasNonPrintableValues2(final byte[] utf8Bytes) {
+        // Get the UTF-8 charset
+        Charset utf8Charset = StandardCharsets.UTF_8;
+
+        // Create a decoder
+        CharsetDecoder decoder = utf8Charset.newDecoder();
+
+        // Wrap the bytes in a ByteBuffer
+        ByteBuffer buffer = ByteBuffer.wrap(utf8Bytes);
+
+        try {
+            // Decode the bytes into a character buffer
+            CharBuffer charBuffer = decoder.decode(buffer);
+            while (charBuffer.hasRemaining()) {
+                int codePoint = charBuffer.get();
+                // Check if the code point is printable
+                if (!isIndexable(codePoint)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (CharacterCodingException e) {
+            return true;
+        }
+
+    }
+
     /**
      * Scans a byte array looking for non-printable values.
      * 
      * @param utf8Bytes the bytes to be scanned.
      * @return true if the byte array contains an invalid text character.
      */
-    public static boolean hasNonPrintableValues(final byte[] utf8Bytes) {
+    public static boolean hasNonPrintableValues3(final byte[] utf8Bytes) {
         int i = 0;
         while (i < utf8Bytes.length) {
             int codePoint;
@@ -322,7 +387,7 @@ public class ByteUtil {
             }
 
             // Check if the code point is printable
-            if (!isPrintable(codePoint)) {
+            if (!isIndexable(codePoint)) {
                 return true;
             }
         }
@@ -381,7 +446,7 @@ public class ByteUtil {
      *
      * @return if code-point is a valid text character
      */
-    private static boolean isPrintable(int codePoint) {
+    private static boolean isIndexable(int codePoint) {
 
         return codePoint >= 0x09 && codePoint <= 0x0D ||
                 codePoint >= 0x20 && codePoint <= 0x7E || // basic latin
