@@ -371,7 +371,7 @@ public class ByteUtil {
             }
             return false;
         } catch (IOException e) {
-            return false;
+            return true;
         }
     }
 
