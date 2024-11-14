@@ -87,7 +87,7 @@
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-    <maven.min-version>3.5.0</maven.min-version>
+    <maven.min-version>3.6.3</maven.min-version>
     <plugin.build-helper-maven.version>3.3.0</plugin.build-helper-maven.version>
     <plugin.cyclonedx-maven.version>2.7.9</plugin.cyclonedx-maven.version>
     <plugin.duplicate-finder-maven.version>1.5.1</plugin.duplicate-finder-maven.version>
