@@ -96,7 +96,7 @@
     <plugin.git-commit-id-maven.version>4.9.9</plugin.git-commit-id-maven.version>
     <plugin.impsort-maven.version>1.8.0</plugin.impsort-maven.version>
     <plugin.jacoco-maven.version>0.8.8</plugin.jacoco-maven.version>
-    <plugin.maven-assembly.version>3.4.2</plugin.maven-assembly.version>
+    <plugin.maven-assembly.version>3.7.1</plugin.maven-assembly.version>
     <plugin.maven-checkstyle.version>3.2.1</plugin.maven-checkstyle.version>
     <plugin.maven-clean.version>3.2.0</plugin.maven-clean.version>
     <plugin.maven-compiler.version>3.10.1</plugin.maven-compiler.version>
