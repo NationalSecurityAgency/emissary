@@ -27,7 +27,6 @@ import java.rmi.Remote;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -992,64 +991,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
         this.parameters.put(key, value);
         return true;
-    }
-
-    @Override
-    @Deprecated
-    public String getStringParameter(final String key) {
-        return getParameterAsConcatString(key);
-    }
-
-    @Nullable
-    @Override
-    @Deprecated
-    public String getStringParameter(final String key, final String sep) {
-        return getParameterAsConcatString(key, sep);
-    }
-
-    @Override
-    public Collection<String> getParameterAsStrings(final String key) {
-        final List<Object> obj = getParameter(key);
-
-        if (obj == null) {
-            return Collections.emptyList();
-        } else if (obj.isEmpty()) {
-            return Collections.emptyList();
-        } else if ((obj.size() == 1) && (obj.get(0) instanceof String)) {
-            return Collections.singletonList((String) obj.get(0));
-        } else if ((obj.size() == 1) && (obj.get(0) == null)) {
-            return Collections.emptyList();
-        } else {
-            final List<String> values = new ArrayList<>(obj.size());
-            for (final Object item : obj) {
-                values.add(String.valueOf(item));
-            }
-            return Collections.unmodifiableList(values);
-        }
-    }
-
-    @Nullable
-    @Override
-    public String getParameterAsString(final String key) {
-        final Collection<String> paramStrings = getParameterAsStrings(key);
-        if (paramStrings.size() > 1) {
-            throw new IllegalStateException("There is more than one value for parameter[" + key + " ]!!");
-        }
-
-        return StringUtils.trimToNull(paramStrings.stream().findFirst().orElse(null));
-    }
-
-    @Nullable
-    @Override
-    public String getParameterAsConcatString(final String key) {
-        return getStringParameter(key, DEFAULT_PARAM_SEPARATOR);
-    }
-
-    @Nullable
-    @Override
-    public String getParameterAsConcatString(final String key, final String sep) {
-        final String strParameter = String.join(sep, getParameterAsStrings(key));
-        return StringUtils.isBlank(strParameter) ? null : strParameter;
     }
 
     /**
