@@ -90,7 +90,7 @@
     <maven.min-version>3.6.3</maven.min-version>
     <plugin.build-helper-maven.version>3.6.0</plugin.build-helper-maven.version>
     <plugin.cyclonedx-maven.version>2.9.0</plugin.cyclonedx-maven.version>
-    <plugin.duplicate-finder-maven.version>2.0.1</plugin.duplicate-finder-maven.version>
+    <plugin.duplicate-finder-maven.version>1.5.1</plugin.duplicate-finder-maven.version>
     <plugin.exec-maven.version>3.5.0</plugin.exec-maven.version>
     <plugin.formatter-maven.version>2.23.0</plugin.formatter-maven.version>
     <plugin.git-commit-id-maven.version>9.0.1</plugin.git-commit-id-maven.version>
@@ -114,9 +114,9 @@
     <plugin.maven-replacer.version>1.5.3</plugin.maven-replacer.version>
     <plugin.maven-resources.version>3.3.1</plugin.maven-resources.version>
     <plugin.maven-scm-publish.version>3.3.0</plugin.maven-scm-publish.version>
-    <plugin.maven-site.version>3.21.0</plugin.maven-site.version>
+    <plugin.maven-site.version>3.12.1</plugin.maven-site.version>
     <plugin.maven-source.version>3.3.1</plugin.maven-source.version>
-    <plugin.maven-surefire.version>3.5.2</plugin.maven-surefire.version>
+    <plugin.maven-surefire.version>3.2.3</plugin.maven-surefire.version>
     <plugin.nexus-staging-maven.version>1.6.7</plugin.nexus-staging-maven.version>
     <plugin.sonar-maven.version>3.9.1.2184</plugin.sonar-maven.version>
     <plugin.sortpom-maven.version>2.15.0</plugin.sortpom-maven.version>
