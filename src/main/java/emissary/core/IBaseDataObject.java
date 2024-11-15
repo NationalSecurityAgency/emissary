@@ -350,7 +350,9 @@ public interface IBaseDataObject {
      * 
      * @param key name of the metadata element
      * @return the string value or null if no such element
+     * @deprecated use {@link #getParameterAsConcatString(String)}
      */
+    @Deprecated
     String getStringParameter(String key);
 
     /**
@@ -359,8 +361,45 @@ public interface IBaseDataObject {
      * @param key name of the metadata element
      * @param sep the separator for multivalued fields
      * @return the string value or null if no such element
+     * @deprecated use {@link #getParameterAsConcatString(String, String)}
      */
+    @Deprecated
     String getStringParameter(String key, String sep);
+
+    /**
+     * Retrieve the Collection of metadata values identified by key where each element is converted to a string
+     *
+     * @param key name of the metadata element collection
+     * @return Collection of elements converted to strings
+     */
+    Collection<String> getParameterAsStrings(String key);
+
+    /**
+     * Retrieve the metadata value identified by key where the element is converted to a string
+     *
+     * @param key name of the metadata element
+     * @return parameter converted to strings
+     * @throws IllegalStateException if the parameter has more than one value
+     */
+    String getParameterAsString(String key);
+
+
+    /**
+     * Retrieve a specified metadata element as a string of concatenated values
+     *
+     * @param key name of the metadata element
+     * @return the string value or null if no such element
+     */
+    String getParameterAsConcatString(String key);
+
+    /**
+     * Retrieve a specified metadata element as a string of concatenated values
+     *
+     * @param key name of the metadata element
+     * @param sep the separator for multivalued fields
+     * @return the string value or null if no such element
+     */
+    String getParameterAsConcatString(String key, String sep);
 
     /**
      * Retrieve all the metadata elements of this object
