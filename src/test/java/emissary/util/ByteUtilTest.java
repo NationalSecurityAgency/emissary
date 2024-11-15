@@ -4,6 +4,7 @@ import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -206,6 +207,55 @@ class ByteUtilTest extends UnitTest {
         assertEquals("This is line one\r\n", ByteUtil.grabLine(data, 0), "First line extraction");
         assertEquals("This is line two\n", ByteUtil.grabLine(data, 18), "Middle line extraction");
         assertEquals("This is line three", ByteUtil.grabLine(data, 35), "Last line extraction");
+    }
+
+    @Test
+    void testContainsNonIndexableValues() {
+        String newLineCarriageTab = "This is line one\r\nThis is line two\nThis is line three\n\nEnding with a tab\t";
+        assertFalse(ByteUtil.hasNonPrintableValues(newLineCarriageTab.getBytes(StandardCharsets.UTF_8)));
+        assertFalse(ByteUtil.containsNonIndexableBytes(newLineCarriageTab.getBytes(StandardCharsets.UTF_8)));
+
+        // 2-byte character: € (Euro symbol)
+        String euro = "€";
+        assertEquals("\u20ac", euro);
+        assertTrue(ByteUtil.hasNonPrintableValues(euro.getBytes(StandardCharsets.UTF_8)));
+        assertFalse(ByteUtil.containsNonIndexableBytes(euro.getBytes(StandardCharsets.UTF_8)));
+
+        // 3-byte character: (Chinese character for "hello")
+        String nihao = "你好";
+        assertEquals("\u4f60\u597d", nihao);
+        assertTrue(ByteUtil.hasNonPrintableValues(nihao.getBytes(StandardCharsets.UTF_8)));
+        assertFalse(ByteUtil.containsNonIndexableBytes(nihao.getBytes(StandardCharsets.UTF_8)));
+
+        // 4-byte character: (Emoji: grinning face)
+        String emoji = "😊";
+        assertEquals("\uD83D\uDE0A", emoji);
+        assertTrue(ByteUtil.hasNonPrintableValues(emoji.getBytes(StandardCharsets.UTF_8)));
+        assertFalse(ByteUtil.containsNonIndexableBytes(emoji.getBytes(StandardCharsets.UTF_8)));
+
+        // Unicode value denoting 'null'
+        String uNull = " ";
+        assertEquals("\u0000", uNull);
+        assertTrue(ByteUtil.hasNonPrintableValues(uNull.getBytes(StandardCharsets.UTF_8)));
+        assertTrue(ByteUtil.containsNonIndexableBytes(uNull.getBytes(StandardCharsets.UTF_8)));
+
+        // Narrow No-Break Space
+        String nnbsp = " ";
+        assertEquals("\u202F", nnbsp);
+        assertTrue(ByteUtil.hasNonPrintableValues(nnbsp.getBytes(StandardCharsets.UTF_8)));
+        assertTrue(ByteUtil.containsNonIndexableBytes(nnbsp.getBytes(StandardCharsets.UTF_8)));
+
+        // byte order mark
+        String zwbsp = "﻿";
+        assertEquals("\uFEFF", zwbsp);
+        assertTrue(ByteUtil.hasNonPrintableValues(zwbsp.getBytes(StandardCharsets.UTF_8)));
+        assertTrue(ByteUtil.containsNonIndexableBytes(zwbsp.getBytes(StandardCharsets.UTF_8)));
+
+        // UTF-8 Error Replacement Character
+        String rep = "�";
+        assertEquals("\uFFFD", rep);
+        assertTrue(ByteUtil.hasNonPrintableValues(rep.getBytes(StandardCharsets.UTF_8)));
+        assertTrue(ByteUtil.containsNonIndexableBytes(rep.getBytes(StandardCharsets.UTF_8)));
     }
 
 }
