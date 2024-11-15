@@ -396,17 +396,8 @@ public interface IBaseDataObject {
      *
      * @param key name of the metadata element
      * @return parameter converted to strings
-     * @throws IllegalStateException if the parameter has more than one value
      */
-    default String getParameterAsString(final String key) {
-        final var obj = getParameterAsStrings(key);
-        if (obj.size() > 1) {
-            throw new IllegalStateException("There is more than one value for parameter[" + key + " ]!!");
-        }
-
-        return StringUtils.trimToNull(obj.stream().findFirst().orElse(null));
-    }
-
+    String getParameterAsString(String key);
 
     /**
      * Retrieve a specified metadata element as a string of concatenated values

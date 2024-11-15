@@ -993,6 +993,16 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         return true;
     }
 
+    @Nullable
+    @Override
+    public String getParameterAsString(final String key) {
+        final var obj = getParameterAsStrings(key);
+        if (obj.size() > 1) {
+            logger.warn("Multiple values for parameter, returning the first - parameter:{}, number of values:{}", key, obj.size());
+        }
+        return StringUtils.trimToNull(obj.stream().findFirst().orElse(null));
+    }
+
     /**
      * Retrieve all the metadata elements of this object This method returns possibly mapped metadata element names
      *
