@@ -3,6 +3,7 @@ package emissary.core;
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.directory.DirectoryEntry;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -382,7 +383,7 @@ public interface IBaseDataObject {
      */
     default Collection<String> getParameterAsStrings(final String key) {
         final var obj = getParameter(key);
-        if (obj == null || obj.isEmpty() || ((obj.size() == 1) && (obj.get(0) == null))) {
+        if (CollectionUtils.isEmpty(obj) || ((obj.size() == 1) && (obj.get(0) == null))) {
             return Collections.emptyList();
         } else if ((obj.size() == 1) && (obj.get(0) instanceof String)) {
             return Collections.singletonList((String) obj.get(0));
