@@ -109,7 +109,7 @@
     <plugin.maven-javadoc.version>3.11.1</plugin.maven-javadoc.version>
     <plugin.maven-jxr.version>3.6.0</plugin.maven-jxr.version>
     <plugin.maven-pmd.version>3.26.0</plugin.maven-pmd.version>
-    <plugin.maven-project-info-reports.version>3.8.0</plugin.maven-project-info-reports.version>
+    <plugin.maven-project-info-reports.version>3.4.2</plugin.maven-project-info-reports.version>
     <plugin.maven-release.version>3.1.1</plugin.maven-release.version>
     <plugin.maven-replacer.version>1.5.3</plugin.maven-replacer.version>
     <plugin.maven-resources.version>3.3.1</plugin.maven-resources.version>
@@ -120,7 +120,7 @@
     <plugin.nexus-staging-maven.version>1.6.7</plugin.nexus-staging-maven.version>
     <plugin.sonar-maven.version>3.9.1.2184</plugin.sonar-maven.version>
     <plugin.sortpom-maven.version>2.15.0</plugin.sortpom-maven.version>
-    <plugin.versions-maven.version>2.18.0</plugin.versions-maven.version>
+    <plugin.versions-maven.version>2.17.1</plugin.versions-maven.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- The following properties are used to ignore certain SonarQube rules. -->
