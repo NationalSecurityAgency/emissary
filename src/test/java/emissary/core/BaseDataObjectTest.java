@@ -1465,12 +1465,19 @@ class BaseDataObjectTest extends UnitTest {
     }
 
     @Test
-    void testGetParameterAsString() {
-        this.b.putParameter("A", 1L);
-        this.b.appendParameter("A", "TWO");
-        this.b.appendParameter("A", "THREE");
-        assertEquals("1", this.b.getParameterAsString("A"));
-        assertEquals("1;TWO;THREE", this.b.getParameterAsConcatString("A"));
+    void testGetParameterAsString() throws IOException {
+        assertNotNull(this.b);
+
+        try (LogbackTester logbackTester = new LogbackTester(BaseDataObject.class.getName())) {
+            this.b.putParameter("A", 1L);
+            this.b.appendParameter("A", "TWO");
+            this.b.appendParameter("A", "THREE");
+            assertEquals("1", this.b.getParameterAsString("A"));
+            assertEquals("1;TWO;THREE", this.b.getParameterAsConcatString("A"));
+            LogbackTester.SimplifiedLogEvent logEvent = new LogbackTester.SimplifiedLogEvent(Level.WARN,
+                    "Multiple values for parameter, returning the first - parameter:A, number of values:3", null);
+            logbackTester.checkLogList(Collections.singletonList(logEvent));
+        }
 
         this.b.putParameter("A", 2L);
         assertEquals("2", this.b.getParameterAsString("A"));
