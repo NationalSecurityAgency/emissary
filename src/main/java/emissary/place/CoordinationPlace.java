@@ -322,9 +322,9 @@ public class CoordinationPlace extends ServiceProviderPlace {
             if (pushForm) {
                 d.pushCurrentForm(outputForm);
             } else {
-
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Object has {} number of forms in the Stack. CoordinationPlace Setting top form from {} to {}", d.currentFormSize(), d.currentForm(), outputForm);
+                    logger.debug("Object has {} number of forms in the Stack. CoordinationPlace Setting top form from {} to {}", d.currentFormSize(),
+                            d.currentForm(), outputForm);
                 }
                 d.setCurrentForm(outputForm);
             }
