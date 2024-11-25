@@ -1011,4 +1011,12 @@ public interface IBaseDataObject {
      * @param transactionId the unique identifier of the transaction
      */
     void setTransactionId(String transactionId);
+
+    /**
+     * Return the Top level document or null if there is none for this IBaseDataObject
+     *
+     * @return The TLD IBaseDataObject
+     */
+    IBaseDataObject getTld();
+
 }

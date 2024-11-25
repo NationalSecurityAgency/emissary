@@ -193,6 +193,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     protected SeekableByteChannelFactory seekableByteChannelFactory;
 
 
+    protected final IBaseDataObject tld;
+
     protected enum DataState {
         NO_DATA, CHANNEL_ONLY, BYTE_ARRAY_ONLY, BYTE_ARRAY_AND_CHANNEL
     }
@@ -238,6 +240,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public BaseDataObject() {
         this.theData = null;
         setCreationTimestamp(Instant.now());
+        tld = null;
     }
 
     /**
@@ -251,6 +254,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         setData(newData);
         setFilename(name);
         setCreationTimestamp(Instant.now());
+        tld = null;
     }
 
     /**
@@ -273,6 +277,29 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         if (fileType != null) {
             this.setFileType(fileType);
         }
+    }
+
+    public BaseDataObject(final byte[] newData, final String name, @Nullable final String form, IBaseDataObject tld) {
+        setData(newData);
+        setFilename(name);
+        setCreationTimestamp(Instant.now());
+        if (form != null) {
+            pushCurrentForm(form);
+        }
+        this.tld = tld;
+    }
+
+    public BaseDataObject(final byte[] newData, final String name, @Nullable final String form, @Nullable final String fileType,
+            IBaseDataObject tld) {
+        setData(newData);
+        setFilename(name);
+        if (form != null) {
+            pushCurrentForm(form);
+        }
+        if (fileType != null) {
+            this.setFileType(fileType);
+        }
+        this.tld = tld;
     }
 
     /**
@@ -1462,4 +1489,10 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
     }
+
+    @Override
+    public IBaseDataObject getTld() {
+        return tld;
+    }
+
 }
