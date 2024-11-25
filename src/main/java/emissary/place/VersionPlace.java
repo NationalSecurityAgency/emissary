@@ -6,6 +6,8 @@ import emissary.util.GitRepositoryState;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class VersionPlace extends ServiceProviderPlace {
 
@@ -15,6 +17,7 @@ public class VersionPlace extends ServiceProviderPlace {
     private boolean useAbbrevHash;
     private String formattedVersion;
     private String versionHash;
+    protected Pattern regexPatternForVersion;
 
     /**
      * Create the place from the specified config file or resource
@@ -63,6 +66,10 @@ public class VersionPlace extends ServiceProviderPlace {
 
         includeDate = configG.findBooleanEntry("INCLUDE_DATE", true);
         useAbbrevHash = configG.findBooleanEntry("USE_ABBREV_HASH", true);
+
+        String cfgRegex = configG.findStringEntry("VERSION_REGEX_FOR_NO_DATE", "^(\\d+\\.)?(\\d+\\.)?(\\d+)$");
+        regexPatternForVersion = Pattern.compile(cfgRegex);
+
         formattedVersion = getVersion(gitRepositoryState);
         versionHash = getVersionHash(gitRepositoryState);
     }
@@ -78,16 +85,23 @@ public class VersionPlace extends ServiceProviderPlace {
     }
 
     protected String getVersion(GitRepositoryState gitRepositoryState) {
+        String version = gitRepositoryState.getBuildVersion();
+        Matcher matcher = regexPatternForVersion.matcher(version);
+        // if a release version, return just the version, even if includeDate is true
+        if (matcher.matches()) {
+            return version;
+        }
+
         if (includeDate) {
             // version with date & time information
             // changes format of date from 2024-09-23T10:41:18-0400, to 20240923104118
             String buildTime = gitRepositoryState.getBuildTime();
             int cutEndMark = buildTime.lastIndexOf(":") + 3;
             String formattedDate = buildTime.substring(0, cutEndMark).replaceAll("\\D", "");
-            return gitRepositoryState.getBuildVersion() + "-" + formattedDate;
+            return version + "-" + formattedDate;
         } else {
             // adds just version
-            return gitRepositoryState.getBuildVersion();
+            return version;
         }
     }
 

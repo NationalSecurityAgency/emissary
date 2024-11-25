@@ -1,5 +1,11 @@
 package emissary.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -331,6 +337,66 @@ public class ByteUtil {
         } catch (NoSuchAlgorithmException e) {
             return null;
         }
+    }
+
+    /**
+     * Check if the bytes contains a non-indexable characters
+     *
+     * @param utf8Bytes the bytes to be scanned
+     * @return whether there were non-indexable characters
+     */
+    public static boolean containsNonIndexableBytes(final byte[] utf8Bytes) {
+        // Wrap the byte array in a ByteArrayInputStream
+        final InputStream inputStream = new ByteArrayInputStream(utf8Bytes);
+        return containsNonIndexableBytes(inputStream);
+    }
+
+    /**
+     * Check if the input stream contains a non-indexable characters
+     *
+     * @param inputStream the input stream to be scanned
+     * @return whether there were non-indexable characters
+     */
+    public static boolean containsNonIndexableBytes(final InputStream inputStream) {
+        // Create an InputStreamReader to read the bytes as characters
+        try (Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+            int codePoint;
+            // Use the read() method of the InputStreamReader to read code points. The read() method automatically handles
+            // surrogate pairs, returning a single code point even for characters represented by multiple code units.
+            while ((codePoint = reader.read()) != -1) {
+                // Check if the code point is indexable
+                if (isNotIndexable(codePoint)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (IOException e) {
+            return true;
+        }
+    }
+
+    /**
+     * Check if the code point is a control character or surrogate pair
+     * <a href="https://en.wikipedia.org/wiki/Unicode_block">Unicode Block</a>
+     * <a href="https://www.unicode.org/charts/PDF/U0000.pdf">U0000</a>
+     * <a href="https://www.unicode.org/charts/PDF/U2000.pdf">U2000</a>
+     * <a href="https://www.unicode.org/charts/PDF/U3000.pdf">U3000</a>
+     * <a href="https://www.unicode.org/charts/PDF/UFE70.pdf">UFE70</a>
+     * <a href="https://www.unicode.org/charts/PDF/UFFF0.pdf">UFFF0</a>
+     *
+     * @param codepoint numerical value that maps to a specific character to check
+     * @return if code-point is a valid text character
+     */
+    private static boolean isNotIndexable(final int codepoint) {
+        return ('\u0000' <= codepoint && codepoint <= '\u0008')
+                || ('\u000E' <= codepoint && codepoint <= '\u001F')
+                || ('\u007F' <= codepoint && codepoint <= '\u009F')
+                || ('\u2000' <= codepoint && codepoint <= '\u200F')
+                || ('\u2028' <= codepoint && codepoint <= '\u202F')
+                || ('\u205F' <= codepoint && codepoint <= '\u206F')
+                || codepoint == '\u3000'
+                || codepoint == '\uFEFF'
+                || codepoint == '\uFFFD';
     }
 
     /** This class is not meant to be instantiated. */

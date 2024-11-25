@@ -512,7 +512,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * @return 0 when it works
      * @deprecated use {@link #processSingleChild(IBaseDataObject, File, byte[])}
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     @SuppressWarnings("InconsistentOverloads")
     protected int processSingleChild(IBaseDataObject d, byte[] theData, File f) {
         return processSingleChild(d, f, theData);
