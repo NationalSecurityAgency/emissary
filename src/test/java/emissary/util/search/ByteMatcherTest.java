@@ -116,6 +116,12 @@ class ByteMatcherTest extends UnitTest {
         assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test", 0));
         assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test", 0, LIST_DATA.length()));
 
+        // Test startOffset and endOffset
+        List<Integer> testStartOffs = List.of(26, 47, 53);
+        List<Integer> testEndOffs = List.of(26, 47);
+        assertEquals(testStartOffs, this.bl.indexListIgnoreCase("test".getBytes(), 15, LIST_DATA.length()));
+        assertEquals(testEndOffs, this.bl.listIndexOf("test".getBytes(), 15, 52));
+
     }
 
     @Test
