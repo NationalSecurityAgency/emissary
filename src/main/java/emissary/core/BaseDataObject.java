@@ -11,7 +11,6 @@ import com.google.common.collect.LinkedListMultimap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -337,8 +336,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void setFilename(final String f) {
-        this.theFileName = f;
-        this.shortName = makeShortName();
+        if (f == null) {
+            this.theFileName = null;
+            this.shortName = null;
+        } else {
+            this.theFileName = f;
+            this.shortName = makeShortName();
+        }
     }
 
     /**
@@ -348,7 +352,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void setChannelFactory(final SeekableByteChannelFactory sbcf) {
-        Validate.notNull(sbcf, "Required: SeekableByteChannelFactory not null");
         this.theData = null;
         this.seekableByteChannelFactory = sbcf;
 
@@ -754,10 +757,14 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public void addProcessingError(final String err) {
-        if (this.procError == null) {
-            this.procError = new StringBuilder();
+        if (err == null) {
+            this.procError = null;
+        } else {
+            if (this.procError == null) {
+                this.procError = new StringBuilder();
+            }
+            this.procError.append(err).append("\n");
         }
-        this.procError.append(err).append("\n");
     }
 
     @Override
@@ -1406,16 +1413,16 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public void setExtractedRecords(final List<? extends IBaseDataObject> records) {
         if (records == null) {
-            throw new IllegalArgumentException("Record list must not be null");
-        }
-
-        for (final IBaseDataObject r : records) {
-            if (r == null) {
-                throw new IllegalArgumentException("No added record may be null");
+            extractedRecords = null;
+        } else {
+            for (final IBaseDataObject r : records) {
+                if (r == null) {
+                    throw new IllegalArgumentException("No added record may be null");
+                }
             }
-        }
 
-        this.extractedRecords = new ArrayList<>(records);
+            this.extractedRecords = new ArrayList<>(records);
+        }
     }
 
     @Override

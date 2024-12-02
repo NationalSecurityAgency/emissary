@@ -1210,11 +1210,6 @@ class BaseDataObjectTest extends UnitTest {
     }
 
     @Test
-    void testSeekableByteChannelFactoryWithInvalidData() {
-        assertThrows(NullPointerException.class, () -> this.b.setChannelFactory(null));
-    }
-
-    @Test
     void testExtractedRecords() {
         final BaseDataObject other = new BaseDataObject();
         assertFalse(this.b.hasExtractedRecords(), "Expected no extracted records");
@@ -1229,8 +1224,6 @@ class BaseDataObjectTest extends UnitTest {
         assertTrue(this.b.hasExtractedRecords(), "Expected extracted records");
         assertEquals(1, this.b.getExtractedRecords().size(), "Expected a single extracted record");
         assertEquals(1, this.b.getExtractedRecordCount(), "Expected a single extracted record");
-
-        assertThrows(IllegalArgumentException.class, () -> this.b.setExtractedRecords(null));
 
         assertThrows(IllegalArgumentException.class, () -> this.b.addExtractedRecord(null));
 

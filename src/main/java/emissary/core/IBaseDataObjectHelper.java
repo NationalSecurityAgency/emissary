@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -108,12 +107,7 @@ public final class IBaseDataObjectHelper {
         Validate.isTrue(fromBdo != null, "Required: fromBdo != null");
         Validate.isTrue(toBdo != null, "Required: toBdo != null");
 
-        try {
-            setPrivateFieldValue(toBdo, "theData", null);
-            setPrivateFieldValue(toBdo, "seekableByteChannelFactory", null);
-        } catch (ReflectiveOperationException e) {
-            LOGGER.info("Could not set theData/seekableByteChannelFactory!", e);
-        }
+        toBdo.setChannelFactory(null);
         final SeekableByteChannelFactory sbcf = fromBdo.getChannelFactory();
         if (sbcf != null) {
             toBdo.setChannelFactory(sbcf);
@@ -135,32 +129,19 @@ public final class IBaseDataObjectHelper {
             toBdo.addAlternateView(entry.getKey(), entry.getValue());
         }
 
-        try {
-            setPrivateFieldValue(toBdo, "extractedRecords", null);
-        } catch (ReflectiveOperationException e) {
-            LOGGER.info("Could not set processingError!", e);
-        }
+        toBdo.setExtractedRecords(null);
         final List<IBaseDataObject> extractedRecords = fromBdo.getExtractedRecords();
         if (extractedRecords != null) {
             toBdo.setExtractedRecords(extractedRecords);
         }
 
-        try {
-            setPrivateFieldValue(toBdo, "theFileName", null);
-            setPrivateFieldValue(toBdo, "shortName", null);
-        } catch (ReflectiveOperationException e) {
-            LOGGER.info("Could not set theFileName/shortName!", e);
-        }
+        toBdo.setFilename(null);
         final String filename = fromBdo.getFilename();
         if (filename != null) {
             toBdo.setFilename(filename);
         }
 
-        try {
-            setPrivateFieldValue(toBdo, "procError", null);
-        } catch (ReflectiveOperationException e) {
-            LOGGER.info("Could not set processingError!", e);
-        }
+        toBdo.addProcessingError(null);
         final String processingError = fromBdo.getProcessingError();
         if (processingError != null) {
             toBdo.addProcessingError(processingError.substring(0, processingError.length() - 1));
@@ -182,29 +163,6 @@ public final class IBaseDataObjectHelper {
         toBdo.setId(fromBdo.getId());
         toBdo.setWorkBundleId(fromBdo.getWorkBundleId());
         toBdo.setTransactionId(fromBdo.getTransactionId());
-    }
-
-    /**
-     * This method reflectively sets a private method that is not normally accessible. This method should only be used when
-     * the field must be set and there is no other way to do it. Ideally the class would be modified so that this method
-     * call would not be necessary.
-     * 
-     * @param bdo the BaseDataObject to set the field on.
-     * @param fieldName the name of the field to be set.
-     * @param object the object that the field is to be set to.
-     * @throws IllegalAccessException if this {@code Field} object is enforcing Java language access control and the
-     *         underlying field is either inaccessible or final.
-     * @throws NoSuchFieldException if a field with the specified name is not found.
-     */
-    public static void setPrivateFieldValue(final BaseDataObject bdo, final String fieldName, @Nullable final Object object)
-            throws IllegalAccessException, NoSuchFieldException {
-        Validate.notNull(bdo, "Required: bdo not null");
-        Validate.notNull(fieldName, "Required: fieldName not null");
-
-        final Field field = bdo.getClass().getDeclaredField(fieldName);
-
-        field.setAccessible(true); // NOSONAR intentional visibility change
-        field.set(bdo, object); // NOSONAR intentional visibility change
     }
 
     /**
