@@ -3,15 +3,20 @@ package emissary.core;
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.directory.DirectoryEntry;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public interface IBaseDataObject {
 
@@ -348,8 +353,12 @@ public interface IBaseDataObject {
      * 
      * @param key name of the metadata element
      * @return the string value or null if no such element
+     * @deprecated use {@link #getParameterAsConcatString(String)}
      */
-    String getStringParameter(String key);
+    @Deprecated
+    default String getStringParameter(final String key) {
+        return getParameterAsConcatString(key);
+    }
 
     /**
      * Retrieve a specified metadata element as a string value
@@ -357,8 +366,59 @@ public interface IBaseDataObject {
      * @param key name of the metadata element
      * @param sep the separator for multivalued fields
      * @return the string value or null if no such element
+     * @deprecated use {@link #getParameterAsConcatString(String, String)}
      */
-    String getStringParameter(String key, String sep);
+    @Deprecated
+    default String getStringParameter(final String key, final String sep) {
+        return getParameterAsConcatString(key, sep);
+    }
+
+    /**
+     * Retrieve the Collection of metadata values identified by key where each element is converted to a string
+     *
+     * @param key name of the metadata element collection
+     * @return Collection of elements converted to strings
+     */
+    default Collection<String> getParameterAsStrings(final String key) {
+        final var obj = getParameter(key);
+        if (CollectionUtils.isEmpty(obj) || ((obj.size() == 1) && (obj.get(0) == null))) {
+            return Collections.emptyList();
+        } else if ((obj.size() == 1) && (obj.get(0) instanceof String)) {
+            return Collections.singletonList((String) obj.get(0));
+        } else {
+            return obj.stream().map(String::valueOf).collect(Collectors.toList());
+        }
+    }
+
+    /**
+     * Retrieve the metadata value identified by key where the element is converted to a string
+     *
+     * @param key name of the metadata element
+     * @return parameter converted to strings
+     */
+    String getParameterAsString(String key);
+
+    /**
+     * Retrieve a specified metadata element as a string of concatenated values
+     *
+     * @param key name of the metadata element
+     * @return the string value or null if no such element
+     */
+    default String getParameterAsConcatString(final String key) {
+        return getParameterAsConcatString(key, DEFAULT_PARAM_SEPARATOR);
+    }
+
+    /**
+     * Retrieve a specified metadata element as a string of concatenated values
+     *
+     * @param key name of the metadata element
+     * @param sep the separator for multivalued fields
+     * @return the string value or null if no such element
+     */
+    default String getParameterAsConcatString(final String key, final String sep) {
+        final var strParameter = String.join(sep, getParameterAsStrings(key));
+        return StringUtils.isBlank(strParameter) ? null : strParameter;
+    }
 
     /**
      * Retrieve all the metadata elements of this object
