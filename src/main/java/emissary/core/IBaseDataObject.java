@@ -28,12 +28,10 @@ public interface IBaseDataObject {
     String DEFAULT_PARAM_SEPARATOR = ";";
 
     /**
-     * Checks to see if payload byte arrays visible to external classes have any changes not explicitly saved via a call to
-     * the {@link IBaseDataObject#setData(byte[]) setData(byte[])}, {@link IBaseDataObject#setData(byte[], int, int)
-     * setData(byte[], int, int)}, or {@link IBaseDataObject#setChannelFactory(SeekableByteChannelFactory)
-     * setChannelFactory(SeekableByteChannelFactory)} method.
+     * @deprecated As of emissary 8.18.0, this method performs no operations
      */
-    void checkForUnsafeDataChanges();
+    @Deprecated(forRemoval = true)
+    default void checkForUnsafeDataChanges() {};
 
     /**
      * Return the data as a byte array. If using a channel to the data, calling this method will only return up to

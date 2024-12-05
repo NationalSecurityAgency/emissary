@@ -191,7 +191,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Nullable
     protected SeekableByteChannelFactory seekableByteChannelFactory;
 
-    final SafeUsageChecker safeUsageChecker = new SafeUsageChecker();
 
     protected enum DataState {
         NO_DATA, CHANNEL_ONLY, BYTE_ARRAY_ONLY, BYTE_ARRAY_AND_CHANNEL
@@ -229,18 +228,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             } else {
                 return DataState.BYTE_ARRAY_AND_CHANNEL;
             }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void checkForUnsafeDataChanges() {
-        safeUsageChecker.checkForUnsafeDataChanges();
-
-        if (theData != null) {
-            safeUsageChecker.recordSnapshot(theData);
         }
     }
 
@@ -354,10 +341,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public void setChannelFactory(final SeekableByteChannelFactory sbcf) {
         this.theData = null;
         this.seekableByteChannelFactory = sbcf;
-
-        // calls to setData clear the unsafe state by definition
-        // reset the usage checker but don't capture a snapshot until someone requests the data in byte[] form
-        safeUsageChecker.reset();
     }
 
     /**
@@ -424,12 +407,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
                 return theData;
             case CHANNEL_ONLY:
                 // Max size here is slightly less than the true max size to avoid memory issues
-                final byte[] bytes = SeekableByteChannelHelper.getByteArrayFromBdo(this, MAX_BYTE_ARRAY_SIZE);
-
-                // capture a reference to the returned byte[] so we can test for unsafe modifications of its contents
-                safeUsageChecker.recordSnapshot(bytes);
-
-                return bytes;
+                return SeekableByteChannelHelper.getByteArrayFromBdo(this, MAX_BYTE_ARRAY_SIZE);
             case NO_DATA:
             default:
                 return null; // NOSONAR maintains backwards compatibility
@@ -443,9 +421,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public void setData(@Nullable final byte[] newData) {
         this.seekableByteChannelFactory = null;
         this.theData = newData == null ? new byte[0] : newData;
-
-        // calls to setData clear the unsafe state by definition, but we need to capture a new snapshot
-        safeUsageChecker.resetCacheThenRecordSnapshot(theData);
     }
 
     /**
@@ -472,9 +447,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             this.theData = new byte[length];
             System.arraycopy(newData, offset, this.theData, 0, length);
         }
-
-        // calls to setData clear the unsafe state by definition, but we need to capture a new snapshot
-        safeUsageChecker.resetCacheThenRecordSnapshot(theData);
     }
 
     /**

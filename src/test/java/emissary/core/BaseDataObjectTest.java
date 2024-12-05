@@ -6,10 +6,8 @@ import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.core.channels.SeekableByteChannelHelper;
 import emissary.directory.DirectoryEntry;
 import emissary.pickup.Priority;
-import emissary.test.core.junit5.LogbackTester;
 import emissary.test.core.junit5.UnitTest;
 
-import ch.qos.logback.classic.Level;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import org.apache.commons.io.IOUtils;
@@ -27,7 +25,6 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +39,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
-import static emissary.core.SafeUsageChecker.UNSAFE_MODIFICATION_DETECTED;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -1298,132 +1294,6 @@ class BaseDataObjectTest extends UnitTest {
                     .getExtractedRecordCount(), "Cloned IBDO should have same sized extracted record list");
         } catch (CloneNotSupportedException ex) {
             fail("Clone method should have been called", ex);
-        }
-    }
-
-    static final byte[] DATA_MODIFICATION_BYTES = "These are the test bytes!".getBytes(StandardCharsets.US_ASCII);
-    static final Level LEVELS_ONE_WARN = Level.WARN;
-
-    @Nullable
-    @SuppressWarnings("StaticAssignmentOfThrowable")
-    static final Throwable NO_THROWABLES = null;
-    List<LogbackTester.SimplifiedLogEvent> events = new ArrayList<>();
-    LogbackTester.SimplifiedLogEvent event1 =
-            new LogbackTester.SimplifiedLogEvent(LEVELS_ONE_WARN, UNSAFE_MODIFICATION_DETECTED, NO_THROWABLES);
-
-    @Test
-    void testChannelFactoryInArrayOutNoSet() throws IOException {
-        try (LogbackTester logbackTester = new LogbackTester(SafeUsageChecker.class.getName())) {
-            final IBaseDataObject ibdo = new BaseDataObject();
-
-            ibdo.setChannelFactory(InMemoryChannelFactory.create(DATA_MODIFICATION_BYTES));
-
-            final byte[] data = ibdo.data();
-
-            Arrays.fill(data, (byte) 0);
-
-            ibdo.checkForUnsafeDataChanges();
-
-            assertArrayEquals(DATA_MODIFICATION_BYTES, ibdo.data());
-            events.add(event1);
-            logbackTester.checkLogList(events);
-        }
-    }
-
-    @Test
-    void shouldDetectUnsafeChangesIfArrayChangesNotFollowedByOneSet() throws IOException {
-        try (LogbackTester logbackTester = new LogbackTester(SafeUsageChecker.class.getName())) {
-            final IBaseDataObject ibdo = new BaseDataObject();
-
-            ibdo.setChannelFactory(InMemoryChannelFactory.create(DATA_MODIFICATION_BYTES));
-
-            byte[] data = ibdo.data();
-
-            Arrays.fill(data, (byte) 0);
-
-            ibdo.checkForUnsafeDataChanges();
-
-            assertArrayEquals(DATA_MODIFICATION_BYTES, ibdo.data());
-            events.add(event1);
-            logbackTester.checkLogList(events);
-        }
-    }
-
-    @Test
-    void shouldDetectUnsafeChangesIfArrayChangesNotFollowedByBothSet() throws IOException {
-        try (LogbackTester logbackTester = new LogbackTester(SafeUsageChecker.class.getName())) {
-            final IBaseDataObject ibdo = new BaseDataObject();
-
-            ibdo.setChannelFactory(InMemoryChannelFactory.create(DATA_MODIFICATION_BYTES));
-
-            final byte[] data0 = ibdo.data();
-            final byte[] data1 = ibdo.data();
-
-            Arrays.fill(data0, (byte) 0);
-            Arrays.fill(data1, (byte) 0);
-
-            ibdo.checkForUnsafeDataChanges();
-
-            assertArrayEquals(DATA_MODIFICATION_BYTES, ibdo.data());
-            events.add(event1);
-            logbackTester.checkLogList(events);
-        }
-    }
-
-    @Test
-    void shouldDetectNoUnsafeChangesImmediatelyAfterSetChannelFactory() throws IOException {
-        try (LogbackTester logbackTester = new LogbackTester(SafeUsageChecker.class.getName())) {
-            final IBaseDataObject ibdo = new BaseDataObject();
-
-            ibdo.setChannelFactory(InMemoryChannelFactory.create(DATA_MODIFICATION_BYTES));
-
-            final byte[] data = ibdo.data();
-
-            Arrays.fill(data, (byte) 0);
-            ibdo.setChannelFactory(InMemoryChannelFactory.create(data));
-
-            ibdo.checkForUnsafeDataChanges();
-
-            assertArrayEquals(new byte[DATA_MODIFICATION_BYTES.length], ibdo.data());
-            logbackTester.checkLogList(Collections.emptyList());
-        }
-    }
-
-    @Test
-    void shouldDetectNoUnsafeChangesImmediatelyAfterSetData() throws IOException {
-        try (LogbackTester logbackTester = new LogbackTester(SafeUsageChecker.class.getName())) {
-            final IBaseDataObject ibdo = new BaseDataObject();
-
-            ibdo.setChannelFactory(InMemoryChannelFactory.create(DATA_MODIFICATION_BYTES));
-
-            final byte[] data = ibdo.data();
-
-            Arrays.fill(data, (byte) 0);
-            ibdo.setData(data);
-
-            ibdo.checkForUnsafeDataChanges();
-
-            assertArrayEquals(new byte[DATA_MODIFICATION_BYTES.length], ibdo.data());
-            logbackTester.checkLogList(Collections.emptyList());
-        }
-    }
-
-    @Test
-    void testArrayInArrayOutNoSet() throws IOException {
-        try (LogbackTester logbackTester = new LogbackTester(SafeUsageChecker.class.getName())) {
-            final IBaseDataObject ibdo = new BaseDataObject();
-
-            ibdo.setData(DATA_MODIFICATION_BYTES);
-
-            final byte[] data = ibdo.data();
-
-            Arrays.fill(data, (byte) 0);
-
-            ibdo.checkForUnsafeDataChanges();
-
-            assertArrayEquals(DATA_MODIFICATION_BYTES, ibdo.data());
-            events.add(event1);
-            logbackTester.checkLogList(events);
         }
     }
 

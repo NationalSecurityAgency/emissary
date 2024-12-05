@@ -535,11 +535,11 @@ public final class IBaseDataObjectXmlCodecs {
         private static Element protectedElementHash(final String name, final byte[] bytes) {
             final Element element = new Element(name);
 
-            if (ByteUtil.hasNonPrintableValues(bytes)) {
+            if (ByteUtil.containsNonIndexableBytes(bytes)) {
                 element.setAttribute(ENCODING_ATTRIBUTE_NAME, SHA256);
                 element.addContent(ByteUtil.sha256Bytes(bytes));
             } else {
-                element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
+                element.addContent(new String(bytes, StandardCharsets.UTF_8));
             }
 
             return element;
@@ -777,7 +777,7 @@ public final class IBaseDataObjectXmlCodecs {
     public static Element protectedElementBase64(final String name, final byte[] bytes) {
         final Element element = new Element(name);
 
-        if (ByteUtil.hasNonPrintableValues(bytes)) {
+        if (ByteUtil.containsNonIndexableBytes(bytes)) {
             String base64String = BASE64_NEW_LINE_STRING +
                     BASE64_ENCODER.encodeToString(bytes) +
                     BASE64_NEW_LINE_STRING;
@@ -785,7 +785,7 @@ public final class IBaseDataObjectXmlCodecs {
             element.setAttribute(ENCODING_ATTRIBUTE_NAME, BASE64);
             element.addContent(base64String);
         } else {
-            element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
+            element.addContent(new String(bytes, StandardCharsets.UTF_8));
         }
 
         return element;
@@ -803,11 +803,11 @@ public final class IBaseDataObjectXmlCodecs {
     public static Element protectedElementSha256(final String name, final byte[] bytes) {
         final Element element = new Element(name);
 
-        if (ByteUtil.hasNonPrintableValues(bytes)) {
+        if (ByteUtil.containsNonIndexableBytes(bytes)) {
             element.setAttribute(IBaseDataObjectXmlCodecs.ENCODING_ATTRIBUTE_NAME, IBaseDataObjectXmlCodecs.SHA256);
             element.addContent(ByteUtil.sha256Bytes(bytes));
         } else {
-            element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
+            element.addContent(new String(bytes, StandardCharsets.UTF_8));
         }
 
         return element;

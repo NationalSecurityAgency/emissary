@@ -109,6 +109,19 @@ class IBaseDataObjectHelperTest extends UnitTest {
     }
 
     @Test
+    void testOneArgClone() {
+        final IBaseDataObject originalIbdo = new BaseDataObject(new byte[123], "Filename", "form", "filetype");
+        final IBaseDataObject clonedIbdo = IBaseDataObjectHelper.clone(originalIbdo);
+        final List<String> differences = new ArrayList<>();
+        final DiffCheckConfiguration diffCheckConfiguration =
+                DiffCheckConfiguration.configure().enableData().enableInternalId().enableTimestamp().enableTransformHistory().build();
+
+        IBaseDataObjectDiffHelper.diff(originalIbdo, clonedIbdo, differences, diffCheckConfiguration);
+
+        assertEquals(0, differences.size());
+    }
+
+    @Test
     void testCloneArguments() {
         assertNotNull(IBaseDataObjectHelper.clone(new BaseDataObject(), false));
         checkThrowsNull(() -> IBaseDataObjectHelper.clone(null, false));
