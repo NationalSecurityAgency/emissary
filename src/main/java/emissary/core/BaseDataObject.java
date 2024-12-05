@@ -56,11 +56,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * Original name of the input data. Can only be set in the constructor of the DataObject. returned via the
      * {@link #getFilename()} method. Also used in constructing the {@link #shortName()} of the document.
      */
+    @Nullable
     protected String theFileName;
 
     /**
      * Terminal portion of theFileName
      */
+    @Nullable
     protected String shortName;
 
     /**
@@ -77,6 +79,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * History of processing errors. Lines of text are accumulated from String and returned in-toto as a String.
      */
+    @Nullable
     protected StringBuilder procError;
 
     /**
@@ -728,15 +731,16 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    public void clearProcessingError() {
+        this.procError = null;
+    }
+
+    @Override
     public void addProcessingError(final String err) {
-        if (err == null) {
-            this.procError = null;
-        } else {
-            if (this.procError == null) {
-                this.procError = new StringBuilder();
-            }
-            this.procError.append(err).append("\n");
+        if (this.procError == null) {
+            this.procError = new StringBuilder();
         }
+        this.procError.append(err).append("\n");
     }
 
     @Override

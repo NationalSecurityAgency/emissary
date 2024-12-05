@@ -153,7 +153,7 @@ public final class IBaseDataObjectHelper {
             toBdo.setFilename(filename);
         }
 
-        toBdo.addProcessingError(null);
+        toBdo.clearProcessingError();
         final String processingError = fromBdo.getProcessingError();
         if (processingError != null) {
             toBdo.addProcessingError(processingError.substring(0, processingError.length() - 1));
