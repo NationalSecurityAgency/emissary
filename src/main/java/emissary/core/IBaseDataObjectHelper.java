@@ -110,6 +110,74 @@ public final class IBaseDataObjectHelper {
     }
 
     /**
+     * Shallow copies the fields from one BaseDataObject to another BaseDataObject.
+     * 
+     * @param fromBdo the BaseDataObject to copy fields from.
+     * @param toBdo the BaseDataObject to copy fields to.
+     */
+    public static void copy(final BaseDataObject fromBdo, final BaseDataObject toBdo) {
+        Validate.isTrue(fromBdo != null, "Required: fromBdo != null");
+        Validate.isTrue(toBdo != null, "Required: toBdo != null");
+
+        toBdo.setChannelFactory(null);
+        final SeekableByteChannelFactory sbcf = fromBdo.getChannelFactory();
+        if (sbcf != null) {
+            toBdo.setChannelFactory(sbcf);
+        }
+
+        toBdo.replaceCurrentForm(null);
+        final List<String> allCurrentForms = fromBdo.getAllCurrentForms();
+        for (int i = 0; i < allCurrentForms.size(); i++) {
+            toBdo.enqueueCurrentForm(allCurrentForms.get(i));
+        }
+
+        toBdo.clearParameters();
+        toBdo.putParameters(fromBdo.getParameters());
+
+        for (String alternateViewName : toBdo.getAlternateViewNames()) {
+            toBdo.addAlternateView(alternateViewName, null);
+        }
+        for (final Map.Entry<String, byte[]> entry : fromBdo.getAlternateViews().entrySet()) {
+            toBdo.addAlternateView(entry.getKey(), entry.getValue());
+        }
+
+        toBdo.setExtractedRecords(null);
+        final List<IBaseDataObject> extractedRecords = fromBdo.getExtractedRecords();
+        if (extractedRecords != null) {
+            toBdo.setExtractedRecords(extractedRecords);
+        }
+
+        toBdo.setFilename(null);
+        final String filename = fromBdo.getFilename();
+        if (filename != null) {
+            toBdo.setFilename(filename);
+        }
+
+        toBdo.clearProcessingError();
+        final String processingError = fromBdo.getProcessingError();
+        if (processingError != null) {
+            toBdo.addProcessingError(processingError.substring(0, processingError.length() - 1));
+        }
+
+        toBdo.setCreationTimestamp(fromBdo.getCreationTimestamp());
+        toBdo.setPriority(fromBdo.getPriority());
+        toBdo.setHistory(fromBdo.getTransformHistory());
+        toBdo.setFontEncoding(fromBdo.getFontEncoding());
+        toBdo.setNumChildren(fromBdo.getNumChildren());
+        toBdo.setNumSiblings(fromBdo.getNumSiblings());
+        toBdo.setBirthOrder(fromBdo.getBirthOrder());
+        toBdo.setHeader(fromBdo.header() == null ? null : fromBdo.header().clone());
+        toBdo.setFooter(fromBdo.footer() == null ? null : fromBdo.footer().clone());
+        toBdo.setHeaderEncoding(fromBdo.getHeaderEncoding());
+        toBdo.setClassification(fromBdo.getClassification());
+        toBdo.setBroken(fromBdo.getBroken());
+        toBdo.setOutputable(fromBdo.isOutputable());
+        toBdo.setId(fromBdo.getId());
+        toBdo.setWorkBundleId(fromBdo.getWorkBundleId());
+        toBdo.setTransactionId(fromBdo.getTransactionId());
+    }
+
+    /**
      * Used to propagate needed parent information to a sprouted child. NOTE: This is taken from
      * emissary.place.MultiFileServerPlace.
      * 

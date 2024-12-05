@@ -687,6 +687,11 @@ public interface IBaseDataObject {
 
 
     /**
+     * Clears the processing error
+     */
+    void clearProcessingError();
+
+    /**
      * Record a processing error
      * 
      * @param val the new error message to record
