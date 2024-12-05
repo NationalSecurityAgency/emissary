@@ -182,7 +182,7 @@ public abstract class RegressionTest extends ExtractionTest {
         // touch up alternate views to match how their bytes would have encoded into the answer file
         for (Entry<String, byte[]> entry : new TreeMap<>(payload.getAlternateViews()).entrySet()) {
             Optional<String> viewSha256 = hashBytesIfNonPrintable(entry.getValue());
-            viewSha256.ifPresent(s -> payload.addAlternateView(entry.getKey(), s.getBytes(StandardCharsets.ISO_8859_1)));
+            viewSha256.ifPresent(s -> payload.addAlternateView(entry.getKey(), s.getBytes(StandardCharsets.UTF_8)));
         }
 
         // touch up primary view if necessary
@@ -233,7 +233,7 @@ public abstract class RegressionTest extends ExtractionTest {
      * @return a value optionally containing the generated hash
      */
     protected Optional<String> hashBytesIfNonPrintable(byte[] bytes) {
-        if (ArrayUtils.isNotEmpty(bytes) && ByteUtil.hasNonPrintableValues(bytes)) {
+        if (ArrayUtils.isNotEmpty(bytes) && ByteUtil.containsNonIndexableBytes(bytes)) {
             return Optional.ofNullable(ByteUtil.sha256Bytes(bytes));
         }
 
