@@ -589,7 +589,6 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
         MDC.put(MDCConstants.SERVICE_LOCATION, this.getKey());
         try {
             List<IBaseDataObject> l = processHeavyDuty(payload);
-            payload.checkForUnsafeDataChanges();
             rehash(payload);
             return l;
         } catch (Exception e) {
