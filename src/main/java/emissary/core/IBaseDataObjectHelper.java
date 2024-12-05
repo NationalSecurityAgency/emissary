@@ -57,7 +57,7 @@ public final class IBaseDataObjectHelper {
      * @param fullClone specifies if all fields should be cloned.
      * @return the clone of the IBaseDataObject passed in.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public static IBaseDataObject clone(final IBaseDataObject iBaseDataObject, final boolean fullClone) {
         Validate.notNull(iBaseDataObject, "Required: iBaseDataObject not null");
 
