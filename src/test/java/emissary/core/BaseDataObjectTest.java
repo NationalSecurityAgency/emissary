@@ -6,10 +6,8 @@ import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.core.channels.SeekableByteChannelHelper;
 import emissary.directory.DirectoryEntry;
 import emissary.pickup.Priority;
-import emissary.test.core.junit5.LogbackTester;
 import emissary.test.core.junit5.UnitTest;
 
-import ch.qos.logback.classic.Level;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import org.apache.commons.io.IOUtils;
