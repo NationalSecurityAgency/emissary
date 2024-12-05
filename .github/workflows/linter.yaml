@@ -10,6 +10,7 @@ on: # yamllint disable-line rule:truthy
 permissions:
   contents: read
   statuses: write
+  pull-requests: write
 
 jobs:
   lint:
