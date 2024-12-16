@@ -83,7 +83,7 @@ public abstract class FunctionalTest extends UnitTest {
         try {
             ServerCommand cmd = ServerCommand.parse(ServerCommand.class, args);
 
-            jserver = new EmissaryServer(cmd);
+            jserver = EmissaryServer.init(cmd);
             jetty = jserver.startServer();
         } catch (Exception ignored) {
             // Ignore
@@ -160,7 +160,7 @@ public abstract class FunctionalTest extends UnitTest {
         if (jserver != null && jserver.isServerRunning()) {
             jserver.stop();
             jetty = null;
-            assertFalse(EmissaryServer.isStarted(), "Server did not stop and unbind");
+            assertFalse(EmissaryServer.getInstance().isServerRunning(), "Server did not stop and unbind");
             jserver = null;
         }
 
