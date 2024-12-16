@@ -30,7 +30,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PeersIT extends EndpointTestBase {
 
-    public static final String DIRNAME = "http://" + TestEmissaryNode.TEST_NODE_PORT + "/DirectoryPlace";
+    public static final int TEST_PORT = 123456;
+    public static final String TEST_NODE = "localhost";
+    public static final String TEST_NODE_PORT = TEST_NODE + ":" + TEST_PORT;
+    public static final String DIRNAME = "http://" + TEST_NODE_PORT + "/DirectoryPlace";
     public static final String SELF = "*.*.*.http://localhost:9999/DirectoryPlace";
     public static final String PEER1 = "*.*.*.http://remoteHost:8888/DirectoryPlace";
     public static final String PEER2 = "*.*.*.http://remoteHost2:8888/DirectoryPlace";
@@ -38,16 +41,15 @@ class PeersIT extends EndpointTestBase {
 
     @BeforeEach
     public void setup() throws Exception {
-        EmissaryNode emissaryNode = new TestEmissaryNode();
-        DirectoryPlace directoryPlace = new DirectoryPlace(DIRNAME, emissaryNode);
+        String projectBase = System.getenv(ConfigUtil.PROJECT_BASE_ENV);
+        ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-b ", projectBase, "-m", "cluster", "-p", "123456");
+        cmd.setupServer();
+        EmissaryServer server = EmissaryServer.init(cmd, new TestEmissaryNode());
+        Namespace.bind("EmissaryServer", server);
+
+        DirectoryPlace directoryPlace = new DirectoryPlace(DIRNAME, server.getNode());
         directoryPlace.addPeerDirectories(PEERS, false);
         Namespace.bind(DIRNAME, directoryPlace);
-
-        String projectBase = System.getenv(ConfigUtil.PROJECT_BASE_ENV);
-        ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-b ", projectBase, "-m", "cluster");
-        cmd.setupServer();
-        EmissaryServer server = new EmissaryServer(cmd, emissaryNode);
-        Namespace.bind("EmissaryServer", server);
     }
 
     @AfterEach
@@ -66,7 +68,7 @@ class PeersIT extends EndpointTestBase {
         PeersResponseEntity entity = response.readEntity(PeersResponseEntity.class);
         assertEquals(0, entity.getErrors().size());
         assertTrue(CollectionUtils.isEmpty(entity.getCluster()));
-        assertEquals(TestEmissaryNode.TEST_NODE_PORT, entity.getLocal().getHost());
+        assertEquals(TEST_NODE_PORT, entity.getLocal().getHost());
         assertTrue(entity.getLocal().getPeers().containsAll(PEERS));
     }
 
@@ -105,9 +107,6 @@ class PeersIT extends EndpointTestBase {
     }
 
     static class TestEmissaryNode extends EmissaryNode {
-        public static final int TEST_PORT = 123456;
-        public static final String TEST_NODE = "localhost";
-        public static final String TEST_NODE_PORT = TEST_NODE + ":" + TEST_PORT;
 
         public TestEmissaryNode() {
             nodeNameIsDefault = true;
