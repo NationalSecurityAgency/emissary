@@ -332,14 +332,14 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      * @return true if it worked
      */
     private boolean localizeDirectory(@Nullable String theDir) {
-        // Get a local (non proxy) copy of the directory if possible!
+        // Get a local (non-proxy) copy of the directory if possible!
         // Looking up both if nothing is provided
         if (theDir == null) {
             try {
                 localDirPlace = DirectoryPlace.lookup();
                 dirPlace = localDirPlace.toString();
             } catch (EmissaryException ex) {
-                if (EmissaryServer.exists() && !(this instanceof DirectoryPlace)) {
+                if (EmissaryServer.getInstance().isServerRunning() && !(this instanceof DirectoryPlace)) {
                     logger.warn("Unable to find DirectoryPlace in local namespace", ex);
                     return false;
                 }
@@ -422,7 +422,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
             keys.add(placeLocation); // save as first in list
             locationPart = KeyManipulator.getServiceLocation(placeLocation);
         } else if (!placeLocation.contains("://")) {
-            EmissaryNode node = new EmissaryNode();
+            EmissaryNode node = EmissaryServer.getInstance().getNode();
             locationPart = "http://" + node.getNodeName() + ":" + node.getNodePort() + "/" + placeLocation;
         }
 

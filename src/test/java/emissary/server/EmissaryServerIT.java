@@ -25,7 +25,7 @@ class EmissaryServerIT extends UnitTest {
     @Test
     void testThreadPoolStuff() throws Exception {
         ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-h", "host1", "-p", "3001");
-        EmissaryServer server = new EmissaryServer(cmd);
+        EmissaryServer server = EmissaryServer.init(cmd);
         Server jettyServer = server.configureServer();
         QueuedThreadPool pool = (QueuedThreadPool) jettyServer.getThreadPool();
         assertEquals(10, pool.getMinThreads());
@@ -38,7 +38,7 @@ class EmissaryServerIT extends UnitTest {
     @Test
     void testSSLWorks() throws Exception {
         ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-p", "3443", "--ssl", "--disableSniHostCheck");
-        EmissaryServer server = new EmissaryServer(cmd);
+        EmissaryServer server = EmissaryServer.init(cmd);
         try {
             server.startServer();
             EmissaryClient client = new EmissaryClient();
@@ -56,7 +56,7 @@ class EmissaryServerIT extends UnitTest {
     @Test
     void testInvisPlacesOnStrictStartUp() throws EmissaryException {
         ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "--strict");
-        EmissaryServer server = new EmissaryServer(cmd);
+        EmissaryServer server = EmissaryServer.init(cmd);
         EmissaryNode node = new EmissaryNode();
         String location = "http://" + node.getNodeName() + ":" + node.getNodePort();
         Startup.getInvisPlaces().add(location + "/PlaceStartUnannouncedTest");
