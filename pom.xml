@@ -884,7 +884,7 @@
             <format>xml</format>
             <includeTests>true</includeTests>
             <minimumTokens>100</minimumTokens>
-            <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+            <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
             <targetJdk>${maven.compiler.target}</targetJdk>
           </configuration>
           <executions>
