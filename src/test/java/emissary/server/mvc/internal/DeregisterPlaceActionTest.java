@@ -63,7 +63,7 @@ class DeregisterPlaceActionTest extends EndpointTestBase {
         formParams.replace(ADD_KEY, Collections.singletonList(badParam));
 
         // test
-        try (final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(500, status);
@@ -80,7 +80,7 @@ class DeregisterPlaceActionTest extends EndpointTestBase {
         formParams.replace(ADD_KEY, Collections.singletonList(paramsToSanitize));
 
         // test
-        try (final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(500, status);
@@ -95,7 +95,7 @@ class DeregisterPlaceActionTest extends EndpointTestBase {
         formParams.replace(TARGET_DIRECTORY, Collections.singletonList("CantFindThis"));
 
         // test
-        try (final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(500, status);
@@ -107,7 +107,7 @@ class DeregisterPlaceActionTest extends EndpointTestBase {
     @Test
     void removeSingleDirectory() {
         // test
-        try (final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(200, status);
@@ -121,7 +121,7 @@ class DeregisterPlaceActionTest extends EndpointTestBase {
         // setup
         formParams.replace(ADD_KEY, Arrays.asList(ADD_KEY_DIR, "ThisOneWontHit"));
         // test
-        try (final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(200, status);
@@ -136,7 +136,7 @@ class DeregisterPlaceActionTest extends EndpointTestBase {
         // setup
         formParams.replace(ADD_KEY, Arrays.asList(ADD_KEY_DIR, ADD_KEY_DIR + "MissingMe"));
         // test
-        try (final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(200, status);

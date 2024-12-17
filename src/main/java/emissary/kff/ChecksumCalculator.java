@@ -179,7 +179,7 @@ public class ChecksumCalculator {
         final byte[] b = new byte[1024];
 
         for (final MessageDigest d : digest) {
-            try (final InputStream is = Channels.newInputStream(sbcf.create())) {
+            try (InputStream is = Channels.newInputStream(sbcf.create())) {
                 d.reset();
 
                 int bytesRead;
@@ -194,7 +194,7 @@ public class ChecksumCalculator {
         }
 
         if (crc != null) {
-            try (final InputStream is = Channels.newInputStream(sbcf.create())) {
+            try (InputStream is = Channels.newInputStream(sbcf.create())) {
                 crc.reset();
 
                 int bytesRead;

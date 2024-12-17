@@ -154,7 +154,7 @@ public class KffChain {
         final ChecksumResults sums = computeSums(sbcf);
         KffResult answer = null;
         long sbcSize = 0;
-        try (final SeekableByteChannel sbc = sbcf.create()) {
+        try (SeekableByteChannel sbc = sbcf.create()) {
             sbcSize = sbc.size();
         }
         if (sbcSize < kffMinDataSize || list.isEmpty()) {

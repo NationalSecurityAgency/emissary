@@ -62,7 +62,7 @@ class HeartbeatActionTest extends EndpointTestBase {
         formParams.put(HeartbeatAdapter.TO_PLACE_NAME, Collections.singletonList(badValue));
 
         // test
-        try (final Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(500, status);
@@ -74,7 +74,7 @@ class HeartbeatActionTest extends EndpointTestBase {
     @Test
     void heartbeat() {
         // test
-        try (final Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(200, status);
@@ -91,7 +91,7 @@ class HeartbeatActionTest extends EndpointTestBase {
         Namespace.bind(TO_PLACE, dp);
 
         // test
-        try (final Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(200, status);
