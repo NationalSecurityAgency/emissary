@@ -89,7 +89,7 @@
     <maven.compiler.target>11</maven.compiler.target>
     <maven.min-version>3.6.3</maven.min-version>
     <plugin.build-helper-maven.version>3.6.0</plugin.build-helper-maven.version>
-    <plugin.cyclonedx-maven.version>2.9.0</plugin.cyclonedx-maven.version>
+    <plugin.cyclonedx-maven.version>2.9.1</plugin.cyclonedx-maven.version>
     <plugin.duplicate-finder-maven.version>1.5.1</plugin.duplicate-finder-maven.version>
     <plugin.exec-maven.version>3.5.0</plugin.exec-maven.version>
     <plugin.formatter-maven.version>2.23.0</plugin.formatter-maven.version>
@@ -97,7 +97,7 @@
     <plugin.impsort-maven.version>1.8.0</plugin.impsort-maven.version>
     <plugin.jacoco-maven.version>0.8.12</plugin.jacoco-maven.version>
     <plugin.maven-assembly.version>3.7.1</plugin.maven-assembly.version>
-    <plugin.maven-checkstyle.version>3.6.0</plugin.maven-checkstyle.version>
+    <plugin.maven-checkstyle.version>3.3.0</plugin.maven-checkstyle.version>
     <plugin.maven-clean.version>3.4.0</plugin.maven-clean.version>
     <plugin.maven-compiler.version>3.13.0</plugin.maven-compiler.version>
     <plugin.maven-dependency.version>3.8.1</plugin.maven-dependency.version>
@@ -108,7 +108,7 @@
     <plugin.maven-jar.version>3.4.2</plugin.maven-jar.version>
     <plugin.maven-javadoc.version>3.11.1</plugin.maven-javadoc.version>
     <plugin.maven-jxr.version>3.6.0</plugin.maven-jxr.version>
-    <plugin.maven-pmd.version>3.26.0</plugin.maven-pmd.version>
+    <plugin.maven-pmd.version>3.24.0</plugin.maven-pmd.version>
     <plugin.maven-project-info-reports.version>3.4.2</plugin.maven-project-info-reports.version>
     <plugin.maven-release.version>3.1.1</plugin.maven-release.version>
     <plugin.maven-replacer.version>1.5.3</plugin.maven-replacer.version>
