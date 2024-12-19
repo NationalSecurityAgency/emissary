@@ -17,6 +17,7 @@ class ShortNameComparatorTest {
     private static final String CHILD_DEF = PARENT + Family.SEP + DEF;
     private static final String CHILD_1 = PARENT + Family.SEP + "1";
     private static final String CHILD_2 = PARENT + Family.SEP + "2";
+    private static final String CHILD_10 = PARENT + Family.SEP + "10";
     private static final String GRANDCHILD_1_1 = CHILD_1 + Family.SEP + "1";
 
     @Test
@@ -33,6 +34,7 @@ class ShortNameComparatorTest {
         check(ABC, DEF, 0, 0);
         check(CHILD_ABC, CHILD_DEF, -3, 3);
         check(CHILD_1, CHILD_2, -1, 1);
+        check(CHILD_1, CHILD_10, -9, 9);
         check(CHILD_1, GRANDCHILD_1_1, -1, 1);
     }
 
