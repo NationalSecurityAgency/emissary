@@ -120,6 +120,7 @@
     <plugin.nexus-staging-maven.version>1.6.7</plugin.nexus-staging-maven.version>
     <plugin.sonar-maven.version>3.9.1.2184</plugin.sonar-maven.version>
     <plugin.sortpom-maven.version>2.15.0</plugin.sortpom-maven.version>
+    <plugin.takari-lifecycle>2.2.0</plugin.takari-lifecycle>
     <plugin.versions-maven.version>2.17.1</plugin.versions-maven.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -666,6 +667,11 @@
               </goals>
             </execution>
           </executions>
+        </plugin>
+        <plugin>
+          <groupId>io.takari.maven.plugins</groupId>
+          <artifactId>takari-lifecycle-plugin</artifactId>
+          <version>${plugin.takari-lifecycle}</version>
         </plugin>
         <plugin>
           <groupId>net.revelc.code</groupId>
@@ -1356,6 +1362,10 @@
       <id>dist</id>
       <build>
         <plugins>
+          <plugin>
+            <groupId>io.takari.maven.plugins</groupId>
+            <artifactId>takari-lifecycle-plugin</artifactId>
+          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
