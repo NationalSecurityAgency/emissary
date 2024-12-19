@@ -139,7 +139,7 @@ public class KffDataObjectHandler {
 
         KffResult kffCheck = null;
         if (sbcf != null) {
-            try (final SeekableByteChannel sbc = sbcf.create()) {
+            try (SeekableByteChannel sbc = sbcf.create()) {
                 if (sbc.size() > 0) {
                     kffCheck = kff.check(name, sbcf);
                 }

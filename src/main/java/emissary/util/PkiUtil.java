@@ -51,7 +51,7 @@ public class PkiUtil {
         if (isPemCertificate(pemData)) {
             loadKeyStore(keyStore, pemData);
         } else {
-            try (final InputStream is = Files.newInputStream(Paths.get(path))) {
+            try (InputStream is = Files.newInputStream(Paths.get(path))) {
                 keyStore.load(is, pazz);
             }
         }

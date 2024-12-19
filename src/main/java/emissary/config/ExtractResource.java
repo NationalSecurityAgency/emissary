@@ -43,8 +43,8 @@ public class ExtractResource {
         }
         logger.debug("Reading " + resource);
         final String result;
-        try (final InputStream is = ConfigUtil.getConfigStream(resource);
-                final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+        try (InputStream is = ConfigUtil.getConfigStream(resource);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             final byte[] buf = new byte[4096];
             int thisReadOp = 0;
             while ((thisReadOp = is.read(buf)) > -1) {
@@ -63,7 +63,7 @@ public class ExtractResource {
         final String rezdata = getResource(resource);
         final String outputPath = this.outputDirectory + "/" + resource.replaceAll("/", ".");
         logger.debug("Writing " + outputPath);
-        try (final BufferedOutputStream os = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {
+        try (BufferedOutputStream os = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {
             os.write(rezdata.getBytes());
         }
     }

@@ -69,7 +69,7 @@ class FailDirectoryActionTest extends EndpointTestBase {
         formParams.replace(ADD_KEY, Collections.singletonList(badParam));
 
         // test
-        try (final Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(500, status);
@@ -86,7 +86,7 @@ class FailDirectoryActionTest extends EndpointTestBase {
         formParams.replace(ADD_KEY, Collections.singletonList(paramsToSanitize));
 
         // test
-        try (final Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(500, status);
@@ -98,7 +98,7 @@ class FailDirectoryActionTest extends EndpointTestBase {
     @Test
     void failDirectoryNonPropagating() {
         // test
-        try (final Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(200, status);
@@ -120,7 +120,7 @@ class FailDirectoryActionTest extends EndpointTestBase {
         formParams.put(ADD_PROPAGATION_FLAG, Collections.singletonList("true"));
 
         // test
-        try (final Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(200, status);
@@ -137,7 +137,7 @@ class FailDirectoryActionTest extends EndpointTestBase {
         formParams.replace(TARGET_DIRECTORY, Collections.singletonList("WontFindThis"));
 
         // test
-        try (final Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(500, status);
