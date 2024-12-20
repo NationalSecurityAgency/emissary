@@ -470,7 +470,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             case BYTE_ARRAY_ONLY:
                 return ArrayUtils.getLength(theData);
             case CHANNEL_ONLY:
-                try (final SeekableByteChannel sbc = this.seekableByteChannelFactory.create()) {
+                try (SeekableByteChannel sbc = this.seekableByteChannelFactory.create()) {
                     return sbc.size();
                 }
             case NO_DATA:

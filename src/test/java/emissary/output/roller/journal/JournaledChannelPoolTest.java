@@ -69,7 +69,7 @@ class JournaledChannelPoolTest extends UnitTest {
         }
         final ArrayList<JournalEntry> result = new ArrayList<>();
         for (final Path journalPath : JournalReader.getJournalPaths(this.directory)) {
-            try (final JournalReader jr = new JournalReader(journalPath)) {
+            try (JournalReader jr = new JournalReader(journalPath)) {
                 Journal j = jr.getJournal();
                 result.addAll(j.getEntries());
             }
