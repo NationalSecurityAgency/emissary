@@ -114,6 +114,11 @@ public class DataObjectFactory {
         return getInstance(payload, filename, fileTypeAndForm, fileTypeAndForm);
     }
 
+    public static IBaseDataObject getInstance(final byte[] payload, final String filename, final String fileTypeAndForm, IBaseDataObject tld) {
+        final Object o = Factory.create(clazz, payload, filename, fileTypeAndForm, tld);
+        return (IBaseDataObject) o;
+    }
+
     /**
      * Get an instance of the configured DataObject impl with filename, form, and file type set
      *
@@ -125,6 +130,12 @@ public class DataObjectFactory {
      */
     public static IBaseDataObject getInstance(final byte[] payload, final String filename, final String form, final String fileType) {
         final Object o = Factory.create(clazz, payload, filename, form, fileType);
+        return (IBaseDataObject) o;
+    }
+
+    public static IBaseDataObject getInstance(final byte[] payload, final String filename, final String form, final String fileType,
+            IBaseDataObject tld) {
+        final Object o = Factory.create(clazz, payload, filename, form, fileType, tld);
         return (IBaseDataObject) o;
     }
 
