@@ -133,7 +133,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish site to GitHub Pages
-        run: mvn site site:stage scm-publish:publish-scm -DskipTests
+        run: mvn site site:stage scm-publish:publish-scm -Pcoverage,pmd -DskipTests
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
