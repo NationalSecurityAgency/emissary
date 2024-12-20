@@ -118,7 +118,7 @@ jobs:
           distribution: "corretto"
 
       - name: Build with Maven
-        run: mvn -B -e -ntp "-Dstyle.color=always" site
+        run: mvn -B -e -ntp "-Dstyle.color=always" site -Pcoverage,pmd
 
   slack-notify:
     if: ${{ github.event_name == 'push' && github.repository == 'NationalSecurityAgency/emissary' }}
