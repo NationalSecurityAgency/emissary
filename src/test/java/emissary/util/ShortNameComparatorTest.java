@@ -2,94 +2,89 @@ package emissary.util;
 
 import emissary.core.BaseDataObject;
 import emissary.core.DataObjectFactory;
-import emissary.core.Family;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ShortNameComparatorTest extends UnitTest {
-    private final byte[] nobytes = new byte[0];
-    private static final String b = "foo";
-    private final String ba = b + Family.SEP;
+    // @formatter: off
+    private static final String ABC = "abc";
+    private static final String DEF = "def";
+    private static final String FOO_ATT_ABC = "foo-att-abc";
+    private static final String FOO_ATT_DEF = "foo-att-def";
+    private static final String FOO_ATT_1 = "foo-att-1";
+    private static final String FOO_ATT_2 = "foo-att-2";
+    private static final String FOO_ATT_1_ATT_1 = "foo-att-1-att-1";
+    private static final String FOO_ATT_1_ATT_2 = "foo-att-1-att-2";
+    private static final String FOO_ATT_10 = "foo-att-10";
+    private static final String FOO_ATT_10_ATT_1 = "foo-att-10-att-1";
+    // @formatter: on
+    private static final ShortNameComparator COMPARATOR = new ShortNameComparator();
 
     @Test
-    void testOrdering() {
-        final List<IBaseDataObject> l = new ArrayList<>();
+    void testParameters() {
+        final ShortNameComparator comparator = new ShortNameComparator();
+        final IBaseDataObject ibdo = new BaseDataObject();
 
-        fillList(l);
-        l.sort(new ShortNameComparator());
-        checkList(l);
-    }
-
-    @Test
-    void testNonsenseNames() {
-        final List<IBaseDataObject> l = new ArrayList<>();
-        l.add(DataObjectFactory.getInstance(null, "foo-att-def"));
-        l.add(DataObjectFactory.getInstance(null, "foo-att-abc"));
-        l.sort(new ShortNameComparator());
-        assertEquals("foo-att-abc", l.get(0).shortName(), "Bad components sort in alpha order");
-    }
-
-    private void fillList(final List<IBaseDataObject> l) {
-        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "1"));
-        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3"));
-        l.add(DataObjectFactory.getInstance(this.nobytes, b));
-        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3" + Family.getSep(2)));
-        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3" + Family.getSep(1)));
-        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "2"));
-        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3" + Family.getSep(1) + Family.getSep(1)));
-    }
-
-    private void checkList(final List<IBaseDataObject> l) {
-        assertEquals(b, l.get(0).shortName(), "Ordering of sort");
-        assertEquals(this.ba + "1", l.get(1).shortName(), "Ordering of sort");
-        assertEquals(this.ba + "2", l.get(2).shortName(), "Ordering of sort");
-        assertEquals(this.ba + "3", l.get(3).shortName(), "Ordering of sort");
-        assertEquals(this.ba + "3" + Family.getSep(1), l.get(4).shortName(), "Ordering of sort");
-        assertEquals(this.ba + "3" + Family.getSep(1) + Family.getSep(1), l.get(5).shortName(), "Ordering of sort");
-        assertEquals(this.ba + "3" + Family.getSep(2), l.get(6).shortName(), "Ordering of sort");
+        assertThrows(IllegalArgumentException.class, () -> comparator.compare(null, ibdo));
+        assertThrows(IllegalArgumentException.class, () -> comparator.compare(ibdo, null));
     }
 
     @Test
-    void testImplComparator() {
-        final List<IBaseDataObject> l = new ArrayList<>();
-
-        fillList(l);
-        l.sort(new ShortNameComparator());
-        checkList(l);
+    void testComparator() {
+        check(ABC, DEF, 0);
+        check(FOO_ATT_ABC, FOO_ATT_DEF, -3);
+        check(FOO_ATT_1, FOO_ATT_2, -1);
+        check(FOO_ATT_1, FOO_ATT_10, -9);
+        check(FOO_ATT_1, FOO_ATT_1_ATT_1, -1);
     }
 
     @Test
-    void testSubclassedComparator() {
-        final String defaultPayloadClass = DataObjectFactory.getImplementingClass();
-        DataObjectFactory.setImplementingClass(MyDataObject.class.getName());
-        try {
-            final List<IBaseDataObject> l = new ArrayList<>();
+    void testListSorting() {
+        // start with an unsorted list
+        List<String> unsorted = List.of(
+                FOO_ATT_1,
+                FOO_ATT_10,
+                FOO_ATT_2,
+                FOO_ATT_10_ATT_1,
+                FOO_ATT_1_ATT_2,
+                FOO_ATT_1_ATT_1);
 
-            fillList(l);
-            l.sort(new ShortNameComparator());
-            checkList(l);
-        } catch (RuntimeException ex) {
-            fail("Cannot operate Comparator in subclass", ex);
-        } finally {
-            DataObjectFactory.setImplementingClass(defaultPayloadClass);
-        }
+        // map to a list of IBDO, sort using Comparator, map back to a list of Strings
+        List<String> actual = unsorted
+                .stream()
+                .map(name -> DataObjectFactory.getInstance(new byte[0], name))
+                .sorted(COMPARATOR)
+                .map(IBaseDataObject::shortName)
+                .collect(Collectors.toList());
+
+        // list with shortnames in expected sort order
+        List<String> expected = List.of(
+                FOO_ATT_1,
+                FOO_ATT_1_ATT_1,
+                FOO_ATT_1_ATT_2,
+                FOO_ATT_2,
+                FOO_ATT_10,
+                FOO_ATT_10_ATT_1);
+
+        // verify that the sorted output is correct
+        assertIterableEquals(expected, actual, "List wasn't sorted in the expected order");
     }
 
-    // An extension of BaseDataObject for testing the
-    // lower bounded generics on the comparator
-    public static class MyDataObject extends BaseDataObject {
-        static final long serialVersionUID = 7872122417333007868L;
+    private static void check(final String name1, final String name2, final int forwardResult) {
+        final IBaseDataObject ibdo1 = new BaseDataObject(null, name1);
+        final IBaseDataObject ibdo2 = new BaseDataObject(null, name2);
+        final ShortNameComparator snc = new ShortNameComparator();
 
-        public MyDataObject(final byte[] data, final String name) {
-            super(data, name);
-        }
+        assertEquals(forwardResult, snc.compare(ibdo1, ibdo2));
+        assertEquals(-forwardResult, snc.compare(ibdo2, ibdo1));
     }
 }
