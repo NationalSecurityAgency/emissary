@@ -965,33 +965,14 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         return true;
     }
 
-    @Override
-    public String getStringParameter(final String key) {
-        return getStringParameter(key, DEFAULT_PARAM_SEPARATOR);
-    }
-
     @Nullable
     @Override
-    public String getStringParameter(final String key, final String sep) {
-        final List<Object> obj = getParameter(key);
-        if (obj == null) {
-            return null;
-        } else if (obj.isEmpty()) {
-            return null;
-        } else if ((obj.size() == 1) && (obj.get(0) instanceof String)) {
-            return (String) obj.get(0);
-        } else if ((obj.size() == 1) && (obj.get(0) == null)) {
-            return null;
-        } else {
-            final StringBuilder sb = new StringBuilder();
-            for (final Object item : obj) {
-                if (sb.length() > 0) {
-                    sb.append(sep);
-                }
-                sb.append(item);
-            }
-            return sb.toString();
+    public String getParameterAsString(final String key) {
+        final var obj = getParameterAsStrings(key);
+        if (obj.size() > 1) {
+            logger.warn("Multiple values for parameter, returning the first - parameter:{}, number of values:{}", key, obj.size());
         }
+        return StringUtils.trimToNull(obj.stream().findFirst().orElse(null));
     }
 
     /**
