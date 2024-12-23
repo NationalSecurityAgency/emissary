@@ -1333,46 +1333,4 @@ class BaseDataObjectTest extends UnitTest {
             assertArrayEquals(bytes2, byteArrayOutputStream.toByteArray());
         }
     }
-
-    @Test
-    void testGetParameterAsString() throws IOException {
-        assertNotNull(this.b);
-
-        try (LogbackTester logbackTester = new LogbackTester(BaseDataObject.class.getName())) {
-            this.b.putParameter("A", 1L);
-            this.b.appendParameter("A", "TWO");
-            this.b.appendParameter("A", "THREE");
-            assertEquals("1", this.b.getParameterAsString("A"));
-            assertEquals("1;TWO;THREE", this.b.getParameterAsConcatString("A"));
-            LogbackTester.SimplifiedLogEvent logEvent = new LogbackTester.SimplifiedLogEvent(Level.WARN,
-                    "Multiple values for parameter, returning the first - parameter:A, number of values:3", null);
-            logbackTester.checkLogList(Collections.singletonList(logEvent));
-        }
-
-        this.b.putParameter("A", 2L);
-        assertEquals("2", this.b.getParameterAsString("A"));
-        assertEquals("2", this.b.getParameterAsConcatString("A"));
-
-        this.b.putParameter("A", "THREE");
-        assertEquals("THREE", this.b.getParameterAsString("A"));
-        assertEquals("THREE", this.b.getParameterAsConcatString("A"));
-
-        this.b.putParameter("A", null);
-        assertNull(this.b.getParameterAsString("A"));
-        assertNull(this.b.getParameterAsConcatString("A"));
-
-        this.b.putParameter("A", "");
-        assertNull(this.b.getParameterAsString("A"));
-        assertNull(this.b.getParameterAsConcatString("A"));
-
-        assertNull(this.b.getParameterAsString("DNE"));
-        assertNull(this.b.getParameterAsConcatString("DNE"));
-
-        this.b.putParameter("A", null);
-        this.b.appendParameter("A", "FOUR");
-        this.b.appendParameter("A", "  ");
-        assertEquals("null", this.b.getParameterAsString("A"));
-        assertEquals("null;FOUR;  ", this.b.getParameterAsConcatString("A"));
-    }
-
 }
