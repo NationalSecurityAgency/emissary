@@ -1,24 +1,33 @@
 package emissary.util;
 
 import emissary.core.BaseDataObject;
-import emissary.core.Family;
+import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
+import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class ShortNameComparatorTest {
+class ShortNameComparatorTest extends UnitTest {
+    // @formatter: off
     private static final String ABC = "abc";
     private static final String DEF = "def";
-    private static final String PARENT = "foo";
-    private static final String CHILD_ABC = PARENT + Family.SEP + ABC;
-    private static final String CHILD_DEF = PARENT + Family.SEP + DEF;
-    private static final String CHILD_1 = PARENT + Family.SEP + "1";
-    private static final String CHILD_2 = PARENT + Family.SEP + "2";
-    private static final String CHILD_10 = PARENT + Family.SEP + "10";
-    private static final String GRANDCHILD_1_1 = CHILD_1 + Family.SEP + "1";
+    private static final String FOO_ATT_ABC = "foo-att-abc";
+    private static final String FOO_ATT_DEF = "foo-att-def";
+    private static final String FOO_ATT_1 = "foo-att-1";
+    private static final String FOO_ATT_2 = "foo-att-2";
+    private static final String FOO_ATT_1_ATT_1 = "foo-att-1-att-1";
+    private static final String FOO_ATT_1_ATT_2 = "foo-att-1-att-2";
+    private static final String FOO_ATT_10 = "foo-att-10";
+    private static final String FOO_ATT_10_ATT_1 = "foo-att-10-att-1";
+    // @formatter: on
+    private static final ShortNameComparator COMPARATOR = new ShortNameComparator();
 
     @Test
     void testParameters() {
@@ -31,19 +40,51 @@ class ShortNameComparatorTest {
 
     @Test
     void testComparator() {
-        check(ABC, DEF, 0, 0);
-        check(CHILD_ABC, CHILD_DEF, -3, 3);
-        check(CHILD_1, CHILD_2, -1, 1);
-        check(CHILD_1, CHILD_10, -9, 9);
-        check(CHILD_1, GRANDCHILD_1_1, -1, 1);
+        check(ABC, DEF, 0);
+        check(FOO_ATT_ABC, FOO_ATT_DEF, -3);
+        check(FOO_ATT_1, FOO_ATT_2, -1);
+        check(FOO_ATT_1, FOO_ATT_10, -9);
+        check(FOO_ATT_1, FOO_ATT_1_ATT_1, -1);
     }
 
-    private static void check(final String name1, final String name2, final int forwardResult, final int reverseResult) {
+    @Test
+    void testListSorting() {
+        // start with an unsorted list
+        List<String> unsorted = List.of(
+                FOO_ATT_1,
+                FOO_ATT_10,
+                FOO_ATT_2,
+                FOO_ATT_10_ATT_1,
+                FOO_ATT_1_ATT_2,
+                FOO_ATT_1_ATT_1);
+
+        // map to a list of IBDO, sort using Comparator, map back to a list of Strings
+        List<String> actual = unsorted
+                .stream()
+                .map(name -> DataObjectFactory.getInstance(new byte[0], name))
+                .sorted(COMPARATOR)
+                .map(IBaseDataObject::shortName)
+                .collect(Collectors.toList());
+
+        // list with shortnames in expected sort order
+        List<String> expected = List.of(
+                FOO_ATT_1,
+                FOO_ATT_1_ATT_1,
+                FOO_ATT_1_ATT_2,
+                FOO_ATT_2,
+                FOO_ATT_10,
+                FOO_ATT_10_ATT_1);
+
+        // verify that the sorted output is correct
+        assertIterableEquals(expected, actual, "List wasn't sorted in the expected order");
+    }
+
+    private static void check(final String name1, final String name2, final int forwardResult) {
         final IBaseDataObject ibdo1 = new BaseDataObject(null, name1);
         final IBaseDataObject ibdo2 = new BaseDataObject(null, name2);
         final ShortNameComparator snc = new ShortNameComparator();
 
         assertEquals(forwardResult, snc.compare(ibdo1, ibdo2));
-        assertEquals(reverseResult, snc.compare(ibdo2, ibdo1));
+        assertEquals(-forwardResult, snc.compare(ibdo2, ibdo1));
     }
 }

@@ -41,8 +41,8 @@ public class ShortNameComparator implements Comparator<IBaseDataObject>, Seriali
             // Get character length of level.
             final int nextIndex1 = s1.indexOf(Family.SEP, index1);
             final int nextIndex2 = s2.indexOf(Family.SEP, index2);
-            final int length1 = ((nextIndex1 <= -1) ? s1.length() : nextIndex1) - index1;
-            final int length2 = ((nextIndex2 <= -1) ? s2.length() : nextIndex2) - index2;
+            final int length1 = ((nextIndex1 < 0) ? s1.length() : nextIndex1) - index1;
+            final int length2 = ((nextIndex2 < 0) ? s2.length() : nextIndex2) - index2;
 
             // If the obj1's level and obj2's level are the same, then go to the next level.
             if (length1 == length2 && s1.regionMatches(index1, s2, index2, length1)) {
