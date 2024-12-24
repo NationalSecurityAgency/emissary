@@ -84,11 +84,16 @@ public class EmissaryNode {
 
     protected boolean strictStartupMode = false;
 
+    public EmissaryNode() {
+        this(DEFAULT_NODE_MODE);
+    }
+
     /**
      * Construct the node. The node name and port are from system properties. The node type is based on the os.name in this
      * implementation
      */
-    public EmissaryNode() {
+    public EmissaryNode(String nodeMode) {
+        this.nodeMode = nodeMode;
         this.nodeName = System.getProperty(NODE_NAME_PROPERTY);
         if (this.nodeName == null) {
             // Use IP Address for default node name since it is
@@ -104,7 +109,6 @@ public class EmissaryNode {
         this.nodeScheme = System.getProperty(NODE_SCHEME_PROPERTY, "http");
         this.nodePort = Integer.getInteger(NODE_PORT_PROPERTY, -1).intValue();
         this.nodeType = System.getProperty("os.name", DEFAULT_NODE_TYPE).toLowerCase(Locale.getDefault()).replace(' ', '_');
-        this.nodeMode = System.getProperty("node.mode", DEFAULT_NODE_MODE).toLowerCase(Locale.getDefault());
         this.nodeServiceType = System.getProperty(NODE_SERVICE_TYPE_PROPERTY, DEFAULT_NODE_SERVICE_TYPE);
         this.strictStartupMode = Boolean.parseBoolean(System.getProperty(STRICT_STARTUP_MODE, String.valueOf(false)));
     }
@@ -198,14 +202,14 @@ public class EmissaryNode {
     }
 
     /**
-     * Get the peer configuration stream for this noed
+     * Get the peer configuration stream for this node
      */
     public Configurator getPeerConfigurator() throws IOException {
         if (isStandalone()) {
             // return a configurator here with just standalone, don't actually read the peer.cfg
             // This is a hack until we can TODO: refactor all this so standalone doesn't need peers
             // maybe even warn if there is a peer.cfg
-            logger.debug("Node is standalone, ignoring any peer.cfg and only constructing one rendevous peer with the local node");
+            logger.debug("Node is standalone, ignoring any peer.cfg and only constructing one rendezvous peer with the local node");
             Configurator cfg = new ServiceConfigGuide();
             cfg.addEntry("RENDEZVOUS_PEER", this.asUrlKey());
             return cfg;
