@@ -292,6 +292,7 @@ public class WorkSpace implements Runnable {
     /**
      * Shut down services that were started here
      */
+    @SuppressWarnings("CatchingUnchecked")
     public void shutDown() {
         stop();
         if (this.jettyStartedHere) {

@@ -92,6 +92,7 @@ public class EmissaryServer {
 
     private final EmissaryNode emissaryNode;
 
+    @SuppressWarnings("NonFinalStaticField")
     private static EmissaryServer emissaryServer;
 
     private EmissaryServer(ServerCommand cmd) {
