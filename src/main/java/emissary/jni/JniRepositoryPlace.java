@@ -95,8 +95,8 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
             return null;
         }
 
-        try (final InputStream theFile = Files.newInputStream(nativeLib.toPath());
-                final DataInputStream theStream = new DataInputStream(theFile)) {
+        try (InputStream theFile = Files.newInputStream(nativeLib.toPath());
+                DataInputStream theStream = new DataInputStream(theFile)) {
             final byte[] theContent = new byte[theStream.available()];
             theStream.readFully(theContent);
             return theContent;

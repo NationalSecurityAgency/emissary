@@ -87,7 +87,7 @@ public class InputStreamChannelFactory {
         @Override
         protected long sizeImpl() throws IOException {
             if (size < 0) {
-                try (final InputStream is = inputStreamFactory.create()) {
+                try (InputStream is = inputStreamFactory.create()) {
                     size = SeekableByteChannelHelper.available(is);
                 }
             }

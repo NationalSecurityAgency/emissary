@@ -169,7 +169,7 @@ class BaseDataObjectTest extends UnitTest {
         // Hook into the SBCF
         this.b.setChannelFactory(sbcf);
         // Hook into an SBC
-        try (final SeekableByteChannel sbc = Mockito.spy(this.b.getChannelFactory().create())) {
+        try (SeekableByteChannel sbc = Mockito.spy(this.b.getChannelFactory().create())) {
             // Always return this spied SBC
             Mockito.when(sbcf.create()).thenReturn(sbc);
             // Kick an exception when calling size()
@@ -185,7 +185,7 @@ class BaseDataObjectTest extends UnitTest {
         final SeekableByteChannelFactory sbcf = Mockito.spy(SeekableByteChannelHelper.memory("Test data".getBytes()));
         this.b.setChannelFactory(sbcf);
         // Hook into an SBC
-        try (final SeekableByteChannel sbc = Mockito.spy(this.b.getChannelFactory().create())) {
+        try (SeekableByteChannel sbc = Mockito.spy(this.b.getChannelFactory().create())) {
             // Always return this spied SBC
             Mockito.when(sbcf.create()).thenReturn(sbc);
             // Kick an exception when asking for the size
@@ -1316,8 +1316,8 @@ class BaseDataObjectTest extends UnitTest {
 
         ibdo.setData(bytes1);
 
-        try (final InputStream bytesInputStream = ibdo.newInputStream();
-                final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();) {
+        try (InputStream bytesInputStream = ibdo.newInputStream();
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();) {
             IOUtils.copy(bytesInputStream, byteArrayOutputStream);
 
             assertArrayEquals(bytes1, byteArrayOutputStream.toByteArray());
@@ -1328,8 +1328,8 @@ class BaseDataObjectTest extends UnitTest {
 
         ibdo.setChannelFactory(sbcf);
 
-        try (final InputStream sbcfInputStream = ibdo.newInputStream();
-                final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+        try (InputStream sbcfInputStream = ibdo.newInputStream();
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             IOUtils.copy(sbcfInputStream, byteArrayOutputStream);
 
             assertArrayEquals(bytes2, byteArrayOutputStream.toByteArray());

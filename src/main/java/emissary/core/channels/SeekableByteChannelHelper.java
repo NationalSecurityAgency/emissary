@@ -85,7 +85,7 @@ public final class SeekableByteChannelHelper {
      * @return a byte array of the data from the BDO sized up to maxSize (so could truncate data)
      */
     public static byte[] getByteArrayFromBdo(final IBaseDataObject ibdo, final int maxSize) {
-        try (final SeekableByteChannel sbc = ibdo.getChannelFactory().create()) {
+        try (SeekableByteChannel sbc = ibdo.getChannelFactory().create()) {
             final long truncatedBy = sbc.size() - maxSize;
             if (truncatedBy > 0 && logger.isWarnEnabled()) {
                 logger.warn("Returned data for [{}] will be truncated by {} bytes due to size constraints of byte arrays", ibdo.shortName(),
@@ -108,7 +108,7 @@ public final class SeekableByteChannelHelper {
      * @throws IOException if we couldn't read all the data
      */
     public static byte[] getByteArrayFromChannel(final SeekableByteChannelFactory sbcf, final int maxSize) throws IOException {
-        try (final SeekableByteChannel sbc = sbcf.create()) {
+        try (SeekableByteChannel sbc = sbcf.create()) {
             final int byteArraySize = (int) Math.min(sbc.size(), maxSize);
             final ByteBuffer buff = ByteBuffer.allocate(byteArraySize);
 

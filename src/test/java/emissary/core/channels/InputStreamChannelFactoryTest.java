@@ -88,7 +88,7 @@ class InputStreamChannelFactoryTest extends UnitTest {
     @Test
     void testSize() throws IOException {
         // Normal path
-        try (final SeekableByteChannel sbc = InputStreamChannelFactory.create(testBytes.length, new TestInputStreamFactory(testBytes)).create()) {
+        try (SeekableByteChannel sbc = InputStreamChannelFactory.create(testBytes.length, new TestInputStreamFactory(testBytes)).create()) {
             ByteBuffer buff = ByteBuffer.allocate(32);
             assertEquals(testBytes.length, sbc.size());
             assertEquals(testBytes.length, sbc.read(buff));
@@ -99,7 +99,7 @@ class InputStreamChannelFactoryTest extends UnitTest {
     @Test
     void testCanWorkOutSize() throws IOException {
         // Make the factory work it out
-        try (final SeekableByteChannel sbc = InputStreamChannelFactory.create(-1, new TestInputStreamFactory(testBytes)).create()) {
+        try (SeekableByteChannel sbc = InputStreamChannelFactory.create(-1, new TestInputStreamFactory(testBytes)).create()) {
             ByteBuffer buff = ByteBuffer.allocate(32);
             assertEquals(testBytes.length, sbc.size());
             assertEquals(testBytes.length, sbc.read(buff));
@@ -111,7 +111,7 @@ class InputStreamChannelFactoryTest extends UnitTest {
     void testReadWithIncorrectSize() throws IOException {
         // You can set the size incorrectly, but this is still 'valid'
         final int sbcLength = testBytes.length + 8;
-        try (final SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, new TestInputStreamFactory(testBytes)).create()) {
+        try (SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, new TestInputStreamFactory(testBytes)).create()) {
             ByteBuffer buff = ByteBuffer.allocate(32);
             assertEquals(sbcLength, sbc.size());
             assertEquals(testBytes.length, sbc.read(buff));
@@ -122,7 +122,7 @@ class InputStreamChannelFactoryTest extends UnitTest {
     @Test
     void testReadWithZeroSize() throws IOException {
         // Zero length channel - will always be EOS, not reading anything into the buffer
-        try (final SeekableByteChannel sbc = InputStreamChannelFactory.create(0, new TestInputStreamFactory(testBytes)).create()) {
+        try (SeekableByteChannel sbc = InputStreamChannelFactory.create(0, new TestInputStreamFactory(testBytes)).create()) {
             ByteBuffer buff = ByteBuffer.allocate(1);
             assertEquals(0, sbc.size());
             assertEquals(-1, sbc.read(buff));
@@ -134,7 +134,7 @@ class InputStreamChannelFactoryTest extends UnitTest {
     void testStartReadBeyondActualData() throws IOException {
         // Set an SBC that is larger than the data we have, ensure an IOException occurs when reading
         final int sbcLength = testBytes.length + 8;
-        try (final SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, new TestInputStreamFactory(testBytes)).create()) {
+        try (SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, new TestInputStreamFactory(testBytes)).create()) {
             ByteBuffer buff = ByteBuffer.allocate(32);
             assertEquals(sbcLength, sbc.size());
             // Set position beyond length
@@ -148,7 +148,7 @@ class InputStreamChannelFactoryTest extends UnitTest {
     void testReadWithLargerThanDefinedSize() throws IOException {
         final int sbcLength = testBytes.length / 2;
         // Set an SBC that is smaller than the amount of data we have, ensure that we can't read more than the defined size
-        try (final SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, new TestInputStreamFactory(testBytes)).create()) {
+        try (SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, new TestInputStreamFactory(testBytes)).create()) {
             ByteBuffer buff = ByteBuffer.allocate(32);
             assertEquals(sbcLength, sbc.size());
             sbc.read(buff);

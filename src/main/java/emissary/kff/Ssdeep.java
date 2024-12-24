@@ -128,7 +128,7 @@ public final class Ssdeep {
         public SsContext(final SeekableByteChannelFactory sbcf) {
             long expectedInputLength = 0;
 
-            try (final SeekableByteChannel sbc = sbcf.create()) {
+            try (SeekableByteChannel sbc = sbcf.create()) {
                 expectedInputLength = sbc.size();
             } catch (final IOException ioe) {
                 // Ignore
@@ -283,7 +283,7 @@ public final class Ssdeep {
             beginHashing();
             final RollingState rollState = new RollingState();
 
-            try (final InputStream is = Channels.newInputStream(sbcf.create())) {
+            try (InputStream is = Channels.newInputStream(sbcf.create())) {
                 final byte[] b = new byte[1024];
 
                 int bytesRead;
@@ -438,7 +438,7 @@ public final class Ssdeep {
      * @throws IOException If there is some I/O problem accessing the file.
      */
     public String fuzzyHashFile(final File file) throws IOException {
-        try (final RandomAccessFile stream = new RandomAccessFile(file, "r")) {
+        try (RandomAccessFile stream = new RandomAccessFile(file, "r")) {
             final SsContext ctx = new SsContext(file);
             while (true) {
                 stream.seek(0);
@@ -706,7 +706,7 @@ public final class Ssdeep {
     public static void main(final String[] args) throws Exception {
         final Ssdeep ss = new Ssdeep();
         for (final String f : args) {
-            try (final InputStream is = Files.newInputStream(Paths.get(f))) {
+            try (InputStream is = Files.newInputStream(Paths.get(f))) {
                 final byte[] buffer = IOUtils.toByteArray(is);
                 // output format matches the original ssdeep program
                 System.out.println(ss.fuzzyHash(buffer) + ",\"" + f + "\"");

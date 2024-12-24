@@ -15,7 +15,7 @@ public class ChannelTestHelper {
 
     public static void checkByteArrayAgainstSbc(final byte[] bytesToVerify, final SeekableByteChannelFactory sbcf)
             throws IOException {
-        try (final SeekableByteChannel sbc = sbcf.create()) {
+        try (SeekableByteChannel sbc = sbcf.create()) {
             int startIndex;
             int length;
             for (startIndex = 0; startIndex < bytesToVerify.length; startIndex++) {
