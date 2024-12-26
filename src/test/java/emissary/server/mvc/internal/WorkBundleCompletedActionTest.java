@@ -63,7 +63,7 @@ class WorkBundleCompletedActionTest extends EndpointTestBase {
         formParams.replace(WORK_BUNDLE_STATUS, Collections.singletonList(badValue));
 
         // test
-        try (final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(500, status);
@@ -78,7 +78,7 @@ class WorkBundleCompletedActionTest extends EndpointTestBase {
         formParams.replace(SPACE_NAME, Collections.singletonList("ThisShouldCauseAnException"));
 
         // test
-        try (final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(500, status);
@@ -93,7 +93,7 @@ class WorkBundleCompletedActionTest extends EndpointTestBase {
         formParams.replace(SPACE_NAME, Collections.singletonList(WORKSPACE_NAME + "ThisWillMiss"));
 
         // test
-        try (final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(500, status);
@@ -110,7 +110,7 @@ class WorkBundleCompletedActionTest extends EndpointTestBase {
         formParams.replace(CLIENT_NAME, Collections.singletonList("ThisIsBad"));
 
         // test
-        try (final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(500, status);
@@ -122,7 +122,7 @@ class WorkBundleCompletedActionTest extends EndpointTestBase {
     @Test
     void itemNotPresentInPending() {
         // test
-        try (final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(500, status);
@@ -141,7 +141,7 @@ class WorkBundleCompletedActionTest extends EndpointTestBase {
         Namespace.bind(WORKSPACE_BIND_KEY, spyWs);
 
         // test
-        try (final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
+        try (Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
             // verify
             final int status = response.getStatus();
             assertEquals(200, status);

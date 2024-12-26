@@ -262,8 +262,8 @@ public class Executrix {
      */
     public static void writeFile(final byte[] theContent, final int pos, final int len, final String filename, final boolean append)
             throws IOException {
-        try (final FileOutputStream theOutput = new FileOutputStream(filename, append);
-                final BufferedOutputStream theStream = new BufferedOutputStream(theOutput)) {
+        try (FileOutputStream theOutput = new FileOutputStream(filename, append);
+                BufferedOutputStream theStream = new BufferedOutputStream(theOutput)) {
             theStream.write(theContent, pos, len);
         }
     }

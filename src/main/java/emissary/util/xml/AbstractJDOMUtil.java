@@ -121,7 +121,7 @@ public abstract class AbstractJDOMUtil {
     @Nullable
     public static String toString(final Document jdom) {
         final XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-        try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             outputter.output(jdom, os);
             return os.toString();
         } catch (IOException iox) {

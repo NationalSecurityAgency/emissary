@@ -770,7 +770,7 @@ public class EmissaryServer {
         sslContextFactory.setKeyStorePassword(keystorePass);
 
         KeyStore trustStoreInstance;
-        try (final InputStream is = Files.newInputStream(Paths.get(trustStore))) {
+        try (InputStream is = Files.newInputStream(Paths.get(trustStore))) {
             trustStoreInstance = KeyStore.getInstance("JKS");
             trustStoreInstance.load(is, trustStorePass.toCharArray());
         } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException e) {
