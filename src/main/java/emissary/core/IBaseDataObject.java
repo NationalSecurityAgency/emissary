@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 public interface IBaseDataObject {
 
@@ -415,6 +416,7 @@ public interface IBaseDataObject {
      * @param sep the separator for multivalued fields
      * @return the string value or null if no such element
      */
+    @Nullable
     default String getParameterAsConcatString(final String key, final String sep) {
         final var strParameter = String.join(sep, getParameterAsStrings(key));
         return StringUtils.isBlank(strParameter) ? null : strParameter;
