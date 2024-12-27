@@ -514,6 +514,12 @@ class BaseDataObjectTest extends UnitTest {
     }
 
     @Test
+    void testStringParameterOnEmptyValue() {
+        this.b.putParameter("A", "");
+        assertEquals("", this.b.getStringParameter("A"), "Empty parameter must be returned as empty string");
+    }
+
+    @Test
     void testNumSiblings() {
         this.b.setNumSiblings(10);
         assertEquals(10, this.b.getNumSiblings(), "NumSiblings simple set/get failed");
@@ -1365,7 +1371,7 @@ class BaseDataObjectTest extends UnitTest {
 
         this.b.putParameter("A", "");
         assertNull(this.b.getParameterAsString("A"));
-        assertNull(this.b.getParameterAsConcatString("A"));
+        assertEquals("", this.b.getParameterAsConcatString("A"));
 
         assertNull(this.b.getParameterAsString("DNE"));
         assertNull(this.b.getParameterAsConcatString("DNE"));

@@ -4,7 +4,6 @@ import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.directory.DirectoryEntry;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -418,8 +418,11 @@ public interface IBaseDataObject {
      */
     @Nullable
     default String getParameterAsConcatString(final String key, final String sep) {
-        final var strParameter = String.join(sep, getParameterAsStrings(key));
-        return StringUtils.isBlank(strParameter) ? null : strParameter;
+        Collection<String> strings = getParameterAsStrings(key);
+        if (strings.stream().anyMatch(Objects::nonNull)) {
+            return String.join(sep, strings);
+        }
+        return null;
     }
 
     /**
