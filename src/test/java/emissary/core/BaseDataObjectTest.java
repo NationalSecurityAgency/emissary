@@ -1352,6 +1352,7 @@ class BaseDataObjectTest extends UnitTest {
             this.b.appendParameter("A", "THREE");
             assertEquals("1", this.b.getParameterAsString("A"));
             assertEquals("1;TWO;THREE", this.b.getParameterAsConcatString("A"));
+            assertEquals("1;TWO;THREE", this.b.getStringParameter("A"));
             LogbackTester.SimplifiedLogEvent logEvent = new LogbackTester.SimplifiedLogEvent(Level.WARN,
                     "Multiple values for parameter, returning the first - parameter:A, number of values:3", null);
             logbackTester.checkLogList(Collections.singletonList(logEvent));
@@ -1360,27 +1361,33 @@ class BaseDataObjectTest extends UnitTest {
         this.b.putParameter("A", 2L);
         assertEquals("2", this.b.getParameterAsString("A"));
         assertEquals("2", this.b.getParameterAsConcatString("A"));
+        assertEquals("2", this.b.getStringParameter("A"));
 
         this.b.putParameter("A", "THREE");
         assertEquals("THREE", this.b.getParameterAsString("A"));
         assertEquals("THREE", this.b.getParameterAsConcatString("A"));
+        assertEquals("THREE", this.b.getStringParameter("A"));
 
         this.b.putParameter("A", null);
         assertNull(this.b.getParameterAsString("A"));
         assertNull(this.b.getParameterAsConcatString("A"));
+        assertNull(this.b.getStringParameter("A"));
 
         this.b.putParameter("A", "");
         assertEquals("", this.b.getParameterAsString("A"));
         assertEquals("", this.b.getParameterAsConcatString("A"));
+        assertEquals("", this.b.getStringParameter("A"));
 
         assertNull(this.b.getParameterAsString("DNE"));
         assertNull(this.b.getParameterAsConcatString("DNE"));
+        assertNull(this.b.getStringParameter("DNE"));
 
         this.b.putParameter("A", null);
         this.b.appendParameter("A", "FOUR");
         this.b.appendParameter("A", "  ");
         assertEquals("null", this.b.getParameterAsString("A"));
         assertEquals("null;FOUR;  ", this.b.getParameterAsConcatString("A"));
+        assertEquals("null;FOUR;  ", this.b.getStringParameter("A"));
     }
 
 }

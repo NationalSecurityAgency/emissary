@@ -358,7 +358,7 @@ public interface IBaseDataObject {
      */
     @Deprecated
     default String getStringParameter(final String key) {
-        return getParameterAsConcatString(key);
+        return getStringParameter(key, DEFAULT_PARAM_SEPARATOR);
     }
 
     /**
@@ -371,7 +371,25 @@ public interface IBaseDataObject {
      */
     @Deprecated
     default String getStringParameter(final String key, final String sep) {
-        return getParameterAsConcatString(key, sep);
+        final List<Object> obj = getParameter(key);
+        if (obj == null) {
+            return null;
+        } else if (obj.isEmpty()) {
+            return null;
+        } else if ((obj.size() == 1) && (obj.get(0) instanceof String)) {
+            return (String) obj.get(0);
+        } else if ((obj.size() == 1) && (obj.get(0) == null)) {
+            return null;
+        } else {
+            final StringBuilder sb = new StringBuilder();
+            for (final Object item : obj) {
+                if (sb.length() > 0) {
+                    sb.append(sep);
+                }
+                sb.append(item);
+            }
+            return sb.toString();
+        }
     }
 
     /**
