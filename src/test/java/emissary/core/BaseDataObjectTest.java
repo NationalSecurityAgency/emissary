@@ -1370,7 +1370,7 @@ class BaseDataObjectTest extends UnitTest {
         assertNull(this.b.getParameterAsConcatString("A"));
 
         this.b.putParameter("A", "");
-        assertNull(this.b.getParameterAsString("A"));
+        assertEquals("", this.b.getParameterAsString("A"));
         assertEquals("", this.b.getParameterAsConcatString("A"));
 
         assertNull(this.b.getParameterAsString("DNE"));
