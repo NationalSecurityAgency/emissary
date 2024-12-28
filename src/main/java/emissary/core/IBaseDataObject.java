@@ -370,6 +370,7 @@ public interface IBaseDataObject {
      * @deprecated use {@link #getParameterAsConcatString(String, String)}
      */
     @Deprecated
+    @Nullable
     default String getStringParameter(final String key, final String sep) {
         final List<Object> obj = getParameter(key);
         if (obj == null) {

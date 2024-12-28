@@ -505,18 +505,24 @@ class BaseDataObjectTest extends UnitTest {
     void testStringParameterOnNonStringValue() {
         this.b.putParameter("A", 1L);
         assertEquals("1", this.b.getStringParameter("A"), "Non-string parameters must call toString method");
+        assertEquals("1", this.b.getParameterAsConcatString("A"), "Non-string parameters must call toString method");
+        assertEquals("1", this.b.getParameterAsString("A"), "Non-string parameters must call toString method");
     }
 
     @Test
     void testStringParameterOnNullValue() {
         this.b.putParameter("A", null);
         assertNull(this.b.getStringParameter("A"), "Null parameter must be returned as null");
+        assertNull(this.b.getParameterAsConcatString("A"), "Null parameter must be returned as null");
+        assertNull(this.b.getParameterAsString("A"), "Null parameter must be returned as null");
     }
 
     @Test
     void testStringParameterOnEmptyValue() {
         this.b.putParameter("A", "");
         assertEquals("", this.b.getStringParameter("A"), "Empty parameter must be returned as empty string");
+        assertEquals("", this.b.getParameterAsConcatString("A"), "Empty parameter must be returned as empty string");
+        assertEquals("", this.b.getParameterAsString("A"), "Empty parameter must be returned as empty string");
     }
 
     @Test
@@ -801,8 +807,14 @@ class BaseDataObjectTest extends UnitTest {
         this.b.mergeParameters(map);
 
         assertEquals("uno", this.b.getStringParameter("ONE"), "When merging parameters previous values must override");
+        assertEquals("uno", this.b.getParameterAsConcatString("ONE"), "When merging parameters previous values must override");
+        assertEquals("uno", this.b.getParameterAsString("ONE"), "When merging parameters previous values must override");
         assertEquals("deux", this.b.getStringParameter("TWO"), "When merging parameters previous values must override");
+        assertEquals("deux", this.b.getParameterAsConcatString("TWO"), "When merging parameters previous values must override");
+        assertEquals("deux", this.b.getParameterAsString("TWO"), "When merging parameters previous values must override");
         assertEquals("tres", this.b.getStringParameter("THREE"), "When merging  parameters new keys must be stored");
+        assertEquals("tres", this.b.getParameterAsConcatString("THREE"), "When merging  parameters new keys must be stored");
+        assertEquals("tres", this.b.getParameterAsString("THREE"), "When merging  parameters new keys must be stored");
     }
 
     @Test
@@ -819,8 +831,14 @@ class BaseDataObjectTest extends UnitTest {
         this.b.putParameters(map, IBaseDataObject.MergePolicy.KEEP_ALL);
 
         assertEquals("uno;uno", this.b.getStringParameter("ONE"), "When specifying KEEP_ALL values must all stay");
+        assertEquals("uno;uno", this.b.getParameterAsConcatString("ONE"), "When specifying KEEP_ALL values must all stay");
+        assertEquals("uno", this.b.getParameterAsString("ONE"), "When specifying KEEP_ALL values must all stay");
         assertEquals("deux;dos", this.b.getStringParameter("TWO"), "When specifying KEEP_ALL values must all stay");
+        assertEquals("deux;dos", this.b.getParameterAsConcatString("TWO"), "When specifying KEEP_ALL values must all stay");
+        assertEquals("deux", this.b.getParameterAsString("TWO"), "When specifying KEEP_ALL values must all stay");
         assertEquals("tres", this.b.getStringParameter("THREE"), "When specifying KEEP_ALL new keys must be stored");
+        assertEquals("tres", this.b.getParameterAsConcatString("THREE"), "When specifying KEEP_ALL new keys must be stored");
+        assertEquals("tres", this.b.getParameterAsString("THREE"), "When specifying KEEP_ALL new keys must be stored");
     }
 
     @Test
@@ -850,15 +868,25 @@ class BaseDataObjectTest extends UnitTest {
     void testParameters() {
         this.b.putParameter("ME", "YOU");
         assertEquals("YOU", this.b.getStringParameter("ME"), "Gotten parameter");
+        assertEquals("YOU", this.b.getParameterAsConcatString("ME"), "Gotten parameter");
+        assertEquals("YOU", this.b.getParameterAsString("ME"), "Gotten parameter");
         final Map<String, Object> map = new HashMap<>();
         map.put("ONE", "uno");
         map.put("TWO", "dos");
         map.put("THREE", "tres");
         this.b.putParameters(map);
         assertEquals("uno", this.b.getStringParameter("ONE"), "Map put parameter gotten");
+        assertEquals("uno", this.b.getParameterAsConcatString("ONE"), "Map put parameter gotten");
+        assertEquals("uno", this.b.getParameterAsString("ONE"), "Map put parameter gotten");
         assertEquals("dos", this.b.getStringParameter("TWO"), "Map put parameter gotten");
+        assertEquals("dos", this.b.getParameterAsConcatString("TWO"), "Map put parameter gotten");
+        assertEquals("dos", this.b.getParameterAsString("TWO"), "Map put parameter gotten");
         assertEquals("tres", this.b.getStringParameter("THREE"), "Map put parameter gotten");
+        assertEquals("tres", this.b.getParameterAsConcatString("THREE"), "Map put parameter gotten");
+        assertEquals("tres", this.b.getParameterAsString("THREE"), "Map put parameter gotten");
         assertEquals("YOU", this.b.getStringParameter("ME"), "Gotten parameter");
+        assertEquals("YOU", this.b.getParameterAsConcatString("ME"), "Gotten parameter");
+        assertEquals("YOU", this.b.getParameterAsString("ME"), "Gotten parameter");
 
         // Deletes
         this.b.deleteParameter("THREE");
@@ -867,6 +895,8 @@ class BaseDataObjectTest extends UnitTest {
         // Overwrite
         this.b.putParameter("ME", "THEM");
         assertEquals("THEM", this.b.getStringParameter("ME"), "Gotten parameter");
+        assertEquals("THEM", this.b.getParameterAsConcatString("ME"), "Gotten parameter");
+        assertEquals("THEM", this.b.getParameterAsString("ME"), "Gotten parameter");
 
         // Clear
         this.b.clearParameters();
@@ -901,6 +931,8 @@ class BaseDataObjectTest extends UnitTest {
         this.b.appendParameter("YO", "GABBA");
         this.b.appendParameter("YO", "GABBA");
         assertEquals("GABBA;GABBA", this.b.getStringParameter("YO"), "Appended duplicate parameters should be preserved");
+        assertEquals("GABBA;GABBA", this.b.getParameterAsConcatString("YO"), "Appended duplicate parameters should be preserved");
+        assertEquals("GABBA", this.b.getParameterAsString("YO"), "Appended duplicate parameters should be preserved");
         assertTrue(this.b.hasParameter("YO"), "HasParameter should be true");
     }
 
@@ -909,6 +941,8 @@ class BaseDataObjectTest extends UnitTest {
         this.b.appendUniqueParameter("YO", "GABBA");
         this.b.appendUniqueParameter("YO", "GABBA");
         assertEquals("GABBA", this.b.getStringParameter("YO"), "Appended unique  parameters should be collapsed");
+        assertEquals("GABBA", this.b.getParameterAsConcatString("YO"), "Appended unique  parameters should be collapsed");
+        assertEquals("GABBA", this.b.getParameterAsString("YO"), "Appended unique  parameters should be collapsed");
         assertTrue(this.b.hasParameter("YO"), "HasParameter should be true");
     }
 
@@ -926,6 +960,12 @@ class BaseDataObjectTest extends UnitTest {
         assertEquals("FOO1;FOO2;FOO3;FOO4",
                 this.b.getStringParameter("FOO"),
                 "Returned string should be combination of initial list and added value");
+        assertEquals("FOO1;FOO2;FOO3;FOO4",
+                this.b.getParameterAsConcatString("FOO"),
+                "Returned string should be combination of initial list and added value");
+        assertEquals("FOO1",
+                this.b.getParameterAsString("FOO"),
+                "Returned string should be combination of initial list and added value");
     }
 
     @Test
@@ -940,6 +980,10 @@ class BaseDataObjectTest extends UnitTest {
         assertEquals(3, this.b.getParameter("FOO").size(), "Returned list size should match what was put in");
         this.b.appendParameter("FOO", "FOO4");
         assertEquals("FOO1;FOO2;FOO3;FOO4", this.b.getStringParameter("FOO"), "Returned string should be combination of initial set and added value");
+        assertEquals("FOO1;FOO2;FOO3;FOO4", this.b.getParameterAsConcatString("FOO"),
+                "Returned string should be combination of initial set and added value");
+        assertEquals("FOO1", this.b.getParameterAsString("FOO"),
+                "Returned string should be combination of initial set and added value");
     }
 
     @Test
@@ -971,6 +1015,8 @@ class BaseDataObjectTest extends UnitTest {
         this.b.putParameter("ME", "YOU");
         this.b.appendParameter("ME", "FOO");
         assertEquals("YOU;FOO", this.b.getStringParameter("ME"), "Appended parameter value");
+        assertEquals("YOU;FOO", this.b.getParameterAsConcatString("ME"), "Appended parameter value");
+        assertEquals("YOU", this.b.getParameterAsString("ME"), "Appended parameter value");
     }
 
     @Test
@@ -978,6 +1024,8 @@ class BaseDataObjectTest extends UnitTest {
         this.b.putParameter("ME", "YOU");
         this.b.appendParameter("ME", Arrays.asList("FOO", "BAR", "BAZ"));
         assertEquals("YOU;FOO;BAR;BAZ", this.b.getStringParameter("ME"), "Appended parameter value");
+        assertEquals("YOU;FOO;BAR;BAZ", this.b.getParameterAsConcatString("ME"), "Appended parameter value");
+        assertEquals("YOU", this.b.getParameterAsString("ME"), "Appended parameter value");
 
         final Set<String> s = new TreeSet<>();
         s.add("ZAB");
@@ -986,12 +1034,16 @@ class BaseDataObjectTest extends UnitTest {
         this.b.appendParameter("ME", s);
 
         assertEquals("YOU;FOO;BAR;BAZ;OOF;RAB;ZAB", this.b.getStringParameter("ME"), "Appended set paramter value");
+        assertEquals("YOU;FOO;BAR;BAZ;OOF;RAB;ZAB", this.b.getParameterAsConcatString("ME"), "Appended set paramter value");
+        assertEquals("YOU", this.b.getParameterAsString("ME"), "Appended set paramter value");
     }
 
     @Test
     void testAppendParameterOntoEmpty() {
         this.b.appendParameter("ME", "FOO");
         assertEquals("FOO", this.b.getStringParameter("ME"), "Appended parameter value");
+        assertEquals("FOO", this.b.getParameterAsConcatString("ME"), "Appended parameter value");
+        assertEquals("FOO", this.b.getParameterAsString("ME"), "Appended parameter value");
     }
 
 
