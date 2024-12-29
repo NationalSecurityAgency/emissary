@@ -11,6 +11,7 @@ import emissary.core.EmissaryException;
 import emissary.core.EmissaryRuntimeException;
 import emissary.core.IPausable;
 import emissary.core.MetricsManager;
+import emissary.core.MobileAgent;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.core.ResourceWatcher;
@@ -18,6 +19,7 @@ import emissary.core.sentinel.Sentinel;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.place.IServiceProviderPlace;
+import emissary.place.ServiceProviderRefreshablePlace;
 import emissary.pool.AgentPool;
 import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
@@ -70,7 +72,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.annotation.Nullable;
 import javax.naming.directory.AttributeInUseException;
 
@@ -276,6 +280,60 @@ public class EmissaryServer {
     public static void unpause(boolean silent) throws NamespaceException {
         LOG.debug("Unpausing Emissary Server");
         Namespace.lookup(IPausable.class, silent).forEach(IPausable::unpause);
+    }
+
+    /**
+     * Refresh reloadable places
+     *
+     * @throws NamespaceException if there is an issue
+     */
+    public static void refresh() throws NamespaceException {
+        refresh(true);
+    }
+
+    /**
+     * Invalidate places that are reconfigurable
+     *
+     * @param silent true to silence {@link NamespaceException}, false otherwise
+     * @throws NamespaceException if there is an issue
+     */
+    public static void refresh(final boolean silent) throws NamespaceException {
+        LOG.info("Invalidating places that need to be reconfigured");
+        Namespace.lookup(ServiceProviderRefreshablePlace.class, silent).forEach(ServiceProviderRefreshablePlace::invalidate);
+
+        var unused = CompletableFuture.runAsync(EmissaryServer::handleRefresh);
+    }
+
+    private static void handleRefresh() {
+        try {
+            pause();
+            waitForAgentsToDrain();
+            Namespace.lookup(ServiceProviderRefreshablePlace.class).forEach(ServiceProviderRefreshablePlace::refresh);
+            unpause();
+        } catch (Exception e) {
+            LOG.error("There was an error trying to refresh services, shutting down!!", e);
+            stopServer();
+        }
+    }
+
+    private static void waitForAgentsToDrain() throws NamespaceException, TimeoutException {
+        long agentCount;
+        try {
+            long maxWait = getInstance().getNode().getNodeRefreshTimeout();
+            long timeout = System.currentTimeMillis() + maxWait;
+            final Set<MobileAgent> agents = Namespace.lookup(MobileAgent.class, true);
+            LOG.info("Waiting for server to drain, waiting max of {} minutes...", TimeUnit.MILLISECONDS.toMinutes(maxWait));
+            do {
+                TimeUnit.SECONDS.sleep(5);
+                agentCount = agents.stream().filter(MobileAgent::isInUse).count();
+            } while (agentCount > 0 && System.currentTimeMillis() < timeout);
+
+            if (agentCount > 0) {
+                throw new TimeoutException("Server did not drain in the allotted amount of time");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**

@@ -31,6 +31,9 @@ public abstract class ServiceCommand extends HttpCommand {
     @Option(names = {"--stop"}, description = "Shutdown the service\nDefault: ${DEFAULT-VALUE}")
     private boolean stop = false;
 
+    @Option(names = {"--refresh"}, description = "Refresh services\nDefault: ${DEFAULT-VALUE}")
+    private boolean refresh = false;
+
     @Option(names = {"--kill"}, description = "Force the shutdown of the service\nDefault: ${DEFAULT-VALUE}")
     private boolean kill = false;
 
@@ -46,6 +49,10 @@ public abstract class ServiceCommand extends HttpCommand {
 
     public boolean isStop() {
         return stop;
+    }
+
+    public boolean isRefresh() {
+        return refresh;
     }
 
     public boolean isKill() {
@@ -109,6 +116,8 @@ public abstract class ServiceCommand extends HttpCommand {
                     pauseService();
                 } else if (isUnpause()) {
                     unpauseService();
+                } else if (isRefresh()) {
+                    refreshService();
                 } else {
                     throw new EmissaryRuntimeException("Emissary " + getServiceName() + " is already running");
                 }
@@ -149,6 +158,13 @@ public abstract class ServiceCommand extends HttpCommand {
      */
     protected void unpauseService() {
         throw new UnsupportedOperationException("Unpause not implemented for " + getServiceName());
+    }
+
+    /**
+     * A method that refreshes services
+     */
+    protected void refreshService() {
+        throw new UnsupportedOperationException("Refresh not implemented for " + getServiceName());
     }
 
 }
