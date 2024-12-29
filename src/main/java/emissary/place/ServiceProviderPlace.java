@@ -72,6 +72,8 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
     @Nullable
     protected Configurator configG;
 
+    protected final List<String> configLocs = new ArrayList<>();
+
     /**
      * A <i><b>local</b></i> reference to the directory that this place resides in. Every JVM that contains 'places' must
      * have a local directory
@@ -109,6 +111,8 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      */
     @Nullable
     protected String serviceDescription;
+
+    protected String placeLocation;
 
     /**
      * Static context logger
@@ -219,6 +223,15 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
     }
 
     /**
+     * Create the place based on another ServiceProviderPlace
+     *
+     * @param place the ServiceProviderRefreshablePlace to clone
+     */
+    protected ServiceProviderPlace(final ServiceProviderPlace place) {
+        super();
+    }
+
+    /**
      * Load the configurator
      *
      * @param configStream the stream to use or null to auto configure
@@ -253,12 +266,11 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
         if (placeLocation == null) {
             placeLocation = this.getClass().getSimpleName();
         }
-
+        this.placeLocation = placeLocation;
         // Extract config data stream name from place location
         // and try finding config info with and without the
         // package name of this class (in that order)
         String myPackage = this.getClass().getPackage().getName();
-        List<String> configLocs = new ArrayList<>();
         // Dont use KeyManipulator for this, only works when hostname/fqdn has dots
         int pos = placeLocation.lastIndexOf("/");
         String serviceClass = pos > -1 ? placeLocation.substring(pos + 1) : placeLocation;
@@ -273,6 +285,15 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      * @param theDir name of our directory
      */
     protected void setupPlace(@Nullable String theDir, String placeLocation) throws IOException {
+        setupPlace(theDir, placeLocation, true);
+    }
+
+    /**
+     * Help the constructor get the place running
+     *
+     * @param theDir name of our directory
+     */
+    protected void setupPlace(@Nullable String theDir, String placeLocation, boolean register) throws IOException {
 
         // Customize the logger to the runtime class
         logger = LoggerFactory.getLogger(this.getClass());
@@ -280,8 +301,10 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
         // The order of the following initialization calls
         // is touchy. NPE all over if you mess up here.
 
-        // Set ServicePlace config items
-        configureServicePlace(placeLocation);
+        if (register) {
+            // Set ServicePlace config items
+            configureServicePlace(placeLocation);
+        }
 
         // Backwards compatibility setup items
         DirectoryEntry firstentry = new DirectoryEntry(keys.get(0));
@@ -313,10 +336,12 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
             Namespace.bind(bindKey, this);
         }
 
-        // Register with the directory
-        // This pushes all our keys out to the directory which
-        // sends them on in turn to peers, &c. in the p2p network
-        register();
+        if (register) {
+            // Register with the directory
+            // This pushes all our keys out to the directory which
+            // sends them on in turn to peers, &c. in the p2p network
+            register();
+        }
 
         // register MBean with JMX
         JMXUtil.registerMBean(this);
@@ -924,7 +949,6 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
             logger.warn("Deregister ERROR keys={}", keys, e);
         }
     }
-
 
     /**
      * Remove a service proxy from the running place. Proxy strings not found registered will be ignored Will remove all

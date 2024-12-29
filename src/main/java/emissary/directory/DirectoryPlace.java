@@ -6,6 +6,7 @@ import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
 import emissary.log.MDCConstants;
 import emissary.place.ServiceProviderPlace;
+import emissary.place.ServiceProviderRefreshablePlace;
 import emissary.server.mvc.adapters.DirectoryAdapter;
 
 import jakarta.annotation.Nullable;
@@ -979,6 +980,11 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         // remove denied entries
         currentList.removeIf(de -> de.getLocalPlace() != null && de.getLocalPlace().isDenied(payload.currentForm()));
 
+        // test for invalidated places
+        currentList.stream().filter(e -> e.getLocalPlace() instanceof ServiceProviderRefreshablePlace
+                && ((ServiceProviderRefreshablePlace) e.getLocalPlace()).isInvalidated())
+                .forEach(this::handleEntryRefresh);
+
         if (currentList.isEmpty()) {
             logger.debug("nextKeys - no non-DENIED entries found here for {}", dataId);
             return List.of();
@@ -1034,6 +1040,19 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         }
 
         return keyList;
+    }
+
+    protected synchronized void handleEntryRefresh(final DirectoryEntry entry) {
+        // attempt to see if the place has been refreshed already
+        entry.clearLocalPlace();
+
+        final ServiceProviderRefreshablePlace place = (ServiceProviderRefreshablePlace) entry.getLocalPlace();
+        if (place.isInvalidated()) {
+            logger.debug("{} has been invalidated, attempting refresh ....", entry);
+            place.refresh();
+            entry.clearLocalPlace();
+            logger.debug("{} has been refreshed", entry);
+        }
     }
 
     /**
@@ -1186,10 +1205,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      */
     @Override
     public int irdRemovePlaces(@Nullable final List<String> keys, final boolean propagating) {
-        if (this.emissaryNode.isStandalone()) {
-            logger.debug("Cannot remove remote places in standalone nodes");
-            return 0;
-        }
 
         if ((keys == null) || keys.isEmpty()) {
             logger.warn("Ignoring null or empty key list for irdRemovePlaces");
