@@ -72,6 +72,8 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
     @Nullable
     protected Configurator configG;
 
+    protected final List<String> configLocs = new ArrayList<>();
+
     /**
      * A <i><b>local</b></i> reference to the directory that this place resides in. Every JVM that contains 'places' must
      * have a local directory
@@ -109,6 +111,8 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      */
     @Nullable
     protected String serviceDescription;
+
+    protected String placeLocation;
 
     /**
      * Static context logger
@@ -253,12 +257,11 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
         if (placeLocation == null) {
             placeLocation = this.getClass().getSimpleName();
         }
-
+        this.placeLocation = placeLocation;
         // Extract config data stream name from place location
         // and try finding config info with and without the
         // package name of this class (in that order)
         String myPackage = this.getClass().getPackage().getName();
-        List<String> configLocs = new ArrayList<>();
         // Dont use KeyManipulator for this, only works when hostname/fqdn has dots
         int pos = placeLocation.lastIndexOf("/");
         String serviceClass = pos > -1 ? placeLocation.substring(pos + 1) : placeLocation;
@@ -924,7 +927,6 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
             logger.warn("Deregister ERROR keys={}", keys, e);
         }
     }
-
 
     /**
      * Remove a service proxy from the running place. Proxy strings not found registered will be ignored Will remove all
