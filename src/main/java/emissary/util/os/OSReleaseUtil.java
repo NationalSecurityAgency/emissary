@@ -13,6 +13,11 @@ public class OSReleaseUtil {
 
     private OSReleaseUtil() {}
 
+    /**
+     * Finds and parses the VERSION_ID entry in the /etc/os-release file
+     *
+     * @return the VERSION_ID value
+     */
     public static String getVersionId() {
         return getVersionId(OS_RELEASE_PATH);
     }
@@ -34,6 +39,11 @@ public class OSReleaseUtil {
         return versionId;
     }
 
+    /**
+     * Uses the VERSION_ID entry in the /etc/os-release file to determine the major OS version
+     *
+     * @return the major OS version
+     */
     public static String getMajorVersion() {
         return getMajorVersion(OS_RELEASE_PATH);
     }
@@ -42,6 +52,11 @@ public class OSReleaseUtil {
         return String.format("%.0f", Float.parseFloat(getVersionId(osReleasePath)));
     }
 
+    /**
+     * Use the /etc/os-release file to determine if the OS is Ubuntu
+     *
+     * @return true if ubuntu is found, false otherwise
+     */
     public static boolean isUbuntu() {
         return isUbuntu(OS_RELEASE_PATH);
     }
