@@ -832,13 +832,13 @@ class BaseDataObjectTest extends UnitTest {
 
         assertEquals("uno;uno", this.b.getStringParameter("ONE"), "When specifying KEEP_ALL values must all stay");
         assertEquals("uno;uno", this.b.getParameterAsConcatString("ONE"), "When specifying KEEP_ALL values must all stay");
-        assertEquals("uno", this.b.getParameterAsString("ONE"), "When specifying KEEP_ALL values must all stay");
+        assertEquals("uno", this.b.getParameterAsString("ONE"), "When specifying KEEP_ALL first value should be retained");
         assertEquals("deux;dos", this.b.getStringParameter("TWO"), "When specifying KEEP_ALL values must all stay");
         assertEquals("deux;dos", this.b.getParameterAsConcatString("TWO"), "When specifying KEEP_ALL values must all stay");
-        assertEquals("deux", this.b.getParameterAsString("TWO"), "When specifying KEEP_ALL values must all stay");
+        assertEquals("deux", this.b.getParameterAsString("TWO"), "When specifying KEEP_ALL first value should be retained");
         assertEquals("tres", this.b.getStringParameter("THREE"), "When specifying KEEP_ALL new keys must be stored");
         assertEquals("tres", this.b.getParameterAsConcatString("THREE"), "When specifying KEEP_ALL new keys must be stored");
-        assertEquals("tres", this.b.getParameterAsString("THREE"), "When specifying KEEP_ALL new keys must be stored");
+        assertEquals("tres", this.b.getParameterAsString("THREE"), "When specifying KEEP_ALL first value should be retained");
     }
 
     @Test
@@ -932,7 +932,7 @@ class BaseDataObjectTest extends UnitTest {
         this.b.appendParameter("YO", "GABBA");
         assertEquals("GABBA;GABBA", this.b.getStringParameter("YO"), "Appended duplicate parameters should be preserved");
         assertEquals("GABBA;GABBA", this.b.getParameterAsConcatString("YO"), "Appended duplicate parameters should be preserved");
-        assertEquals("GABBA", this.b.getParameterAsString("YO"), "Appended duplicate parameters should be preserved");
+        assertEquals("GABBA", this.b.getParameterAsString("YO"), "Appended duplicate parameters first value should be preserved");
         assertTrue(this.b.hasParameter("YO"), "HasParameter should be true");
     }
 
@@ -940,9 +940,9 @@ class BaseDataObjectTest extends UnitTest {
     void testAppendUniqueParameters() {
         this.b.appendUniqueParameter("YO", "GABBA");
         this.b.appendUniqueParameter("YO", "GABBA");
-        assertEquals("GABBA", this.b.getStringParameter("YO"), "Appended unique  parameters should be collapsed");
-        assertEquals("GABBA", this.b.getParameterAsConcatString("YO"), "Appended unique  parameters should be collapsed");
-        assertEquals("GABBA", this.b.getParameterAsString("YO"), "Appended unique  parameters should be collapsed");
+        assertEquals("GABBA", this.b.getStringParameter("YO"), "Appended unique parameters should be collapsed");
+        assertEquals("GABBA", this.b.getParameterAsConcatString("YO"), "Appended unique parameters should be collapsed");
+        assertEquals("GABBA", this.b.getParameterAsString("YO"), "Appended unique parameters should be collapsed");
         assertTrue(this.b.hasParameter("YO"), "HasParameter should be true");
     }
 
@@ -965,7 +965,7 @@ class BaseDataObjectTest extends UnitTest {
                 "Returned string should be combination of initial list and added value");
         assertEquals("FOO1",
                 this.b.getParameterAsString("FOO"),
-                "Returned string should be combination of initial list and added value");
+                "Returned string should be first value from combination of initial list and added value");
     }
 
     @Test
@@ -983,7 +983,7 @@ class BaseDataObjectTest extends UnitTest {
         assertEquals("FOO1;FOO2;FOO3;FOO4", this.b.getParameterAsConcatString("FOO"),
                 "Returned string should be combination of initial set and added value");
         assertEquals("FOO1", this.b.getParameterAsString("FOO"),
-                "Returned string should be combination of initial set and added value");
+                "Returned string should be first value from combination of initial set and added value");
     }
 
     @Test
@@ -1025,7 +1025,7 @@ class BaseDataObjectTest extends UnitTest {
         this.b.appendParameter("ME", Arrays.asList("FOO", "BAR", "BAZ"));
         assertEquals("YOU;FOO;BAR;BAZ", this.b.getStringParameter("ME"), "Appended parameter value");
         assertEquals("YOU;FOO;BAR;BAZ", this.b.getParameterAsConcatString("ME"), "Appended parameter value");
-        assertEquals("YOU", this.b.getParameterAsString("ME"), "Appended parameter value");
+        assertEquals("YOU", this.b.getParameterAsString("ME"), "First value from appended parameter value");
 
         final Set<String> s = new TreeSet<>();
         s.add("ZAB");
@@ -1033,9 +1033,9 @@ class BaseDataObjectTest extends UnitTest {
         s.add("OOF");
         this.b.appendParameter("ME", s);
 
-        assertEquals("YOU;FOO;BAR;BAZ;OOF;RAB;ZAB", this.b.getStringParameter("ME"), "Appended set paramter value");
-        assertEquals("YOU;FOO;BAR;BAZ;OOF;RAB;ZAB", this.b.getParameterAsConcatString("ME"), "Appended set paramter value");
-        assertEquals("YOU", this.b.getParameterAsString("ME"), "Appended set paramter value");
+        assertEquals("YOU;FOO;BAR;BAZ;OOF;RAB;ZAB", this.b.getStringParameter("ME"), "Appended set parameter value");
+        assertEquals("YOU;FOO;BAR;BAZ;OOF;RAB;ZAB", this.b.getParameterAsConcatString("ME"), "Appended set parameter value");
+        assertEquals("YOU", this.b.getParameterAsString("ME"), "First value from appended set parameter value");
     }
 
     @Test
@@ -1043,7 +1043,7 @@ class BaseDataObjectTest extends UnitTest {
         this.b.appendParameter("ME", "FOO");
         assertEquals("FOO", this.b.getStringParameter("ME"), "Appended parameter value");
         assertEquals("FOO", this.b.getParameterAsConcatString("ME"), "Appended parameter value");
-        assertEquals("FOO", this.b.getParameterAsString("ME"), "Appended parameter value");
+        assertEquals("FOO", this.b.getParameterAsString("ME"), "First value from appended parameter value");
     }
 
 
