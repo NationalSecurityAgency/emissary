@@ -1,0 +1,8 @@
+NAME="Ubuntu"
+VERSION="20.04.3 LTS (Focal Fossa)"
+ID="ubuntu"
+ID_LIKE="debian"
+VERSION_ID="20.04"
+PRETTY_NAME="Ubuntu 20.04.3 LTS"
+HOME_URL="https://www.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
