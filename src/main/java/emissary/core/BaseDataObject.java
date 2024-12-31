@@ -972,7 +972,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         if (obj.size() > 1) {
             logger.warn("Multiple values for parameter, returning the first - parameter:{}, number of values:{}", key, obj.size());
         }
-        return StringUtils.trimToNull(obj.stream().findFirst().orElse(null));
+        return obj.stream().findFirst().orElse(null);
     }
 
     /**
