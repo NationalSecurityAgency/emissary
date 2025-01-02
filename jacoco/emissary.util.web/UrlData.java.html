@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UrlData.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.web</a> &gt; <span class="el_source">UrlData.java</span></div><h1>UrlData.java</h1><pre class="source lang-java linenums">package emissary.util.web;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
+
+/**
+ * The consolidated output from a web page retrieval
+ *
+ * @author mjf, 2000-08-01
+ */
+public class UrlData {
+
+    String password;
+    List&lt;UrlRequestProperty&gt; props;
+    String referer;
+    int responseCode;
+    byte[] theContent;
+    String theUrl;
+    int theMethod;
+    String userName;
+    String userAgent;
+
+    /*
+     * The request properties array sent into this constructor is copied. Note that a deep copy is not performed. If the
+     * properties inside the list are changed, this class will see the changes.
+     */
+<span class="fc" id="L28">    public UrlData(final String theUrl, final byte[] theContent, final int responseCode, final List&lt;UrlRequestProperty&gt; props) {</span>
+<span class="fc" id="L29">        this.theUrl = theUrl;</span>
+<span class="fc" id="L30">        this.theContent = theContent;</span>
+<span class="fc" id="L31">        this.responseCode = responseCode;</span>
+<span class="fc" id="L32">        this.theMethod = Url.GET;</span>
+<span class="fc" id="L33">        this.props = new ArrayList&lt;&gt;(props);</span>
+<span class="fc" id="L34">    }</span>
+
+<span class="fc" id="L36">    public UrlData() {}</span>
+
+<span class="fc" id="L38">    public UrlData(final String theUrl) {</span>
+<span class="fc" id="L39">        this.theUrl = theUrl;</span>
+<span class="fc" id="L40">    }</span>
+
+    /**
+     * Get the value of responseCode.
+     * 
+     * @return Value of responseCode.
+     */
+    public int getResponseCode() {
+<span class="fc" id="L48">        return this.responseCode;</span>
+    }
+
+    /**
+     * Set the value of responseCode.
+     * 
+     * @param v Value to assign to responseCode.
+     */
+    public void setResponseCode(final int v) {
+<span class="fc" id="L57">        this.responseCode = v;</span>
+<span class="fc" id="L58">    }</span>
+
+    /**
+     * Get the value of theUrl.
+     * 
+     * @return Value of theUrl.
+     */
+    public String getTheUrl() {
+<span class="fc" id="L66">        return this.theUrl;</span>
+    }
+
+    /**
+     * Set the value of theUrl.
+     * 
+     * @param v Value to assign to theUrl.
+     */
+    public void setTheUrl(final String v) {
+<span class="fc" id="L75">        this.theUrl = v;</span>
+<span class="fc" id="L76">    }</span>
+
+    /**
+     * Get the value of theContent.
+     * 
+     * @return Value of theContent.
+     */
+    public byte[] getTheContent() {
+<span class="nc" id="L84">        return this.theContent;</span>
+    }
+
+    public int getContentLength() {
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        return (this.theContent == null) ? 0 : this.theContent.length;</span>
+    }
+
+    /**
+     * Set the value of theContent.
+     * 
+     * @param v Value to assign to theContent.
+     */
+    public void setTheContent(final byte[] v) {
+<span class="fc" id="L97">        this.theContent = v;</span>
+<span class="fc" id="L98">    }</span>
+
+    /**
+     * Get the value of referer.
+     * 
+     * @return Value of referer.
+     */
+    public String getReferer() {
+<span class="fc" id="L106">        return this.referer;</span>
+    }
+
+    /**
+     * Set the value of referer.
+     * 
+     * @param v Value to assign to referer.
+     */
+    public void setReferer(final String v) {
+<span class="fc" id="L115">        this.referer = v;</span>
+<span class="fc" id="L116">    }</span>
+
+    /**
+     * Get the value of userAgent.
+     * 
+     * @return Value of userAgent.
+     */
+    public String getUserAgent() {
+<span class="fc" id="L124">        return this.userAgent;</span>
+    }
+
+    /**
+     * Set the value of userAgent.
+     * 
+     * @param v Value to assign to userAgent.
+     */
+    public void setUserAgent(final String v) {
+<span class="fc" id="L133">        this.userAgent = v;</span>
+<span class="fc" id="L134">    }</span>
+
+    /**
+     * Get the value of userName.
+     * 
+     * @return Value of userName.
+     */
+    public String getUserName() {
+<span class="fc" id="L142">        return this.userName;</span>
+    }
+
+    /**
+     * Set the value of userName.
+     * 
+     * @param v Value to assign to userName.
+     */
+    public void setUserName(final String v) {
+<span class="fc" id="L151">        this.userName = v;</span>
+<span class="fc" id="L152">    }</span>
+
+    /**
+     * Get the value of password.
+     * 
+     * @return Value of password.
+     */
+    public String getPassword() {
+<span class="fc" id="L160">        return this.password;</span>
+    }
+
+    /**
+     * Set the value of password.
+     * 
+     * @param v Value to assign to password.
+     */
+    public void setPassword(final String v) {
+<span class="fc" id="L169">        this.password = v;</span>
+<span class="fc" id="L170">    }</span>
+
+    /**
+     * Get the value of theMethod.
+     * 
+     * @return Value of theMethod.
+     */
+    public int getTheMethod() {
+<span class="fc" id="L178">        return this.theMethod;</span>
+    }
+
+    /**
+     * Get the value of props.
+     * 
+     * @return Value of props.
+     */
+    @Nullable
+    public List&lt;UrlRequestProperty&gt; getProps() {
+<span class="fc bfc" id="L188" title="All 2 branches covered.">        return this.props == null ? null : new ArrayList&lt;&gt;(this.props);</span>
+    }
+
+    public int getNumberOfProperties() {
+<span class="fc bfc" id="L192" title="All 2 branches covered.">        return (this.props == null) ? 0 : this.props.size();</span>
+    }
+
+    /**
+     * Set the value of props.
+     * 
+     * @param v Value to assign to props.
+     */
+    public void setProps(final List&lt;UrlRequestProperty&gt; v) {
+<span class="fc" id="L201">        this.props = new ArrayList&lt;&gt;(v);</span>
+<span class="fc" id="L202">    }</span>
+
+    /**
+     * Add one more property to this request
+     * 
+     * @param v the new UrlRequestProperty to add
+     */
+    public void addProp(@Nullable final UrlRequestProperty v) {
+
+<span class="fc bfc" id="L211" title="All 2 branches covered.">        if (v == null) {</span>
+<span class="fc" id="L212">            return;</span>
+        }
+
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">        if (this.props == null) {</span>
+<span class="fc" id="L216">            this.props = new ArrayList&lt;&gt;();</span>
+        }
+
+<span class="fc" id="L219">        this.props.add(v);</span>
+<span class="fc" id="L220">    }</span>
+
+    /**
+     * Add a bunch more properties to this request
+     * 
+     * @param v array of new UrlRequestProperty to add
+     */
+    public void addProps(@Nullable final List&lt;UrlRequestProperty&gt; v) {
+<span class="fc bfc" id="L228" title="All 2 branches covered.">        if (v == null) {</span>
+<span class="fc" id="L229">            return;</span>
+        }
+<span class="fc bfc" id="L231" title="All 2 branches covered.">        if (v.isEmpty()) {</span>
+<span class="fc" id="L232">            return;</span>
+        }
+
+<span class="fc bfc" id="L235" title="All 2 branches covered.">        if (this.props == null) {</span>
+<span class="fc" id="L236">            this.props = new ArrayList&lt;&gt;();</span>
+        }
+
+<span class="fc" id="L239">        this.props.addAll(v);</span>
+<span class="fc" id="L240">    }</span>
+
+    /**
+     * Set the value of theMethod.
+     * 
+     * @param v Value to assign to theMethod.
+     */
+    public void setTheMethod(final int v) {
+<span class="fc" id="L248">        this.theMethod = v;</span>
+<span class="fc" id="L249">    }</span>
+
+    /**
+     * As a helper to the toString methods
+     */
+    private StringBuilder toStringBuilder(final boolean headers) {
+<span class="nc" id="L255">        final StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L256">        sb.append(Url.theMethodString[this.theMethod]).append(&quot;: &quot;).append(this.theUrl).append(&quot; &quot;).append(this.responseCode).append(&quot;/&quot;)</span>
+<span class="nc" id="L257">                .append(this.theContent.length);</span>
+<span class="nc bnc" id="L258" title="All 4 branches missed.">        if (headers &amp;&amp; (this.props != null)) {</span>
+<span class="nc bnc" id="L259" title="All 2 branches missed.">            for (UrlRequestProperty prop : this.props) {</span>
+<span class="nc" id="L260">                sb.append(prop.toString());</span>
+<span class="nc" id="L261">            }</span>
+        }
+<span class="nc" id="L263">        sb.append(&quot;\n\n&quot;).append(new String(this.theContent)).append(&quot;\n&quot;);</span>
+<span class="nc" id="L264">        return sb;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L269">        return this.toStringBuilder(false).toString();</span>
+    }
+
+    public String toString(final boolean headers) {
+<span class="nc" id="L273">        return this.toStringBuilder(headers).toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

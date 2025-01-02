@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DirectoryEntry.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.directory</a> &gt; <span class="el_source">DirectoryEntry.java</span></div><h1>DirectoryEntry.java</h1><pre class="source lang-java linenums">package emissary.directory;
+
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+import emissary.place.IServiceProviderPlace;
+import emissary.util.xml.JDOMUtil;
+
+import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import javax.annotation.Nullable;
+
+import static emissary.directory.KeyManipulator.CLASSSEPARATOR;
+import static emissary.directory.KeyManipulator.DOLLAR;
+
+/**
+ * This class is container object for storing directory entry information such as the service name and type, the
+ * location, the cost and quality and description of a place.
+ *
+ * The implementation is not synchronized and is not suitable for multiple threads that will be changing the contents
+ * unless external synchronization is used.
+ */
+public class DirectoryEntry implements Serializable {
+
+    // Serializable
+    static final long serialVersionUID = 2629953887545857011L;
+
+    /** The key for this entry as a string */
+    protected String theKey;
+
+    /** The cost of this entry */
+<span class="pc" id="L34">    protected int theCost = 0;</span>
+
+    /** The quality of this entry */
+<span class="pc" id="L37">    protected int theQuality = 100;</span>
+
+    /**
+     * The expense is computed from the cost and quality by {@link #calculateExpense}
+     */
+<span class="pc" id="L42">    protected int theExpense = 0;</span>
+
+    /** Protection against repeated namespace lookups for this entry */
+<span class="pc" id="L45">    protected transient boolean lookupAttempted = false;</span>
+
+    /** Cached reference to the place instance if local */
+<span class="pc" id="L48">    @Nullable</span>
+    protected transient IServiceProviderPlace localPlace = null;
+
+    /** The data type from the key */
+    protected String dataType;
+
+    /** The DataType::ServiceType from the key */
+    protected String dataId;
+
+    /** THe service name from the key */
+    protected String serviceName;
+
+    /** The service type from the key */
+    protected String serviceType;
+
+    /** THe service location from the key */
+    protected String serviceLocation;
+
+    /** The service URL from the key */
+    protected String serviceHostUrl;
+
+    /** Logger instance */
+<span class="fc" id="L70">    protected static final Logger logger = LoggerFactory.getLogger(DirectoryEntry.class);</span>
+
+    /** The description field for this entry */
+    @Nullable
+    protected String description;
+
+    /** Age of this entry */
+<span class="pc" id="L77">    protected transient long age = System.currentTimeMillis();</span>
+
+    /** Xml name of entry element value is {@value} */
+    public static final String ENTRY = &quot;entry&quot;;
+
+    /** Xml name of key element value is {@value} */
+    public static final String KEY = &quot;key&quot;;
+
+    /** Xml name of description element value is {@value} */
+    public static final String DESC = &quot;description&quot;;
+
+    /** Xml name of cost element value is {@value} */
+    public static final String COST = &quot;cost&quot;;
+
+    /** Xml name of quality element value is {@value} */
+    public static final String QUALITY = &quot;quality&quot;;
+
+    /** Xml name of expense element value is {@value} */
+    public static final String EXPENSE = &quot;expense&quot;;
+
+    /** Value of PRESERVE_TIME flag */
+    public static final boolean PRESERVE_TIME = true;
+
+    /**
+     * Constructor which create a new directory entry and new directoryInfo object.
+     * 
+     * @param key four-tuple key of the place
+     * @param description from config file
+     * @param cost from config file
+     * @param quality from config file
+     */
+<span class="fc" id="L108">    public DirectoryEntry(final String key, final String description, final int cost, final int quality) {</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L110">            logger.debug(&quot;Directory entry: {},{},{},\&quot;{}\&quot;&quot;, key, cost, quality, description);</span>
+        }
+<span class="fc" id="L112">        setKey(key);</span>
+<span class="fc" id="L113">        this.theQuality = quality;</span>
+<span class="fc" id="L114">        this.theCost = cost;</span>
+<span class="fc" id="L115">        calculateExpense();</span>
+
+<span class="fc" id="L117">        this.description = description;</span>
+<span class="fc" id="L118">    }</span>
+
+    /**
+     * Create an entry from nothing but a key
+     * 
+     * @param key the key to use
+     */
+<span class="fc" id="L125">    public DirectoryEntry(final String key) {</span>
+<span class="fc" id="L126">        setKey(key);</span>
+<span class="fc" id="L127">    }</span>
+
+    /**
+     * Make an entry from parts, specifying expense
+     * 
+     * @param dataType the first part of the key
+     * @param serviceName the second part of the key
+     * @param serviceType the third part of the key
+     * @param serviceLocation the fourth part of the key
+     * @param description the description
+     * @param expense the expense
+     */
+    public DirectoryEntry(final String dataType, final String serviceName, final String serviceType, final String serviceLocation,
+<span class="nc" id="L140">            final String description, final int expense) {</span>
+<span class="nc" id="L141">        this.dataType = dataType;</span>
+<span class="nc" id="L142">        this.serviceName = serviceName;</span>
+<span class="nc" id="L143">        this.serviceType = serviceType;</span>
+<span class="nc" id="L144">        this.serviceLocation = serviceLocation;</span>
+<span class="nc" id="L145">        this.description = description;</span>
+<span class="nc" id="L146">        setCqeFromExp(expense);</span>
+<span class="nc" id="L147">        buildKey();</span>
+<span class="nc" id="L148">    }</span>
+
+    /**
+     * Make an entry from parts, specifing cost and quality
+     * 
+     * @param dataType the first part of the key
+     * @param serviceName the second part of the key
+     * @param serviceType the third part of the key
+     * @param serviceLocation the fourth part of the key
+     * @param description the description
+     * @param cost the cost of the place
+     * @param quality the quality of the place
+     */
+    public DirectoryEntry(final String dataType, final String serviceName, final String serviceType, final String serviceLocation,
+<span class="fc" id="L162">            final String description, final int cost, final int quality) {</span>
+<span class="fc" id="L163">        this.dataType = dataType;</span>
+<span class="fc" id="L164">        this.serviceName = serviceName;</span>
+<span class="fc" id="L165">        this.serviceType = serviceType;</span>
+<span class="fc" id="L166">        this.serviceLocation = serviceLocation;</span>
+<span class="fc" id="L167">        this.description = description;</span>
+<span class="fc" id="L168">        this.theCost = cost;</span>
+<span class="fc" id="L169">        this.theQuality = quality;</span>
+<span class="fc" id="L170">        calculateExpense();</span>
+<span class="fc" id="L171">        buildKey();</span>
+<span class="fc" id="L172">    }</span>
+
+    /**
+     * Make an entry from parts, default expense
+     * 
+     * @param dataType the first part of the key
+     * @param serviceName the second part of the key
+     * @param serviceType the third part of the key
+     * @param serviceLocation the fourth part of the key
+     * @param description the description
+     */
+    public DirectoryEntry(final String dataType, final String serviceName, final String serviceType, final String serviceLocation,
+            final String description) {
+<span class="nc" id="L185">        this(dataType, serviceName, serviceType, serviceLocation, description, 0, 0);</span>
+<span class="nc" id="L186">    }</span>
+
+    /**
+     * Copy constructor
+     * 
+     * @param that the entry to copy
+     */
+    public DirectoryEntry(final DirectoryEntry that) {
+<span class="fc" id="L194">        this(that, !PRESERVE_TIME);</span>
+<span class="fc" id="L195">    }</span>
+
+    /**
+     * Copy constructor with time copy
+     * 
+     * @param that the entry to copy
+     * @param preserveTime copy the time value also when true
+     */
+<span class="fc" id="L203">    DirectoryEntry(final DirectoryEntry that, final boolean preserveTime) {</span>
+<span class="fc" id="L204">        this.theKey = that.theKey;</span>
+<span class="fc" id="L205">        this.serviceType = that.serviceType;</span>
+<span class="fc" id="L206">        this.serviceName = that.serviceName;</span>
+<span class="fc" id="L207">        this.dataType = that.dataType;</span>
+<span class="fc" id="L208">        this.dataId = that.dataId;</span>
+<span class="fc" id="L209">        this.serviceLocation = that.serviceLocation;</span>
+<span class="fc" id="L210">        this.serviceHostUrl = that.serviceHostUrl;</span>
+<span class="fc" id="L211">        this.theQuality = that.theQuality;</span>
+<span class="fc" id="L212">        this.theCost = that.theCost;</span>
+<span class="fc" id="L213">        this.calculateExpense();</span>
+<span class="fc" id="L214">        this.description = that.description;</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">        if (preserveTime) {</span>
+<span class="fc" id="L216">            this.age = that.age;</span>
+        }
+<span class="fc" id="L218">    }</span>
+
+    /**
+     * Ensure this directory entry contains a valid key
+     */
+    public boolean isValid() {
+<span class="fc" id="L224">        return KeyManipulator.isValid(this.theKey);</span>
+    }
+
+    /**
+     * Set the expense, cost and quality from the expense
+     * 
+     * @param expense the expense to use
+     */
+    protected void setCqeFromExp(final int expense) {
+<span class="pc bpc" id="L233" title="1 of 2 branches missed.">        if (expense &gt;= 100) {</span>
+<span class="fc" id="L234">            final int invQual = expense % 100;</span>
+<span class="fc" id="L235">            this.theQuality = 100 - invQual;</span>
+<span class="fc" id="L236">            this.theCost = (expense - invQual) / 100;</span>
+<span class="fc" id="L237">        } else {</span>
+            // Should give expense of 0
+<span class="nc" id="L239">            this.theCost = 0;</span>
+<span class="nc" id="L240">            this.theQuality = 100;</span>
+        }
+
+<span class="fc" id="L243">        this.theExpense = expense;</span>
+
+<span class="fc" id="L245">    }</span>
+
+    /**
+     * Get place description
+     */
+    public String getDescription() {
+<span class="fc" id="L251">        return this.description;</span>
+    }
+
+    /**
+     * Returns the key
+     */
+    public String getKey() {
+<span class="fc" id="L258">        return this.theKey;</span>
+    }
+
+    /**
+     * Return the full key with expense
+     */
+    public String getFullKey() {
+<span class="fc" id="L265">        return this.theKey + DOLLAR + this.theExpense;</span>
+    }
+
+    /**
+     * Get quality of how well a place does its function
+     */
+    public int getQuality() {
+<span class="fc" id="L272">        return this.theQuality;</span>
+    }
+
+    /**
+     * Set the quality associated with the entry and force the expese to be recalculated
+     */
+    public void setQuality(final int quality) {
+<span class="fc" id="L279">        this.theQuality = quality;</span>
+<span class="fc" id="L280">        calculateExpense();</span>
+<span class="fc" id="L281">    }</span>
+
+    /**
+     * Get and set cost of using system, ie. how fast the place processes data
+     */
+    public int getCost() {
+<span class="fc" id="L287">        return this.theCost;</span>
+    }
+
+    /**
+     * Set the cost of processing at a place.
+     * 
+     * @param cost the new cost
+     */
+    public void setCost(final int cost) {
+<span class="fc" id="L296">        this.theCost = cost;</span>
+<span class="fc" id="L297">        calculateExpense();</span>
+<span class="fc" id="L298">    }</span>
+
+    /**
+     * Increment the cost of a place's processing
+     * 
+     * @param costIncrement the increment to add
+     */
+    public void addCost(final int costIncrement) {
+<span class="fc" id="L306">        this.theCost += costIncrement;</span>
+<span class="fc" id="L307">        calculateExpense();</span>
+<span class="fc" id="L308">    }</span>
+
+    /**
+     * Set key and precompute stuff we need
+     * 
+     * @see #buildKey
+     * @param key the key
+     */
+    protected void setKey(final String key) {
+<span class="fc" id="L317">        this.theKey = KeyManipulator.removeExpense(key);</span>
+<span class="fc" id="L318">        this.serviceType = KeyManipulator.getServiceType(this.theKey);</span>
+<span class="fc" id="L319">        this.serviceName = KeyManipulator.getServiceName(this.theKey);</span>
+<span class="fc" id="L320">        this.dataType = KeyManipulator.getDataType(key);</span>
+<span class="fc" id="L321">        this.dataId = this.dataType + KeyManipulator.DATAIDSEPARATOR + this.serviceType;</span>
+<span class="fc" id="L322">        this.serviceLocation = KeyManipulator.getServiceLocation(key);</span>
+<span class="fc" id="L323">        this.serviceHostUrl = KeyManipulator.getServiceHostUrl(key);</span>
+<span class="fc" id="L324">        final int exp = KeyManipulator.getExpense(key, -1);</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">        if (exp &gt; -1) {</span>
+<span class="fc" id="L326">            setCqeFromExp(exp);</span>
+        }
+<span class="fc" id="L328">    }</span>
+
+    /**
+     * Set a new data type
+     * 
+     * @param dataType the new data type
+     */
+    public void setDataType(final String dataType) {
+<span class="fc" id="L336">        this.dataType = dataType;</span>
+<span class="fc" id="L337">        buildKey();</span>
+<span class="fc" id="L338">    }</span>
+
+    /**
+     * Set a new servicelocation
+     * 
+     * @param serviceLocation the new value
+     */
+    public void setServiceLocation(final String serviceLocation) {
+<span class="nc" id="L346">        this.serviceLocation = serviceLocation;</span>
+<span class="nc" id="L347">        this.serviceHostUrl = serviceLocation.substring(0, serviceLocation.lastIndexOf(CLASSSEPARATOR) + 1);</span>
+<span class="nc" id="L348">        buildKey();</span>
+<span class="nc" id="L349">    }</span>
+
+    /**
+     * Set a reference to the local place object
+     * 
+     * @param place the local reference
+     */
+    protected void setLocalPlace(final IServiceProviderPlace place) {
+<span class="fc" id="L357">        this.localPlace = place;</span>
+<span class="fc" id="L358">    }</span>
+
+    /**
+     * Get service name
+     * 
+     * @return service name from key
+     */
+    public String getDataType() {
+<span class="fc" id="L366">        return this.dataType;</span>
+    }
+
+    /**
+     * Get dataId
+     * 
+     * @return dataId from key
+     */
+    public String getDataId() {
+<span class="fc" id="L375">        return this.dataId;</span>
+    }
+
+    /**
+     * Get service location
+     * 
+     * @return service location from key
+     */
+    public String getServiceLocation() {
+<span class="fc" id="L384">        return this.serviceLocation;</span>
+    }
+
+    /**
+     * Get service host url
+     * 
+     * @return service host url from key
+     */
+    public String getServiceHostUrl() {
+<span class="fc" id="L393">        return this.serviceHostUrl;</span>
+    }
+
+    /**
+     * Get the reference to the local place
+     * 
+     * @return local place reference or null if not local
+     */
+    public IServiceProviderPlace getLocalPlace() {
+<span class="fc" id="L402">        isLocal(); // force lookup if needed</span>
+<span class="fc" id="L403">        return this.localPlace;</span>
+    }
+
+    /**
+     * String rep for debug
+     */
+    @Override
+    public String toString() {
+<span class="fc bfc" id="L411" title="All 2 branches covered.">        return getFullKey() + (this.description != null ? (&quot; (&quot; + this.description + &quot;)&quot;) : &quot;&quot;);</span>
+    }
+
+    /**
+     * Used to order directory entries. Returns true if this entry is better than the argument entry
+     * 
+     * @param that the entry to test
+     * @return true if this is better than that
+     */
+    public boolean isBetterThan(final DirectoryEntry that) {
+<span class="fc bfc" id="L421" title="All 2 branches covered.">        return this.theExpense &lt; that.getExpense();</span>
+    }
+
+    /**
+     * test if the current dataEntry matches the passed key pattern.
+     */
+    public boolean matches(final String pattern) {
+<span class="fc" id="L428">        return matches(pattern.toCharArray());</span>
+    }
+
+    /**
+     * test if the current dataEntry matches the passed key pattern
+     */
+    public boolean matches(final char[] pattern) {
+<span class="fc" id="L435">        return KeyManipulator.gmatch(this.theKey.toCharArray(), pattern);</span>
+    }
+
+
+    /**
+     * test if the current dataEntry matches the passed key pattern specifically ignoring cost in the incoming pattern (if
+     * any)
+     */
+    public boolean matchesIgnoreCost(final String pattern) {
+<span class="fc" id="L444">        return matches(KeyManipulator.removeExpense(pattern));</span>
+    }
+
+    /**
+     * Return the service type from the key of this entry
+     */
+    public String getServiceType() {
+<span class="fc" id="L451">        return this.serviceType;</span>
+    }
+
+    /**
+     * Set a new service type
+     */
+    public void setServiceType(final String serviceType) {
+<span class="fc" id="L458">        this.serviceType = serviceType;</span>
+<span class="fc" id="L459">        buildKey();</span>
+<span class="fc" id="L460">    }</span>
+
+    /**
+     * Return the service name from the key of this entry
+     */
+    public String getServiceName() {
+<span class="fc" id="L466">        return this.serviceName;</span>
+    }
+
+
+    /**
+     * Set a new service name
+     */
+    public void setServiceName(final String serviceName) {
+<span class="fc" id="L474">        this.serviceName = serviceName;</span>
+<span class="fc" id="L475">        buildKey();</span>
+<span class="fc" id="L476">    }</span>
+
+    /**
+     * Return the expense associated with this entry
+     */
+    public int getExpense() {
+<span class="fc" id="L482">        return this.theExpense;</span>
+    }
+
+    /**
+     * Expense includes the cost and quality, cost is primary
+     */
+    protected void calculateExpense() {
+<span class="fc" id="L489">        this.theExpense = calculateExpense(this.theCost, this.theQuality);</span>
+<span class="fc" id="L490">    }</span>
+
+    /**
+     * Calculate an expense value from the cost and quality, cost is primary
+     * 
+     * @param cost the cost
+     * @param quality the quality
+     */
+    public static int calculateExpense(final int cost, final int quality) {
+<span class="fc" id="L499">        return (cost * 100) + (100 - quality);</span>
+    }
+
+    /**
+     * Keep the internal key parameters in sync when one of the setters is called
+     * 
+     * @see #setKey(String)
+     */
+    protected void buildKey() {
+<span class="fc" id="L508">        this.theKey = KeyManipulator.makeKey(this.dataType, this.serviceName, this.serviceType, this.serviceLocation);</span>
+<span class="fc" id="L509">        this.dataId = this.dataType + KeyManipulator.DATAIDSEPARATOR + this.serviceType;</span>
+<span class="fc" id="L510">    }</span>
+
+    /**
+     * Determine if local by looking up in namespace
+     * 
+     * @return true if local
+     */
+    public boolean isLocal() {
+<span class="fc bfc" id="L518" title="All 2 branches covered.">        if (!this.lookupAttempted) {</span>
+            try {
+<span class="fc" id="L520">                setLocalPlace((IServiceProviderPlace) Namespace.lookup(this.serviceLocation));</span>
+<span class="fc" id="L521">            } catch (NamespaceException e) {</span>
+                // empty catch block
+<span class="fc" id="L523">            }</span>
+<span class="fc bfc" id="L524" title="All 2 branches covered.">            logger.debug(&quot;NS Lookup for locality on {}{}&quot;, this.serviceLocation, this.localPlace == null ? &quot; failed&quot; : &quot; passed&quot;);</span>
+
+<span class="fc" id="L526">            this.lookupAttempted = true;</span>
+        }
+<span class="fc bfc" id="L528" title="All 2 branches covered.">        return this.localPlace != null;</span>
+    }
+
+    /**
+     * Change the key such that the place specified by proxyKey acts as a proxy for the current key. We keep the same data
+     * type, service type, service name and expense but change the place to the proxy
+     * 
+     * @param proxyKey the replacement key
+     */
+    public void proxyFor(final String proxyKey) {
+<span class="fc" id="L538">        final String newKey = KeyManipulator.makeProxyKey(this.theKey, proxyKey, this.theExpense);</span>
+<span class="fc" id="L539">        setKey(newKey);</span>
+<span class="fc" id="L540">    }</span>
+
+    /**
+     * Show the creation date of this entry
+     */
+    public long getAge() {
+<span class="fc" id="L546">        return this.age;</span>
+    }
+
+    /**
+     * Package access to the age value so that creation time can be preserved in some cases
+     * 
+     * @param age the age to be preserved
+     */
+    void preserveCopyAge(final long age) {
+<span class="fc" id="L555">        this.age = age;</span>
+<span class="fc" id="L556">    }</span>
+
+    /**
+     * Build an entry from the supplied xml fragment
+     * 
+     * @param e a JDOM Element
+     */
+    public static DirectoryEntry fromXml(final Element e) {
+<span class="fc" id="L564">        final String key = e.getChildTextTrim(KEY);</span>
+<span class="fc" id="L565">        final String desc = e.getChildTextTrim(DESC);</span>
+<span class="fc" id="L566">        final int cost = JDOMUtil.getChildIntValue(e, COST);</span>
+<span class="fc" id="L567">        final int quality = JDOMUtil.getChildIntValue(e, QUALITY);</span>
+<span class="fc" id="L568">        return new DirectoryEntry(key, desc, cost, quality);</span>
+    }
+
+    /**
+     * Turn this entry into an xml fragment
+     */
+    public Element getXml() {
+<span class="fc" id="L575">        final Element root = new Element(ENTRY);</span>
+<span class="fc" id="L576">        root.addContent(JDOMUtil.simpleElement(KEY, this.theKey));</span>
+<span class="fc" id="L577">        root.addContent(JDOMUtil.simpleElement(DESC, this.description));</span>
+<span class="fc" id="L578">        root.addContent(JDOMUtil.simpleElement(COST, this.theCost));</span>
+<span class="fc" id="L579">        root.addContent(JDOMUtil.simpleElement(QUALITY, this.theQuality));</span>
+<span class="fc" id="L580">        root.addContent(JDOMUtil.simpleElement(EXPENSE, this.theExpense));</span>
+<span class="fc" id="L581">        return root;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

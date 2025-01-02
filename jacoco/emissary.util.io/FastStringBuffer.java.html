@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FastStringBuffer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.io</a> &gt; <span class="el_source">FastStringBuffer.java</span></div><h1>FastStringBuffer.java</h1><pre class="source lang-java linenums">package emissary.util.io;
+
+import emissary.util.web.HtmlEscaper;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
+
+/**
+ * This buffer implementation attempts to improve file creation performance by preventing conversion from byte array to
+ * string and then back to byte array for writing to a stream. The append method here accepts byte arrays and strings.
+ * In the case of a byte array it simply copies the bytes. Very fast. In the case of strings it attempts to convert the
+ * string to a byte array once and save the results. In this way we avoid converting each time. If many constant string
+ * literals are passed to this class, it will be faster. This string buffer will now accept an output stream in addition
+ * which allows this string buffer to act as a buffered output stream.
+ */
+public class FastStringBuffer extends OutputStream {
+
+<span class="nc" id="L26">    protected static final Logger logger = LoggerFactory.getLogger(FastStringBuffer.class);</span>
+
+    public static final int MAX_CACHE_SIZE = 256;
+<span class="nc" id="L29">    private static final byte[] CRBYTES = &quot;\n&quot;.getBytes();</span>
+<span class="nc" id="L30">    private static final byte[] CRLFBYTES = &quot;\r\n&quot;.getBytes();</span>
+
+<span class="nc" id="L32">    static final Map&lt;String, byte[]&gt; strings = new HashMap&lt;&gt;(MAX_CACHE_SIZE * 3);</span>
+
+<span class="nc" id="L34">    protected int curPos = 0;</span>
+    protected byte[] buffer;
+<span class="nc" id="L36">    @Nullable</span>
+    protected String myString = null;
+    protected OutputStream stream;
+<span class="nc" id="L39">    protected int bytesWritten = 0;</span>
+
+    public FastStringBuffer() {
+<span class="nc" id="L42">        this(null);</span>
+<span class="nc" id="L43">    }</span>
+
+    public FastStringBuffer(@Nullable final OutputStream stream) {
+<span class="nc" id="L46">        this(1024, stream);</span>
+<span class="nc" id="L47">    }</span>
+
+    public FastStringBuffer(final int initialSize) {
+<span class="nc" id="L50">        this(initialSize, null);</span>
+<span class="nc" id="L51">    }</span>
+
+<span class="nc" id="L53">    public FastStringBuffer(final int initialSize, @Nullable final OutputStream stream) {</span>
+<span class="nc" id="L54">        this.buffer = new byte[initialSize];</span>
+<span class="nc" id="L55">        this.stream = stream;</span>
+<span class="nc" id="L56">    }</span>
+
+    public FastStringBuffer append(final String s) throws IOException {
+<span class="nc" id="L59">        return append(s, StandardCharsets.ISO_8859_1.name());</span>
+    }
+
+    public FastStringBuffer append(final int i) throws IOException {
+<span class="nc" id="L63">        return append(String.valueOf(i));</span>
+    }
+
+    public FastStringBuffer append(final byte[] a) throws IOException {
+<span class="nc" id="L67">        write(a);</span>
+<span class="nc" id="L68">        return this;</span>
+    }
+
+    public FastStringBuffer append(final byte[] a, final int start, final int length) throws IOException {
+<span class="nc" id="L72">        write(a, start, length);</span>
+<span class="nc" id="L73">        return this;</span>
+    }
+
+    public FastStringBuffer append(@Nullable final String s, final String charset) throws IOException {
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (s == null) {</span>
+<span class="nc" id="L78">            return this;</span>
+        }
+
+<span class="nc" id="L81">        return append(stringToBytes(s, charset));</span>
+    }
+
+    public FastStringBuffer appendEscaped(final String s) throws IOException {
+<span class="nc" id="L85">        return appendEscaped(s, StandardCharsets.ISO_8859_1.name());</span>
+    }
+
+    public FastStringBuffer appendEscaped(@Nullable final String s, final String charset) throws IOException {
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (s == null) {</span>
+<span class="nc" id="L90">            return this;</span>
+        }
+
+<span class="nc" id="L93">        return append(stringToBytes(HtmlEscaper.escapeHtml(s), charset));</span>
+    }
+
+    /** Appends constant string literals only!!!!! */
+    public FastStringBuffer appendCls(final String s) throws IOException {
+<span class="nc" id="L98">        return appendCls(s, StandardCharsets.ISO_8859_1.name());</span>
+    }
+
+    /** Appends constant string literals only!!!!! */
+    public FastStringBuffer appendCls(@Nullable final String s, final String charset) throws IOException {
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if (s == null) {</span>
+<span class="nc" id="L104">            return this;</span>
+        }
+
+<span class="nc" id="L107">        byte[] tmp = strings.get(s);</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (tmp == null) {</span>
+<span class="nc" id="L109">            tmp = stringToBytes(s, charset);</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">            if (strings.size() &lt; MAX_CACHE_SIZE) {</span>
+<span class="nc" id="L111">                strings.put(s, tmp);</span>
+            } else {
+<span class="nc bnc" id="L113" title="All 2 branches missed.">                if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L114">                    logger.debug(&quot;Dropping literal from cache:{}&quot;, s.replace('\n', '~'));</span>
+                }
+            }
+        }
+<span class="nc" id="L118">        return append(tmp);</span>
+    }
+
+    public FastStringBuffer appendCr() throws IOException {
+<span class="nc" id="L122">        return append(CRBYTES);</span>
+    }
+
+    public FastStringBuffer appendCrLf() throws IOException {
+<span class="nc" id="L126">        return append(CRLFBYTES);</span>
+    }
+
+    public byte[] getBytes() {
+<span class="nc" id="L130">        return this.buffer;</span>
+    }
+
+    public int getSize() {
+<span class="nc" id="L134">        return this.curPos;</span>
+    }
+
+    public void setLength(final int len) {
+<span class="nc" id="L138">        this.curPos = len;</span>
+<span class="nc" id="L139">        this.myString = null;</span>
+<span class="nc" id="L140">    }</span>
+
+    @Override
+    public void write(final int b) throws IOException {
+<span class="nc" id="L144">        write(new byte[] {(byte) b});</span>
+<span class="nc" id="L145">    }</span>
+
+    @Override
+    public void write(@Nullable final byte[] a) throws IOException {
+<span class="nc bnc" id="L149" title="All 2 branches missed.">        if (a != null) {</span>
+<span class="nc" id="L150">            write(a, 0, a.length);</span>
+        }
+<span class="nc" id="L152">    }</span>
+
+    @Override
+    public void write(final byte[] a, final int start, final int length) throws IOException {
+<span class="nc" id="L156">        int lengthVal = length;</span>
+        try {
+<span class="nc bnc" id="L158" title="All 2 branches missed.">            if (lengthVal &gt; (this.buffer.length - this.curPos)) {</span>
+                // if we have an output stream, this is an opportune time to write
+<span class="nc bnc" id="L160" title="All 2 branches missed.">                if (this.stream != null) {</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">                    if (this.curPos &gt; 0) {</span>
+<span class="nc" id="L162">                        this.stream.write(this.buffer, 0, this.curPos);</span>
+<span class="nc" id="L163">                        this.bytesWritten += this.curPos;</span>
+<span class="nc" id="L164">                        this.curPos = 0;</span>
+                    }
+                    // if the new data is larger than half our buffer, then write it too
+<span class="nc bnc" id="L167" title="All 2 branches missed.">                    if (lengthVal &gt; this.buffer.length / 2) {</span>
+<span class="nc" id="L168">                        this.stream.write(a, start, lengthVal);</span>
+<span class="nc" id="L169">                        this.bytesWritten += lengthVal;</span>
+<span class="nc" id="L170">                        lengthVal = 0;</span>
+                    }
+                } else {
+                    // if not writing to stream, then increase the buffer appropriately
+<span class="nc" id="L174">                    final int newSize = Math.max(this.buffer.length + this.buffer.length / 2, (this.curPos + lengthVal) + 1024);</span>
+<span class="nc" id="L175">                    final byte[] newArray = new byte[newSize];</span>
+<span class="nc" id="L176">                    System.arraycopy(this.buffer, 0, newArray, 0, this.curPos);// ??</span>
+<span class="nc" id="L177">                    this.buffer = newArray;</span>
+                }
+            }
+
+<span class="nc bnc" id="L181" title="All 2 branches missed.">            if (lengthVal &gt;= 0) {</span>
+<span class="nc" id="L182">                System.arraycopy(a, start, this.buffer, this.curPos, lengthVal);</span>
+<span class="nc" id="L183">                this.curPos += lengthVal;</span>
+            }
+<span class="nc" id="L185">        } catch (Exception ex) {</span>
+<span class="nc" id="L186">            logger.warn(&quot;Exception in append&quot;, ex);</span>
+<span class="nc" id="L187">            logger.warn(&quot;a.length={}&quot;, a.length);// 1</span>
+<span class="nc" id="L188">            logger.warn(&quot;start={}&quot;, start);// 0</span>
+<span class="nc" id="L189">            logger.warn(&quot;length={}&quot;, lengthVal);// 1</span>
+<span class="nc" id="L190">            logger.warn(&quot;curPos={}&quot;, this.curPos);// 1</span>
+<span class="nc" id="L191">            logger.warn(&quot;buffer.length={}&quot;, this.buffer.length);// 1</span>
+<span class="nc" id="L192">            logger.warn(&quot;newSize={}&quot;, Math.max(this.buffer.length + this.buffer.length / 2, (this.curPos + lengthVal) + 1024));</span>
+<span class="nc" id="L193">        }</span>
+<span class="nc" id="L194">    }</span>
+
+    @Override
+    public void flush() throws IOException {
+<span class="nc bnc" id="L198" title="All 2 branches missed.">        if (this.stream != null) {</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">            if (this.curPos &gt; 0) {</span>
+<span class="nc" id="L200">                this.stream.write(this.buffer, 0, this.curPos);</span>
+<span class="nc" id="L201">                this.bytesWritten += this.curPos;</span>
+<span class="nc" id="L202">                this.curPos = 0;</span>
+            }
+<span class="nc" id="L204">            this.stream.flush();</span>
+        }
+<span class="nc" id="L206">    }</span>
+
+    public int getBytesWritten() {
+<span class="nc" id="L209">        return this.bytesWritten;</span>
+    }
+
+    @Override
+    public void close() throws IOException {
+<span class="nc bnc" id="L214" title="All 2 branches missed.">        if (this.stream != null) {</span>
+<span class="nc" id="L215">            flush();</span>
+<span class="nc" id="L216">            this.stream.close();</span>
+        }
+<span class="nc" id="L218">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc bnc" id="L222" title="All 4 branches missed.">        if ((this.myString == null) || (this.myString.length() != this.buffer.length)) {</span>
+<span class="nc" id="L223">            this.myString = new String(this.buffer, 0, this.curPos);</span>
+        }
+<span class="nc" id="L225">        return this.myString;</span>
+    }
+
+    /**
+     * Write UTF8 data to the output page buffer without specifying a start or end position, defaults to 0,-1
+     */
+    public FastStringBuffer appendUtf8(final byte[] data, final String charset) throws IOException {
+<span class="nc" id="L232">        return appendUtf8(data, charset, 0, -1);</span>
+    }
+
+    /**
+     * Write UTF8 data to the output page buffer without specifying a start position, defaults to 0
+     */
+    public FastStringBuffer appendUtf8(final byte[] data, final String charset, final int end) throws IOException {
+<span class="nc" id="L239">        return appendUtf8(data, charset, 0, end);</span>
+    }
+
+    /**
+     * Write UTF8 data to the output page buffer Pass in 0 and -1 for start and end to do the whole thing
+     */
+    @SuppressWarnings(&quot;InconsistentOverloads&quot;)
+    public FastStringBuffer appendUtf8(final byte[] data, @Nullable final String charset, final int start, final int end) throws IOException {
+        final int actualEnd;
+<span class="nc bnc" id="L248" title="All 2 branches missed.">        if (end &lt; 0) {</span>
+<span class="nc" id="L249">            actualEnd = data.length;</span>
+        } else {
+<span class="nc" id="L251">            actualEnd = end;</span>
+        }
+
+        final int actualStart;
+<span class="nc bnc" id="L255" title="All 4 branches missed.">        if ((start &lt; 0) || (start &gt; actualEnd)) {</span>
+<span class="nc" id="L256">            actualStart = 0;</span>
+        } else {
+<span class="nc" id="L258">            actualStart = start;</span>
+        }
+
+<span class="nc" id="L261">        String converted = null;</span>
+<span class="nc bnc" id="L262" title="All 2 branches missed.">        if (charset != null) {</span>
+            try {
+<span class="nc" id="L264">                converted = new String(data, actualStart, actualEnd - actualStart, charset);</span>
+<span class="nc" id="L265">                logger.debug(&quot;Converted data from {} to utf-8&quot;, charset);</span>
+<span class="nc" id="L266">            } catch (UnsupportedEncodingException uee) {</span>
+<span class="nc" id="L267">                logger.warn(&quot;Unable to convert from {}&quot;, charset);</span>
+<span class="nc" id="L268">                converted = null; // make sure we write something below</span>
+<span class="nc" id="L269">            }</span>
+        } else {
+<span class="nc" id="L271">            logger.debug(&quot;Not converting data because charset is null&quot;);</span>
+        }
+
+<span class="nc bnc" id="L274" title="All 2 branches missed.">        if (converted != null) {</span>
+<span class="nc" id="L275">            return append(converted, &quot;UTF8&quot;);</span>
+        }
+<span class="nc" id="L277">        return append(data, actualStart, actualEnd - actualStart);</span>
+    }
+
+    public FastStringBuffer appendEscapedUtf8(final byte[] data, @Nullable final String charset, final int start, final int end) throws IOException {
+        final int actualEnd;
+<span class="nc bnc" id="L282" title="All 2 branches missed.">        if (end &lt; 0) {</span>
+<span class="nc" id="L283">            actualEnd = data.length;</span>
+        } else {
+<span class="nc" id="L285">            actualEnd = end;</span>
+        }
+
+        final int actualStart;
+<span class="nc bnc" id="L289" title="All 4 branches missed.">        if ((start &lt; 0) || (start &gt; actualEnd)) {</span>
+<span class="nc" id="L290">            actualStart = 0;</span>
+        } else {
+<span class="nc" id="L292">            actualStart = start;</span>
+        }
+
+        String converted;
+<span class="nc bnc" id="L296" title="All 2 branches missed.">        if (charset != null) {</span>
+            try {
+<span class="nc" id="L298">                converted = new String(data, actualStart, actualEnd - actualStart, charset);</span>
+<span class="nc" id="L299">                logger.debug(&quot;Converted data from {} to utf-8&quot;, charset);</span>
+<span class="nc" id="L300">            } catch (UnsupportedEncodingException uee) {</span>
+<span class="nc" id="L301">                logger.warn(&quot;Unable to convert from {}&quot;, charset);</span>
+<span class="nc" id="L302">                converted = new String(data, actualStart, actualEnd - actualStart);</span>
+<span class="nc" id="L303">            }</span>
+        } else {
+<span class="nc" id="L305">            converted = new String(data, actualStart, actualEnd - actualStart);</span>
+        }
+
+        // Escape the HTML in the converted string
+<span class="nc" id="L309">        converted = HtmlEscaper.escapeHtml(converted);</span>
+<span class="nc" id="L310">        return append(converted, &quot;UTF8&quot;);</span>
+    }
+
+    protected byte[] stringToBytes(String s, String charset) {
+        byte[] tmp;
+        try {
+<span class="nc" id="L316">            tmp = s.getBytes(charset);</span>
+<span class="nc" id="L317">        } catch (UnsupportedEncodingException e) {</span>
+<span class="nc" id="L318">            logger.warn(&quot;Unsupported encoding:{}&quot;, e.getMessage());</span>
+<span class="nc" id="L319">            tmp = s.getBytes();</span>
+<span class="nc" id="L320">        }</span>
+<span class="nc" id="L321">        return tmp;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

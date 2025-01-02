@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IBaseDataObjectHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core</a> &gt; <span class="el_source">IBaseDataObjectHelper.java</span></div><h1>IBaseDataObjectHelper.java</h1><pre class="source lang-java linenums">package emissary.core;
+
+import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.directory.KeyManipulator;
+import emissary.kff.KffDataObjectHandler;
+import emissary.parser.SessionParser;
+
+import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.stream.StreamSupport;
+import javax.annotation.Nullable;
+
+/**
+ * Utility methods that assist with working with IBaseDataObject's.
+ */
+public final class IBaseDataObjectHelper {
+    /**
+     * A logger instance.
+     */
+<span class="fc" id="L30">    private static final Logger LOGGER = LoggerFactory.getLogger(IBaseDataObjectHelper.class);</span>
+
+    private static class InternalIdBaseDataObject extends BaseDataObject {
+<span class="fc" id="L33">        private InternalIdBaseDataObject(final UUID internalId) {</span>
+<span class="fc" id="L34">            this.internalId = internalId;</span>
+<span class="fc" id="L35">        }</span>
+    }
+
+    private IBaseDataObjectHelper() {}
+
+    /**
+     * Clones an IBaseDataObject.
+     * 
+     * @param iBaseDataObject the IBaseDataObject to be cloned.
+     * @return the clone of the IBaseDataObject passed in.
+     */
+    public static IBaseDataObject clone(final IBaseDataObject iBaseDataObject) {
+<span class="fc" id="L47">        return clone(iBaseDataObject, true);</span>
+    }
+
+    /**
+     * Clones an IBaseDataObject equivalently to emissary.core.BaseDataObject.clone(), which duplicates some attributes.
+     * 
+     * A &quot;fullClone&quot; duplicates all attributes.
+     * 
+     * @deprecated prefer {@link #clone(IBaseDataObject)}
+     * @param iBaseDataObject the IBaseDataObject to be cloned.
+     * @param fullClone specifies if all fields should be cloned.
+     * @return the clone of the IBaseDataObject passed in.
+     */
+    @Deprecated
+    public static IBaseDataObject clone(final IBaseDataObject iBaseDataObject, final boolean fullClone) {
+<span class="fc" id="L62">        Validate.notNull(iBaseDataObject, &quot;Required: iBaseDataObject not null&quot;);</span>
+
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        final IBaseDataObject bdo = fullClone ? new InternalIdBaseDataObject(iBaseDataObject.getInternalId()) : DataObjectFactory.getInstance();</span>
+
+<span class="fc" id="L66">        final SeekableByteChannelFactory sbcf = iBaseDataObject.getChannelFactory();</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (sbcf != null) {</span>
+<span class="fc" id="L68">            bdo.setChannelFactory(sbcf);</span>
+        }
+
+<span class="fc" id="L71">        final List&lt;String&gt; allCurrentForms = iBaseDataObject.getAllCurrentForms();</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        for (int i = 0; i &lt; allCurrentForms.size(); i++) {</span>
+<span class="fc" id="L73">            bdo.enqueueCurrentForm(allCurrentForms.get(i));</span>
+        }
+<span class="fc" id="L75">        bdo.setHistory(iBaseDataObject.getTransformHistory());</span>
+<span class="fc" id="L76">        bdo.putParameters(iBaseDataObject.getParameters());</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        for (final Map.Entry&lt;String, byte[]&gt; entry : iBaseDataObject.getAlternateViews().entrySet()) {</span>
+<span class="fc" id="L78">            bdo.addAlternateView(entry.getKey(), entry.getValue());</span>
+<span class="fc" id="L79">        }</span>
+<span class="fc" id="L80">        bdo.setPriority(iBaseDataObject.getPriority());</span>
+<span class="fc" id="L81">        bdo.setCreationTimestamp(iBaseDataObject.getCreationTimestamp());</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        if (iBaseDataObject.getExtractedRecords() != null) {</span>
+<span class="fc" id="L83">            bdo.setExtractedRecords(iBaseDataObject.getExtractedRecords());</span>
+        }
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (iBaseDataObject.getFilename() != null) {</span>
+<span class="fc" id="L86">            bdo.setFilename(iBaseDataObject.getFilename());</span>
+        }
+
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (fullClone) {</span>
+<span class="fc" id="L90">            final String processingError = iBaseDataObject.getProcessingError();</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">            if (processingError != null) {</span>
+<span class="fc" id="L92">                bdo.addProcessingError(processingError.substring(0, processingError.length() - 1));</span>
+            }
+<span class="fc" id="L94">            bdo.setFontEncoding(iBaseDataObject.getFontEncoding());</span>
+<span class="fc" id="L95">            bdo.setNumChildren(iBaseDataObject.getNumChildren());</span>
+<span class="fc" id="L96">            bdo.setNumSiblings(iBaseDataObject.getNumSiblings());</span>
+<span class="fc" id="L97">            bdo.setBirthOrder(iBaseDataObject.getBirthOrder());</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">            bdo.setHeader(iBaseDataObject.header() == null ? null : iBaseDataObject.header().clone());</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">            bdo.setFooter(iBaseDataObject.footer() == null ? null : iBaseDataObject.footer().clone());</span>
+<span class="fc" id="L100">            bdo.setHeaderEncoding(iBaseDataObject.getHeaderEncoding());</span>
+<span class="fc" id="L101">            bdo.setClassification(iBaseDataObject.getClassification());</span>
+<span class="fc" id="L102">            bdo.setBroken(iBaseDataObject.getBroken());</span>
+<span class="fc" id="L103">            bdo.setOutputable(iBaseDataObject.isOutputable());</span>
+<span class="fc" id="L104">            bdo.setId(iBaseDataObject.getId());</span>
+<span class="fc" id="L105">            bdo.setWorkBundleId(iBaseDataObject.getWorkBundleId());</span>
+<span class="fc" id="L106">            bdo.setTransactionId(iBaseDataObject.getTransactionId());</span>
+        }
+
+<span class="fc" id="L109">        return bdo;</span>
+    }
+
+    /**
+     * Used to propagate needed parent information to a sprouted child. NOTE: This is taken from
+     * emissary.place.MultiFileServerPlace.
+     * 
+     * @param parentIBaseDataObject the source of parameters to be copied
+     * @param childIBaseDataObject the destination for parameters to be copied
+     * @param nullifyFileType if true the child fileType is nullified after the copy
+     * @param alwaysCopyMetadataKeys set of metadata keys to always copy from parent to child.
+     * @param placeKey the place key to be added to the transform history.
+     * @param kffDataObjectHandler the kffDataObjectHandler to use to create the kff hashes.
+     */
+    public static void addParentInformationToChild(final IBaseDataObject parentIBaseDataObject,
+            final IBaseDataObject childIBaseDataObject, final boolean nullifyFileType,
+            final Set&lt;String&gt; alwaysCopyMetadataKeys, final String placeKey,
+            final KffDataObjectHandler kffDataObjectHandler) {
+<span class="fc" id="L127">        Validate.notNull(parentIBaseDataObject, &quot;Required: parentIBaseDataObject not null&quot;);</span>
+<span class="fc" id="L128">        Validate.notNull(childIBaseDataObject, &quot;Required: childIBaseDataObject not null&quot;);</span>
+<span class="fc" id="L129">        Validate.notNull(alwaysCopyMetadataKeys, &quot;Required: alwaysCopyMetadataKeys not null&quot;);</span>
+<span class="fc" id="L130">        Validate.notNull(placeKey, &quot;Required: placeKey not null&quot;);</span>
+<span class="fc" id="L131">        Validate.notNull(kffDataObjectHandler, &quot;Required: kffDataObjectHandler not null&quot;);</span>
+
+        // Copy over the classification
+<span class="fc bfc" id="L134" title="All 2 branches covered.">        if (parentIBaseDataObject.getClassification() != null) {</span>
+<span class="fc" id="L135">            childIBaseDataObject.setClassification(parentIBaseDataObject.getClassification());</span>
+        }
+
+        // And some other things we configure to be always copied
+<span class="fc bfc" id="L139" title="All 2 branches covered.">        for (final String meta : alwaysCopyMetadataKeys) {</span>
+<span class="fc" id="L140">            final List&lt;Object&gt; parentVals = parentIBaseDataObject.getParameter(meta);</span>
+
+<span class="fc bfc" id="L142" title="All 2 branches covered.">            if (parentVals != null) {</span>
+<span class="fc" id="L143">                childIBaseDataObject.putParameter(meta, parentVals);</span>
+            }
+<span class="fc" id="L145">        }</span>
+
+        // Copy over the transform history up to this point
+<span class="fc" id="L148">        childIBaseDataObject.setHistory(parentIBaseDataObject.getTransformHistory());</span>
+<span class="fc" id="L149">        childIBaseDataObject.appendTransformHistory(KeyManipulator.makeSproutKey(placeKey));</span>
+        try {
+<span class="fc" id="L151">            childIBaseDataObject.putParameter(SessionParser.ORIG_DOC_SIZE_KEY,</span>
+<span class="fc" id="L152">                    Long.toString(childIBaseDataObject.getChannelSize()));</span>
+<span class="fc" id="L153">        } catch (IOException e) {</span>
+            // Do not add the ORIG_DOC_SIZE_KEY parameter.
+<span class="fc" id="L155">        }</span>
+
+        // start over with no FILETYPE if so directed
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        if (nullifyFileType) {</span>
+<span class="fc" id="L159">            childIBaseDataObject.setFileType(null);</span>
+        }
+
+        // Set up the proper KFF/HASH information for the child
+        // Change parent hit so it doesn't look like hit on the child
+<span class="fc" id="L164">        KffDataObjectHandler.parentToChild(childIBaseDataObject);</span>
+
+        // Hash the new child data, overwrites parent hashes if any
+<span class="fc" id="L167">        kffDataObjectHandler.hash(childIBaseDataObject, true);</span>
+<span class="fc" id="L168">    }</span>
+
+    /**
+     * Used to propagate needed parent information to a sprouted child. NOTE: This is taken from
+     * emissary.place.MultiFileServerPlace.
+     * 
+     * @param parent the source of parameters to be copied
+     * @param children the destination for parameters to be copied
+     * @param nullifyFileType if true the child fileType is nullified after the copy
+     * @param alwaysCopyMetadataKeys set of metadata keys to always copy from parent to child.
+     * @param placeKey the place key to be added to the transform history.
+     * @param kffDataObjectHandler the kffDataObjectHandler to use to create the kff hashes.
+     */
+    public static void addParentInformationToChildren(final IBaseDataObject parent, @Nullable final List&lt;IBaseDataObject&gt; children,
+            final boolean nullifyFileType, final Set&lt;String&gt; alwaysCopyMetadataKeys, final String placeKey,
+            final KffDataObjectHandler kffDataObjectHandler) {
+<span class="fc" id="L184">        Validate.notNull(parent, &quot;Required: parent not null&quot;);</span>
+<span class="fc" id="L185">        Validate.notNull(alwaysCopyMetadataKeys, &quot;Required: alwaysCopyMetadataKeys not null&quot;);</span>
+<span class="fc" id="L186">        Validate.notNull(placeKey, &quot;Required: placeKey not null&quot;);</span>
+<span class="fc" id="L187">        Validate.notNull(kffDataObjectHandler, &quot;Required: kffDataObjectHandler not null&quot;);</span>
+
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        if (children != null) {</span>
+<span class="fc" id="L190">            int birthOrder = 1;</span>
+
+<span class="fc" id="L192">            final int totalNumSiblings = children.size();</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">            for (final IBaseDataObject child : children) {</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">                if (child == null) {</span>
+<span class="fc" id="L195">                    LOGGER.warn(&quot;addParentInformation with null child&quot;);</span>
+<span class="fc" id="L196">                    continue;</span>
+                }
+<span class="fc" id="L198">                addParentInformationToChild(parent, child, nullifyFileType, alwaysCopyMetadataKeys, placeKey,</span>
+                        kffDataObjectHandler);
+<span class="fc" id="L200">                child.setBirthOrder(birthOrder++);</span>
+<span class="fc" id="L201">                child.setNumSiblings(totalNumSiblings);</span>
+<span class="fc" id="L202">            }</span>
+        }
+<span class="fc" id="L204">    }</span>
+
+    /**
+     * Used to propagate needed parent metadata parameter information to a sprouted child except for those parameters whose
+     * names are specified in a regular expression pattern.
+     *
+     * @param parentIBaseDataObject the source of parameters to be copied
+     * @param childIBaseDataObject the destination for parameters to be copied
+     * @param excludedParametersPattern compiled regular expression specifying parameter names not to copy down
+     */
+
+    public static void addParentInformationToChildExcluding(final IBaseDataObject parentIBaseDataObject,
+            final IBaseDataObject childIBaseDataObject,
+            final Pattern excludedParametersPattern) {
+<span class="fc" id="L218">        Validate.notNull(parentIBaseDataObject, &quot;Required: parentIBaseDataObject not null&quot;);</span>
+<span class="fc" id="L219">        Validate.notNull(childIBaseDataObject, &quot;Required: childIBaseDataObject not null&quot;);</span>
+<span class="fc" id="L220">        Validate.notNull(excludedParametersPattern, &quot;Required: excludedParametersPattern not null&quot;);</span>
+<span class="fc" id="L221">        StreamSupport.stream(parentIBaseDataObject.getParameterKeys().spliterator(), false)</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">                .filter(key -&gt; !excludedParametersPattern.matcher(key).matches())</span>
+<span class="fc" id="L223">                .forEach(key -&gt; childIBaseDataObject.putParameter(key, parentIBaseDataObject.getParameter(key)));</span>
+<span class="fc" id="L224">    }</span>
+
+    /**
+     * Search for the first preferred view by regular expression or use the primary data if none match
+     *
+     * @param payload the payload to pull data from
+     * @param preferredViewNamePatterns the list of referred view regular expression patterns (null returns data)
+     */
+    public static byte[] findPreferredDataByRegex(final IBaseDataObject payload, List&lt;Pattern&gt; preferredViewNamePatterns) {
+<span class="fc bfc" id="L233" title="All 2 branches covered.">        Validate.isTrue(payload != null, &quot;Required: payload != null&quot;);</span>
+
+<span class="fc" id="L235">        return Optional.ofNullable(preferredViewNamePatterns).orElse(Collections.emptyList()).stream()</span>
+<span class="fc" id="L236">                .map(preferredViewNamePattern -&gt; findFirstAlternameViewNameByRegex(payload, preferredViewNamePattern))</span>
+<span class="fc" id="L237">                .filter(Optional::isPresent)</span>
+<span class="fc" id="L238">                .map(Optional::get)</span>
+<span class="fc" id="L239">                .map(payload::getAlternateView)</span>
+<span class="fc" id="L240">                .findFirst().orElse(payload.data());</span>
+    }
+
+    private static Optional&lt;String&gt; findFirstAlternameViewNameByRegex(IBaseDataObject payload, Pattern preferredViewNamePattern) {
+<span class="fc" id="L244">        return payload.getAlternateViewNames().stream()</span>
+<span class="fc" id="L245">                .filter(altViewName -&gt; preferredViewNamePattern.matcher(altViewName).find())</span>
+<span class="fc" id="L246">                .findFirst();</span>
+    }
+
+    /**
+     * Search for the first preferred view that is present or use the primary data if none
+     *
+     * @param payload the payload to pull data from
+     * @param preferredViews the list of preferred views (null returns data)
+     */
+    public static byte[] findPreferredData(final IBaseDataObject payload, List&lt;String&gt; preferredViews) {
+<span class="fc bfc" id="L256" title="All 2 branches covered.">        Validate.isTrue(payload != null, &quot;Required: payload != null&quot;);</span>
+
+<span class="fc" id="L258">        final Set&lt;String&gt; altViewNames = payload.getAlternateViewNames();</span>
+
+<span class="fc bfc" id="L260" title="All 2 branches covered.">        if (preferredViews != null) {</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">            for (final String view : preferredViews) {</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">                if (altViewNames.contains(view)) {</span>
+<span class="fc" id="L263">                    return payload.getAlternateView(view);</span>
+                }
+<span class="fc" id="L265">            }</span>
+        }
+
+<span class="fc" id="L268">        return payload.data();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

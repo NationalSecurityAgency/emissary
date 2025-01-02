@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EditDistance.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.kff</a> &gt; <span class="el_source">EditDistance.java</span></div><h1>EditDistance.java</h1><pre class="source lang-java linenums">package emissary.kff;
+
+import javax.annotation.Nullable;
+
+/**
+ * A java port of the ssdeep code for &quot;fuzzy hashing&quot;. http://ssdeep.sourceforge.net There are a number of ports out
+ * there that all look basically the same. This one is from
+ * https://opensourceprojects.eu/p/triplecheck/code/23/tree/tool/src/ssdeep/
+ * 
+ * A new ssdeep hash gets calculated and saved at each level of unwrapping.
+ */
+@SuppressWarnings(&quot;NonFinalStaticField&quot;)
+public class EditDistance {
+    /*
+     * This edit distance code is taken from trn3.6. A few minor modifications have been made by Andrew Tridgell
+     * &lt;tridge@samba.org&gt; for use in spamsum.
+     */
+
+
+    /***************************************************************************/
+
+
+    /*
+     * The authors make no claims as to the fitness or correctness of this software for any use whatsoever, and it is
+     * provided as is. Any use of this software is at the user's own risk.
+     */
+
+    /*
+     * edit_dist -- returns the minimum edit distance between two strings
+     * 
+     * Program by: Mark Maimone CMU Computer Science 13 Nov 89 Last Modified: 28 Jan 90
+     * 
+     * If the input strings have length n and m, the algorithm runs in time O(nm) and space O(min(m,n)).
+     * 
+     * HISTORY 13 Nov 89 (mwm) Created edit_dist() and set_costs().
+     * 
+     * 28 Jan 90 (mwm) Added view_costs(). Should verify that THRESHOLD computations will work even when THRESHOLD is not a
+     * multiple of sizeof(int).
+     * 
+     * 17 May 93 (mwm) Improved performance when used with trn's newsgroup processing; assume all costs are 1, and you can
+     * terminate when a threshold is exceeded.
+     */
+
+    private static final int MIN_DIST = 100;
+
+    /*
+     * Use a less-general version of the routine, one that's better for trn. All change costs are 1, and it's okay to
+     * terminate if the edit distance is known to exceed MIN_DIST
+     */
+
+    private static final int THRESHOLD = 4000; /*
+                                                * worry about allocating more memory only when this # of bytes is exceeded
+                                                */
+
+    private static final int STRLENTHRESHOLD = (THRESHOLD / (Integer.SIZE / 8) - 3) / 2;
+
+    // #define SAFE_ASSIGN(x,y) (((x) != NULL) ? (*(x) = (y)) : (y))
+
+    // #define swap_int(x,y) (_iswap = (x), (x) = (y), (y) = _iswap)
+    private static void swapInt(int[] x, int[] y) {
+<span class="nc" id="L61">        int iswap = x[0];</span>
+<span class="nc" id="L62">        x[0] = y[0];</span>
+<span class="nc" id="L63">        y[0] = iswap;</span>
+<span class="nc" id="L64">    }</span>
+
+    // #define swap_char(x,y) (_cswap = (x), (x) = (y), (y) = _cswap)
+    private static void swapChar(/* ref */byte[][] x, /* ref */byte[][] y) {
+<span class="nc" id="L68">        byte[] cswap = x[0];</span>
+<span class="nc" id="L69">        x[0] = y[0];</span>
+<span class="nc" id="L70">        y[0] = cswap;</span>
+<span class="nc" id="L71">    }</span>
+
+    // #define min3(x,y,z) (_mx = (x), _my = (y), _mz = (z), (_mx &lt; _my ? (_mx &lt; _mz ? _mx : _mz) : (_mz &lt; _my) ? _mz :
+    // _my))
+    private static int min3(int x, int y, int z) {
+<span class="fc" id="L76">        int mx = x;</span>
+<span class="fc" id="L77">        int my = y;</span>
+<span class="fc" id="L78">        int mz = z;</span>
+<span class="fc bfc" id="L79" title="All 6 branches covered.">        return (mx &lt; my ? (mx &lt; mz ? mx : mz) : (mz &lt; my) ? mz : my);</span>
+    }
+
+    // #define min2(x,y) (_mx = (x), _my = (y), (_mx &lt; _my ? _mx : _my))
+    private static int min2(int x, int y) {
+<span class="fc" id="L84">        int mx = x;</span>
+<span class="fc" id="L85">        int my = y;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        return (mx &lt; my ? mx : my);</span>
+    }
+
+<span class="fc" id="L89">    static int insertCost = 1;</span>
+<span class="fc" id="L90">    static int deleteCost = 1;</span>
+
+    // dynamic programming counters
+    static int row;
+    static int col;
+<span class="fc" id="L95">    static int index = 0;</span>
+    static int radix; // radix for modular indexing
+    static int low;
+    static int[] buffer; /*
+                          * pointer to storage for one row of the d.p. array
+                          */
+
+<span class="fc" id="L102">    static int[] store = new int[THRESHOLD / (Integer.SIZE / 8)];</span>
+    /*
+     * a small amount of static storage, to be used when the input strings are small enough
+     */
+
+    /* Handle trivial cases when one string is empty */
+
+<span class="fc" id="L109">    static int ins = 1;</span>
+<span class="fc" id="L110">    static int del = 1;</span>
+<span class="fc" id="L111">    static int ch = 3;</span>
+<span class="fc" id="L112">    static int swapCost = 5;</span>
+
+    static int fromLen;
+    static int toLen;
+
+    private static int ar(int x, int y, int index) {
+<span class="fc bfc" id="L118" title="All 4 branches covered.">        return ((x == 0) ? y * del : ((y == 0) ? x * ins : buffer[mod(index)]));</span>
+    }
+
+    private static int nw(int x, int y) {
+<span class="fc" id="L122">        return ar(x, y, index + fromLen + 2);</span>
+    }
+
+    private static int n(int x, int y) {
+<span class="fc" id="L126">        return ar(x, y, index + fromLen + 3);</span>
+    }
+
+    private static int w(int x, int y) {
+<span class="fc" id="L130">        return ar(x, y, index + radix - 1);</span>
+    }
+
+    private static int nnww(int x, int y) {
+<span class="fc" id="L134">        return ar(x, y, index + 1);</span>
+    }
+
+    private static int mod(int x) {
+<span class="fc" id="L138">        return (x % radix);</span>
+    }
+
+    /*
+     * returns the edit distance between two strings, or -1 on failure
+     */
+    public static int calculateEditDistance(@Nullable byte[] from, int fromLen, @Nullable byte[] to, int toLen) {
+<span class="fc" id="L145">        EditDistance.fromLen = fromLen;</span>
+<span class="fc" id="L146">        EditDistance.toLen = toLen;</span>
+
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if (from == null) {</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">            if (to == null) {</span>
+<span class="nc" id="L150">                return 0;</span>
+            } else {
+<span class="nc" id="L152">                return EditDistance.toLen * insertCost;</span>
+            }
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">        } else if (to == null) {</span>
+<span class="nc" id="L155">            return EditDistance.fromLen * deleteCost;</span>
+        }
+
+        /* Initialize registers */
+
+<span class="fc" id="L160">        radix = 2 * EditDistance.fromLen + 3;</span>
+
+        /* Make from short enough to fit in the static storage, if it's at all possible */
+
+<span class="pc bpc" id="L164" title="1 of 4 branches missed.">        if (EditDistance.fromLen &gt; EditDistance.toLen &amp;&amp; EditDistance.fromLen &gt; STRLENTHRESHOLD) {</span>
+<span class="nc" id="L165">            int[] x = new int[1];</span>
+<span class="nc" id="L166">            int[] y = new int[1];</span>
+<span class="nc" id="L167">            x[0] = EditDistance.fromLen;</span>
+<span class="nc" id="L168">            y[0] = EditDistance.toLen;</span>
+<span class="nc" id="L169">            swapInt(x, y);</span>
+<span class="nc" id="L170">            byte[][] xx = new byte[1][];</span>
+<span class="nc" id="L171">            byte[][] yy = new byte[1][];</span>
+<span class="nc" id="L172">            xx[0] = from;</span>
+<span class="nc" id="L173">            yy[0] = to;</span>
+<span class="nc" id="L174">            swapChar(xx, yy);</span>
+        } // if from_len &gt; to_len
+
+        /* Allocate the array storage (from the heap if necessary) */
+
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        if (EditDistance.fromLen &lt;= STRLENTHRESHOLD) {</span>
+<span class="fc" id="L180">            buffer = store;</span>
+        } else {
+<span class="nc" id="L182">            buffer = new int[radix];</span>
+        }
+
+        /*
+         * Here's where the fun begins. We will find the minimum edit distance using dynamic programming. We only need to store
+         * two rows of the matrix at a time, since we always progress down the matrix. For example, given the strings &quot;one&quot; and
+         * &quot;two&quot;, and insert, delete and change costs equal to 1:
+         * 
+         * _ o n e _ 0 1 2 3 t 1 1 2 3 w 2 2 2 3 o 3 2 3 3
+         * 
+         * The dynamic programming recursion is defined as follows:
+         * 
+         * ar(x,0) := x * insert_cost ar(0,y) := y * delete_cost ar(x,y) := min(a(x - 1, y - 1) + (from[x] == to[y] ? 0 :
+         * change), a(x - 1, y) + insert_cost, a(x, y - 1) + delete_cost, a(x - 2, y - 2) + (from[x] == to[y-1] &amp;&amp; from[x-1] ==
+         * to[y] ? swap_cost : infinity))
+         * 
+         * Since this only looks at most two rows and three columns back, we need only store the values for the two preceeding
+         * rows. In this implementation, we do not explicitly store the zero column, so only 2 * from_len + 2 words are needed.
+         * However, in the implementation of the swap_cost check, the current matrix value is used as a buffer; we can't
+         * overwrite the earlier value until the swap_cost check has been performed. So we use 2 * from_len + 3 elements in the
+         * buffer.
+         */
+
+        // /#define ar(x,y,index) (((x) == 0) ? (y) * del : (((y) == 0) ? (x) * ins :
+        // \ buffer[mod(index)]))
+        // /#define NW(x,y) ar(x, y, index + from_len + 2)
+        // /#define N(x,y) ar(x, y, index + from_len + 3)
+        // /#define W(x,y) ar(x, y, index + radix - 1)
+        // /#define NNWW(x,y) ar(x, y, index + 1)
+        // /#define mod(x) ((x) % radix)
+
+
+<span class="fc bfc" id="L214" title="All 2 branches covered.">        buffer[index++] = min2(ins + del, (from[0] == to[0] ? 0 : ch));</span>
+
+<span class="fc" id="L216">        low = buffer[mod(index + radix - 1)];</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">        for (col = 1; col &lt; EditDistance.fromLen; col++) {</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">            buffer[index] = min3(col * del + ((from[col] == to[0]) ? 0 : ch), (col + 1) * del + ins, buffer[index - 1] + del);</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">            if (buffer[index] &lt; low) {</span>
+<span class="fc" id="L220">                low = buffer[index];</span>
+            }
+<span class="fc" id="L222">            index++;</span>
+        }
+
+        /* Now handle the rest of the matrix */
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        for (row = 1; row &lt; EditDistance.toLen; row++) {</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">            for (col = 0; col &lt; EditDistance.fromLen; col++) {</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">                buffer[index] = min3(nw(row, col) + ((from[col] == to[row]) ? 0 : ch), n(row, col + 1) + ins, w(row + 1, col) + del);</span>
+
+<span class="fc bfc" id="L230" title="All 6 branches covered.">                if (from[col] == to[row - 1] &amp;&amp; col &gt; 0 &amp;&amp; from[col - 1] == to[row]) {</span>
+<span class="fc" id="L231">                    buffer[index] = min2(buffer[index], nnww(row - 1, col - 1) + swapCost);</span>
+                }
+
+<span class="fc bfc" id="L234" title="All 4 branches covered.">                if (buffer[index] &lt; low || col == 0) {</span>
+<span class="fc" id="L235">                    low = buffer[index];</span>
+                }
+<span class="fc" id="L237">                index = mod(index + 1);</span>
+            }
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">            if (low &gt; MIN_DIST) {</span>
+<span class="nc" id="L240">                break;</span>
+            }
+        }
+
+<span class="fc" id="L244">        row = buffer[mod(index + radix - 1)];</span>
+
+<span class="fc" id="L246">        return row;</span>
+    } // edit_distn
+
+    /** This class is not meant to be instantiated. */
+    private EditDistance() {}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

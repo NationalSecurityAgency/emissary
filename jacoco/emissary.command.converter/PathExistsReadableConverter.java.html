@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PathExistsReadableConverter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.command.converter</a> &gt; <span class="el_source">PathExistsReadableConverter.java</span></div><h1>PathExistsReadableConverter.java</h1><pre class="source lang-java linenums">package emissary.command.converter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import javax.annotation.Nullable;
+
+public class PathExistsReadableConverter extends PathExistsConverter {
+    public PathExistsReadableConverter() {
+<span class="nc" id="L12">        this(null);</span>
+<span class="nc" id="L13">    }</span>
+
+    public PathExistsReadableConverter(@Nullable String optionName) {
+<span class="fc" id="L16">        super(optionName);</span>
+<span class="fc" id="L17">    }</span>
+
+<span class="fc" id="L19">    private static final Logger LOG = LoggerFactory.getLogger(PathExistsReadableConverter.class);</span>
+
+    @Override
+    public Path convert(String value) {
+<span class="fc" id="L23">        Path p = super.convert(value);</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        if (!Files.isReadable(p)) {</span>
+<span class="fc" id="L25">            String msg = String.format(&quot;The option '%s' was configured with path '%s' which is not readable&quot;, getOptionName(), p);</span>
+<span class="fc" id="L26">            LOG.error(msg);</span>
+<span class="fc" id="L27">            throw new IllegalArgumentException(msg);</span>
+        }
+<span class="fc" id="L29">        return p;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

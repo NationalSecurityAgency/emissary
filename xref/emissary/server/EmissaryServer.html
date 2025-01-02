@@ -565,7 +565,7 @@
 <a class="jxr_linenumber" name="L557" href="#L557">557</a>         <strong class="jxr_keyword">return</strong> handler;
 <a class="jxr_linenumber" name="L558" href="#L558">558</a>     }
 <a class="jxr_linenumber" name="L559" href="#L559">559</a> 
-<a class="jxr_linenumber" name="L560" href="#L560">560</a>     <strong class="jxr_keyword">private</strong> LoginService buildLoginService() {
+<a class="jxr_linenumber" name="L560" href="#L560">560</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> LoginService buildLoginService() {
 <a class="jxr_linenumber" name="L561" href="#L561">561</a>         String jettyUsersFile = ConfigUtil.getConfigFile(<span class="jxr_string">"jetty-users.properties"</span>);
 <a class="jxr_linenumber" name="L562" href="#L562">562</a>         System.setProperty(<span class="jxr_string">"emissary.jetty.users.file"</span>, jettyUsersFile); <em class="jxr_comment">// for EmissaryClient</em>
 <a class="jxr_linenumber" name="L563" href="#L563">563</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> HashLoginService(<span class="jxr_string">"EmissaryRealm"</span>, jettyUsersFile);
@@ -666,7 +666,7 @@
 <a class="jxr_linenumber" name="L658" href="#L658">658</a>         <strong class="jxr_keyword">return</strong> emissaryHolderContext;
 <a class="jxr_linenumber" name="L659" href="#L659">659</a>     }
 <a class="jxr_linenumber" name="L660" href="#L660">660</a> 
-<a class="jxr_linenumber" name="L661" href="#L661">661</a>     <strong class="jxr_keyword">private</strong> ContextHandler buildLogbackConfigHandler() {
+<a class="jxr_linenumber" name="L661" href="#L661">661</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> ContextHandler buildLogbackConfigHandler() {
 <a class="jxr_linenumber" name="L662" href="#L662">662</a>         ServletHolder lbHolder = <strong class="jxr_keyword">new</strong> ServletHolder(<span class="jxr_string">"logback-config-holder"</span>, ViewStatusMessagesServlet.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L663" href="#L663">663</a>         ServletContextHandler lbHolderContext = <strong class="jxr_keyword">new</strong> ServletContextHandler(ServletContextHandler.SESSIONS);
 <a class="jxr_linenumber" name="L664" href="#L664">664</a>         lbHolderContext.addServlet(lbHolder, <span class="jxr_string">"/*"</span>);
@@ -713,7 +713,7 @@
 <a class="jxr_linenumber" name="L705" href="#L705">705</a> <em class="jxr_javadoccomment">     * @param server the Jetty HTTP Servlet Server</em>
 <a class="jxr_linenumber" name="L706" href="#L706">706</a> <em class="jxr_javadoccomment">     * @return server connector that is the primary connector for the Jetty server over TCP/IP</em>
 <a class="jxr_linenumber" name="L707" href="#L707">707</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L708" href="#L708">708</a>     <strong class="jxr_keyword">private</strong> ServerConnector createHttpConnector(Server server) {
+<a class="jxr_linenumber" name="L708" href="#L708">708</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> ServerConnector createHttpConnector(Server server) {
 <a class="jxr_linenumber" name="L709" href="#L709">709</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ServerConnector(server);
 <a class="jxr_linenumber" name="L710" href="#L710">710</a>     }
 <a class="jxr_linenumber" name="L711" href="#L711">711</a> 
@@ -762,7 +762,7 @@
 <a class="jxr_linenumber" name="L754" href="#L754">754</a> <em class="jxr_javadoccomment">     * @return SslContextFactory that is used to configure SSL parameters to be used by server connectors</em>
 <a class="jxr_linenumber" name="L755" href="#L755">755</a> <em class="jxr_javadoccomment">     * @throws IOException if there is an error getting the context factory</em>
 <a class="jxr_linenumber" name="L756" href="#L756">756</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L757" href="#L757">757</a>     <strong class="jxr_keyword">private</strong> SslContextFactory.Server getSslContextFactory() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L757" href="#L757">757</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> SslContextFactory.Server getSslContextFactory() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L758" href="#L758">758</a>         <a name="Configurator" href="../../emissary/config/Configurator.html#Configurator">Configurator</a> httpConnFactCfg = ConfigUtil.getConfigInfo(HTTPConnectionFactory.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L759" href="#L759">759</a>         String keystore = httpConnFactCfg.findStringEntry(<span class="jxr_string">"javax.net.ssl.keyStore"</span>, <span class="jxr_string">"no-keystore"</span>);
 <a class="jxr_linenumber" name="L760" href="#L760">760</a>         System.setProperty(<span class="jxr_string">"javax.net.ssl.keyStore"</span>, keystore);
@@ -792,6 +792,6 @@
 <a class="jxr_linenumber" name="L784" href="#L784">784</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

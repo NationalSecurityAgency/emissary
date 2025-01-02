@@ -1,0 +1,1413 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DirectoryPlace.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.directory</a> &gt; <span class="el_source">DirectoryPlace.java</span></div><h1>DirectoryPlace.java</h1><pre class="source lang-java linenums">package emissary.directory;
+
+import emissary.config.Configurator;
+import emissary.core.EmissaryException;
+import emissary.core.IBaseDataObject;
+import emissary.core.Namespace;
+import emissary.log.MDCConstants;
+import emissary.place.ServiceProviderPlace;
+import emissary.server.mvc.adapters.DirectoryAdapter;
+
+import org.slf4j.MDC;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.CopyOnWriteArraySet;
+import javax.annotation.Nullable;
+
+/**
+ * The DirectoryPlace class is used to store information relating to Places/Services in the Emissary Agent-Based
+ * architecture. When a Place comes up it calls the method addPlace passing in all the relevant information to store in
+ * the Directory. Agents query the directory by calling the method nextKeys which requires a query String search
+ * pattern.
+ *
+ * &lt;p&gt;
+ * We try to support some network topographic constructions by providing a set of peer directories. Peers are monitored
+ * and checked automatically by HeartbeatManager and the peer network is assumed to be fully connected. Peer directories
+ * are a fairly-static list of peer directories read from a config file. At least one host must be listed in order to
+ * bootstrap the network.
+ *
+ * &lt;p&gt;
+ * Emissary directory instances are also observable with respect to Peer activities, and Place activities. Peer
+ * observers will be called with a list of current members of the peer group (including this directory) whenever the
+ * peer group loses or gains members. Place observers will be called with a key that matches the pattern supplied on
+ * their subscription and an indication of whether it is a register or deregister or cost change.
+ *
+ */
+public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirectory {
+
+    /**
+     * Map of DirectoryEntryList objects by data id. This map contains the actual advertisements seen by this directory and
+     * available for MobilAgent/Place use via nextKeys
+     */
+<span class="fc" id="L49">    protected DirectoryEntryMap entryMap = new DirectoryEntryMap();</span>
+
+    /** Peer directories to this one */
+<span class="fc" id="L52">    protected Set&lt;DirectoryEntry&gt; peerDirectories = new CopyOnWriteArraySet&lt;&gt;();</span>
+
+    /**
+     * Statically configured peers. Remember them even when they shut down. A subset of peerDirectories
+     */
+<span class="fc" id="L57">    protected Set&lt;String&gt; staticPeers = new HashSet&lt;&gt;();</span>
+
+    /** Heartbeat manager for checking up on remote directories */
+    protected HeartbeatManager heartbeat;
+
+    /** Manage observers */
+    protected DirectoryObserverManager observerManager;
+
+    /** True if this directory is a rendezvous peer */
+<span class="fc" id="L66">    protected boolean rdvPeer = false;</span>
+
+    /** True is this directory is shutdown */
+<span class="fc" id="L69">    protected boolean shutdownInitiated = false;</span>
+
+    /** True if this directory is running */
+<span class="fc" id="L72">    protected boolean running = false;</span>
+
+    /** Emissary node configuration for network topology */
+    protected EmissaryNode emissaryNode;
+
+    /**
+     * Window of slop between asking for a zone and purging &quot;stale&quot; entries from the entry map. Since there is a window of
+     * time when the remote directory might be spewing out addPlace calls while we are asking for the zone transfer we can't
+     * just remove all entries once we get the zone, demarshall it and decide (finally) that it's ready to put into our map.
+     * We have to allow things somewhat recent to stay around also. This time window looks back from the beginning of the
+     * zone transfer request to provide some leniency.
+     */
+<span class="fc" id="L84">    protected long zoneSlopWindowMillis = 30000; // 30 sec</span>
+
+    /**
+     * Create a new empty directory using this location and no parent
+     *
+     * @param placeLoc string key to register this directory
+     * @param node EmissaryNode for this directory place
+     * 
+     * @throws IOException when configuration fails
+     */
+    public DirectoryPlace(final String placeLoc, EmissaryNode node) throws IOException {
+<span class="fc" id="L95">        super(placeLoc);</span>
+<span class="fc" id="L96">        this.emissaryNode = node;</span>
+<span class="fc" id="L97">        setupDirectory();</span>
+<span class="fc" id="L98">    }</span>
+
+    /**
+     * Create a new directory as specified by the config info with a parent for relaying through.
+     *
+     * @param configStream config info
+     * @param parentDir the parent directory or null if none
+     * @param placeLoc key for this place
+     * @param node node configuration details or null for defaults
+     * @throws IOException when configuration fails
+     */
+    public DirectoryPlace(final InputStream configStream, final String parentDir, final String placeLoc, final EmissaryNode node) throws IOException {
+<span class="fc" id="L110">        super(configStream, parentDir, placeLoc);</span>
+<span class="fc" id="L111">        this.emissaryNode = node;</span>
+<span class="fc" id="L112">        setupDirectory();</span>
+<span class="fc" id="L113">    }</span>
+
+    /**
+     * Create a new child directory as specified by the config info
+     *
+     * @param configInfo our config file to read
+     * @param placeLoc string key to register this directory
+     * @param node node configuration details or null for defaults
+     * @throws IOException when configuration fails
+     */
+    public DirectoryPlace(final String configInfo, final String placeLoc, final EmissaryNode node) throws IOException {
+<span class="fc" id="L124">        super(configInfo, placeLoc);</span>
+<span class="fc" id="L125">        this.emissaryNode = node;</span>
+<span class="fc" id="L126">        setupDirectory();</span>
+<span class="fc" id="L127">    }</span>
+
+    /**
+     * Create a new directory as specified by the config info
+     *
+     * @param configStream config info
+     * @param placeLoc key for this place
+     * @param node node configuration details or null for defaults
+     * @throws IOException when configuration fails
+     */
+    public DirectoryPlace(final InputStream configStream, final String placeLoc, final EmissaryNode node) throws IOException {
+<span class="fc" id="L138">        super(configStream, placeLoc);</span>
+<span class="fc" id="L139">        this.emissaryNode = node;</span>
+<span class="fc" id="L140">        setupDirectory();</span>
+<span class="fc" id="L141">    }</span>
+
+    /**
+     * Shared code for all the constructors to take advantage of in initializing directory services Configuration items read
+     * here are
+     * &lt;ul&gt;
+     * &lt;li&gt;HEARTBEAT_DELAY_SECONDS, default is 30&lt;/li&gt;
+     * &lt;li&gt;HEARTBEAT_INTERVAL_SECONDS, default is 30&lt;/li&gt;
+     * &lt;li&gt;HEARTBEAT_FAILURE_THRESHOLD, set transient failure count, default owned by HeartbeatManager&lt;/li&gt;
+     * &lt;li&gt;HEARTBEAT_PERMANENT_FAILURE_THRESHOLD, set permanent failure count, default owned by HeartbeatManager&lt;/li&gt;
+     * &lt;/ul&gt;
+     */
+    private void setupDirectory() {
+<span class="pc bpc" id="L154" title="1 of 4 branches missed.">        if (this.emissaryNode.isValid() &amp;&amp; !this.emissaryNode.isStandalone()) {</span>
+            // Start a heart beat manager with initial and interval seconds
+<span class="fc" id="L156">            final int initialSeconds = configG.findIntEntry(&quot;HEARTBEAT_DELAY_SECONDS&quot;, 30);</span>
+<span class="fc" id="L157">            final int intervalSeconds = configG.findIntEntry(&quot;HEARTBEAT_INTERVAL_SECONDS&quot;, 30);</span>
+
+<span class="fc" id="L159">            this.heartbeat = new HeartbeatManager(myKey, initialSeconds, intervalSeconds);</span>
+
+<span class="fc" id="L161">            final int heartbeatFailureThreshold = configG.findIntEntry(&quot;HEARTBEAT_FAILURE_THRESHOLD&quot;, -1);</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">            if (heartbeatFailureThreshold &gt; 0) {</span>
+<span class="nc" id="L163">                this.heartbeat.setFailThreshold(heartbeatFailureThreshold);</span>
+            }
+
+<span class="fc" id="L166">            final int heartbeatPermanentFailure = configG.findIntEntry(&quot;HEARTBEAT_PERMANENT_FAILURE_THRESHOLD&quot;, -1);</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">            if (heartbeatPermanentFailure &gt; 0) {</span>
+<span class="nc" id="L168">                this.heartbeat.setPermanentFailThreshold(heartbeatPermanentFailure);</span>
+            }
+        }
+
+        // Set up deferred stuff from ServiceProviderPlace
+        // for directories only we are our own localDirPlace
+        // and the key is our own key
+<span class="fc" id="L175">        localDirPlace = this;</span>
+<span class="fc" id="L176">        dirPlace = myKey;</span>
+
+        // Start an observer manager
+<span class="fc" id="L179">        this.observerManager = new DirectoryObserverManager(myKey);</span>
+
+        // Configure my initial rendezvous peers
+<span class="fc" id="L182">        configureNetworkTopology();</span>
+
+        // Add an entry representing myself into the
+        // local entry map. This allows observers to
+        // work for this case, and allows Jetty instances
+        // with just a DirectoryPlace and some bunches
+        // of other non-Place code to function well and trigger
+        // the peer discovery mechanism when they zone transfer
+        // this entry
+<span class="fc" id="L191">        final List&lt;String&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L192">        list.add(keys.get(0));</span>
+<span class="fc" id="L193">        addPlaces(list);</span>
+<span class="fc" id="L194">        this.running = true;</span>
+<span class="fc" id="L195">    }</span>
+
+    /**
+     * Find an optional peer config stream or file and initialize tracking of the peers found there.
+     * &lt;p&gt;
+     * We don't actually contact any of the remote directories here, so we can get the heck out of the constructor code and
+     * get this place registered in the namespace quick! so other directories can find us in a timely fashion.
+     */
+    private void configureNetworkTopology() {
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">        if (!this.emissaryNode.isValid()) {</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">            if (this.emissaryNode.isStandalone()) {</span>
+<span class="nc" id="L206">                logger.debug(&quot;Running as a standalone emissary node&quot;);</span>
+            } else {
+<span class="nc" id="L208">                logger.debug(&quot;Not configured as an emissary node&quot;);</span>
+            }
+<span class="nc" id="L210">            return;</span>
+        }
+
+<span class="fc" id="L213">        logger.debug(&quot;Emissary node info: {}&quot;, this.emissaryNode);</span>
+
+        try {
+            // Peer network configuration is from peer.cfg
+<span class="fc" id="L217">            final Configurator peerConfig = this.emissaryNode.getPeerConfigurator();</span>
+<span class="fc" id="L218">            final Set&lt;String&gt; peers = peerConfig.findEntriesAsSet(&quot;RENDEZVOUS_PEER&quot;);</span>
+<span class="fc" id="L219">            this.staticPeers.addAll(peers);</span>
+<span class="fc" id="L220">            addPeerDirectories(peers, true);</span>
+
+<span class="fc" id="L222">            logger.debug(&quot;Configured {} rendezvous peers from {} config entries.&quot;, this.peerDirectories.size(), peers.size());</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">            logger.debug(&quot;This directory is {}a rendezvous peer.&quot;, (this.rdvPeer ? &quot;&quot; : &quot;NOT (yet) &quot;));</span>
+<span class="nc" id="L224">        } catch (IOException iox) {</span>
+<span class="nc" id="L225">            logger.debug(&quot;There is no peer.cfg data available&quot;);</span>
+<span class="fc" id="L226">        }</span>
+<span class="fc" id="L227">    }</span>
+
+    /**
+     * Determine if the key is local to this directory
+     *
+     * @param key the key to query for
+     * @return true iff the key host and port are the same (jvm locality test)
+     */
+    private boolean isLocal(final String key) {
+<span class="fc" id="L236">        return KeyManipulator.isLocalTo(key, myKey);</span>
+    }
+
+    /**
+     * Determine if the entry is local to this directory
+     *
+     * @param entry the entry to query for
+     * @return true iff the entry key host and port are the same (jvm locality test)
+     */
+    private boolean isLocal(final DirectoryEntry entry) {
+<span class="fc" id="L246">        return isLocal(entry.getKey());</span>
+    }
+
+    /**
+     * Add a Set of peer directory to this one
+     *
+     * @param keys set of string key for peer directories
+     */
+    @Override
+    public void irdAddPeerDirectories(@Nullable final Set&lt;String&gt; keys) {
+        // Validate contract
+<span class="pc bpc" id="L257" title="2 of 4 branches missed.">        if ((keys == null) || keys.isEmpty()) {</span>
+<span class="nc" id="L258">            logger.warn(&quot;Ignoring irdAddPeerDirectories called with null or no keys&quot;);</span>
+<span class="nc" id="L259">            return;</span>
+        }
+
+        // Validate remote parameters
+<span class="fc bfc" id="L263" title="All 2 branches covered.">        for (final String key : keys) {</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">            if (!KeyManipulator.isValid(key)) {</span>
+<span class="nc" id="L265">                logger.warn(&quot;Ignoring irdAddPeerDirectories called with {} keys, invalid key {}&quot;, keys.size(), key);</span>
+<span class="nc" id="L266">                return;</span>
+            }
+<span class="fc" id="L268">        }</span>
+<span class="fc" id="L269">        addPeerDirectories(keys, false);</span>
+<span class="fc" id="L270">    }</span>
+
+    /**
+     * Add a Set of peer directory to this one
+     *
+     * @param keys set of string key for peer directories
+     * @param initPhase true if during place initialization
+     */
+    // TODO Look at DirectoryPlaceTest at the cases where spied methods are used
+    public void addPeerDirectories(final Set&lt;String&gt; keys, final boolean initPhase) {
+
+<span class="fc bfc" id="L281" title="All 2 branches covered.">        if (this.shutdownInitiated) {</span>
+<span class="fc" id="L282">            logger.error(&quot;Shutdown has been initiated. Cannot add peer directories in this state.&quot;);</span>
+<span class="fc" id="L283">            return;</span>
+        }
+
+<span class="fc" id="L286">        boolean changeMade = false;</span>
+
+<span class="fc bfc" id="L288" title="All 2 branches covered.">        for (final String key : keys) {</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">            if (isLocal(key)) {</span>
+                // I am listed as a rendezvous for someone
+<span class="fc" id="L291">                this.rdvPeer = true;</span>
+<span class="fc" id="L292">                continue;</span>
+            }
+
+<span class="fc bfc" id="L295" title="All 2 branches covered.">            if (this.emissaryNode.isStandalone()) {</span>
+<span class="fc" id="L296">                logger.debug(&quot;Not adding peers in standalone nodes&quot;);</span>
+<span class="fc" id="L297">                continue;</span>
+            }
+
+<span class="fc bfc" id="L300" title="All 2 branches covered.">            if (!isStaticPeer(key)) {</span>
+<span class="fc" id="L301">                logger.warn(&quot;Unknown peer requesting to be added: {}&quot;, key);</span>
+<span class="fc" id="L302">                continue;</span>
+            }
+
+<span class="fc bfc" id="L305" title="All 2 branches covered.">            if (!isKnownPeer(key)) {</span>
+<span class="fc" id="L306">                this.peerDirectories.add(new DirectoryEntry(key));</span>
+<span class="fc" id="L307">                logger.debug(&quot;Added peer directory {}&quot;, key);</span>
+
+                // Setup heartbeat to new peer directory
+<span class="pc bpc" id="L310" title="1 of 2 branches missed.">                if (initPhase) {</span>
+                    // not contacted yet
+<span class="fc" id="L312">                    this.heartbeat.addRemoteDirectory(key, HeartbeatManager.NO_CONTACT);</span>
+                } else {
+                    // already contacted
+<span class="nc" id="L315">                    this.heartbeat.addRemoteDirectory(key, HeartbeatManager.IS_ALIVE);</span>
+
+                    // Initial transfer of remote directory info here
+                    // It may not be up yet, so be resilient
+<span class="nc" id="L319">                    loadPeerEntries(key);</span>
+                }
+
+
+<span class="fc" id="L323">                changeMade = true;</span>
+            } else {
+<span class="fc" id="L325">                logger.debug(&quot;We already knew about peer {}&quot;, key);</span>
+<span class="pc bpc" id="L326" title="1 of 2 branches missed.">                if (!this.heartbeat.isAlive(key)) {</span>
+<span class="fc" id="L327">                    logger.debug(&quot;Forcing peer {} alive due to arriving registration&quot;, key);</span>
+<span class="fc" id="L328">                    this.heartbeat.setHealthStatus(key, HeartbeatManager.IS_ALIVE, &quot;Received peer registration&quot;);</span>
+<span class="fc" id="L329">                    loadPeerEntries(key);</span>
+                }
+            }
+<span class="fc" id="L332">        }</span>
+
+        // Notify all observers
+<span class="fc bfc" id="L335" title="All 2 branches covered.">        if (changeMade) {</span>
+<span class="fc" id="L336">            this.observerManager.peerUpdate(new HashSet&lt;&gt;(this.peerDirectories));</span>
+        }
+<span class="fc" id="L338">    }</span>
+
+    /**
+     * Retrieve and load (zone transfer) all the entries from the specified peer directory. Zone transfers do not trigger
+     * observables like addPlaces does
+     *
+     * @param peerKey the key of the peer directory
+     */
+    protected void loadPeerEntries(final String peerKey) {
+
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">        if (this.emissaryNode.isStandalone()) {</span>
+<span class="nc" id="L349">            logger.debug(&quot;Cannot load peer entries in standalone nodes&quot;);</span>
+<span class="nc" id="L350">            return;</span>
+        }
+
+<span class="fc" id="L353">        logger.debug(&quot;Doing zone transfer with peer {}&quot;, peerKey);</span>
+        // TODO See DirectoryPlace for spy example which needs to be addressed
+<span class="fc" id="L355">        final DirectoryEntryMap newEntries = loadRemoteEntries(peerKey, this.entryMap);</span>
+<span class="pc bpc" id="L356" title="3 of 4 branches missed.">        if ((newEntries == null) || newEntries.isEmpty()) {</span>
+<span class="fc" id="L357">            logger.debug(&quot;We got nothing back from the peer zone xfer&quot;);</span>
+<span class="fc" id="L358">            return;</span>
+        }
+
+        // We just did this guy remove his stuff
+<span class="nc" id="L362">        newEntries.removeAllOnDirectory(peerKey);</span>
+
+        // Remove local stuff
+<span class="nc" id="L365">        newEntries.removeAllOnDirectory(myKey);</span>
+
+        // Make note of any possible new peer directory
+        // We should only be seeing peers here
+<span class="nc" id="L369">        final Set&lt;String&gt; newPeers = new HashSet&lt;&gt;();</span>
+<span class="nc bnc" id="L370" title="All 2 branches missed.">        for (final DirectoryEntry newEntry : newEntries.allEntries()) {</span>
+<span class="nc bnc" id="L371" title="All 2 branches missed.">            if (!isLocal(newEntry)) {</span>
+<span class="nc" id="L372">                final String possiblePeer = KeyManipulator.getDefaultDirectoryKey(newEntry.getKey());</span>
+<span class="nc bnc" id="L373" title="All 4 branches missed.">                if (!isKnownPeer(possiblePeer) &amp;&amp; !newPeers.contains(possiblePeer)) {</span>
+<span class="nc" id="L374">                    logger.debug(&quot;Discovered new peer {} from {} during zt with {}&quot;, possiblePeer, newEntry.getKey(), peerKey);</span>
+<span class="nc" id="L375">                    newPeers.add(possiblePeer);</span>
+                }
+            }
+<span class="nc" id="L378">        }</span>
+<span class="nc bnc" id="L379" title="All 2 branches missed.">        if (!newPeers.isEmpty()) {</span>
+<span class="nc" id="L380">            logger.debug(&quot;Adding {} new peers from zt with {}&quot;, newPeers.size(), peerKey);</span>
+<span class="nc" id="L381">            addPeerDirectories(newPeers, false);</span>
+        }
+<span class="nc" id="L383">    }</span>
+
+    /**
+     * Retrieve and load (zone transfer) all the entries from specified remote directory into the specified map. Remove any
+     * stale entries from the destination map if one is specified and merge in the new entries. Zone transfers do not
+     * trigger observables like addPlaces does
+     *
+     * @param key key of the remote directory to transfer from
+     * @param loadMap the map to load into or null for no load. Observers are notified if loadMap is not null
+     * @return the new entries
+     */
+    @Nullable
+    private DirectoryEntryMap loadRemoteEntries(final String key, @Nullable final DirectoryEntryMap loadMap) {
+
+<span class="pc bpc" id="L397" title="1 of 2 branches missed.">        if (this.emissaryNode.isStandalone()) {</span>
+<span class="nc" id="L398">            logger.debug(&quot;Cannot load remote entries in standalone nodes&quot;);</span>
+<span class="nc" id="L399">            return null;</span>
+        }
+
+<span class="pc bpc" id="L402" title="1 of 2 branches missed.">        if (!isStaticPeer(key)) {</span>
+<span class="nc" id="L403">            logger.debug(&quot;Ignoring non-configured peer {}&quot;, key);</span>
+<span class="nc" id="L404">            return null;</span>
+        }
+
+        // Track how long the zone transfer takes and use that
+        // info along with the slop window to help determine if
+        // there are stale entries and what they might be.
+
+<span class="fc" id="L411">        final long startZone = System.currentTimeMillis();</span>
+<span class="fc" id="L412">        DirectoryEntryMap map = null;</span>
+        try {
+            // Also registers as a peer with them
+            // TODO should we need to get the current EmissaryClient to ensure parameters are set correctly
+<span class="fc" id="L416">            final DirectoryAdapter da = new DirectoryAdapter();</span>
+<span class="nc" id="L417">            map = da.outboundRegisterPeer(key, myKey);</span>
+
+<span class="nc bnc" id="L419" title="All 2 branches missed.">            if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L420">                logger.debug(&quot;Retrieved {} entries in zone transfer from {} in {} millis&quot;, map.entryCount(), key,</span>
+<span class="nc" id="L421">                        (System.currentTimeMillis() - startZone));</span>
+            }
+
+            // No entries mean we got the remote message,
+            // and they just don't have any places registered yet
+<span class="nc bnc" id="L426" title="All 2 branches missed.">            if (map.isEmpty()) {</span>
+<span class="nc" id="L427">                return map;</span>
+            }
+
+<span class="nc bnc" id="L430" title="All 2 branches missed.">            if (loadMap != null) {</span>
+
+                // Remove and notify of any stale entries in loadMap
+<span class="nc" id="L433">                removeStaleEntries(loadMap, key, startZone - this.zoneSlopWindowMillis, map, true);</span>
+
+                // Remove any duplicate entries from map
+                // so that they don't get double notified to observers
+                // do the load and notify all observers
+<span class="nc" id="L438">                cleanLoadNotifyEntries(map, loadMap, myKey, REMOTE_COST_OVERHEAD);</span>
+            } else {
+<span class="nc" id="L440">                logger.debug(&quot;Skipping load of {} new entries from {} returning list to caller&quot;, map.entryCount(), key);</span>
+            }
+<span class="fc" id="L442">        } catch (Exception ex) {</span>
+<span class="pc bpc" id="L443" title="1 of 2 branches missed.">            if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L444">                logger.debug(&quot;Unable to zone transfer with {}&quot;, key, ex);</span>
+            } else {
+<span class="fc" id="L446">                logger.info(&quot;Unable to zone transfer with {}&quot;, key);</span>
+            }
+            // Failure condition. Trigger state change in heartbeat manager
+<span class="fc" id="L449">            this.heartbeat.setHealthStatus(key, HeartbeatManager.NO_CONTACT, &quot;Remote directory failed zone transfer&quot;);</span>
+<span class="nc" id="L450">        }</span>
+
+<span class="fc" id="L452">        return map;</span>
+    }
+
+    /**
+     * Remove stale entries from the specified map and notify any observers Nothing older than checkpoint time can be
+     * considered stale and nothing that is on the incming newEntries list can be considered stale since we would just be
+     * adding it back again. Duplicates (non-stale entries) are removed from the newEntries map to avoid further confusion
+     * but only if the cost is the same. Otherwise, we leave it so that a cost-change event can propagete from later code
+     * but still avoid triggering a place removed event.
+     *
+     * @param loadMap the map we are removing from
+     * @param key the key of the directory whose entries might be stale
+     * @param checkpoint the time window to determine possible staleness
+     * @param newEntries the new map arriving
+     * @param performNotification only use observerManager if true
+     * @return list of entries that were removed
+     */
+    private List&lt;DirectoryEntry&gt; removeStaleEntries(final DirectoryEntryMap loadMap, final String key, final long checkpoint,
+            @Nullable final DirectoryEntryMap newEntries, final boolean performNotification) {
+
+<span class="nc" id="L472">        final List&lt;DirectoryEntry&gt; staleEntries = new ArrayList&lt;&gt;();</span>
+
+        // Nothing newer than the checkpoint time can be stale
+        // Nothing that is in teh loadMap but also duplicated in
+        // the newEntries map can be stale either. This helps eliminate
+        // the problem of removing it just so we can add it back.
+        // This uses a mark and sweep to prevent concurrent mod exceptions
+<span class="nc bnc" id="L479" title="All 2 branches missed.">        for (final DirectoryEntry d : loadMap.collectAllMatching(key)) {</span>
+            // is it old enough to be possibly stale
+<span class="nc bnc" id="L481" title="All 2 branches missed.">            if (d.getAge() &lt; checkpoint) {</span>
+                // is it missing from the new list
+<span class="nc bnc" id="L483" title="All 2 branches missed.">                if (newEntries != null) {</span>
+<span class="nc" id="L484">                    final List&lt;DirectoryEntry&gt; matches = newEntries.collectAllMatching(d.getKey());</span>
+<span class="nc bnc" id="L485" title="All 2 branches missed.">                    if (matches.isEmpty()) {</span>
+<span class="nc" id="L486">                        logger.debug(&quot;Marking stale entry {}&quot;, d.getKey());</span>
+<span class="nc" id="L487">                        staleEntries.add(d);</span>
+<span class="nc bnc" id="L488" title="All 2 branches missed.">                    } else if (matches.size() == 1) {</span>
+                        // remove from newEntries if exact dup
+<span class="nc" id="L490">                        final DirectoryEntry me = matches.get(0);</span>
+<span class="nc bnc" id="L491" title="All 2 branches missed.">                        if (me.getFullKey().equals(d.getFullKey())) {</span>
+<span class="nc" id="L492">                            logger.debug(&quot;Removing duplcate key from incoming map {}&quot;, me.getKey());</span>
+<span class="nc" id="L493">                            newEntries.removeEntry(me.getKey());</span>
+                        }
+                    }
+<span class="nc" id="L496">                } else {</span>
+                    // must be stale if no newEntries
+<span class="nc" id="L498">                    logger.debug(&quot;Marking stale entry (no new entries){}&quot;, d.getKey());</span>
+<span class="nc" id="L499">                    staleEntries.add(d);</span>
+                }
+            }
+<span class="nc" id="L502">        }</span>
+
+        // Remove and notify
+<span class="nc bnc" id="L505" title="All 2 branches missed.">        if (!staleEntries.isEmpty()) {</span>
+<span class="nc bnc" id="L506" title="All 2 branches missed.">            for (final DirectoryEntry stale : staleEntries) {</span>
+<span class="nc" id="L507">                logger.debug(&quot;Removing stale entry {}&quot;, stale.getKey());</span>
+<span class="nc" id="L508">                loadMap.removeEntry(stale.getKey());</span>
+<span class="nc" id="L509">            }</span>
+
+<span class="nc bnc" id="L511" title="All 2 branches missed.">            if (performNotification) {</span>
+<span class="nc" id="L512">                logger.debug(&quot;Notifying observers of {} stale entry removals&quot;, staleEntries.size());</span>
+<span class="nc" id="L513">                this.observerManager.placeRemoveEntries(staleEntries);</span>
+            }
+        } else {
+<span class="nc" id="L516">            logger.debug(&quot;There were no stale entries to remove&quot;);</span>
+        }
+
+<span class="nc" id="L519">        return staleEntries;</span>
+    }
+
+    /**
+     * Grok the details of a new entry list and figure out which observers need to be notified. Remove any entries that are
+     * not going to end up being added anyway.
+     *
+     * @param map the new entries to understand
+     * @param loadMap the map the entries will be loaded into
+     * @param purgeKey remove any keys matching
+     * @param costBump add cost to incoming
+     */
+    private void cleanLoadNotifyEntries(final DirectoryEntryMap map, @Nullable final DirectoryEntryMap loadMap, @Nullable final String purgeKey,
+            final int costBump) {
+        // Remove local entries from the new map
+        // We already know about our local stuff.
+<span class="nc bnc" id="L535" title="All 2 branches missed.">        if (purgeKey != null) {</span>
+<span class="nc" id="L536">            final List&lt;DirectoryEntry&gt; removed = map.removeAllOnDirectory(purgeKey);</span>
+<span class="nc" id="L537">            logger.debug(&quot;Clean/load removed {} entries based on {} remaining = {}&quot;, removed.size(), purgeKey, map.entryCount());</span>
+        }
+
+        // Add remote overhead to remaining
+<span class="nc bnc" id="L541" title="All 2 branches missed.">        if (costBump &gt; 0) {</span>
+<span class="nc" id="L542">            map.addCostToMatching(&quot;*.*.*.*&quot;, costBump);</span>
+<span class="nc" id="L543">            logger.debug(&quot;Clean/load did cost-bump of {} on {} entries&quot;, costBump, map.entryCount());</span>
+        }
+
+<span class="nc bnc" id="L546" title="All 2 branches missed.">        if (loadMap != null) {</span>
+<span class="nc" id="L547">            final DirectoryEntryMap newEntries = new DirectoryEntryMap();</span>
+<span class="nc" id="L548">            final DirectoryEntryMap costChangeEntries = new DirectoryEntryMap();</span>
+<span class="nc bnc" id="L549" title="All 2 branches missed.">            for (final DirectoryEntry e : map.allEntries()) {</span>
+<span class="nc" id="L550">                final List&lt;DirectoryEntry&gt; matches = loadMap.collectAllMatching(e.getKey());</span>
+<span class="nc bnc" id="L551" title="All 2 branches missed.">                if (matches.isEmpty()) {</span>
+<span class="nc" id="L552">                    newEntries.addEntry(e);</span>
+<span class="nc bnc" id="L553" title="All 4 branches missed.">                } else if ((matches.size() == 1) &amp;&amp; e.isBetterThan(matches.get(0))) {</span>
+<span class="nc" id="L554">                    costChangeEntries.addEntry(e);</span>
+                }
+<span class="nc" id="L556">            }</span>
+
+            // Merge remaining truly new entries and notify observers
+<span class="nc" id="L559">            final int newCount = newEntries.entryCount();</span>
+<span class="nc" id="L560">            final int cceCount = costChangeEntries.entryCount();</span>
+<span class="nc bnc" id="L561" title="All 2 branches missed.">            if (newCount &gt; 0) {</span>
+<span class="nc" id="L562">                logger.debug(&quot;Loading {} new entries&quot;, newCount);</span>
+<span class="nc" id="L563">                loadMap.addEntries(newEntries);</span>
+<span class="nc" id="L564">                this.observerManager.placeAdd(newEntries.allEntryKeys());</span>
+            } else {
+<span class="nc" id="L566">                logger.debug(&quot;Nothing truly new from {} entries&quot;, map.entryCount());</span>
+            }
+
+            // .. and cost change entries
+<span class="nc bnc" id="L570" title="All 2 branches missed.">            if (cceCount &gt; 0) {</span>
+<span class="nc" id="L571">                logger.debug(&quot;Loading {} better cost entries&quot;, cceCount);</span>
+<span class="nc" id="L572">                loadMap.addEntries(costChangeEntries);</span>
+<span class="nc" id="L573">                this.observerManager.placeCostChange(costChangeEntries.allEntryKeys());</span>
+            } else {
+<span class="nc" id="L575">                logger.debug(&quot;No cost change entries from {} entries&quot;, map.entryCount());</span>
+            }
+
+            // Now let the map that gets returned have just the new
+            // and cost changed entries, no already known stuff
+<span class="nc bnc" id="L580" title="All 2 branches missed.">            if ((newCount + cceCount) &lt; map.entryCount()) {</span>
+<span class="nc" id="L581">                map.clear();</span>
+<span class="nc" id="L582">                map.addEntries(costChangeEntries);</span>
+<span class="nc" id="L583">                map.addEntries(newEntries);</span>
+<span class="nc" id="L584">                map.sort();</span>
+            }
+<span class="nc" id="L586">        } else {</span>
+<span class="nc" id="L587">            logger.debug(&quot;Clean/load got a null loadMap so skipping the load for {} entries&quot;, map.entryCount());</span>
+        }
+<span class="nc" id="L589">    }</span>
+
+
+    /**
+     * Get a list of the keys of all the peer directories known here
+     *
+     * @return set of string names of peer directory keys
+     */
+    @Override
+    public Set&lt;String&gt; getPeerDirectories() {
+<span class="fc" id="L599">        final Set&lt;String&gt; l = new TreeSet&lt;&gt;();</span>
+<span class="fc bfc" id="L600" title="All 2 branches covered.">        for (final DirectoryEntry sde : this.peerDirectories) {</span>
+<span class="fc" id="L601">            l.add(sde.getKey());</span>
+<span class="fc" id="L602">        }</span>
+<span class="fc" id="L603">        return l;</span>
+    }
+
+    /**
+     * Add a list of entries to the directory Entries are kept in a Hash by &quot;datatype::serviceType&quot; Each entry is a List of
+     * sorted DirectoryEntries sorted order on cost and then quality, held in a DirectoryEntryList object
+     *
+     * @param entryList the new entries to add
+     */
+    protected void addEntries(final List&lt;DirectoryEntry&gt; entryList) {
+<span class="fc" id="L613">        logger.debug(&quot;Adding {} new entries&quot;, entryList.size());</span>
+
+        // add them
+<span class="fc" id="L616">        this.entryMap.addEntries(entryList);</span>
+
+        // notify all observers
+<span class="fc" id="L619">        this.observerManager.placeAddEntries(entryList);</span>
+
+<span class="fc" id="L621">        final Set&lt;String&gt; peerSet = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L622" title="All 2 branches covered.">        for (final DirectoryEntry newEntry : entryList) {</span>
+            // Make a note of any possible new peer directory
+<span class="fc bfc" id="L624" title="All 2 branches covered.">            if (!isLocal(newEntry)) {</span>
+<span class="fc" id="L625">                final String peerKey = KeyManipulator.getDefaultDirectoryKey(newEntry.getKey());</span>
+<span class="fc bfc" id="L626" title="All 4 branches covered.">                if (!isKnownPeer(peerKey) &amp;&amp; !peerSet.contains(peerKey)) {</span>
+<span class="fc" id="L627">                    logger.debug(&quot;Discovered new peer {} from  addEntries {}&quot;, peerKey, newEntry.getKey());</span>
+<span class="fc" id="L628">                    peerSet.add(peerKey);</span>
+                } else {
+<span class="fc" id="L630">                    logger.debug(&quot;No new peer implications to {} from {}&quot;, peerKey, newEntry.getKey());</span>
+                }
+            }
+<span class="fc" id="L633">        }</span>
+
+<span class="fc bfc" id="L635" title="All 2 branches covered.">        if (!peerSet.isEmpty()) {</span>
+<span class="fc" id="L636">            logger.debug(&quot;Adding {} newly discovered peer entries&quot;, peerSet.size());</span>
+<span class="fc" id="L637">            addPeerDirectories(peerSet, false);</span>
+        }
+<span class="fc" id="L639">    }</span>
+
+    /**
+     * Add an entry to the directory Entries are kept in a Hash by &quot;datatype::serviceType&quot; Each entry is a List of sorted
+     * DirectoryEntries sorted order on cost and then quality, held in a DirectoryEntryList object
+     *
+     * @param newEntry the new entry to add
+     */
+    protected void addEntry(final DirectoryEntry newEntry) {
+<span class="fc" id="L648">        logger.debug(&quot;Adding single new entry {}&quot;, newEntry.getKey());</span>
+<span class="fc" id="L649">        final List&lt;DirectoryEntry&gt; entryList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L650">        entryList.add(newEntry);</span>
+<span class="fc" id="L651">        addEntries(entryList);</span>
+<span class="fc" id="L652">    }</span>
+
+    /**
+     * Determine if key represents a configured peer
+     */
+    public boolean isStaticPeer(final String key) {
+<span class="fc" id="L658">        return this.staticPeers.contains(key);</span>
+    }
+
+    /**
+     * Determine if key represents a known peer
+     */
+    private boolean isKnownPeer(final String key) {
+<span class="fc bfc" id="L665" title="All 2 branches covered.">        for (final DirectoryEntry sde : this.peerDirectories) {</span>
+<span class="fc bfc" id="L666" title="All 2 branches covered.">            if (KeyManipulator.isLocalTo(sde.getKey(), key)) {</span>
+<span class="fc" id="L667">                return true;</span>
+            }
+<span class="fc" id="L669">        }</span>
+<span class="fc" id="L670">        return false;</span>
+    }
+
+    /**
+     * Remove a peer from the peer list
+     *
+     * @param key the peer to remove
+     */
+    @Nullable
+    private DirectoryEntry removePeer(final String key) {
+<span class="nc bnc" id="L680" title="All 2 branches missed.">        if (this.emissaryNode.isStandalone()) {</span>
+<span class="nc" id="L681">            logger.debug(&quot;Cannot remove peers from standalone nodes&quot;);</span>
+<span class="nc" id="L682">            return null;</span>
+        }
+
+<span class="nc" id="L685">        DirectoryEntry expeer = null;</span>
+
+        // Find it
+<span class="nc bnc" id="L688" title="All 2 branches missed.">        for (final DirectoryEntry sde : this.peerDirectories) {</span>
+<span class="nc bnc" id="L689" title="All 2 branches missed.">            if (KeyManipulator.isLocalTo(sde.getKey(), key)) {</span>
+                // nb. COW Set does not support iterator.remove
+<span class="nc" id="L691">                expeer = sde;</span>
+<span class="nc" id="L692">                break;</span>
+            }
+<span class="nc" id="L694">        }</span>
+
+        // Nuke it
+<span class="nc bnc" id="L697" title="All 2 branches missed.">        if (expeer != null) {</span>
+            // Remove from COW set
+<span class="nc" id="L699">            this.peerDirectories.remove(expeer);</span>
+
+            // Remove from heartbeat manager
+<span class="nc" id="L702">            this.heartbeat.removeRemoteDirectory(expeer.getKey());</span>
+
+            // Notify all observers, but don't give them
+            // access to our own Set object
+<span class="nc" id="L706">            this.observerManager.peerUpdate(new HashSet&lt;&gt;(this.peerDirectories));</span>
+
+            // Remove the entries if any remain
+<span class="nc" id="L709">            removePlaces(Collections.singletonList(KeyManipulator.getHostMatchKey(expeer.getKey())));</span>
+        }
+
+<span class="nc" id="L712">        return expeer;</span>
+    }
+
+    /**
+     * Remove directory. Called from the heartbeat manager and from the EmissaryClient
+     *
+     * @param key string key of failed directory
+     * @param permanent true if from a normal shutdown rather than a transient error
+     * @return count of how many places were removed locally
+     */
+    @Override
+    public int irdFailDirectory(final String key, final boolean permanent) {
+
+<span class="pc bpc" id="L725" title="1 of 2 branches missed.">        if (this.emissaryNode.isStandalone()) {</span>
+<span class="fc" id="L726">            logger.debug(&quot;Cannot fail remotes in standalone nodes&quot;);</span>
+<span class="fc" id="L727">            return 0;</span>
+        }
+
+        // Validate remote input
+<span class="nc bnc" id="L731" title="All 2 branches missed.">        if (!KeyManipulator.isValid(key)) {</span>
+<span class="nc" id="L732">            logger.warn(&quot;Ignoring, called with invalid key {}&quot;, key);</span>
+<span class="nc" id="L733">            return 0;</span>
+        }
+
+<span class="nc bnc" id="L736" title="All 2 branches missed.">        if (this.shutdownInitiated) {</span>
+<span class="nc" id="L737">            logger.debug(&quot;Remote {} reported as failed, in shutdown&quot;, key);</span>
+<span class="nc" id="L738">            return 0;</span>
+        }
+
+        // Reports of my demise are premature...
+<span class="nc bnc" id="L742" title="All 2 branches missed.">        if (isLocal(key)) {</span>
+<span class="nc" id="L743">            logger.warn(</span>
+                    &quot;Someone reported me as failed, but I appear to be still running. Refusing to remove my own entries and propagate this filthy lie.&quot;);
+<span class="nc" id="L745">            return 0;</span>
+        }
+
+<span class="nc" id="L748">        final String dirKey = KeyManipulator.getDefaultDirectoryKey(key);</span>
+<span class="nc" id="L749">        final String hmKey = KeyManipulator.getHostMatchKey(key);</span>
+<span class="nc" id="L750">        int count = 0;</span>
+
+<span class="nc bnc" id="L752" title="All 2 branches missed.">        logger.debug(&quot;irdFailDirectory {} {} permanent&quot;, key, (permanent ? &quot;is&quot; : &quot;is not&quot;));</span>
+
+        // Modify local entries for the failed remote directory
+        // Permanent failure removes entries on failed directory.
+        // Transient failure adjusts weight of entries on failed directory.
+<span class="nc bnc" id="L757" title="All 2 branches missed.">        if (permanent) {</span>
+<span class="nc" id="L758">            logger.debug(&quot;Permanent failure of remote {}&quot;, key);</span>
+<span class="nc" id="L759">            count += removePlaces(Collections.singletonList(hmKey));</span>
+        } else {
+            // Change the cost for all places matching the
+            // failed directory. This has the effect of causing them
+            // not to be chosen as much.
+<span class="nc" id="L764">            final List&lt;DirectoryEntry&gt; list = this.entryMap.collectAllMatching(hmKey);</span>
+<span class="nc" id="L765">            this.observerManager.placeCostChangeEntries(list);</span>
+        }
+
+        // Handle permanent removal of remote directory
+<span class="nc bnc" id="L769" title="All 2 branches missed.">        if (permanent) {</span>
+            // Notify my heartbeat manager so that a normal deregistration
+            // followed by a restart will trigger a state transition even
+            // if under the timer check time
+<span class="nc" id="L773">            this.heartbeat.setHealthStatus(key, HeartbeatManager.NO_CONTACT, &quot;Permanent deregistration&quot;);</span>
+
+            // Remove from peer list
+<span class="nc bnc" id="L776" title="All 2 branches missed.">            if (isKnownPeer(dirKey)) {</span>
+<span class="nc bnc" id="L777" title="All 2 branches missed.">                if (!isStaticPeer(dirKey)) {</span>
+<span class="nc" id="L778">                    logger.debug(&quot;Removing non-static peer {}&quot;, dirKey);</span>
+<span class="nc" id="L779">                    removePeer(dirKey);</span>
+                } else {
+<span class="nc" id="L781">                    logger.debug(&quot;Static peer {} is deregistered but monitoring continues&quot;, dirKey);</span>
+                }
+            } else {
+<span class="nc" id="L784">                logger.warn(&quot;Directory {} failed but it isn't a peer??&quot;, dirKey);</span>
+            }
+        }
+
+<span class="nc" id="L788">        return count;</span>
+    }
+
+    /**
+     * Send directory failure message to another directory
+     *
+     * @param directory the place to send the message
+     * @param failKey the key of the one that failed
+     * @param permanent true if this is from normal deregistrtion
+     */
+    protected void sendFailMessage(final DirectoryEntry directory, final String failKey, final boolean permanent) {
+
+<span class="pc bpc" id="L800" title="1 of 2 branches missed.">        if (this.emissaryNode.isStandalone()) {</span>
+<span class="nc" id="L801">            logger.debug(&quot;No remote failure messages generated in standalone node&quot;);</span>
+<span class="nc" id="L802">            return;</span>
+        }
+
+        try {
+<span class="fc" id="L806">            new DirectoryAdapter().outboundFailDirectory(directory.getKey(), failKey, permanent);</span>
+<span class="nc" id="L807">        } catch (RuntimeException ex) {</span>
+<span class="nc" id="L808">            logger.error(&quot;Problem talking to directory {} to fail {}&quot;, directory.getKey(), failKey, ex);</span>
+<span class="fc" id="L809">        }</span>
+<span class="fc" id="L810">    }</span>
+
+    /**
+     * Established or re-established contact with a remote directory. Check for presence on peer and initiate zone transfer
+     * if needed.
+     *
+     * @param key the key of the directory we contacted
+     */
+    void contactedRemoteDirectory(final String key) {
+<span class="nc" id="L819">        MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(myKey));</span>
+<span class="nc" id="L820">        logger.debug(&quot;Established contact with {}&quot;, key);</span>
+
+<span class="nc bnc" id="L822" title="All 4 branches missed.">        if (isStaticPeer(key) &amp;&amp; isKnownPeer(key)) {</span>
+<span class="nc" id="L823">            loadPeerEntries(key);</span>
+        } else {
+<span class="nc" id="L825">            logger.warn(&quot;Contact established with {} but it is not a peer&quot;, key);</span>
+        }
+<span class="nc" id="L827">        MDC.remove(MDCConstants.SERVICE_LOCATION);</span>
+<span class="nc" id="L828">    }</span>
+
+    /**
+     * Register a place with all of its complete keys
+     *
+     * @param keys list of complete keys with expense
+     */
+    @Override
+    public void addPlaces(@Nullable final List&lt;String&gt; keys) {
+        // Validate contract
+<span class="pc bpc" id="L838" title="3 of 6 branches missed.">        if ((keys == null) || keys.isEmpty() || (keys.get(0) == null)) {</span>
+<span class="nc" id="L839">            logger.error(&quot;addPlaces skipping place with no keys&quot;);</span>
+<span class="nc" id="L840">            return;</span>
+        }
+
+        // Build a list of DirectoryEntry out of these
+<span class="fc" id="L844">        final List&lt;DirectoryEntry&gt; del = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L845" title="All 2 branches covered.">        for (final String key : keys) {</span>
+<span class="fc" id="L846">            final DirectoryEntry d = new DirectoryEntry(key);</span>
+<span class="fc" id="L847">            del.add(d);</span>
+<span class="fc" id="L848">        }</span>
+
+<span class="fc" id="L850">        irdAddPlaces(del, false);</span>
+<span class="fc" id="L851">    }</span>
+
+    /**
+     * Register a list of entries. This signature only meant to be called from within EmissaryClient code. Each entry will
+     * have a separate key, cost and quality but should all be local to each other.
+     *
+     * @param entryList list of directoryEntry to add
+     * @param propagating true if going back down the directory chain
+     */
+    @Override
+    public void irdAddPlaces(@Nullable final List&lt;DirectoryEntry&gt; entryList, final boolean propagating) {
+
+<span class="pc bpc" id="L863" title="2 of 4 branches missed.">        if ((entryList == null) || entryList.isEmpty()) {</span>
+<span class="nc" id="L864">            logger.debug(&quot;irdAddPlaces called with null or empty entryList!&quot;);</span>
+<span class="nc" id="L865">            return;</span>
+        }
+
+        // Validate remote input
+<span class="fc bfc" id="L869" title="All 2 branches covered.">        for (final DirectoryEntry d : entryList) {</span>
+<span class="pc bpc" id="L870" title="2 of 4 branches missed.">            if (d == null || !d.isValid()) {</span>
+<span class="nc" id="L871">                logger.warn(&quot;Ignoring irdAddPlaces called with {} DirectoryEntry objects due to invalid key in {}&quot;, entryList.size(), d);</span>
+<span class="nc" id="L872">                return;</span>
+            }
+<span class="fc" id="L874">        }</span>
+
+        // These keys better all be from the same emissary node
+        // We should check that they are and throw if not
+<span class="fc" id="L878">        final String place = entryList.get(0).getKey(); // !!</span>
+<span class="fc" id="L879">        final boolean isLocal = isLocal(place);</span>
+
+<span class="pc bpc" id="L881" title="1 of 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L882">            logger.debug(&quot;Starting irdAddPlaces with {} entries for {} place  - place={}, myKey={}&quot;, entryList.size(),</span>
+<span class="nc bnc" id="L883" title="All 2 branches missed.">                    (isLocal ? &quot;local&quot; : &quot;non-local&quot;), place, myKey);</span>
+        }
+
+        // make a defensive deep copy of the incoming list, so we
+        // can safely proxy and adjust cost as needed
+<span class="fc" id="L888">        final List&lt;DirectoryEntry&gt; entries = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L889" title="All 2 branches covered.">        for (final DirectoryEntry d : entryList) {</span>
+<span class="fc" id="L890">            entries.add(new DirectoryEntry(d, DirectoryEntry.PRESERVE_TIME));</span>
+<span class="fc" id="L891">        }</span>
+
+        // Let each directory add this non-local component to the cost
+        // based on the place locality. This should be enough to
+        // dwarf any cost variants among truly local places
+<span class="fc bfc" id="L896" title="All 2 branches covered.">        if (!isLocal) {</span>
+<span class="fc bfc" id="L897" title="All 2 branches covered.">            for (final DirectoryEntry d : entries) {</span>
+<span class="fc" id="L898">                d.addCost(REMOTE_COST_OVERHEAD);</span>
+<span class="fc" id="L899">            }</span>
+        }
+
+<span class="fc" id="L902">        logger.debug(&quot;Doing addEntries for {} new entries&quot;, entries.size());</span>
+<span class="fc" id="L903">        addEntries(entries);</span>
+
+        // Notify peers if entries are being added locally
+<span class="fc bfc" id="L906" title="All 4 branches covered.">        if (isLocal &amp;&amp; !this.peerDirectories.isEmpty()) {</span>
+            // This may fail if the peer is not up yet. That is normal.
+<span class="fc bfc" id="L908" title="All 2 branches covered.">            for (final DirectoryEntry peer : this.peerDirectories) {</span>
+<span class="pc bpc" id="L909" title="1 of 2 branches missed.">                if (this.heartbeat.isAlive(peer.getKey())) {</span>
+<span class="nc" id="L910">                    registerWith(peer, entries, false);</span>
+<span class="pc bpc" id="L911" title="1 of 2 branches missed.">                } else if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L912">                    logger.debug(&quot;Not registering {} with peer {}, not alive right now&quot;, entries.size(), peer.getKey());</span>
+                }
+<span class="fc" id="L914">            }</span>
+        }
+<span class="fc" id="L916">    }</span>
+
+    /**
+     * Private helper to register directories. This method handles multiple directory entries, each can have separate key,
+     * description, cost, and quality
+     *
+     * @param dir the place entry to register
+     * @param entryList the new entries
+     * @param propagating true if propagating back down from higher level directory
+     */
+    protected void registerWith(final DirectoryEntry dir, final List&lt;DirectoryEntry&gt; entryList, final boolean propagating) {
+<span class="nc bnc" id="L927" title="All 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L928">            logger.debug(&quot;registerWith({},{},{})&quot;, dir.getKey(), entryList, propagating);</span>
+        }
+
+        try {
+<span class="nc" id="L932">            new DirectoryAdapter().outboundAddPlaces(dir.getKey(), entryList, propagating);</span>
+<span class="nc" id="L933">            logger.debug(&quot;registration succeeded&quot;);</span>
+<span class="nc" id="L934">        } catch (RuntimeException ex) {</span>
+<span class="nc" id="L935">            logger.warn(&quot;DirectoryPlace.registerWith: Problem talking to directory {} to add {} entries&quot;, dir.getKey(), entryList.size(), ex);</span>
+<span class="nc" id="L936">        }</span>
+<span class="nc" id="L937">    }</span>
+
+    /**
+     * Called by mobile agent to get a destination for a payload
+     *
+     * @param dataId key to entryMap, dataType::serviceType, e.g. UNKNOWN::ID
+     * @param payload the payload being evaluated
+     * @param lastPlace place agent visited last, this is not stateless
+     * @return List of DirectoryEntry with next place to go or empty list if none
+     */
+    @Override
+    public List&lt;DirectoryEntry&gt; nextKeys(final String dataId, final IBaseDataObject payload, final DirectoryEntry lastPlace) {
+        // Normal lookup in public entry map
+<span class="fc bfc" id="L950" title="All 2 branches covered.">        logger.debug(&quot;nextKey called with dataId='{}', and lastPlace={}&quot;, dataId, (lastPlace == null ? &quot;null&quot; : lastPlace.getFullKey()));</span>
+
+<span class="fc" id="L952">        List&lt;DirectoryEntry&gt; entries = nextKeys(dataId, payload, lastPlace, this.entryMap);</span>
+<span class="pc bpc" id="L953" title="5 of 6 branches missed.">        if (logger.isDebugEnabled() &amp;&amp; (entries != null) &amp;&amp; !entries.isEmpty()) {</span>
+<span class="nc" id="L954">            logger.debug(&quot;nextKey produced {} entries from main map {}&quot;, entries.size(), entries);</span>
+        }
+<span class="fc" id="L956">        return entries;</span>
+    }
+
+    /**
+     * Get tne next logical entry based on current dataId and last place visited
+     *
+     * @param dataId key to entryMap, dataType::serviceType, e.g. UNKNOWN::ID
+     * @param payload the payload being routed
+     * @param lastPlace place agent visited last, this is not stateless
+     * @param entries map of DirectoryEntry stored in this directory
+     * @return List of DirectoryEntry with next place to go or empty list if none
+     */
+    protected List&lt;DirectoryEntry&gt; nextKeys(final String dataId, final IBaseDataObject payload, @Nullable final DirectoryEntry lastPlace,
+            final DirectoryEntryMap entries) {
+        // Find the entry list for the type being requested
+<span class="fc" id="L971">        final DirectoryEntryList currentList = getWildcardedEntryList(dataId, entries);</span>
+
+        // Nothing for the dataId or any wildcarded versions, we are done
+<span class="pc bpc" id="L974" title="1 of 4 branches missed.">        if ((currentList == null) || currentList.isEmpty()) {</span>
+<span class="fc" id="L975">            logger.debug(&quot;nextKey - nothing found here for {}&quot;, dataId);</span>
+<span class="fc" id="L976">            return List.of();</span>
+        }
+
+        // remove denied entries
+<span class="fc bfc" id="L980" title="All 4 branches covered.">        currentList.removeIf(de -&gt; de.getLocalPlace() != null &amp;&amp; de.getLocalPlace().isDenied(payload.currentForm()));</span>
+
+<span class="fc bfc" id="L982" title="All 2 branches covered.">        if (currentList.isEmpty()) {</span>
+<span class="fc" id="L983">            logger.debug(&quot;nextKeys - no non-DENIED entries found here for {}&quot;, dataId);</span>
+<span class="fc" id="L984">            return List.of();</span>
+        }
+        // The list we are building for return to the caller
+<span class="fc" id="L987">        final List&lt;DirectoryEntry&gt; keyList = new ArrayList&lt;&gt;();</span>
+
+        // The dataId this time is different from the last place
+        // visited, so we can just choose from the list of the lowest
+        // expense places and get on with it
+<span class="fc" id="L992">        DirectoryEntry trialEntry = currentList.getEntry(0);</span>
+<span class="fc bfc" id="L993" title="All 6 branches covered.">        if (lastPlace == null || (!lastPlace.getDataId().equals(dataId) &amp;&amp; !trialEntry.getServiceLocation().equals(lastPlace.getServiceLocation()))) {</span>
+<span class="fc" id="L994">            logger.debug(&quot;doing first in list for {}&quot;, trialEntry);</span>
+<span class="fc" id="L995">            keyList.add(currentList.pickOneOf(trialEntry.getExpense()));</span>
+        } else {
+            // Trying a particular &quot;dataType::serviceType&quot; pair again
+<span class="fc bfc" id="L998" title="All 2 branches covered.">            for (int i = 0; i &lt; currentList.size(); i++) {</span>
+<span class="fc" id="L999">                trialEntry = currentList.getEntry(i);</span>
+
+                // Skip entry if less/same expensive. Includes the obvious
+                // test, plus evaluation of whether we would choose a
+                // particular non-local place if it was here. If we wouldn't
+                // choose it if it was here, we certainly aren't willing
+                // to move to get it.
+<span class="fc" id="L1006">                final int te = trialEntry.getExpense() % REMOTE_EXPENSE_OVERHEAD;</span>
+<span class="fc" id="L1007">                final int le = lastPlace.getExpense() % REMOTE_EXPENSE_OVERHEAD;</span>
+
+                // Always skip service cheaper than what we already did
+<span class="fc bfc" id="L1010" title="All 2 branches covered.">                if (te &lt; le) {</span>
+<span class="fc" id="L1011">                    logger.debug(&quot;nextKey skip lower cost {}&quot;, trialEntry.getFullKey());</span>
+<span class="fc" id="L1012">                    continue;</span>
+                }
+
+                // If relaying, we want to be hopping closer to the target
+<span class="pc bpc" id="L1016" title="1 of 4 branches missed.">                if ((te == le) &amp;&amp; (trialEntry.getExpense() &gt;= lastPlace.getExpense())</span>
+<span class="pc bpc" id="L1017" title="1 of 2 branches missed.">                        &amp;&amp; !trialEntry.getServiceHostUrl().equals(lastPlace.getServiceHostUrl())) {</span>
+<span class="nc" id="L1018">                    logger.debug(&quot;nextKey skip equal cost {}&quot;, trialEntry.getFullKey());</span>
+<span class="nc" id="L1019">                    continue;</span>
+                }
+
+                // If equal or lower cost, no point in using the entry
+<span class="pc bpc" id="L1023" title="1 of 4 branches missed.">                if ((trialEntry.getExpense() &lt;= lastPlace.getExpense()) &amp;&amp; trialEntry.getServiceHostUrl().equals(lastPlace.getServiceHostUrl())) {</span>
+<span class="fc" id="L1024">                    logger.debug(&quot;nextKey skip lower cost not relaying {}&quot;, trialEntry.getFullKey());</span>
+<span class="fc" id="L1025">                    continue;</span>
+                }
+
+                // Entry is more expense and different service
+<span class="fc" id="L1029">                logger.debug(&quot;nextKey - doing next in list&quot;);</span>
+<span class="fc" id="L1030">                keyList.add(currentList.pickOneOf(trialEntry.getExpense()));</span>
+<span class="fc" id="L1031">                break;</span>
+            }
+
+        }
+
+<span class="fc" id="L1036">        return keyList;</span>
+    }
+
+    /**
+     * Get the possibly wildcarded DirectoryEntryList for the dataId
+     *
+     * @param dataId the type of data being queried
+     * @param entries the entry map to use
+     * @return DirectoryEntryList or null if none
+     */
+    protected DirectoryEntryList getWildcardedEntryList(final String dataId, final DirectoryEntryMap entries) {
+        // Ids of the form FOO-BAR(ASCII)-BAZ will be wildcarded as:
+        // FOO-BAR(ASCII)-BAZ
+        // FOO-BAR(*)-BAZ
+        // FOO-BAR(*)-*
+        // FOO-*
+        // See WildcardEntry for a more thorough example
+<span class="fc" id="L1053">        return WildcardEntry.getWildcardedEntry(dataId, entries);</span>
+    }
+
+    /**
+     * Payloads that need to traverse the relay gateway can visit here to be forwarded on to the correct destination
+     * &lt;p&gt;
+     * The payload will have the simple current form that caused this relay point to be selected replace with the full
+     * four-tupled key of the place matching the request on the proper side of this relay point.
+     *
+     * @param d the payload to be inspected
+     */
+    @Override
+    public void process(final IBaseDataObject d) {
+<span class="nc bnc" id="L1066" title="All 2 branches missed.">        if (d.currentForm().equals(this.myKey)) {</span>
+<span class="nc" id="L1067">            logger.debug(&quot;Probe routing has been removed&quot;);</span>
+        } else {
+<span class="nc" id="L1069">            logger.debug(&quot;Doing routing on '{}'&quot;, d.shortName());</span>
+<span class="nc" id="L1070">            handleRouting(d);</span>
+        }
+<span class="nc" id="L1072">    }</span>
+
+    /**
+     * Handle the routing for a payload
+     *
+     * @param d the visiting payload
+     */
+    protected void handleRouting(final IBaseDataObject d) {
+        // The source entry we are interested in is the one that got us
+        // here. The &quot;lastPlaceVisited&quot; should be my own key, so we want
+        // the one before that.
+<span class="nc" id="L1083">        DirectoryEntry sourceEntry = d.getPenultimatePlaceVisited();</span>
+
+        // Source entry still null?
+<span class="nc bnc" id="L1086" title="All 2 branches missed.">        if (sourceEntry == null) {</span>
+<span class="nc" id="L1087">            logger.debug(&quot;Payload had no source entry and no places visited. &quot; + &quot;Using my own directory key, which is probably wrong.&quot;);</span>
+<span class="nc" id="L1088">            sourceEntry = this.getDirectoryEntry();</span>
+        }
+
+        // Last place visited shows the key that cause the payload
+        // to arrive at this place since it is logged into the history
+        // just before calling this method. The dataId on this entry
+        // is the entry that finally was selected for use, so we reuse
+        // it here in the proper entry map.
+<span class="nc" id="L1096">        final DirectoryEntry thisEntry = d.getLastPlaceVisited();</span>
+<span class="nc" id="L1097">        final String dataId = thisEntry.getDataId();</span>
+
+<span class="nc bnc" id="L1099" title="All 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L1100">            logger.debug(&quot;Relay payload '{}' arrived with form {} coming from {} arrival entry {} arrival dataId={}&quot;, d.shortName(), d.currentForm(),</span>
+<span class="nc" id="L1101">                    sourceEntry.getKey(), thisEntry.getKey(), dataId);</span>
+        }
+
+        // Where we want to go from here
+<span class="nc" id="L1105">        List&lt;DirectoryEntry&gt; destination = nextKeys(dataId, d, sourceEntry);</span>
+
+<span class="nc bnc" id="L1107" title="All 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L1108">            logger.debug(&quot;Selected {} entries {} from incoming {} and data id {} current form={}&quot;, destination.size(), destination,</span>
+<span class="nc" id="L1109">                    sourceEntry.getKey(), dataId, d.currentForm());</span>
+        }
+
+        // Replace the current form with the full key version of same
+<span class="nc" id="L1113">        d.popCurrentForm();</span>
+<span class="nc bnc" id="L1114" title="All 2 branches missed.">        for (final DirectoryEntry destEntry : destination) {</span>
+<span class="nc" id="L1115">            d.pushCurrentForm(destEntry.getKey());</span>
+<span class="nc" id="L1116">        }</span>
+
+<span class="nc bnc" id="L1118" title="All 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L1119">            logger.debug(&quot;Leaving relay gateway with current form {}&quot;, d.getAllCurrentForms());</span>
+        }
+<span class="nc" id="L1121">    }</span>
+
+    /**
+     * Make directory contents available for debug or display and analysis
+     *
+     * @return List of DirectoryEntry (copies)
+     */
+    @Override
+    public List&lt;DirectoryEntry&gt; getEntries() {
+<span class="fc" id="L1130">        final List&lt;DirectoryEntry&gt; entries = this.entryMap.allEntries();</span>
+<span class="fc" id="L1131">        return DirectoryEntryList.deepCopy(entries, true);</span>
+    }
+
+    /**
+     * Get list of DirectoryEntry that match the key pattern
+     *
+     * @param pattern a key pattern to match
+     * @return List of DirectoryEntry (copies)
+     */
+    @Override
+    public List&lt;DirectoryEntry&gt; getMatchingEntries(final String pattern) {
+<span class="fc" id="L1142">        final List&lt;DirectoryEntry&gt; entries = this.entryMap.collectAllMatching(pattern);</span>
+<span class="fc" id="L1143">        return DirectoryEntryList.deepCopy(entries, true);</span>
+    }
+
+    /**
+     * Make directory contents entry keys available for display and transfer
+     *
+     * @return Set of String in the DataId format DATATYPE::SERVICETYPE
+     */
+    @Override
+    public Set&lt;String&gt; getEntryKeys() {
+<span class="fc" id="L1153">        return new TreeSet&lt;&gt;(this.entryMap.keySet());</span>
+    }
+
+    /**
+     * Get the requested directory entry
+     *
+     * @param dataId the key to the entry Map set of DirectoryEntryList objects
+     * @return a DirectoryEntryList object for the key or null if none
+     */
+    @Override
+    public DirectoryEntryList getEntryList(final String dataId) {
+<span class="fc" id="L1164">        final DirectoryEntryList value = this.entryMap.get(dataId);</span>
+<span class="fc" id="L1165">        return new DirectoryEntryList(value, DirectoryEntryList.DEEP_COPY, DirectoryEntryList.PRESERVE_TIME);</span>
+    }
+
+    /**
+     * Deregister places removing all keys for the specified places.
+     *
+     * @param keys four-tuple key for the place
+     * @return count of how many keys removed
+     */
+    @Override
+    public int removePlaces(final List&lt;String&gt; keys) {
+<span class="fc" id="L1176">        return irdRemovePlaces(keys, false);</span>
+    }
+
+    /**
+     * Deregister places removing all keys for the specified places. Should only be called externally from EmissaryClient
+     *
+     * @see #removePlaces(List)
+     * @param keys four-tuple key for the place
+     * @param propagating true if going down the line
+     * @return count of how many keys removed
+     */
+    @Override
+    public int irdRemovePlaces(@Nullable final List&lt;String&gt; keys, final boolean propagating) {
+<span class="pc bpc" id="L1189" title="1 of 2 branches missed.">        if (this.emissaryNode.isStandalone()) {</span>
+<span class="nc" id="L1190">            logger.debug(&quot;Cannot remove remote places in standalone nodes&quot;);</span>
+<span class="nc" id="L1191">            return 0;</span>
+        }
+
+<span class="pc bpc" id="L1194" title="2 of 4 branches missed.">        if ((keys == null) || keys.isEmpty()) {</span>
+<span class="nc" id="L1195">            logger.warn(&quot;Ignoring null or empty key list for irdRemovePlaces&quot;);</span>
+<span class="nc" id="L1196">            return 0;</span>
+        }
+
+        // Validate remote input
+<span class="fc bfc" id="L1200" title="All 2 branches covered.">        for (final String key : keys) {</span>
+<span class="fc bfc" id="L1201" title="All 2 branches covered.">            if (!KeyManipulator.isValid(key)) {</span>
+<span class="fc" id="L1202">                logger.warn(&quot;Ignoring irdRemovePlaces called with {} keys due to invalid key {}&quot;, keys.size(), key);</span>
+<span class="fc" id="L1203">                return 0;</span>
+            }
+<span class="fc" id="L1205">        }</span>
+
+        // Note we don't just pull the dataId from the map
+        // because we anticipate the incoming keys will be
+        // wildcarded as places go away rather than individual
+        // service proxy keys
+<span class="fc" id="L1211">        final List&lt;DirectoryEntry&gt; matches = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L1212" title="All 2 branches covered.">        for (final String key : keys) {</span>
+<span class="fc" id="L1213">            final List&lt;DirectoryEntry&gt; m = this.entryMap.removeAllMatching(key);</span>
+<span class="fc" id="L1214">            matches.addAll(m);</span>
+<span class="fc" id="L1215">        }</span>
+
+<span class="fc" id="L1217">        final int count = matches.size();</span>
+<span class="pc bpc" id="L1218" title="1 of 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L1219">            logger.debug(&quot;Found {} entries for removal matching {} keys={}&quot;, count, keys.size(), keys);</span>
+        }
+
+        // Nothing do to, nothing to propagate
+<span class="pc bpc" id="L1223" title="1 of 2 branches missed.">        if (count == 0) {</span>
+<span class="nc" id="L1224">            return 0;</span>
+        }
+
+<span class="fc" id="L1227">        int localCount = 0;</span>
+
+        // Count the locals and hit the observers
+<span class="fc bfc" id="L1230" title="All 2 branches covered.">        for (final DirectoryEntry e : matches) {</span>
+<span class="fc bfc" id="L1231" title="All 2 branches covered.">            if (isLocal(e.getKey())) {</span>
+<span class="fc" id="L1232">                localCount++;</span>
+            }
+            // Notify observers of entry removal
+<span class="fc" id="L1235">            this.observerManager.placeRemove(e.getFullKey());</span>
+<span class="fc" id="L1236">        }</span>
+
+        // Notify peers if local entries are being removed
+<span class="pc bpc" id="L1239" title="1 of 4 branches missed.">        if (!this.peerDirectories.isEmpty() &amp;&amp; (localCount &gt; 0)) {</span>
+            // This may fail if the peer is not up. That is normal.
+<span class="fc bfc" id="L1241" title="All 2 branches covered.">            for (final DirectoryEntry peer : this.peerDirectories) {</span>
+<span class="pc bpc" id="L1242" title="1 of 2 branches missed.">                if (this.heartbeat.isAlive(peer.getKey())) {</span>
+<span class="nc" id="L1243">                    logger.debug(&quot;Deregistering {} keys from peer {}&quot;, keys.size(), peer);</span>
+<span class="nc" id="L1244">                    deregisterFrom(peer, keys, false);</span>
+                }
+<span class="fc" id="L1246">            }</span>
+        }
+
+<span class="fc" id="L1249">        final List&lt;String&gt; localKeys = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L1250" title="All 2 branches covered.">        for (final DirectoryEntry match : matches) {</span>
+<span class="fc" id="L1251">            final String key = match.getKey();</span>
+<span class="fc bfc" id="L1252" title="All 2 branches covered.">            if (isLocal(key)) {</span>
+<span class="fc" id="L1253">                logger.debug(&quot;Removed {} putting in local bucket&quot;, key);</span>
+<span class="fc" id="L1254">                localKeys.add(key);</span>
+            }
+<span class="fc" id="L1256">        }</span>
+
+<span class="fc" id="L1258">        return localKeys.size();</span>
+    }
+
+    /**
+     * Private helper to deregister entry from directories
+     *
+     * @param dir the remote directory to deregister from
+     * @param keys the list of keys the place can handle (SERVICE_PROXY)
+     * @param propagating true if propagating across levels
+     */
+    protected void deregisterFrom(final DirectoryEntry dir, final List&lt;String&gt; keys, final boolean propagating) {
+        try {
+            // Follow the logic to irdRemovePlaces on the remote side
+<span class="nc" id="L1271">            new DirectoryAdapter().outboundRemovePlaces(dir.getKey(), keys, propagating);</span>
+<span class="nc" id="L1272">        } catch (RuntimeException ex) {</span>
+<span class="nc" id="L1273">            logger.error(&quot;DirectoryPlace.deregisterFrom: &quot; + &quot;Problem talking to directory &quot; + dir.getKey() + &quot; to deregister keys&quot;, ex);</span>
+<span class="nc" id="L1274">        }</span>
+<span class="nc" id="L1275">    }</span>
+
+    /**
+     * Shutdown this place and deregister and notify any peers and observers that this directory is closing
+     */
+    @Override
+    public void shutDown() {
+<span class="pc bpc" id="L1282" title="1 of 2 branches missed.">        if (this.shutdownInitiated) {</span>
+<span class="nc" id="L1283">            return;</span>
+        }
+<span class="fc" id="L1285">        this.shutdownInitiated = true;</span>
+<span class="fc" id="L1286">        this.running = false;</span>
+
+<span class="fc" id="L1288">        logger.debug(&quot;Initiating directory shutdown&quot;);</span>
+
+<span class="fc bfc" id="L1290" title="All 2 branches covered.">        if (this.heartbeat != null) {</span>
+<span class="fc" id="L1291">            this.heartbeat.shutDown();</span>
+        }
+
+<span class="fc bfc" id="L1294" title="All 2 branches covered.">        if (!this.emissaryNode.isStandalone()) {</span>
+
+            // Notify peers of my demise
+<span class="fc bfc" id="L1297" title="All 2 branches covered.">            for (final DirectoryEntry peer : this.peerDirectories) {</span>
+<span class="fc" id="L1298">                logger.debug(&quot;Sending fail msg to peer {}&quot;, peer);</span>
+<span class="fc" id="L1299">                sendFailMessage(peer, myKey, true);</span>
+<span class="fc" id="L1300">            }</span>
+        }
+
+        // Remove all entries and notify all observers
+<span class="fc" id="L1304">        final List&lt;DirectoryEntry&gt; matches = this.entryMap.collectAllMatching(&quot;*.*.*.*&quot;);</span>
+<span class="fc bfc" id="L1305" title="All 2 branches covered.">        for (final DirectoryEntry e : matches) {</span>
+<span class="fc" id="L1306">            this.observerManager.placeRemove(e.getFullKey());</span>
+<span class="fc" id="L1307">        }</span>
+
+        // Nuke em
+<span class="fc" id="L1310">        this.entryMap.clear();</span>
+
+        // Remove peers and Notify all observers that we are leaving the group
+<span class="fc" id="L1313">        this.peerDirectories.clear();</span>
+<span class="fc" id="L1314">        this.observerManager.peerUpdate(this.peerDirectories);</span>
+
+<span class="fc" id="L1316">        unbindFromNamespace();</span>
+<span class="fc" id="L1317">        logger.info(&quot;Done shutting down DirectoryPlace&quot;);</span>
+
+<span class="fc" id="L1319">    }</span>
+
+    /**
+     * Add an observer for one of the observable activities in the directory The runtime class of the observer determines
+     * what is being observed
+     *
+     * @param observer the new DirectoryObserver to add
+     */
+    @Override
+    public void addObserver(final DirectoryObserver observer) {
+<span class="fc" id="L1329">        this.observerManager.addObserver(observer);</span>
+<span class="fc" id="L1330">        logger.debug(&quot;We now have {} observers registered&quot;, this.observerManager.getObserverCount());</span>
+<span class="fc" id="L1331">    }</span>
+
+    /**
+     * Remove an observer previously registered with this directory
+     *
+     * @param observer the object to remove
+     * @return true if it was found on the list
+     */
+    @Override
+    public boolean deleteObserver(final DirectoryObserver observer) {
+<span class="nc" id="L1341">        final boolean removed = this.observerManager.deleteObserver(observer);</span>
+<span class="nc" id="L1342">        logger.debug(&quot;We now have {} observers registered&quot;, this.observerManager.getObserverCount());</span>
+<span class="nc" id="L1343">        return removed;</span>
+    }
+
+    /**
+     * Pull the local directory from the namespace and return it. This does not work in some test scenarios where we have
+     * multiple non-local directories in a single JVM.
+     *
+     * @return the local directory instance
+     * @throws EmissaryException when directory does not exist in namespace
+     */
+    public static IDirectoryPlace lookup() throws EmissaryException {
+<span class="fc" id="L1354">        final String name = &quot;DirectoryPlace&quot;;</span>
+
+<span class="fc" id="L1356">        final Object nsval = Namespace.lookup(name);</span>
+<span class="pc bpc" id="L1357" title="1 of 2 branches missed.">        if (nsval instanceof IDirectoryPlace) {</span>
+<span class="fc" id="L1358">            return (IDirectoryPlace) nsval;</span>
+        }
+
+<span class="nc" id="L1361">        throw new EmissaryException(&quot;Bad directory place lookup found &quot; + nsval);</span>
+    }
+
+    /**
+     * Get the sync status of a remote directory as seen from this directory. Note that this method only can return true for
+     * things that the HeartbeatManager is tracking, i.e. peer directories of this instance.
+     *
+     * @param key the key of the remote directory
+     * @return true if remote is reported as being up, false otherwise
+     */
+    @Override
+    public boolean isRemoteDirectoryAvailable(final String key) {
+<span class="nc bnc" id="L1373" title="All 4 branches missed.">        return (this.heartbeat != null) &amp;&amp; this.heartbeat.isHealthy(key);</span>
+    }
+
+    /**
+     * Force a heartbeat with a particular directory represented by key does not necessarily need to be one that the
+     * HeartbeatManager is already tracking and calling this method will not add it permanently to any list to be tracked.
+     * This is a one time event and can be used at the caller's discretion. Note however,that if the key is not a peer of
+     * this directory, a warning will be issued here when the success or failure action is taken by the heartbeat manager.
+     * It can be ignored in this case. Note also, that a true return from this method merely means that the remote directory
+     * responded to the heartbeat method, not that the remote directory is in sync yet with this one.
+     *
+     * @see #isRemoteDirectoryAvailable(String)
+     * @param key the key of the remote directory
+     * @return true if remote is up, false otherwise
+     */
+    @Override
+    public boolean heartbeatRemoteDirectory(final String key) {
+<span class="nc bnc" id="L1390" title="All 4 branches missed.">        return (this.heartbeat != null) &amp;&amp; this.heartbeat.heartbeat(key);</span>
+    }
+
+    /**
+     * Indicate if directory is running
+     *
+     * @return true if running
+     */
+    @Override
+    public boolean isRunning() {
+<span class="fc" id="L1400">        return this.running;</span>
+    }
+
+    /**
+     * Indicate whether shutdown has been initiated
+     *
+     * @return true if shutdown initiated
+     */
+    @Override
+    public boolean isShutdownInitiated() {
+<span class="nc" id="L1410">        return this.shutdownInitiated;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

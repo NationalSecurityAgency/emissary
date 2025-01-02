@@ -48,7 +48,7 @@
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">     * If our que is a prime numbered size they cannot fill it completely, which will help prevent blocking maybe.</em>
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> pollingInterval = 500;
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> MAX_QUE_SIZE = 5;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> maxQueSize = 5;
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>      <strong class="jxr_keyword">protected</strong> <a name="QueServer" href="../../../emissary/pickup/QueServer.html#QueServer">QueServer</a> queServer;
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>      <em class="jxr_comment">// work bundle currently being processed</em>
@@ -102,7 +102,7 @@
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> configurePlace() {
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>          pollingInterval = configG.findIntEntry(<span class="jxr_string">"POLLING_INTERVAL"</span>, pollingInterval);
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>          MAX_QUE_SIZE = configG.findIntEntry(<span class="jxr_string">"MAX_QUE_SIZE"</span>, MAX_QUE_SIZE);
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>          maxQueSize = configG.findIntEntry(<span class="jxr_string">"MAX_QUE_SIZE"</span>, maxQueSize);
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>          unixInRoot = configG.findStringEntry(<span class="jxr_string">"UNIX_IN_ROOT"</span>, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>          unixOutRoot = configG.findStringEntry(<span class="jxr_string">"UNIX_OUT_ROOT"</span>, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L100" href="#L100">100</a>         digestHashType = configG.findStringEntry(<span class="jxr_string">"DIGEST_HASH_TYPE"</span>, <span class="jxr_string">"SHA-256"</span>);
@@ -115,7 +115,7 @@
 <a class="jxr_linenumber" name="L107" href="#L107">107</a>     }
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> 
 <a class="jxr_linenumber" name="L109" href="#L109">109</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> configureQueueServer() {
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>         queServer = <strong class="jxr_keyword">new</strong> FileQueServer(<strong class="jxr_keyword">this</strong>, <strong class="jxr_keyword">new</strong> <a name="PickupQueue" href="../../../emissary/pickup/PickupQueue.html#PickupQueue">PickupQueue</a>(MAX_QUE_SIZE), pollingInterval);
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>         queServer = <strong class="jxr_keyword">new</strong> FileQueServer(<strong class="jxr_keyword">this</strong>, <strong class="jxr_keyword">new</strong> <a name="PickupQueue" href="../../../emissary/pickup/PickupQueue.html#PickupQueue">PickupQueue</a>(maxQueSize), pollingInterval);
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>         queServer.start();
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>     }
 <a class="jxr_linenumber" name="L113" href="#L113">113</a> 
@@ -488,6 +488,6 @@
 <a class="jxr_linenumber" name="L480" href="#L480">480</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

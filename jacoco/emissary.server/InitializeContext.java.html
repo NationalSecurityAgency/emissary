@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InitializeContext.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.server</a> &gt; <span class="el_source">InitializeContext.java</span></div><h1>InitializeContext.java</h1><pre class="source lang-java linenums">package emissary.server;
+
+import emissary.core.EmissaryException;
+import emissary.directory.EmissaryNode;
+
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Initialize the application from inside the webapp context This initializer performs the following actions
+ * &lt;ol&gt;
+ * &lt;li&gt;Create and fill the emissary.pool.AgentPool&lt;/li&gt;
+ * &lt;li&gt;Create the emissary.pool.MoveSpool&lt;/li&gt;
+ * &lt;li&gt;Initialize the Charset conversion subsystem&lt;/li&gt;
+ * &lt;li&gt;Initialize the Metadata Dictionary subsystem&lt;/li&gt;
+ * &lt;li&gt;Deploy any places configure to run on this instance This is determined by looking for an appropriate config file
+ * or stream based on the following preferences:
+ * &lt;ol&gt;
+ * &lt;li&gt;node-ENV{{@value emissary.directory.EmissaryNode#NODE_NAME_PROPERTY} -ENV{
+ * {@value emissary.directory.EmissaryNode#NODE_PORT_PROPERTY} .cfg&lt;/li&gt;
+ * &lt;li&gt;node-ENV{{@value emissary.directory.EmissaryNode#NODE_NAME_PROPERTY} .cfg&lt;/li&gt;
+ * &lt;li&gt;node-ENV{os.name}.toLowerCase().cfg&lt;/li&gt;
+ * &lt;li&gt;node.cfg&lt;/li&gt;
+ * &lt;/ol&gt;
+ * &lt;/li&gt;
+ * &lt;/ol&gt;
+ * 
+ * @see emissary.directory.EmissaryNode
+ */
+// TODO: can we annotate this instead with @WebListener
+public class InitializeContext implements ServletContextListener {
+
+<span class="fc" id="L35">    private static final Logger logger = LoggerFactory.getLogger(InitializeContext.class);</span>
+    private final EmissaryNode node;
+
+    public InitializeContext(EmissaryNode node) {
+<span class="fc" id="L39">        super();</span>
+<span class="fc" id="L40">        this.node = node;</span>
+<span class="fc" id="L41">    }</span>
+
+    @Override
+    public void contextInitialized(final ServletContextEvent sce) {
+        // ServletContext sc = sce.getServletContext();
+
+<span class="fc" id="L47">        logger.info(&quot;Emissary Node services starting for &quot; + node);</span>
+        try {
+<span class="fc" id="L49">            node.configureEmissaryServer();</span>
+<span class="nc" id="L50">        } catch (EmissaryException ex) {</span>
+<span class="nc" id="L51">            logger.error(&quot;Unable to start Emissary Node services&quot;, ex);</span>
+<span class="fc" id="L52">        }</span>
+<span class="fc" id="L53">    }</span>
+
+    @Override
+    public void contextDestroyed(final ServletContextEvent sce) {
+<span class="nc" id="L57">        logger.debug(&quot;Received servlet context destroyed event&quot;);</span>
+<span class="nc" id="L58">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

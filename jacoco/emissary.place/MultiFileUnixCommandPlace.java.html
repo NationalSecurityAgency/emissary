@@ -1,0 +1,736 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MultiFileUnixCommandPlace.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.place</a> &gt; <span class="el_source">MultiFileUnixCommandPlace.java</span></div><h1>MultiFileUnixCommandPlace.java</h1><pre class="source lang-java linenums">package emissary.place;
+
+import emissary.core.DataObjectFactory;
+import emissary.core.Family;
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.core.ResourceException;
+import emissary.directory.KeyManipulator;
+import emissary.kff.KffDataObjectHandler;
+import emissary.util.shell.Executrix;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
+
+import static emissary.core.constants.Parameters.DOCUMENT_TITLE;
+
+public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements IMultiFileUnixCommandPlace {
+    protected boolean doSynchronized;
+    protected List&lt;String&gt; newChildForms;
+    @Nullable
+    protected String newParentForm;
+    protected String newErrorForm;
+<span class="pc" id="L34">    protected boolean keepFilesDebug = false;</span>
+<span class="pc" id="L35">    protected boolean nukeMyProxies = true;</span>
+<span class="pc" id="L36">    protected boolean recurseSubDirs = true;</span>
+<span class="pc" id="L37">    @Nullable</span>
+    protected String apBinDir = null;
+<span class="pc" id="L39">    @Nullable</span>
+    protected List&lt;String&gt; binFiles = null;
+<span class="pc" id="L41">    @Nullable</span>
+    protected List&lt;String&gt; binFileExt = null;
+<span class="pc" id="L43">    @Nullable</span>
+    protected List&lt;String&gt; outDirs = null;
+<span class="pc" id="L45">    protected String singleChildFiletype = Form.UNKNOWN;</span>
+<span class="pc" id="L46">    protected boolean keepParentHashesForSingleChild = false;</span>
+<span class="pc" id="L47">    protected boolean keepParentFiletypeForSingleChild = false;</span>
+    protected static final String DEFAULT_NEW_PARENT_FORM = &quot;SAFE_HTML&quot;;
+    protected static final String DEFAULT_NEW_CHILD_FORM = Form.UNKNOWN;
+    protected static final String DEFAULT_NEW_ERROR_FORM = Form.ERROR;
+<span class="pc" id="L51">    protected boolean setTitleToFile = true;</span>
+<span class="pc" id="L52">    protected Map&lt;String, String&gt; fileTypesByExtension = new HashMap&lt;&gt;();</span>
+<span class="pc" id="L53">    @Nullable</span>
+    protected String contentFile = null;
+    protected Executrix executrix;
+    protected String logfilename;
+<span class="pc" id="L57">    protected String charset = StandardCharsets.UTF_8.name();</span>
+<span class="pc" id="L58">    protected boolean singleOutputAsChild = false;</span>
+<span class="pc" id="L59">    protected boolean preserveParentData = false;</span>
+
+<span class="pc" id="L61">    String placeDisplayName = &quot;Some Place&quot;;</span>
+
+    public MultiFileUnixCommandPlace() throws IOException {
+<span class="nc" id="L64">        super();</span>
+<span class="nc" id="L65">        configurePlace();</span>
+<span class="nc" id="L66">    }</span>
+
+    public MultiFileUnixCommandPlace(InputStream configStream) throws IOException {
+<span class="fc" id="L69">        super(configStream);</span>
+<span class="fc" id="L70">        configurePlace();</span>
+<span class="fc" id="L71">    }</span>
+
+    /** Distributed constructor */
+    public MultiFileUnixCommandPlace(String configInfo, String dir, String placeLoc) throws IOException {
+<span class="nc" id="L75">        super(configInfo, dir, placeLoc);</span>
+<span class="nc" id="L76">        configurePlace();</span>
+<span class="nc" id="L77">    }</span>
+
+    /** Test constructors */
+    public MultiFileUnixCommandPlace(String configInfo) throws IOException {
+<span class="nc" id="L81">        super(configInfo, &quot;FooPlace.foo.bar.com:8001&quot;);</span>
+<span class="nc" id="L82">        configurePlace();</span>
+<span class="nc" id="L83">    }</span>
+
+    public MultiFileUnixCommandPlace(String configInfo, String loc) throws IOException {
+<span class="nc" id="L86">        super(configInfo, loc);</span>
+<span class="nc" id="L87">        configurePlace();</span>
+<span class="nc" id="L88">    }</span>
+
+    /**
+     * Configure local special variables
+     * &lt;ul&gt;
+     * &lt;li&gt;CONTENT_FILE: file name to become new parent&lt;/li&gt;
+     * &lt;li&gt;SYNCHRONIZED_PROCESS: decide whether to synchronize, default false&lt;/li&gt;
+     * &lt;li&gt;NUKE_MY_PROXIES: remove all place proxies from incoming payload, default true&lt;/li&gt;
+     * &lt;li&gt;KEEP_FILES_DEBUG: keep all files resulting from exec, default false&lt;/li&gt;
+     * &lt;li&gt;RECURSE_SUBDIRS: when picking up results, default true&lt;/li&gt;
+     * &lt;li&gt;AP_BIN_DIR: where to find executables&lt;/li&gt;
+     * &lt;li&gt;OUT_DIRS: where output goes, default '.'&lt;/li&gt;
+     * &lt;li&gt;BIN_EXTENSIONS: extension of files to skip when picking up results&lt;/li&gt;
+     * &lt;li&gt;BIN_FILES: filenames to skip when picking up results&lt;/li&gt;
+     * &lt;li&gt;NEW_ERROR_FORM: form for error result, default ERROR&lt;/li&gt;
+     * &lt;li&gt;NEW_PARENT_FORM: form on parent for success, default UNKNOWN, can use '&amp;lt;null&amp;gt;'&lt;/li&gt;
+     * &lt;li&gt;NEW_CHILD_FORM: new form on extracted data, default UNKNOWN&lt;/li&gt;
+     * &lt;li&gt;SINGLE_CHILD_FILETYPE: file type for single child&lt;/li&gt;
+     * &lt;li&gt;KEEP_PARENT_HASHES_FOR_SINGLE_CHILD: when single child is promoted determines if original parent hashes are kept
+     * or not, default false&lt;/li&gt;
+     * &lt;li&gt;KEEP_PARENT_FILETYPE_FOR_SINGLE_CHILD: when single child is promoted determines if original parent filetype is
+     * kept or not, default false&lt;/li&gt;
+     * &lt;li&gt;SET_TITLE_TO_FILENAME: whether to use filename in doc title, defaul true&lt;/li&gt;
+     * &lt;li&gt;SERVICE_DISPLAY_NAME: pretty name for sprout message&lt;/li&gt;
+     * &lt;li&gt;CUSTOM_FILE_TYPES: special mapping to set type by file extension&lt;/li&gt;
+     * &lt;li&gt;LOG_FILE_NAME: name of output file to translate into logger commands, default: [servicename].log from key&lt;/li&gt;
+     * &lt;li&gt;OUTPUT_CHARSET: charset of the process output, default UTF-8&lt;/li&gt;
+     * &lt;li&gt;SINGLE_OUTPUT_AS_CHILD: If only one output file keep it as a child and do not replace the parent.&lt;/li&gt;
+     * &lt;li&gt;PRESERVE_PARENT_DATA: Stops the parent from getting replaced by output data&lt;/li&gt;
+     * &lt;/ul&gt;
+     */
+    @Override
+    public void configurePlace() {
+<span class="fc" id="L121">        executrix = new Executrix(configG);</span>
+<span class="fc" id="L122">        contentFile = configG.findStringEntry(&quot;CONTENT_FILE&quot;, null);</span>
+<span class="fc" id="L123">        doSynchronized = configG.findBooleanEntry(&quot;SYNCHRONIZED_PROCESS&quot;, false);</span>
+<span class="fc" id="L124">        nukeMyProxies = configG.findBooleanEntry(&quot;NUKE_MY_PROXIES&quot;, true);</span>
+<span class="fc" id="L125">        keepFilesDebug = configG.findBooleanEntry(&quot;KEEP_FILES_DEBUG&quot;, false);</span>
+<span class="fc" id="L126">        recurseSubDirs = configG.findBooleanEntry(&quot;RECURSE_SUBDIRS&quot;, true);</span>
+<span class="fc" id="L127">        apBinDir = configG.findStringEntry(&quot;AP_BIN_DIR&quot;, &quot;&quot;);</span>
+<span class="fc" id="L128">        outDirs = configG.findEntries(&quot;OUT_DIRS&quot;, &quot;.&quot;);</span>
+<span class="fc" id="L129">        charset = configG.findStringEntry(&quot;OUTPUT_CHARSET&quot;, charset);</span>
+
+<span class="fc" id="L131">        binFileExt = configG.findEntries(&quot;BIN_EXTENSIONS&quot;);</span>
+<span class="fc" id="L132">        binFiles = configG.findEntries(&quot;BIN_FILES&quot;);</span>
+
+<span class="fc" id="L134">        newErrorForm = configG.findStringEntry(&quot;NEW_ERROR_FORM&quot;, DEFAULT_NEW_ERROR_FORM);</span>
+<span class="fc" id="L135">        newParentForm = configG.findStringEntry(&quot;NEW_PARENT_FORM&quot;, DEFAULT_NEW_PARENT_FORM);</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">        if (newParentForm.equals(&quot;&lt;null&gt;&quot;)) {</span>
+<span class="nc" id="L137">            newParentForm = null;</span>
+        }
+<span class="fc" id="L139">        newChildForms = configG.findEntries(&quot;NEW_CHILD_FORM&quot;, DEFAULT_NEW_CHILD_FORM);</span>
+<span class="fc" id="L140">        singleChildFiletype = configG.findStringEntry(&quot;SINGLE_CHILD_FILETYPE&quot;, Form.UNKNOWN);</span>
+<span class="fc" id="L141">        keepParentHashesForSingleChild = configG.findBooleanEntry(&quot;KEEP_PARENT_HASHES_FOR_SINGLE_CHILD&quot;, false);</span>
+<span class="fc" id="L142">        keepParentFiletypeForSingleChild = configG.findBooleanEntry(&quot;KEEP_PARENT_FILETYPE_FOR_SINGLE_CHILD&quot;, false);</span>
+
+<span class="fc" id="L144">        setTitleToFile = configG.findBooleanEntry(&quot;SET_TITLE_TO_FILENAME&quot;, true);</span>
+<span class="fc" id="L145">        placeDisplayName = configG.findStringEntry(&quot;SERVICE_DISPLAY_NAME&quot;, placeName);</span>
+<span class="fc" id="L146">        logfilename = configG.findStringEntry(&quot;LOG_FILE_NAME&quot;, KeyManipulator.getServiceName(keys.get(0)) + &quot;.log&quot;);</span>
+<span class="fc" id="L147">        singleOutputAsChild = configG.findBooleanEntry(&quot;SINGLE_OUTPUT_AS_CHILD&quot;, singleOutputAsChild);</span>
+<span class="fc" id="L148">        preserveParentData = configG.findBooleanEntry(&quot;PRESERVE_PARENT_DATA&quot;, preserveParentData);</span>
+
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">        for (String name : configG.findEntries(&quot;CUSTOM_FILE_TYPES&quot;)) {</span>
+<span class="nc" id="L151">            String tmp = configG.findStringEntry(name + &quot;_EXT&quot;, null);</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">            if (tmp == null) {</span>
+<span class="nc" id="L153">                logger.warn(&quot;Type missing for {}&quot;, name);</span>
+<span class="nc" id="L154">                continue;</span>
+            }
+<span class="nc" id="L156">            fileTypesByExtension.put(tmp, name);</span>
+<span class="nc" id="L157">        }</span>
+<span class="fc" id="L158">    }</span>
+
+
+    /**
+     * get the log file name
+     */
+    public String getLogFileName() {
+<span class="fc" id="L165">        return logfilename;</span>
+    }
+
+    /**
+     * Set a custom executrix, allows easier mocking among other things
+     * 
+     * @param e the new executrix instance to use
+     */
+    public void setExecutrix(Executrix e) {
+<span class="nc" id="L174">        executrix = e;</span>
+<span class="nc" id="L175">    }</span>
+
+    /**
+     * Set the output type programatically
+     */
+    public void setStdOutputCommand() {
+<span class="nc" id="L181">        executrix.setOutputStd();</span>
+<span class="nc" id="L182">        logger.debug(&quot;Output type set to STD&quot;);</span>
+<span class="nc" id="L183">    }</span>
+
+    /**
+     * Set the output type programatically
+     */
+    public void setFileOutputCommand() {
+<span class="fc" id="L189">        executrix.setOutputFile();</span>
+<span class="fc" id="L190">        logger.debug(&quot;Output type set to FILE&quot;);</span>
+<span class="fc" id="L191">    }</span>
+
+
+    /**
+     * Log the messages found in the log file
+     * 
+     * @param tempDir the directory where the command executed
+     */
+    protected void logMessages(String tempDir) {
+        // if there is a log file, read it and log the messages
+        try {
+<span class="fc" id="L202">            String lfn = tempDir + &quot;/&quot; + logfilename;</span>
+<span class="fc" id="L203">            byte[] logdata = Executrix.readDataFromFile(lfn, true);</span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">            if (logdata != null) {</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">                for (String message : new String(logdata, charset).split(&quot;\n&quot;)) {</span>
+<span class="fc" id="L206">                    logger.info(message);</span>
+                }
+            }
+<span class="nc" id="L209">        } catch (Exception e) {</span>
+<span class="nc" id="L210">            logger.debug(&quot;Error logging messages&quot;, e);</span>
+<span class="fc" id="L211">        }</span>
+<span class="fc" id="L212">    }</span>
+
+    /**
+     * Get list of things that were excreted from the process
+     * 
+     * @param tmpDir the process execution area
+     * @param inputFileName name of input file so it can be skipped
+     */
+    protected List&lt;File&gt; getFileList(File tmpDir, String inputFileName) {
+<span class="fc" id="L221">        List&lt;File&gt; outFiles = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L222">        getFileList(tmpDir, inputFileName, outFiles);</span>
+<span class="fc" id="L223">        return outFiles;</span>
+    }
+
+    /**
+     * Get list of things that were excreted from the process by recursively walking the directory
+     * 
+     * @param tmpDir the process execution area
+     * @param inputFileName name of input file so it can be skipped
+     * @param outFiles list to which files that are found can be added
+     */
+    protected void getFileList(File tmpDir, String inputFileName, List&lt;File&gt; outFiles) {
+        // Recursive call to walk the subtree of output files/dirs
+<span class="fc bfc" id="L235" title="All 2 branches covered.">        for (int d = 0; d &lt; outDirs.size(); d++) {</span>
+<span class="fc" id="L236">            logger.debug(&quot;outDirs[{}]={}&quot;, d, outDirs.get(d));</span>
+            File dir;
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">            if (outDirs.get(d).equals(&quot;.&quot;)) {</span>
+<span class="fc" id="L239">                dir = tmpDir;</span>
+            } else {
+<span class="nc" id="L241">                dir = new File(tmpDir, outDirs.get(d));</span>
+            }
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">            if (!dir.exists()) {</span>
+<span class="nc" id="L244">                logger.warn(&quot;Output directory does not exist:{}&quot;, outDirs.get(d));</span>
+<span class="nc" id="L245">                continue;</span>
+            }
+<span class="fc" id="L247">            File[] files = dir.listFiles();</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">            if (files == null) {</span>
+<span class="nc" id="L249">                continue;</span>
+            }
+<span class="fc bfc" id="L251" title="All 2 branches covered.">            for (File file : files) {</span>
+<span class="pc bpc" id="L252" title="2 of 4 branches missed.">                if (!(file.exists() &amp;&amp; file.canRead())) {</span>
+<span class="nc" id="L253">                    logger.warn(&quot;cannot access child[{}]:{}&quot;, outFiles.size(), file.getAbsolutePath());</span>
+<span class="nc" id="L254">                    continue;</span>
+                }
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">                if (file.isDirectory()) {</span>
+<span class="nc bnc" id="L257" title="All 2 branches missed.">                    if (recurseSubDirs) {</span>
+<span class="nc" id="L258">                        getFileList(file, inputFileName, outFiles);</span>
+                    } else {
+<span class="nc" id="L260">                        logger.debug(&quot;skipping directory: {}&quot;, file.getPath());</span>
+                    }
+<span class="nc" id="L262">                    continue;</span>
+                }
+<span class="fc" id="L264">                String fname = file.getName();</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">                if (binFiles.contains(fname)) {</span>
+<span class="nc" id="L266">                    logger.debug(&quot;Ignoring file '{}' because it is in BIN_FILES&quot;, fname);</span>
+<span class="nc" id="L267">                    continue;</span>
+                }
+<span class="fc bfc" id="L269" title="All 2 branches covered.">                if (fname.equals(getLogFileName())) {</span>
+<span class="fc" id="L270">                    logger.debug(&quot;Using file {} as log message source&quot;, fname);</span>
+<span class="fc" id="L271">                    logMessages(tmpDir.getPath());</span>
+<span class="fc" id="L272">                    continue;</span>
+                }
+<span class="pc bpc" id="L274" title="2 of 4 branches missed.">                if (fname.contains(&quot;.&quot;) &amp;&amp; binFileExt.contains(fname.substring(fname.lastIndexOf(&quot;.&quot;) + 1))) {</span>
+<span class="nc" id="L275">                    logger.debug(&quot;Ignoring file '{}' because it is in BIN_EXTENSIONS.&quot;, fname);</span>
+<span class="nc" id="L276">                    continue;</span>
+                }
+<span class="pc bpc" id="L278" title="3 of 4 branches missed.">                if (contentFile != null &amp;&amp; contentFile.equals(fname)) {</span>
+<span class="nc" id="L279">                    logger.debug(&quot;Ignoring file '{}' because it is to be the new parent data.&quot;, fname);</span>
+<span class="nc" id="L280">                    continue;</span>
+                }
+<span class="fc bfc" id="L282" title="All 2 branches covered.">                if (inputFileName.endsWith(fname)) {</span>
+<span class="fc" id="L283">                    logger.debug(&quot;Ignoring file '{}' because it is the input file.&quot;, fname);</span>
+<span class="fc" id="L284">                    continue;</span>
+                }
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">                if (file.length() == 0) {</span>
+<span class="nc" id="L287">                    logger.debug(&quot;Ignoring file '{}' because it is empty.&quot;, fname);</span>
+<span class="nc" id="L288">                    continue;</span>
+                }
+<span class="fc" id="L290">                logger.debug(&quot;Adding output file '{}' for processing&quot;, fname);</span>
+<span class="fc" id="L291">                outFiles.add(file);</span>
+            }
+        }
+<span class="fc" id="L294">        outFiles.sort(new FileNameComparator());</span>
+<span class="fc" id="L295">    }</span>
+
+<span class="fc" id="L297">    protected static class FileNameComparator implements Comparator&lt;File&gt; {</span>
+        @Override
+        public int compare(@Nullable File o1, @Nullable File o2) {
+<span class="pc bpc" id="L300" title="1 of 2 branches missed.">            if (o1 == null) {</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">                return o2 != null ? 1 : 0;</span>
+            }
+<span class="pc bpc" id="L303" title="1 of 2 branches missed.">            if (o2 == null) {</span>
+<span class="nc" id="L304">                return -1;</span>
+            }
+<span class="fc" id="L306">            return o1.getName().compareTo(o2.getName());</span>
+        }
+    }
+
+    /**
+     * Process the result files, turning them into attachments Override hooks: initSprout, preSprout,
+     * postSprout,finishSprout
+     * 
+     * @param parent the original payload
+     * @param files the result files
+     * @param tempDirName execution area name
+     * @param newData data for parent accumulator
+     * @return list of attachments
+     */
+    protected List&lt;IBaseDataObject&gt; sproutResults(IBaseDataObject parent, List&lt;File&gt; files, String tempDirName, StringBuilder newData) {
+<span class="fc" id="L321">        List&lt;IBaseDataObject&gt; sprouts = new ArrayList&lt;&gt;();</span>
+
+<span class="pc bpc" id="L323" title="1 of 2 branches missed.">        if (files.isEmpty()) {</span>
+<span class="nc" id="L324">            logger.warn(&quot;NO OUTPUT FILES FOUND!&quot;);</span>
+<span class="nc" id="L325">            return sprouts;</span>
+        }
+
+<span class="fc" id="L328">        int fileCount = files.size();</span>
+<span class="fc" id="L329">        int actualFileCount = 0;</span>
+<span class="fc" id="L330">        int birthOrder = parent.getNumChildren() + 1;</span>
+
+<span class="fc" id="L332">        parent.setNumChildren(fileCount);</span>
+<span class="fc" id="L333">        initSprout(parent, files, newData, tempDirName);</span>
+
+<span class="fc bfc" id="L335" title="All 2 branches covered.">        for (File f : files) {</span>
+<span class="fc" id="L336">            logger.debug(&quot;Handling data file {}&quot;, f.getName());</span>
+
+<span class="pc bpc" id="L338" title="2 of 4 branches missed.">            if (!f.canRead() || !f.isFile()) {</span>
+<span class="nc" id="L339">                logger.debug(&quot;Cannot read from {}&quot;, f.getAbsolutePath());</span>
+<span class="nc" id="L340">                continue;</span>
+            }
+
+<span class="fc" id="L343">            byte[] theData = Executrix.readDataFromFile(f.getAbsolutePath());</span>
+<span class="pc bpc" id="L344" title="1 of 2 branches missed.">            if (theData == null) {</span>
+<span class="nc" id="L345">                logger.debug(&quot;Cannot read data from {}&quot;, f.getAbsolutePath());</span>
+<span class="nc" id="L346">                continue;</span>
+            }
+
+<span class="pc bpc" id="L349" title="1 of 2 branches missed.">            if (!preSprout(theData, parent, f, birthOrder, fileCount, newData)) {</span>
+<span class="nc" id="L350">                continue;</span>
+            }
+
+<span class="fc" id="L353">            Map&lt;String, Object&gt; metaData = new HashMap&lt;&gt;();</span>
+<span class="pc bpc" id="L354" title="1 of 2 branches missed.">            if (setTitleToFile) {</span>
+<span class="fc" id="L355">                metaData.put(DOCUMENT_TITLE, f.getName());</span>
+            }
+
+<span class="fc" id="L358">            List&lt;String&gt; tmpForms = getFormsFromFile(f);</span>
+
+<span class="fc" id="L360">            IBaseDataObject dObj = DataObjectFactory.getInstance(theData, parent.getFilename() + Family.SEP + birthOrder, tmpForms.get(0));</span>
+
+<span class="fc" id="L362">            dObj.putParameters(metaData);</span>
+<span class="fc" id="L363">            sprouts.add(dObj);</span>
+
+<span class="fc" id="L365">            actualFileCount++;</span>
+<span class="fc" id="L366">            birthOrder++;</span>
+<span class="fc" id="L367">            postSprout(theData, parent, f, birthOrder, fileCount, actualFileCount, newData, dObj);</span>
+<span class="fc" id="L368">        }</span>
+
+<span class="fc" id="L370">        finishSprout(parent, fileCount, actualFileCount, newData);</span>
+
+<span class="fc bfc" id="L372" title="All 2 branches covered.">        if (!preserveParentData) {</span>
+            try {
+<span class="fc" id="L374">                parent.setData(newData.toString().getBytes(charset));</span>
+<span class="nc" id="L375">            } catch (UnsupportedEncodingException e) {</span>
+<span class="nc" id="L376">                logger.debug(&quot;SproutResults charset problem&quot;, e);</span>
+<span class="nc" id="L377">                parent.setData(newData.toString().getBytes());</span>
+<span class="fc" id="L378">            }</span>
+        }
+<span class="fc" id="L380">        return sprouts;</span>
+    }
+
+
+    /**
+     * Determines the initial forms for a new data object based on the configuration settings and the file name. This method
+     * may be customized in sub-classes, but at least one form value must be returned!
+     */
+    protected List&lt;String&gt; getFormsFromFile(File f) {
+<span class="fc" id="L389">        List&lt;String&gt; tmpForms = new ArrayList&lt;&gt;();</span>
+
+<span class="pc bpc" id="L391" title="1 of 2 branches missed.">        for (Map.Entry&lt;String, String&gt; fileTypes : fileTypesByExtension.entrySet()) {</span>
+<span class="nc bnc" id="L392" title="All 2 branches missed.">            if (f.getName().endsWith(fileTypes.getKey())) {</span>
+<span class="nc" id="L393">                tmpForms.add(fileTypes.getValue());</span>
+            }
+<span class="nc" id="L395">        }</span>
+<span class="pc bpc" id="L396" title="1 of 2 branches missed.">        if (tmpForms.isEmpty()) {</span>
+<span class="fc" id="L397">            tmpForms.addAll(newChildForms);</span>
+        }
+<span class="fc" id="L399">        return tmpForms;</span>
+    }
+
+
+    /**
+     * Override hook when attachment processing is about to be started If CONTENT_FILE has been specified that data is read
+     * and loaded into the newData accumulator now
+     * 
+     * @param parent the original payload
+     * @param files the result files
+     * @param newData accumulator for replacement parent data
+     * @param dirName name of process execution area
+     */
+    protected void initSprout(IBaseDataObject parent, List&lt;File&gt; files, StringBuilder newData, String dirName) {
+<span class="fc" id="L413">        logger.debug(&quot;initSprout hook contentFile={}&quot;, contentFile);</span>
+<span class="pc bpc" id="L414" title="1 of 2 branches missed.">        if (contentFile != null) {</span>
+<span class="nc" id="L415">            byte[] fileData = Executrix.readDataFromFile(dirName + File.separator + contentFile);</span>
+<span class="nc bnc" id="L416" title="All 2 branches missed.">            if (fileData != null) {</span>
+<span class="nc" id="L417">                newData.append(new String(fileData));</span>
+            } else {
+<span class="nc" id="L419">                logger.debug(&quot;Can't find new content file:{}{}{}&quot;, dirName, File.separator, contentFile);</span>
+            }
+        }
+<span class="fc" id="L422">    }</span>
+
+
+    /**
+     * Override hook when attachment processing is finished
+     * 
+     * @param parent the original payload
+     * @param numSubParts the number of attachments handled
+     * @param actualFileCount the number of result files processed
+     * @param newParentData accumulator for replacement parent data
+     */
+    protected void finishSprout(IBaseDataObject parent, int numSubParts, int actualFileCount, StringBuilder newParentData) {
+<span class="fc" id="L434">        logger.debug(&quot;finishSprout hook&quot;);</span>
+<span class="fc" id="L435">    }</span>
+
+    /**
+     * Override hook when an attachment begins processing
+     * 
+     * @param data the bytes of content for the attachment
+     * @param parent the original payload
+     * @param f the file the content comes from
+     * @param birthOrder for this attachment
+     * @param numSubParts the number of attachments handled
+     * @param newParentData accumulator for replacement parent data
+     * @return true to continue, false to skip this attachment
+     */
+    protected boolean preSprout(byte[] data, IBaseDataObject parent, File f, int birthOrder, int numSubParts, StringBuilder newParentData) {
+<span class="fc" id="L449">        logger.debug(&quot;preSprout hook on {} order={}&quot;, f.getName(), birthOrder);</span>
+<span class="fc" id="L450">        return true;</span>
+    }
+
+    /**
+     * Override hook when an attachment finished processing
+     * 
+     * @param data the bytes of content for the attachment
+     * @param parent the original payload
+     * @param f the file the content comes from
+     * @param birthOrder for this attachment
+     * @param numSubParts the number of attachments handled
+     * @param actualFileCount count of files to process
+     * @param newParentData accumulator for replacement parent data
+     * @param theSprout the new data object
+     */
+    protected void postSprout(byte[] data, IBaseDataObject parent, File f, int birthOrder, int numSubParts, int actualFileCount,
+            StringBuilder newParentData, IBaseDataObject theSprout) {
+<span class="fc" id="L467">        logger.debug(&quot;postSprout hook on {} order={}&quot;, f.getName(), birthOrder);</span>
+<span class="fc" id="L468">    }</span>
+
+
+    /**
+     * Process in a custom way when there is only one file result
+     * 
+     * @param d the parent payload
+     * @param f the file to process
+     * @return 0 when it works
+     */
+    protected int processSingleChild(IBaseDataObject d, File f) {
+<span class="nc" id="L479">        byte[] theData = Executrix.readDataFromFile(f.getAbsolutePath());</span>
+<span class="nc" id="L480">        return processSingleChild(d, f, theData);</span>
+    }
+
+
+    /**
+     * Process in a custom way when there is only one file result
+     * 
+     * @param d the parent payload
+     * @param theData the bytes to process
+     * @param f the file the data comes from
+     * @return 0 when it works
+     */
+    protected int processSingleChild(IBaseDataObject d, File f, byte[] theData) {
+<span class="nc" id="L493">        String filename = f.getName();</span>
+<span class="nc" id="L494">        d.setData(theData);</span>
+<span class="nc bnc" id="L495" title="All 2 branches missed.">        if (setTitleToFile) {</span>
+<span class="nc" id="L496">            d.putParameter(DOCUMENT_TITLE, filename);</span>
+        }
+<span class="nc" id="L498">        List&lt;String&gt; tmpForms = getFormsFromFile(f);</span>
+<span class="nc bnc" id="L499" title="All 2 branches missed.">        for (String tmpForm : tmpForms) {</span>
+<span class="nc" id="L500">            d.pushCurrentForm(tmpForm);</span>
+<span class="nc" id="L501">        }</span>
+<span class="nc" id="L502">        d.setFileType(singleChildFiletype);</span>
+<span class="nc" id="L503">        return 0;</span>
+    }
+
+    /**
+     * Process in a custom way when there is only one file result
+     *
+     * @param d the parent payload
+     * @param theData the bytes to process
+     * @param f the file the data comes from
+     * @return 0 when it works
+     * @deprecated use {@link #processSingleChild(IBaseDataObject, File, byte[])}
+     */
+    @Deprecated
+    @SuppressWarnings(&quot;InconsistentOverloads&quot;)
+    protected int processSingleChild(IBaseDataObject d, byte[] theData, File f) {
+<span class="nc" id="L518">        return processSingleChild(d, f, theData);</span>
+    }
+
+    /**
+     * Process an incoming payload in synchronized fashion
+     * 
+     * @param theDataObject the payload to process
+     */
+    protected synchronized List&lt;IBaseDataObject&gt; synchronizedProcess(IBaseDataObject theDataObject) throws ResourceException {
+<span class="nc" id="L527">        return processData(theDataObject);</span>
+    }
+
+
+    /**
+     * Process an incoming payload in non-synchronized fashion
+     * 
+     * @param theDataObject the payload to process
+     */
+    protected List&lt;IBaseDataObject&gt; unSynchronizedProcess(IBaseDataObject theDataObject) throws ResourceException {
+<span class="fc" id="L537">        return processData(theDataObject);</span>
+    }
+
+
+    /**
+     * Process an incoming payload returning a list of attachments
+     * 
+     * @param tData the payload to process
+     */
+    @Override
+    public List&lt;IBaseDataObject&gt; processHeavyDuty(IBaseDataObject tData) throws ResourceException {
+        List&lt;IBaseDataObject&gt; entries;
+
+<span class="pc bpc" id="L550" title="1 of 2 branches missed.">        if (doSynchronized) {</span>
+<span class="nc" id="L551">            entries = synchronizedProcess(tData);</span>
+        } else {
+<span class="fc" id="L553">            entries = unSynchronizedProcess(tData);</span>
+        }
+
+<span class="pc bpc" id="L556" title="1 of 4 branches missed.">        if (entries == null || entries.isEmpty()) {</span>
+<span class="fc" id="L557">            logger.debug(&quot;no messages found in file.&quot;);</span>
+<span class="fc" id="L558">            return Collections.emptyList();</span>
+        }
+
+<span class="fc" id="L561">        addParentInformation(tData, entries);</span>
+
+        // Replace parent if single child and singleOutputAsChild is false
+<span class="pc bpc" id="L564" title="1 of 8 branches missed.">        if (executrix.getOutput().equals(&quot;FILE&quot;) &amp;&amp; entries.size() == 1 &amp;&amp; contentFile == null &amp;&amp; !singleOutputAsChild) {</span>
+<span class="fc" id="L565">            IBaseDataObject d = entries.get(0);</span>
+<span class="fc" id="L566">            tData.setData(d.data());</span>
+<span class="pc bpc" id="L567" title="1 of 2 branches missed.">            if (keepParentHashesForSingleChild) {</span>
+<span class="fc" id="L568">                KffDataObjectHandler.removeHash(d);</span>
+            }
+<span class="fc" id="L570">            tData.putUniqueParameters(d.getParameters());</span>
+<span class="fc" id="L571">            tData.setCurrentForm(d.currentForm());</span>
+<span class="pc bpc" id="L572" title="1 of 2 branches missed.">            if (!keepParentFiletypeForSingleChild) {</span>
+<span class="nc" id="L573">                tData.setFileType(d.getFileType());</span>
+            }
+<span class="fc" id="L575">            return Collections.emptyList(); // so we just continue with current</span>
+        }
+
+        // Set the parent form after the addParentInformation call
+<span class="pc bpc" id="L579" title="1 of 2 branches missed.">        if (newParentForm != null) {</span>
+<span class="fc" id="L580">            logger.debug(&quot;Pushing new parent form {}&quot;, newParentForm);</span>
+<span class="fc" id="L581">            tData.pushCurrentForm(newParentForm);</span>
+        }
+
+<span class="fc" id="L584">        return entries;</span>
+    }
+
+    /**
+     * Process an incoming payload returning attachments This entry point is shared among all synchronized, unsynchronized,
+     * normal and heavy-duty processing entry points.
+     * 
+     * @param tData the payload to process
+     * @return attachments
+     */
+    protected List&lt;IBaseDataObject&gt; processData(IBaseDataObject tData) throws ResourceException {
+<span class="fc" id="L595">        return processData(tData, 0, tData.dataLength());</span>
+    }
+
+
+    /**
+     * Process an incoming payload returning attachments, using only some of the data This entry point is shared among all
+     * synchronized, unsynchronized, normal and heavy-duty processing entry points.
+     * 
+     * @param tData the payload to process
+     * @param start offset in data to start
+     * @param len length of data to use
+     * @return attachments
+     */
+    protected List&lt;IBaseDataObject&gt; processData(@Nullable IBaseDataObject tData, int start, int len) throws ResourceException {
+<span class="fc" id="L609">        List&lt;IBaseDataObject&gt; sprouts = new ArrayList&lt;&gt;();</span>
+
+        // Validate parameters
+<span class="pc bpc" id="L612" title="1 of 2 branches missed.">        if (tData == null) {</span>
+<span class="nc" id="L613">            logger.debug(&quot;Received null data object!&quot;);</span>
+<span class="nc" id="L614">            return sprouts;</span>
+        }
+
+        // Validate data
+<span class="pc bpc" id="L618" title="1 of 2 branches missed.">        if (tData.data() == null) {</span>
+<span class="nc" id="L619">            logger.debug(&quot;Received null data: {}&quot;, tData);</span>
+<span class="nc" id="L620">            tData.addProcessingError(&quot;NULL data in &quot; + placeName + &quot;.process&quot;);</span>
+<span class="nc" id="L621">            tData.pushCurrentForm(newErrorForm);</span>
+<span class="nc" id="L622">            return sprouts;</span>
+        }
+
+        // Validate start and len
+<span class="pc bpc" id="L626" title="3 of 6 branches missed.">        if (start &lt; 0 || len &lt;= 0 || (start + len) &gt; tData.dataLength()) {</span>
+<span class="nc" id="L627">            logger.debug(&quot;Invalid start/len for data {}/{}&quot;, start, len);</span>
+<span class="nc" id="L628">            tData.addProcessingError(&quot;Invalid data &quot; + start + &quot;/&quot; + len);</span>
+<span class="nc" id="L629">            tData.pushCurrentForm(newErrorForm);</span>
+<span class="nc" id="L630">            return sprouts;</span>
+        }
+
+        // make the directory and write the input file.
+        String[] names;
+<span class="fc" id="L635">        File f = null;</span>
+<span class="fc" id="L636">        int result = -1;</span>
+        try {
+<span class="fc" id="L638">            names = executrix.writeDataToNewTempDir(tData.data(), start, len);</span>
+<span class="fc" id="L639">            f = new File(names[Executrix.INPATH]);</span>
+<span class="fc" id="L640">            logger.debug(&quot;Wrote file out to {}&quot;, f.getPath());</span>
+
+            // Create the command string and run it
+<span class="fc" id="L643">            String[] cmd = executrix.getCommand(names);</span>
+<span class="fc" id="L644">            StringBuilder parentData = new StringBuilder();</span>
+
+<span class="fc" id="L646">            logger.debug(&quot;Generated command {}&quot;, Arrays.asList(cmd));</span>
+
+<span class="fc bfc" id="L648" title="All 2 branches covered.">            if (executrix.getOutput().equals(&quot;FILE&quot;)) {</span>
+<span class="fc" id="L649">                result = processCommand(cmd);</span>
+<span class="pc bpc" id="L650" title="1 of 2 branches missed.">            } else if (executrix.getOutput().equals(&quot;STD&quot;)) {</span>
+<span class="fc" id="L651">                StringBuilder errbuf = new StringBuilder();</span>
+<span class="fc" id="L652">                result = processCommand(cmd, parentData, errbuf);</span>
+<span class="pc bpc" id="L653" title="1 of 2 branches missed.">                if (errbuf.length() &gt; 0) {</span>
+<span class="nc" id="L654">                    tData.addProcessingError(errbuf.toString());</span>
+                }
+            }
+
+            // Clean out any proxies that would cause an infinite loop.
+            // we will add new forms later.
+<span class="pc bpc" id="L660" title="1 of 2 branches missed.">            if (nukeMyProxies) {</span>
+<span class="fc" id="L661">                nukeMyProxies(tData);</span>
+            }
+<span class="fc" id="L663">            logger.debug(&quot;Parent forms {}, nuke={}&quot;, tData.getAllCurrentForms(), nukeMyProxies);</span>
+
+            // Generate the list of resulting files in the directory(s)
+<span class="fc" id="L666">            List&lt;File&gt; files = getFileList(f.getParentFile(), f.getName());</span>
+
+<span class="pc bpc" id="L668" title="1 of 4 branches missed.">            if (files != null &amp;&amp; !files.isEmpty()) {</span>
+<span class="fc" id="L669">                sprouts = sproutResults(tData, files, f.getParent(), parentData);</span>
+            }
+<span class="nc" id="L671">        } catch (RuntimeException ex) {</span>
+<span class="nc" id="L672">            logger.error(&quot;Problem in command execution&quot;, ex);</span>
+        } finally {
+            // Delete the temporary directory and all of its contents.
+<span class="pc bpc" id="L675" title="1 of 2 branches missed.">            if (f != null) {</span>
+<span class="fc" id="L676">                cleanupFiles(f.getParentFile());</span>
+            }
+        }
+
+        // If there was not result, then report it in 2 places.
+<span class="fc bfc" id="L681" title="All 2 branches covered.">        if (sprouts.isEmpty()) {</span>
+<span class="fc" id="L682">            logger.debug(&quot;Command failed. nothing to sprout for file: result={}&quot;, result);</span>
+<span class="fc" id="L683">            tData.addProcessingError(&quot;ERROR in &quot; + placeName + &quot;. Exec returned errno &quot; + result);</span>
+<span class="fc" id="L684">            tData.pushCurrentForm(newErrorForm);</span>
+        }
+<span class="fc" id="L686">        return sprouts;</span>
+    }
+
+    /**
+     * Execute the command and args in the array
+     * 
+     * @param cmd the command and args to execute
+     * @return the process errno status value
+     */
+    protected int processCommand(String[] cmd) {
+<span class="fc" id="L696">        return processCommand(cmd, new StringBuilder(), new StringBuilder());</span>
+    }
+
+    /**
+     * Execute the command and args in the array
+     * 
+     * @param cmd the command and args to execute
+     * @param stdout builder to append stdout from process
+     * @param stderr builder to append stderr from process
+     * @return the process errno status value
+     */
+    protected int processCommand(String[] cmd, StringBuilder stdout, StringBuilder stderr) {
+<span class="fc" id="L708">        return executrix.execute(cmd, stdout, stderr, charset);</span>
+    }
+
+
+    /**
+     * API Compatibility wrapper for Executrix cleanup method
+     * 
+     * @param tempDir the directory to remove
+     */
+    protected void cleanupFiles(File tempDir) {
+<span class="pc bpc" id="L718" title="1 of 2 branches missed.">        if (!keepFilesDebug) {</span>
+<span class="nc" id="L719">            cleanupDirectory(tempDir);</span>
+        }
+<span class="fc" id="L721">    }</span>
+
+    /**
+     * API Compatibility wrapper for Executrix cleanup method
+     * 
+     * @param dir the directory to remove
+     */
+    protected void cleanupDirectory(File dir) {
+<span class="nc" id="L729">        boolean status = Executrix.cleanupDirectory(dir);</span>
+<span class="nc bnc" id="L730" title="All 2 branches missed.">        if (!status) {</span>
+<span class="nc" id="L731">            logger.debug(&quot;Could not remove temp directory {}&quot;, dir);</span>
+        }
+<span class="nc" id="L733">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

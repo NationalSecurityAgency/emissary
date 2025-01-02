@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JavaCharSet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util</a> &gt; <span class="el_source">JavaCharSet.java</span></div><h1>JavaCharSet.java</h1><pre class="source lang-java linenums">package emissary.util;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import javax.annotation.Nullable;
+
+/**
+ * Convert any charset to a Java Charset name that a JDK 1.1 and up will understand. Just returns ones that need
+ * remapping. Callers should be advised that getting a null back means the code set passed might be valid *as is* or it
+ * might be completely bogus. We currently cannot tell.
+ */
+public class JavaCharSet {
+
+<span class="fc" id="L15">    private static final Map&lt;String, String&gt; charsets = new HashMap&lt;&gt;();</span>
+
+    @SuppressWarnings(&quot;NonFinalStaticField&quot;)
+<span class="fc" id="L18">    private static boolean initialized = false;</span>
+
+    /**
+     * Load hash from config file
+     */
+    public static synchronized void initialize(final Map&lt;String, String&gt; mappings) {
+<span class="fc" id="L24">        charsets.putAll(mappings);</span>
+<span class="fc" id="L25">        initialized = true;</span>
+<span class="fc" id="L26">    }</span>
+
+    /**
+     * Return initialization status
+     */
+    public static synchronized boolean isInitialized() {
+<span class="fc" id="L32">        return initialized;</span>
+    }
+
+    /**
+     * Look up the encoding and return the Java CharSet for it if different from the string passed in
+     */
+    @Nullable
+    public static String get(@Nullable final String cs) {
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        if (cs == null) {</span>
+<span class="nc" id="L41">            return null;</span>
+        }
+
+        // Look up in the hash
+<span class="nc" id="L45">        String s = cs.toUpperCase(Locale.getDefault());</span>
+<span class="nc" id="L46">        String charSet = charsets.get(s);</span>
+
+<span class="nc" id="L48">        String enc = null;</span>
+
+        // If nothing look for an encoding inside a set of parens
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (charSet == null) {</span>
+<span class="nc" id="L52">            final int start = s.indexOf(&quot;(&quot;);</span>
+<span class="nc" id="L53">            final int stop = s.indexOf(&quot;)&quot;);</span>
+<span class="nc bnc" id="L54" title="All 4 branches missed.">            if (start &gt; -1 &amp;&amp; stop &gt; start) {</span>
+<span class="nc" id="L55">                enc = s.substring(start + 1, stop);</span>
+<span class="nc" id="L56">                charSet = charsets.get(enc);</span>
+            }
+        }
+
+        // If nothing, clean the encoding tag and use it
+        // ID phase can add -&lt;TAG&gt; things to just about
+        // any encoding. It doesn't change the base value
+        // of the characters to strip it out since we should
+        // be processing those out anyway
+<span class="nc bnc" id="L65" title="All 4 branches missed.">        while (s.contains(&quot;-&quot;) &amp;&amp; charSet == null) {</span>
+<span class="nc" id="L66">            s = s.substring(0, s.lastIndexOf(&quot;-&quot;));</span>
+<span class="nc" id="L67">            charSet = charsets.get(s);</span>
+        }
+
+        // Finally, try just the encoding stripped of -&lt;TAG&gt;, etc.
+<span class="nc bnc" id="L71" title="All 6 branches missed.">        while ((charSet == null) &amp;&amp; (enc != null) &amp;&amp; enc.contains(&quot;-&quot;)) {</span>
+<span class="nc" id="L72">            enc = enc.substring(0, enc.lastIndexOf(&quot;-&quot;));</span>
+<span class="nc" id="L73">            charSet = charsets.get(enc);</span>
+        }
+
+        // Use the supplied encoding as a last resort, may be null
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (charSet == null) {</span>
+<span class="nc" id="L78">            charSet = enc;</span>
+        }
+
+<span class="nc" id="L81">        return charSet;</span>
+    }
+
+    /** This class is not meant to be instantiated. */
+    private JavaCharSet() {}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

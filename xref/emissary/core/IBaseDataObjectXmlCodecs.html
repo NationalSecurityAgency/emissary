@@ -543,11 +543,11 @@
 <a class="jxr_linenumber" name="L535" href="#L535">535</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Element protectedElementHash(<strong class="jxr_keyword">final</strong> String name, <strong class="jxr_keyword">final</strong> byte[] bytes) {
 <a class="jxr_linenumber" name="L536" href="#L536">536</a>             <strong class="jxr_keyword">final</strong> Element element = <strong class="jxr_keyword">new</strong> Element(name);
 <a class="jxr_linenumber" name="L537" href="#L537">537</a> 
-<a class="jxr_linenumber" name="L538" href="#L538">538</a>             <strong class="jxr_keyword">if</strong> (ByteUtil.hasNonPrintableValues(bytes)) {
+<a class="jxr_linenumber" name="L538" href="#L538">538</a>             <strong class="jxr_keyword">if</strong> (ByteUtil.containsNonIndexableBytes(bytes)) {
 <a class="jxr_linenumber" name="L539" href="#L539">539</a>                 element.setAttribute(ENCODING_ATTRIBUTE_NAME, SHA256);
 <a class="jxr_linenumber" name="L540" href="#L540">540</a>                 element.addContent(ByteUtil.sha256Bytes(bytes));
 <a class="jxr_linenumber" name="L541" href="#L541">541</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L542" href="#L542">542</a>                 element.addContent(<strong class="jxr_keyword">new</strong> String(bytes, StandardCharsets.ISO_8859_1));
+<a class="jxr_linenumber" name="L542" href="#L542">542</a>                 element.addContent(<strong class="jxr_keyword">new</strong> String(bytes, StandardCharsets.UTF_8));
 <a class="jxr_linenumber" name="L543" href="#L543">543</a>             }
 <a class="jxr_linenumber" name="L544" href="#L544">544</a> 
 <a class="jxr_linenumber" name="L545" href="#L545">545</a>             <strong class="jxr_keyword">return</strong> element;
@@ -785,7 +785,7 @@
 <a class="jxr_linenumber" name="L777" href="#L777">777</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Element protectedElementBase64(<strong class="jxr_keyword">final</strong> String name, <strong class="jxr_keyword">final</strong> byte[] bytes) {
 <a class="jxr_linenumber" name="L778" href="#L778">778</a>         <strong class="jxr_keyword">final</strong> Element element = <strong class="jxr_keyword">new</strong> Element(name);
 <a class="jxr_linenumber" name="L779" href="#L779">779</a> 
-<a class="jxr_linenumber" name="L780" href="#L780">780</a>         <strong class="jxr_keyword">if</strong> (ByteUtil.hasNonPrintableValues(bytes)) {
+<a class="jxr_linenumber" name="L780" href="#L780">780</a>         <strong class="jxr_keyword">if</strong> (ByteUtil.containsNonIndexableBytes(bytes)) {
 <a class="jxr_linenumber" name="L781" href="#L781">781</a>             String base64String = BASE64_NEW_LINE_STRING +
 <a class="jxr_linenumber" name="L782" href="#L782">782</a>                     BASE64_ENCODER.encodeToString(bytes) +
 <a class="jxr_linenumber" name="L783" href="#L783">783</a>                     BASE64_NEW_LINE_STRING;
@@ -793,7 +793,7 @@
 <a class="jxr_linenumber" name="L785" href="#L785">785</a>             element.setAttribute(ENCODING_ATTRIBUTE_NAME, BASE64);
 <a class="jxr_linenumber" name="L786" href="#L786">786</a>             element.addContent(base64String);
 <a class="jxr_linenumber" name="L787" href="#L787">787</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L788" href="#L788">788</a>             element.addContent(<strong class="jxr_keyword">new</strong> String(bytes, StandardCharsets.ISO_8859_1));
+<a class="jxr_linenumber" name="L788" href="#L788">788</a>             element.addContent(<strong class="jxr_keyword">new</strong> String(bytes, StandardCharsets.UTF_8));
 <a class="jxr_linenumber" name="L789" href="#L789">789</a>         }
 <a class="jxr_linenumber" name="L790" href="#L790">790</a> 
 <a class="jxr_linenumber" name="L791" href="#L791">791</a>         <strong class="jxr_keyword">return</strong> element;
@@ -811,11 +811,11 @@
 <a class="jxr_linenumber" name="L803" href="#L803">803</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Element protectedElementSha256(<strong class="jxr_keyword">final</strong> String name, <strong class="jxr_keyword">final</strong> byte[] bytes) {
 <a class="jxr_linenumber" name="L804" href="#L804">804</a>         <strong class="jxr_keyword">final</strong> Element element = <strong class="jxr_keyword">new</strong> Element(name);
 <a class="jxr_linenumber" name="L805" href="#L805">805</a> 
-<a class="jxr_linenumber" name="L806" href="#L806">806</a>         <strong class="jxr_keyword">if</strong> (ByteUtil.hasNonPrintableValues(bytes)) {
+<a class="jxr_linenumber" name="L806" href="#L806">806</a>         <strong class="jxr_keyword">if</strong> (ByteUtil.containsNonIndexableBytes(bytes)) {
 <a class="jxr_linenumber" name="L807" href="#L807">807</a>             element.setAttribute(IBaseDataObjectXmlCodecs.ENCODING_ATTRIBUTE_NAME, IBaseDataObjectXmlCodecs.SHA256);
 <a class="jxr_linenumber" name="L808" href="#L808">808</a>             element.addContent(ByteUtil.sha256Bytes(bytes));
 <a class="jxr_linenumber" name="L809" href="#L809">809</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L810" href="#L810">810</a>             element.addContent(<strong class="jxr_keyword">new</strong> String(bytes, StandardCharsets.ISO_8859_1));
+<a class="jxr_linenumber" name="L810" href="#L810">810</a>             element.addContent(<strong class="jxr_keyword">new</strong> String(bytes, StandardCharsets.UTF_8));
 <a class="jxr_linenumber" name="L811" href="#L811">811</a>         }
 <a class="jxr_linenumber" name="L812" href="#L812">812</a> 
 <a class="jxr_linenumber" name="L813" href="#L813">813</a>         <strong class="jxr_keyword">return</strong> element;
@@ -837,6 +837,6 @@
 <a class="jxr_linenumber" name="L829" href="#L829">829</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

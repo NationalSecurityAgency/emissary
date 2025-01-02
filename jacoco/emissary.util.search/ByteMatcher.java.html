@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ByteMatcher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.search</a> &gt; <span class="el_source">ByteMatcher.java</span></div><h1>ByteMatcher.java</h1><pre class="source lang-java linenums">package emissary.util.search;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
+
+/**
+ * This class provides some simple string matching functions on byte arrays
+ */
+public class ByteMatcher {
+
+<span class="fc" id="L14">    @Nullable</span>
+    private byte[] mydata = null;
+
+<span class="fc" id="L17">    @Nullable</span>
+    private KeywordScanner scanner = null;
+
+    public static final int NOTFOUND = -1;
+
+    public ByteMatcher() {
+<span class="fc" id="L23">        this(new byte[0]);</span>
+<span class="fc" id="L24">    }</span>
+
+    public ByteMatcher(String data) {
+<span class="fc" id="L27">        this(data.getBytes());</span>
+<span class="fc" id="L28">    }</span>
+
+<span class="fc" id="L30">    public ByteMatcher(byte[] data) {</span>
+<span class="fc" id="L31">        resetData(data);</span>
+<span class="fc" id="L32">    }</span>
+
+    public void resetData(String data) {
+<span class="fc" id="L35">        resetData(data, StandardCharsets.UTF_8);</span>
+<span class="fc" id="L36">    }</span>
+
+    public void resetData(String data, String charsetName) {
+<span class="fc" id="L39">        resetData(data, Charset.forName(charsetName));</span>
+<span class="fc" id="L40">    }</span>
+
+    public void resetData(String data, Charset charset) {
+<span class="fc" id="L43">        resetData(data.getBytes(charset));</span>
+<span class="fc" id="L44">    }</span>
+
+    /**
+     * Reset the byte array. Use of this method avoids having to instantiate a new ByteMatcher.
+     *
+     * @param data - bytes to match against
+     */
+    public void resetData(byte[] data) {
+<span class="fc" id="L52">        this.mydata = data;</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (null == this.scanner) {</span>
+<span class="fc" id="L54">            this.scanner = new KeywordScanner(data);</span>
+        } else {
+<span class="fc" id="L56">            this.scanner.resetData(data);</span>
+        }
+<span class="fc" id="L58">    }</span>
+
+    /**
+     * Return a reference to the text we are working on
+     */
+    public byte[] getText() {
+<span class="nc" id="L64">        return mydata;</span>
+    }
+
+    /**
+     * Return the length of the text
+     */
+    public int length() {
+<span class="fc" id="L71">        return mydata.length;</span>
+    }
+
+    /**
+     * Match pattern in the text
+     */
+    public int indexOf(byte[] pattern) {
+
+<span class="fc" id="L79">        return indexOf(pattern, 0);</span>
+
+    }
+
+    /**
+     * Match pattern in the text
+     */
+    public int indexOf(String pattern) {
+
+<span class="fc" id="L88">        return indexOf(pattern.getBytes(), 0);</span>
+
+    }
+
+    /**
+     * This method finds a pattern in the text and returns the offset
+     *
+     * @param pattern bytes to find
+     * @param startOfs start index
+     */
+    public int indexOf(byte[] pattern, int startOfs) {
+
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (mydata == null) {</span>
+<span class="fc" id="L101">            return NOTFOUND;</span>
+        }
+
+<span class="fc" id="L104">        return indexOf(pattern, startOfs, mydata.length);</span>
+
+    }
+
+    /**
+     * Match pattern in the text beginning at startOfs
+     */
+    public int indexOf(String pattern, int startOfs) {
+
+<span class="fc" id="L113">        return indexOf(pattern.getBytes(), startOfs);</span>
+
+    }
+
+    /**
+     * This method finds a pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return position
+     */
+    public int indexOf(byte[] pattern, int beginIndex, int endIndex) {
+
+        // Impossible to find under these conditions
+<span class="pc bpc" id="L129" title="2 of 6 branches missed.">        if (mydata == null || beginIndex &gt; (mydata.length - pattern.length) || endIndex &gt; mydata.length) {</span>
+<span class="fc" id="L130">            return NOTFOUND;</span>
+        }
+
+        // Use the Boyer-Moore scanning algorithm.
+<span class="fc" id="L134">        return scanner.indexOf(pattern, beginIndex, endIndex);</span>
+
+    }
+
+    /**
+     * Match pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return position
+     */
+    public int indexOf(String pattern, int beginIndex, int endIndex) {
+
+<span class="fc" id="L149">        return indexOf(pattern.getBytes(), beginIndex, endIndex);</span>
+
+    }
+
+    /**
+     * Match pattern in the text
+     *
+     * @param pattern bytes to find
+     * @return list of positions
+     */
+    public List&lt;Integer&gt; listIndexOf(byte[] pattern) {
+<span class="fc" id="L160">        return listIndexOf(pattern, 0);</span>
+    }
+
+    /**
+     * Match pattern in the text
+     *
+     * @param pattern bytes to find
+     * @return list of positions
+     */
+    public List&lt;Integer&gt; listIndexOf(String pattern) {
+
+<span class="fc" id="L171">        return listIndexOf(pattern.getBytes(), 0);</span>
+    }
+
+    /**
+     * This method finds a pattern in the text from {@code startOfs} and returns a list of offsets
+     *
+     * @param pattern bytes to find
+     * @param startOfs start index
+     */
+    public List&lt;Integer&gt; listIndexOf(byte[] pattern, int startOfs) {
+
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">        if (mydata == null) {</span>
+<span class="nc" id="L183">            return Collections.emptyList();</span>
+        }
+
+<span class="fc" id="L186">        return listIndexOf(pattern, startOfs, mydata.length);</span>
+    }
+
+    /**
+     * Match pattern in the text beginning at {@code startOfs}
+     *
+     * @param pattern bytes to find
+     * @param startOfs start index
+     * @return list of positions
+     */
+    public List&lt;Integer&gt; listIndexOf(String pattern, int startOfs) {
+
+<span class="fc" id="L198">        return listIndexOf(pattern.getBytes(), startOfs);</span>
+    }
+
+    /**
+     * This method finds a pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset list
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return list of positions
+     */
+    public List&lt;Integer&gt; listIndexOf(byte[] pattern, int beginIndex, int endIndex) {
+
+        // Impossible to find under these conditions
+<span class="pc bpc" id="L213" title="3 of 6 branches missed.">        if (mydata == null || beginIndex &gt; (mydata.length - pattern.length) || endIndex &gt; mydata.length) {</span>
+<span class="nc" id="L214">            return Collections.emptyList();</span>
+        }
+
+<span class="fc" id="L217">        return scanner.listIndexOf(pattern, beginIndex, endIndex);</span>
+    }
+
+
+    /**
+     * Match pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset list
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return list of positions
+     */
+    public List&lt;Integer&gt; listIndexOf(String pattern, int beginIndex, int endIndex) {
+
+<span class="fc" id="L232">        return listIndexOf(pattern.getBytes(), beginIndex, endIndex);</span>
+    }
+
+    /**
+     * Sort of like libc's strcmp, find if pattern matches this at offset
+     */
+    public boolean strcmp(int offset, @Nullable String pattern) {
+
+<span class="fc bfc" id="L240" title="All 2 branches covered.">        if (pattern == null) {</span>
+<span class="fc" id="L241">            return false;</span>
+        }
+
+<span class="fc" id="L244">        byte[] patternBytes = pattern.getBytes();</span>
+
+<span class="fc bfc" id="L246" title="All 2 branches covered.">        for (int i = 0; i &lt; patternBytes.length; i++) {</span>
+
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">            if (offset + i &gt;= mydata.length) {</span>
+<span class="nc" id="L249">                return false;</span>
+            }
+
+<span class="fc bfc" id="L252" title="All 2 branches covered.">            if (mydata[offset + i] != patternBytes[i]) {</span>
+<span class="fc" id="L253">                return false;</span>
+            }
+
+        }
+
+<span class="fc" id="L258">        return true;</span>
+
+    }
+
+    /**
+     * Return the specified byte
+     */
+    public byte byteAt(int i) {
+
+<span class="pc bpc" id="L267" title="1 of 4 branches missed.">        if (i &lt; 0 || i &gt;= mydata.length) {</span>
+<span class="fc" id="L268">            throw new ArrayIndexOutOfBoundsException(&quot;ByteMatcher.data(&quot; + mydata.length + &quot;) : &quot; + i);</span>
+        }
+
+<span class="fc" id="L271">        return mydata[i];</span>
+    }
+
+    /**
+     * Return a slice
+     *
+     * @param start index to start
+     * @param end index one past the end of desired range
+     * @return array slice
+     */
+    public byte[] slice(int start, int end) {
+<span class="pc bpc" id="L282" title="2 of 6 branches missed.">        if (end &gt; start &amp;&amp; start &gt;= 0 &amp;&amp; end &lt;= mydata.length) {</span>
+<span class="fc" id="L283">            byte[] slice = new byte[end - start];</span>
+<span class="fc" id="L284">            System.arraycopy(mydata, start, slice, 0, end - start);</span>
+<span class="fc" id="L285">            return slice;</span>
+        }
+<span class="fc" id="L287">        return new byte[0];</span>
+    }
+
+
+    /**
+     * StartsWith
+     */
+    public boolean startsWith(String s) {
+<span class="pc bpc" id="L295" title="1 of 2 branches missed.">        if (mydata.length &lt; s.length()) {</span>
+<span class="nc" id="L296">            return false;</span>
+        }
+
+<span class="fc bfc" id="L299" title="All 2 branches covered.">        for (int i = 0; i &lt; s.length(); i++) {</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">            if (byteAt(i) != (byte) s.charAt(i)) {</span>
+<span class="fc" id="L301">                return false;</span>
+            }
+        }
+<span class="fc" id="L304">        return true;</span>
+    }
+
+    /**
+     * This method finds a pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset ignoring
+     * upper/lower case
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return position
+     */
+    public int indexIgnoreCase(byte[] pattern, int beginIndex, int endIndex) {
+
+        // Impossible to find under these conditions
+<span class="pc bpc" id="L320" title="2 of 6 branches missed.">        if (mydata == null || beginIndex &gt; (mydata.length - pattern.length) || endIndex &gt; mydata.length) {</span>
+<span class="fc" id="L321">            return NOTFOUND;</span>
+        }
+
+
+        // Use the Boyer-Moore scanner. Set it to
+        // ignore case.
+
+<span class="fc" id="L328">        scanner.setCaseSensitive(false);</span>
+<span class="fc" id="L329">        int matchPos = scanner.indexOf(pattern, beginIndex, endIndex);</span>
+
+        // Reset scanner to default state.
+<span class="fc" id="L332">        scanner.setCaseSensitive(true);</span>
+
+<span class="fc" id="L334">        return matchPos;</span>
+
+
+    }
+
+    /**
+     * This method finds a pattern in the text and returns the offset ignoring upper/lower case
+     */
+
+    public int indexIgnoreCase(byte[] pattern, int startOfs) {
+
+<span class="fc bfc" id="L345" title="All 2 branches covered.">        if (mydata == null) {</span>
+<span class="fc" id="L346">            return NOTFOUND;</span>
+        }
+
+<span class="fc" id="L349">        return indexIgnoreCase(pattern, startOfs, mydata.length);</span>
+    }
+
+    public int indexIgnoreCase(byte[] pattern) {
+
+<span class="fc" id="L354">        return indexIgnoreCase(pattern, 0);</span>
+
+    }
+
+    public int indexIgnoreCase(String pattern) {
+
+<span class="fc" id="L360">        return indexIgnoreCase(pattern.getBytes(), 0);</span>
+
+    }
+
+    public int indexIgnoreCase(String pattern, int startOfs) {
+
+<span class="fc" id="L366">        return indexIgnoreCase(pattern.getBytes(), startOfs);</span>
+
+    }
+
+    /**
+     * Match pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset ignoring upper/lower
+     * case
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return position
+     */
+    public int indexIgnoreCase(String pattern, int beginIndex, int endIndex) {
+
+<span class="fc" id="L382">        return indexIgnoreCase(pattern.getBytes(), beginIndex, endIndex);</span>
+
+    }
+
+    /**
+     * This method finds a pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset list
+     * ignoring upper/lower case
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return list of positions
+     */
+    public List&lt;Integer&gt; indexListIgnoreCase(byte[] pattern, int beginIndex, int endIndex) {
+
+        // Impossible to find under these conditions
+<span class="pc bpc" id="L399" title="3 of 6 branches missed.">        if (mydata == null || beginIndex &gt; (mydata.length - pattern.length) || endIndex &gt; mydata.length) {</span>
+<span class="nc" id="L400">            return Collections.emptyList();</span>
+        }
+
+<span class="fc" id="L403">        scanner.setCaseSensitive(false);</span>
+<span class="fc" id="L404">        List&lt;Integer&gt; matchPosList = scanner.listIndexOf(pattern, beginIndex, endIndex);</span>
+
+        // Reset scanner to default state.
+<span class="fc" id="L407">        scanner.setCaseSensitive(true);</span>
+
+<span class="fc" id="L409">        return matchPosList;</span>
+    }
+
+    /**
+     * This method finds a pattern in the text and returns the offset list ignoring upper/lower case
+     *
+     * @param pattern bytes to find
+     * @param startOfs start index
+     * @return list of positions
+     */
+    public List&lt;Integer&gt; indexListIgnoreCase(byte[] pattern, int startOfs) {
+
+<span class="pc bpc" id="L421" title="1 of 2 branches missed.">        if (mydata == null) {</span>
+<span class="nc" id="L422">            return Collections.emptyList();</span>
+        }
+
+<span class="fc" id="L425">        return indexListIgnoreCase(pattern, startOfs, mydata.length);</span>
+    }
+
+    /**
+     * Match pattern in the test and returns the offset list ignoring upper/lower case
+     *
+     * @param pattern bytes to find
+     * @return list of positions
+     */
+    public List&lt;Integer&gt; indexListIgnoreCase(byte[] pattern) {
+
+<span class="fc" id="L436">        return indexListIgnoreCase(pattern, 0);</span>
+    }
+
+    /**
+     * Match pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset list ignoring
+     * upper/lower case
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return list of positions
+     */
+    public List&lt;Integer&gt; indexListIgnoreCase(String pattern, int beginIndex, int endIndex) {
+
+<span class="fc" id="L451">        return indexListIgnoreCase(pattern.getBytes(), beginIndex, endIndex);</span>
+    }
+
+    /**
+     * Match pattern in the text from {@code startOfs} and returns the offset list ignoring upper/lower case
+     *
+     * @param pattern bytes to find
+     * @param startOfs start index
+     * @return list of positions
+     */
+    public List&lt;Integer&gt; indexListIgnoreCase(String pattern, int startOfs) {
+
+<span class="fc" id="L463">        return indexListIgnoreCase(pattern.getBytes(), startOfs);</span>
+    }
+
+    /**
+     * Match pattern in the text
+     *
+     * @param pattern bytes to find
+     * @return list of positions
+     */
+    public List&lt;Integer&gt; indexListIgnoreCase(String pattern) {
+
+<span class="fc" id="L474">        return indexListIgnoreCase(pattern.getBytes(), 0);</span>
+    }
+
+    /**
+     * Find tags of the form &quot;Key{token}Value&quot; returning &quot;Value&quot; when &quot;Key&quot; is supplied. The value goes after the {token} to
+     * the end of the line.
+     */
+    @Nullable
+    public String getValue(String key, int ofs, String delim) {
+
+<span class="fc" id="L484">        int keypos = this.indexOf(key, ofs);</span>
+<span class="fc bfc" id="L485" title="All 2 branches covered.">        if (keypos == -1) {</span>
+<span class="fc" id="L486">            return null;</span>
+        }
+
+<span class="fc" id="L489">        int eolpos = keypos + key.length();</span>
+<span class="pc bpc" id="L490" title="1 of 6 branches missed.">        while (eolpos &lt; mydata.length &amp;&amp; mydata[eolpos] != '\n' &amp;&amp; mydata[eolpos] != '\r') {</span>
+<span class="fc" id="L491">            eolpos++;</span>
+        }
+
+<span class="fc" id="L494">        int delimpos = this.indexOf(delim, keypos + key.length());</span>
+<span class="fc" id="L495">        int eodpos = delimpos + delim.length();</span>
+<span class="fc bfc" id="L496" title="All 4 branches covered.">        if (delimpos &gt; -1 &amp;&amp; eodpos &lt; eolpos) {</span>
+<span class="fc" id="L497">            return new String(mydata, eodpos, eolpos - eodpos);</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">        } else if (eodpos == eolpos) {</span>
+<span class="fc" id="L499">            return &quot;&quot;;</span>
+        } else {
+<span class="fc" id="L501">            return null;</span>
+        }
+    }
+
+    public String getValue(String key, int ofs) {
+<span class="fc" id="L506">        return getValue(key, ofs, &quot;=&quot;);</span>
+    }
+
+    public String getValue(String key) {
+<span class="fc" id="L510">        return getValue(key, 0, &quot;=&quot;);</span>
+    }
+
+    /**
+     * Get the value of a S tag, given the value S values work like this: KEY: length data data tdata data more data
+     * NEXTKEY: nextlength
+     */
+
+    public byte[] getSValue(String key) {
+<span class="fc" id="L519">        return getSValue(key, 0, mydata.length);</span>
+    }
+
+    @Nullable
+    public byte[] getSValue(String key, int ofs, int limit) {
+
+        // Make sure the key exists
+<span class="fc" id="L526">        int keypos = this.indexOf(key, ofs);</span>
+<span class="pc bpc" id="L527" title="1 of 4 branches missed.">        if (keypos == -1 || keypos &gt; limit) {</span>
+<span class="fc" id="L528">            return null;</span>
+        }
+<span class="fc" id="L530">        int valpos = this.indexOf(&quot;\n&quot;, keypos);</span>
+<span class="pc bpc" id="L531" title="1 of 2 branches missed.">        if (valpos &gt; limit) {</span>
+<span class="nc" id="L532">            return null;</span>
+        }
+<span class="pc bpc" id="L534" title="1 of 2 branches missed.">        if (valpos == -1) {</span>
+<span class="nc" id="L535">            valpos = this.mydata.length;</span>
+        }
+<span class="fc" id="L537">        valpos += 1; // past the new line</span>
+
+        // Get the length out as a string
+<span class="fc" id="L540">        String sDelim = &quot;:&quot;;</span>
+<span class="fc" id="L541">        String strLength = this.getValue(key, ofs, sDelim);</span>
+<span class="pc bpc" id="L542" title="1 of 2 branches missed.">        if (strLength == null) {</span>
+<span class="nc" id="L543">            return null;</span>
+        }
+
+        // Turn the length into an int
+<span class="fc" id="L547">        int length = -1;</span>
+        try {
+<span class="fc" id="L549">            length = Integer.parseInt(strLength.trim());</span>
+<span class="nc" id="L550">        } catch (NumberFormatException e) {</span>
+            // empty catch block
+<span class="fc" id="L552">        }</span>
+<span class="pc bpc" id="L553" title="1 of 2 branches missed.">        if (length &lt;= 0) {</span>
+<span class="nc" id="L554">            return null;</span>
+        }
+
+        // Dont let length exceed limit
+<span class="pc bpc" id="L558" title="1 of 2 branches missed.">        if (valpos + length &gt; limit) {</span>
+<span class="nc" id="L559">            length = limit;</span>
+        }
+
+        // Make sure the length is legal
+<span class="pc bpc" id="L563" title="1 of 2 branches missed.">        if (valpos + length &gt; this.mydata.length) {</span>
+<span class="nc" id="L564">            return null;</span>
+        }
+
+        // Take off a new line if that's the last char
+<span class="pc bpc" id="L568" title="1 of 2 branches missed.">        if (mydata[valpos + length - 1] == '\n') {</span>
+<span class="nc" id="L569">            length--;</span>
+        }
+
+        // Return the bytes of the data
+<span class="fc" id="L573">        byte[] value = new byte[length];</span>
+<span class="fc" id="L574">        System.arraycopy(this.mydata, valpos, value, 0, length);</span>
+<span class="fc" id="L575">        return value;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L580">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L581">        sb.append(this.getClass());</span>
+<span class="nc" id="L582">        sb.append(&quot;[&quot;);</span>
+<span class="nc" id="L583">        sb.append(this.length());</span>
+<span class="nc" id="L584">        sb.append(&quot;] : &quot;);</span>
+<span class="nc" id="L585">        sb.append(new String(this.mydata));</span>
+<span class="nc" id="L586">        return sb.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,762 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PickUpPlace.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.pickup</a> &gt; <span class="el_source">PickUpPlace.java</span></div><h1>PickUpPlace.java</h1><pre class="source lang-java linenums">package emissary.pickup;
+
+import emissary.core.DataObjectFactory;
+import emissary.core.EmissaryException;
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.core.IMobileAgent;
+import emissary.core.NamespaceException;
+import emissary.core.channels.InMemoryChannelFactory;
+import emissary.log.MDCConstants;
+import emissary.parser.ParserEOFException;
+import emissary.parser.ParserException;
+import emissary.parser.ParserFactory;
+import emissary.parser.SessionParser;
+import emissary.parser.SessionProducer;
+import emissary.place.AgentsNotSupportedPlace;
+import emissary.place.IServiceProviderPlace;
+import emissary.place.ServiceProviderPlace;
+import emissary.pool.AgentPool;
+import emissary.spi.ObjectTracing;
+import emissary.spi.ObjectTracingService;
+import emissary.util.ClassComparator;
+import emissary.util.TimeUtil;
+import emissary.util.shell.Executrix;
+
+import org.slf4j.MDC;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
+
+import static emissary.core.constants.Parameters.FILE_DATE;
+import static emissary.core.constants.Parameters.FILE_NAME;
+
+/**
+ * This class is the base class of those places that inject data into the system. This place knows a lot about
+ * processing files of input, including files of sessions that must be identified and parsed using a ParserFactory. It
+ * knows nothing about where the data comes from, though. The method of input, either a directory or set of directories
+ * to monitor, a socket, a WorkSpace provider, or something else, comes from classes that extend this one.
+ */
+public abstract class PickUpPlace extends ServiceProviderPlace implements IPickUpPlace, AgentsNotSupportedPlace {
+
+    // Any data picked up with less/more bytes than this will be
+    // set to ERROR initially, can be overridden in config files
+    // for pickup places.
+<span class="pc" id="L52">    protected int minimumContentLength = 10;</span>
+<span class="pc" id="L53">    protected long maximumContentLength = 1048567;</span>
+<span class="pc" id="L54">    protected String oversizeArea = &quot;OversizeData&quot;;</span>
+
+    // Directory store original data while processing
+    protected String holdingArea;
+
+    // Where to move data that has an error
+    protected String errorArea;
+
+    // Where to move data when done
+    @Nullable
+    protected String doneArea;
+
+    // Our parser factory
+<span class="pc" id="L67">    protected ParserFactory parserFactory = new ParserFactory();</span>
+
+    // True turns off data identification engine to just favor
+    // the simple parsers
+<span class="pc" id="L71">    protected boolean simpleMode = false;</span>
+
+    // Reference to global agent pool for out payloads
+    protected AgentPool agentPool;
+
+    // Initial forms for new data, read from config file
+<span class="pc" id="L77">    protected List&lt;String&gt; initialFormValues = Collections.emptyList();</span>
+
+    // Metadata items that should always be copied to children
+<span class="pc" id="L80">    protected Set&lt;String&gt; alwaysCopyMetadataVals = new HashSet&lt;&gt;();</span>
+
+<span class="pc" id="L82">    protected boolean useObjectTraceLogger = false;</span>
+
+    public PickUpPlace() throws IOException {
+<span class="fc" id="L85">        super();</span>
+<span class="fc" id="L86">        configurePickUpPlace();</span>
+<span class="fc" id="L87">    }</span>
+
+    public PickUpPlace(InputStream configStream) throws IOException {
+<span class="fc" id="L90">        super(configStream);</span>
+<span class="fc" id="L91">        configurePickUpPlace();</span>
+<span class="fc" id="L92">    }</span>
+
+    /**
+     * Create a pick up place
+     * 
+     * @param configInfo the config location
+     * @param placeLocation the place key
+     * @throws IOException If there is some I/O problem.
+     */
+    public PickUpPlace(String configInfo, String placeLocation) throws IOException {
+<span class="nc" id="L102">        this(configInfo, null, placeLocation);</span>
+<span class="nc" id="L103">    }</span>
+
+
+    /**
+     * Create a pick up place
+     * 
+     * @param configInfo the config location
+     * @param dir the key of the controlling directory
+     * @param placeLoc the place key
+     * @throws IOException If there is some I/O problem.
+     */
+    public PickUpPlace(String configInfo, @Nullable String dir, String placeLoc) throws IOException {
+<span class="nc" id="L115">        super(configInfo, dir, placeLoc);</span>
+<span class="nc" id="L116">        configurePickUpPlace();</span>
+<span class="nc" id="L117">    }</span>
+
+    /**
+     * Create a pick up place
+     * 
+     * @param configStream the config stream
+     * @param dir the key of the controlling directory
+     * @param placeLoc the place key
+     * @throws IOException If there is some I/O problem.
+     */
+    public PickUpPlace(InputStream configStream, String dir, String placeLoc) throws IOException {
+<span class="fc" id="L128">        super(configStream, dir, placeLoc);</span>
+<span class="fc" id="L129">        configurePickUpPlace();</span>
+<span class="fc" id="L130">    }</span>
+
+    /**
+     * Create a pick up place
+     * 
+     * @param configStream the config stream
+     * @param placeLoc the place key
+     * @throws IOException If there is some I/O problem.
+     */
+    public PickUpPlace(InputStream configStream, String placeLoc) throws IOException {
+<span class="fc" id="L140">        super(configStream, placeLoc);</span>
+<span class="fc" id="L141">        configurePickUpPlace();</span>
+<span class="fc" id="L142">    }</span>
+
+    /**
+     * Configure the place specific items
+     * &lt;ul&gt;
+     * &lt;li&gt;MINIMUM_DATA_SIZE: min size in bytes of a file&lt;/li&gt;
+     * &lt;li&gt;MAXIMUM_DATA_SIZE: max size in bytes of a file, -1 for unlimited&lt;/li&gt;
+     * &lt;li&gt;OVERSIZE_DATA_HOLDING_AREA: where to put oversize data&lt;/li&gt;
+     * &lt;li&gt;HOLDING_AREA: where to put data while inprocess&lt;/li&gt;
+     * &lt;li&gt;ERROR_DATA: where to put things that have errors&lt;/li&gt;
+     * &lt;li&gt;DONE_DATA: where it goes when done&lt;/li&gt;
+     * &lt;li&gt;SIMPLE_MODE: boolean when true turns off DataIdentification engine&lt;/li&gt;
+     * &lt;li&gt;INITIAL_FORM: one or more forms for new payloads&lt;/li&gt;
+     * &lt;/ul&gt;
+     */
+    protected void configurePickUpPlace() {
+<span class="fc" id="L158">        minimumContentLength = configG.findIntEntry(&quot;MINIMUM_DATA_SIZE&quot;, minimumContentLength);</span>
+<span class="fc" id="L159">        maximumContentLength = configG.findSizeEntry(&quot;MAXIMUM_DATA_SIZE&quot;, maximumContentLength);</span>
+<span class="fc" id="L160">        oversizeArea = configG.findStringEntry(&quot;OVERSIZE_DATA_HOLDING_AREA&quot;, oversizeArea);</span>
+
+<span class="fc" id="L162">        simpleMode = configG.findBooleanEntry(&quot;SIMPLE_MODE&quot;, false);</span>
+<span class="fc" id="L163">        holdingArea = configG.findCanonicalFileNameEntry(&quot;HOLDING_AREA&quot;, null);</span>
+<span class="fc" id="L164">        doneArea = configG.findCanonicalFileNameEntry(&quot;DONE_DATA&quot;, doneArea);</span>
+<span class="fc" id="L165">        errorArea = configG.findCanonicalFileNameEntry(&quot;ERROR_DATA&quot;, &quot;errorArea&quot;);</span>
+
+<span class="pc bpc" id="L167" title="1 of 4 branches missed.">        if (doneArea != null &amp;&amp; doneArea.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L168">            doneArea = null;</span>
+<span class="nc" id="L169">            logger.info(&quot;Alert: Completed data will be deleted from the system due to DONE_AREA setting&quot;);</span>
+        }
+
+<span class="fc" id="L172">        logger.debug(&quot;Pickup Canonical HOLD =&gt; {}, Pickup Canonical DONE =&gt; {}, Pickup Canonical ERROR =&gt; {}&quot;, holdingArea, doneArea, errorArea);</span>
+
+<span class="fc" id="L174">        initialFormValues = configG.findEntries(&quot;INITIAL_FORM&quot;);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        if (initialFormValues.isEmpty()) {</span>
+<span class="fc" id="L176">            initialFormValues.add(Form.UNKNOWN);</span>
+        }
+
+        // Grab the default pool
+        try {
+<span class="fc" id="L181">            agentPool = AgentPool.lookup();</span>
+<span class="fc" id="L182">        } catch (NamespaceException e) {</span>
+<span class="fc" id="L183">            logger.warn(&quot;Cannot find agent pool!&quot;);</span>
+<span class="fc" id="L184">        }</span>
+
+<span class="fc" id="L186">        alwaysCopyMetadataVals = configG.findEntriesAsSet(&quot;ALWAYS_COPY_METADATA&quot;);</span>
+
+        // Whether or not to use the objectTrace logger
+<span class="fc" id="L189">        useObjectTraceLogger = configG.findBooleanEntry(&quot;USE_OBJECT_TRACE_LOGGER&quot;, useObjectTraceLogger);</span>
+<span class="fc" id="L190">    }</span>
+
+    /**
+     * Return the value of the inprocess area, usually a directory path
+     * 
+     * @return holdingArea string
+     */
+    @Override
+    public String getInProcessArea() {
+<span class="fc" id="L199">        return holdingArea;</span>
+    }
+
+    /**
+     * Return the value of the error area, usually a directory path
+     * 
+     * @return errorArea string
+     */
+    @Override
+    public String getErrorArea() {
+<span class="fc" id="L209">        return errorArea;</span>
+    }
+
+    /**
+     * Return the value of the done area, usually a directory path
+     * 
+     * @return doneArea string
+     */
+    @Override
+    public String getDoneArea() {
+<span class="nc" id="L219">        return doneArea;</span>
+    }
+
+    /**
+     * Return the maximum content size for a file that can be handled by this place
+     * 
+     * @return maximumContentLength string
+     */
+    @Override
+    public long getMaximumContentLength() {
+<span class="nc" id="L229">        return maximumContentLength;</span>
+    }
+
+    /**
+     * Return the minumum content size for a file that can be handled by this place
+     * 
+     * @return minimumContentLength string
+     */
+    @Override
+    public int getMinimumContentLength() {
+<span class="nc" id="L239">        return minimumContentLength;</span>
+    }
+
+
+    /**
+     * Return the value of the oversize area, usually a directory path
+     * 
+     * @return path to the oversize area
+     */
+    @Override
+    public String getOversizeArea() {
+<span class="nc" id="L250">        return oversizeArea;</span>
+    }
+
+    /**
+     * Add metadata as the data objects are created Can be overridden to customize behavior
+     * 
+     * @param d the nascent data object
+     * @param f the file it came from
+     */
+    protected void dataObjectCreated(IBaseDataObject d, File f) {
+<span class="fc" id="L260">        d.putParameter(FILE_DATE, TimeUtil.getDateAsISO8601(f.lastModified()));</span>
+<span class="fc" id="L261">        d.putParameter(FILE_NAME, f.getName());</span>
+<span class="fc" id="L262">    }</span>
+
+    /**
+     * Call back from a data server or queue server when a new file is ready to process. This method is called for raw
+     * files, not work bundles, so the simpleMode determination is made by this Place configuration.
+     * 
+     * @param f file to process
+     * @return true if it worked
+     * @throws IOException If there is some I/O problem.
+     */
+    public boolean processDataFile(File f) throws IOException, EmissaryException {
+<span class="nc" id="L273">        boolean isOversize = false;</span>
+<span class="nc bnc" id="L274" title="All 4 branches missed.">        if (maximumContentLength != -1 &amp;&amp; f.length() &gt; maximumContentLength) {</span>
+<span class="nc" id="L275">            logger.warn(&quot;Sorry, This file is too large ({} &lt; {}): {}&quot;, f.length(), maximumContentLength, f.getPath());</span>
+<span class="nc" id="L276">            isOversize = true;</span>
+            // Let it continue on knowing it is too big
+            // as we may need a record of the file
+        }
+<span class="nc" id="L280">        String fixedName = fixFileName(f.getName());</span>
+<span class="nc" id="L281">        return processDataFile(f, fixedName, isOversize, simpleMode, getDoneArea());</span>
+    }
+
+    /**
+     * Call back from a data server or queue server when a new file is ready to process
+     * 
+     * @param theFile file to process
+     * @param fixedName the good short name of the file
+     * @param isOversize true if the content is too big by configuration
+     * @param simpleMode true if no session parsing is desired
+     * @param outputRoot the done area
+     * @return true if it worked
+     * @throws IOException If there is some I/O problem.
+     */
+    public boolean processDataFile(File theFile, String fixedName, boolean isOversize, boolean simpleMode, String outputRoot) throws IOException,
+            EmissaryException {
+<span class="nc" id="L297">        boolean success = true;</span>
+<span class="nc" id="L298">        logger.debug(&quot;Starting processDataFile in PickUpPlace for {}&quot;, theFile);</span>
+
+<span class="nc" id="L300">        ObjectTracingService.emitLifecycleEvent(null, fixedName, ObjectTracing.Stage.PICK_UP, useObjectTraceLogger);</span>
+
+        // Handle oversize data quickly without reading the file
+<span class="nc bnc" id="L303" title="All 2 branches missed.">        if (isOversize) {</span>
+<span class="nc" id="L304">            handleOversizePayload(theFile, fixedName, simpleMode);</span>
+        }
+
+        // Handle it without session parsing if simple mode is on
+<span class="nc bnc" id="L308" title="All 2 branches missed.">        else if (simpleMode) {</span>
+<span class="nc" id="L309">            handleSimplePayload(theFile, fixedName);</span>
+        }
+
+        // Parse sessions out of the file
+        else {
+            try {
+<span class="nc" id="L315">                logger.debug(&quot;Starting processSessions on {}&quot;, theFile);</span>
+<span class="nc" id="L316">                processSessions(theFile, fixedName);</span>
+<span class="nc" id="L317">                logger.debug(&quot;Finished with processSessions on {}&quot;, theFile);</span>
+<span class="nc" id="L318">            } catch (ParserException ex) {</span>
+<span class="nc" id="L319">                logger.error(&quot;Cannot parse {}&quot;, theFile.getName(), ex);</span>
+<span class="nc" id="L320">                success = false;</span>
+<span class="nc" id="L321">            }</span>
+        }
+
+<span class="nc bnc" id="L324" title="All 2 branches missed.">        if (success) {</span>
+<span class="nc" id="L325">            handleFileSuccess(theFile, outputRoot);</span>
+        } else {
+<span class="nc" id="L327">            handleFileError(theFile);</span>
+        }
+
+<span class="nc bnc" id="L330" title="All 4 branches missed.">        logger.debug(&quot;Ending processDataFile {} {} {}&quot;, theFile, (success ? &quot;success&quot; : &quot;failure&quot;), (simpleMode ? &quot;simple&quot; : &quot;&quot;));</span>
+<span class="nc" id="L331">        return success;</span>
+    }
+
+    /**
+     * Handle oversize payload item
+     * 
+     * @param theFile the file with the oversize data
+     * @param fixedName name to use for the object
+     * @param simpleMode simple flag from the input
+     * @return true
+     */
+    protected boolean handleOversizePayload(File theFile, String fixedName, boolean simpleMode) throws EmissaryException {
+        // Send it away, blocks until an agent is ready
+<span class="nc" id="L344">        IBaseDataObject dataObject =</span>
+<span class="nc" id="L345">                DataObjectFactory.getInstance(new Object[] {(&quot;The file is oversize at &quot; + theFile.length() + &quot; bytes&quot;).getBytes(), fixedName,</span>
+                        &quot;OVERSIZE&quot;});
+<span class="nc" id="L347">        dataObject.setParameter(&quot;SIMPLE_MODE&quot;, Boolean.toString(simpleMode));</span>
+<span class="nc" id="L348">        dataObjectCreated(dataObject, theFile);</span>
+<span class="nc" id="L349">        logger.info(&quot;**Deploying an agent for oversized {} and object {} simple={}&quot;, fixedName, dataObject.getInternalId(),</span>
+<span class="nc bnc" id="L350" title="All 2 branches missed.">                (simpleMode ? &quot;simple&quot; : &quot;&quot;));</span>
+<span class="nc" id="L351">        assignToPooledAgent(dataObject, -1L);</span>
+<span class="nc" id="L352">        return true;</span>
+    }
+
+    /**
+     * Action to handle a simple mode File
+     * 
+     * @param theFile the file that contains the data
+     * @param fixedName name to use for the dataObject
+     * @return true if the file is processed successfully
+     */
+    protected boolean handleSimplePayload(File theFile, String fixedName) throws EmissaryException {
+<span class="nc" id="L363">        byte[] theContent = Executrix.readDataFromFile(theFile.getAbsolutePath());</span>
+<span class="nc" id="L364">        return processDataObject(theContent, fixedName, theFile, true);</span>
+    }
+
+    /**
+     * Action to move th file to the done area when successfully processed
+     * 
+     * @param theFile the file that was processed
+     * @return true if the file was renamed
+     */
+    protected boolean renameFileToDoneArea(File theFile) {
+<span class="nc" id="L374">        return renameFileToDoneArea(theFile, getDoneArea());</span>
+    }
+
+    /**
+     * Action to move th file to the done area when successfully processed using the specified outut area
+     * 
+     * @param theFile the file that was processed
+     * @param outputRoot a specified output root
+     * @return true if the file was renamed
+     */
+    protected boolean renameFileToDoneArea(File theFile, @Nullable String outputRoot) {
+<span class="nc" id="L385">        String base = theFile.getPath();</span>
+<span class="nc" id="L386">        boolean renamed = false;</span>
+<span class="nc bnc" id="L387" title="All 2 branches missed.">        if (holdingArea != null) {</span>
+<span class="nc" id="L388">            base = base.substring(holdingArea.length());</span>
+        }
+
+<span class="nc bnc" id="L391" title="All 2 branches missed.">        if (outputRoot != null) {</span>
+<span class="nc" id="L392">            File dest = new File(outputRoot + &quot;/&quot; + base);</span>
+<span class="nc" id="L393">            dest.getParentFile().mkdirs();</span>
+<span class="nc" id="L394">            renamed = theFile.renameTo(dest);</span>
+<span class="nc bnc" id="L395" title="All 2 branches missed.">            if (renamed) {</span>
+<span class="nc" id="L396">                logger.info(&quot;{} processed and moved to done area {}&quot;, theFile.getName(), outputRoot);</span>
+            } else {
+<span class="nc" id="L398">                logger.warn(&quot;{} processed but could not be moved to done area as {}&quot;, theFile.getName(), dest);</span>
+            }
+        }
+<span class="nc" id="L401">        return renamed;</span>
+    }
+
+    /**
+     * Get the endpoint file name for when the file is move to inProcess
+     * 
+     * @param theFile the file to be considered
+     * @param eatPrefix optional prefix strip from the work bundle
+     * @return null if no holdingArea, else the new File endpoint
+     */
+    @Nullable
+    protected File getInProcessFileNameFor(File theFile, @Nullable String eatPrefix) {
+<span class="nc" id="L413">        String base = theFile.getPath();</span>
+<span class="nc bnc" id="L414" title="All 2 branches missed.">        if (eatPrefix != null) {</span>
+<span class="nc" id="L415">            base = base.substring(eatPrefix.length());</span>
+<span class="nc" id="L416">            logger.debug(&quot;Using base of {} due to eatPrefix of {} chopped from incoming {}&quot;, base, eatPrefix, theFile);</span>
+        }
+
+<span class="nc bnc" id="L419" title="All 2 branches missed.">        if (holdingArea != null) {</span>
+<span class="nc" id="L420">            return new File(holdingArea + &quot;/&quot; + base);</span>
+        }
+<span class="nc" id="L422">        return null;</span>
+    }
+
+    /**
+     * Action to move the file to inProcess area when taking ownership
+     * 
+     * @param source the file to be renamed
+     * @param dest where it should end up, or use the holdingArea if nil
+     * @return true if renamed, false if not
+     */
+    protected boolean renameToInProcessAreaAs(File source, @Nullable File dest) {
+<span class="nc bnc" id="L433" title="All 4 branches missed.">        if (holdingArea == null &amp;&amp; dest == null) {</span>
+<span class="nc" id="L434">            logger.warn(&quot;Holding area not configured, cannot rename {}&quot;, source);</span>
+<span class="nc" id="L435">            return false;</span>
+        }
+
+<span class="nc bnc" id="L438" title="All 2 branches missed.">        if (dest == null) {</span>
+<span class="nc" id="L439">            dest = getInProcessFileNameFor(source, null);</span>
+        } else {
+<span class="nc" id="L441">            dest.getParentFile().mkdirs();</span>
+        }
+
+<span class="nc" id="L444">        boolean renamed = source.renameTo(dest);</span>
+<span class="nc bnc" id="L445" title="All 2 branches missed.">        if (renamed) {</span>
+<span class="nc" id="L446">            logger.debug(&quot;{} moved to inProcess area as {}&quot;, source.getName(), dest);</span>
+        } else {
+<span class="nc" id="L448">            logger.warn(&quot;{} could not be moved to inProcess area {}&quot;, source.getName(), dest);</span>
+        }
+<span class="nc" id="L450">        return renamed;</span>
+    }
+
+
+    /**
+     * Action to move the file to the error area due to failure to process
+     * 
+     * @param theFile the file to move
+     * @return true if the rename was successful
+     */
+    protected boolean renameFileToErrorArea(File theFile) {
+<span class="nc" id="L461">        boolean renamed = theFile.renameTo(new File(errorArea, theFile.getName()));</span>
+<span class="nc bnc" id="L462" title="All 2 branches missed.">        if (renamed) {</span>
+<span class="nc" id="L463">            logger.warn(&quot;{} failed and is moved to the error area&quot;, theFile.getName());</span>
+        } else {
+<span class="nc" id="L465">            logger.error(&quot;{} failed and could not be moved to the error area&quot;, theFile.getName());</span>
+        }
+<span class="nc" id="L467">        return renamed;</span>
+    }
+
+    /**
+     * Action to delete the file from the holding area
+     * 
+     * @param theFile file to delete
+     */
+    protected void deleteFileFromHoldingArea(File theFile) {
+<span class="nc" id="L476">        boolean deleted = theFile.delete();</span>
+<span class="nc bnc" id="L477" title="All 2 branches missed.">        if (deleted) {</span>
+<span class="nc" id="L478">            logger.info(&quot;{} processed and deleted&quot;, theFile.getName());</span>
+        } else {
+<span class="nc" id="L480">            logger.warn(&quot;{} processed but could not be deleted&quot;, theFile.getName());</span>
+        }
+<span class="nc" id="L482">    }</span>
+
+    /**
+     * File was successfully processed, take appropriate action
+     * 
+     * @param theFile the file that was processed
+     */
+    protected void handleFileSuccess(File theFile) {
+<span class="nc" id="L490">        handleFileSuccess(theFile, getDoneArea());</span>
+<span class="nc" id="L491">    }</span>
+
+    /**
+     * File was successfully processed, take appropriate action using specified done area
+     * 
+     * @param theFile the file that was processed
+     * @param outputRoot the specified output done area
+     */
+    protected void handleFileSuccess(File theFile, @Nullable String outputRoot) {
+<span class="nc bnc" id="L500" title="All 2 branches missed.">        if (outputRoot != null) {</span>
+<span class="nc" id="L501">            logger.debug(&quot;Handling file success by moving to doneArea {}&quot;, theFile);</span>
+<span class="nc" id="L502">            renameFileToDoneArea(theFile, outputRoot);</span>
+<span class="nc bnc" id="L503" title="All 2 branches missed.">        } else if (holdingArea != null) {</span>
+<span class="nc" id="L504">            logger.debug(&quot;Handling file success by deleting from holdingArea {}&quot;, theFile);</span>
+<span class="nc" id="L505">            deleteFileFromHoldingArea(theFile);</span>
+        } else {
+<span class="nc" id="L507">            logger.debug(&quot;Neither Done nor Holding areas defined, leaving file as {}&quot;, theFile.getName());</span>
+        }
+<span class="nc" id="L509">    }</span>
+
+    /**
+     * File failed to process, take appropriate action
+     * 
+     * @param theFile the file that failed
+     */
+    protected void handleFileError(File theFile) {
+<span class="nc bnc" id="L517" title="All 2 branches missed.">        if (errorArea != null) {</span>
+<span class="nc" id="L518">            logger.debug(&quot;Handling file error case for {}&quot;, theFile);</span>
+<span class="nc" id="L519">            renameFileToErrorArea(theFile);</span>
+        } else {
+<span class="nc" id="L521">            logger.warn(&quot;There is no error location defined and the file did not process. It is stuck at {}&quot;, theFile.getName());</span>
+        }
+<span class="nc" id="L523">    }</span>
+
+    /**
+     * Build a data object and handle the data bytes
+     * 
+     * @param theContent the data bytes
+     * @param fixedName good short name for the data
+     * @param theFile where it came from
+     * @param simpleMode simple flag from the input
+     * @return true if it works
+     */
+    protected boolean processDataObject(byte[] theContent, String fixedName, File theFile, boolean simpleMode) throws EmissaryException {
+<span class="nc" id="L535">        IBaseDataObject d = DataObjectFactory.getInstance(new Object[] {theContent, fixedName});</span>
+<span class="nc" id="L536">        return processDataObject(d, fixedName, theFile, simpleMode);</span>
+    }
+
+    /**
+     * Set up the dataobject and send it on the way
+     * 
+     * @param d the nascent data object
+     * @param fixedName the short name of it
+     * @param theFile where it came from
+     * @param simpleMode simple flag from the input
+     * @return true if it works
+     */
+    protected boolean processDataObject(IBaseDataObject d, String fixedName, File theFile, boolean simpleMode) throws EmissaryException {
+<span class="nc" id="L549">        String currentForm = d.popCurrentForm();</span>
+<span class="nc bnc" id="L550" title="All 2 branches missed.">        if (currentForm == null) {</span>
+            // Add our stuff to the form stack if none is set (e.g from DecomposedSession)
+<span class="nc bnc" id="L552" title="All 2 branches missed.">            for (int j = initialFormValues.size() - 1; j &gt;= 0; j--) {</span>
+<span class="nc" id="L553">                d.pushCurrentForm(initialFormValues.get(j));</span>
+            }
+        } else {
+<span class="nc" id="L556">            d.pushCurrentForm(currentForm);</span>
+        }
+
+<span class="nc" id="L559">        d.setParameter(&quot;SIMPLE_MODE&quot;, Boolean.toString(simpleMode));</span>
+<span class="nc" id="L560">        dataObjectCreated(d, theFile);</span>
+<span class="nc" id="L561">        logger.info(&quot;**Deploying an agent for {} and object {} forms={} simple={}&quot;, fixedName, d.getInternalId(), d.getAllCurrentForms(),</span>
+<span class="nc bnc" id="L562" title="All 2 branches missed.">                (simpleMode ? &quot;simple&quot; : &quot;&quot;));</span>
+
+<span class="nc" id="L564">        assignToPooledAgent(d, -1L);</span>
+<span class="nc" id="L565">        return true;</span>
+    }
+
+    /**
+     * Parse out sessions and process data from a file
+     * 
+     * @param theFile file to process
+     * @param fixedName the good short name of the file
+     * @return count of sessions parsed
+     * @throws IOException If there is some I/O problem.
+     */
+    public int processSessions(File theFile, String fixedName) throws IOException, ParserException {
+        // We are going to prefer a RAF parser if one
+        // is available so start by getting the file opened
+<span class="nc" id="L579">        logger.debug(&quot;PickUpPlace: Starting on {}&quot;, theFile.getName());</span>
+<span class="nc" id="L580">        int sessionNum = 0;</span>
+<span class="nc" id="L581">        try (RandomAccessFile raf = new RandomAccessFile(theFile, &quot;r&quot;)) {</span>
+
+            // Get the right type of session parser
+<span class="nc" id="L584">            SessionParser sp = parserFactory.makeSessionParser(raf.getChannel());</span>
+<span class="nc" id="L585">            logger.debug(&quot;Using session parser from raf ident {}&quot;, sp.getClass().getName());</span>
+
+            // ... and a session producer to crank out the data objects...
+<span class="nc" id="L588">            SessionProducer dof = new SessionProducer(sp, myKey, null);</span>
+
+<span class="nc" id="L590">            long fileStart = System.currentTimeMillis();</span>
+<span class="nc" id="L591">            long totalSize = 0;</span>
+
+            // For each session get a data object from the producer
+<span class="nc" id="L594">            boolean isParserComplete = false;</span>
+<span class="nc bnc" id="L595" title="All 2 branches missed.">            while (!isParserComplete) {</span>
+<span class="nc" id="L596">                long sessionStart = System.currentTimeMillis();</span>
+                try {
+                    // Use filename-xx for default name
+<span class="nc" id="L599">                    String sessionName = fixedName + &quot;-&quot; + (sessionNum + 1);</span>
+
+<span class="nc" id="L601">                    IBaseDataObject dataObject = dof.getNextSession(sessionName);</span>
+<span class="nc" id="L602">                    logger.debug(&quot;Pulled session {} from {} shortName={}&quot;, sessionName, theFile.getName(), dataObject.shortName());</span>
+<span class="nc" id="L603">                    sessionNum++;</span>
+<span class="nc" id="L604">                    long sessionEnd = System.currentTimeMillis();</span>
+<span class="nc" id="L605">                    totalSize += dataObject.data().length;</span>
+<span class="nc" id="L606">                    logger.info(&quot;sessionParseMetric:{},{},{},{},{},{}&quot;, sessionEnd - sessionStart, sp.getClass().getName(), theFile, sessionName,</span>
+<span class="nc" id="L607">                            sessionNum, dataObject.data().length);</span>
+<span class="nc" id="L608">                    processDataObject(dataObject, sessionName, theFile, false);</span>
+<span class="nc" id="L609">                } catch (ParserEOFException eof) {</span>
+                    // expected at end of file
+<span class="nc" id="L611">                    isParserComplete = true;</span>
+<span class="nc" id="L612">                    long fileEnd = System.currentTimeMillis();</span>
+<span class="nc" id="L613">                    logger.info(&quot;fileParseMetric:{},{},{},{},{}&quot;, fileEnd - fileStart, sp.getClass().getName(), theFile, sessionNum, totalSize);</span>
+<span class="nc" id="L614">                } catch (EmissaryException ex) {</span>
+<span class="nc" id="L615">                    logger.error(&quot;Could not dispatch {}&quot;, theFile.getName(), ex);</span>
+<span class="nc" id="L616">                    throw new ParserException(&quot;Could not process&quot; + theFile.getName(), ex);</span>
+<span class="nc" id="L617">                }</span>
+<span class="nc" id="L618">            }</span>
+        }
+
+<span class="nc" id="L621">        logger.debug(&quot;Done processing {} sessions from {}&quot;, sessionNum, theFile.getName());</span>
+<span class="nc" id="L622">        return sessionNum;</span>
+    }
+
+    /**
+     * Parse out sessions and process data from a byte array
+     * 
+     * @param data the bytes to process
+     * @param fixedName the good short name of the file
+     * @param theFile file object representing path data belongs to
+     * @return count of sessions parsed
+     */
+    public int processSessions(byte[] data, String fixedName, File theFile) {
+        // We are going to prefer a byte array parser since
+        // the data is already in memory
+<span class="nc" id="L636">        logger.debug(&quot;PickUpPlace: Starting on {}&quot;, theFile.getName());</span>
+<span class="nc" id="L637">        int sessionNum = 0;</span>
+
+        // Get the right type of session parser
+<span class="nc" id="L640">        SessionParser sp = parserFactory.makeSessionParser(InMemoryChannelFactory.create(data).create());</span>
+
+        // .. and a session producer to crank out the data objects...
+<span class="nc" id="L643">        SessionProducer dof = new SessionProducer(sp, myKey, null);</span>
+
+        // For each session get a data object from the producer
+<span class="nc" id="L646">        boolean isParserComplete = false;</span>
+<span class="nc bnc" id="L647" title="All 2 branches missed.">        while (!isParserComplete) {</span>
+            try {
+                // Use filename-xx for default name
+<span class="nc" id="L650">                String sessionName = fixedName + &quot;-&quot; + (sessionNum + 1);</span>
+
+<span class="nc" id="L652">                IBaseDataObject dataObject = dof.getNextSession(sessionName);</span>
+<span class="nc" id="L653">                sessionNum++;</span>
+<span class="nc" id="L654">                processDataObject(dataObject, sessionName, theFile, false);</span>
+<span class="nc" id="L655">            } catch (ParserEOFException eof) {</span>
+                // expected at end of file
+<span class="nc" id="L657">                isParserComplete = true;</span>
+<span class="nc" id="L658">            } catch (EmissaryException ex) {</span>
+<span class="nc" id="L659">                logger.error(&quot;Could not dispatch {}&quot;, fixedName, ex);</span>
+<span class="nc" id="L660">            }</span>
+        }
+
+<span class="nc" id="L663">        logger.debug(&quot;Done processing {} sessions from {}&quot;, sessionNum, theFile.getName());</span>
+<span class="nc" id="L664">        return sessionNum;</span>
+    }
+
+    /**
+     * Produce a legal tracking filename from the disk filename
+     * 
+     * @return fixed filename
+     */
+    @Nullable
+    protected String fixFileName(@Nullable String v) {
+<span class="pc bpc" id="L674" title="1 of 2 branches missed.">        if (v == null) {</span>
+<span class="nc" id="L675">            return null;</span>
+        }
+<span class="fc" id="L677">        String s = v.replace(' ', '_');</span>
+<span class="fc" id="L678">        s = s.replace('\t', '_');</span>
+<span class="fc" id="L679">        s = s.replace('\n', '_');</span>
+<span class="fc" id="L680">        s = s.replace('\r', '_');</span>
+<span class="fc" id="L681">        s = s.replace('\f', '_');</span>
+<span class="fc" id="L682">        s = s.replace(':', '_');</span>
+
+<span class="pc bpc" id="L684" title="1 of 2 branches missed.">        if (s.startsWith(&quot;.&quot;)) {</span>
+<span class="nc" id="L685">            s = &quot;_dot_&quot; + s.substring(1);</span>
+        }
+
+<span class="fc" id="L688">        return s;</span>
+    }
+
+    /**
+     * Retrieve and agent from the pool and assign the payload to it
+     * 
+     * @param payload the payload for the agent
+     * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The specified
+     *        time will not be strictly observed because the pool itself blocks for a configurable amount of time when
+     *        requesting an agent. We will wait no more than the specified timeoutMs + the configured pool timeout value.
+     * @throws EmissaryException when an agent cannot be obtained
+     */
+    public void assignToPooledAgent(IBaseDataObject payload, long timeoutMs) throws EmissaryException {
+<span class="nc" id="L701">        assignToPooledAgent(payload, agentPool, this, timeoutMs);</span>
+<span class="nc" id="L702">    }</span>
+
+    /**
+     * Retrieve and agent from the specified pool and assign the payload to it
+     * 
+     * @param payload the payload for the agent
+     * @param agentPool the pool of agents
+     * @param startingLocation the agent launch point
+     * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The specified
+     *        time will not be strictly observed because the pool itself blocks for a configurable amount of time when
+     *        requesting an agent. We will wait no more than the specified timeoutMs + the configured pool timeout value.
+     * @return mobile agent assigned to pool
+     * @throws EmissaryException when an agent cannot be obtained
+     */
+    @SuppressWarnings(&quot;ThreadPriorityCheck&quot;)
+    public static IMobileAgent assignToPooledAgent(IBaseDataObject payload, @Nullable AgentPool agentPool, IServiceProviderPlace startingLocation,
+            long timeoutMs) throws EmissaryException {
+<span class="nc" id="L719">        IMobileAgent agent = null;</span>
+<span class="nc" id="L720">        long startTime = System.currentTimeMillis();</span>
+<span class="nc" id="L721">        boolean warningGiven = false;</span>
+<span class="nc" id="L722">        int loopCount = 0;</span>
+
+<span class="nc" id="L724">        MDC.put(MDCConstants.SHORT_NAME, payload.shortName());</span>
+        try {
+
+<span class="nc bnc" id="L727" title="All 2 branches missed.">            if (agentPool == null) {</span>
+<span class="nc" id="L728">                agentPool = AgentPool.lookup();</span>
+            }
+
+            do {
+<span class="nc" id="L732">                loopCount++;</span>
+                try {
+<span class="nc" id="L734">                    agent = agentPool.borrowAgent();</span>
+<span class="nc" id="L735">                } catch (Exception e) {</span>
+<span class="nc bnc" id="L736" title="All 2 branches missed.">                    if (!warningGiven) {</span>
+<span class="nc" id="L737">                        slogger.debug(&quot;Cannot get agent from pool, trying again &quot;, e);</span>
+<span class="nc" id="L738">                        warningGiven = true;</span>
+                    }
+<span class="nc" id="L740">                }</span>
+<span class="nc bnc" id="L741" title="All 6 branches missed.">            } while (agent == null &amp;&amp; (timeoutMs &lt; 0 || (startTime + timeoutMs) &lt; System.currentTimeMillis()));</span>
+
+<span class="nc bnc" id="L743" title="All 2 branches missed.">            if (agent == null) {</span>
+<span class="nc" id="L744">                throw new EmissaryException(&quot;No agent found for &quot; + payload.shortName() + &quot; after &quot; + loopCount + &quot; tries.&quot;);</span>
+<span class="nc bnc" id="L745" title="All 2 branches missed.">            } else if (loopCount &gt; 1) {</span>
+<span class="nc" id="L746">                slogger.info(&quot;Found agent after {} tries&quot;, loopCount);</span>
+            }
+
+<span class="nc" id="L749">            agent.go(payload, startingLocation);</span>
+<span class="nc" id="L750">            Thread.yield();</span>
+        } finally {
+<span class="nc" id="L752">            MDC.remove(MDCConstants.SHORT_NAME);</span>
+        }
+
+<span class="nc" id="L755">        return agent;</span>
+    }
+
+    public static boolean implementsPickUpPlace(Class&lt;? extends Object&gt; clazz) {
+<span class="fc" id="L759">        return ClassComparator.isaImplementation(clazz, IPickUpPlace.class);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ResourceReader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.io</a> &gt; <span class="el_source">ResourceReader.java</span></div><h1>ResourceReader.java</h1><pre class="source lang-java linenums">package emissary.util.io;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import javax.annotation.Nullable;
+
+/**
+ * This class reads a resource with utilities to read those with common names
+ */
+public class ResourceReader {
+
+<span class="fc" id="L25">    private static final Logger logger = LoggerFactory.getLogger(ResourceReader.class);</span>
+
+    public static final String CONFIG_SUFFIX = &quot;.cfg&quot;;
+    public static final String XML_SUFFIX = &quot;.xml&quot;;
+    public static final String DATA_SUFFIX = &quot;.dat&quot;;
+    public static final String JS_SUFFIX = &quot;.js&quot;;
+    public static final String PROP_SUFFIX = &quot;.properties&quot;;
+    public static final String CLASS_SUFFIX = &quot;.class&quot;;
+
+    /**
+     * Create a resource reader for use
+     */
+<span class="fc" id="L37">    public ResourceReader() {}</span>
+
+    /**
+     * Return the config stream for the class config file Caller must close the stream
+     * 
+     * @param o the object whose class name matches the resource
+     */
+    public InputStream getConfigDataAsStream(Object o) {
+<span class="fc" id="L45">        return getConfigDataAsStream(o.getClass());</span>
+    }
+
+    /**
+     * Return the config stream for the class config file Caller must close the stream
+     * 
+     * @param c the class name matching the desired resource
+     */
+    public InputStream getConfigDataAsStream(Class&lt;?&gt; c) {
+<span class="fc" id="L54">        String name = getConfigDataName(c);</span>
+<span class="fc" id="L55">        return getResourceAsStream(name);</span>
+    }
+
+    /**
+     * Get the config name
+     */
+    public String getConfigDataName(Class&lt;?&gt; c) {
+<span class="fc" id="L62">        return getResourceName(c) + CONFIG_SUFFIX;</span>
+    }
+
+    /**
+     * Return the stream for the class xml resource file Caller must close the stream
+     * 
+     * @param o the object whose class name matches the resource
+     */
+    public InputStream getXmlStream(Object o) {
+<span class="nc" id="L71">        return getXmlStream(o.getClass());</span>
+    }
+
+    /**
+     * Return the xml stream for the class resource Caller must close the stream
+     * 
+     * @param c the class name matching the desired resource
+     */
+    public InputStream getXmlStream(Class&lt;?&gt; c) {
+<span class="nc" id="L80">        String name = getXmlName(c);</span>
+<span class="nc" id="L81">        return getResourceAsStream(name);</span>
+    }
+
+    /**
+     * Get the xml name
+     */
+    public String getXmlName(Class&lt;?&gt; c) {
+<span class="fc" id="L88">        return getResourceName(c) + XML_SUFFIX;</span>
+    }
+
+    /**
+     * Get the xml name
+     */
+    public String getXmlName(Package pkg, String name) {
+<span class="fc" id="L95">        return getResourceName(pkg, name) + XML_SUFFIX;</span>
+    }
+
+    /**
+     * Get the resource name
+     */
+    public String getResourceName(Class&lt;?&gt; c) {
+<span class="fc" id="L102">        return c.getName().replace('.', '/');</span>
+    }
+
+    /**
+     * Get the resource name
+     */
+    public String getResourceName(Package pkg, String name) {
+<span class="fc" id="L109">        return (pkg.getName().replace('.', '/') + &quot;/&quot; + name);</span>
+    }
+
+    /**
+     * Get the url of the specified resource
+     * 
+     * @param name name of the resource
+     * @return url to the resource
+     */
+    public URL getResource(@Nullable String name) {
+<span class="pc bpc" id="L119" title="3 of 6 branches missed.">        if (name != null &amp;&amp; name.length() &gt; 1 &amp;&amp; name.charAt(1) == ':') {</span>
+<span class="nc" id="L120">            name = name.substring(2);</span>
+        }
+<span class="fc" id="L122">        return Thread.currentThread().getContextClassLoader().getResource(name);</span>
+    }
+
+    /**
+     * Get the specified resource
+     * 
+     * @param name name of resource
+     * @return stream, caller must close
+     */
+    public InputStream getResourceAsStream(@Nullable String name) {
+<span class="pc bpc" id="L132" title="3 of 6 branches missed.">        if (name != null &amp;&amp; name.length() &gt; 1 &amp;&amp; name.charAt(1) == ':') {</span>
+<span class="nc" id="L133">            name = name.substring(2);</span>
+        }
+<span class="fc" id="L135">        return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);</span>
+    }
+
+    /**
+     * Indicate the URL that the specified class was loaded from
+     * 
+     * @param c the class
+     * @return a URL indicating the jar file or file location or null if none
+     */
+    @Nullable
+    public URL which(@Nullable Class&lt;?&gt; c) {
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">        if (c == null) {</span>
+<span class="nc" id="L147">            return null;</span>
+        }
+<span class="fc" id="L149">        String cx = getResourceName(c) + CLASS_SUFFIX;</span>
+<span class="fc" id="L150">        ClassLoader loader = c.getClassLoader();</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">        if (loader != null) {</span>
+<span class="fc" id="L152">            return loader.getResource(cx);</span>
+        }
+<span class="nc" id="L154">        return ClassLoader.getSystemResource(cx);</span>
+    }
+
+    /**
+     * Find all the config resources present for the specified class
+     * 
+     * @param c the class
+     * @return sorted list of resources found or an empty list if none
+     */
+    public List&lt;String&gt; findConfigResourcesFor(Class&lt;?&gt; c) {
+<span class="fc" id="L164">        return findResourcesFor(c, CONFIG_SUFFIX);</span>
+    }
+
+    /**
+     * Find all the data resources present for the specified class
+     * 
+     * @param c the class
+     * @return sorted list of resources found or an empty list if none
+     */
+    public List&lt;String&gt; findDataResourcesFor(Class&lt;?&gt; c) {
+<span class="fc" id="L174">        return findResourcesFor(c, DATA_SUFFIX);</span>
+    }
+
+    /**
+     * Find all the xml resources present for the specified class
+     * 
+     * @param c the class
+     * @return sorted list of resources found or an empty list if none
+     */
+    public List&lt;String&gt; findXmlResourcesFor(Class&lt;?&gt; c) {
+<span class="fc" id="L184">        return findResourcesFor(c, XML_SUFFIX);</span>
+    }
+
+    /**
+     * Find all the properties resources present for the specified class
+     * 
+     * @param c the class
+     * @return sorted list of resources found or an empty list if none
+     */
+    public List&lt;String&gt; findPropertyResourcesFor(Class&lt;?&gt; c) {
+<span class="fc" id="L194">        return findResourcesFor(c, PROP_SUFFIX);</span>
+    }
+
+    /**
+     * Find all the resources present for the specified class that use the indicated suffix.
+     * 
+     * @param c the class
+     * @param suffix the resource suffix to hunt for, use &quot;&quot; for all
+     * @return sorted list of resources found or an empty list if none
+     */
+    public List&lt;String&gt; findResourcesFor(Class&lt;?&gt; c, String suffix) {
+<span class="fc" id="L205">        List&lt;String&gt; results = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L206">        URL url = which(c);</span>
+<span class="pc bpc" id="L207" title="1 of 2 branches missed.">        if (url == null) {</span>
+<span class="nc" id="L208">            return results;</span>
+        }
+
+<span class="pc bpc" id="L211" title="1 of 2 branches missed.">        if (url.getProtocol().equals(&quot;jar&quot;)) {</span>
+<span class="nc" id="L212">            results.addAll(getJarResourcesFor(c, url, suffix));</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">        } else if (url.getProtocol().equals(&quot;file&quot;)) {</span>
+<span class="fc" id="L214">            results.addAll(getFileResourcesFor(c, url, suffix));</span>
+        }
+
+<span class="fc" id="L217">        Collections.sort(results);</span>
+<span class="fc" id="L218">        return results;</span>
+    }
+
+    /**
+     * Find resources for the specified class from the Jar URL This finds resources at multiple levels at ones. For example
+     * if you pass in emissary.util.Version.class with the &quot;.cfg&quot; suffix, you could get back resources that are located at
+     * emissary/util/Version.cfg and emissary/util/Version/foo.cfg in the list.
+     * 
+     * @param c the class
+     * @param url the jar url
+     * @param suffix the ending suffix of desired resources
+     * @return list of resources found
+     */
+    public List&lt;String&gt; getJarResourcesFor(Class&lt;?&gt; c, URL url, String suffix) {
+<span class="nc" id="L232">        List&lt;String&gt; results = new ArrayList&lt;&gt;();</span>
+        try {
+<span class="nc" id="L234">            JarURLConnection jc = (JarURLConnection) url.openConnection();</span>
+<span class="nc" id="L235">            JarFile jf = jc.getJarFile();</span>
+<span class="nc" id="L236">            String cmatch = getResourceName(c);</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">            for (Enumeration&lt;JarEntry&gt; entries = jf.entries(); entries.hasMoreElements();) {</span>
+<span class="nc" id="L238">                JarEntry entry = entries.nextElement();</span>
+<span class="nc" id="L239">                String name = entry.getName();</span>
+<span class="nc bnc" id="L240" title="All 4 branches missed.">                if (name.startsWith(cmatch) &amp;&amp; name.endsWith(suffix)) {</span>
+<span class="nc" id="L241">                    results.add(name);</span>
+                }
+<span class="nc" id="L243">            }</span>
+<span class="nc" id="L244">            logger.debug(&quot;Found {} jar resources for {}&quot;, results.size(), cmatch);</span>
+<span class="nc" id="L245">        } catch (IOException ex) {</span>
+<span class="nc" id="L246">            logger.warn(&quot;Cannot get jar url connection to {}&quot;, url, ex);</span>
+<span class="nc" id="L247">        }</span>
+<span class="nc" id="L248">        return results;</span>
+    }
+
+
+    /**
+     * Find resources for the specified class from the file URL This finds resources at multiple levels at ones. For example
+     * if you pass in emissary.util.Version.class with the &quot;.cfg&quot; suffix, you could get back resources that are located at
+     * emissary/util/Version.cfg and emissary/util/Version/foo.cfg in the list.
+     * 
+     * @param c the class
+     * @param url the file url
+     * @param suffix the ending suffix of desired resources
+     * @return list of resources found
+     */
+    public List&lt;String&gt; getFileResourcesFor(Class&lt;?&gt; c, URL url, String suffix) {
+<span class="fc" id="L263">        List&lt;String&gt; results = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L264">        String cmatch = getResourceName(c);</span>
+
+        // The url may or may not have the class portion on it
+<span class="fc" id="L267">        String path = url.getPath();</span>
+<span class="pc bpc" id="L268" title="1 of 2 branches missed.">        if (path.contains(CLASS_SUFFIX)) {</span>
+            // Take off the &quot;.class&quot;
+<span class="fc" id="L270">            path = path.substring(0, path.length() - CLASS_SUFFIX.length());</span>
+        } else {
+            // Add on the package and class names
+<span class="nc" id="L273">            path += &quot;/&quot; + cmatch;</span>
+        }
+
+        // Look for a base resource at same level as class (in package dir)
+<span class="fc" id="L277">        File base = new File(path.substring(0, path.lastIndexOf('/')));</span>
+<span class="fc" id="L278">        String pkgNamePart = cmatch.substring(0, cmatch.lastIndexOf('/'));</span>
+<span class="fc" id="L279">        String classNamePart = cmatch.substring(cmatch.lastIndexOf('/') + 1);</span>
+<span class="pc bpc" id="L280" title="2 of 4 branches missed.">        if (base.exists() &amp;&amp; base.isDirectory()) {</span>
+<span class="fc" id="L281">            String[] list = base.list();</span>
+<span class="pc bpc" id="L282" title="1 of 2 branches missed.">            if (list != null) {</span>
+<span class="fc" id="L283">                Arrays.stream(list)</span>
+<span class="fc bfc" id="L284" title="All 4 branches covered.">                        .filter(s -&gt; s.startsWith(classNamePart) &amp;&amp; s.endsWith(suffix))</span>
+<span class="fc" id="L285">                        .forEach(s -&gt; results.add(pkgNamePart + &quot;/&quot; + s));</span>
+            }
+        }
+
+        // Look for more resources in a directory with the class name
+<span class="fc" id="L290">        File dir = new File(path);</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">        if (dir.isDirectory()) {</span>
+<span class="fc" id="L292">            String[] list = dir.list();</span>
+<span class="pc bpc" id="L293" title="1 of 2 branches missed.">            if (list != null) {</span>
+<span class="fc" id="L294">                Arrays.stream(list)</span>
+<span class="fc" id="L295">                        .filter(s -&gt; s.endsWith(suffix))</span>
+<span class="fc" id="L296">                        .forEach(s -&gt; results.add(cmatch + '/' + s));</span>
+            }
+        }
+
+<span class="fc" id="L300">        logger.debug(&quot;Found {} file resources for {}&quot;, results.size(), cmatch);</span>
+<span class="fc" id="L301">        return results;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

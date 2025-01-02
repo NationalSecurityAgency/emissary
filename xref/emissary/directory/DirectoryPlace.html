@@ -812,7 +812,7 @@
 <a class="jxr_linenumber" name="L804" href="#L804">804</a> 
 <a class="jxr_linenumber" name="L805" href="#L805">805</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L806" href="#L806">806</a>             <strong class="jxr_keyword">new</strong> <a name="DirectoryAdapter" href="../../emissary/directory/DirectoryAdapter.html#DirectoryAdapter">DirectoryAdapter</a>().outboundFailDirectory(directory.getKey(), failKey, permanent);
-<a class="jxr_linenumber" name="L807" href="#L807">807</a>         } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L807" href="#L807">807</a>         } <strong class="jxr_keyword">catch</strong> (RuntimeException ex) {
 <a class="jxr_linenumber" name="L808" href="#L808">808</a>             logger.error(<span class="jxr_string">"Problem talking to directory {} to fail {}"</span>, directory.getKey(), failKey, ex);
 <a class="jxr_linenumber" name="L809" href="#L809">809</a>         }
 <a class="jxr_linenumber" name="L810" href="#L810">810</a>     }
@@ -939,7 +939,7 @@
 <a class="jxr_linenumber" name="L931" href="#L931">931</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L932" href="#L932">932</a>             <strong class="jxr_keyword">new</strong> <a name="DirectoryAdapter" href="../../emissary/directory/DirectoryAdapter.html#DirectoryAdapter">DirectoryAdapter</a>().outboundAddPlaces(dir.getKey(), entryList, propagating);
 <a class="jxr_linenumber" name="L933" href="#L933">933</a>             logger.debug(<span class="jxr_string">"registration succeeded"</span>);
-<a class="jxr_linenumber" name="L934" href="#L934">934</a>         } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L934" href="#L934">934</a>         } <strong class="jxr_keyword">catch</strong> (RuntimeException ex) {
 <a class="jxr_linenumber" name="L935" href="#L935">935</a>             logger.warn(<span class="jxr_string">"DirectoryPlace.registerWith: Problem talking to directory {} to add {} entries"</span>, dir.getKey(), entryList.size(), ex);
 <a class="jxr_linenumber" name="L936" href="#L936">936</a>         }
 <a class="jxr_linenumber" name="L937" href="#L937">937</a>     }
@@ -981,7 +981,7 @@
 <a class="jxr_linenumber" name="L973" href="#L973">973</a>         <em class="jxr_comment">// Nothing for the dataId or any wildcarded versions, we are done</em>
 <a class="jxr_linenumber" name="L974" href="#L974">974</a>         <strong class="jxr_keyword">if</strong> ((currentList == <strong class="jxr_keyword">null</strong>) || currentList.isEmpty()) {
 <a class="jxr_linenumber" name="L975" href="#L975">975</a>             logger.debug(<span class="jxr_string">"nextKey - nothing found here for {}"</span>, dataId);
-<a class="jxr_linenumber" name="L976" href="#L976">976</a>             <strong class="jxr_keyword">return</strong> Collections.emptyList();
+<a class="jxr_linenumber" name="L976" href="#L976">976</a>             <strong class="jxr_keyword">return</strong> List.of();
 <a class="jxr_linenumber" name="L977" href="#L977">977</a>         }
 <a class="jxr_linenumber" name="L978" href="#L978">978</a> 
 <a class="jxr_linenumber" name="L979" href="#L979">979</a>         <em class="jxr_comment">// remove denied entries</em>
@@ -989,7 +989,7 @@
 <a class="jxr_linenumber" name="L981" href="#L981">981</a> 
 <a class="jxr_linenumber" name="L982" href="#L982">982</a>         <strong class="jxr_keyword">if</strong> (currentList.isEmpty()) {
 <a class="jxr_linenumber" name="L983" href="#L983">983</a>             logger.debug(<span class="jxr_string">"nextKeys - no non-DENIED entries found here for {}"</span>, dataId);
-<a class="jxr_linenumber" name="L984" href="#L984">984</a>             <strong class="jxr_keyword">return</strong> Collections.emptyList();
+<a class="jxr_linenumber" name="L984" href="#L984">984</a>             <strong class="jxr_keyword">return</strong> List.of();
 <a class="jxr_linenumber" name="L985" href="#L985">985</a>         }
 <a class="jxr_linenumber" name="L986" href="#L986">986</a>         <em class="jxr_comment">// The list we are building for return to the caller</em>
 <a class="jxr_linenumber" name="L987" href="#L987">987</a>         <strong class="jxr_keyword">final</strong> List&lt;DirectoryEntry&gt; keyList = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
@@ -1277,7 +1277,7 @@
 <a class="jxr_linenumber" name="L1269" href="#L1269">1269</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L1270" href="#L1270">1270</a>             <em class="jxr_comment">// Follow the logic to irdRemovePlaces on the remote side</em>
 <a class="jxr_linenumber" name="L1271" href="#L1271">1271</a>             <strong class="jxr_keyword">new</strong> <a name="DirectoryAdapter" href="../../emissary/directory/DirectoryAdapter.html#DirectoryAdapter">DirectoryAdapter</a>().outboundRemovePlaces(dir.getKey(), keys, propagating);
-<a class="jxr_linenumber" name="L1272" href="#L1272">1272</a>         } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L1272" href="#L1272">1272</a>         } <strong class="jxr_keyword">catch</strong> (RuntimeException ex) {
 <a class="jxr_linenumber" name="L1273" href="#L1273">1273</a>             logger.error(<span class="jxr_string">"DirectoryPlace.deregisterFrom: "</span> + <span class="jxr_string">"Problem talking to directory "</span> + dir.getKey() + <span class="jxr_string">" to deregister keys"</span>, ex);
 <a class="jxr_linenumber" name="L1274" href="#L1274">1274</a>         }
 <a class="jxr_linenumber" name="L1275" href="#L1275">1275</a>     }
@@ -1420,6 +1420,6 @@
 <a class="jxr_linenumber" name="L1412" href="#L1412">1412</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

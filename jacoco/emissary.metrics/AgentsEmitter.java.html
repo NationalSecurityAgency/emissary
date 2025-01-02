@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AgentsEmitter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.metrics</a> &gt; <span class="el_source">AgentsEmitter.java</span></div><h1>AgentsEmitter.java</h1><pre class="source lang-java linenums">package emissary.metrics;
+
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+import emissary.pool.MobileAgentFactory;
+import emissary.roll.Rollable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * This class is used to write out agents status via a logger.
+ *
+ * This can be configured in the emissary.roll.RollManager.cfg file, i.e.:&quot;
+ *
+ * &lt;pre&gt;
+ * # This configuration will log the running agents every minute
+ * ROLLABLE = &quot;AGENTS&quot;
+ * AGENTS_CLASS = &quot;emissary.metrics.AgentsEmitter&quot;
+ * AGENTS_TIME_PERIOD = &quot;1&quot;
+ * AGENTS_TIME_UNIT = &quot;MINUTES&quot;
+ * &lt;/pre&gt;
+ */
+<span class="nc" id="L24">public class AgentsEmitter implements Rollable {</span>
+
+<span class="nc" id="L26">    private static final Logger logger = LoggerFactory.getLogger(AgentsEmitter.class);</span>
+
+    /**
+     * Attempt to emit an id that an agent is processing
+     */
+    @Override
+    public void roll() {
+<span class="nc" id="L33">        Namespace.keySet().stream().filter(k -&gt; k.startsWith(MobileAgentFactory.AGENT_NAME)).sorted().forEach(agentKey -&gt; {</span>
+            try {
+<span class="nc" id="L35">                logger.info(&quot;{}: {}&quot;, agentKey, Namespace.lookup(agentKey));</span>
+<span class="nc" id="L36">            } catch (NamespaceException e) {</span>
+<span class="nc" id="L37">                logger.error(&quot;Missing an agent in the Namespace: {}&quot;, agentKey);</span>
+<span class="nc" id="L38">            }</span>
+<span class="nc" id="L39">        });</span>
+<span class="nc" id="L40">    }</span>
+
+    /**
+     * Currently there is nothing to lock, so just return false.
+     *
+     * @return false if the MetricsEmitter is not currently rolling
+     */
+    @Override
+    public boolean isRolling() {
+<span class="nc" id="L49">        return false;</span>
+    }
+
+    /**
+     * Do nothing on shutdown.
+     */
+    @Override
+    public void close() {
+        // Do nothing on shutdown
+<span class="nc" id="L58">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

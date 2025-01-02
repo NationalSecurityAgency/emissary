@@ -140,7 +140,7 @@
 <a class="jxr_linenumber" name="L132" href="#L132">132</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String getUtfString(<strong class="jxr_keyword">final</strong> String s, <strong class="jxr_keyword">final</strong> String charSet) {
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> String(s.getBytes(<span class="jxr_string">"ISO8859_1"</span>), charSet);
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> String(s.getBytes(StandardCharsets.ISO_8859_1), charSet);
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>         } <strong class="jxr_keyword">catch</strong> (UnsupportedEncodingException uue) {
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>             logger.warn(<span class="jxr_string">"Unable to convert to "</span> + charSet);
 <a class="jxr_linenumber" name="L138" href="#L138">138</a>         }
@@ -207,7 +207,7 @@
 <a class="jxr_linenumber" name="L199" href="#L199">199</a>                     <strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>                 }
 <a class="jxr_linenumber" name="L201" href="#L201">201</a>             }
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>         } <strong class="jxr_keyword">catch</strong> (RuntimeException e) {
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>             <strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>         }
 <a class="jxr_linenumber" name="L205" href="#L205">205</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
@@ -335,6 +335,6 @@
 <a class="jxr_linenumber" name="L327" href="#L327">327</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

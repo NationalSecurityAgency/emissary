@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Pause.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.server.api</a> &gt; <span class="el_source">Pause.java</span></div><h1>Pause.java</h1><pre class="source lang-java linenums">package emissary.server.api;
+
+import emissary.core.NamespaceException;
+import emissary.server.EmissaryServer;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Path(&quot;&quot;)
+// context is api
+<span class="nc" id="L18">public class Pause {</span>
+
+<span class="nc" id="L20">    private static final Logger LOG = LoggerFactory.getLogger(Pause.class);</span>
+    public static final String PAUSE = &quot;pause&quot;;
+    public static final String UNPAUSE = &quot;unpause&quot;;
+
+    @POST
+    @Path(&quot;/&quot; + PAUSE)
+    @Produces(MediaType.TEXT_HTML)
+    public Response pause(@Context HttpServletRequest request) {
+<span class="nc" id="L28">        return doAction(true);</span>
+    }
+
+    protected String pause() throws NamespaceException {
+<span class="nc" id="L32">        EmissaryServer.pause();</span>
+<span class="nc" id="L33">        return &quot;server paused&quot;;</span>
+    }
+
+    @POST
+    @Path(&quot;/&quot; + UNPAUSE)
+    @Produces(MediaType.TEXT_HTML)
+    public Response unpause(@Context HttpServletRequest request) {
+<span class="nc" id="L40">        return doAction(false);</span>
+    }
+
+    protected String unpause() throws NamespaceException {
+<span class="nc" id="L44">        EmissaryServer.unpause();</span>
+<span class="nc" id="L45">        return &quot;server unpaused&quot;;</span>
+    }
+
+    private Response doAction(boolean pause) {
+        try {
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            return Response.ok(pause ? pause() : unpause()).build();</span>
+<span class="nc" id="L51">        } catch (Exception e) {</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">            LOG.warn(&quot;Exception trying to initiate {}&quot;, (pause ? PAUSE : UNPAUSE), e);</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            return Response.serverError().entity(&quot;error trying to &quot; + (pause ? PAUSE : UNPAUSE)).build();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

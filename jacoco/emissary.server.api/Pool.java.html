@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Pool.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.server.api</a> &gt; <span class="el_source">Pool.java</span></div><h1>Pool.java</h1><pre class="source lang-java linenums">package emissary.server.api;
+
+import emissary.client.EmissaryClient;
+import emissary.client.response.MapResponseEntity;
+import emissary.core.EmissaryException;
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+import emissary.directory.EmissaryNode;
+import emissary.pool.AgentPool;
+import emissary.pool.MobileAgentFactory;
+import emissary.server.EmissaryServer;
+
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static emissary.server.api.ApiUtils.lookupPeers;
+import static emissary.server.api.ApiUtils.stripPeerString;
+
+/**
+ * The agents Emissary API endpoint. Currently contains the local (/api/pool) call and cluster (/api/clusterPool) calls.
+ */
+@Path(&quot;&quot;)
+// context is /api and is set in EmissaryServer.java
+<span class="fc" id="L30">public class Pool {</span>
+<span class="fc" id="L31">    private final Logger logger = LoggerFactory.getLogger(this.getClass());</span>
+
+    public static final String POOL_ENDPOINT = &quot;api/pool&quot;;
+    public static final String POOL_CLUSTER_ENDPOINT = &quot;api/cluster/pool&quot;;
+
+    @GET
+    @Path(&quot;/pool&quot;)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response pool() {
+<span class="fc" id="L40">        return Response.ok().entity(this.lookupPool()).build();</span>
+    }
+
+    @GET
+    @Path(&quot;/cluster/pool&quot;)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response clusterPool() {
+<span class="nc" id="L47">        MapResponseEntity entity = new MapResponseEntity();</span>
+        try {
+            // Get our local mobile agents
+<span class="nc" id="L50">            entity.append(this.lookupPool());</span>
+            // Get all of our peers agents
+<span class="nc" id="L52">            EmissaryClient client = new EmissaryClient();</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            for (String peer : lookupPeers()) {</span>
+<span class="nc" id="L54">                String remoteEndPoint = stripPeerString(peer) + &quot;api/pool&quot;;</span>
+<span class="nc" id="L55">                MapResponseEntity remoteEntity = client.send(new HttpGet(remoteEndPoint)).getContent(MapResponseEntity.class);</span>
+<span class="nc" id="L56">                entity.append(remoteEntity);</span>
+<span class="nc" id="L57">            }</span>
+<span class="nc" id="L58">            return Response.ok().entity(entity).build();</span>
+<span class="nc" id="L59">        } catch (EmissaryException e) {</span>
+            // This should never happen since we already saw if it exists
+<span class="nc" id="L61">            return Response.serverError().entity(e.getMessage()).build();</span>
+        }
+    }
+
+    private MapResponseEntity lookupPool() {
+<span class="fc" id="L66">        MapResponseEntity entity = new MapResponseEntity();</span>
+        // Get the server so we can be ready to talk to ourself then the peers
+        try {
+<span class="fc" id="L69">            EmissaryServer emissaryServer = (EmissaryServer) Namespace.lookup(&quot;EmissaryServer&quot;);</span>
+<span class="fc" id="L70">            EmissaryNode localNode = emissaryServer.getNode();</span>
+<span class="fc" id="L71">            String nodeName = localNode.getNodeName() + &quot;:&quot; + localNode.getNodePort();</span>
+<span class="fc" id="L72">            int active = 0;</span>
+<span class="fc" id="L73">            int idle = 0;</span>
+            try {
+<span class="fc bfc" id="L75" title="All 2 branches covered.">                for (int i = 0; i &lt; AgentPool.lookup().getMaxTotal(); i++) {</span>
+<span class="fc" id="L76">                    String agentKey = MobileAgentFactory.AGENT_NAME + &quot;-&quot; + String.format(&quot;%02d&quot;, i);</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">                    if (Namespace.exists(agentKey)) {</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">                        if (Namespace.lookup(agentKey).toString().startsWith(&quot;Idle&quot;)) {</span>
+<span class="fc" id="L79">                            idle++;</span>
+                        } else {
+<span class="nc" id="L81">                            active++;</span>
+                        }
+                    } else {
+                        // TODO Handle this any better?
+<span class="nc" id="L85">                        logger.error(&quot;Missing an agent in the Namespace: {}&quot;, agentKey);</span>
+<span class="nc" id="L86">                        entity.addError(&quot;Missing an agent in the Namespace: &quot; + agentKey);</span>
+<span class="nc" id="L87">                        idle++;</span>
+                    }
+                }
+<span class="fc" id="L90">                entity.addKeyValue(nodeName, &quot;Poolsize active/idle: &quot; + active + &quot;/&quot; + idle);</span>
+<span class="nc" id="L91">            } catch (EmissaryException e) {</span>
+                // TODO Figure out what we really want to do here in the event a node crashes
+<span class="nc" id="L93">                logger.error(&quot;Problem when looking up the pool&quot;, e);</span>
+<span class="nc" id="L94">                entity.addError(&quot;Problem when looking up the pool on &quot; + localNode + &quot;: &quot; + e.getMessage());</span>
+<span class="fc" id="L95">            }</span>
+<span class="nc" id="L96">        } catch (NamespaceException e) {</span>
+            // should never happen
+<span class="nc" id="L98">            logger.error(&quot;Problem finding the emissary server in the namespace, something is majorly wrong&quot;, e);</span>
+<span class="nc" id="L99">            entity.addError(&quot;Problem finding the emissary server in the namespace: &quot; + e.getMessage());</span>
+<span class="fc" id="L100">        }</span>
+<span class="fc" id="L101">        return entity;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

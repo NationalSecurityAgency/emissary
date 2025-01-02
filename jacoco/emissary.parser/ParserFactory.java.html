@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ParserFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.parser</a> &gt; <span class="el_source">ParserFactory.java</span></div><h1>ParserFactory.java</h1><pre class="source lang-java linenums">package emissary.parser;
+
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.Factory;
+import emissary.util.shell.Executrix;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.channels.SeekableByteChannel;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
+
+/**
+ * Provide a factory for getting the proper type of input parser Provide the implementing classes for that match the
+ * configured Data Identifier Engine in PARSER_NIO_IMPL_[type] variants if available. All configured parsers must
+ * implement emissary.parser.SessionParser.
+ *
+ * When no proper mappings are found or the specified parser cannot be instantiated, the SimpleNioParser is used
+ * instead. If these cannot be instantiated, then something is likely seriously wrong.
+ *
+ * If an NIO parser is requested, see makeSessionParser(FileChannel), but cannot be found for the data type, the Channel
+ * is evaluated and if under MAX_NIO_FALLBACK_SIZE, then the bytes are consumed and a standard parser is produced if one
+ * is available.
+ *
+ * The ID engine is configured with the ID_ENGINE_CLASS in the configuration file and must be an instance of
+ * emissary.parser.DataIdentifier.
+ */
+public class ParserFactory {
+    // Logger
+<span class="fc" id="L34">    protected static final Logger logger = LoggerFactory.getLogger(ParserFactory.class.getName());</span>
+
+    // Map of dataType to FileChannel parser implementation class name
+    // Read from config file
+<span class="fc" id="L38">    protected Map&lt;String, String&gt; nioTypeMap = new HashMap&lt;&gt;();</span>
+
+    // For channel sizes larger than this no fallback to a byte[]
+    // parser is attempted.
+<span class="fc" id="L42">    protected long nioFallbackMax = 1024L * 1024L * 100L; // 100 Mb</span>
+
+    protected static final String DEFAULT_NIO_PARSER = &quot;emissary.parser.SimpleNioParser&quot;;
+<span class="fc" id="L45">    protected String nioParser = DEFAULT_NIO_PARSER;</span>
+
+
+    // Data type identification engine
+<span class="fc" id="L49">    @Nullable</span>
+    DataIdentifier idEngine = null;
+
+    /**
+     * Public constructor causes default configuration to be read
+     */
+<span class="fc" id="L55">    public ParserFactory() {</span>
+<span class="fc" id="L56">        reconfigure();</span>
+<span class="fc" id="L57">    }</span>
+
+    /**
+     * Construct factory with specified configuration
+     *
+     * @param config the configuration to use for this instance
+     * @since 3.7.1
+     */
+<span class="fc" id="L65">    public ParserFactory(Configurator config) {</span>
+<span class="fc" id="L66">        reconfigure(config);</span>
+<span class="fc" id="L67">    }</span>
+
+    /**
+     * Configure this factory with default config (for keeping the API backward compatible)
+     */
+    public void reconfigure() {
+<span class="fc" id="L73">        reconfigure(null);</span>
+<span class="fc" id="L74">    }</span>
+
+    /**
+     * Reconfigure the factory causes the configuration to be reloaded It is not threadsafe to call this while data is being
+     * identified or parsers are being instantiated.
+     *
+     * @param config the configuration to use or null for the default
+     * @since 3.7.1
+     */
+    public void reconfigure(@Nullable Configurator config) {
+        try {
+<span class="fc bfc" id="L85" title="All 2 branches covered.">            if (config == null) {</span>
+<span class="fc" id="L86">                config = ConfigUtil.getConfigInfo(ParserFactory.class);</span>
+            }
+
+<span class="fc" id="L89">            Map&lt;String, String&gt; m = config.findStringMatchMap(&quot;PARSER_NIO_IMPL_&quot;, Configurator.PRESERVE_CASE);</span>
+
+<span class="fc" id="L91">            nioFallbackMax = config.findSizeEntry(&quot;MAX_NIO_FALLBACK_SIZE&quot;, nioFallbackMax);</span>
+
+<span class="fc" id="L93">            nioTypeMap.clear();</span>
+<span class="fc" id="L94">            nioTypeMap.putAll(m);</span>
+
+<span class="fc" id="L96">            logger.debug(&quot;Loaded {} nio parsers with fallback size {}&quot;, nioTypeMap.size(), nioFallbackMax);</span>
+
+            // change this to &quot;DEFAULT_PARSER&quot;
+<span class="fc" id="L99">            nioParser = config.findStringEntry(&quot;DEFAULT_NIO_PARSER&quot;, DEFAULT_NIO_PARSER);</span>
+
+<span class="fc" id="L101">            String idEngineClass = config.findStringEntry(&quot;ID_ENGINE_CLASS&quot;, null);</span>
+
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            if (idEngineClass != null) {</span>
+<span class="fc" id="L104">                makeIdEngine(idEngineClass);</span>
+            }
+<span class="nc" id="L106">        } catch (IOException ex) {</span>
+<span class="nc" id="L107">            logger.error(&quot;Unable to read configuration&quot;, ex);</span>
+<span class="fc" id="L108">        }</span>
+<span class="fc" id="L109">    }</span>
+
+    /**
+     * Make a session parser with the data in channel. If no NIO parser is configured for the type of this data, a standard
+     * byte[] parser will be produced if there is one available and the size of the data in the channel is less than the
+     * configured MAX_NIO_FALLBACK_SIZE. Otherwise the default NIO parser will be used.
+     *
+     * @param channel the data to be parsed
+     * @return SessionParser implementation
+     */
+    public SessionParser makeSessionParser(SeekableByteChannel channel) {
+<span class="nc" id="L120">        String id = identify(channel);</span>
+<span class="nc" id="L121">        return makeSessionParser(id, channel);</span>
+    }
+
+    /**
+     * Make a session parser with the data in channel. If no NIO parser is configured for the type of this data, a standard
+     * byte[] parser will be produced if there is one available and the size of the data in the channel is less than the
+     * configured MAX_NIO_FALLBACK_SIZE. Otherwise the default NIO parser will be used.
+     *
+     * @param type the type of data
+     * @param channel the data to be parsed
+     * @return SessionParser implementation
+     * @deprecated use {@link #makeSessionParser(SeekableByteChannel, String)}
+     */
+    @Deprecated
+    @SuppressWarnings(&quot;InconsistentOverloads&quot;)
+    public SessionParser makeSessionParser(String type, SeekableByteChannel channel) {
+<span class="nc" id="L137">        return makeSessionParser(channel, type);</span>
+    }
+
+    /**
+     * Make a session parser with the data in channel. If no NIO parser is configured for the type of this data, a standard
+     * byte[] parser will be produced if there is one available and the size of the data in the channel is less than the
+     * configured MAX_NIO_FALLBACK_SIZE. Otherwise the default NIO parser will be used.
+     *
+     * @param channel the data to be parsed
+     * @param type the type of data
+     * @return SessionParser implementation
+     */
+    public SessionParser makeSessionParser(SeekableByteChannel channel, String type) {
+        SessionParser sp;
+
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        if (nioTypeMap.containsKey(type)) {</span>
+<span class="nc" id="L153">            sp = makeSessionParserClass(nioTypeMap.get(type), channel);</span>
+        } else {
+<span class="nc" id="L155">            sp = makeSessionParserClass(nioParser, channel);</span>
+        }
+<span class="nc" id="L157">        return sp;</span>
+    }
+
+    /**
+     * Make a session parser for the specified data type with the args
+     *
+     * @param clazz the class name of the parser to create
+     * @param args arguments to the parser constructor
+     * @return SessionParser implementation
+     */
+    @Nullable
+    protected SessionParser makeSessionParserClass(@Nullable String clazz, Object... args) {
+        // Choose implementation class based on data type
+<span class="nc bnc" id="L170" title="All 2 branches missed.">        if (clazz == null) {</span>
+<span class="nc" id="L171">            logger.warn(&quot;Cannot make a session parser for a null class&quot;);</span>
+<span class="nc" id="L172">            return null;</span>
+        }
+
+<span class="nc" id="L175">        SessionParser sp = null;</span>
+
+        try {
+<span class="nc" id="L178">            sp = (SessionParser) Factory.create(clazz, args);</span>
+<span class="nc" id="L179">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L180">            logger.error(&quot;Unable to instantiate {}&quot;, clazz, e);</span>
+<span class="nc" id="L181">        }</span>
+
+<span class="nc" id="L183">        return sp;</span>
+    }
+
+    /**
+     * Instantiate the specified DataIdentifier class for typing the data
+     */
+    protected void makeIdEngine(String clazz) {
+        try {
+<span class="fc" id="L191">            DataIdentifier d = (DataIdentifier) Factory.create(clazz);</span>
+<span class="fc" id="L192">            idEngine = d;</span>
+<span class="nc" id="L193">        } catch (RuntimeException ex) {</span>
+<span class="nc" id="L194">            logger.warn(&quot;Cannot make data identifier from &quot; + clazz, ex);</span>
+<span class="fc" id="L195">        }</span>
+<span class="fc" id="L196">    }</span>
+
+
+    /**
+     * Return the key identification type fo the data in the channel
+     *
+     * @param channel the channel containing bytes to identify
+     * @return string matching the keys in ParserFactory.cfg
+     */
+    public String identify(SeekableByteChannel channel) {
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">        if (idEngine != null) {</span>
+            try {
+<span class="nc" id="L208">                long pos = channel.position();</span>
+<span class="nc" id="L209">                byte[] buf = Executrix.readDataFromChannel(channel, pos, idEngine.DATA_ID_STR_SZ);</span>
+<span class="nc" id="L210">                channel.position(pos);</span>
+<span class="nc" id="L211">                return idEngine.identify(buf);</span>
+<span class="nc" id="L212">            } catch (IOException e) {</span>
+<span class="nc" id="L213">                logger.warn(&quot;Unable to reposition file channel&quot;, e);</span>
+            }
+        }
+<span class="fc" id="L216">        return DataIdentifier.UNKNOWN_TYPE;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

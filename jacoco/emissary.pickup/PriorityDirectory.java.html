@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriorityDirectory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.pickup</a> &gt; <span class="el_source">PriorityDirectory.java</span></div><h1>PriorityDirectory.java</h1><pre class="source lang-java linenums">package emissary.pickup;
+
+/**
+ * Hold the name of a directory path along with the priority at which things should be processed from that source
+ */
+public class PriorityDirectory implements Comparable&lt;PriorityDirectory&gt; {
+    protected String directoryName;
+<span class="pc" id="L8">    protected int priority = Priority.DEFAULT;</span>
+
+<span class="nc" id="L10">    public PriorityDirectory() {}</span>
+
+<span class="fc" id="L12">    public PriorityDirectory(String directoryName, int priority) {</span>
+<span class="fc" id="L13">        this.directoryName = directoryName;</span>
+<span class="fc" id="L14">        this.priority = priority;</span>
+<span class="fc" id="L15">    }</span>
+
+    public void setPriority(int val) {
+<span class="nc" id="L18">        this.priority = val;</span>
+<span class="nc" id="L19">    }</span>
+
+    public int getPriority() {
+<span class="fc" id="L22">        return priority;</span>
+    }
+
+    public void setDirectoryName(String val) {
+<span class="nc" id="L26">        this.directoryName = val;</span>
+<span class="nc" id="L27">    }</span>
+
+    public String getDirectoryName() {
+<span class="fc" id="L30">        return directoryName;</span>
+    }
+
+    /**
+     * Compare in priority order, lower numbers mean high priority data Note: this comparator imposes ordering that is
+     * inconsistent with equals
+     */
+    @Override
+    public int compareTo(PriorityDirectory that) {
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (this.getPriority() &lt; that.getPriority()) {</span>
+<span class="fc" id="L40">            return -1;</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        } else if (that.getPriority() &lt; this.getPriority()) {</span>
+<span class="fc" id="L42">            return 1;</span>
+        } else {
+<span class="nc" id="L44">            return 0;</span>
+        }
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L50">        return directoryName + &quot;:&quot; + priority;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

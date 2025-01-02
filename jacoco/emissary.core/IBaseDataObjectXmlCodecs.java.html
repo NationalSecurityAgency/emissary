@@ -1,0 +1,830 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IBaseDataObjectXmlCodecs.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core</a> &gt; <span class="el_source">IBaseDataObjectXmlCodecs.java</span></div><h1>IBaseDataObjectXmlCodecs.java</h1><pre class="source lang-java linenums">package emissary.core;
+
+import emissary.core.channels.InMemoryChannelFactory;
+import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.core.channels.SeekableByteChannelHelper;
+import emissary.core.constants.IbdoMethodNames;
+import emissary.core.constants.IbdoXmlElementNames;
+import emissary.util.ByteUtil;
+import emissary.util.xml.AbstractJDOMUtil;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.util.AbstractMap;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.xml.XMLConstants;
+
+import static emissary.core.constants.IbdoXmlElementNames.BIRTH_ORDER;
+import static emissary.core.constants.IbdoXmlElementNames.BROKEN;
+import static emissary.core.constants.IbdoXmlElementNames.NAME;
+import static emissary.core.constants.IbdoXmlElementNames.NUM_CHILDREN;
+import static emissary.core.constants.IbdoXmlElementNames.NUM_SIBLINGS;
+import static emissary.core.constants.IbdoXmlElementNames.OUTPUTABLE;
+import static emissary.core.constants.IbdoXmlElementNames.PARAMETER;
+import static emissary.core.constants.IbdoXmlElementNames.PRIORITY;
+import static emissary.core.constants.IbdoXmlElementNames.PROCESSING_ERROR;
+import static emissary.core.constants.IbdoXmlElementNames.VALUE;
+import static emissary.core.constants.IbdoXmlElementNames.VIEW;
+
+/**
+ * This class contains the interfaces and implementations used to convert an IBDO-&amp;gt;XML and XML-&amp;gt;IBDO.
+ */
+public final class IBaseDataObjectXmlCodecs {
+    /**
+     * Logger instance
+     */
+<span class="fc" id="L53">    private static final Logger LOGGER = LoggerFactory.getLogger(IBaseDataObjectXmlCodecs.class);</span>
+    /**
+     * New line string to use for normalised XML
+     */
+<span class="fc" id="L57">    public static final String BASE64_NEW_LINE_STRING = new String(new byte[] {'\n'});</span>
+    /**
+     * Max width of Base64 char block.
+     */
+    public static final int BASE64_LINE_WIDTH = 76;
+    /**
+     * The Base64 encoder.
+     * 
+     * Uses same width as default, but overrides new line separator to use normalized XML separator.
+     * 
+     * See http://www.jdom.org/docs/apidocs/org/jdom2/output/Format.html#setLineSeparator(java.lang.String)
+     */
+<span class="fc" id="L69">    public static final Base64.Encoder BASE64_ENCODER = Base64.getMimeEncoder(BASE64_LINE_WIDTH, new byte[] {'\n'});</span>
+    /**
+     * The Base64 decoder.
+     */
+<span class="fc" id="L73">    private static final Base64.Decoder BASE64_DECODER = Base64.getMimeDecoder();</span>
+    public static final String BASE64 = &quot;base64&quot;;
+    public static final String SHA256 = &quot;sha256&quot;;
+    /**
+     * The XML attribute name for Encoding.
+     */
+    public static final String ENCODING_ATTRIBUTE_NAME = &quot;encoding&quot;;
+    /**
+     * The XML attribute name for Length.
+     */
+    public static final String LENGTH_ATTRIBUTE_NAME = &quot;length&quot;;
+    /**
+     * A map of element names of IBaseDataObject methods that get/set primitives and their default values.
+     */
+<span class="fc" id="L87">    public static final Map&lt;String, Object&gt; PRIMITVE_NAME_DEFAULT_MAP = Collections</span>
+<span class="fc" id="L88">            .unmodifiableMap(new ConcurrentHashMap&lt;&gt;(Stream.of(</span>
+<span class="fc" id="L89">                    new AbstractMap.SimpleEntry&lt;&gt;(BIRTH_ORDER, DataObjectFactory.getInstance().getBirthOrder()),</span>
+<span class="fc" id="L90">                    new AbstractMap.SimpleEntry&lt;&gt;(BROKEN, DataObjectFactory.getInstance().isBroken()),</span>
+<span class="fc" id="L91">                    new AbstractMap.SimpleEntry&lt;&gt;(NUM_CHILDREN, DataObjectFactory.getInstance().getNumChildren()),</span>
+<span class="fc" id="L92">                    new AbstractMap.SimpleEntry&lt;&gt;(NUM_SIBLINGS, DataObjectFactory.getInstance().getNumSiblings()),</span>
+<span class="fc" id="L93">                    new AbstractMap.SimpleEntry&lt;&gt;(OUTPUTABLE, DataObjectFactory.getInstance().isOutputable()),</span>
+<span class="fc" id="L94">                    new AbstractMap.SimpleEntry&lt;&gt;(PRIORITY, DataObjectFactory.getInstance().getPriority()))</span>
+<span class="fc" id="L95">                    .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue))));</span>
+    /**
+     * The XML namespace for &quot;xml&quot;.
+     */
+<span class="fc" id="L99">    public static final Namespace XML_NAMESPACE = Namespace.getNamespace(XMLConstants.XML_NS_PREFIX,</span>
+            XMLConstants.XML_NS_URI);
+    /**
+     * The Map for ElementDecoders, which uses ElementName -&amp;gt; MethodName mapping
+     */
+    private static final Map&lt;String, String&gt; METHOD_MAP;
+    static {
+<span class="fc" id="L106">        METHOD_MAP = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L107">        METHOD_MAP.put(IbdoXmlElementNames.BIRTH_ORDER, IbdoMethodNames.SET_BIRTH_ORDER);</span>
+<span class="fc" id="L108">        METHOD_MAP.put(IbdoXmlElementNames.BROKEN, IbdoMethodNames.SET_BROKEN);</span>
+<span class="fc" id="L109">        METHOD_MAP.put(IbdoXmlElementNames.CLASSIFICATION, IbdoMethodNames.SET_CLASSIFICATION);</span>
+<span class="fc" id="L110">        METHOD_MAP.put(IbdoXmlElementNames.CURRENT_FORM, IbdoMethodNames.SET_CURRENT_FORM);</span>
+<span class="fc" id="L111">        METHOD_MAP.put(IbdoXmlElementNames.DATA, IbdoMethodNames.SET_DATA);</span>
+<span class="fc" id="L112">        METHOD_MAP.put(IbdoXmlElementNames.FILENAME, IbdoMethodNames.SET_FILENAME);</span>
+<span class="fc" id="L113">        METHOD_MAP.put(IbdoXmlElementNames.FONT_ENCODING, IbdoMethodNames.SET_FONT_ENCODING);</span>
+<span class="fc" id="L114">        METHOD_MAP.put(IbdoXmlElementNames.FOOTER, IbdoMethodNames.SET_FOOTER);</span>
+<span class="fc" id="L115">        METHOD_MAP.put(IbdoXmlElementNames.HEADER, IbdoMethodNames.SET_HEADER);</span>
+<span class="fc" id="L116">        METHOD_MAP.put(IbdoXmlElementNames.HEADER_ENCODING, IbdoMethodNames.SET_HEADER_ENCODING);</span>
+<span class="fc" id="L117">        METHOD_MAP.put(IbdoXmlElementNames.ID, IbdoMethodNames.SET_ID);</span>
+<span class="fc" id="L118">        METHOD_MAP.put(IbdoXmlElementNames.NUM_CHILDREN, IbdoMethodNames.SET_NUM_CHILDREN);</span>
+<span class="fc" id="L119">        METHOD_MAP.put(IbdoXmlElementNames.NUM_SIBLINGS, IbdoMethodNames.SET_NUM_SIBLINGS);</span>
+<span class="fc" id="L120">        METHOD_MAP.put(IbdoXmlElementNames.OUTPUTABLE, IbdoMethodNames.SET_OUTPUTABLE);</span>
+<span class="fc" id="L121">        METHOD_MAP.put(IbdoXmlElementNames.PARAMETER, IbdoMethodNames.SET_PARAMETER);</span>
+<span class="fc" id="L122">        METHOD_MAP.put(IbdoXmlElementNames.PRIORITY, IbdoMethodNames.SET_PRIORITY);</span>
+<span class="fc" id="L123">        METHOD_MAP.put(IbdoXmlElementNames.PROCESSING_ERROR, IbdoMethodNames.ADD_PROCESSING_ERROR);</span>
+<span class="fc" id="L124">        METHOD_MAP.put(IbdoXmlElementNames.TRANSACTION_ID, IbdoMethodNames.SET_TRANSACTION_ID);</span>
+<span class="fc" id="L125">        METHOD_MAP.put(IbdoXmlElementNames.VIEW, IbdoMethodNames.ADD_ALTERNATE_VIEW);</span>
+<span class="fc" id="L126">        METHOD_MAP.put(IbdoXmlElementNames.WORK_BUNDLE_ID, IbdoMethodNames.SET_WORK_BUNDLE_ID);</span>
+    }
+    private static final String NO_IBDO_METHOD_MATCH_ELEMENT_NAME = &quot;Could not find the IBDO method for element name &quot;;
+
+    /**
+     * Interface for decoding an element value.
+     */
+    public interface ElementDecoder {
+        /**
+         * Decodes and XML element value and sets it on the specified IBDO method.
+         * 
+         * @param elements the list of elements to be decoded.
+         * @param ibdo the ibdo to set the values on.
+         * @param ibdoMethodName the ibdo method name to use to set the values.
+         * @throws IOException thrown if anything goes wrong.
+         */
+        void decode(List&lt;Element&gt; elements, IBaseDataObject ibdo, String ibdoMethodName) throws IOException;
+    }
+
+    /**
+     * Interface for encoding an element value.
+     */
+    public interface ElementEncoder&lt;T&gt; {
+        /**
+         * Encodes a list of values into an element that is attached to the parent element with the specified child element
+         * name.
+         * 
+         * @param values to be encoded.
+         * @param parentElement that the child element is to be attached to.
+         * @param childElementName the name of the child element.
+         */
+        void encode(List&lt;T&gt; values, Element parentElement, String childElementName);
+    }
+
+    /**
+     * Class that contains the element decoders.
+     */
+    public static class ElementDecoders {
+        /**
+         * Decoder for boolean elements.
+         */
+        private final ElementDecoder booleanDecoder;
+        /**
+         * Decoder for byte[] elements.
+         */
+        private final ElementDecoder byteArrayDecoder;
+        /**
+         * Decoder for integer elements.
+         */
+        private final ElementDecoder integerDecoder;
+        /**
+         * Decoder for SeekableByteChannel elements.
+         */
+        private final ElementDecoder seekableByteChannelFactoryDecoder;
+        /**
+         * Decoder for Map&amp;lt;String,byte[]&amp;gt; elements.
+         */
+        private final ElementDecoder stringByteArrayDecoder;
+        /**
+         * Decoder for String elements.
+         */
+        private final ElementDecoder stringDecoder;
+        /**
+         * Decoder for Map&amp;lt;String,Collection&amp;lt;Object&amp;gt;&amp;gt; elements.
+         */
+        private final ElementDecoder stringObjectDecoder;
+
+        /**
+         * Constructs a container for the XML element decoders.
+         * 
+         * @param booleanDecoder decoder for boolean elements
+         * @param byteArrayDecoder decoder for byte[] elements
+         * @param integerDecoder decoder for integer elements
+         * @param seekableByteChannelFactoryDecoder decoder for SeekableByteChannelElements.
+         * @param stringByteArrayDecoder decoder for Map&amp;lt;String,byte[]&amp;gt; elements
+         * @param stringDecoder decoder for String elements
+         * @param stringObjectDecoder decoder for Map&amp;lt;String,Collection&amp;lt;Object&amp;gt;&amp;gt; elements
+         */
+        public ElementDecoders(
+                final ElementDecoder booleanDecoder,
+                final ElementDecoder byteArrayDecoder,
+                final ElementDecoder integerDecoder,
+                final ElementDecoder seekableByteChannelFactoryDecoder,
+                final ElementDecoder stringByteArrayDecoder,
+                final ElementDecoder stringDecoder,
+<span class="fc" id="L211">                final ElementDecoder stringObjectDecoder) {</span>
+<span class="fc" id="L212">            Validate.notNull(booleanDecoder, &quot;Required: booleanDecoder not null!&quot;);</span>
+<span class="fc" id="L213">            Validate.notNull(byteArrayDecoder, &quot;Required: byteArrayDecoder not null!&quot;);</span>
+<span class="fc" id="L214">            Validate.notNull(integerDecoder, &quot;Required: integerDecoder not null!&quot;);</span>
+<span class="fc" id="L215">            Validate.notNull(seekableByteChannelFactoryDecoder, &quot;Required: seekableByteChannelFactoryDecoder not null!&quot;);</span>
+<span class="fc" id="L216">            Validate.notNull(stringByteArrayDecoder, &quot;Required: stringByteArrayDecoder not null!&quot;);</span>
+<span class="fc" id="L217">            Validate.notNull(stringDecoder, &quot;Required: stringDecoder not null!&quot;);</span>
+<span class="fc" id="L218">            Validate.notNull(stringObjectDecoder, &quot;Required: stringObjectDecoder not null!&quot;);</span>
+
+<span class="fc" id="L220">            this.booleanDecoder = booleanDecoder;</span>
+<span class="fc" id="L221">            this.byteArrayDecoder = byteArrayDecoder;</span>
+<span class="fc" id="L222">            this.integerDecoder = integerDecoder;</span>
+<span class="fc" id="L223">            this.seekableByteChannelFactoryDecoder = seekableByteChannelFactoryDecoder;</span>
+<span class="fc" id="L224">            this.stringByteArrayDecoder = stringByteArrayDecoder;</span>
+<span class="fc" id="L225">            this.stringDecoder = stringDecoder;</span>
+<span class="fc" id="L226">            this.stringObjectDecoder = stringObjectDecoder;</span>
+<span class="fc" id="L227">        }</span>
+
+        public void decodeBoolean(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
+<span class="fc" id="L230">            String methodName = getBdoMethodForElement(elementName);</span>
+<span class="fc" id="L231">            List&lt;Element&gt; elements = currentElement.getChildren(elementName);</span>
+<span class="fc" id="L232">            booleanDecoder.decode(elements, ibdo, methodName);</span>
+<span class="fc" id="L233">        }</span>
+
+        public void decodeByteArray(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
+<span class="fc" id="L236">            String methodName = getBdoMethodForElement(elementName);</span>
+<span class="fc" id="L237">            List&lt;Element&gt; elements = currentElement.getChildren(elementName);</span>
+<span class="fc" id="L238">            byteArrayDecoder.decode(elements, ibdo, methodName);</span>
+<span class="fc" id="L239">        }</span>
+
+        public void decodeInteger(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
+<span class="fc" id="L242">            String methodName = getBdoMethodForElement(elementName);</span>
+<span class="fc" id="L243">            List&lt;Element&gt; elements = currentElement.getChildren(elementName);</span>
+<span class="fc" id="L244">            integerDecoder.decode(elements, ibdo, methodName);</span>
+<span class="fc" id="L245">        }</span>
+
+        public void decodeSeekableByteChannelFactory(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
+<span class="fc" id="L248">            String methodName = getBdoMethodForElement(elementName);</span>
+<span class="fc" id="L249">            List&lt;Element&gt; elements = currentElement.getChildren(elementName);</span>
+<span class="fc" id="L250">            seekableByteChannelFactoryDecoder.decode(elements, ibdo, methodName);</span>
+<span class="fc" id="L251">        }</span>
+
+        public void decodeStringByteArray(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
+<span class="fc" id="L254">            String methodName = getBdoMethodForElement(elementName);</span>
+<span class="fc" id="L255">            List&lt;Element&gt; elements = currentElement.getChildren(elementName);</span>
+<span class="fc" id="L256">            stringByteArrayDecoder.decode(elements, ibdo, methodName);</span>
+<span class="fc" id="L257">        }</span>
+
+        public void decodeString(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
+<span class="fc" id="L260">            String methodName = getBdoMethodForElement(elementName);</span>
+<span class="fc" id="L261">            List&lt;Element&gt; elements = currentElement.getChildren(elementName);</span>
+<span class="fc" id="L262">            stringDecoder.decode(elements, ibdo, methodName);</span>
+<span class="fc" id="L263">        }</span>
+
+        public void decodeStringObject(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
+<span class="fc" id="L266">            String methodName = getBdoMethodForElement(elementName);</span>
+<span class="fc" id="L267">            List&lt;Element&gt; elements = currentElement.getChildren(elementName);</span>
+<span class="fc" id="L268">            stringObjectDecoder.decode(elements, ibdo, methodName);</span>
+<span class="fc" id="L269">        }</span>
+
+        private static String getBdoMethodForElement(String elementName) {
+<span class="fc" id="L272">            String methodName = METHOD_MAP.get(elementName);</span>
+<span class="fc" id="L273">            Validate.notNull(methodName, NO_IBDO_METHOD_MATCH_ELEMENT_NAME + elementName);</span>
+<span class="fc" id="L274">            return methodName;</span>
+        }
+    }
+
+    /**
+     * Class that contains the element encoders.
+     */
+    public static class ElementEncoders {
+        /**
+         * Encoder for boolean elements.
+         */
+        public final ElementEncoder&lt;Boolean&gt; booleanEncoder;
+        /**
+         * Encoder for byte[] elements.
+         */
+        public final ElementEncoder&lt;byte[]&gt; byteArrayEncoder;
+        /**
+         * Encoder for integer elements.
+         */
+        public final ElementEncoder&lt;Integer&gt; integerEncoder;
+        /**
+         * Encoder for SeekableByteChannel elements.
+         */
+        public final ElementEncoder&lt;SeekableByteChannelFactory&gt; seekableByteChannelFactoryEncoder;
+        /**
+         * Encoder for Map&amp;lt;String,byte[]&amp;gt; elements.
+         */
+        public final ElementEncoder&lt;Map&lt;String, byte[]&gt;&gt; stringByteArrayEncoder;
+        /**
+         * Encoder for String elements.
+         */
+        public final ElementEncoder&lt;String&gt; stringEncoder;
+        /**
+         * Encoder for Map&amp;lt;String, Collection&amp;lt;Object&amp;gt;&amp;gt; elements.
+         */
+        public final ElementEncoder&lt;Map&lt;String, Collection&lt;Object&gt;&gt;&gt; stringObjectEncoder;
+
+        /**
+         * Constructs a container for the XML element encoders.
+         * 
+         * @param booleanEncoder encoder for boolean elements
+         * @param byteArrayEncoder encoder for byte[] elements
+         * @param integerEncoder encoder for integer elements
+         * @param seekableByteChannelFactoryEncoder encoder for SeekableByteChannel elements
+         * @param stringByteArrayEncoder encoder for Map&amp;lt;String,byte[]&amp;gt; elements
+         * @param stringEncoder encoder for String elements.
+         * @param stringObjectEncoder encoder for Map&amp;lt;String, Collection&amp;lt;Object&amp;gt;&amp;gt; elements
+         */
+        public ElementEncoders(
+                final ElementEncoder&lt;Boolean&gt; booleanEncoder,
+                final ElementEncoder&lt;byte[]&gt; byteArrayEncoder,
+                final ElementEncoder&lt;Integer&gt; integerEncoder,
+                final ElementEncoder&lt;SeekableByteChannelFactory&gt; seekableByteChannelFactoryEncoder,
+                final ElementEncoder&lt;Map&lt;String, byte[]&gt;&gt; stringByteArrayEncoder,
+                final ElementEncoder&lt;String&gt; stringEncoder,
+<span class="fc" id="L329">                final ElementEncoder&lt;Map&lt;String, Collection&lt;Object&gt;&gt;&gt; stringObjectEncoder) {</span>
+<span class="fc" id="L330">            Validate.notNull(booleanEncoder, &quot;Required: booleanEncoder not null!&quot;);</span>
+<span class="fc" id="L331">            Validate.notNull(byteArrayEncoder, &quot;Required: byteArrayEncoder not null!&quot;);</span>
+<span class="fc" id="L332">            Validate.notNull(integerEncoder, &quot;Required: integerEncoder not null!&quot;);</span>
+<span class="fc" id="L333">            Validate.notNull(seekableByteChannelFactoryEncoder, &quot;Required: seekableByteChannelFactoryEncoder not null!&quot;);</span>
+<span class="fc" id="L334">            Validate.notNull(stringByteArrayEncoder, &quot;Required: stringByteArrayEncoder not null!&quot;);</span>
+<span class="fc" id="L335">            Validate.notNull(stringEncoder, &quot;Required: stringEncoder not null!&quot;);</span>
+<span class="fc" id="L336">            Validate.notNull(stringObjectEncoder, &quot;Required: stringObjectEncoder not null!&quot;);</span>
+
+<span class="fc" id="L338">            this.booleanEncoder = booleanEncoder;</span>
+<span class="fc" id="L339">            this.byteArrayEncoder = byteArrayEncoder;</span>
+<span class="fc" id="L340">            this.integerEncoder = integerEncoder;</span>
+<span class="fc" id="L341">            this.seekableByteChannelFactoryEncoder = seekableByteChannelFactoryEncoder;</span>
+<span class="fc" id="L342">            this.stringByteArrayEncoder = stringByteArrayEncoder;</span>
+<span class="fc" id="L343">            this.stringEncoder = stringEncoder;</span>
+<span class="fc" id="L344">            this.stringObjectEncoder = stringObjectEncoder;</span>
+<span class="fc" id="L345">        }</span>
+    }
+
+    /**
+     * Implementation of an XML element decoder that has a boolean value.
+     */
+<span class="fc" id="L351">    public static final ElementDecoder DEFAULT_BOOLEAN_DECODER = (elements, ibdo, ibdoMethodName) -&gt; {</span>
+        try {
+<span class="fc" id="L353">            final Method method = getIbdoMethod(ibdoMethodName, boolean.class);</span>
+
+<span class="fc bfc" id="L355" title="All 2 branches covered.">            for (final Element element : elements) {</span>
+<span class="fc" id="L356">                method.invoke(ibdo, Boolean.valueOf(element.getValue()));</span>
+<span class="fc" id="L357">            }</span>
+<span class="fc" id="L358">        } catch (ReflectiveOperationException e) {</span>
+<span class="fc" id="L359">            throw new IOException(&quot;Failed to decode boolean!&quot;, e);</span>
+<span class="fc" id="L360">        }</span>
+<span class="fc" id="L361">    };</span>
+
+    /**
+     * Implementation of an XML element decoder that has a SeekableByteChannel value.
+     */
+<span class="fc" id="L366">    public static final ElementDecoder DEFAULT_SEEKABLE_BYTE_CHANNEL_FACTORY_DECODER = (elements, ibdo, ibdoMethodName) -&gt; {</span>
+        try {
+<span class="fc" id="L368">            final Method method = getIbdoMethod(ibdoMethodName, SeekableByteChannelFactory.class);</span>
+
+<span class="fc bfc" id="L370" title="All 2 branches covered.">            for (final Element element : elements) {</span>
+<span class="fc" id="L371">                final String elementValue = element.getValue();</span>
+<span class="fc" id="L372">                final String encoding = element.getAttributeValue(ENCODING_ATTRIBUTE_NAME);</span>
+
+<span class="fc" id="L374">                method.invoke(ibdo, InMemoryChannelFactory.create(extractBytes(encoding, elementValue)));</span>
+<span class="fc" id="L375">            }</span>
+<span class="fc" id="L376">        } catch (ReflectiveOperationException e) {</span>
+<span class="fc" id="L377">            throw new IOException(&quot;Failed to decode SeekableByteChannelFactory!&quot;, e);</span>
+<span class="fc" id="L378">        }</span>
+<span class="fc" id="L379">    };</span>
+
+    /**
+     * Implementation of an XML element decoder that has a byte array value.
+     */
+<span class="fc" id="L384">    public static final ElementDecoder DEFAULT_BYTE_ARRAY_DECODER = (elements, ibdo, ibdoMethodName) -&gt; {</span>
+        try {
+<span class="fc" id="L386">            final Method method = getIbdoMethod(ibdoMethodName, byte[].class);</span>
+
+<span class="fc bfc" id="L388" title="All 2 branches covered.">            for (final Element element : elements) {</span>
+<span class="fc" id="L389">                final String elementValue = element.getValue();</span>
+<span class="fc" id="L390">                final String encoding = element.getAttributeValue(ENCODING_ATTRIBUTE_NAME);</span>
+
+<span class="fc" id="L392">                method.invoke(ibdo, (Object) extractBytes(encoding, elementValue));</span>
+<span class="fc" id="L393">            }</span>
+<span class="fc" id="L394">        } catch (ReflectiveOperationException e) {</span>
+<span class="fc" id="L395">            throw new IOException(&quot;Failed to decode byte[]!&quot;, e);</span>
+<span class="fc" id="L396">        }</span>
+<span class="fc" id="L397">    };</span>
+
+    /**
+     * Implementation of an XML element decoder that has an integer value.
+     */
+<span class="fc" id="L402">    public static final ElementDecoder DEFAULT_INTEGER_DECODER = (elements, ibdo, ibdoMethodName) -&gt; {</span>
+        try {
+<span class="fc" id="L404">            final Method method = getIbdoMethod(ibdoMethodName, int.class);</span>
+
+<span class="fc bfc" id="L406" title="All 2 branches covered.">            for (final Element element : elements) {</span>
+<span class="fc" id="L407">                method.invoke(ibdo, Integer.decode(element.getValue()));</span>
+<span class="fc" id="L408">            }</span>
+<span class="fc" id="L409">        } catch (ReflectiveOperationException | NumberFormatException e) {</span>
+<span class="fc" id="L410">            throw new IOException(&quot;Failed to decode integer!&quot;, e);</span>
+<span class="fc" id="L411">        }</span>
+<span class="fc" id="L412">    };</span>
+
+    /**
+     * Implementation of an XML element decoder that has a string value.
+     */
+<span class="fc" id="L417">    public static final ElementDecoder DEFAULT_STRING_DECODER = (elements, ibdo, ibdoMethodName) -&gt; {</span>
+        try {
+<span class="fc" id="L419">            final Method method = getIbdoMethod(ibdoMethodName, String.class);</span>
+
+<span class="fc bfc" id="L421" title="All 2 branches covered.">            for (final Element element : elements) {</span>
+<span class="fc" id="L422">                final String elementValue = element.getValue();</span>
+<span class="fc" id="L423">                final String encoding = element.getAttributeValue(ENCODING_ATTRIBUTE_NAME);</span>
+
+<span class="fc" id="L425">                method.invoke(ibdo, new String(extractBytes(encoding, elementValue), StandardCharsets.UTF_8));</span>
+<span class="fc" id="L426">            }</span>
+<span class="fc" id="L427">        } catch (ReflectiveOperationException e) {</span>
+<span class="fc" id="L428">            throw new IOException(&quot;Failed to decode string!&quot;, e);</span>
+<span class="fc" id="L429">        }</span>
+<span class="fc" id="L430">    };</span>
+
+    /**
+     * Implementation of an XML element decoder that has a mapped value where the key is a string and the value is a byte
+     * array.
+     */
+<span class="fc" id="L436">    public static final ElementDecoder DEFAULT_STRING_BYTE_ARRAY_DECODER = (elements, ibdo, ibdoMethodName) -&gt; {</span>
+        try {
+<span class="fc" id="L438">            final Method method = getIbdoMethod(ibdoMethodName, String.class, byte[].class);</span>
+
+<span class="fc bfc" id="L440" title="All 2 branches covered.">            for (final Element element : elements) {</span>
+<span class="fc" id="L441">                final Element nameElement = element.getChild(NAME);</span>
+<span class="fc" id="L442">                final String name = nameElement.getValue();</span>
+<span class="fc" id="L443">                final String nameEncoding = nameElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);</span>
+<span class="fc" id="L444">                final String nameDecoded = new String(extractBytes(nameEncoding, name), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L445">                final Element valueElement = element.getChild(VALUE);</span>
+<span class="fc" id="L446">                final String value = valueElement.getValue();</span>
+<span class="fc" id="L447">                final String valueEncoding = valueElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);</span>
+<span class="fc" id="L448">                final byte[] valueDecoded = extractBytes(valueEncoding, value);</span>
+
+<span class="fc" id="L450">                method.invoke(ibdo, nameDecoded, valueDecoded);</span>
+<span class="fc" id="L451">            }</span>
+<span class="fc" id="L452">        } catch (ReflectiveOperationException e) {</span>
+<span class="fc" id="L453">            throw new IOException(&quot;Failed to decode a mapping of String and byte[]!&quot;, e);</span>
+<span class="fc" id="L454">        }</span>
+<span class="fc" id="L455">    };</span>
+
+    /**
+     * Implementation of an XML element decoder that has a mapped value where the key is a string and the value is an
+     * object.
+     */
+<span class="fc" id="L461">    public static final ElementDecoder DEFAULT_STRING_OBJECT_DECODER = (elements, ibdo, ibdoMethodName) -&gt; {</span>
+        try {
+<span class="fc" id="L463">            final Method method = getIbdoMethod(ibdoMethodName, String.class, CharSequence.class);</span>
+
+<span class="fc bfc" id="L465" title="All 2 branches covered.">            for (final Element element : elements) {</span>
+<span class="fc" id="L466">                final Element nameElement = element.getChild(NAME);</span>
+<span class="fc" id="L467">                final String name = nameElement.getValue();</span>
+<span class="fc" id="L468">                final String nameEncoding = nameElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);</span>
+<span class="fc" id="L469">                final String nameDecoded = new String(extractBytes(nameEncoding, name), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L470">                final Element valueElement = element.getChild(VALUE);</span>
+<span class="fc" id="L471">                final String value = valueElement.getValue();</span>
+<span class="fc" id="L472">                final String valueEncoding = valueElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);</span>
+<span class="fc" id="L473">                final String valueDecoded = new String(extractBytes(valueEncoding, value));</span>
+
+<span class="fc" id="L475">                method.invoke(ibdo, nameDecoded, valueDecoded);</span>
+<span class="fc" id="L476">            }</span>
+<span class="fc" id="L477">        } catch (ReflectiveOperationException e) {</span>
+<span class="fc" id="L478">            throw new IOException(&quot;Failed to decode a mapping of String and Object!&quot;, e);</span>
+<span class="fc" id="L479">        }</span>
+<span class="fc" id="L480">    };</span>
+
+    /**
+     * An implementation of an XML element encoder for SeekableByteChannel's that produces a base64 value.
+     */
+<span class="fc" id="L485">    public static final ElementEncoder&lt;SeekableByteChannelFactory&gt; DEFAULT_SEEKABLE_BYTE_CHANNEL_FACTORY_ENCODER =</span>
+            new SeekableByteChannelFactoryEncoder();
+
+    private static class SeekableByteChannelFactoryEncoder implements ElementEncoder&lt;SeekableByteChannelFactory&gt; {
+        @Override
+        public void encode(final List&lt;SeekableByteChannelFactory&gt; values, final Element parentElement, final String childElementName) {
+<span class="fc bfc" id="L491" title="All 2 branches covered.">            for (final SeekableByteChannelFactory value : values) {</span>
+<span class="fc bfc" id="L492" title="All 2 branches covered.">                if (value != null) {</span>
+                    try {
+<span class="fc" id="L494">                        final byte[] bytes = SeekableByteChannelHelper.getByteArrayFromChannel(value,</span>
+                                BaseDataObject.MAX_BYTE_ARRAY_SIZE);
+<span class="fc" id="L496">                        final Element childElement = preserve(protectedElementBase64(childElementName, bytes));</span>
+
+<span class="fc" id="L498">                        childElement.setAttribute(LENGTH_ATTRIBUTE_NAME, Integer.toString(bytes.length));</span>
+
+<span class="fc" id="L500">                        parentElement.addContent(childElement);</span>
+<span class="fc" id="L501">                    } catch (final IOException e) {</span>
+<span class="fc" id="L502">                        LOGGER.error(&quot;Could not get bytes from SeekableByteChannel!&quot;, e);</span>
+<span class="fc" id="L503">                    }</span>
+                }
+<span class="fc" id="L505">            }</span>
+<span class="fc" id="L506">        }</span>
+    }
+
+    /**
+     * An implementation of an XML element encoder for SeekableByteChannel's that produces a SHA256 hash value.
+     */
+<span class="fc" id="L512">    public static final ElementEncoder&lt;SeekableByteChannelFactory&gt; SHA256_SEEKABLE_BYTE_CHANNEL_FACTORY_ENCODER =</span>
+            new Sha256SeekableByteChannelFactoryEncoder();
+
+    private static class Sha256SeekableByteChannelFactoryEncoder implements ElementEncoder&lt;SeekableByteChannelFactory&gt; {
+        @Override
+        public void encode(final List&lt;SeekableByteChannelFactory&gt; values, final Element parentElement, final String childElementName) {
+<span class="fc bfc" id="L518" title="All 2 branches covered.">            for (final SeekableByteChannelFactory value : values) {</span>
+<span class="fc bfc" id="L519" title="All 2 branches covered.">                if (value != null) {</span>
+                    try {
+<span class="fc" id="L521">                        final byte[] bytes = SeekableByteChannelHelper.getByteArrayFromChannel(value,</span>
+                                BaseDataObject.MAX_BYTE_ARRAY_SIZE);
+<span class="fc" id="L523">                        final Element childElement = preserve(protectedElementHash(childElementName, bytes));</span>
+
+<span class="fc" id="L525">                        childElement.setAttribute(LENGTH_ATTRIBUTE_NAME, Integer.toString(bytes.length));</span>
+
+<span class="fc" id="L527">                        parentElement.addContent(childElement);</span>
+<span class="fc" id="L528">                    } catch (final IOException e) {</span>
+<span class="fc" id="L529">                        LOGGER.error(&quot;Could not get bytes from SeekableByteChannel!&quot;, e);</span>
+<span class="fc" id="L530">                    }</span>
+                }
+<span class="fc" id="L532">            }</span>
+<span class="fc" id="L533">        }</span>
+
+        private static Element protectedElementHash(final String name, final byte[] bytes) {
+<span class="fc" id="L536">            final Element element = new Element(name);</span>
+
+<span class="fc bfc" id="L538" title="All 2 branches covered.">            if (ByteUtil.containsNonIndexableBytes(bytes)) {</span>
+<span class="fc" id="L539">                element.setAttribute(ENCODING_ATTRIBUTE_NAME, SHA256);</span>
+<span class="fc" id="L540">                element.addContent(ByteUtil.sha256Bytes(bytes));</span>
+            } else {
+<span class="fc" id="L542">                element.addContent(new String(bytes, StandardCharsets.UTF_8));</span>
+            }
+
+<span class="fc" id="L545">            return element;</span>
+        }
+    }
+
+    /**
+     * An implementation of an XML element encoder for integers.
+     */
+<span class="fc" id="L552">    public static final ElementEncoder&lt;Integer&gt; DEFAULT_INTEGER_ENCODER = new IntegerEncoder();</span>
+
+    private static class IntegerEncoder implements ElementEncoder&lt;Integer&gt; {
+        @Override
+        public void encode(final List&lt;Integer&gt; values, final Element parentElement, final String childElementName) {
+<span class="fc bfc" id="L557" title="All 2 branches covered.">            for (final int value : values) {</span>
+<span class="fc bfc" id="L558" title="All 2 branches covered.">                if (((Integer) PRIMITVE_NAME_DEFAULT_MAP.get(childElementName)) != value) {</span>
+<span class="fc" id="L559">                    parentElement.addContent(AbstractJDOMUtil.simpleElement(childElementName, value));</span>
+                }
+<span class="fc" id="L561">            }</span>
+<span class="fc" id="L562">        }</span>
+    }
+
+    /**
+     * An implementation of an XML element encoder for Strings.
+     */
+<span class="fc" id="L568">    public static final ElementEncoder&lt;String&gt; DEFAULT_STRING_ENCODER = new StringEncoder();</span>
+
+    private static class StringEncoder implements ElementEncoder&lt;String&gt; {
+        @Override
+        public void encode(final List&lt;String&gt; values, final Element parentElement, final String childElementName) {
+<span class="fc bfc" id="L573" title="All 2 branches covered.">            for (int i = values.size() - 1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L574">                String value = values.get(i);</span>
+
+<span class="fc bfc" id="L576" title="All 4 branches covered.">                if (PROCESSING_ERROR.equals(childElementName) &amp;&amp; StringUtils.isNotEmpty(value)) {</span>
+<span class="fc" id="L577">                    value = value.substring(0, value.length() - 1);</span>
+                }
+
+<span class="fc bfc" id="L580" title="All 2 branches covered.">                if (value != null) {</span>
+<span class="fc" id="L581">                    parentElement.addContent(preserve(protectedElement(childElementName, value)));</span>
+                }
+            }
+<span class="fc" id="L584">        }</span>
+    }
+
+    /**
+     * An implementation of an XML element encoder for byte[].
+     */
+<span class="fc" id="L590">    public static final ElementEncoder&lt;byte[]&gt; DEFAULT_BYTE_ARRAY_ENCODER = new ByteArrayEncoder();</span>
+
+    private static class ByteArrayEncoder implements ElementEncoder&lt;byte[]&gt; {
+        @Override
+        public void encode(final List&lt;byte[]&gt; values, final Element parentElement, final String childElementName) {
+<span class="fc bfc" id="L595" title="All 2 branches covered.">            for (final byte[] value : values) {</span>
+<span class="fc bfc" id="L596" title="All 2 branches covered.">                if (value != null) {</span>
+<span class="fc" id="L597">                    final Element childElement = preserve(protectedElementBase64(childElementName, value));</span>
+
+<span class="fc" id="L599">                    childElement.setAttribute(LENGTH_ATTRIBUTE_NAME, Integer.toString(value.length));</span>
+
+<span class="fc" id="L601">                    parentElement.addContent(childElement);</span>
+                }
+<span class="fc" id="L603">            }</span>
+<span class="fc" id="L604">        }</span>
+    }
+
+    /**
+     * An implementation of an XML element encoder for booleans.
+     */
+<span class="fc" id="L610">    public static final ElementEncoder&lt;Boolean&gt; DEFAULT_BOOLEAN_ENCODER = new BooleanEncoder();</span>
+
+    private static class BooleanEncoder implements ElementEncoder&lt;Boolean&gt; {
+        @Override
+        public void encode(final List&lt;Boolean&gt; values, final Element parentElement, final String childElementName) {
+<span class="fc bfc" id="L615" title="All 2 branches covered.">            for (final boolean value : values) {</span>
+<span class="fc bfc" id="L616" title="All 2 branches covered.">                if (!((Boolean) PRIMITVE_NAME_DEFAULT_MAP.get(childElementName)).equals(value)) {</span>
+<span class="fc" id="L617">                    parentElement.addContent(AbstractJDOMUtil.simpleElement(childElementName, value));</span>
+                }
+<span class="fc" id="L619">            }</span>
+<span class="fc" id="L620">        }</span>
+    }
+
+    /**
+     * An implementation of an XML element encoder for Map&amp;lt;String, Collection&amp;lt;Object&amp;gt;&amp;gt;.
+     */
+<span class="fc" id="L626">    public static final ElementEncoder&lt;Map&lt;String, Collection&lt;Object&gt;&gt;&gt; DEFAULT_STRING_OBJECT_ENCODER = new StringObjectEncoder();</span>
+
+    private static class StringObjectEncoder implements ElementEncoder&lt;Map&lt;String, Collection&lt;Object&gt;&gt;&gt; {
+        @Override
+        public void encode(final List&lt;Map&lt;String, Collection&lt;Object&gt;&gt;&gt; values, final Element parentElement, final String childElementName) {
+<span class="fc bfc" id="L631" title="All 2 branches covered.">            for (final Map&lt;String, Collection&lt;Object&gt;&gt; value : values) {</span>
+<span class="fc bfc" id="L632" title="All 2 branches covered.">                for (final Entry&lt;String, Collection&lt;Object&gt;&gt; parameter : value.entrySet()) {</span>
+<span class="fc bfc" id="L633" title="All 2 branches covered.">                    for (final Object item : parameter.getValue()) {</span>
+<span class="fc" id="L634">                        final Element metaElement = new Element(PARAMETER);</span>
+
+<span class="fc" id="L636">                        parentElement.addContent(metaElement);</span>
+<span class="fc" id="L637">                        metaElement.addContent(preserve(protectedElement(NAME, parameter.getKey())));</span>
+<span class="fc" id="L638">                        metaElement.addContent(preserve(protectedElement(VALUE, item.toString())));</span>
+<span class="fc" id="L639">                    }</span>
+<span class="fc" id="L640">                }</span>
+<span class="fc" id="L641">            }</span>
+<span class="fc" id="L642">        }</span>
+    }
+
+    /**
+     * An implementation of an XML element encoder for Map&amp;lt;String, byte[]&amp;gt;.
+     */
+<span class="fc" id="L648">    public static final ElementEncoder&lt;Map&lt;String, byte[]&gt;&gt; DEFAULT_STRING_BYTE_ARRAY_ENCODER = new StringByteArrayEncoder();</span>
+
+    private static class StringByteArrayEncoder implements ElementEncoder&lt;Map&lt;String, byte[]&gt;&gt; {
+        @Override
+        public void encode(final List&lt;Map&lt;String, byte[]&gt;&gt; values, final Element parentElement, final String childElementName) {
+<span class="fc bfc" id="L653" title="All 2 branches covered.">            for (final Map&lt;String, byte[]&gt; value : values) {</span>
+<span class="fc bfc" id="L654" title="All 2 branches covered.">                for (final Entry&lt;String, byte[]&gt; view : value.entrySet()) {</span>
+<span class="fc" id="L655">                    final Element metaElement = new Element(VIEW);</span>
+<span class="fc" id="L656">                    final Element nameElement = preserve(protectedElement(NAME, view.getKey()));</span>
+<span class="fc" id="L657">                    final Element valueElement = preserve(protectedElementBase64(VALUE, view.getValue()));</span>
+
+<span class="fc" id="L659">                    valueElement.setAttribute(LENGTH_ATTRIBUTE_NAME, Integer.toString(view.getValue().length));</span>
+
+<span class="fc" id="L661">                    parentElement.addContent(metaElement);</span>
+<span class="fc" id="L662">                    metaElement.addContent(nameElement);</span>
+<span class="fc" id="L663">                    metaElement.addContent(valueElement);</span>
+<span class="fc" id="L664">                }</span>
+<span class="fc" id="L665">            }</span>
+<span class="fc" id="L666">        }</span>
+    }
+
+<span class="fc" id="L669">    public static final ElementEncoder&lt;Map&lt;String, byte[]&gt;&gt; SHA256_STRING_BYTE_ARRAY_ENCODER = new Sha256StringByteArrayEncoder();</span>
+
+    private static class Sha256StringByteArrayEncoder implements ElementEncoder&lt;Map&lt;String, byte[]&gt;&gt; {
+        @Override
+        public void encode(final List&lt;Map&lt;String, byte[]&gt;&gt; values, final Element parentElement, final String childElementName) {
+<span class="fc bfc" id="L674" title="All 2 branches covered.">            for (final Map&lt;String, byte[]&gt; value : values) {</span>
+<span class="fc bfc" id="L675" title="All 2 branches covered.">                for (final Entry&lt;String, byte[]&gt; view : value.entrySet()) {</span>
+<span class="fc" id="L676">                    final Element metaElement = new Element(IbdoXmlElementNames.VIEW);</span>
+<span class="fc" id="L677">                    final Element nameElement = preserve(protectedElement(IbdoXmlElementNames.NAME, view.getKey()));</span>
+<span class="fc" id="L678">                    final Element valueElement = preserve(protectedElementSha256(IbdoXmlElementNames.VALUE, view.getValue()));</span>
+
+<span class="fc" id="L680">                    valueElement.setAttribute(LENGTH_ATTRIBUTE_NAME, Integer.toString(view.getValue().length));</span>
+
+<span class="fc" id="L682">                    parentElement.addContent(metaElement);</span>
+<span class="fc" id="L683">                    metaElement.addContent(nameElement);</span>
+<span class="fc" id="L684">                    metaElement.addContent(valueElement);</span>
+<span class="fc" id="L685">                }</span>
+<span class="fc" id="L686">            }</span>
+<span class="fc" id="L687">        }</span>
+    }
+
+    /**
+     * The default set of XML element decoders.
+     */
+<span class="fc" id="L693">    public static final ElementDecoders DEFAULT_ELEMENT_DECODERS = new ElementDecoders(</span>
+            DEFAULT_BOOLEAN_DECODER,
+            DEFAULT_BYTE_ARRAY_DECODER,
+            DEFAULT_INTEGER_DECODER,
+            DEFAULT_SEEKABLE_BYTE_CHANNEL_FACTORY_DECODER,
+            DEFAULT_STRING_BYTE_ARRAY_DECODER,
+            DEFAULT_STRING_DECODER,
+            DEFAULT_STRING_OBJECT_DECODER);
+
+    /**
+     * The default set of XML element encoders.
+     */
+<span class="fc" id="L705">    public static final ElementEncoders DEFAULT_ELEMENT_ENCODERS = new ElementEncoders(</span>
+            DEFAULT_BOOLEAN_ENCODER,
+            DEFAULT_BYTE_ARRAY_ENCODER,
+            DEFAULT_INTEGER_ENCODER,
+            DEFAULT_SEEKABLE_BYTE_CHANNEL_FACTORY_ENCODER,
+            DEFAULT_STRING_BYTE_ARRAY_ENCODER,
+            DEFAULT_STRING_ENCODER,
+            DEFAULT_STRING_OBJECT_ENCODER);
+
+    /**
+     * The set of XML element encoders that will sha256 hash the specified element types.
+     */
+<span class="fc" id="L717">    public static final ElementEncoders SHA256_ELEMENT_ENCODERS = new ElementEncoders(</span>
+            DEFAULT_BOOLEAN_ENCODER,
+            DEFAULT_BYTE_ARRAY_ENCODER,
+            DEFAULT_INTEGER_ENCODER,
+            SHA256_SEEKABLE_BYTE_CHANNEL_FACTORY_ENCODER,
+            SHA256_STRING_BYTE_ARRAY_ENCODER,
+            DEFAULT_STRING_ENCODER,
+            DEFAULT_STRING_OBJECT_ENCODER);
+
+    private IBaseDataObjectXmlCodecs() {}
+
+    /**
+     * Return UTF8 bytes from an XML value, decoding base64 if required
+     * 
+     * @param encoding e.g. 'base64', otherwise it returns the bytes as they are presented
+     * @param elementValue containing the data
+     * @return the data from elementValue, decoded from base64 if required
+     */
+    public static byte[] extractBytes(final String encoding, final String elementValue) {
+<span class="fc bfc" id="L736" title="All 2 branches covered.">        if (BASE64.equalsIgnoreCase(encoding)) {</span>
+<span class="fc" id="L737">            final String newElementValue = elementValue.replace(&quot;\n&quot;, &quot;&quot;);</span>
+<span class="fc" id="L738">            final byte[] bytes = newElementValue.getBytes(StandardCharsets.UTF_8);</span>
+<span class="fc" id="L739">            return BASE64_DECODER.decode(bytes);</span>
+        }
+
+<span class="fc" id="L742">        return elementValue.getBytes(StandardCharsets.UTF_8);</span>
+    }
+
+    /**
+     * Adds preservation attributes to an XML element.
+     * 
+     * @param element to add preservation attributes to.
+     * @return the element passed in with the preservation elements added.
+     */
+    public static Element preserve(final Element element) {
+<span class="fc" id="L752">        element.setAttribute(&quot;space&quot;, &quot;preserve&quot;, XML_NAMESPACE);</span>
+
+<span class="fc" id="L754">        return element;</span>
+    }
+
+    /**
+     * Creates a protected XML string element.
+     * 
+     * @param name of the XML element
+     * @param string value of the XML element
+     * @return the protected XML element.
+     */
+    public static Element protectedElement(final String name, final String string) {
+<span class="fc" id="L765">        return protectedElementBase64(name, string.getBytes(StandardCharsets.UTF_8));</span>
+    }
+
+    /**
+     * Creates a 'protected' element which can be encoded with base64 if it contains non-printable characters
+     * 
+     * See method source for specific definition of 'non-printable'.
+     * 
+     * @param name of the element
+     * @param bytes to wrap, if they contain non-printable characters
+     * @return the created element
+     */
+    public static Element protectedElementBase64(final String name, final byte[] bytes) {
+<span class="fc" id="L778">        final Element element = new Element(name);</span>
+
+<span class="fc bfc" id="L780" title="All 2 branches covered.">        if (ByteUtil.containsNonIndexableBytes(bytes)) {</span>
+<span class="fc" id="L781">            String base64String = BASE64_NEW_LINE_STRING +</span>
+<span class="fc" id="L782">                    BASE64_ENCODER.encodeToString(bytes) +</span>
+                    BASE64_NEW_LINE_STRING;
+
+<span class="fc" id="L785">            element.setAttribute(ENCODING_ATTRIBUTE_NAME, BASE64);</span>
+<span class="fc" id="L786">            element.addContent(base64String);</span>
+<span class="fc" id="L787">        } else {</span>
+<span class="fc" id="L788">            element.addContent(new String(bytes, StandardCharsets.UTF_8));</span>
+        }
+
+<span class="fc" id="L791">        return element;</span>
+    }
+
+    /**
+     * Creates a 'protected' element which can be hashed with sha256 if it contains non-printable characters
+     * 
+     * See method source for specific definition of 'non-printable'.
+     * 
+     * @param name of the element
+     * @param bytes to wrap, if they contain non-printable characters.
+     * @return the created element
+     */
+    public static Element protectedElementSha256(final String name, final byte[] bytes) {
+<span class="fc" id="L804">        final Element element = new Element(name);</span>
+
+<span class="fc bfc" id="L806" title="All 2 branches covered.">        if (ByteUtil.containsNonIndexableBytes(bytes)) {</span>
+<span class="fc" id="L807">            element.setAttribute(IBaseDataObjectXmlCodecs.ENCODING_ATTRIBUTE_NAME, IBaseDataObjectXmlCodecs.SHA256);</span>
+<span class="fc" id="L808">            element.addContent(ByteUtil.sha256Bytes(bytes));</span>
+        } else {
+<span class="fc" id="L810">            element.addContent(new String(bytes, StandardCharsets.UTF_8));</span>
+        }
+
+<span class="fc" id="L813">        return element;</span>
+    }
+
+    /**
+     * Gets the requested method object from the IBaseDataObject class.
+     * 
+     * @param methodName name of the ibdo method
+     * @param parameterTypes list of ibdo method parameter types
+     * @throws SecurityException if a security manager is present and encounters a problem.
+     * @throws NoSuchMethodException if a matching method is not found
+     * @return the ibdo method object
+     */
+    public static Method getIbdoMethod(final String methodName, final Class&lt;?&gt;... parameterTypes)
+            throws NoSuchMethodException {
+<span class="fc" id="L827">        return IBaseDataObject.class.getMethod(methodName, parameterTypes);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

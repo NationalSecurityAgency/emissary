@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Shutdown.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.server.api</a> &gt; <span class="el_source">Shutdown.java</span></div><h1>Shutdown.java</h1><pre class="source lang-java linenums">package emissary.server.api;
+
+import emissary.server.EmissaryServer;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Path(&quot;&quot;)
+// context is api
+<span class="nc" id="L17">public class Shutdown {</span>
+
+<span class="nc" id="L19">    private static final Logger LOG = LoggerFactory.getLogger(Shutdown.class);</span>
+
+    public static final String SHUTDOWN = &quot;shutdown&quot;;
+
+    @POST
+    @Path(&quot;/&quot; + SHUTDOWN)
+    @Produces(MediaType.TEXT_HTML)
+    public Response shutdownNow(@Context HttpServletRequest request) {
+<span class="nc" id="L27">        return shutdown(request, false);</span>
+    }
+
+    @POST
+    @Path(&quot;/&quot; + SHUTDOWN + &quot;/force&quot;)
+    @Produces(MediaType.TEXT_HTML)
+    public Response forceShutdown(@Context HttpServletRequest request) {
+<span class="nc" id="L34">        return shutdown(request, true);</span>
+    }
+
+    @SuppressWarnings(&quot;SystemExitOutsideMain&quot;)
+    protected Response shutdown(HttpServletRequest request, boolean force) {
+        try {
+<span class="nc" id="L40">            LOG.debug(&quot;Calling the stop method&quot;);</span>
+            // need a new thread so the response will return
+<span class="nc" id="L42">            new Thread(() -&gt; {</span>
+                try {
+<span class="nc bnc" id="L44" title="All 2 branches missed.">                    if (force) {</span>
+<span class="nc" id="L45">                        EmissaryServer.stopServerForce();</span>
+                    } else {
+<span class="nc" id="L47">                        EmissaryServer.stopServer();</span>
+                    }
+<span class="nc" id="L49">                } catch (RuntimeException e) {</span>
+                    // swallow
+<span class="nc" id="L51">                }</span>
+<span class="nc" id="L52">                System.exit(0);</span>
+<span class="nc" id="L53">            }).start();</span>
+<span class="nc" id="L54">            return Response.ok(&quot;Shutdown initiated. Come again soon!&quot;).build();</span>
+<span class="nc" id="L55">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L56">            LOG.warn(&quot;Exception trying to initiate shutdown: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L57">            return Response.serverError().entity(&quot;Error trying to initiate shutdown&quot;).build();</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

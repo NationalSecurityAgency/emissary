@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DirectoryAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.directory</a> &gt; <span class="el_source">DirectoryAdapter.java</span></div><h1>DirectoryAdapter.java</h1><pre class="source lang-java linenums">package emissary.directory;
+
+import emissary.core.EmissaryException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Set;
+
+/**
+ * This class implements all of the emissary.directory.DirectoryPlace observer interfaces with null implementations so
+ * that it is easy to extend and just provide behaviour for the methods of interest.
+ */
+public class DirectoryAdapter implements PeerObserver, PlaceObserver {
+
+    // Our logger
+<span class="fc" id="L17">    protected static final Logger logger = LoggerFactory.getLogger(DirectoryAdapter.class);</span>
+
+    /**
+     * Pattern for place observer subscriptions
+     * 
+     * @see emissary.directory.KeyManipulator#gmatch
+     */
+<span class="pc" id="L24">    protected String pattern = &quot;*.*.*.*&quot;;</span>
+
+    /**
+     * Default constructor
+     */
+<span class="nc" id="L29">    public DirectoryAdapter() {}</span>
+
+    /**
+     * Constructor with place pattern
+     */
+<span class="fc" id="L34">    public DirectoryAdapter(final String pattern) {</span>
+<span class="fc" id="L35">        this.pattern = pattern;</span>
+<span class="fc" id="L36">    }</span>
+
+    /**
+     * Called when a place matching the subscription is registered
+     * 
+     * @param observableKey key of the directory reporting the registration
+     * @param placeKey key of the place that is being registered
+     */
+    @Override
+    public void placeRegistered(final String observableKey, final String placeKey) {
+<span class="nc" id="L46">        logger.debug(&quot;Place registered {} in directory {}&quot;, placeKey, observableKey);</span>
+<span class="nc" id="L47">    }</span>
+
+    /**
+     * Called when a place matching the subscription is deregistered
+     * 
+     * @param observableKey key of the directory reporting the deregistration
+     * @param placeKey key of the place that is being deregistered
+     */
+    @Override
+    public void placeDeregistered(final String observableKey, final String placeKey) {
+<span class="nc" id="L57">        logger.debug(&quot;Place deregistered {} in directory {}&quot;, placeKey, observableKey);</span>
+<span class="nc" id="L58">    }</span>
+
+    /**
+     * Called when the cost of a place matching the subscription is changed
+     * 
+     * @param observableKey key of the directory reporting the change
+     * @param placeKey key of the place that is being changed
+     */
+    @Override
+    public void placeCostChanged(final String observableKey, final String placeKey) {
+<span class="nc" id="L68">        logger.debug(&quot;Place cost change {} in directory {}&quot;, placeKey, observableKey);</span>
+<span class="nc" id="L69">    }</span>
+
+    /**
+     * The pattern for this observers subscription,
+     * 
+     * @see emissary.directory.KeyManipulator#gmatch
+     */
+    @Override
+    public String getPattern() {
+<span class="fc" id="L78">        return this.pattern;</span>
+    }
+
+    /**
+     * Called when the peer group changes
+     * 
+     * @param observableKey the key of the directory being observed
+     * @param peers the list of peers currently in the group
+     */
+    @Override
+    public void peerUpdate(final String observableKey, final Set&lt;DirectoryEntry&gt; peers) {
+<span class="nc" id="L89">        logger.debug(&quot;Peer group updates from {} set is now {}&quot;, observableKey, peers);</span>
+<span class="nc" id="L90">    }</span>
+
+    /**
+     * Static method to register on the local default named directory
+     * 
+     * @param observer the DirectoryObserver to register
+     */
+    public static void register(final DirectoryObserver observer) throws EmissaryException {
+<span class="fc" id="L98">        final IDirectoryPlace directory = DirectoryPlace.lookup();</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if (directory != null) {</span>
+<span class="fc" id="L100">            directory.addObserver(observer);</span>
+        }
+<span class="fc" id="L102">    }</span>
+
+    /**
+     * Static method to remove from the local default named directory
+     * 
+     * @param observer the DirectoryObserver to remove
+     */
+    public static void remove(final DirectoryObserver observer) throws EmissaryException {
+<span class="nc" id="L110">        final IDirectoryPlace directory = DirectoryPlace.lookup();</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        if (directory != null) {</span>
+<span class="nc" id="L112">            directory.deleteObserver(observer);</span>
+        }
+<span class="nc" id="L114">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

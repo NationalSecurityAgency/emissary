@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HitList.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.search</a> &gt; <span class="el_source">HitList.java</span></div><h1>HitList.java</h1><pre class="source lang-java linenums">package emissary.util.search;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+/**
+ * List of reportable results from MultiKeywordScanner
+ */
+public class HitList extends ArrayList&lt;Hit&gt; implements List&lt;Hit&gt; {
+    /**
+     * provide uid for serialization
+     */
+    private static final long serialVersionUID = -7099799510085720979L;
+
+    public HitList() {
+<span class="fc" id="L17">        super();</span>
+<span class="fc" id="L18">    }</span>
+
+    public HitList(final Collection&lt;Hit&gt; c) {
+<span class="nc" id="L21">        super(c);</span>
+<span class="nc" id="L22">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

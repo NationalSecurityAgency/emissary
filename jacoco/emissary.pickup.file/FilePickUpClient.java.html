@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FilePickUpClient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.pickup.file</a> &gt; <span class="el_source">FilePickUpClient.java</span></div><h1>FilePickUpClient.java</h1><pre class="source lang-java linenums">package emissary.pickup.file;
+
+import emissary.core.IBaseDataObject;
+import emissary.parser.SessionParser;
+import emissary.pickup.IPickUp;
+import emissary.pickup.IPickUpSpace;
+import emissary.pickup.PickUpSpace;
+import emissary.pickup.PickupQueue;
+import emissary.pickup.QueServer;
+import emissary.pickup.WorkBundle;
+import emissary.pickup.WorkUnit;
+import emissary.util.Hexl;
+import emissary.util.TimeUtil;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.MessageDigest;
+import java.util.Collection;
+import java.util.Map;
+import javax.annotation.Nullable;
+
+import static emissary.core.constants.Parameters.INPUT_FILEDATE;
+import static emissary.core.constants.Parameters.INPUT_FILENAME;
+import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
+
+/**
+ * Pull bundles of file info from a WorkSpace and process as a normal FilePickUp. Monitors a queue rather than a
+ * directory, but reads files from disk as specified in the received WorkBundle objects. Whether workBundles are
+ * processed in simpleMode or not is controlled by the bundle settings not by the inherited configuration of this
+ * client.
+ */
+public class FilePickUpClient extends PickUpSpace implements IPickUp {
+    /**
+     * These parameters determine the enqueing behavior. The desire is to minimize the number of remote calls from WorkSpace
+     * or Distributor to an instance of this class with the getQueSize method, and at the same keep all of the places busy.
+     * We do this by making the MAX_QUE_SIZE large enough to hold enough files to be processed in pollingInterval. BUT we
+     * don't just make the MAX_QUE_SIZE huge because then we use too much memory. Some feeds put stuff on the Que in blocks.
+     * If our que is a prime numbered size they cannot fill it completely, which will help prevent blocking maybe.
+     */
+<span class="pc" id="L42">    protected int pollingInterval = 500;</span>
+<span class="pc" id="L43">    protected int maxQueSize = 5;</span>
+    protected QueServer queServer;
+
+    // work bundle currently being processed
+<span class="pc" id="L47">    @Nullable</span>
+    protected WorkBundle currentBundle = null;
+<span class="pc" id="L49">    @Nullable</span>
+    protected WorkUnit currentWorkUnit = null;
+
+    protected String unixInRoot;
+    protected String unixOutRoot;
+    protected String digestHashType;
+
+<span class="pc" id="L56">    @Nullable</span>
+    protected MessageDigest digest = null;
+
+    /**
+     * Create using default configuration
+     */
+    public FilePickUpClient() throws IOException {
+<span class="nc" id="L63">        super();</span>
+<span class="nc" id="L64">        configurePlace();</span>
+<span class="nc" id="L65">        configureQueueServer();</span>
+<span class="nc" id="L66">    }</span>
+
+    /**
+     * Create, configure, and register
+     */
+    public FilePickUpClient(String configInfo, String dir, String placeLoc) throws IOException {
+<span class="nc" id="L72">        super(configInfo, dir, placeLoc);</span>
+<span class="nc" id="L73">        configurePlace();</span>
+<span class="nc" id="L74">        configureQueueServer();</span>
+<span class="nc" id="L75">    }</span>
+
+    /**
+     * Create, configure, and register
+     */
+    public FilePickUpClient(InputStream configInfo, String dir, String placeLoc) throws IOException {
+<span class="fc" id="L81">        super(configInfo, dir, placeLoc);</span>
+<span class="fc" id="L82">        configurePlace();</span>
+<span class="fc" id="L83">        configureQueueServer();</span>
+<span class="fc" id="L84">    }</span>
+
+    public FilePickUpClient(InputStream configInfo) throws IOException {
+<span class="nc" id="L87">        super(configInfo);</span>
+<span class="nc" id="L88">        configurePlace();</span>
+<span class="nc" id="L89">        configureQueueServer();</span>
+<span class="nc" id="L90">    }</span>
+
+    /**
+     * Configure this place
+     */
+    protected void configurePlace() {
+<span class="fc" id="L96">        pollingInterval = configG.findIntEntry(&quot;POLLING_INTERVAL&quot;, pollingInterval);</span>
+<span class="fc" id="L97">        maxQueSize = configG.findIntEntry(&quot;MAX_QUE_SIZE&quot;, maxQueSize);</span>
+<span class="fc" id="L98">        unixInRoot = configG.findStringEntry(&quot;UNIX_IN_ROOT&quot;, null);</span>
+<span class="fc" id="L99">        unixOutRoot = configG.findStringEntry(&quot;UNIX_OUT_ROOT&quot;, null);</span>
+<span class="fc" id="L100">        digestHashType = configG.findStringEntry(&quot;DIGEST_HASH_TYPE&quot;, &quot;SHA-256&quot;);</span>
+
+        try {
+<span class="fc" id="L103">            digest = MessageDigest.getInstance(digestHashType);</span>
+<span class="nc" id="L104">        } catch (Exception ex) {</span>
+<span class="nc" id="L105">            logger.warn(&quot;Could not initialize message digest: &quot;, ex);</span>
+<span class="fc" id="L106">        }</span>
+<span class="fc" id="L107">    }</span>
+
+    protected void configureQueueServer() {
+<span class="fc" id="L110">        queServer = new FileQueServer(this, new PickupQueue(maxQueSize), pollingInterval);</span>
+<span class="fc" id="L111">        queServer.start();</span>
+<span class="fc" id="L112">    }</span>
+
+    /**
+     * Shut down our que server thread and deregister the place
+     */
+    @Override
+    public void shutDown() {
+<span class="fc" id="L119">        logger.info(&quot;*** Shutting Down: &quot; + keys.get(0));</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">        if (queServer != null) {</span>
+<span class="fc" id="L121">            logger.info(&quot;*** Stopping queue monitor &quot;);</span>
+<span class="fc" id="L122">            queServer.shutdown();</span>
+        }
+<span class="fc" id="L124">        super.shutDown();</span>
+<span class="fc" id="L125">    }</span>
+
+    /**
+     * Pause the QueServer to stop taking work
+     */
+    @Override
+    public void pause() {
+<span class="nc" id="L132">        logger.info(&quot;*** Pausing {} for {}&quot;, queServer.getClass().getName(), getClass().getName());</span>
+<span class="nc" id="L133">        queServer.pause();</span>
+<span class="nc" id="L134">    }</span>
+
+    /**
+     * Unpause the QueServer to start taking work
+     */
+    @Override
+    public void unpause() {
+<span class="nc" id="L141">        logger.info(&quot;*** Unpausing {} for {}&quot;, queServer.getClass().getName(), getClass().getName());</span>
+<span class="nc" id="L142">        queServer.unpause();</span>
+<span class="nc" id="L143">    }</span>
+
+    /**
+     * Check the status of the QueServer to see if it is taking work
+     *
+     * @return true if the QueServer is paused, false otherwise
+     */
+    @Override
+    public boolean isPaused() {
+<span class="nc" id="L152">        return queServer.isPaused();</span>
+    }
+
+    /**
+     * Hook for subclasses to alter the file path perhaps based on the OS at runtime. Allows one set of configuration paths
+     * to work on the system across operating systems.
+     *
+     * @param path file path to alter
+     * @return altered path
+     */
+    protected String fixFilePath(String path) {
+<span class="nc" id="L163">        return path.replace('\\', '/');</span>
+    }
+
+    /**
+     * Find a file in the holding area that matches our guy.
+     */
+    @Nullable
+    protected File findFileInHoldingArea(File f, @Nullable String eatPrefix) {
+<span class="nc bnc" id="L171" title="All 2 branches missed.">        if (holdingArea != null) {</span>
+<span class="nc" id="L172">            String fpart = f.getName();</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">            if (eatPrefix != null) {</span>
+<span class="nc" id="L174">                fpart = f.getPath().substring(eatPrefix.length());</span>
+            }
+
+            // See if it is sitting at the InProcess level
+<span class="nc" id="L178">            File hf = new File(holdingArea + fpart);</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">            if (hf.exists()) {</span>
+<span class="nc" id="L180">                logger.debug(&quot;Data recovered from holding area &quot; + hf);</span>
+<span class="nc" id="L181">                return hf;</span>
+            }
+<span class="nc" id="L183">            logger.debug(&quot;File did not exist in InProcess area directoy as &quot; + hf);</span>
+
+
+            // Or if it is one level down due to an emissary.node.name-emissary.node.port dir
+<span class="nc bnc" id="L187" title="All 2 branches missed.">            for (File subdir : new File(holdingArea).listFiles(new FileFilter() {</span>
+                @Override
+                public boolean accept(File d) {
+<span class="nc" id="L190">                    return d.isDirectory();</span>
+                }
+            })) {
+<span class="nc" id="L193">                File hdf = new File(subdir + fpart);</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">                if (hdf.exists()) {</span>
+<span class="nc" id="L195">                    logger.debug(&quot;Data recovered from holding subdir &quot; + hdf);</span>
+<span class="nc" id="L196">                    return hdf;</span>
+                }
+<span class="nc" id="L198">                logger.debug(&quot;File did not exist in nested InProcess area as &quot; + hdf);</span>
+            }
+        }
+<span class="nc" id="L201">        return null;</span>
+    }
+
+    /**
+     * Call back from queue server when a new bundle is dequeued for processing.
+     *
+     * @param paths the dequeued item
+     * @return true if the files in the WorkBundle were handled
+     */
+    protected boolean processBundle(WorkBundle paths) {
+<span class="nc" id="L211">        boolean success = true;</span>
+<span class="nc" id="L212">        currentBundle = paths; // for use by callbacks</span>
+<span class="nc" id="L213">        String outputRoot = fixFilePath(paths.getOutputRoot());</span>
+<span class="nc" id="L214">        String prefix = &quot;&quot;;</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">        if (null != paths.getEatPrefix()) {</span>
+<span class="nc" id="L216">            prefix = fixFilePath(paths.getEatPrefix());</span>
+        }
+
+<span class="nc bnc" id="L219" title="All 2 branches missed.">        for (String path : paths.getFileNameList()) {</span>
+<span class="nc" id="L220">            boolean wasInHoldingArea = false;</span>
+<span class="nc" id="L221">            String opath = path;</span>
+<span class="nc" id="L222">            path = fixFilePath(path);</span>
+<span class="nc" id="L223">            File f = new File(path);</span>
+<span class="nc" id="L224">            String fixedName = fixFileName(f.getName());</span>
+            // Ensure it exists
+<span class="nc bnc" id="L226" title="All 2 branches missed.">            if (!f.exists()) {</span>
+                // If the errorCount is &gt; 0 look in the holding area
+<span class="nc bnc" id="L228" title="All 2 branches missed.">                if (paths.getErrorCount() &gt; 0) {</span>
+<span class="nc" id="L229">                    logger.debug(&quot;Looking for &quot; + f + &quot; in holding area using eatPrefix of &quot; + prefix);</span>
+<span class="nc" id="L230">                    File holdFile = findFileInHoldingArea(f, prefix);</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">                    if (holdFile != null) {</span>
+<span class="nc" id="L232">                        logger.info(&quot;Switching to found holdArea file &quot; + holdFile);</span>
+<span class="nc" id="L233">                        wasInHoldingArea = true;</span>
+<span class="nc" id="L234">                        f = holdFile;</span>
+                    } else {
+<span class="nc" id="L236">                        logger.debug(&quot;File was not found in holding area &quot; + f + &quot; using eatPrefix of &quot; + prefix);</span>
+                    }
+<span class="nc" id="L238">                } else {</span>
+<span class="nc" id="L239">                    logger.debug(&quot;File does not exist but had errorCount of 0 so not looking in holding area&quot;);</span>
+                }
+            }
+
+<span class="nc bnc" id="L243" title="All 2 branches missed.">            if (!f.exists()) {</span>
+                // Try to get the data from the workspace
+<span class="nc" id="L245">                logger.debug(&quot;Non-existent file &quot; + opath);</span>
+<span class="nc" id="L246">                continue;</span>
+            }
+
+            // Ensure it can be read
+<span class="nc bnc" id="L250" title="All 2 branches missed.">            if (!f.canRead()) {</span>
+<span class="nc" id="L251">                logger.warn(&quot;Sorry, Cannot read file: &quot; + f.getPath());</span>
+<span class="nc" id="L252">                continue;</span>
+            }
+
+            // Only process files here, but give a hook
+            // for subclasses to handle other things
+<span class="nc bnc" id="L257" title="All 2 branches missed.">            if (!f.isFile()) {</span>
+<span class="nc" id="L258">                processDirectoryEntry(outputRoot, prefix, paths.getCaseId(), f, paths.getSimpleMode());</span>
+<span class="nc" id="L259">                continue;</span>
+            }
+
+            // Make sure it is big enough to process
+<span class="nc bnc" id="L263" title="All 2 branches missed.">            if (f.length() &lt;= minimumContentLength) {</span>
+<span class="nc" id="L264">                logger.warn(&quot;Sorry, This file is too small (&quot; + f.length() + &quot; &lt;&quot; + minimumContentLength + &quot;): &quot; + path);</span>
+                // No record is made of too small items
+<span class="nc" id="L266">                continue;</span>
+            }
+
+            // Make sure it is not too big to process
+<span class="nc" id="L270">            boolean isOversize = false;</span>
+<span class="nc bnc" id="L271" title="All 4 branches missed.">            if (maximumContentLength != -1 &amp;&amp; f.length() &gt; maximumContentLength) {</span>
+<span class="nc" id="L272">                logger.warn(&quot;Sorry, This file is too large (&quot; + f.length() + &quot; &lt;&quot; + maximumContentLength + &quot;): &quot; + path);</span>
+<span class="nc" id="L273">                isOversize = true;</span>
+                // Let it continue on knowing it is too big
+                // as we may need a record of the file
+            }
+
+            // Possibly rename the file to a holding area
+            // if one is defined
+<span class="nc bnc" id="L280" title="All 2 branches missed.">            File toProcess = getInProcessFileNameFor(f, wasInHoldingArea ? holdingArea : prefix);</span>
+<span class="nc bnc" id="L281" title="All 6 branches missed.">            if (holdingArea != null &amp;&amp; toProcess != null &amp;&amp; !wasInHoldingArea) {</span>
+<span class="nc bnc" id="L282" title="All 2 branches missed.">                if (!renameToInProcessAreaAs(f, toProcess)) {</span>
+<span class="nc" id="L283">                    logger.error(&quot;File: &quot; + f.getPath() + &quot; Could not be renamed to: &quot; + toProcess.getPath());</span>
+<span class="nc" id="L284">                    continue;</span>
+                }
+            } else {
+<span class="nc" id="L287">                toProcess = f;</span>
+            }
+
+            // Start the processing. The file may be in the original
+            // location or may be in the holding area
+            try {
+<span class="nc" id="L293">                success = processDataFile(toProcess, fixedName, isOversize, paths.getSimpleMode(), outputRoot);</span>
+<span class="nc" id="L294">                logger.debug(&quot;Finished with processDataFile on &quot; + toProcess + &quot; as &quot; + fixedName);</span>
+<span class="nc" id="L295">            } catch (Exception e) {</span>
+                // Return false and let another
+                // processor have a try at this work bundle
+                // TODO: What is some files work and some fail?
+<span class="nc" id="L299">                handleErrorInBundledFile(toProcess, fixedName, isOversize, simpleMode, e);</span>
+<span class="nc" id="L300">                success = false;</span>
+<span class="nc" id="L301">                break;</span>
+<span class="nc" id="L302">            }</span>
+<span class="nc" id="L303">        }</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">        logger.debug(&quot;Finished processBundle &quot; + paths.getBundleId() + &quot; &quot; + (success ? &quot;success&quot; : &quot;failure&quot;));</span>
+<span class="nc" id="L305">        return success;</span>
+    }
+
+    protected void handleErrorInBundledFile(File toProcess, String fixedName, boolean isOversize, boolean simpleMode, Exception e) {
+        // Error either way but louder if debug is on
+<span class="nc bnc" id="L310" title="All 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L311">            logger.error(&quot;Cannot complete &quot; + toProcess.getPath() + &quot; as &quot; + fixedName + &quot; [isOversize=&quot; + isOversize + &quot;, simpleMode=&quot;</span>
+                    + simpleMode + &quot;]&quot;, e);
+        } else {
+<span class="nc" id="L314">            logger.error(&quot;Cannot complete &quot; + toProcess.getPath() + &quot; as &quot; + fixedName, e);</span>
+        }
+
+<span class="nc" id="L317">        String errDir = getErrorArea();</span>
+        // Move the problem file to the error area if there is one
+<span class="nc bnc" id="L319" title="All 2 branches missed.">        if (errDir != null) {</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">            if (!toProcess.renameTo(new File(errDir, toProcess.getName()))) {</span>
+<span class="nc" id="L321">                logger.error(&quot;Cannot rename &quot; + toProcess.getName() + &quot; to the error location &quot; + errDir);</span>
+            } else {
+<span class="nc" id="L323">                logger.error(&quot;Moved &quot; + toProcess + &quot; to the errorArea &quot; + errDir);</span>
+            }
+        } else {
+<span class="nc" id="L326">            logger.error(&quot;There is no configured errorArea in which to drop failed input files like &quot; + toProcess);</span>
+        }
+<span class="nc" id="L328">    }</span>
+
+    /**
+     * Add incoming information to the queue of file names to process and notify anyone waiting on the queue
+     *
+     * @param paths the WorkBundle object containing files to queue up
+     * @return true if it was enqueued, false if we are too busy to handle it
+     */
+    @Override
+    public boolean enque(WorkBundle paths) {
+<span class="nc" id="L338">        return queServer.enque(paths);</span>
+    }
+
+    /**
+     * Return the size of the queue so push mode doesn't send us too much.
+     *
+     * @return available size on queue
+     */
+    @Override
+    public int getQueSize() {
+<span class="nc" id="L348">        return queServer.getQueSize();</span>
+    }
+
+    /**
+     * A little thread class to wake up once in a while and check the queue for data objects.
+     */
+    protected class FileQueServer extends QueServer {
+<span class="fc" id="L355">        public FileQueServer(IPickUpSpace space, PickupQueue queue, long pollingInterval) {</span>
+<span class="fc" id="L356">            super(space, queue, pollingInterval, &quot;FileQueServer&quot;);</span>
+<span class="fc" id="L357">        }</span>
+
+        /**
+         * When taking an item from the queue process it our custom way
+         *
+         * @param path the bundle from the queue
+         */
+        @Override
+        public boolean processQueueItem(WorkBundle path) {
+<span class="nc" id="L366">            return processBundle(path);</span>
+        }
+    }
+
+    /**
+     * Add in a target bin parameter with user and date Override point for subclasses
+     *
+     * @param d the nascent data object from the SessionProducer
+     * @param f the file it came from
+     */
+    @Override
+    protected void dataObjectCreated(IBaseDataObject d, File f) {
+<span class="fc" id="L378">        super.dataObjectCreated(d, f);</span>
+<span class="fc" id="L379">        String fixedDirName = fixFileName(f.getParent()).replace('\\', '/');</span>
+<span class="fc" id="L380">        String eatPrefix = currentBundle.getEatPrefix();</span>
+<span class="fc" id="L381">        currentBundle.getOutputRoot();</span>
+<span class="fc" id="L382">        boolean simpleParam = Boolean.parseBoolean(d.getStringParameter(&quot;SIMPLE_MODE&quot;));</span>
+<span class="pc bpc" id="L383" title="2 of 6 branches missed.">        if (eatPrefix != null &amp;&amp; eatPrefix.length() &gt; 0 &amp;&amp; fixedDirName.startsWith(eatPrefix)) {</span>
+<span class="fc" id="L384">            fixedDirName = fixedDirName.substring(eatPrefix.length());</span>
+        }
+
+
+        // payloadHandler.setup(d);
+<span class="fc" id="L389">        d.putParameter(&quot;TARGETBIN&quot;, fixedDirName);</span>
+<span class="fc" id="L390">        d.putParameter(SessionParser.ORIG_DOC_SIZE_KEY, Integer.valueOf(d.dataLength()));</span>
+<span class="fc" id="L391">        d.setPriority(currentBundle.getPriority());</span>
+
+        // Fix up the complete path
+<span class="fc" id="L394">        String ep = currentBundle.getEatPrefix();</span>
+<span class="fc" id="L395">        String fn = f.getAbsolutePath();</span>
+<span class="pc bpc" id="L396" title="1 of 4 branches missed.">        if (ep != null &amp;&amp; fn.startsWith(ep)) {</span>
+<span class="fc" id="L397">            fn = fn.substring(ep.length());</span>
+        }
+
+<span class="fc bfc" id="L400" title="All 2 branches covered.">        if (simpleParam) {</span>
+<span class="fc" id="L401">            d.putParameter(ORIGINAL_FILENAME, fn);</span>
+        }
+
+<span class="fc" id="L404">        d.putParameter(INPUT_FILEDATE, TimeUtil.getDateAsISO8601(f.lastModified()));</span>
+<span class="fc" id="L405">        d.putParameter(INPUT_FILENAME, f.getName());</span>
+
+        // Fix up the case/project metadata, e.g. PROJECT:GERONIMO22
+<span class="fc" id="L408">        String cid = currentBundle.getCaseId();</span>
+<span class="fc bfc" id="L409" title="All 4 branches covered.">        if (cid != null &amp;&amp; cid.indexOf(&quot;:&quot;) &gt; 0) {</span>
+<span class="fc" id="L410">            String[] parts = cid.split(&quot;:&quot;);</span>
+<span class="pc bpc" id="L411" title="1 of 2 branches missed.">            if (d.getParameter(parts[0]) == null) {</span>
+<span class="fc" id="L412">                d.putParameter(parts[0], parts[1]);</span>
+            }
+
+<span class="pc bpc" id="L415" title="2 of 6 branches missed.">            if (simpleParam &amp;&amp; fn != null &amp;&amp; digest != null) {</span>
+<span class="fc" id="L416">                final MessageDigest theDigest = this.digest;</span>
+<span class="fc" id="L417">                synchronized (theDigest) {</span>
+<span class="fc" id="L418">                    theDigest.reset();</span>
+<span class="fc" id="L419">                    byte[] hash = theDigest.digest(fn.getBytes());</span>
+<span class="fc" id="L420">                    d.setFilename(parts[1] + &quot;-&quot; + Hexl.toUnformattedHexString(hash));</span>
+<span class="fc" id="L421">                }</span>
+            }
+<span class="fc" id="L423">        } else {</span>
+            // Take care of the caseid
+<span class="fc" id="L425">            String fixedCaseId = caseIdHook(cid, d.shortName(), f.toString(), d.getParameters());</span>
+<span class="fc bfc" id="L426" title="All 2 branches covered.">            if (fixedCaseId == null) {</span>
+                // current yyyyjjj
+<span class="fc" id="L428">                fixedCaseId = TimeUtil.getCurrentDateOrdinal();</span>
+            }
+<span class="fc" id="L430">            d.putParameter(&quot;DATABASE_CASE_ID&quot;, fixedCaseId);</span>
+        }
+<span class="fc" id="L432">    }</span>
+
+    /**
+     * Generate a filename using the file's path and a prefix
+     * 
+     * @param filePath the path of the file
+     * @param prefix a prefix to prepend to the resultant filename
+     * @return the generated filename
+     */
+    protected String createFilename(String filePath, String prefix) {
+<span class="fc" id="L442">        final MessageDigest theDigest = this.digest;</span>
+<span class="fc" id="L443">        synchronized (theDigest) {</span>
+<span class="fc" id="L444">            theDigest.reset();</span>
+<span class="fc" id="L445">            byte[] hash = theDigest.digest(filePath.getBytes());</span>
+<span class="fc" id="L446">            return new File(prefix + &quot;-&quot; + Hexl.toUnformattedHexString(hash)).getName();</span>
+        }
+    }
+
+    /**
+     * Hook to allow derived classes to handle various aspects of caseId generation. This do-nothing impementation just
+     * returns the caseId argument unchanged.
+     *
+     * @param initialCaseId the initial case id
+     * @param sessionName name of the current session
+     * @param fileName path and name of file from File.path()
+     * @param metadata Map of data object metadata accumulated so far
+     * @return fixed up name of the caseId
+     */
+    protected String caseIdHook(String initialCaseId, String sessionName, String fileName, Map&lt;String, Collection&lt;Object&gt;&gt; metadata) {
+<span class="fc" id="L461">        return initialCaseId;</span>
+    }
+
+
+    /**
+     * Allow subclasses to do things with work bundles containing directory entries. This would be highly unusual.
+     *
+     * @param root the outputRoot of the current work bundle
+     * @param prefix the prefix of the current work bundle
+     * @param caseid the caseid of the current work bundle
+     * @param dir the directory entry encountered
+     * @param simpleMode true if the workBundle indicated simpleMode
+     */
+    protected void processDirectoryEntry(String root, String prefix, String caseid, @Nullable File dir, boolean simpleMode) {
+<span class="nc bnc" id="L475" title="All 2 branches missed.">        if (dir != null) {</span>
+<span class="nc" id="L476">            logger.warn(&quot;Entry &quot; + dir.getName() + &quot; ignored&quot;);</span>
+        }
+<span class="nc" id="L478">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

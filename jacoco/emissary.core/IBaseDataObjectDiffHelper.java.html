@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IBaseDataObjectDiffHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core</a> &gt; <span class="el_source">IBaseDataObjectDiffHelper.java</span></div><h1>IBaseDataObjectDiffHelper.java</h1><pre class="source lang-java linenums">package emissary.core;
+
+import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.core.constants.IbdoXmlElementNames;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.Validate;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.SeekableByteChannel;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+public class IBaseDataObjectDiffHelper {
+    private static final String DIFF_OUTPUT_FORMAT = &quot;%s%s: %s : %s&quot;;
+    private static final String DIFF_NOT_NULL_MSG = &quot;Required: differences not null&quot;;
+    private static final String ID_NOT_NULL_MSG = &quot;Required: identifier not null&quot;;
+    private static final String ARE_NOT_EQUAL = &quot; are not equal&quot;;
+    private static final String SHORT_NAME = &quot;shortName&quot;;
+    private static final String INTERNAL_ID = &quot;internalId&quot;;
+    private static final String TRANSFORM_HISTORY = &quot;transformHistory&quot;;
+    private static final String FILE_TYPE_EMPTY = &quot;fileTypeEmpty&quot;;
+    private static final String CREATION_TIMESTAMP = &quot;creationTimestamp&quot;;
+    private static final String EXTRACTED_RECORDS = &quot;extractedRecords&quot;;
+
+    private IBaseDataObjectDiffHelper() {}
+
+    /**
+     * This method compares two IBaseDataObject's and adds any differences to the provided string list.
+     *
+     * @param ibdo1 the first IBaseDataObject to compare.
+     * @param ibdo2 the second IBaseDataObject to compare.
+     * @param differences the string list differences are to be added to.
+     * @param options {@link DiffCheckConfiguration} containing config to specify whether to check data etc.
+     */
+    public static void diff(final IBaseDataObject ibdo1, final IBaseDataObject ibdo2,
+            final List&lt;String&gt; differences, final DiffCheckConfiguration options) {
+<span class="fc" id="L50">        Validate.notNull(ibdo1, &quot;Required: ibdo1 not null&quot;);</span>
+<span class="fc" id="L51">        Validate.notNull(ibdo2, &quot;Required: ibdo2 not null&quot;);</span>
+<span class="fc" id="L52">        Validate.notNull(differences, DIFF_NOT_NULL_MSG);</span>
+
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (options.checkData()) {</span>
+<span class="fc" id="L55">            final SeekableByteChannelFactory sbcf1 = ibdo1.getChannelFactory();</span>
+<span class="fc" id="L56">            final SeekableByteChannelFactory sbcf2 = ibdo2.getChannelFactory();</span>
+<span class="fc" id="L57">            diff(sbcf1, sbcf2, IbdoXmlElementNames.DATA, differences);</span>
+        }
+
+<span class="fc" id="L60">        diff(ibdo1.getFilename(), ibdo2.getFilename(), IbdoXmlElementNames.FILENAME, differences);</span>
+<span class="fc" id="L61">        diff(ibdo1.shortName(), ibdo2.shortName(), SHORT_NAME, differences);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if (options.checkInternalId()) {</span>
+<span class="fc" id="L63">            diff(ibdo1.getInternalId(), ibdo2.getInternalId(), INTERNAL_ID, differences);</span>
+        }
+<span class="fc" id="L65">        diff(ibdo1.currentForm(), ibdo2.currentForm(), IbdoXmlElementNames.CURRENT_FORM, differences);</span>
+<span class="fc" id="L66">        diff(ibdo1.getProcessingError(), ibdo2.getProcessingError(), IbdoXmlElementNames.PROCESSING_ERROR, differences);</span>
+
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (options.checkTransformHistory()) {</span>
+<span class="fc" id="L69">            diff(ibdo1.transformHistory(), ibdo2.transformHistory(), TRANSFORM_HISTORY, differences);</span>
+        }
+
+<span class="fc" id="L72">        diff(ibdo1.getFontEncoding(), ibdo2.getFontEncoding(), IbdoXmlElementNames.FONT_ENCODING, differences);</span>
+
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (options.performDetailedParameterDiff()) {</span>
+<span class="fc" id="L75">            diff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), IbdoXmlElementNames.PARAMETER, differences);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        } else if (options.performKeyValueParameterDiff()) {</span>
+<span class="fc" id="L77">            keyValueMapDiff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), IbdoXmlElementNames.PARAMETER, differences);</span>
+        } else {
+<span class="fc" id="L79">            minimalMapDiff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), IbdoXmlElementNames.PARAMETER, differences);</span>
+        }
+
+<span class="fc" id="L82">        diff(ibdo1.getNumChildren(), ibdo2.getNumChildren(), IbdoXmlElementNames.NUM_CHILDREN, differences);</span>
+<span class="fc" id="L83">        diff(ibdo1.getNumSiblings(), ibdo2.getNumSiblings(), IbdoXmlElementNames.NUM_SIBLINGS, differences);</span>
+<span class="fc" id="L84">        diff(ibdo1.getBirthOrder(), ibdo2.getBirthOrder(), IbdoXmlElementNames.BIRTH_ORDER, differences);</span>
+<span class="fc" id="L85">        diff(ibdo1.getAlternateViews(), ibdo2.getAlternateViews(), IbdoXmlElementNames.VIEW, differences);</span>
+<span class="fc" id="L86">        diff(ibdo1.header(), ibdo2.header(), IbdoXmlElementNames.HEADER, differences);</span>
+<span class="fc" id="L87">        diff(ibdo1.footer(), ibdo2.footer(), IbdoXmlElementNames.FOOTER, differences);</span>
+<span class="fc" id="L88">        diff(ibdo1.getHeaderEncoding(), ibdo2.getHeaderEncoding(), IbdoXmlElementNames.HEADER_ENCODING, differences);</span>
+<span class="fc" id="L89">        diff(ibdo1.getClassification(), ibdo2.getClassification(), IbdoXmlElementNames.CLASSIFICATION, differences);</span>
+<span class="fc" id="L90">        diff(ibdo1.isBroken(), ibdo2.isBroken(), IbdoXmlElementNames.BROKEN, differences);</span>
+<span class="fc" id="L91">        diff(ibdo1.isFileTypeEmpty(), ibdo2.isFileTypeEmpty(), FILE_TYPE_EMPTY, differences);</span>
+<span class="fc" id="L92">        diff(ibdo1.getPriority(), ibdo2.getPriority(), IbdoXmlElementNames.PRIORITY, differences);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (options.checkTimestamp()) {</span>
+<span class="fc" id="L94">            diff(ibdo1.getCreationTimestamp(), ibdo2.getCreationTimestamp(), CREATION_TIMESTAMP, differences);</span>
+        }
+<span class="fc" id="L96">        diff(ibdo1.isOutputable(), ibdo2.isOutputable(), IbdoXmlElementNames.OUTPUTABLE, differences);</span>
+<span class="fc" id="L97">        diff(ibdo1.getId(), ibdo2.getId(), IbdoXmlElementNames.ID, differences);</span>
+<span class="fc" id="L98">        diff(ibdo1.getWorkBundleId(), ibdo2.getWorkBundleId(), IbdoXmlElementNames.WORK_BUNDLE_ID, differences);</span>
+<span class="fc" id="L99">        diff(ibdo1.getTransactionId(), ibdo2.getTransactionId(), IbdoXmlElementNames.TRANSACTION_ID, differences);</span>
+
+        // Special case - pass through DiffCheckConfiguration options. This also ensures the right method is called (Object vs
+        // List&lt;IBDO&gt;)
+<span class="fc" id="L103">        diff(ibdo1.getExtractedRecords(), ibdo2.getExtractedRecords(), EXTRACTED_RECORDS, differences, options);</span>
+<span class="fc" id="L104">    }</span>
+
+    /**
+     * This method compares two lists of IBaseDataObject's and adds any differences to the provided string list.
+     *
+     * @param ibdoList1 the first list of IBaseDataObjects to compare.
+     * @param ibdoList2 the second list of IBaseDataObjects to compare.
+     * @param identifier a string that helps identify the context of comparing these two list of IBaseDataObjects.
+     * @param differences the string list differences are to be added to.
+     * @param options {@link DiffCheckConfiguration} containing config to specify whether to check data etc.
+     */
+    public static void diff(final List&lt;IBaseDataObject&gt; ibdoList1, final List&lt;IBaseDataObject&gt; ibdoList2,
+            final String identifier, final List&lt;String&gt; differences, final DiffCheckConfiguration options) {
+<span class="fc" id="L117">        Validate.notNull(identifier, ID_NOT_NULL_MSG);</span>
+<span class="fc" id="L118">        Validate.notNull(differences, DIFF_NOT_NULL_MSG);</span>
+
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        final int ibdoList1Size = (ibdoList1 == null) ? 0 : ibdoList1.size();</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        final int ibdoList2Size = (ibdoList2 == null) ? 0 : ibdoList2.size();</span>
+
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        if (ibdoList1Size != ibdoList2Size) {</span>
+<span class="fc" id="L124">            differences.add(String.format(&quot;%s%s: 1.s=%s 2.s=%s&quot;, identifier, ARE_NOT_EQUAL, ibdoList1Size, ibdoList2Size));</span>
+<span class="fc bfc" id="L125" title="All 4 branches covered.">        } else if (ibdoList1 != null &amp;&amp; ibdoList2 != null) {</span>
+<span class="fc" id="L126">            final List&lt;String&gt; childDifferences = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">            for (int i = 0; i &lt; ibdoList1.size(); i++) {</span>
+<span class="fc" id="L128">                childDifferences.clear();</span>
+
+<span class="fc" id="L130">                diff(ibdoList1.get(i), ibdoList2.get(i), childDifferences, options);</span>
+
+<span class="fc" id="L132">                final String prefix = identifier + &quot; : &quot; + i + &quot; : &quot;;</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">                while (!childDifferences.isEmpty()) {</span>
+<span class="fc" id="L134">                    differences.add(prefix + childDifferences.remove(0)); // NOSONAR Used correctly</span>
+                }
+            }
+        }
+<span class="fc" id="L138">    }</span>
+
+    /**
+     * This method compares two {@link SeekableByteChannelFactory} (SBCF) objects and adds any differences to the provided
+     * string list.
+     *
+     * @param sbcf1 the first SBCF to compare.
+     * @param sbcf2 the second SBCF to compare.
+     * @param identifier an identifier to describe the context of this SBCF comparison.
+     * @param differences the string list differences are to be added to.
+     */
+    public static void diff(final SeekableByteChannelFactory sbcf1, final SeekableByteChannelFactory sbcf2,
+            final String identifier, final List&lt;String&gt; differences) {
+<span class="fc" id="L151">        Validate.notNull(identifier, ID_NOT_NULL_MSG);</span>
+<span class="fc" id="L152">        Validate.notNull(differences, DIFF_NOT_NULL_MSG);</span>
+
+<span class="fc bfc" id="L154" title="All 4 branches covered.">        if (sbcf1 != null &amp;&amp; sbcf2 != null) {</span>
+<span class="fc" id="L155">            try (SeekableByteChannel sbc1 = sbcf1.create();</span>
+<span class="fc" id="L156">                    SeekableByteChannel sbc2 = sbcf2.create();</span>
+<span class="fc" id="L157">                    InputStream is1 = Channels.newInputStream(sbc1);</span>
+<span class="fc" id="L158">                    InputStream is2 = Channels.newInputStream(sbc2)) {</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">                if (!IOUtils.contentEquals(is1, is2)) {</span>
+<span class="fc" id="L160">                    differences.add(String.format(&quot;%s not equal. 1.cs=%s 2.cs=%s&quot;,</span>
+<span class="fc" id="L161">                            identifier, sbc1.size(), sbc2.size()));</span>
+                }
+<span class="fc" id="L163">            } catch (IOException e) {</span>
+<span class="fc" id="L164">                differences.add(String.format(&quot;Failed to compare %s: %s&quot;, identifier, e.getMessage()));</span>
+<span class="fc" id="L165">            }</span>
+<span class="fc bfc" id="L166" title="All 4 branches covered.">        } else if (sbcf1 == null &amp;&amp; sbcf2 == null) {</span>
+            // Do nothing as they are considered equal.
+        } else {
+<span class="fc" id="L169">            differences.add(String.format(&quot;%s not equal. sbcf1=%s sbcf2=%s&quot;, identifier, sbcf1, sbcf2));</span>
+        }
+<span class="fc" id="L171">    }</span>
+
+    /**
+     * This method compares two Objects and adds any differences to the provided string list.
+     *
+     * @param object1 the first Object to compare.
+     * @param object2 the second Object to compare.
+     * @param identifier an identifier to describe the context of this Object comparison.
+     * @param differences the string list differences are to be added to.
+     */
+    public static void diff(final Object object1, final Object object2, final String identifier,
+            final List&lt;String&gt; differences) {
+<span class="fc" id="L183">        Validate.notNull(identifier, ID_NOT_NULL_MSG);</span>
+<span class="fc" id="L184">        Validate.notNull(differences, DIFF_NOT_NULL_MSG);</span>
+
+<span class="fc bfc" id="L186" title="All 2 branches covered.">        if (!Objects.deepEquals(object1, object2)) {</span>
+<span class="fc" id="L187">            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL, object1, object2));</span>
+        }
+<span class="fc" id="L189">    }</span>
+
+    /**
+     * This method compares two integers and adds any differences to the provided string list.
+     *
+     * @param integer1 the first integer to compare.
+     * @param integer2 the second integer to compare.
+     * @param identifier an identifier to describe the context of this integer comparison.
+     * @param differences the string list differences are to be added to.
+     */
+    public static void diff(final int integer1, final int integer2, final String identifier,
+            final List&lt;String&gt; differences) {
+<span class="fc" id="L201">        Validate.notNull(identifier, ID_NOT_NULL_MSG);</span>
+<span class="fc" id="L202">        Validate.notNull(differences, DIFF_NOT_NULL_MSG);</span>
+
+<span class="fc bfc" id="L204" title="All 2 branches covered.">        if (integer1 != integer2) {</span>
+<span class="fc" id="L205">            differences.add(identifier + ARE_NOT_EQUAL);</span>
+        }
+<span class="fc" id="L207">    }</span>
+
+    /**
+     * This method compares two booleans and adds any differences to the provided string list.
+     *
+     * @param boolean1 the first boolean to compare.
+     * @param boolean2 the second boolean to compare.
+     * @param identifier an identifier to describe the context of this boolean comparison.
+     * @param differences the string list differences are to be added to.
+     */
+    public static void diff(final boolean boolean1, final boolean boolean2, final String identifier,
+            final List&lt;String&gt; differences) {
+<span class="fc" id="L219">        Validate.notNull(identifier, ID_NOT_NULL_MSG);</span>
+<span class="fc" id="L220">        Validate.notNull(differences, DIFF_NOT_NULL_MSG);</span>
+
+<span class="fc bfc" id="L222" title="All 2 branches covered.">        if (boolean1 != boolean2) {</span>
+<span class="fc" id="L223">            differences.add(identifier + ARE_NOT_EQUAL);</span>
+        }
+<span class="fc" id="L225">    }</span>
+
+    /**
+     * This method compares two maps and adds any differences to the provided string list.
+     *
+     * @param map1 the first map to compare.
+     * @param map2 the second map to compare.
+     * @param identifier an identifier to describe the context of this map comparison.
+     * @param differences the string list of differences to be added to.
+     */
+    public static void diff(final Map&lt;String, byte[]&gt; map1, final Map&lt;String, byte[]&gt; map2, final String identifier,
+            final List&lt;String&gt; differences) {
+<span class="fc" id="L237">        Validate.notNull(map1, &quot;Required: map1 not null!&quot;);</span>
+<span class="fc" id="L238">        Validate.notNull(map2, &quot;Required: map2 not null!&quot;);</span>
+<span class="fc" id="L239">        Validate.notNull(identifier, ID_NOT_NULL_MSG);</span>
+<span class="fc" id="L240">        Validate.notNull(differences, DIFF_NOT_NULL_MSG);</span>
+
+<span class="fc bfc" id="L242" title="All 2 branches covered.">        if (map1.size() != map2.size() ||</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">                !map1.entrySet().stream().allMatch(e -&gt; Arrays.equals(e.getValue(), map2.get(e.getKey())))) {</span>
+<span class="fc" id="L244">            differences.add(identifier + ARE_NOT_EQUAL);</span>
+        }
+<span class="fc" id="L246">    }</span>
+
+    /**
+     * This method compares two maps and adds only the key/value pairs that differ to the provided string list.
+     * 
+     * @param parameter1 the first map to compare.
+     * @param parameter2 the second map to compare.
+     * @param identifier an identifier to describe the context of this map comparison.
+     * @param differences the string list of differences to be added to.
+     */
+    public static void keyValueMapDiff(final Map&lt;String, Collection&lt;String&gt;&gt; parameter1, final Map&lt;String, Collection&lt;String&gt;&gt; parameter2,
+            final String identifier, final List&lt;String&gt; differences) {
+<span class="fc" id="L258">        final Set&lt;Entry&lt;String, Collection&lt;String&gt;&gt;&gt; p1Entries = new HashSet&lt;&gt;(parameter1.entrySet());</span>
+<span class="fc" id="L259">        final Set&lt;Entry&lt;String, Collection&lt;String&gt;&gt;&gt; p2Entries = new HashSet&lt;&gt;(parameter2.entrySet());</span>
+<span class="fc" id="L260">        final Map&lt;String, Collection&lt;String&gt;&gt; p1 = new HashMap&lt;&gt;(parameter1);</span>
+<span class="fc" id="L261">        final Map&lt;String, Collection&lt;String&gt;&gt; p2 = new HashMap&lt;&gt;(parameter2);</span>
+
+<span class="fc bfc" id="L263" title="All 2 branches covered.">        for (Entry&lt;String, Collection&lt;String&gt;&gt; p1Entry : p1Entries) {</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">            if (p2Entries.contains(p1Entry)) {</span>
+<span class="fc" id="L265">                p1.remove(p1Entry.getKey());</span>
+<span class="fc" id="L266">                p2.remove(p1Entry.getKey());</span>
+            }
+<span class="fc" id="L268">        }</span>
+
+<span class="fc bfc" id="L270" title="All 4 branches covered.">        if (!p1.isEmpty() || !p2.isEmpty()) {</span>
+<span class="fc" id="L271">            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL + &quot;-Differing Keys/Values&quot;, p1, p2));</span>
+        }
+<span class="fc" id="L273">    }</span>
+
+    /**
+     * This method compares two maps and adds only the keys that differ to the provided string list.
+     * 
+     * @param parameter1 the first map to compare.
+     * @param parameter2 the second map to compare.
+     * @param identifier an identifier to describe the context of this map comparison.
+     * @param differences the string list of differences to be added to.
+     */
+    public static void minimalMapDiff(final Map&lt;String, Collection&lt;String&gt;&gt; parameter1, final Map&lt;String, Collection&lt;String&gt;&gt; parameter2,
+            final String identifier, final List&lt;String&gt; differences) {
+<span class="fc" id="L285">        final Set&lt;Entry&lt;String, Collection&lt;String&gt;&gt;&gt; p1Entries = new HashSet&lt;&gt;(parameter1.entrySet());</span>
+<span class="fc" id="L286">        final Set&lt;Entry&lt;String, Collection&lt;String&gt;&gt;&gt; p2Entries = new HashSet&lt;&gt;(parameter2.entrySet());</span>
+<span class="fc" id="L287">        final Set&lt;String&gt; p1Keys = new TreeSet&lt;&gt;(parameter1.keySet());</span>
+<span class="fc" id="L288">        final Set&lt;String&gt; p2Keys = new TreeSet&lt;&gt;(parameter2.keySet());</span>
+
+<span class="fc bfc" id="L290" title="All 2 branches covered.">        for (Entry&lt;String, Collection&lt;String&gt;&gt; p1Entry : p1Entries) {</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">            if (p2Entries.contains(p1Entry)) {</span>
+<span class="fc" id="L292">                p1Keys.remove(p1Entry.getKey());</span>
+<span class="fc" id="L293">                p2Keys.remove(p1Entry.getKey());</span>
+            }
+<span class="fc" id="L295">        }</span>
+
+<span class="fc bfc" id="L297" title="All 4 branches covered.">        if (!p1Keys.isEmpty() || !p2Keys.isEmpty()) {</span>
+<span class="fc" id="L298">            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL + &quot;-Differing Keys&quot;, p1Keys, p2Keys));</span>
+        }
+<span class="fc" id="L300">    }</span>
+
+    /**
+     * This method converts the IBDO parameter map of Object values to a map of String values for better comparison.
+     * 
+     * @param map IBDO parameter map
+     * @return a map that has only Strings as it values.
+     */
+    public static Map&lt;String, Collection&lt;String&gt;&gt; convertMap(final Map&lt;String, Collection&lt;Object&gt;&gt; map) {
+<span class="fc" id="L309">        Map&lt;String, Collection&lt;String&gt;&gt; newMap = new TreeMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L311" title="All 2 branches covered.">        for (Map.Entry&lt;String, Collection&lt;Object&gt;&gt; e : map.entrySet()) {</span>
+<span class="fc" id="L312">            final List&lt;String&gt; list = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L314" title="All 2 branches covered.">            for (Object o : e.getValue()) {</span>
+<span class="fc" id="L315">                list.add(o.toString());</span>
+<span class="fc" id="L316">            }</span>
+
+<span class="fc" id="L318">            newMap.put(e.getKey(), list);</span>
+<span class="fc" id="L319">        }</span>
+
+<span class="fc" id="L321">        return newMap;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

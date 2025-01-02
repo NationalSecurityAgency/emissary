@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Banner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.command</a> &gt; <span class="el_source">Banner.java</span></div><h1>Banner.java</h1><pre class="source lang-java linenums">package emissary.command;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+public class Banner {
+
+    static final String DEFAULT_TEXT = &quot; ________  ________ _____ _____  ___  ________   __\n&quot;
+            + &quot;|  ___|  \\/  |_   _/  ___/  ___|/ _ \\ | ___ \\ \\ / /\n&quot; + &quot;| |__ | .  . | | | \\ `--.\\ `--./ /_\\ \\| |_/ /\\ V / \n&quot;
+            + &quot;|  __|| |\\/| | | |  `--. \\`--. \\  _  ||    /  \\ /  \n&quot; + &quot;| |___| |  | |_| |_/\\__/ /\\__/ / | | || |\\ \\  | |  \n&quot;
+            + &quot;\\____/\\_|  |_/\\___/\\____/\\____/\\_| |_/\\_| \\_| \\_/  \n&quot;;
+
+    private final String bannerText;
+
+<span class="fc" id="L17">    public Banner() {</span>
+<span class="fc" id="L18">        InputStream in = this.getClass().getClassLoader().getResourceAsStream(&quot;banner.txt&quot;);</span>
+<span class="pc bpc" id="L19" title="1 of 2 branches missed.">        if (in == null) {</span>
+<span class="fc" id="L20">            bannerText = DEFAULT_TEXT;</span>
+        } else {
+<span class="nc" id="L22">            String bText = DEFAULT_TEXT;</span>
+            try {
+<span class="nc" id="L24">                BufferedReader reader = new BufferedReader(new InputStreamReader(in));</span>
+<span class="nc" id="L25">                StringBuilder result = new StringBuilder();</span>
+                String line;
+<span class="nc bnc" id="L27" title="All 2 branches missed.">                while ((line = reader.readLine()) != null) {</span>
+<span class="nc" id="L28">                    result.append(System.getProperty(&quot;line.separator&quot;)).append(line);</span>
+                }
+<span class="nc" id="L30">                bText = System.getProperty(&quot;line.separator&quot;) + result.toString();</span>
+<span class="nc" id="L31">            } catch (IOException e) {</span>
+                // will be DEFAULT_TEXT;
+<span class="nc" id="L33">            }</span>
+<span class="nc" id="L34">            bannerText = bText;</span>
+        }
+<span class="fc" id="L36">    }</span>
+
+    @SuppressWarnings(&quot;SystemOut&quot;)
+    public void dump() {
+<span class="fc" id="L40">        System.out.println(bannerText);</span>
+<span class="fc" id="L41">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

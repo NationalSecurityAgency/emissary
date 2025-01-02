@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JournaledCoalescer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.output.roller</a> &gt; <span class="el_source">JournaledCoalescer.java</span></div><h1>JournaledCoalescer.java</h1><pre class="source lang-java linenums">package emissary.output.roller;
+
+import emissary.output.roller.journal.Journal;
+import emissary.output.roller.journal.JournalEntry;
+import emissary.output.roller.journal.JournalReader;
+import emissary.output.roller.journal.JournaledChannelPool;
+import emissary.output.roller.journal.KeyedOutput;
+import emissary.util.io.FileNameGenerator;
+
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static emissary.output.roller.journal.Journal.EXT;
+import static emissary.output.roller.journal.JournaledChannelPool.EXTENSION;
+import static java.nio.file.Files.exists;
+import static java.nio.file.Files.isDirectory;
+import static java.nio.file.Files.isReadable;
+import static java.nio.file.Files.isWritable;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.READ;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
+
+/**
+ * The Rollable implemenation that uses a journal to record offsets of completed writes to a pool of outputs. The
+ * Journal serves as a write ahead log and records positions of all open file handles until rolled.
+ * &lt;p&gt;
+ * During a roll, all Journals are identified and their outputs are combined into a destination filename denoted by the
+ * FileNameGenerator.
+ *
+ */
+public class JournaledCoalescer implements IJournaler, ICoalescer {
+
+<span class="fc" id="L49">    private static final Logger LOG = LoggerFactory.getLogger(JournaledCoalescer.class);</span>
+    /**
+     * Locks for protecting writes to underlying stream
+     */
+<span class="fc" id="L53">    private final ReentrantLock lock = new ReentrantLock();</span>
+    /**
+     * Flag to let callers know if this class is currently rolling *
+     */
+    private volatile boolean rolling;
+    /**
+     * The name generator to use when creating new output files *
+     */
+    private final FileNameGenerator fileNameGenerator;
+    /**
+     * The path to read input and write rolled output *
+     */
+    protected Path outputPath;
+    /**
+     * The current pool of output channels we're writing to *
+     */
+    private JournaledChannelPool journaledPool;
+    /**
+     * Max number of pooled outputs to create *
+     */
+    private final int poolsize;
+    /**
+     * File extension used while coalescing part files
+     */
+    static final String ROLLING_EXT = &quot;.rolling&quot;;
+    /**
+     * File extension used while cleanup of part files after coalescing has completed
+     */
+    static final String ROLLED_EXT = &quot;.rolled&quot;;
+    /**
+     * File extension used while cleanup of part files after coalescing has completed
+     */
+    static final String ERROR_EXT = &quot;.error&quot;;
+    /**
+     * Part/journal file matcher
+     */
+    private static final String PART_GLOB = &quot;*{&quot; + EXTENSION + &quot;,&quot; + EXT + &quot;}&quot;;
+
+    /**
+     * @see JournaledCoalescer#JournaledCoalescer(java.nio.file.Path, FileNameGenerator, int)
+     * @param outPath The Path to use for reading input and writing combined output
+     * @param fileNameGenerator The FileNameGenerator to use for unique destination file names
+     * @throws IOException If there is some I/O problem.
+     */
+    public JournaledCoalescer(final Path outPath, final FileNameGenerator fileNameGenerator) throws IOException, InterruptedException {
+<span class="fc" id="L98">        this(outPath, fileNameGenerator, JournaledChannelPool.DEFAULT_MAX);</span>
+<span class="fc" id="L99">    }</span>
+
+    /**
+     * The Rollable with take all files in a Path and combine them into a single destination file on each roll.
+     *
+     * @param outPath The Path to use for reading input and writing combined output
+     * @param fileNameGenerator The FileNameGenerator to use for unique destination file names
+     * @param poolsize The max number of outputs for the pool.
+     */
+<span class="fc" id="L108">    public JournaledCoalescer(final Path outPath, final FileNameGenerator fileNameGenerator, int poolsize) throws IOException, InterruptedException {</span>
+<span class="fc" id="L109">        this.outputPath = outPath.toAbsolutePath();</span>
+<span class="fc" id="L110">        this.fileNameGenerator = fileNameGenerator;</span>
+<span class="fc" id="L111">        this.poolsize = poolsize;</span>
+<span class="fc" id="L112">        validateOutputPath();</span>
+<span class="fc" id="L113">        cleanupOrphanedRolledFiles();</span>
+<span class="fc" id="L114">        initializeNextPool();</span>
+<span class="fc" id="L115">    }</span>
+
+    /**
+     * Validate the Path we are using for combining files
+     */
+    private void validateOutputPath() throws IOException {
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (!exists(this.outputPath)) {</span>
+<span class="fc" id="L122">            throw new FileNotFoundException(&quot;The output file path does not exist: &quot; + this.outputPath + &quot;.&quot;);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        } else if (!isDirectory(this.outputPath)) {</span>
+<span class="fc" id="L124">            throw new IllegalArgumentException(&quot;The output file path is not a directory: &quot; + this.outputPath + &quot;.&quot;);</span>
+<span class="fc bfc" id="L125" title="All 4 branches covered.">        } else if (!(isReadable(this.outputPath) &amp;&amp; isWritable(this.outputPath))) {</span>
+<span class="fc" id="L126">            throw new IllegalAccessError(&quot;The output path is not readable and writable: &quot; + this.outputPath + &quot;.&quot;);</span>
+        }
+<span class="fc" id="L128">    }</span>
+
+    /**
+     * Sometimes the rolled files can hang around after a crash. If there is a rolled file, that means all of the files
+     * coalesced successfully but cleanup failed. If there are not any files with the same name, just rename the rolled
+     * file. Otherwise, the rolled file will get cleaned up with the normal process.
+     */
+    private void cleanupOrphanedRolledFiles() {
+<span class="fc" id="L136">        try (DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(outputPath, &quot;*&quot; + ROLLED_EXT)) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">            for (Path entry : stream) {</span>
+<span class="fc" id="L138">                String finalOutputFilename = FilenameUtils.getBaseName(entry.toString());</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">                if (isOrphanedFile(finalOutputFilename)) {</span>
+<span class="fc" id="L140">                    finalizeRoll(entry, outputPath.resolve(finalOutputFilename));</span>
+                }
+<span class="fc" id="L142">            }</span>
+<span class="nc" id="L143">        } catch (IOException e) {</span>
+<span class="nc" id="L144">            LOG.error(&quot;There was an error trying to cleanup rolled files {}&quot;, outputPath, e);</span>
+<span class="fc" id="L145">        }</span>
+<span class="fc" id="L146">    }</span>
+
+    /**
+     * Sets the current file name to be used when creating files and rolling output. Closes current pool, retrieves a list
+     * of Journal files that need to be rolled, and instantiates the next pool.
+     * &lt;p&gt;
+     * Called by the roll method, synchronized for consistency.
+     */
+    private Collection&lt;Path&gt; initializeNextPool() throws IOException, InterruptedException {
+<span class="fc" id="L155">        lock.lock();</span>
+        try {
+<span class="fc bfc" id="L157" title="All 2 branches covered.">            if (journaledPool != null) {</span>
+<span class="fc" id="L158">                this.journaledPool.close();</span>
+            }
+<span class="fc" id="L160">            Collection&lt;Path&gt; journals = JournalReader.getJournalPaths(outputPath);</span>
+<span class="fc" id="L161">            this.journaledPool = new JournaledChannelPool(outputPath, this.fileNameGenerator.nextFileName(), poolsize);</span>
+<span class="fc" id="L162">            LOG.debug(&quot;Generated new Journal file name: {}&quot;, this.journaledPool);</span>
+<span class="fc" id="L163">            return journals;</span>
+        } finally {
+<span class="fc" id="L165">            lock.unlock();</span>
+        }
+    }
+
+    /**
+     * Returns and KeyedOutput object containing the final output file and can be written to as either an OutputStream or a
+     * SeekableByteChannel. This method will block if objects from the pool have been exhausted.
+     *
+     * @return a KeyedOutput
+     */
+    @Override
+    public final KeyedOutput getOutput() throws IOException {
+<span class="fc" id="L177">        lock.lock();</span>
+        try {
+            // Return the final, full path
+<span class="fc" id="L180">            return journaledPool.getFree();</span>
+<span class="nc" id="L181">        } catch (InterruptedException ex) {</span>
+<span class="nc" id="L182">            Thread.currentThread().interrupt();</span>
+<span class="nc" id="L183">            throw new IOException(&quot;Interrupted trying to obtain KeyedOutput&quot;, ex);</span>
+        } finally {
+<span class="fc" id="L185">            lock.unlock();</span>
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+<span class="fc" id="L191">        roll();</span>
+<span class="fc" id="L192">    }</span>
+
+    @Override
+    public void roll() {
+        try {
+<span class="fc" id="L197">            this.rolling = true;</span>
+<span class="fc" id="L198">            Collection&lt;Path&gt; paths = initializeNextPool();</span>
+<span class="fc" id="L199">            coalesce(paths);</span>
+<span class="nc" id="L200">        } catch (IOException ex) {</span>
+<span class="nc" id="L201">            LOG.error(&quot;Error occurred during roll.&quot;, ex);</span>
+<span class="nc" id="L202">        } catch (InterruptedException ex) {</span>
+<span class="nc" id="L203">            LOG.warn(&quot;Roll interrupted during execution. Should continue on next roll.&quot;, ex);</span>
+<span class="nc" id="L204">            Thread.currentThread().interrupt();</span>
+        } finally {
+<span class="fc" id="L206">            this.rolling = false;</span>
+        }
+<span class="fc" id="L208">    }</span>
+
+    @Override
+    public void coalesce() throws IOException {
+<span class="nc" id="L212">        throw new UnsupportedOperationException();</span>
+    }
+
+    @Override
+    public void coalesce(Collection&lt;Path&gt; journalPaths) throws IOException {
+<span class="fc bfc" id="L217" title="All 2 branches covered.">        if (journalPaths.isEmpty()) {</span>
+            // nothing to do...
+<span class="fc" id="L219">            return;</span>
+        }
+<span class="fc" id="L221">        HashMap&lt;String, Collection&lt;Journal&gt;&gt; outputMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L222">        journalPaths.forEach(path -&gt; loadJournal(path, outputMap));</span>
+<span class="fc" id="L223">        outputMap.forEach(this::coalesceFiles);</span>
+<span class="fc" id="L224">    }</span>
+
+    private void loadJournal(Path path, Map&lt;String, Collection&lt;Journal&gt;&gt; outputMap) {
+<span class="fc" id="L227">        try (JournalReader jr = new JournalReader(path)) {</span>
+<span class="fc" id="L228">            Journal j = jr.getJournal();</span>
+<span class="fc" id="L229">            outputMap.computeIfAbsent(j.getKey(), k -&gt; new ArrayList&lt;&gt;()).add(j);</span>
+<span class="nc" id="L230">        } catch (IOException ex) {</span>
+<span class="nc" id="L231">            LOG.error(&quot;Unable to load Journal {}, renaming to {}{}&quot;, path.toString(), path.toString(), ERROR_EXT, ex);</span>
+<span class="nc" id="L232">            renameToError(path);</span>
+<span class="fc" id="L233">        }</span>
+<span class="fc" id="L234">    }</span>
+
+    /**
+     * Combines all files in the path that are ready to be rolled into their output file.
+     *
+     * @param key The path to use for reading and writing files
+     * @param journals The journal files currently needed to roll
+     */
+    protected void coalesceFiles(String key, Collection&lt;Journal&gt; journals) {
+        try {
+            // Create the path to the final outputFile
+<span class="fc" id="L245">            Path finalOutputPath = this.outputPath.resolve(key);</span>
+<span class="fc" id="L246">            Path rolledOutputPath = this.outputPath.resolve(key + ROLLED_EXT);</span>
+
+            // Check to see if we already rolled files successfully and crashed on deletion
+<span class="fc bfc" id="L249" title="All 2 branches covered.">            if (Files.exists(rolledOutputPath)) {</span>
+<span class="fc" id="L250">                LOG.warn(&quot;Full output file already found {}. Deleting old part files.&quot;, rolledOutputPath);</span>
+<span class="fc" id="L251">                finalizeRoll(journals, rolledOutputPath, finalOutputPath);</span>
+<span class="fc" id="L252">                return;</span>
+            }
+
+            // Create the path to the working outputFile
+<span class="fc" id="L256">            Path workingOutputPath = this.outputPath.resolve(key + ROLLING_EXT);</span>
+
+            // Create the working file output stream, truncating a bad file from a crashed run, if it exists
+<span class="fc" id="L259">            try (FileChannel workingOutputChannel = FileChannel.open(workingOutputPath, CREATE, TRUNCATE_EXISTING, WRITE)) {</span>
+                // Combine the files into the rolledOutputFile and delete them
+<span class="fc bfc" id="L261" title="All 2 branches covered.">                for (Journal j : journals) {</span>
+<span class="fc" id="L262">                    combineFiles(j, workingOutputChannel);</span>
+<span class="fc" id="L263">                }</span>
+                // Flush and close output stream
+<span class="fc" id="L265">                workingOutputChannel.force(true);</span>
+            }
+
+<span class="fc" id="L268">            Files.move(workingOutputPath, rolledOutputPath);</span>
+<span class="fc" id="L269">            LOG.info(&quot;Successfully coalesced {} files into: {}. Size: {}&quot;, journals.size(), rolledOutputPath, Files.size(rolledOutputPath));</span>
+
+<span class="fc" id="L271">            finalizeRoll(journals, rolledOutputPath, finalOutputPath);</span>
+<span class="nc" id="L272">        } catch (IOException ex) {</span>
+<span class="nc" id="L273">            LOG.error(&quot;IOException while processing journals for {}&quot;, key, ex);</span>
+<span class="fc" id="L274">        }</span>
+<span class="fc" id="L275">    }</span>
+
+    /**
+     * Copies all bytes from all paths that match to an output stream.
+     *
+     * @param journal The journal to combine in the output stream
+     * @param rolledOutput The OutputStream object to use
+     */
+    protected void combineFiles(Journal journal, SeekableByteChannel rolledOutput) throws IOException {
+<span class="fc" id="L284">        long startPos = rolledOutput.position();</span>
+<span class="fc" id="L285">        JournalEntry last = journal.getLastEntry();</span>
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">        if (last == null) {</span>
+<span class="nc" id="L287">            LOG.debug(&quot;Empty Journal encountered. {}&quot;, journal);</span>
+<span class="nc" id="L288">            return;</span>
+        }
+<span class="fc" id="L290">        long offset = last.getOffset();</span>
+<span class="fc" id="L291">        Path p = Paths.get(last.getVal());</span>
+<span class="fc" id="L292">        LOG.debug(&quot;Reading from path {}&quot;, p);</span>
+<span class="fc" id="L293">        try (FileChannel part = FileChannel.open(p, READ)) {</span>
+<span class="fc" id="L294">            long partSize = Files.size(p);</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">            if (partSize &lt; last.getOffset()) {</span>
+<span class="fc" id="L296">                JournalEntry lastGood = journal.getLastValidEntry(partSize);</span>
+<span class="fc" id="L297">                offset = lastGood.getOffset();</span>
+<span class="fc" id="L298">                LOG.warn(&quot;The bgpart file, {}, likely lost data due to a crash. Part size: {}, Expected {}, Actual: {}&quot;, last.getVal(), partSize,</span>
+<span class="fc" id="L299">                        last.getOffset(), offset);</span>
+            }
+            long xfer;
+            // for loop due to contract of channel.transferTo()
+<span class="fc bfc" id="L303" title="All 2 branches covered.">            for (long count = offset; count &gt; 0L;) {</span>
+<span class="fc" id="L304">                xfer = part.transferTo(part.position(), count, rolledOutput);</span>
+<span class="fc" id="L305">                part.position(part.position() + xfer);</span>
+<span class="fc" id="L306">                count -= xfer;</span>
+<span class="pc bpc" id="L307" title="2 of 4 branches missed.">                if (part.position() == partSize &amp;&amp; count &gt; 0L) {</span>
+<span class="nc" id="L308">                    throw new IOException(&quot;Premature EOF. Expected &quot; + offset + &quot;, but only transferred &quot; + partSize);</span>
+                }
+            }
+<span class="fc" id="L311">            LOG.debug(&quot;Successfully appended {} bytes from {} to output file.&quot;, offset, p);</span>
+<span class="nc" id="L312">        } catch (IOException ex) {</span>
+<span class="nc" id="L313">            LOG.error(&quot;Exception attempting to transfer {} bytes from {} to output&quot;, offset, p.toString(), ex);</span>
+<span class="nc" id="L314">            renameToError(p);</span>
+<span class="nc" id="L315">            renameToError(journal.getJournalPath());</span>
+<span class="nc" id="L316">            rolledOutput.truncate(startPos);</span>
+<span class="nc" id="L317">            rolledOutput.position(startPos);</span>
+<span class="fc" id="L318">        }</span>
+<span class="fc" id="L319">    }</span>
+
+    @Override
+    public boolean isRolling() {
+<span class="nc" id="L323">        return this.rolling;</span>
+    }
+
+    /** @deprecated replaced by {@link #finalizeRoll(Path, Path, Collection)} */
+    @Deprecated(since = &quot;8.1.0&quot;)
+    @SuppressWarnings(&quot;InconsistentOverloads&quot;)
+    protected void finalize(Collection&lt;Journal&gt; journals, Path rolledOutputPath, Path finalOutputPath) throws IOException { // NOSONAR
+<span class="nc" id="L330">        finalizeRoll(rolledOutputPath, finalOutputPath, journals);</span>
+<span class="nc" id="L331">    }</span>
+
+    /** @deprecated replaced by {@link #finalizeRoll(Path, Path)} */
+    @Deprecated(since = &quot;8.1.0&quot;)
+    protected void finalize(Path rolledOutputPath, Path finalOutputPath) throws IOException { // NOSONAR
+<span class="nc" id="L336">        finalizeRoll(rolledOutputPath, finalOutputPath);</span>
+<span class="nc" id="L337">    }</span>
+
+    @Deprecated
+    @SuppressWarnings(&quot;InconsistentOverloads&quot;)
+    protected void finalizeRoll(Collection&lt;Journal&gt; journals, Path rolledOutputPath, Path finalOutputPath) throws IOException {
+<span class="fc" id="L342">        finalizeRoll(rolledOutputPath, finalOutputPath, journals);</span>
+<span class="fc" id="L343">    }</span>
+
+    protected void finalizeRoll(Path rolledOutputPath, Path finalOutputPath, Collection&lt;Journal&gt; journals) throws IOException {
+<span class="fc" id="L346">        cleanupFiles(journals);</span>
+<span class="fc" id="L347">        finalizeRoll(rolledOutputPath, finalOutputPath);</span>
+<span class="fc" id="L348">    }</span>
+
+    protected void finalizeRoll(Path rolledOutputPath, Path finalOutputPath) throws IOException {
+<span class="pc bpc" id="L351" title="1 of 2 branches missed.">        if (!Files.exists(rolledOutputPath)) {</span>
+<span class="nc" id="L352">            return;</span>
+        }
+
+<span class="fc bfc" id="L355" title="All 2 branches covered.">        if (Files.size(rolledOutputPath) &gt; 0) {</span>
+<span class="fc" id="L356">            Files.move(rolledOutputPath, finalOutputPath);</span>
+<span class="fc" id="L357">            LOG.info(&quot;Cleaned part files and moved rolled file to {}&quot;, finalOutputPath);</span>
+        } else {
+            // delete the rolled file if it is empty
+<span class="fc" id="L360">            Files.delete(rolledOutputPath);</span>
+        }
+<span class="fc" id="L362">    }</span>
+
+    protected void renameToError(Path path) {
+        try {
+<span class="nc" id="L366">            Path errorPath = Paths.get(path.toString() + ERROR_EXT);</span>
+<span class="nc" id="L367">            Files.move(path, errorPath);</span>
+<span class="nc" id="L368">        } catch (IOException ex) {</span>
+<span class="nc" id="L369">            LOG.warn(&quot;Unable to rename file {}.&quot;, path.toString(), ex);</span>
+<span class="nc" id="L370">        }</span>
+<span class="nc" id="L371">    }</span>
+
+    /**
+     * Test to see if a rolled file is orphaned
+     *
+     * @param startsWith the name of the rolled file
+     * @return true if no part/journal files exist, false otherwise
+     * @throws IOException if there is an issue
+     */
+    private boolean isOrphanedFile(String startsWith) throws IOException {
+<span class="fc" id="L381">        try (DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(outputPath, startsWith + PART_GLOB)) {</span>
+<span class="fc bfc" id="L382" title="All 2 branches covered.">            return !stream.iterator().hasNext();</span>
+        }
+    }
+
+    protected void cleanupFiles(Collection&lt;Journal&gt; journals) throws IOException {
+<span class="fc bfc" id="L387" title="All 2 branches covered.">        for (Journal journal : journals) {</span>
+<span class="fc" id="L388">            Path jpath = journal.getJournalPath();</span>
+<span class="fc" id="L389">            deleteParts(journal.getEntries());</span>
+<span class="fc" id="L390">            Files.deleteIfExists(jpath);</span>
+<span class="fc" id="L391">        }</span>
+<span class="fc" id="L392">    }</span>
+
+    private static void deleteParts(Collection&lt;JournalEntry&gt; entries) throws IOException {
+<span class="fc bfc" id="L395" title="All 2 branches covered.">        for (JournalEntry entry : entries) {</span>
+<span class="fc" id="L396">            Path p = Paths.get(entry.getVal());</span>
+<span class="fc" id="L397">            Files.deleteIfExists(p);</span>
+<span class="fc" id="L398">        }</span>
+<span class="fc" id="L399">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

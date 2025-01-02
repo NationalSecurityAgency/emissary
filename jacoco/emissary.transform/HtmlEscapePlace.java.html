@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HtmlEscapePlace.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.transform</a> &gt; <span class="el_source">HtmlEscapePlace.java</span></div><h1>HtmlEscapePlace.java</h1><pre class="source lang-java linenums">/***********************************************************
+ * This place transforms &amp;#xxxx; formatted HTML Escape
+ * stuff into normal unicode (utf-8 characters)
+ **/
+
+package emissary.transform;
+
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.place.ServiceProviderPlace;
+import emissary.transform.decode.HtmlEscape;
+import emissary.util.CharacterCounterSet;
+import emissary.util.DataUtil;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import javax.annotation.Nullable;
+
+import static emissary.core.Form.HTML;
+import static emissary.core.Form.PREFIXES_LANG;
+import static emissary.core.Form.SUFFIXES_HTMLESC;
+import static emissary.core.Form.TEXT;
+import static emissary.core.constants.Configurations.OUTPUT_FORM;
+import static emissary.core.constants.Parameters.DOCUMENT_TITLE;
+import static emissary.core.constants.Parameters.SUFFIXES_HTML_ESCAPE;
+import static emissary.core.constants.Parameters.SUMMARY;
+
+@Deprecated
+public class HtmlEscapePlace extends ServiceProviderPlace {
+
+    /**
+     * Can be overridden from config file
+     */
+<span class="pc" id="L37">    @Nullable</span>
+    private String outputForm = null;
+
+    /**
+     * The remote constructor
+     */
+    public HtmlEscapePlace(String cfgInfo, String dir, String placeLoc) throws IOException {
+<span class="nc" id="L44">        super(cfgInfo, dir, placeLoc);</span>
+<span class="nc" id="L45">        configurePlace();</span>
+<span class="nc" id="L46">    }</span>
+
+    /**
+     * The test constructor
+     */
+    public HtmlEscapePlace(String cfgInfo) throws IOException {
+<span class="nc" id="L52">        super(cfgInfo, &quot;TestHtmlEscapePlace.example.com:8001&quot;);</span>
+<span class="nc" id="L53">        configurePlace();</span>
+<span class="nc" id="L54">    }</span>
+
+    /**
+     * Create with the default configuration
+     */
+    public HtmlEscapePlace() throws IOException {
+<span class="fc" id="L60">        super();</span>
+<span class="fc" id="L61">        configurePlace();</span>
+<span class="fc" id="L62">    }</span>
+
+    /**
+     * Take care of special place configuration
+     */
+    protected void configurePlace() {
+<span class="fc" id="L68">        outputForm = configG.findStringEntry(OUTPUT_FORM, null);</span>
+
+        // Force statics to load
+<span class="fc" id="L71">        HtmlEscape.unescapeHtml(new byte[0]);</span>
+<span class="fc" id="L72">    }</span>
+
+    /**
+     * Consume a dataObject and return a modified one.
+     */
+    @Override
+    public void process(IBaseDataObject d) {
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if (DataUtil.isEmpty(d)) {</span>
+<span class="nc" id="L80">            logger.debug(&quot;empty data&quot;);</span>
+<span class="nc" id="L81">            return;</span>
+        }
+<span class="fc" id="L83">        String incomingForm = d.currentForm();</span>
+<span class="fc" id="L84">        CharacterCounterSet counters = new CharacterCounterSet();</span>
+
+<span class="fc" id="L86">        logger.debug(&quot;Just got a payload with form {}&quot;, incomingForm);</span>
+
+<span class="fc" id="L88">        byte[] newData = HtmlEscape.unescapeHtml(d.data(), counters);</span>
+
+<span class="pc bpc" id="L90" title="2 of 4 branches missed.">        if (newData != null &amp;&amp; newData.length &gt; 0) {</span>
+<span class="fc" id="L91">            newData = HtmlEscape.unescapeEntities(newData, counters);</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">            if (outputForm != null) {</span>
+<span class="nc" id="L93">                d.setCurrentForm(outputForm);</span>
+            }
+            // Track how much change in size there was
+<span class="fc" id="L96">            int variance = d.dataLength() - newData.length;</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">            if (variance &lt; 0) {</span>
+<span class="nc" id="L98">                variance *= -1;</span>
+            }
+<span class="fc" id="L100">            d.setParameter(&quot;HTML_Entity_Decode_Variance&quot;, Integer.toString(variance));</span>
+<span class="fc" id="L101">            d.setData(newData);</span>
+<span class="fc" id="L102">            d.setFileTypeIfEmpty(HTML);</span>
+
+<span class="fc bfc" id="L104" title="All 2 branches covered.">            for (String key : counters.getKeys()) {</span>
+<span class="fc" id="L105">                d.putParameter(key + SUFFIXES_HTML_ESCAPE, Integer.toString(counters.get(key)));</span>
+<span class="fc" id="L106">            }</span>
+
+<span class="fc" id="L108">        } else {</span>
+<span class="nc" id="L109">            logger.warn(&quot;error doing HtmlEscape, unable to decode&quot;);</span>
+<span class="nc" id="L110">            d.pushCurrentForm(Form.ERROR);</span>
+        }
+
+<span class="fc" id="L113">        unescapeAltViews(d);</span>
+<span class="fc" id="L114">        unescapeSummary(d);</span>
+<span class="fc" id="L115">        unescapeDocTitle(d);</span>
+<span class="fc" id="L116">        processEncoding(d);</span>
+<span class="fc" id="L117">        processCurrentForms(d);</span>
+<span class="fc" id="L118">        nukeMyProxies(d);</span>
+<span class="fc" id="L119">    }</span>
+
+    protected void unescapeAltViews(IBaseDataObject d) {
+        // Unescape any TEXT alt views we may have
+<span class="fc" id="L123">        d.getAlternateViewNames().stream().filter(v -&gt; v.startsWith(TEXT)).forEach(viewName -&gt; {</span>
+<span class="fc" id="L124">            byte[] textView = d.getAlternateView(viewName);</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">            if (ArrayUtils.isNotEmpty(textView)) {</span>
+<span class="fc" id="L126">                byte[] s = HtmlEscape.unescapeHtml(textView);</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">                if (ArrayUtils.isNotEmpty(s)) {</span>
+<span class="fc" id="L128">                    s = HtmlEscape.unescapeEntities(s);</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">                    if (ArrayUtils.isNotEmpty(s)) {</span>
+<span class="fc" id="L130">                        d.addAlternateView(viewName, s);</span>
+                    }
+                }
+            }
+<span class="fc" id="L134">        });</span>
+<span class="fc" id="L135">    }</span>
+
+    protected void unescapeSummary(IBaseDataObject d) {
+        // Unescape the Summary if present
+<span class="fc" id="L139">        String summary = d.getStringParameter(SUMMARY);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">        if (StringUtils.contains(summary, &quot;&amp;#&quot;)) {</span>
+<span class="fc" id="L141">            logger.debug(&quot;Working on summary &quot;/* + summary */);</span>
+<span class="fc" id="L142">            String s = makeString(HtmlEscape.unescapeHtml(summary.getBytes()));</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">            if (StringUtils.isNotBlank(s)) {</span>
+<span class="fc" id="L144">                s = HtmlEscape.unescapeEntities(s);</span>
+<span class="fc" id="L145">                d.deleteParameter(SUMMARY);</span>
+<span class="fc" id="L146">                d.putParameter(SUMMARY, s);</span>
+            }
+        }
+<span class="fc" id="L149">    }</span>
+
+    protected void unescapeDocTitle(IBaseDataObject d) {
+        // Unescape the Document Title
+<span class="fc" id="L153">        String title = d.getStringParameter(DOCUMENT_TITLE);</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">        if (StringUtils.contains(title, &quot;&amp;#&quot;)) {</span>
+<span class="fc" id="L155">            logger.debug(&quot;Working on title &quot;/* + title */);</span>
+<span class="fc" id="L156">            String s = makeString(HtmlEscape.unescapeHtml(title.getBytes()));</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">            if (StringUtils.isNotBlank(s)) {</span>
+<span class="fc" id="L158">                d.deleteParameter(DOCUMENT_TITLE);</span>
+<span class="fc" id="L159">                s = HtmlEscape.unescapeEntities(s);</span>
+<span class="fc" id="L160">                d.putParameter(DOCUMENT_TITLE, s);</span>
+            }
+        }
+<span class="fc" id="L163">        logger.debug(&quot;Retrieved new title &quot;);</span>
+<span class="fc" id="L164">    }</span>
+
+    protected void processEncoding(IBaseDataObject d) {
+        // If the encoding or the LANG- form has -HTMLESC remove it
+<span class="fc" id="L168">        String enc = d.getFontEncoding();</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">        if (StringUtils.contains(enc, SUFFIXES_HTMLESC)) {</span>
+<span class="fc" id="L170">            d.setFontEncoding(enc.replaceFirst(SUFFIXES_HTMLESC, &quot;&quot;));</span>
+        }
+<span class="fc" id="L172">    }</span>
+
+    protected void processCurrentForms(IBaseDataObject d) {
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        for (String cf : d.getAllCurrentForms()) {</span>
+<span class="pc bpc" id="L176" title="1 of 4 branches missed.">            if (cf.contains(PREFIXES_LANG) &amp;&amp; cf.contains(SUFFIXES_HTMLESC)) {</span>
+                // Get the old pos
+<span class="fc" id="L178">                int pos = d.searchCurrentForm(cf);</span>
+<span class="fc" id="L179">                d.deleteCurrentForm(cf);</span>
+<span class="fc" id="L180">                cf = cf.replaceFirst(SUFFIXES_HTMLESC, &quot;&quot;);</span>
+<span class="fc" id="L181">                d.addCurrentFormAt(pos, cf);</span>
+<span class="fc" id="L182">                break;</span>
+            }
+<span class="fc" id="L184">        }</span>
+<span class="fc" id="L185">    }</span>
+
+    public static String makeString(byte[] s) {
+<span class="fc" id="L188">        return new String(s, StandardCharsets.UTF_8);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

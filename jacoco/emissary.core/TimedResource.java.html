@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TimedResource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core</a> &gt; <span class="el_source">TimedResource.java</span></div><h1>TimedResource.java</h1><pre class="source lang-java linenums">package emissary.core;
+
+import emissary.place.IServiceProviderPlace;
+
+import com.codahale.metrics.Timer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.locks.ReentrantLock;
+import javax.annotation.Nullable;
+
+/**
+ * Class to help track the things we are interested in monitoring
+ */
+public class TimedResource implements AutoCloseable {
+
+<span class="fc" id="L17">    protected static final Logger LOG = LoggerFactory.getLogger(TimedResource.class);</span>
+
+<span class="fc" id="L19">    public static final TimedResource EMPTY = new TimedResource();</span>
+
+    @Nullable
+    private final IMobileAgent agent;
+    private final int payloadCount;
+    private final long allowedDuration;
+    private final String placeName;
+    private final long started;
+
+    @Nullable
+    private final Timer.Context timerContext;
+
+<span class="fc" id="L31">    private final ReentrantLock lock = new ReentrantLock();</span>
+
+<span class="fc" id="L33">    private volatile boolean isClosed = false;</span>
+
+<span class="fc" id="L35">    private TimedResource() {</span>
+<span class="fc" id="L36">        isClosed = true;</span>
+<span class="fc" id="L37">        started = -1;</span>
+<span class="fc" id="L38">        allowedDuration = -1;</span>
+<span class="fc" id="L39">        agent = null;</span>
+<span class="fc" id="L40">        payloadCount = -1;</span>
+<span class="fc" id="L41">        placeName = &quot;NOOP&quot;;</span>
+<span class="fc" id="L42">        timerContext = null;</span>
+<span class="fc" id="L43">    }</span>
+
+<span class="fc" id="L45">    public TimedResource(final IMobileAgent agent, final IServiceProviderPlace place, final long allowedDuration, final Timer timer) {</span>
+<span class="fc" id="L46">        this.started = System.currentTimeMillis();</span>
+<span class="fc" id="L47">        this.agent = agent;</span>
+<span class="fc" id="L48">        this.payloadCount = agent.payloadCount();</span>
+<span class="fc" id="L49">        this.placeName = place.getPlaceName();</span>
+<span class="fc" id="L50">        this.timerContext = timer.time();</span>
+<span class="fc" id="L51">        this.allowedDuration = allowedDuration;</span>
+
+<span class="fc" id="L53">    }</span>
+
+    // checks the state of the current place, returns true if it's closed
+    protected boolean checkState(long now) {
+<span class="fc bfc" id="L57" title="All 4 branches covered.">        if (allowedDuration &gt; 0 &amp;&amp; (now - started) &gt; (allowedDuration * payloadCount)) {</span>
+<span class="fc" id="L58">            interruptAgent();</span>
+        }
+<span class="fc" id="L60">        return isClosed;</span>
+    }
+
+    // test visibility
+    void interruptAgent() {
+        // don't grab the lock if we're done
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (isClosed) {</span>
+<span class="fc" id="L67">            return;</span>
+        }
+<span class="fc" id="L69">        lock.lock();</span>
+        try {
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">            if (!isClosed) {</span>
+<span class="fc" id="L72">                LOG.debug(&quot;Found agent that needs interrupting {} in place {}&quot;, agent.getName(), placeName);</span>
+<span class="fc" id="L73">                agent.interrupt();</span>
+            }
+<span class="nc" id="L75">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L76">            LOG.error(&quot;Unable to interrupt agent {}: {}&quot;, agent.getName(), e.getMessage(), e);</span>
+        } finally {
+<span class="fc" id="L78">            lock.unlock();</span>
+        }
+<span class="fc" id="L80">    }</span>
+
+    @Override
+    public void close() {
+<span class="fc" id="L84">        lock.lock();</span>
+        try {
+<span class="fc bfc" id="L86" title="All 2 branches covered.">            if (isClosed) {</span>
+<span class="fc" id="L87">                return;</span>
+            }
+<span class="fc" id="L89">            timerContext.stop();</span>
+<span class="fc" id="L90">            isClosed = true;</span>
+        } finally {
+<span class="fc" id="L92">            lock.unlock();</span>
+        }
+<span class="fc" id="L94">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

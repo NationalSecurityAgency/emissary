@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConcatenateChannelFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core.channels</a> &gt; <span class="el_source">ConcatenateChannelFactory.java</span></div><h1>ConcatenateChannelFactory.java</h1><pre class="source lang-java linenums">package emissary.core.channels;
+
+import org.apache.commons.lang3.Validate;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
+
+/**
+ * This class creates a SeekableByteChannelFactory that concatenates two other SeekableByteChannelFactories.
+ */
+public final class ConcatenateChannelFactory {
+    private ConcatenateChannelFactory() {}
+
+    /**
+     * Creates a SeekableByteChannelFactory which represents the concatenation of two other SeekableByteChannelFactories
+     * 
+     * @param first is the first SeekableByteChannelFactory to be concatenated.
+     * @param second is the second SeekableByteChannelFactory to be concatenated.
+     * @return the concatenated SeekableByteChannelFactory.
+     */
+    public static SeekableByteChannelFactory create(final SeekableByteChannelFactory first,
+            final SeekableByteChannelFactory second) {
+<span class="fc" id="L25">        return new ConcatenateChannelFactoryImpl(first, second);</span>
+    }
+
+    /**
+     * The SeekableByteChannelFactory implementation that returns a &quot;concatenation&quot; of two SeekableByteChannels.
+     */
+    private static class ConcatenateChannelFactoryImpl implements SeekableByteChannelFactory {
+        /**
+         * The first SeekableByteChannelFactory to be concatenated
+         */
+        private final SeekableByteChannelFactory first;
+        /**
+         * The second SeekableByteChannelFactory to be concatenated
+         */
+        private final SeekableByteChannelFactory second;
+
+        private ConcatenateChannelFactoryImpl(final SeekableByteChannelFactory first,
+<span class="fc" id="L42">                final SeekableByteChannelFactory second) {</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">            Validate.isTrue(first != null, &quot;Required: first != null!&quot;);</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">            Validate.isTrue(second != null, &quot;Required: second != null!&quot;);</span>
+
+<span class="fc" id="L46">            this.first = first;</span>
+<span class="fc" id="L47">            this.second = second;</span>
+<span class="fc" id="L48">        }</span>
+
+        @Override
+        public SeekableByteChannel create() {
+<span class="fc" id="L52">            return new ConcatenateSeekableByteChannel(first.create(), second.create());</span>
+        }
+    }
+
+    /**
+     * The &quot;concatenation&quot; SeekableByteChannel implementation.
+     */
+    private static class ConcatenateSeekableByteChannel extends AbstractSeekableByteChannel {
+<span class="fc" id="L60">        private static final BigInteger LONG_MAX_VALUE = BigInteger.valueOf(Long.MAX_VALUE);</span>
+
+        /**
+         * The first SeekableByteChannel to be concatenated.
+         */
+        private final SeekableByteChannel first;
+        /**
+         * The second SeekableByteChannel to be concatenated.
+         */
+        private final SeekableByteChannel second;
+
+        /**
+         * the total size of first.size() + second.size() or -1 if not valid.
+         */
+<span class="fc" id="L74">        private long totalSize = -1;</span>
+
+        private ConcatenateSeekableByteChannel(final SeekableByteChannel first,
+<span class="fc" id="L77">                final SeekableByteChannel second) {</span>
+<span class="fc" id="L78">            this.first = first;</span>
+<span class="fc" id="L79">            this.second = second;</span>
+<span class="fc" id="L80">        }</span>
+
+        @Override
+        protected void closeImpl() throws IOException {
+<span class="fc" id="L84">            first.close();</span>
+<span class="fc" id="L85">            second.close();</span>
+<span class="fc" id="L86">        }</span>
+
+        @Override
+        protected int readImpl(final ByteBuffer byteBuffer) throws IOException {
+<span class="fc" id="L90">            size();</span>
+
+<span class="fc" id="L92">            final long start = position();</span>
+<span class="fc" id="L93">            final int length = byteBuffer.remaining();</span>
+<span class="fc" id="L94">            final long firstSbcSize = first.size();</span>
+<span class="fc" id="L95">            final long firstSbcLastIndex = firstSbcSize - 1;</span>
+
+<span class="fc bfc" id="L97" title="All 2 branches covered.">            if (start + length &lt;= firstSbcLastIndex) {</span>
+<span class="fc" id="L98">                first.position(start);</span>
+<span class="fc" id="L99">                first.read(byteBuffer);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">            } else if (start &gt; firstSbcLastIndex) {</span>
+<span class="fc" id="L101">                second.position(start - firstSbcSize);</span>
+<span class="fc" id="L102">                second.read(byteBuffer);</span>
+            } else {
+<span class="fc" id="L104">                final int firstAmount = (int) (firstSbcSize - start);</span>
+<span class="fc" id="L105">                final int originalLimit = byteBuffer.limit();</span>
+
+<span class="fc" id="L107">                byteBuffer.limit(firstAmount);</span>
+<span class="fc" id="L108">                first.position(start);</span>
+<span class="fc" id="L109">                first.read(byteBuffer);</span>
+<span class="fc" id="L110">                byteBuffer.limit(originalLimit);</span>
+<span class="fc" id="L111">                second.position(0);</span>
+<span class="fc" id="L112">                second.read(byteBuffer);</span>
+            }
+
+<span class="fc" id="L115">            return length;</span>
+        }
+
+        @Override
+        protected long sizeImpl() throws IOException {
+<span class="fc bfc" id="L120" title="All 2 branches covered.">            if (totalSize &lt;= -1) {</span>
+<span class="fc" id="L121">                final BigInteger firstSize = BigInteger.valueOf(first.size());</span>
+<span class="fc" id="L122">                final BigInteger secondSize = BigInteger.valueOf(second.size());</span>
+<span class="fc" id="L123">                final BigInteger firstPlusSecondSize = firstSize.add(secondSize);</span>
+
+<span class="fc bfc" id="L125" title="All 2 branches covered.">                if (firstPlusSecondSize.compareTo(LONG_MAX_VALUE) &lt;= 0) {</span>
+<span class="fc" id="L126">                    totalSize = firstPlusSecondSize.longValue();</span>
+                } else {
+<span class="fc" id="L128">                    throw new IOException(&quot;firstSbcf.size() + secondSbcf.size() &gt; Long.MAX_VALUE not allowed!&quot;);</span>
+                }
+            }
+
+<span class="fc" id="L132">            return totalSize;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

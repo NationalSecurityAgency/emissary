@@ -1,0 +1,717 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Ssdeep.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.kff</a> &gt; <span class="el_source">Ssdeep.java</span></div><h1>Ssdeep.java</h1><pre class="source lang-java linenums">package emissary.kff;
+
+import emissary.core.channels.SeekableByteChannelFactory;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.Channels;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import javax.annotation.Nullable;
+
+/**
+ * A java port of the ssdeep code for &quot;fuzzy hashing&quot;. http://ssdeep.sourceforge.net There are a number of ports out
+ * there that all look basically the same. This one is from
+ * https://opensourceprojects.eu/p/triplecheck/code/23/tree/tool/src/ssdeep/
+ *
+ * A new ssdeep hash gets calculated and saved at each level of unwrapping.
+ */
+public final class Ssdeep {
+
+<span class="fc" id="L29">    private static final Logger logger = LoggerFactory.getLogger(Ssdeep.class);</span>
+
+    private static final int SPAMSUM_LENGTH = 64;
+    private static final int MIN_BLOCKSIZE = 3;
+
+    public static final int FUZZY_MAX_RESULT = (SPAMSUM_LENGTH + (SPAMSUM_LENGTH / 2 + 20));
+
+    /** The window size for the rolling hash. */
+    private static final int ROLLING_WINDOW_SIZE = 7;
+
+    /** The buffer size to use when reading data from a file. */
+    private static final int BUFFER_SIZE = 8192;
+
+    /** FNV hash initial value, 32-bit unsigned. */
+    private static final long HASH_INIT = 0x28021967;
+
+    /** FNV hash prime multiplier, 32-bit unsigned. */
+    private static final long HASH_PRIME = 0x01000193;
+
+    /** Used to mask long values to 32 bits unsigned. */
+    private static final long MASK32 = 0xffffffffL;
+
+    /**
+     * Base64 encoding table. Given a 5-bit value {@code n}, position {@code n} in the array is the code point (expressed as
+     * a byte) that should appear.
+     */
+<span class="fc" id="L55">    private static final byte[] b64Table = SpamSumSignature.getBytes(&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/&quot;);</span>
+
+    /**
+     * Get the base64 encoding of the low 6 bits of the given value.
+     *
+     * @param v The value to encode.
+     * @return The base64 encoding of the low 6 bits of {@code v}. The returned value is a code point expressed as a byte.
+     */
+    private static byte b64EncodeLowBits(final long v) {
+<span class="fc" id="L64">        return b64Table[((int) v) &amp; 0x3f];</span>
+    }
+
+    private static final class SsContext {
+
+        /** A buffer for the main hash output. */
+<span class="pc" id="L70">        private final byte[] fuzzHash1 = new byte[SPAMSUM_LENGTH + 1];</span>
+
+        /** A buffer for the secondary hash output. */
+<span class="pc" id="L73">        private final byte[] fuzzHash2 = new byte[SPAMSUM_LENGTH / 2 + 1];</span>
+
+        /** The count of output bytes currently stored in {@link #fuzzHash1}, initially zero. */
+        private int fuzzLen1;
+
+        /** The count of output bytes currently stored in {@link #fuzzHash2}, initially zero. */
+        private int fuzzLen2;
+
+        private long sumHash1; // Initially zero.
+        private long sumHash2; // Initially zero.
+        private long blockSize; // Initialized by constructor.
+
+        /**
+         * Estimate the block size to use.
+         *
+         * @param expectedInputLength The expected amount of data to be processed, in bytes. A 0 value can be used if the length
+         *        is unknown, in which case a default block size is returned.
+         * @return The estimated block size to use.
+         */
+        private static long estimateBlockSize(final long expectedInputLength) {
+<span class="fc" id="L93">            long blockSize = MIN_BLOCKSIZE;</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">            while ((blockSize * SPAMSUM_LENGTH) &lt; expectedInputLength) {</span>
+<span class="fc" id="L95">                blockSize *= 2;</span>
+            }
+<span class="fc" id="L97">            return blockSize;</span>
+        }
+
+        /**
+         * Construct a spam sum context to process a file.
+         *
+         * @param f The file that will be processed, if known. If non-{@code null}, the length of the file is used to guess the
+         *        hash block size to use.
+         */
+<span class="nc" id="L106">        public SsContext(@Nullable final File f) {</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">            final long expectedInputLength = (f != null) ? f.length() : 0;</span>
+<span class="nc" id="L108">            this.blockSize = estimateBlockSize(expectedInputLength);</span>
+<span class="nc" id="L109">        }</span>
+
+        /**
+         * Construct a spam sum context to process a byte array.
+         *
+         * @param data The bytes that will be processed, if known. If non-{@code null}, the length of the array is used to guess
+         *        the hash block size to use.
+         */
+<span class="fc" id="L117">        public SsContext(@Nullable final byte[] data) {</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">            final long expectedInputLength = (data != null) ? data.length : 0;</span>
+<span class="fc" id="L119">            this.blockSize = estimateBlockSize(expectedInputLength);</span>
+<span class="fc" id="L120">        }</span>
+
+        /**
+         * Construct a spam sum context to process a {@link SeekableByteChannel}
+         *
+         * @param sbcf The channel that will be processed, if known. If non-{@code null}, the length of the channel is used to
+         *        guess the hash block size to use.
+         */
+<span class="fc" id="L128">        public SsContext(final SeekableByteChannelFactory sbcf) {</span>
+<span class="fc" id="L129">            long expectedInputLength = 0;</span>
+
+<span class="fc" id="L131">            try (final SeekableByteChannel sbc = sbcf.create()) {</span>
+<span class="fc" id="L132">                expectedInputLength = sbc.size();</span>
+<span class="nc" id="L133">            } catch (final IOException ioe) {</span>
+                // Ignore
+<span class="fc" id="L135">            }</span>
+
+<span class="fc" id="L137">            this.blockSize = estimateBlockSize(expectedInputLength);</span>
+<span class="fc" id="L138">        }</span>
+
+        /**
+         * A simple non-rolling hash, based on the FNV hash
+         * 
+         * @param b The next byte value, assumed to be in the range 0..255.
+         * @param h The existing hash value, 32-bit unsigned.
+         * @return The updated hash value, 32-bit unsigned.
+         */
+        private static long updateSumHash(final int b, final long h) {
+<span class="fc" id="L148">            return ((h * HASH_PRIME) ^ b) &amp; MASK32;</span>
+        }
+
+        /**
+         * Apply some bytes to a SpamSum context.
+         *
+         * @param rollState The rolling hash state to use.
+         * @param buffer A buffer containing the input bytes.
+         * @param start The starting offset in {@code buffer}, inclusive.
+         * @param end The ending offset in {@code buffer}, exclusive.
+         */
+        private void applyBytes(final RollingState rollState, final byte[] buffer, final int start, final int end) {
+            // At each byte we update the rolling hash and the normal
+            // hash. When the rolling hash hits the reset value, we
+            // emit the normal hash as an element of the signature and
+            // reset both hashes.
+<span class="fc bfc" id="L164" title="All 2 branches covered.">            for (int i = start; i &lt; end; i++) {</span>
+                // Get the next input byte and normalize to 0..255.
+<span class="fc" id="L166">                final int nextByte = ((int) buffer[i]) &amp; 0xff;</span>
+
+                // Apply the next byte to the hashes.
+<span class="fc" id="L169">                this.sumHash1 = updateSumHash(nextByte, this.sumHash1);</span>
+<span class="fc" id="L170">                this.sumHash2 = updateSumHash(nextByte, this.sumHash2);</span>
+<span class="fc" id="L171">                final long rollingHash = rollState.roll(nextByte);</span>
+
+<span class="fc bfc" id="L173" title="All 2 branches covered.">                if ((rollingHash % this.blockSize) == (this.blockSize - 1)) {</span>
+                    // We have hit a reset point. We now emit a hash
+                    // which is based on all bytes in the input
+                    // between the last reset point and this one.
+<span class="fc bfc" id="L177" title="All 2 branches covered.">                    if (this.fuzzLen1 &lt; (SPAMSUM_LENGTH - 1)) {</span>
+                        // We can have a problem with the tail
+                        // overflowing. The easiest way to cope with
+                        // this is to only reset the second hash if we
+                        // have room for more characters in our
+                        // signature. This has the effect of combining
+                        // the last few pieces of the message into a
+                        // single piece
+<span class="fc" id="L185">                        this.fuzzHash1[this.fuzzLen1++] = b64EncodeLowBits(this.sumHash1);</span>
+<span class="fc" id="L186">                        this.sumHash1 = HASH_INIT;</span>
+                    }
+
+                    // This produces a second signature with a block size
+                    // of blockSize*2. By producing dual signatures in
+                    // this way the effect of small changes in the message
+                    // size near a block size boundary is greatly reduced.
+                    //
+                    // NOTE: we only have to check this when the main
+                    // signature has hit a reset point, because
+                    // mathematically:
+                    //
+                    // [ h === -1 (mod 2*bs) ] --implies--&gt; [ h === -1 (mod bs) ]
+                    //
+                    // In other words, if this condition is true then the
+                    // main signature condition must always also be true.
+                    // Therefore this secondary signature condition can
+                    // only potentially be true if the main signature
+                    // condition (which we've already checked) is true.
+<span class="fc bfc" id="L205" title="All 2 branches covered.">                    if ((rollingHash % (this.blockSize * 2)) == ((this.blockSize * 2) - 1)) {</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">                        if (this.fuzzLen2 &lt; (SPAMSUM_LENGTH / 2 - 1)) {</span>
+<span class="fc" id="L207">                            this.fuzzHash2[this.fuzzLen2++] = b64EncodeLowBits(this.sumHash2);</span>
+<span class="fc" id="L208">                            this.sumHash2 = HASH_INIT;</span>
+                        }
+                    }
+                }
+            }
+<span class="fc" id="L213">        }</span>
+
+        /**
+         * Discard any existing hash state and prepare to compute a new hash. This should be followed by calls to
+         * {@link #applyBytes(RollingState, byte[], int, int)} to provide the data, and then
+         * {@link #finishHashing(RollingState)} to complete the computations.
+         */
+        private void beginHashing() {
+<span class="fc" id="L221">            this.fuzzLen1 = 0;</span>
+<span class="fc" id="L222">            this.fuzzLen2 = 0;</span>
+<span class="fc" id="L223">            this.sumHash1 = HASH_INIT;</span>
+<span class="fc" id="L224">            this.sumHash2 = HASH_INIT;</span>
+<span class="fc" id="L225">        }</span>
+
+        /**
+         * Truncate an array if larger than the given length.
+         *
+         * @param input The input array.
+         * @param maxLength The desired maximum array length.
+         * @return If {@code input} is no larger than {@code maxLength}, this just returns {@code input}. Otherwise this returns
+         *         a new array with the same content as {@code input} but with the length truncated to {@code maxLength}.
+         */
+        private static byte[] truncateArray(final byte[] input, final int maxLength) {
+<span class="pc bpc" id="L236" title="1 of 2 branches missed.">            if (input.length == maxLength) {</span>
+<span class="nc" id="L237">                return input;</span>
+            } else {
+<span class="fc" id="L239">                return Arrays.copyOf(input, maxLength);</span>
+            }
+        }
+
+        /**
+         * Finish hashing and generate the final signature. This should be done after all bytes have been applied with
+         * {@link #applyBytes(RollingState, byte[], int, int)}.
+         *
+         * @param rollState The rolling hash state used during hashing.
+         * @return The final signature.
+         */
+        private SpamSumSignature finishHashing(final RollingState rollState) {
+<span class="fc bfc" id="L251" title="All 2 branches covered.">            if (rollState.getHash() != 0) {</span>
+<span class="fc" id="L252">                this.fuzzHash1[this.fuzzLen1++] = b64EncodeLowBits(this.sumHash1);</span>
+<span class="fc" id="L253">                this.fuzzHash2[this.fuzzLen2++] = b64EncodeLowBits(this.sumHash2);</span>
+            }
+
+<span class="fc" id="L256">            final byte[] finalHash1 = truncateArray(this.fuzzHash1, this.fuzzLen1);</span>
+<span class="fc" id="L257">            final byte[] finalHash2 = truncateArray(this.fuzzHash2, this.fuzzLen2);</span>
+<span class="fc" id="L258">            return new SpamSumSignature(this.blockSize, finalHash1, finalHash2);</span>
+        }
+
+        /**
+         * Generate the hash for some input.
+         *
+         * &lt;p&gt;
+         * The computations will use the current block size from the context, but any other existing hash state will be
+         * discarded.
+         *
+         * @param data The bytes to hash.
+         * @return The signature for the given data.
+         */
+        public SpamSumSignature generateHash(@Nullable final byte[] data) {
+<span class="fc" id="L272">            beginHashing();</span>
+<span class="fc" id="L273">            final RollingState rollState = new RollingState();</span>
+
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">            if (data != null) {</span>
+<span class="fc" id="L276">                applyBytes(rollState, data, 0, data.length);</span>
+            }
+
+<span class="fc" id="L279">            return finishHashing(rollState);</span>
+        }
+
+        public SpamSumSignature generateHash(final SeekableByteChannelFactory sbcf) {
+<span class="fc" id="L283">            beginHashing();</span>
+<span class="fc" id="L284">            final RollingState rollState = new RollingState();</span>
+
+<span class="fc" id="L286">            try (final InputStream is = Channels.newInputStream(sbcf.create())) {</span>
+<span class="fc" id="L287">                final byte[] b = new byte[1024];</span>
+
+                int bytesRead;
+<span class="fc bfc" id="L290" title="All 2 branches covered.">                while ((bytesRead = is.read(b)) != -1) {</span>
+<span class="fc" id="L291">                    applyBytes(rollState, b, 0, bytesRead);</span>
+                }
+<span class="nc" id="L293">            } catch (final IOException e) {</span>
+                // Ignore
+<span class="fc" id="L295">            }</span>
+
+<span class="fc" id="L297">            return finishHashing(rollState);</span>
+        }
+
+        /**
+         * Generate the hash for some input.
+         *
+         * &lt;p&gt;
+         * The computations will use the current block size from the context, but any other existing hash state will be
+         * discarded.
+         *
+         * @param stream A file containing the bytes to hash. Assumed non-{@code null}. The processing will start reading at the
+         *        current file position and hash all of the data from there to the end of the file. The file position when this
+         *        returns is unspecified. The file is not closed by this operation.
+         * @return The signature for the given stream content.
+         * @throws IOException If there is some I/O problem while reading the stream.
+         */
+        public SpamSumSignature generateHash(final RandomAccessFile stream) throws IOException {
+<span class="nc" id="L314">            beginHashing();</span>
+<span class="nc" id="L315">            final RollingState rollState = new RollingState();</span>
+
+<span class="nc" id="L317">            final byte[] buffer = new byte[BUFFER_SIZE];</span>
+            while (true) {
+<span class="nc" id="L319">                final int bytesRead = stream.read(buffer, 0, buffer.length);</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">                if (bytesRead &lt;= 0) {</span>
+<span class="nc" id="L321">                    break; // No more input.</span>
+                }
+<span class="nc" id="L323">                applyBytes(rollState, buffer, 0, bytesRead);</span>
+<span class="nc" id="L324">            }</span>
+
+<span class="nc" id="L326">            return finishHashing(rollState);</span>
+        }
+    }
+
+    /**
+     * A rolling hash, based on the Adler checksum. By using a rolling hash we can perform auto resynchronisation after
+     * inserts/deletes.
+     */
+    private static final class RollingState {
+
+        /** Rolling window. Each value is in the range 0..255. Initially all 0. */
+<span class="fc" id="L337">        private final int[] window = new int[ROLLING_WINDOW_SIZE];</span>
+
+        /** An index into {@link #window}. Initially 0. */
+        private int windowPosition;
+
+        /** The sum of the values in {@link #window}. Initially 0. */
+        private long h1;
+
+        /**
+         * The original documentation says this is the sum of the bytes times the index, but I'm not sure about that. 32-bit
+         * unsigned, initially 0.
+         */
+        private long h2;
+
+        /**
+         * A shift/xor based rolling hash, mostly needed to ensure that we can cope with large blocksize values. 32-bit
+         * unsigned, initially 0.
+         */
+        private long h3;
+
+        /**
+         * Construct a new rolling hash state.
+         */
+<span class="fc" id="L360">        public RollingState() {}</span>
+
+        /**
+         * Get the current hash value.
+         *
+         * @return The current 32-bit unsigned hash value.
+         */
+        public long getHash() {
+<span class="fc" id="L368">            return (this.h1 + this.h2 + this.h3) &amp; MASK32;</span>
+        }
+
+        /**
+         * Update the rolling hash state with another input byte.
+         *
+         * @param b The byte value to apply. Assumed to be in the range 0..255.
+         * @return The state is updated and the resulting unsigned 32-bit hash value is returned.
+         */
+        public long roll(final int b) {
+<span class="fc" id="L378">            this.h2 = (this.h2 - this.h1 + (ROLLING_WINDOW_SIZE * ((long) b))) &amp; MASK32;</span>
+<span class="fc" id="L379">            this.h1 = (this.h1 + b - this.window[this.windowPosition]) &amp; MASK32;</span>
+<span class="fc" id="L380">            this.window[this.windowPosition] = b;</span>
+
+            // Advance the window position, wrappping around at the end.
+<span class="fc bfc" id="L383" title="All 2 branches covered.">            if (this.windowPosition == (ROLLING_WINDOW_SIZE - 1)) {</span>
+<span class="fc" id="L384">                this.windowPosition = 0;</span>
+            } else {
+<span class="fc" id="L386">                this.windowPosition++;</span>
+            }
+
+<span class="fc" id="L389">            this.h3 = ((this.h3 &lt;&lt; 5) &amp; MASK32) ^ b;</span>
+
+<span class="fc" id="L391">            return (this.h1 + this.h2 + this.h3) &amp; MASK32;</span>
+        }
+    }
+
+<span class="fc" id="L395">    public Ssdeep() {}</span>
+
+    /**
+     * Calculate the SpamSum hash for a byte array.
+     *
+     * @param data The bytes to be hashed.
+     * @return The SpamSum signature for the bytes.
+     */
+    public String fuzzyHash(final byte[] data) {
+<span class="fc" id="L404">        final SsContext ctx = new SsContext(data);</span>
+        while (true) {
+<span class="fc" id="L406">            final SpamSumSignature signature = ctx.generateHash(data);</span>
+
+            // Our blocksize guess may have been way off, repeat with
+            // a smaller block size if necessary.
+<span class="fc bfc" id="L410" title="All 4 branches covered.">            if ((ctx.blockSize &gt; MIN_BLOCKSIZE) &amp;&amp; (ctx.fuzzLen1 &lt; (SPAMSUM_LENGTH / 2))) {</span>
+<span class="fc" id="L411">                ctx.blockSize = ctx.blockSize / 2;</span>
+            } else {
+<span class="fc" id="L413">                return signature.toString();</span>
+            }
+<span class="fc" id="L415">        }</span>
+    }
+
+    public String fuzzyHash(final SeekableByteChannelFactory sbcf) {
+<span class="fc" id="L419">        final SsContext ctx = new SsContext(sbcf);</span>
+        while (true) {
+<span class="fc" id="L421">            final SpamSumSignature signature = ctx.generateHash(sbcf);</span>
+
+            // Our blocksize guess may have been way off, repeat with
+            // a smaller block size if necessary.
+<span class="pc bpc" id="L425" title="1 of 4 branches missed.">            if ((ctx.blockSize &gt; MIN_BLOCKSIZE) &amp;&amp; (ctx.fuzzLen1 &lt; (SPAMSUM_LENGTH / 2))) {</span>
+<span class="fc" id="L426">                ctx.blockSize = ctx.blockSize / 2;</span>
+            } else {
+<span class="fc" id="L428">                return signature.toString();</span>
+            }
+<span class="fc" id="L430">        }</span>
+    }
+
+    /**
+     * Calculates the SpamSum hash for specified stream.
+     * 
+     * @param file The input file to be hashed.
+     * @return The SpamSum signature for the file.
+     * @throws IOException If there is some I/O problem accessing the file.
+     */
+    public String fuzzyHashFile(final File file) throws IOException {
+<span class="nc" id="L441">        try (final RandomAccessFile stream = new RandomAccessFile(file, &quot;r&quot;)) {</span>
+<span class="nc" id="L442">            final SsContext ctx = new SsContext(file);</span>
+            while (true) {
+<span class="nc" id="L444">                stream.seek(0);</span>
+<span class="nc" id="L445">                final SpamSumSignature signature = ctx.generateHash(stream);</span>
+
+                // Our blocksize guess may have been way off, repeat with
+                // a smaller block size if necessary.
+<span class="nc bnc" id="L449" title="All 4 branches missed.">                if ((ctx.blockSize &gt; MIN_BLOCKSIZE) &amp;&amp; (ctx.fuzzLen1 &lt; (SPAMSUM_LENGTH / 2))) {</span>
+<span class="nc" id="L450">                    ctx.blockSize = ctx.blockSize / 2;</span>
+                } else {
+<span class="nc" id="L452">                    return signature.toString();</span>
+                }
+<span class="nc" id="L454">            }</span>
+        }
+    }
+
+    /**
+     * Calculates the SpamSum hash for specified file.
+     *
+     * @param fileName The path to the file to be hashed.
+     * @return The SpamSum signature for the file.
+     * @throws IOException If there is some I/O problem accessing the file.
+     */
+    public String fuzzyHashFile(final String fileName) throws IOException {
+<span class="nc" id="L466">        return this.fuzzyHashFile(new File(fileName));</span>
+    }
+
+    /**
+     * Search an array for a subsequence of another array.
+     *
+     * @param haystack The array to search.
+     * @param needle The array containing the sequence to search for.
+     * @param needleStart The starting offset of the sequence to search for, inclusive. Assumed to be in range for
+     *        {@code needle}.
+     * @param length The length of the sequence to search for. Assumed to be in range for {@code needle}. Assumed greater
+     *        than zero.
+     * @return If the subsequence of {@code needle} is present in {@code haystack}, this returns the least offset where the
+     *         subsequence occurs. Otherwise -1.
+     */
+    private static int indexOfSubSequence(final byte[] haystack, final byte[] needle, final int needleStart, final int length) {
+<span class="fc" id="L482">        final int lastCandidatePos = haystack.length - length;</span>
+<span class="fc" id="L483">        final byte firstNeedleByte = needle[needleStart];</span>
+<span class="fc bfc" id="L484" title="All 2 branches covered.">        NEXT_CANDIDATE: for (int candidatePos = 0; candidatePos &lt;= lastCandidatePos; candidatePos++) {</span>
+<span class="fc bfc" id="L485" title="All 2 branches covered.">            if (haystack[candidatePos] == firstNeedleByte) {</span>
+                // The first needle byte matches at this candidate
+                // position, so look for the rest of the needle
+                // following it.
+<span class="fc bfc" id="L489" title="All 2 branches covered.">                for (int needlePos = 1; needlePos &lt; length; needlePos++) {</span>
+<span class="fc bfc" id="L490" title="All 2 branches covered.">                    if (haystack[candidatePos + needlePos] != needle[needleStart + needlePos]) {</span>
+<span class="fc" id="L491">                        continue NEXT_CANDIDATE; // Needle mismatch.</span>
+                    }
+                }
+                // If we reach here, the entire needle subsequence
+                // matched in the haystack at the candidate position.
+<span class="fc" id="L496">                return candidatePos;</span>
+            }
+        }
+<span class="fc" id="L499">        return -1;</span>
+    }
+
+    /**
+     * Search two arrays for a common subsequence of the given length.
+     *
+     * @param s1 The first byte array for comparison.
+     * @param s2 The second byte array for comparison.
+     * @param length The substring length to look for. Assumed greater than zero.
+     * @return {@code true} iff {@code s1} and {@code s2} have at least one byte sequence of length {@code length} in common
+     *         at arbitrary offsets.
+     */
+    private static boolean hasCommonSequence(final byte[] s1, final byte[] s2, final int length) {
+<span class="pc bpc" id="L512" title="2 of 4 branches missed.">        if ((s1.length &lt; length) || (s2.length &lt; length)) {</span>
+<span class="nc" id="L513">            return false; // The strings are not large enough.</span>
+        }
+
+        // This is just a brute-force approach. We move a window of
+        // the specified length through s1 and check whether it exists
+        // anywhere in s2.
+<span class="fc" id="L519">        final int lastS1Pos = s1.length - length;</span>
+<span class="fc bfc" id="L520" title="All 2 branches covered.">        for (int s1Pos = 0; s1Pos &lt;= lastS1Pos; s1Pos++) {</span>
+<span class="fc" id="L521">            final int s2Pos = indexOfSubSequence(s2, s1, s1Pos, length);</span>
+<span class="fc bfc" id="L522" title="All 2 branches covered.">            if (s2Pos != -1) {</span>
+<span class="fc" id="L523">                return true;</span>
+            }
+        }
+<span class="fc" id="L526">        return false;</span>
+    }
+
+    /**
+     * Truncate sequences of longer than 3 identical bytes. These sequences contain very little information so they tend to
+     * just bias the result unfairly.
+     *
+     * @param in The input bytes.
+     * @return An array containing the same content as {@code in}, except that any sequences of more than 3 identical bytes
+     *         are truncated to 3 bytes. For example &quot;aaabbbbcddddd&quot; becomes &quot;aaabbbcddd&quot;.
+     */
+    private static byte[] eliminateLongSequences(final byte[] in) {
+<span class="pc bpc" id="L538" title="1 of 2 branches missed.">        if (in.length &lt; 4) {</span>
+<span class="nc" id="L539">            return in; // There is not enough input to require any change.</span>
+        }
+
+        // We just need to initialize prev to something other than in[0].
+<span class="pc bpc" id="L543" title="1 of 2 branches missed.">        byte prev = (in[0] != 0) ? 0 : (byte) 1;</span>
+<span class="fc" id="L544">        int repeatCount = 0;</span>
+
+        // Scan the input looking for the index of the first byte that
+        // will need to be removed.
+<span class="fc" id="L548">        int inPos = 0;</span>
+        while (true) {
+<span class="fc bfc" id="L550" title="All 2 branches covered.">            if (inPos == in.length) {</span>
+                // We didn't find anything that needed to be removed.
+<span class="fc" id="L552">                return in;</span>
+<span class="fc bfc" id="L553" title="All 2 branches covered.">            } else if (in[inPos] == prev) {</span>
+                // This is a repeat of the previous byte.
+<span class="fc" id="L555">                repeatCount++;</span>
+<span class="pc bpc" id="L556" title="1 of 2 branches missed.">                if (repeatCount == 3) {</span>
+<span class="nc" id="L557">                    break; // inPos needs to be removed.</span>
+                }
+            } else {
+                // This is not a repeat of the previous byte.
+<span class="fc" id="L561">                prev = in[inPos];</span>
+<span class="fc" id="L562">                repeatCount = 0;</span>
+            }
+<span class="fc" id="L564">            inPos++;</span>
+        }
+
+        // At this point inPos is the first index that needs to be
+        // removed, prev is set to its byte value, and repeatCount is
+        // set to 3. Start an output array and copy everything up to
+        // but not including inPos.
+<span class="nc" id="L571">        final byte[] out = new byte[in.length - 1];</span>
+<span class="nc" id="L572">        System.arraycopy(in, 0, out, 0, inPos);</span>
+<span class="nc" id="L573">        int outPos = inPos;</span>
+
+        // Continue scanning and copying to output.
+<span class="nc bnc" id="L576" title="All 2 branches missed.">        while (++inPos &lt; in.length) {</span>
+<span class="nc bnc" id="L577" title="All 2 branches missed.">            if (in[inPos] == prev) {</span>
+<span class="nc" id="L578">                repeatCount++;</span>
+            } else {
+<span class="nc" id="L580">                prev = in[inPos];</span>
+<span class="nc" id="L581">                repeatCount = 0;</span>
+            }
+<span class="nc bnc" id="L583" title="All 2 branches missed.">            if (repeatCount &lt; 3) {</span>
+<span class="nc" id="L584">                out[outPos++] = in[inPos];</span>
+            }
+        }
+
+<span class="nc bnc" id="L588" title="All 2 branches missed.">        return (outPos == out.length) ? out : Arrays.copyOf(out, outPos);</span>
+    }
+
+    /**
+     * This is the low level string scoring algorithm. It takes two strings and scores them on a scale of 0-100 where 0 is a
+     * terrible match and 100 is a great match. The blockSize is used to cope with very small messages.
+     */
+    private static long scoreStrings(final byte[] s1, final byte[] s2, final long blockSize) {
+<span class="fc" id="L596">        final int len1 = s1.length;</span>
+<span class="fc" id="L597">        final int len2 = s2.length;</span>
+
+<span class="pc bpc" id="L599" title="2 of 4 branches missed.">        if ((len1 &gt; SPAMSUM_LENGTH) || (len2 &gt; SPAMSUM_LENGTH)) {</span>
+            // not a real spamsum signature?
+<span class="nc" id="L601">            return 0;</span>
+        }
+
+        // The two strings must have a common substring of length
+        // ROLLING_WINDOW_SIZE to be candidates.
+<span class="fc bfc" id="L606" title="All 2 branches covered.">        if (!hasCommonSequence(s1, s2, ROLLING_WINDOW_SIZE)) {</span>
+<span class="fc" id="L607">            return 0;</span>
+        }
+
+        // Compute the edit distance between the two strings. The edit
+        // distance gives us a pretty good idea of how closely related
+        // the two strings are.
+<span class="fc" id="L613">        long score = EditDistance.calculateEditDistance(s1, len1, s2, len2);</span>
+<span class="pc bpc" id="L614" title="1 of 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L615">            logger.debug(&quot;edit_dist: {}&quot;, score);</span>
+        }
+
+        // Scale the edit distance by the lengths of the two
+        // strings. This changes the score to be a measure of the
+        // proportion of the message that has changed rather than an
+        // absolute quantity. It also copes with the variability of
+        // the string lengths.
+<span class="fc" id="L623">        score = (score * SPAMSUM_LENGTH) / (len1 + len2);</span>
+
+        // At this stage the score occurs roughly on a 0-64 scale,
+        // with 0 being a good match and 64 being a complete mismatch.
+
+        // Rescale to a 0-100 scale (friendlier to humans).
+<span class="fc" id="L629">        score = (100 * score) / 64;</span>
+
+        // It is possible to get a score above 100 here, but it is a
+        // really terrible match.
+<span class="pc bpc" id="L633" title="1 of 2 branches missed.">        if (score &gt;= 100) {</span>
+<span class="nc" id="L634">            return 0;</span>
+        }
+
+        // Now re-scale on a 0-100 scale with 0 being a poor match and
+        // 100 being a excellent match.
+<span class="fc" id="L639">        score = 100 - score;</span>
+
+        // When the blocksize is small we don't want to exaggerate the
+        // match size.
+<span class="fc bfc" id="L643" title="All 2 branches covered.">        if (score &gt; (blockSize / MIN_BLOCKSIZE * Math.min(len1, len2))) {</span>
+<span class="fc" id="L644">            score = blockSize / MIN_BLOCKSIZE * Math.min(len1, len2);</span>
+        }
+<span class="fc" id="L646">        return score;</span>
+    }
+
+    /**
+     * Given two spamsum signature return a value indicating the degree to which they match.
+     *
+     * @param signature1 The first signature.
+     * @param signature2 The second signature.
+     * @return The score for the two signatures. The value is in the range 0..100, where 0 is a terrible match and 100 is a
+     *         great match.
+     */
+    public int compare(@Nullable final SpamSumSignature signature1, @Nullable final SpamSumSignature signature2) {
+<span class="pc bpc" id="L658" title="2 of 4 branches missed.">        if ((null == signature1) || (null == signature2)) {</span>
+<span class="nc" id="L659">            return -1;</span>
+        }
+<span class="fc" id="L661">        final long blockSize1 = signature1.getBlockSize();</span>
+<span class="fc" id="L662">        final long blockSize2 = signature2.getBlockSize();</span>
+
+        // We require the block sizes to either be equal, or for one
+        // to be twice the other. If the blocksizes don't match then
+        // we are comparing apples to oranges. This isn't an 'error'
+        // per se. We could have two valid signatures, but they can't
+        // be compared.
+<span class="pc bpc" id="L669" title="1 of 6 branches missed.">        if ((blockSize1 != blockSize2) &amp;&amp; (blockSize1 != (blockSize2 * 2)) &amp;&amp; (blockSize2 != (blockSize1 * 2))) {</span>
+<span class="nc bnc" id="L670" title="All 2 branches missed.">            if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L671">                logger.debug(&quot;block sizes too different: {} {}&quot;, blockSize1, blockSize2);</span>
+            }
+<span class="nc" id="L673">            return 0;</span>
+        }
+
+        // There is very little information content is sequences of
+        // the same character like 'LLLLL'. Eliminate any sequences
+        // longer than 3. This is especially important when combined
+        // with the hasCommonSequence() test.
+<span class="fc" id="L680">        final byte[] s1First = eliminateLongSequences(signature1.getHashPart1());</span>
+<span class="fc" id="L681">        final byte[] s1Second = eliminateLongSequences(signature1.getHashPart2());</span>
+<span class="fc" id="L682">        final byte[] s2First = eliminateLongSequences(signature2.getHashPart1());</span>
+<span class="fc" id="L683">        final byte[] s2Second = eliminateLongSequences(signature2.getHashPart2());</span>
+
+        // Each signature has a string for two block sizes. We now
+        // choose how to combine the two block sizes. We checked above
+        // that they have at least one block size in common.
+        final long score;
+<span class="fc bfc" id="L689" title="All 2 branches covered.">        if (blockSize1 == blockSize2) {</span>
+            // The signature block sizes are equal.
+<span class="fc" id="L691">            final long score1 = scoreStrings(s1First, s2First, blockSize1);</span>
+<span class="fc" id="L692">            final long score2 = scoreStrings(s1Second, s2Second, blockSize2);</span>
+<span class="fc" id="L693">            score = Math.max(score1, score2);</span>
+<span class="fc bfc" id="L694" title="All 2 branches covered.">        } else if (blockSize1 == (blockSize2 * 2)) {</span>
+            // The first signature has twice the block size of the second.
+<span class="fc" id="L696">            score = scoreStrings(s1First, s2Second, blockSize1);</span>
+        } else {
+            // The second signature has twice the block size of the first.
+<span class="fc" id="L699">            score = scoreStrings(s1Second, s2First, blockSize2);</span>
+        }
+
+<span class="fc" id="L702">        return (int) score;</span>
+    }
+
+    @SuppressWarnings(&quot;SystemOut&quot;)
+    public static void main(final String[] args) throws Exception {
+<span class="nc" id="L707">        final Ssdeep ss = new Ssdeep();</span>
+<span class="nc bnc" id="L708" title="All 2 branches missed.">        for (final String f : args) {</span>
+<span class="nc" id="L709">            try (final InputStream is = Files.newInputStream(Paths.get(f))) {</span>
+<span class="nc" id="L710">                final byte[] buffer = IOUtils.toByteArray(is);</span>
+                // output format matches the original ssdeep program
+<span class="nc" id="L712">                System.out.println(ss.fuzzyHash(buffer) + &quot;,\&quot;&quot; + f + &quot;\&quot;&quot;);</span>
+            }
+        }
+<span class="nc" id="L715">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

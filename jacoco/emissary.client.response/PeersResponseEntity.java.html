@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PeersResponseEntity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.client.response</a> &gt; <span class="el_source">PeersResponseEntity.java</span></div><h1>PeersResponseEntity.java</h1><pre class="source lang-java linenums">package emissary.client.response;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
+import java.util.Set;
+
+@XmlRootElement(name = &quot;peers&quot;)
+@XmlAccessorType(XmlAccessType.NONE)
+public class PeersResponseEntity extends BaseResponseEntity {
+
+    private static final long serialVersionUID = 5686691885767273319L;
+
+<span class="nc" id="L19">    private static final Logger logger = LoggerFactory.getLogger(PeersResponseEntity.class);</span>
+
+<span class="nc" id="L21">    @XmlElement(name = &quot;local&quot;)</span>
+    private PeerList local = new PeerList();
+
+<span class="nc" id="L24">    @XmlElement(name = &quot;cluster&quot;)</span>
+    private Set&lt;PeerList&gt; cluster = new HashSet&lt;&gt;();
+
+<span class="nc" id="L27">    public PeersResponseEntity() {}</span>
+
+<span class="nc" id="L29">    public PeersResponseEntity(PeerList local) {</span>
+<span class="nc" id="L30">        this.local = local;</span>
+<span class="nc" id="L31">    }</span>
+
+    public void addClusterPeers(PeerList pl) {
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        if (cluster == null) {</span>
+<span class="nc" id="L35">            cluster = new HashSet&lt;&gt;();</span>
+        }
+<span class="nc" id="L37">        this.cluster.add(pl);</span>
+<span class="nc" id="L38">    }</span>
+
+    public PeerList getLocal() {
+<span class="nc" id="L41">        return local;</span>
+    }
+
+    public void setLocal(PeerList local) {
+<span class="nc" id="L45">        this.local = local;</span>
+<span class="nc" id="L46">    }</span>
+
+    public Set&lt;PeerList&gt; getCluster() {
+<span class="nc" id="L49">        return cluster;</span>
+    }
+
+    @Override
+    public void append(BaseEntity e) {
+<span class="nc" id="L54">        addErrors(e.getErrors());</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        if (e instanceof PeersResponseEntity) {</span>
+<span class="nc" id="L56">            PeersResponseEntity pre = this.getClass().cast(e);</span>
+<span class="nc" id="L57">            addClusterPeers(pre.getLocal());</span>
+        }
+<span class="nc" id="L59">    }</span>
+
+    @Override
+    public void dumpToConsole() {
+<span class="nc" id="L63">        getLocal().dumpToConsole();</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        for (PeerList peer : getCluster()) {</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">            if (null != peer) {</span>
+<span class="nc" id="L66">                peer.dumpToConsole();</span>
+            }
+<span class="nc" id="L68">        }</span>
+<span class="nc" id="L69">        Set&lt;String&gt; errors = getErrors();</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (!errors.isEmpty()) {</span>
+<span class="nc" id="L71">            StringBuilder sb = new StringBuilder(&quot;\nErrors&quot;);</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">            for (String error : errors) {</span>
+<span class="nc" id="L73">                sb.append(error);</span>
+<span class="nc" id="L74">            }</span>
+<span class="nc" id="L75">            logger.error(&quot;{}&quot;, sb);</span>
+        }
+<span class="nc" id="L77">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

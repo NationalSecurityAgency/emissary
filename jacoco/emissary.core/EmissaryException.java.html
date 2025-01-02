@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmissaryException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core</a> &gt; <span class="el_source">EmissaryException.java</span></div><h1>EmissaryException.java</h1><pre class="source lang-java linenums">package emissary.core;
+
+/**
+ * This is the top of the exception hierarchy for Emissary All emissary exceptions extend from here
+ */
+public class EmissaryException extends Exception {
+
+    // Serializable
+    static final long serialVersionUID = 4180091209631811809L;
+
+    /**
+     * Create an emissary exception
+     * 
+     * @param message a string to go along with the exception
+     */
+    public EmissaryException(final String message) {
+<span class="fc" id="L17">        super(message);</span>
+<span class="fc" id="L18">    }</span>
+
+    /**
+     * Create an emissary exception
+     * 
+     * @param message a string to go along with the exception
+     * @param cause the wrapped exception
+     */
+    public EmissaryException(final String message, final Throwable cause) {
+<span class="fc" id="L27">        super(message, cause);</span>
+<span class="fc" id="L28">    }</span>
+
+    /**
+     * Create an emissary exception
+     * 
+     * @param cause the wrapped exception
+     */
+    public EmissaryException(final Throwable cause) {
+<span class="fc" id="L36">        super(&quot;Exception: &quot; + cause.getMessage(), cause);</span>
+<span class="fc" id="L37">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

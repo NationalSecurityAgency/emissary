@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MagicNumberFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.magic</a> &gt; <span class="el_source">MagicNumberFactory.java</span></div><h1>MagicNumberFactory.java</h1><pre class="source lang-java linenums">package emissary.util.magic;
+
+import emissary.core.EmissaryRuntimeException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+import javax.annotation.Nullable;
+
+public class MagicNumberFactory {
+
+<span class="fc" id="L22">    private static final Logger log = LoggerFactory.getLogger(MagicNumberFactory.class);</span>
+
+    @Nullable
+    @SuppressWarnings(&quot;NonFinalStaticField&quot;)
+<span class="fc" id="L26">    private static Map&lt;String, Integer&gt; typeMap = null;</span>
+    public static final String EMPTYSTRING = &quot;&quot;;
+    public static final String ENTRY_NOT_NULL_RULE = &quot;Entry cannot be null&quot;;
+    public static final String ENTRY_4COLUMN_RULE = &quot;Entry must have four tab separated columns&quot;;
+
+    public static final String UNSUPPORTED_DATATYPE_MSG_SEARCH = &quot;Data Type 'search/N' not supported - e.g. search/1&quot;;
+    public static final String UNSUPPORTED_DATATYPE_MSG_REGEX = &quot;Data Type 'regex' not supported&quot;;
+    public static final String UNSUPORTED_DATATYPE_MSG_UNSIGNED = &quot;Signed Data Types unsupported - e.g. UBELONG&quot;;
+<span class="fc" id="L34">    public static final List&lt;String&gt; IGNORABLE_DATATYPE_MSGS = Arrays.asList(UNSUPORTED_DATATYPE_MSG_UNSIGNED,</span>
+            UNSUPPORTED_DATATYPE_MSG_REGEX, UNSUPPORTED_DATATYPE_MSG_SEARCH);
+
+    private MagicNumberFactory() {}
+
+
+    /**
+     * Public method to parse a byte array representing the magic file into a list containing MagicNumber objects which are
+     * also nested with continuations as child MagicNumber instances.
+     *
+     * @param configData the byte[] representing the magic file
+     * @param zeroDepthErrorList logs errors with zero depth entries
+     * @param continuationErrorMap logs errors with continuations - these are entries with depths &amp;gt; 0
+     * @return a {@link List}.
+     */
+    public static List&lt;MagicNumber&gt; buildMagicNumberList(byte[] configData, List&lt;String&gt; zeroDepthErrorList,
+            Map&lt;String, List&lt;String&gt;&gt; continuationErrorMap) {
+        // preserve the old way
+<span class="fc" id="L52">        return buildMagicNumberList(configData, zeroDepthErrorList, continuationErrorMap, false);</span>
+    }
+
+    /**
+     * Public method to parse a byte array representing the magic file into a list containing MagicNumber objects which are
+     * also nested with continuations as child MagicNumber instances.
+     *
+     * @param configData the byte[] representing the magic file
+     * @param zeroDepthErrorList logs errors with zero depth entries
+     * @param continuationErrorMap logs errors with continuations - these are entries with depths &amp;gt; 0
+     * @param swallowParseException boolean whether to swallow or propogate ParseExceptions that are IGNORABLE_DATATYPE_MSGS
+     * @return a {@link List}.
+     */
+    public static List&lt;MagicNumber&gt; buildMagicNumberList(byte[] configData, @Nullable List&lt;String&gt; zeroDepthErrorList,
+            @Nullable Map&lt;String, List&lt;String&gt;&gt; continuationErrorMap, boolean swallowParseException) {
+
+<span class="fc" id="L68">        List&lt;MagicNumber&gt; magicNumberList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L69">        MagicNumber finger = null;</span>
+<span class="fc" id="L70">        int currentDepth = -1;</span>
+<span class="fc" id="L71">        List&lt;MagicNumber&gt; extensions = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L72">        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(configData), MagicNumber.DEFAULT_CHARSET))) {</span>
+            String s;
+<span class="fc" id="L74">            int counter = 0;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">            while ((s = reader.readLine()) != null) {</span>
+<span class="fc" id="L76">                counter++;</span>
+<span class="pc bpc" id="L77" title="1 of 6 branches missed.">                if (s == null || s.length() == 0 || s.charAt(0) == '#') {</span>
+<span class="fc" id="L78">                    continue;</span>
+                }
+<span class="fc" id="L80">                int depth = getEntryDepth(s);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">                if (depth &lt; 0) {</span>
+<span class="fc" id="L82">                    continue;</span>
+                }
+                try {
+<span class="fc bfc" id="L85" title="All 4 branches covered.">                    if (depth == 0 &amp;&amp; !extensions.isEmpty()) {</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">                        if (finger == null) {</span>
+<span class="nc" id="L87">                            extensions = null;</span>
+<span class="nc" id="L88">                            extensions = new ArrayList&lt;&gt;();</span>
+                        } else {
+<span class="fc" id="L90">                            addExtensionsLayer(extensions, finger);</span>
+<span class="fc" id="L91">                            extensions = null;</span>
+<span class="fc" id="L92">                            extensions = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L93">                            finger = null;</span>
+                        }
+                    }
+<span class="fc bfc" id="L96" title="All 2 branches covered.">                    if (depth == 0) {</span>
+<span class="fc" id="L97">                        MagicNumber item = parseAndStore(magicNumberList, s, swallowParseException);</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">                        if (item != null) {</span>
+<span class="fc" id="L99">                            finger = item;</span>
+<span class="fc" id="L100">                            currentDepth = -1;</span>
+                        } else {
+<span class="nc" id="L102">                            finger = null;</span>
+                        }
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">                    } else if (depth &gt; 0) {</span>
+
+<span class="fc bfc" id="L106" title="All 2 branches covered.">                        if (finger == null) {</span>
+<span class="fc" id="L107">                            continue;</span>
+                        }
+<span class="fc bfc" id="L109" title="All 2 branches covered.">                        if (currentDepth &lt; 0) {</span>
+<span class="fc" id="L110">                            currentDepth = depth;</span>
+                        }
+<span class="fc bfc" id="L112" title="All 2 branches covered.">                        if (currentDepth == depth) {</span>
+<span class="fc" id="L113">                            parseAndStore(extensions, s, swallowParseException);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">                        } else if (currentDepth &lt; depth) {</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">                            if (extensions.isEmpty()) {</span>
+<span class="fc" id="L116">                                finger = null;</span>
+<span class="fc" id="L117">                                currentDepth = -1;</span>
+<span class="fc" id="L118">                                continue;</span>
+                            }
+<span class="fc" id="L120">                            currentDepth = depth;</span>
+<span class="fc" id="L121">                            addExtensionsLayer(extensions, finger);</span>
+<span class="fc" id="L122">                            extensions = null;</span>
+<span class="fc" id="L123">                            extensions = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L124">                            parseAndStore(extensions, s, swallowParseException);</span>
+                        }
+                    }
+<span class="fc" id="L127">                } catch (Exception e) {</span>
+
+<span class="pc bpc" id="L129" title="3 of 4 branches missed.">                    if (continuationErrorMap == null || zeroDepthErrorList == null) {</span>
+<span class="fc" id="L130">                        continue;</span>
+                    }
+<span class="nc bnc" id="L132" title="All 2 branches missed.">                    if (swallowParseException &amp;&amp;</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">                            (e.getClass() == ParseException.class) &amp;&amp;</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">                            IGNORABLE_DATATYPE_MSGS.contains(e.getMessage())) {</span>
+                        // swallow this cause said we don't care
+<span class="nc" id="L136">                        continue;</span>
+                    }
+
+
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                    if (depth &gt; 0) {</span>
+<span class="nc" id="L141">                        MagicNumber mItem = magicNumberList.get(magicNumberList.size() - 1);</span>
+<span class="nc" id="L142">                        String signature = mItem.toString();</span>
+<span class="nc" id="L143">                        List&lt;String&gt; failedExtensions = continuationErrorMap.get(signature);</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">                        if (failedExtensions == null) {</span>
+<span class="nc" id="L145">                            failedExtensions = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L146">                            continuationErrorMap.put(mItem.toString(), failedExtensions);</span>
+                        }
+<span class="nc" id="L148">                        failedExtensions.add(&quot;[MAGIC LINE# &quot; + counter + &quot;] &quot; + s);</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">                    } else if (depth == 0) {</span>
+<span class="nc" id="L150">                        zeroDepthErrorList.add(&quot;[MAGIC LINE# &quot; + counter + &quot;] &quot; + s);</span>
+                    }
+<span class="fc" id="L152">                }</span>
+<span class="fc" id="L153">            }</span>
+<span class="pc bpc" id="L154" title="1 of 4 branches missed.">            if (finger != null &amp;&amp; !extensions.isEmpty()) {</span>
+<span class="fc" id="L155">                addExtensionsLayer(extensions, finger);</span>
+            }
+<span class="nc" id="L157">        } catch (IOException ioe) {</span>
+<span class="nc" id="L158">            log.error(&quot;Caught IOException on buildMagicNumberList (throwing a runtime exception): {}&quot;, ioe.getMessage(), ioe);</span>
+            // Doing all of this in memory - yes, one could erroneously use one of the IO objects but ...
+<span class="nc" id="L160">            throw new EmissaryRuntimeException(ioe);</span>
+<span class="fc" id="L161">        }</span>
+<span class="fc" id="L162">        return magicNumberList;</span>
+    }
+
+    /**
+     * Private method for parsing entries and storing them into the target storage data structure which is a list.
+     *
+     *
+     * @param entry the magic number String entry
+     * @param storage a {@link List} where the MagicNumber instances will be placed
+     * @param swallowParseException should we swallow Ignorable ParseException or bubble them up
+     * @return the MagicNumber instance created
+     * @throws Exception if one occurs while parsing the entry
+     * @see #buildMagicNumber(java.lang.String, boolean)
+     */
+    private static MagicNumber parseAndStore(List&lt;MagicNumber&gt; storage, String entry, boolean swallowParseException) throws Exception {
+<span class="fc" id="L177">        MagicNumber item = buildMagicNumber(entry, swallowParseException);</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">        if (item != null) {</span>
+<span class="fc" id="L179">            storage.add(item);</span>
+        }
+<span class="fc" id="L181">        return item;</span>
+    }
+
+    /**
+     * Private method to store the list of MagicNumber instances and adds them a new layer of continuations in the target
+     * MagicNumber
+     *
+     * @param target the MagicNumber instance acting as the parent for the continuations
+     * @param extensions a {@link List} of continuations which are MagicNumber instances
+     */
+    private static void addExtensionsLayer(List&lt;MagicNumber&gt; extensions, MagicNumber target) {
+<span class="fc" id="L192">        MagicNumber[] extensionArray = new MagicNumber[extensions.size()];</span>
+<span class="fc" id="L193">        int index = 0;</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        for (MagicNumber m : extensions) {</span>
+<span class="fc" id="L195">            extensionArray[index++] = m;</span>
+<span class="fc" id="L196">        }</span>
+<span class="fc" id="L197">        target.addDependencyLayer(extensionArray);</span>
+<span class="fc" id="L198">    }</span>
+
+    /**
+     * Parses a magic number entry and prepares a magic number item
+     * 
+     * @param entry line to parse
+     */
+    public static MagicNumber buildMagicNumber(String entry) throws ParseException {
+<span class="fc" id="L206">        return buildMagicNumber(entry, false);</span>
+    }
+
+    /**
+     * Parses a magic number entry and prepares a magic number item
+     * 
+     * @param entry line to parse
+     * @param swallowParseException should we swallow Ignorable ParseException or bubble them up
+     */
+    public static MagicNumber buildMagicNumber(String entry, boolean swallowParseException) throws ParseException {
+
+<span class="fc" id="L217">        String[] columns = prepareEntry(entry);</span>
+<span class="fc" id="L218">        MagicNumber item = new MagicNumber();</span>
+
+        try {
+            // column A parsing
+<span class="fc" id="L222">            item.depth = getEntryDepth(columns[0]);</span>
+<span class="fc" id="L223">            item.offsetUnary = resolveOffsetUnary(columns);</span>
+<span class="fc" id="L224">            item.offset = resolveOffset(columns, item);</span>
+<span class="fc" id="L225">        } catch (Exception e) {</span>
+<span class="fc" id="L226">            throw new ParseException(&quot;Error on column 0:&quot; + columns[0] + &quot;. &quot; + e.getMessage());</span>
+<span class="fc" id="L227">        }</span>
+        try {
+            // columb B parsing
+<span class="fc" id="L230">            item.dataType = resolveDataType(columns);</span>
+<span class="fc" id="L231">            item.dataTypeLength = getDataTypeByteLength(item);</span>
+<span class="fc" id="L232">            item.mask = resolveMask(columns, item);</span>
+<span class="fc" id="L233">        } catch (Exception e) {</span>
+<span class="pc bpc" id="L234" title="1 of 2 branches missed.">            if (swallowParseException) {</span>
+                // This means you put TRUE in SWALLOW_IGNORABLE_EXCEPTIONS in a UnixFilePlace.cfg file
+                // so let's log at debug level so you can hide these message easily
+<span class="fc" id="L237">                log.debug(&quot;Warning unable to read column 1\t: {} - {}&quot;, columns[1], e.getMessage());</span>
+            } else {
+<span class="nc" id="L239">                log.error(&quot;original entry   \t: {}&quot;, entry);</span>
+<span class="nc" id="L240">                log.error(&quot;Error on column 1\t: {}&quot;, columns[1], e);</span>
+            }
+<span class="fc" id="L242">            throw new ParseException(&quot;Parse Error on column 1:&quot; + columns[1] + &quot;. &quot; + e.getMessage());</span>
+<span class="fc" id="L243">        }</span>
+        try {
+            // column C parsing
+<span class="fc" id="L246">            item.unaryOperator = resolveUnary(columns, item);</span>
+<span class="fc" id="L247">            item.value = resolveValue(columns, item);</span>
+<span class="fc" id="L248">            item.dataTypeLength = item.value.length;</span>
+<span class="fc" id="L249">        } catch (Exception e) {</span>
+<span class="fc" id="L250">            throw new ParseException(&quot;Error on column 2:&quot; + columns[2] + &quot;. &quot; + e.getMessage());</span>
+<span class="fc" id="L251">        }</span>
+        // column D parsing
+<span class="fc" id="L253">        item.description = columns[3];</span>
+<span class="fc" id="L254">        return item;</span>
+    }
+
+    /**
+     * Tokenizes an entry into four columns by tab or space while recognizing escape sequences.
+     */
+    private static String[] tokenizeEntry(String entry) {
+<span class="fc" id="L261">        int index = 0;</span>
+<span class="fc" id="L262">        String[] columns = new String[4];</span>
+<span class="fc" id="L263">        columns[0] = EMPTYSTRING;</span>
+<span class="fc" id="L264">        columns[1] = EMPTYSTRING;</span>
+<span class="fc" id="L265">        columns[2] = EMPTYSTRING;</span>
+<span class="fc" id="L266">        columns[3] = EMPTYSTRING;</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">        for (int i = 0; i &lt; entry.length(); i++) {</span>
+<span class="fc" id="L268">            char c = entry.charAt(i);</span>
+<span class="pc bpc" id="L269" title="1 of 6 branches missed.">            if (c == '\\' &amp;&amp; i != (entry.length() - 1) &amp;&amp; entry.charAt(i + 1) == ' ') {</span>
+<span class="fc" id="L270">                columns[index] += ' ';</span>
+<span class="fc" id="L271">                i++;</span>
+<span class="fc bfc" id="L272" title="All 4 branches covered.">            } else if (c == ' ' || c == '\t') {</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">                while (entry.length() &gt; (i + 1)) {</span>
+<span class="fc bfc" id="L274" title="All 4 branches covered.">                    if (entry.charAt(i + 1) == ' ' || entry.charAt(i + 1) == '\t') {</span>
+<span class="fc" id="L275">                        i++;</span>
+                    } else {
+                        break;
+                    }
+                }
+<span class="fc" id="L280">                index++;</span>
+            } else {
+<span class="fc" id="L282">                columns[index] += c;</span>
+            }
+<span class="fc bfc" id="L284" title="All 2 branches covered.">            if (index == 3) {</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">                if (entry.length() &gt; (i + 1)) {</span>
+<span class="fc" id="L286">                    columns[index] = entry.substring(i + 1);</span>
+                }
+                break;
+            }
+        }
+<span class="fc" id="L291">        return columns;</span>
+    }
+
+    /**
+     * Corrects some known/common erroneous syntax errors
+     */
+    private static String[] prepareEntry(String entry) throws ParseException {
+<span class="pc bpc" id="L298" title="1 of 2 branches missed.">        if (entry == null) {</span>
+<span class="nc" id="L299">            throw new ParseException(ENTRY_NOT_NULL_RULE);</span>
+        }
+<span class="fc" id="L301">        String subject = entry;</span>
+<span class="fc" id="L302">        int invalidOperatorIndex = subject.indexOf(&quot; = &quot;);</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">        if (invalidOperatorIndex &gt; 0) {</span>
+<span class="pc bpc" id="L304" title="1 of 2 branches missed.">            String tail = subject.length() &gt; (invalidOperatorIndex + 3) ? ' ' + subject.substring(invalidOperatorIndex + 3) : &quot;&quot;;</span>
+<span class="fc" id="L305">            subject = subject.substring(0, invalidOperatorIndex) + tail;</span>
+        }
+
+<span class="fc" id="L308">        String[] columns = tokenizeEntry(subject);</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">        for (int count = 0; count &lt; columns.length; count++) {</span>
+<span class="fc bfc" id="L310" title="All 6 branches covered.">            if (count == 3 &amp;&amp; columns[count].length() == 0 &amp;&amp; !(columns[0].charAt(0) == '&gt;')) {</span>
+                // columns[count] = NULL_DESCRIPTION;
+
+<span class="pc bpc" id="L313" title="1 of 4 branches missed.">            } else if (columns[count].length() == 0 &amp;&amp; count &lt; 3) {</span>
+<span class="nc" id="L314">                throw new ParseException(ENTRY_4COLUMN_RULE);</span>
+            }
+        }
+<span class="fc" id="L317">        return columns;</span>
+    }
+
+    // -----------------------------------------------------------------------
+    // COLUMN A: &gt;&amp;offsetValue
+    // -----------------------------------------------------------------------
+    private static int resolveOffset(String[] columns, MagicNumber item) throws ParseException {
+<span class="fc" id="L324">        String entry = columns[0];</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">        if (item.depth &gt; 0) {</span>
+<span class="fc" id="L326">            entry = entry.substring(item.depth);</span>
+        }
+<span class="fc bfc" id="L328" title="All 2 branches covered.">        if (entry.charAt(0) == '&amp;') {</span>
+<span class="fc" id="L329">            entry = entry.substring(1);</span>
+<span class="pc bpc" id="L330" title="1 of 4 branches missed.">        } else if (entry.charAt(0) == '(' &amp;&amp; entry.charAt(entry.length() - 1) == ')') {</span>
+<span class="fc" id="L331">            entry = entry.substring(1, entry.length() - 1);</span>
+        }
+        try {
+<span class="fc" id="L334">            return MagicMath.stringToInt(entry);</span>
+<span class="fc" id="L335">        } catch (NumberFormatException e) {</span>
+<span class="fc" id="L336">            throw new ParseException(e + &quot;: Malformed offset value&quot;);</span>
+        }
+    }
+
+    private static char resolveOffsetUnary(String[] columns) {
+<span class="pc bpc" id="L341" title="1 of 2 branches missed.">        if (columns[0].charAt(0) == '&amp;') {</span>
+<span class="nc" id="L342">            return '&amp;';</span>
+        }
+<span class="fc" id="L344">        return (char) 0;</span>
+    }
+
+    public static int getEntryDepth(String entry) {
+<span class="pc bpc" id="L348" title="1 of 6 branches missed.">        if (entry.length() == 0 || (entry.charAt(0) != '&gt;' &amp;&amp; !Character.isDigit(entry.charAt(0)))) {</span>
+<span class="fc" id="L349">            return -1;</span>
+        }
+<span class="fc" id="L351">        int depth = 0;</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">        for (; depth &lt; entry.length(); depth++) {</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">            if (entry.charAt(depth) != '&gt;') {</span>
+<span class="fc" id="L354">                break;</span>
+            }
+        }
+<span class="fc" id="L357">        return depth;</span>
+    }
+
+    // -----------------------------------------------------------------------
+    // COLUMN B: BYTE&amp;maskValue
+    // -----------------------------------------------------------------------
+    private static int resolveDataType(String[] columns) throws ParseException {
+<span class="fc" id="L364">        initTypeMap();</span>
+
+<span class="fc" id="L366">        String subject = columns[1];</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">        if (subject.startsWith(&quot;search&quot;)) {</span>
+<span class="fc" id="L368">            throw new ParseException(UNSUPPORTED_DATATYPE_MSG_SEARCH);</span>
+        }
+<span class="fc bfc" id="L370" title="All 2 branches covered.">        if (subject.equals(&quot;regex&quot;)) {</span>
+<span class="fc" id="L371">            throw new ParseException(UNSUPPORTED_DATATYPE_MSG_REGEX);</span>
+        }
+<span class="pc bpc" id="L373" title="1 of 4 branches missed.">        if (subject.charAt(0) == 'u' || subject.charAt(0) == 'U') {</span>
+<span class="fc" id="L374">            throw new ParseException(UNSUPORTED_DATATYPE_MSG_UNSIGNED);</span>
+        }
+
+        // parse out any masking
+<span class="fc bfc" id="L378" title="All 2 branches covered.">        int ix = subject.indexOf(&quot;&amp;&quot;) &gt; 0 ? subject.indexOf(&quot;&amp;&quot;) : subject.indexOf(&quot;/&quot;);</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">        if (ix &gt; 0) {</span>
+<span class="fc" id="L380">            subject = columns[1].substring(0, ix);</span>
+        }
+<span class="fc" id="L382">        int dataTypeId = lookupDataType(subject);</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">        if (dataTypeId &lt; 0) {</span>
+<span class="fc" id="L384">            throw new ParseException(&quot;Unsupported Data Type: &quot; + subject);</span>
+        }
+<span class="fc" id="L386">        return dataTypeId;</span>
+    }
+
+    private static int lookupDataType(String arg) {
+<span class="fc" id="L390">        int dataTypeIdInt = typeMap.get(arg.toUpperCase(Locale.getDefault()));</span>
+<span class="pc bpc" id="L391" title="1 of 4 branches missed.">        switch (dataTypeIdInt) {</span>
+            case MagicNumber.TYPE_DATE:
+<span class="nc" id="L393">                return -1;</span>
+            case MagicNumber.TYPE_BEDATE:
+<span class="fc" id="L395">                return -1;</span>
+            case MagicNumber.TYPE_LEDATE:
+<span class="fc" id="L397">                return -1;</span>
+            default:
+<span class="fc" id="L399">                return dataTypeIdInt;</span>
+        }
+    }
+
+    @Nullable
+    private static byte[] resolveMask(String[] columns, MagicNumber item) {
+<span class="fc" id="L405">        int ix = columns[1].indexOf(&quot;&amp;&quot;);</span>
+<span class="fc bfc" id="L406" title="All 2 branches covered.">        if (ix &gt; 0) {</span>
+<span class="fc" id="L407">            byte[] maskValues = MagicMath.stringToByteArray(columns[1].substring(ix + 1));</span>
+<span class="fc" id="L408">            MagicMath.setLength(maskValues, item.dataTypeLength);</span>
+        }
+<span class="fc" id="L410">        return null;</span>
+    }
+
+    // -----------------------------------------------------------------------
+    // COLUMN C: [UNARY_OPERATOR][Some value like 0x00]
+    // -----------------------------------------------------------------------
+    private static byte[] resolveValue(String[] columns, MagicNumber item) {
+<span class="fc" id="L417">        String subject = columns[2];</span>
+
+<span class="fc bfc" id="L419" title="All 6 branches covered.">        if (item.dataType == MagicNumber.TYPE_STRING &amp;&amp; !(subject.length() == 1 &amp;&amp; subject.charAt(0) == 'x')) {</span>
+<span class="fc" id="L420">            byte[] strVal = MagicMath.parseEscapedString(subject);</span>
+<span class="fc" id="L421">            item.dataTypeLength = strVal.length;</span>
+<span class="fc" id="L422">            return strVal;</span>
+<span class="fc bfc" id="L423" title="All 4 branches covered.">        } else if (subject.length() == 1 &amp;&amp; subject.charAt(0) == 'x') {</span>
+<span class="fc" id="L424">            item.substitute = true;</span>
+<span class="fc" id="L425">            return new byte[0];</span>
+        }
+
+<span class="fc" id="L428">        int unaryLen = unaryPrefixLength(subject);</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">        if (unaryLen &gt; 0) {</span>
+<span class="fc" id="L430">            subject = subject.substring(unaryLen);</span>
+        }
+<span class="fc bfc" id="L432" title="All 2 branches covered.">        if (subject.toUpperCase(Locale.getDefault()).endsWith(&quot;L&quot;)) {</span>
+<span class="fc" id="L433">            subject = subject.substring(0, subject.length() - 1);</span>
+        }
+<span class="fc" id="L435">        byte[] valueArray = MagicMath.stringToByteArray(subject);</span>
+<span class="fc" id="L436">        valueArray = MagicMath.setLength(valueArray, item.dataTypeLength);</span>
+
+<span class="pc bpc" id="L438" title="1 of 2 branches missed.">        if (item.mask != null) {</span>
+<span class="nc" id="L439">            valueArray = MagicMath.mask(valueArray, item.mask);</span>
+        }
+<span class="fc bfc" id="L441" title="All 2 branches covered.">        if (item.dataType == MagicNumber.TYPE_LELONG) {</span>
+<span class="fc" id="L442">            MagicMath.longEndianSwap(valueArray, 0);</span>
+<span class="fc bfc" id="L443" title="All 2 branches covered.">        } else if (item.dataType == MagicNumber.TYPE_LESHORT) {</span>
+<span class="fc" id="L444">            MagicMath.shortEndianSwap(valueArray, 0);</span>
+        }
+<span class="fc" id="L446">        return valueArray;</span>
+    }
+
+    private static int unaryPrefixLength(@Nullable String s) {
+
+<span class="pc bpc" id="L451" title="2 of 4 branches missed.">        if (s == null || s.length() == 0) {</span>
+<span class="nc" id="L452">            return 0;</span>
+        }
+
+<span class="fc" id="L455">        char op = s.charAt(0);</span>
+<span class="fc" id="L456">        int len = s.length();</span>
+<span class="fc bfc" id="L457" title="All 2 branches covered.">        if (!Character.isDigit(op)) {</span>
+<span class="fc bfc" id="L458" title="All 8 branches covered.">            switch (op) {</span>
+                case MagicNumber.MAGICOPERATOR_AND:
+<span class="fc" id="L460">                    return 1;</span>
+                case MagicNumber.MAGICOPERATOR_GTHAN:
+<span class="fc bfc" id="L462" title="All 4 branches covered.">                    return len &gt; 1 &amp;&amp; s.charAt(1) == MagicNumber.MAGICOPERATOR_AND ? 2 : 1;</span>
+                case MagicNumber.MAGICOPERATOR_LTHAN:
+<span class="fc bfc" id="L464" title="All 4 branches covered.">                    return len &gt; 1 &amp;&amp; s.charAt(1) == MagicNumber.MAGICOPERATOR_AND ? 2 : 1;</span>
+                case MagicNumber.MAGICOPERATOR_OR:
+<span class="fc" id="L466">                    return 1;</span>
+                case MagicNumber.MAGICOPERATOR_BWAND:
+<span class="fc" id="L468">                    return 1;</span>
+                case MagicNumber.MAGICOPERATOR_BWNOT:
+<span class="fc" id="L470">                    return 1;</span>
+                case MagicNumber.MAGICOPERATOR_NOT:
+<span class="fc" id="L472">                    return 1;</span>
+                default:
+<span class="fc" id="L474">                    return 0;</span>
+            }
+        }
+<span class="fc" id="L477">        return 0;</span>
+    }
+
+    private static int getDataTypeByteLength(MagicNumber item) {
+<span class="fc" id="L481">        int dataTypeId = item.dataType;</span>
+<span class="pc bpc" id="L482" title="3 of 11 branches missed.">        switch (dataTypeId) {</span>
+            case MagicNumber.TYPE_STRING:
+<span class="pc bpc" id="L484" title="1 of 2 branches missed.">                if (item.value == null) {</span>
+<span class="fc" id="L485">                    return -1;</span>
+                } else {
+<span class="nc" id="L487">                    return item.value.length;</span>
+                }
+            case MagicNumber.TYPE_BYTE:
+<span class="fc" id="L490">                return 1;</span>
+            case MagicNumber.TYPE_SHORT:
+<span class="fc" id="L492">                return 2;</span>
+            case MagicNumber.TYPE_BESHORT:
+<span class="fc" id="L494">                return 2;</span>
+            case MagicNumber.TYPE_LESHORT:
+<span class="fc" id="L496">                return 2;</span>
+            case MagicNumber.TYPE_LONG:
+<span class="fc" id="L498">                return 4;</span>
+            case MagicNumber.TYPE_BELONG:
+<span class="fc" id="L500">                return 4;</span>
+            case MagicNumber.TYPE_LELONG:
+<span class="fc" id="L502">                return 4;</span>
+            case MagicNumber.TYPE_BEDATE:
+<span class="nc" id="L504">                return 4;</span>
+            case MagicNumber.TYPE_LEDATE:
+<span class="nc" id="L506">                return 4;</span>
+            default:
+<span class="nc" id="L508">                return -1;</span>
+        }
+    }
+
+    private static char resolveUnary(String[] columns, MagicNumber item) throws ParseException {
+<span class="fc" id="L513">        int unaryLen = unaryPrefixLength(columns[2]);</span>
+<span class="fc bfc" id="L514" title="All 4 branches covered.">        if (item.dataType == MagicNumber.TYPE_STRING || unaryLen == 0) {</span>
+<span class="fc" id="L515">            return MagicNumber.MAGICOPERATOR_DEFAULT;</span>
+<span class="fc bfc" id="L516" title="All 2 branches covered.">        } else if (unaryLen == 1) {</span>
+<span class="fc" id="L517">            return columns[2].charAt(0);</span>
+<span class="pc bpc" id="L518" title="1 of 4 branches missed.">        } else if (unaryLen == 2 &amp;&amp; columns[2].charAt(0) == MagicNumber.MAGICOPERATOR_LTHAN) {</span>
+<span class="fc" id="L519">            return MagicNumber.MAGICOPERATOR_EQUAL_LTHAN;</span>
+<span class="pc bpc" id="L520" title="2 of 4 branches missed.">        } else if (unaryLen == 2 &amp;&amp; columns[2].charAt(0) == MagicNumber.MAGICOPERATOR_GTHAN) {</span>
+<span class="fc" id="L521">            return MagicNumber.MAGICOPERATOR_EQUAL_GTHAN;</span>
+        } else {
+<span class="nc" id="L523">            throw new ParseException(&quot;Unrecognized unary prefix&quot;);</span>
+        }
+    }
+
+    @Nullable
+    public static String resolveReverseDataType(int dataTypeId) {
+<span class="fc" id="L529">        initTypeMap();</span>
+<span class="pc bpc" id="L530" title="1 of 2 branches missed.">        for (Map.Entry&lt;String, Integer&gt; entry : typeMap.entrySet()) {</span>
+<span class="fc bfc" id="L531" title="All 2 branches covered.">            if (entry.getValue().intValue() == dataTypeId) {</span>
+<span class="fc" id="L532">                return entry.getKey();</span>
+            }
+<span class="fc" id="L534">        }</span>
+<span class="nc" id="L535">        return null;</span>
+    }
+
+    private static void initTypeMap() {
+<span class="fc bfc" id="L539" title="All 2 branches covered.">        if (typeMap != null) {</span>
+<span class="fc" id="L540">            return;</span>
+        }
+<span class="fc" id="L542">        typeMap = new TreeMap&lt;&gt;();</span>
+<span class="fc" id="L543">        typeMap.put(MagicNumber.TYPE_KEY_BYTE, MagicNumber.TYPE_BYTE);</span>
+<span class="fc" id="L544">        typeMap.put(MagicNumber.TYPE_KEY_SHORT, MagicNumber.TYPE_SHORT);</span>
+<span class="fc" id="L545">        typeMap.put(MagicNumber.TYPE_KEY_LONG, MagicNumber.TYPE_LONG);</span>
+<span class="fc" id="L546">        typeMap.put(MagicNumber.TYPE_KEY_STRING, MagicNumber.TYPE_STRING);</span>
+<span class="fc" id="L547">        typeMap.put(MagicNumber.TYPE_KEY_DATE, MagicNumber.TYPE_DATE);</span>
+<span class="fc" id="L548">        typeMap.put(MagicNumber.TYPE_KEY_BESHORT, MagicNumber.TYPE_BESHORT);</span>
+<span class="fc" id="L549">        typeMap.put(MagicNumber.TYPE_KEY_BELONG, MagicNumber.TYPE_BELONG);</span>
+<span class="fc" id="L550">        typeMap.put(MagicNumber.TYPE_KEY_BEDATE, MagicNumber.TYPE_BEDATE);</span>
+<span class="fc" id="L551">        typeMap.put(MagicNumber.TYPE_KEY_LESHORT, MagicNumber.TYPE_LESHORT);</span>
+<span class="fc" id="L552">        typeMap.put(MagicNumber.TYPE_KEY_LELONG, MagicNumber.TYPE_LELONG);</span>
+<span class="fc" id="L553">        typeMap.put(MagicNumber.TYPE_KEY_LEDATE, MagicNumber.TYPE_LEDATE);</span>
+<span class="fc" id="L554">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FailDirectoryAction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.server.mvc.internal</a> &gt; <span class="el_source">FailDirectoryAction.java</span></div><h1>FailDirectoryAction.java</h1><pre class="source lang-java linenums">package emissary.server.mvc.internal;
+
+import emissary.directory.IRemoteDirectory;
+import emissary.directory.KeyManipulator;
+import emissary.log.MDCConstants;
+import emissary.server.mvc.adapters.RequestUtil;
+
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
+import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_PROPAGATION_FLAG;
+import static emissary.server.mvc.adapters.DirectoryAdapter.FAILED_DIRECTORY_NAME;
+import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
+
+@Path(&quot;&quot;)
+// context is /emissary, set in EmissaryServer
+<span class="fc" id="L27">public class FailDirectoryAction {</span>
+<span class="fc" id="L28">    private final Logger logger = LoggerFactory.getLogger(this.getClass());</span>
+
+    /*
+     * &lt;!-- Propagate a directory failure --&gt; &lt;Use-Case source=&quot;*&quot; action=&quot;/FailDirectory.action&quot;&gt; &lt;Work type=&quot;Bean&quot;
+     * target=&quot;emissary.comms.http.worker.LogWorker&quot;/&gt; &lt;Work type=&quot;Bean&quot;
+     * target=&quot;emissary.comms.http.worker.DirectoryFailureWorker&quot;/&gt; &lt;View status=&quot;0&quot; view=&quot;/success.jsp&quot;/&gt; &lt;View status=&quot;-1&quot;
+     * view=&quot;/error.jsp&quot;/&gt; &lt;/Use-Case&gt;
+     */
+    // Call like this
+    // http://localhost:8001/emissary/FailDirectory.action?targetDir=http://localhost:8001/DirectoryPlace&amp;dirFailName=EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:7001/DirectoryPlace&amp;dirAddPropFlag=true
+    // NOTE: This requires a second instance running
+    // NOTE: If you do not make propagate true, nothing appears to be modified. It looks like it just tries to adjust
+    // the places cost. Will not do anything for local keys.
+    @POST
+    @Path(&quot;/FailDirectory.action&quot;)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response failDirectory(@FormParam(TARGET_DIRECTORY) String targetDirectory, @FormParam(FAILED_DIRECTORY_NAME) String failedDirectory,
+            @FormParam(ADD_PROPAGATION_FLAG) boolean propagate) {
+<span class="fc" id="L47">        String cleanTargetDirectory = RequestUtil.sanitizeParameter(targetDirectory);</span>
+<span class="fc" id="L48">        String cleanFailedDirectory = RequestUtil.sanitizeParameter(failedDirectory);</span>
+<span class="pc bpc" id="L49" title="1 of 4 branches missed.">        if (StringUtils.isBlank(cleanTargetDirectory) || StringUtils.isBlank(cleanFailedDirectory)) {</span>
+<span class="fc" id="L50">            return Response.serverError().entity(</span>
+<span class="fc" id="L51">                    &quot;Bad params: &quot; + TARGET_DIRECTORY + &quot; - &quot; + cleanTargetDirectory + &quot;, or &quot; + ADD_KEY + &quot; - &quot; + cleanFailedDirectory).build();</span>
+        }
+
+        try {
+<span class="fc" id="L55">            IRemoteDirectory localDirectory = new IRemoteDirectory.Lookup().getLocalDirectory(cleanTargetDirectory);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">            if (localDirectory == null) {</span>
+<span class="fc" id="L57">                logger.error(&quot;No local directory found using name {}&quot;, cleanTargetDirectory);</span>
+<span class="fc" id="L58">                return Response.serverError().entity(&quot;No local directory found using name &quot; + cleanTargetDirectory).build();</span>
+            }
+
+<span class="fc" id="L61">            MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(localDirectory.getKey()));</span>
+<span class="fc" id="L62">            int count = localDirectory.irdFailDirectory(cleanFailedDirectory, propagate);</span>
+<span class="fc" id="L63">            logger.debug(&quot;Modified {} entries from {} due to failure of remote {}&quot;, count, localDirectory, cleanTargetDirectory);</span>
+<span class="fc" id="L64">            return Response.ok().entity(</span>
+<span class="fc" id="L65">                    &quot;Modified &quot; + count + &quot; entries from &quot; + localDirectory + &quot; due to failure of remote &quot; + cleanFailedDirectory).build();</span>
+
+        } finally {
+<span class="fc" id="L68">            MDC.remove(MDCConstants.SERVICE_LOCATION);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

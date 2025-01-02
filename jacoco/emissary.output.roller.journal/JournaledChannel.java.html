@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JournaledChannel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.output.roller.journal</a> &gt; <span class="el_source">JournaledChannel.java</span></div><h1>JournaledChannel.java</h1><pre class="source lang-java linenums">package emissary.output.roller.journal;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import javax.annotation.Nullable;
+
+/**
+ * Wrapper class to allow for use of underlying channel in either OutputStream code or WritableChannel.
+ */
+public class JournaledChannel extends OutputStream implements SeekableByteChannel {
+
+<span class="fc" id="L20">    static final Logger LOG = LoggerFactory.getLogger(JournaledChannel.class);</span>
+    // 128k
+    static final int BUFF_SIZE = 128 * 1024;
+    @Nullable
+    FileChannel fc;
+    Path path;
+    @Nullable
+    JournalEntry e;
+    final int index;
+    final JournalWriter journal;
+    @Nullable
+    ByteBuffer directBuff;
+
+<span class="fc" id="L33">    JournaledChannel(final Path path, final String key, final int index) throws IOException {</span>
+<span class="fc" id="L34">        this.fc = FileChannel.open(path, StandardOpenOption.CREATE_NEW, StandardOpenOption.READ, StandardOpenOption.WRITE);</span>
+<span class="fc" id="L35">        this.path = path;</span>
+<span class="fc" id="L36">        this.index = index;</span>
+<span class="fc" id="L37">        this.journal = new JournalWriter(path.getParent(), path.getFileName().toString(), key);</span>
+<span class="fc" id="L38">        this.directBuff = ByteBuffer.allocateDirect(BUFF_SIZE);</span>
+<span class="fc" id="L39">        writeEntry();</span>
+<span class="fc" id="L40">    }</span>
+
+<span class="fc" id="L42">    @Nullable</span>
+    private byte[] b1 = null;
+
+    @Override
+    public void write(final int b) throws IOException {
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        if (this.b1 == null) {</span>
+<span class="fc" id="L48">            this.b1 = new byte[1];</span>
+        }
+<span class="fc" id="L50">        this.b1[0] = (byte) b;</span>
+<span class="fc" id="L51">        this.write(this.b1);</span>
+<span class="fc" id="L52">    }</span>
+
+    @Override
+    public void write(final byte[] bs, final int off, final int len) throws IOException {
+<span class="pc bpc" id="L56" title="5 of 10 branches missed.">        if ((off &lt; 0) || (off &gt; bs.length) || (len &lt; 0) || ((off + len) &gt; bs.length) || ((off + len) &lt; 0)) {</span>
+<span class="nc" id="L57">            throw new IndexOutOfBoundsException();</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        } else if (len == 0) {</span>
+<span class="nc" id="L59">            return;</span>
+        }
+
+<span class="fc" id="L62">        int remaining = len;</span>
+<span class="fc" id="L63">        int offset = off;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        while (remaining &gt; 0) {</span>
+<span class="fc" id="L65">            final int limit = Math.min(remaining, this.directBuff.capacity());</span>
+<span class="fc" id="L66">            this.directBuff.clear();</span>
+<span class="fc" id="L67">            this.directBuff.put(bs, offset, limit);</span>
+<span class="fc" id="L68">            this.directBuff.flip();</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">            while (this.directBuff.hasRemaining()) {</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">                if (this.fc.write(this.directBuff) &lt;= 0) {</span>
+<span class="nc" id="L71">                    throw new IllegalStateException(&quot;no bytes written&quot;);</span>
+                }
+            }
+<span class="fc" id="L74">            offset += limit;</span>
+<span class="fc" id="L75">            remaining -= limit;</span>
+<span class="fc" id="L76">        }</span>
+<span class="fc" id="L77">    }</span>
+
+    @Override
+    public int write(final ByteBuffer src) throws IOException {
+        // doing this to avoid java bug that caused direct memory leaks.
+        // could be removed in java 9 when they provide a JVM argument to
+        // limit caching
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        if (!src.isDirect()) {</span>
+<span class="fc" id="L85">            int written = 0;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">            while (src.hasRemaining()) {</span>
+<span class="fc" id="L87">                this.directBuff.clear();</span>
+<span class="pc bpc" id="L88" title="1 of 4 branches missed.">                while (this.directBuff.hasRemaining() &amp;&amp; src.hasRemaining()) {</span>
+<span class="fc" id="L89">                    this.directBuff.put(src.get());</span>
+                }
+<span class="fc" id="L91">                this.directBuff.flip();</span>
+<span class="fc" id="L92">                written += this.fc.write(this.directBuff);</span>
+            }
+<span class="fc" id="L94">            return written;</span>
+        } else {
+<span class="fc" id="L96">            return this.fc.write(src);</span>
+        }
+    }
+
+    @Override
+    public long position() throws IOException {
+<span class="fc" id="L102">        return this.fc.position();</span>
+    }
+
+    /* Unsupported operations */
+    @Override
+    public SeekableByteChannel position(final long newPosition) throws IOException {
+<span class="fc" id="L108">        throw new UnsupportedOperationException(&quot;This operation is not permitted&quot;);</span>
+    }
+
+    @Override
+    public long size() throws IOException {
+<span class="fc" id="L113">        return this.fc.size();</span>
+    }
+
+    @Override
+    public boolean isOpen() {
+<span class="pc bpc" id="L118" title="2 of 4 branches missed.">        return (this.fc != null) &amp;&amp; this.fc.isOpen();</span>
+    }
+
+    /**
+     * Sets the position of the channel according to the current entry. Should only be called by the pool.
+     * 
+     * @throws IOException If there is some I/O problem.
+     */
+    void setPosition() throws IOException {
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        if (this.e.getOffset() != this.fc.position()) {</span>
+<span class="nc" id="L128">            this.fc.position(this.e.getOffset());</span>
+        }
+<span class="fc" id="L130">    }</span>
+
+    /**
+     * Commits writes to underlying storage. This method should only be called after a successful write.
+     * 
+     * @throws IOException If there is some I/O problem.
+     */
+    public final void commit() throws IOException {
+<span class="fc" id="L138">        writeEntry();</span>
+<span class="fc" id="L139">    }</span>
+
+    private void writeEntry() throws IOException {
+<span class="fc" id="L142">        final JournalEntry entry = new JournalEntry(this.path.toString(), this.fc.position());</span>
+<span class="fc" id="L143">        this.journal.write(entry);</span>
+<span class="fc" id="L144">        this.e = entry;</span>
+<span class="fc" id="L145">    }</span>
+
+    /**
+     * Closes this Channel/Output Stream by releasing resources to underlying pool. Further calls result in unspecified
+     * behavior
+     * 
+     * @throws IOException If there is some I/O problem.
+     */
+    @Override
+    public void close() throws IOException {
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        if (this.fc != null) {</span>
+<span class="fc" id="L156">            this.fc.close();</span>
+<span class="fc" id="L157">            this.fc = null;</span>
+        }
+<span class="fc" id="L159">        this.journal.close();</span>
+<span class="fc" id="L160">        this.e = null;</span>
+<span class="fc" id="L161">        this.directBuff = null;</span>
+<span class="fc" id="L162">    }</span>
+
+    /**
+     * Opens this object for writing and sets position according to current Journal Entry.
+     * 
+     * @throws IOException If there is some I/O problem.
+     */
+    void open() throws IOException {
+<span class="nc" id="L170">        LOG.debug(&quot;Opening channel for writing {}&quot;, this.path);</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">        if (this.fc.position() != this.e.getOffset()) {</span>
+<span class="nc" id="L172">            this.fc.position(this.e.getOffset());</span>
+        }
+<span class="nc" id="L174">    }</span>
+
+    @Override
+    public int read(final ByteBuffer dst) throws IOException {
+<span class="fc" id="L178">        throw new UnsupportedOperationException(&quot;This operation is not permitted&quot;);</span>
+    }
+
+    @Override
+    public SeekableByteChannel truncate(final long size) throws IOException {
+<span class="fc" id="L183">        throw new UnsupportedOperationException(&quot;This operation is not permitted&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

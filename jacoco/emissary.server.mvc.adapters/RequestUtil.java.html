@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RequestUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.server.mvc.adapters</a> &gt; <span class="el_source">RequestUtil.java</span></div><h1>RequestUtil.java</h1><pre class="source lang-java linenums">package emissary.server.mvc.adapters;
+
+import jakarta.servlet.ServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
+
+/**
+ * Utilities for dealing with request parameters
+ */
+@SuppressWarnings(&quot;AvoidObjectArrays&quot;)
+public class RequestUtil {
+    public static final int INT_PARAM_NOT_FOUND = -99;
+    public static final float FLOAT_PARAM_NOT_FOUND = -99.99f;
+
+<span class="fc" id="L19">    private static final Logger logger = LoggerFactory.getLogger(RequestUtil.class);</span>
+
+    private RequestUtil() {}
+
+    /**
+     * Get attribute or parameter from request. Attribute has priority over parameter when both are present. If no parameter
+     * is found, return the default value.
+     */
+    public static String getParameter(final ServletRequest request, final String param, @Nullable final String defaultVal) {
+<span class="fc" id="L28">        Object o = request.getAttribute(param);</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (o == null) {</span>
+<span class="fc" id="L30">            o = sanitizeParameter(request.getParameter(param));</span>
+        }
+
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (o == null) {</span>
+<span class="fc" id="L34">            o = defaultVal;</span>
+        }
+<span class="fc" id="L36">        return (String) o;</span>
+    }
+
+
+    /**
+     * Get attribute or parameter from request. Attribute has priority over parameter when both are present. If no parameter
+     * is found, return null.
+     */
+    public static String getParameter(final ServletRequest request, final String param) {
+<span class="nc" id="L45">        return getParameter(request, param, null);</span>
+    }
+
+    /**
+     * Get attribute or parameters from request and return an array of Strings. Attribute has priority over parameter when
+     * both are present
+     */
+    public static String[] getParameterValues(final ServletRequest request, final String param) {
+        String[] retArray;
+<span class="fc" id="L54">        Object o = request.getAttribute(param);</span>
+
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if (o == null) {</span>
+<span class="fc" id="L57">            o = sanitizeParameters(request.getParameterValues(param));</span>
+        }
+
+        try {
+<span class="fc" id="L61">            retArray = (String[]) o;</span>
+<span class="fc" id="L62">        } catch (ClassCastException e) {</span>
+<span class="fc" id="L63">            retArray = new String[1];</span>
+<span class="fc" id="L64">            retArray[0] = (String) o;</span>
+<span class="fc" id="L65">        }</span>
+
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        if (retArray != null) {</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">            for (int i = 0; i &lt; retArray.length; i++) {</span>
+<span class="fc" id="L69">                logger.debug(&quot;RequestUtil.getParameterValues for {} [{}]: {}&quot;, param, i, retArray[i]);</span>
+            }
+        } else {
+<span class="nc" id="L72">            logger.debug(&quot;RequestUtil.getParameterValues for {} is null&quot;, param);</span>
+        }
+
+<span class="fc" id="L75">        return retArray;</span>
+    }
+
+    /**
+     * gets an int parameter.
+     *
+     * @return the parameter's int value, or -99 if the parameter is null.
+     */
+    public static int getIntParam(final ServletRequest request, final String param) {
+<span class="nc" id="L84">        return getIntParam(request, param, INT_PARAM_NOT_FOUND);</span>
+    }
+
+    /**
+     * gets an int parameter.
+     *
+     * @return the parameter's int value, or the default value if the parameter is null.
+     */
+    public static int getIntParam(final ServletRequest request, final String param, final int defValue) {
+<span class="nc" id="L93">        int retval = defValue;</span>
+<span class="nc" id="L94">        String sInt = getParameter(request, param);</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        if (sInt != null) {</span>
+<span class="nc" id="L96">            sInt = sInt.trim();</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">            if (sInt.length() &gt; 0) {</span>
+                try {
+<span class="nc" id="L99">                    retval = Integer.parseInt(sInt);</span>
+<span class="nc" id="L100">                } catch (NumberFormatException e) {</span>
+<span class="nc" id="L101">                    logger.info(&quot;RequestUtil.getIntParam. Param {} had unparseable value '{}'.&quot;, param, sInt);</span>
+
+<span class="nc" id="L103">                }</span>
+            }
+        }
+
+<span class="nc" id="L107">        logger.debug(&quot;RequestUtil.getIntParam for {}: {}.&quot;, param, retval);</span>
+
+<span class="nc" id="L109">        return retval;</span>
+    }
+
+    /**
+     * Retrieves boolean as a String (&quot;true&quot;) and returns boolean.
+     * 
+     * @return boolean
+     */
+    public static boolean getBooleanParam(final ServletRequest request, final String param) {
+<span class="nc" id="L118">        return getBooleanParam(request, param, &quot;true&quot;, false);</span>
+    }
+
+    /**
+     * Retrieves boolean if the string value of the parameter equals the trueString argument. If the parameter is not
+     * present, false will be returned
+     * 
+     * @return boolean
+     */
+    public static boolean getBooleanParam(final ServletRequest request, final String param, final String trueString) {
+<span class="nc" id="L128">        return getBooleanParam(request, param, trueString, false);</span>
+    }
+
+    /**
+     * Retrieves boolean if the string value of the parameter equals the trueString argument.
+     * 
+     * @return boolean
+     */
+    public static boolean getBooleanParam(final ServletRequest request, final String param, final String trueString, final boolean defaultVal) {
+<span class="nc" id="L137">        final String s = getParameter(request, param);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        if (s != null) {</span>
+<span class="nc" id="L139">            return s.equalsIgnoreCase(trueString);</span>
+        }
+
+<span class="nc" id="L142">        return defaultVal;</span>
+    }
+
+    /**
+     * Retrieves a list of Integers from the request
+     * 
+     * @return Integer[]
+     */
+    public static Integer[] getIntegers(final ServletRequest request, final String param) {
+<span class="nc" id="L151">        return getIntegers(request, param, INT_PARAM_NOT_FOUND);</span>
+    }
+
+    /**
+     * Retrieves a list of Integers from the request
+     * 
+     * @return Integer[]
+     */
+    public static Integer[] getIntegers(final ServletRequest request, final String param, final int defValue) {
+<span class="nc" id="L160">        final String[] values = getParameterValues(request, param);</span>
+
+<span class="nc bnc" id="L162" title="All 2 branches missed.">        if (values == null) {</span>
+<span class="nc" id="L163">            return new Integer[0];</span>
+        }
+
+<span class="nc" id="L166">        final Integer[] intValues = new Integer[values.length];</span>
+
+<span class="nc bnc" id="L168" title="All 2 branches missed.">        for (int i = 0; i &lt; values.length; i++) {</span>
+            try {
+<span class="nc" id="L170">                String temp = values[i];</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">                if (temp != null) {</span>
+<span class="nc" id="L172">                    temp = temp.trim();</span>
+                }
+<span class="nc" id="L174">                intValues[i] = Integer.valueOf(temp);</span>
+<span class="nc" id="L175">            } catch (NumberFormatException ne) {</span>
+<span class="nc" id="L176">                logger.info(&quot;RequestUtil.getIntegers. Param {} had unparseable value '{}'.&quot;, param, values[i]);</span>
+
+<span class="nc" id="L178">                intValues[i] = defValue;</span>
+<span class="nc" id="L179">            }</span>
+        }
+
+<span class="nc" id="L182">        return intValues;</span>
+    }
+
+    /**
+     * gets a string parameter
+     *
+     * @return the parameter's value, or &quot;&quot; if the parameter is null.
+     */
+    public static String getParamNoNull(final ServletRequest request, final String param) {
+<span class="nc" id="L191">        final String temp = getParameter(request, param);</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">        if (temp != null) {</span>
+<span class="nc" id="L193">            return temp;</span>
+        }
+<span class="nc" id="L195">        return &quot;&quot;;</span>
+    }
+
+    /**
+     * gets a float parameter.
+     *
+     * @return the parameter's int value, or -99 if the parameter is null.
+     */
+    public static float getFloatParam(final ServletRequest request, final String param) {
+<span class="nc" id="L204">        return getFloatParam(request, param, FLOAT_PARAM_NOT_FOUND);</span>
+    }
+
+    /**
+     * gets a float parameter.
+     *
+     * @return the parameter's float value, or the default value if the parameter is null.
+     */
+    public static float getFloatParam(final ServletRequest request, final String param, final float defValue) {
+<span class="nc" id="L213">        float retval = defValue;</span>
+<span class="nc" id="L214">        String sFloat = getParameter(request, param);</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">        if (sFloat != null) {</span>
+<span class="nc" id="L216">            sFloat = sFloat.trim();</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">            if (sFloat.length() &gt; 0) {</span>
+                try {
+<span class="nc" id="L219">                    retval = Float.parseFloat(sFloat);</span>
+<span class="nc" id="L220">                } catch (NumberFormatException e) {</span>
+<span class="nc" id="L221">                    logger.info(&quot;RequestUtil.getFloatParam. Param {} had unparseable value '{}'.&quot;, param, sFloat);</span>
+
+<span class="nc" id="L223">                }</span>
+            }
+        }
+
+<span class="nc" id="L227">        logger.debug(&quot;RequestUtil.getFloatParam for {}: {}.&quot;, param, retval);</span>
+
+<span class="nc" id="L229">        return retval;</span>
+    }
+
+    /**
+     * Sanitize request parameter to remove CR/LF values
+     *
+     * @param parameter the String to sanitize
+     * @return a new String object with any CR/LF characters removed or null when the provided argument is null
+     */
+    @Nullable
+    public static String sanitizeParameter(String parameter) {
+<span class="fc bfc" id="L240" title="All 2 branches covered.">        return (null == parameter ? null : parameter.replaceAll(&quot;[\n\r]&quot;, &quot;_&quot;));</span>
+    }
+
+    /**
+     * Sanitize request parameters to remove CR/LF values
+     *
+     * @param parameters the String[] to sanitize
+     * @return a new String[] object with any CR/LF characters removed
+     */
+    public static String[] sanitizeParameters(String[] parameters) {
+<span class="fc" id="L250">        List&lt;String&gt; sanitizedParameters = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">        if (null != parameters) {</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">            for (String parameter : parameters) {</span>
+<span class="fc" id="L253">                sanitizedParameters.add(sanitizeParameter(parameter));</span>
+            }
+        }
+<span class="fc" id="L256">        return sanitizedParameters.toArray(new String[0]);</span>
+    }
+
+    /**
+     * Sanitize request parameters to remove CR/LF values
+     *
+     * @param parameters the List String to sanitize
+     * @return a new List String object with any CR/LF characters removed
+     */
+    public static List&lt;String&gt; sanitizeParametersStringList(List&lt;String&gt; parameters) {
+<span class="fc" id="L266">        List&lt;String&gt; sanitizedParameters = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">        if (null != parameters) {</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">            for (String parameter : parameters) {</span>
+<span class="fc" id="L269">                sanitizedParameters.add(sanitizeParameter(parameter));</span>
+<span class="fc" id="L270">            }</span>
+        }
+<span class="fc" id="L272">        return sanitizedParameters;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

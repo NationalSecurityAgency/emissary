@@ -57,7 +57,7 @@
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> updateTransformHistory = false;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>      <em class="jxr_comment">// set of coordination places that failed to be created/did not exist</em>
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> Set&lt;String&gt; failedCoordPlaceCreation = <strong class="jxr_keyword">new</strong> LinkedHashSet&lt;&gt;();
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Set&lt;String&gt; failedCoordPlaceCreation = <strong class="jxr_keyword">new</strong> LinkedHashSet&lt;&gt;();
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">     * Create the place using the supplied configuration and location</em>
@@ -143,7 +143,7 @@
 <a class="jxr_linenumber" name="L135" href="#L135">135</a>                         failedCoordPlaceCreation.add(s + <span class="jxr_string">" in "</span> + configG.findStringEntry(<span class="jxr_string">"PLACE_NAME"</span>));
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>                         logger.error(<span class="jxr_string">"Place does not exist and cannot be created: {}"</span>, s);
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>                     }
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>                 } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>                 } <strong class="jxr_keyword">catch</strong> (RuntimeException e) {
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>                     failedCoordPlaceCreation.add(s + <span class="jxr_string">" in "</span> + configG.findStringEntry(<span class="jxr_string">"PLACE_NAME"</span>));
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>                     logger.error(<span class="jxr_string">"Place does not exist and cannot be created: {}"</span>, s, e);
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>                 }
@@ -196,81 +196,81 @@
 <a class="jxr_linenumber" name="L188" href="#L188">188</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     * Classes can override this method to do anything to the list of sprouted data objects from this coordination</em>
 <a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> sproutHook(List&lt;IBaseDataObject&gt; sproutList, <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> parent) {
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>         logger.debug(<span class="jxr_string">"In base sproutHook with {}"</span>, sproutList.size());
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> sproutHook(List&lt;IBaseDataObject&gt; sproutCollection, <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d) {
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>         logger.debug(<span class="jxr_string">"In base sproutHook with {}"</span>, sproutCollection.size());
 <a class="jxr_linenumber" name="L193" href="#L193">193</a>     }
 <a class="jxr_linenumber" name="L194" href="#L194">194</a> 
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">     * Consume a data object and coordinate its processing</em>
-<a class="jxr_linenumber" name="L197" href="#L197">197</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> <em class="jxr_javadoccomment">     * @param d the payload to process</em>
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_javadoccomment">     * @param hd true if doing heavy-duty processing</em>
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">     * @return the list of sprouted data objects</em>
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>     <strong class="jxr_keyword">protected</strong> List&lt;IBaseDataObject&gt; coordinate(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d, <strong class="jxr_keyword">boolean</strong> hd) {
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>         List&lt;IBaseDataObject&gt; sproutCollection = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L204" href="#L204">204</a> 
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>         <strong class="jxr_keyword">boolean</strong> errorOccurred = false;
-<a class="jxr_linenumber" name="L206" href="#L206">206</a> 
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>         <em class="jxr_comment">// Iterate over the configured places</em>
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>         <strong class="jxr_keyword">for</strong> (<a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> p : placeRefs) {
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>             <em class="jxr_comment">// Let derived classed decide to quit or continue this loop</em>
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>             <strong class="jxr_keyword">if</strong> (!shouldContinue(d, p)) {
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>                 <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L212" href="#L212">212</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (shouldSkip(d, p)) {
-<a class="jxr_linenumber" name="L213" href="#L213">213</a>                 <strong class="jxr_keyword">continue</strong>;
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>             }
-<a class="jxr_linenumber" name="L215" href="#L215">215</a> 
-<a class="jxr_linenumber" name="L216" href="#L216">216</a>             updateTransformHistory(d, p);
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> 
-<a class="jxr_linenumber" name="L218" href="#L218">218</a>             <em class="jxr_comment">// Collect attachments for hd processing</em>
-<a class="jxr_linenumber" name="L219" href="#L219">219</a>             List&lt;IBaseDataObject&gt; sprouts = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> 
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>             <em class="jxr_comment">// Like an agent would do it</em>
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>             <strong class="jxr_keyword">try</strong> (<a name="TimedResource" href="../../emissary/core/TimedResource.html#TimedResource">TimedResource</a> tr = resourceWatcherStart(p)) {
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>                 assert tr != <strong class="jxr_keyword">null</strong>; <em class="jxr_comment">// to silence an unused resource warning</em>
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> sproutHook(List&lt;IBaseDataObject&gt; sproutCollection, <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d, <strong class="jxr_keyword">boolean</strong> hd) {
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>         <em class="jxr_comment">// Allow derived classes a shot at the sprouts</em>
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>         <strong class="jxr_keyword">if</strong> (hd) {
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>             sproutHook(sproutCollection, d);
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>         }
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>     }
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> 
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_javadoccomment">     * Consume a data object and coordinate its processing</em>
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">     * @param d the payload to process</em>
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">     * @param hd true if doing heavy-duty processing</em>
+<a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">     * @return the list of sprouted data objects</em>
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>     <strong class="jxr_keyword">protected</strong> List&lt;IBaseDataObject&gt; coordinate(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d, <strong class="jxr_keyword">boolean</strong> hd) {
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>         List&lt;IBaseDataObject&gt; sproutCollection = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> 
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>         <strong class="jxr_keyword">boolean</strong> errorOccurred = false;
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> 
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>         <em class="jxr_comment">// Iterate over the configured places</em>
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>         <strong class="jxr_keyword">for</strong> (<a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> p : placeRefs) {
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>             <em class="jxr_comment">// Let derived classed decide to quit or continue this loop</em>
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>             <strong class="jxr_keyword">if</strong> (!shouldContinue(d, p)) {
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>                 <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (shouldSkip(d, p)) {
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>                 <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>             }
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> 
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>             updateTransformHistory(d, p);
 <a class="jxr_linenumber" name="L224" href="#L224">224</a> 
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>                 <strong class="jxr_keyword">if</strong> (hd) {
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>                     <em class="jxr_comment">// Do the normal HD processing</em>
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>                     sprouts = p.agentProcessHeavyDuty(d);
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>                     <em class="jxr_comment">// Do the normal Non-HD processing</em>
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>                     p.agentProcessCall(d);
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>                 }
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>                 errorOccurred = d.currentForm().equals(Form.ERROR);
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>             } <strong class="jxr_keyword">catch</strong> (Exception ex) {
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>                 errorOccurred = handlePlaceException(p, hd, ex);
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>             } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>                 <strong class="jxr_keyword">if</strong> (Thread.interrupted()) {
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>                     logger.warn(<span class="jxr_string">"Place {} was interrupted during execution."</span>, p);
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>             <em class="jxr_comment">// Collect attachments for hd processing</em>
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>             List&lt;IBaseDataObject&gt; sprouts = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> 
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>             <em class="jxr_comment">// Like an agent would do it</em>
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>             <strong class="jxr_keyword">try</strong> (<a name="TimedResource" href="../../emissary/core/TimedResource.html#TimedResource">TimedResource</a> tr = resourceWatcherStart(p)) {
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>                 assert tr != <strong class="jxr_keyword">null</strong>; <em class="jxr_comment">// to silence an unused resource warning</em>
+<a class="jxr_linenumber" name="L231" href="#L231">231</a> 
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>                 <strong class="jxr_keyword">if</strong> (hd) {
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>                     <em class="jxr_comment">// Do the normal HD processing</em>
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>                     sprouts = p.agentProcessHeavyDuty(d);
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>                     <em class="jxr_comment">// Do the normal Non-HD processing</em>
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>                     p.agentProcessCall(d);
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>                 }
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>             }
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> 
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>             <strong class="jxr_keyword">if</strong> (!shouldContinue(p, errorOccurred)) {
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>                 <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>             }
-<a class="jxr_linenumber" name="L244" href="#L244">244</a> 
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>             <em class="jxr_comment">// Track any new attachments</em>
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>             <strong class="jxr_keyword">if</strong> (CollectionUtils.isNotEmpty(sprouts)) {
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>                 sproutCollection.addAll(sprouts);
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>             }
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>         }
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> 
-<a class="jxr_linenumber" name="L251" href="#L251">251</a>         applyForm(d, errorOccurred);
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> 
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>         sproutHook(d, hd, sproutCollection);
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> 
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>         <em class="jxr_comment">// Allow derived classes a shot to clean up the parent</em>
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>         cleanUpHook(d);
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>                 errorOccurred = d.currentForm().equals(Form.ERROR);
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>             } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L241" href="#L241">241</a>                 errorOccurred = handlePlaceException(p, hd, ex);
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>             } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>                 <strong class="jxr_keyword">if</strong> (Thread.interrupted()) {
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>                     logger.warn(<span class="jxr_string">"Place {} was interrupted during execution."</span>, p);
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>                 }
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>             }
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> 
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>             <strong class="jxr_keyword">if</strong> (!shouldContinue(p, errorOccurred)) {
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>                 <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>             }
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> 
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>             <em class="jxr_comment">// Track any new attachments</em>
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>             <strong class="jxr_keyword">if</strong> (CollectionUtils.isNotEmpty(sprouts)) {
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>                 sproutCollection.addAll(sprouts);
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>             }
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>         }
 <a class="jxr_linenumber" name="L257" href="#L257">257</a> 
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>         <strong class="jxr_keyword">return</strong> sproutCollection;
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>     }
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> 
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> sproutHook(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d, <strong class="jxr_keyword">boolean</strong> hd, List&lt;IBaseDataObject&gt; sproutCollection) {
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>         <em class="jxr_comment">// Allow derived classes a shot at the sprouts</em>
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>         <strong class="jxr_keyword">if</strong> (hd) {
-<a class="jxr_linenumber" name="L264" href="#L264">264</a>             sproutHook(sproutCollection, d);
-<a class="jxr_linenumber" name="L265" href="#L265">265</a>         }
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>         applyForm(d, errorOccurred);
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> 
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>         sproutHook(sproutCollection, d, hd);
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> 
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>         <em class="jxr_comment">// Allow derived classes a shot to clean up the parent</em>
+<a class="jxr_linenumber" name="L263" href="#L263">263</a>         cleanUpHook(d);
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> 
+<a class="jxr_linenumber" name="L265" href="#L265">265</a>         <strong class="jxr_keyword">return</strong> sproutCollection;
 <a class="jxr_linenumber" name="L266" href="#L266">266</a>     }
 <a class="jxr_linenumber" name="L267" href="#L267">267</a> 
 <a class="jxr_linenumber" name="L268" href="#L268">268</a>     <em class="jxr_javadoccomment">/**</em>
@@ -330,65 +330,69 @@
 <a class="jxr_linenumber" name="L322" href="#L322">322</a>             <strong class="jxr_keyword">if</strong> (pushForm) {
 <a class="jxr_linenumber" name="L323" href="#L323">323</a>                 d.pushCurrentForm(outputForm);
 <a class="jxr_linenumber" name="L324" href="#L324">324</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>                 d.setCurrentForm(outputForm);
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>             }
-<a class="jxr_linenumber" name="L327" href="#L327">327</a>         }
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>     }
-<a class="jxr_linenumber" name="L329" href="#L329">329</a> 
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L331" href="#L331">331</a> <em class="jxr_javadoccomment">     * If false, do not continue processing other places after an error occurs</em>
-<a class="jxr_linenumber" name="L332" href="#L332">332</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_javadoccomment">     * @return boolean to not continue processing after an error</em>
-<a class="jxr_linenumber" name="L334" href="#L334">334</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L335" href="#L335">335</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> continueOnError() {
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>         <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L337" href="#L337">337</a>     }
-<a class="jxr_linenumber" name="L338" href="#L338">338</a> 
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>     <strong class="jxr_keyword">protected</strong> <a name="TimedResource" href="../../emissary/core/TimedResource.html#TimedResource">TimedResource</a> resourceWatcherStart(<strong class="jxr_keyword">final</strong> <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> place) {
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>         <a name="TimedResource" href="../../emissary/core/TimedResource.html#TimedResource">TimedResource</a> tr = TimedResource.EMPTY;
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>             tr = ResourceWatcher.lookup().starting(getAgent(), place);
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>         } <strong class="jxr_keyword">catch</strong> (<a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> ex) {
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>             logger.debug(<span class="jxr_string">"No resource monitoring enabled"</span>);
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>         }
-<a class="jxr_linenumber" name="L346" href="#L346">346</a>         <strong class="jxr_keyword">return</strong> (tr == <strong class="jxr_keyword">null</strong>) ? TimedResource.EMPTY : tr;
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>     }
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> 
-<a class="jxr_linenumber" name="L349" href="#L349">349</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L350" href="#L350">350</a> <em class="jxr_javadoccomment">     * Process point when not using HDMobileAgent</em>
-<a class="jxr_linenumber" name="L351" href="#L351">351</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L352" href="#L352">352</a> <em class="jxr_javadoccomment">     * @param d the payload to process</em>
-<a class="jxr_linenumber" name="L353" href="#L353">353</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L354" href="#L354">354</a>     @Override
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> process(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
-<a class="jxr_linenumber" name="L356" href="#L356">356</a>         List&lt;IBaseDataObject&gt; l = coordinate(d, false);
-<a class="jxr_linenumber" name="L357" href="#L357">357</a>         <strong class="jxr_keyword">if</strong> (CollectionUtils.isNotEmpty(l)) {
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>             logger.error(<span class="jxr_string">"Non-sprouted documents are being lost {}"</span>, l.size());
-<a class="jxr_linenumber" name="L359" href="#L359">359</a>         }
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>     }
-<a class="jxr_linenumber" name="L361" href="#L361">361</a> 
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L363" href="#L363">363</a> <em class="jxr_javadoccomment">     * Process point for HDMobileAgent</em>
-<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">     * @param d the payload to process</em>
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">     * @return the list of sprouted data objects</em>
-<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L368" href="#L368">368</a>     @Override
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>     <strong class="jxr_keyword">public</strong> List&lt;IBaseDataObject&gt; processHeavyDuty(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>         <strong class="jxr_keyword">return</strong> coordinate(d, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L371" href="#L371">371</a>     }
-<a class="jxr_linenumber" name="L372" href="#L372">372</a> 
-<a class="jxr_linenumber" name="L373" href="#L373">373</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L374" href="#L374">374</a> <em class="jxr_javadoccomment">     * Get method for the set of failed coordination places</em>
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     * @return the names of the failed coordination places</em>
-<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Set&lt;String&gt; getFailedCoordinationPlaces() {
-<a class="jxr_linenumber" name="L379" href="#L379">379</a>         <strong class="jxr_keyword">return</strong> failedCoordPlaceCreation;
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>     }
-<a class="jxr_linenumber" name="L381" href="#L381">381</a> }
+<a class="jxr_linenumber" name="L325" href="#L325">325</a>                 <strong class="jxr_keyword">if</strong> (logger.isDebugEnabled()) {
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>                     logger.debug(<span class="jxr_string">"Object has {} number of forms in the Stack. CoordinationPlace Setting top form from {} to {}"</span>, d.currentFormSize(),
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>                             d.currentForm(), outputForm);
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>                 }
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>                 d.setCurrentForm(outputForm);
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>             }
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>         }
+<a class="jxr_linenumber" name="L332" href="#L332">332</a>     }
+<a class="jxr_linenumber" name="L333" href="#L333">333</a> 
+<a class="jxr_linenumber" name="L334" href="#L334">334</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L335" href="#L335">335</a> <em class="jxr_javadoccomment">     * If false, do not continue processing other places after an error occurs</em>
+<a class="jxr_linenumber" name="L336" href="#L336">336</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L337" href="#L337">337</a> <em class="jxr_javadoccomment">     * @return boolean to not continue processing after an error</em>
+<a class="jxr_linenumber" name="L338" href="#L338">338</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> continueOnError() {
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>     }
+<a class="jxr_linenumber" name="L342" href="#L342">342</a> 
+<a class="jxr_linenumber" name="L343" href="#L343">343</a>     <strong class="jxr_keyword">protected</strong> <a name="TimedResource" href="../../emissary/core/TimedResource.html#TimedResource">TimedResource</a> resourceWatcherStart(<strong class="jxr_keyword">final</strong> <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> place) {
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>         <a name="TimedResource" href="../../emissary/core/TimedResource.html#TimedResource">TimedResource</a> tr = TimedResource.EMPTY;
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>             tr = ResourceWatcher.lookup().starting(getAgent(), place);
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>         } <strong class="jxr_keyword">catch</strong> (<a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> ex) {
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>             logger.debug(<span class="jxr_string">"No resource monitoring enabled"</span>);
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>         }
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>         <strong class="jxr_keyword">return</strong> (tr == <strong class="jxr_keyword">null</strong>) ? TimedResource.EMPTY : tr;
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>     }
+<a class="jxr_linenumber" name="L352" href="#L352">352</a> 
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L354" href="#L354">354</a> <em class="jxr_javadoccomment">     * Process point when not using HDMobileAgent</em>
+<a class="jxr_linenumber" name="L355" href="#L355">355</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L356" href="#L356">356</a> <em class="jxr_javadoccomment">     * @param d the payload to process</em>
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>     @Override
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> process(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>         List&lt;IBaseDataObject&gt; l = coordinate(d, false);
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>         <strong class="jxr_keyword">if</strong> (CollectionUtils.isNotEmpty(l)) {
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>             logger.error(<span class="jxr_string">"Non-sprouted documents are being lost {}"</span>, l.size());
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>         }
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>     }
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> 
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     * Process point for HDMobileAgent</em>
+<a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L369" href="#L369">369</a> <em class="jxr_javadoccomment">     * @param d the payload to process</em>
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> <em class="jxr_javadoccomment">     * @return the list of sprouted data objects</em>
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>     @Override
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>     <strong class="jxr_keyword">public</strong> List&lt;IBaseDataObject&gt; processHeavyDuty(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
+<a class="jxr_linenumber" name="L374" href="#L374">374</a>         <strong class="jxr_keyword">return</strong> coordinate(d, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>     }
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> 
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     * Get method for the set of failed coordination places</em>
+<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> <em class="jxr_javadoccomment">     * @return the names of the failed coordination places</em>
+<a class="jxr_linenumber" name="L381" href="#L381">381</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Set&lt;String&gt; getFailedCoordinationPlaces() {
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>         <strong class="jxr_keyword">return</strong> failedCoordPlaceCreation;
+<a class="jxr_linenumber" name="L384" href="#L384">384</a>     }
+<a class="jxr_linenumber" name="L385" href="#L385">385</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

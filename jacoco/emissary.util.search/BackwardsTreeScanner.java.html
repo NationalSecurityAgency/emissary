@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BackwardsTreeScanner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.search</a> &gt; <span class="el_source">BackwardsTreeScanner.java</span></div><h1>BackwardsTreeScanner.java</h1><pre class="source lang-java linenums">/*
+ * BackwardsTreeScanner.java
+ *
+ * Created on February 20, 2002, 1:19 PM
+ */
+
+package emissary.util.search;
+
+import java.io.PrintStream;
+import javax.annotation.Nullable;
+
+/**
+ * This class implements a tree state machine scanner that searches text backwards starting from the end. A list of
+ * strings is provided as the keywords to be searched. This class is useful for a relatively small set of keywords.
+ * Larger keyword lists can be used if you have memory!
+ *
+ * @author ce
+ * @version 1.0
+ */
+@SuppressWarnings(&quot;AvoidObjectArrays&quot;)
+public class BackwardsTreeScanner {
+
+    // The internal structure of the offset-keyword id array
+    // contained in the hit vectors
+
+    /** Root node of tree state diagram. Always start a search from here! */
+<span class="fc" id="L27">    private State root = new State((byte) 0);</span>
+
+    /**
+     * Optional empty constructor
+     */
+<span class="fc" id="L32">    public BackwardsTreeScanner() {</span>
+
+<span class="fc" id="L34">    }</span>
+
+    /**
+     * Constructor that delegates learning keywords to resetKeywords method.
+     *
+     * @param keywordStrings - array of keywords to learn
+     * @throws Exception - thrown if problem encountered
+     */
+<span class="fc" id="L42">    public BackwardsTreeScanner(String[] keywordStrings) throws Exception {</span>
+<span class="fc" id="L43">        resetKeywords(keywordStrings);</span>
+<span class="fc" id="L44">    }</span>
+
+    /**
+     * Resets keywords and internal State learns them. This method destroys previous state.
+     *
+     * @param keywordStrings - String of keywords to learn
+     * @throws Exception - if problem encountered while learning
+     */
+    public synchronized void resetKeywords(String[] keywordStrings) throws Exception {
+        // make byte arrays
+        // Original list of keywords stored in byte array form.
+<span class="fc" id="L55">        byte[][] keywords = new byte[keywordStrings.length][];</span>
+<span class="fc" id="L56">        root = new State((byte) 0); // reset state</span>
+        // and learn them
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        for (int i = 0; i &lt; keywords.length; i++) {</span>
+<span class="fc" id="L59">            keywords[i] = keywordStrings[i].getBytes();</span>
+<span class="fc" id="L60">            root.learn(keywordStrings[i].getBytes(), i);</span>
+        }
+        // root.print(System.out);
+<span class="fc" id="L63">    }</span>
+
+    /**
+     * This scans the byte array backwards from the offset. Each hit is added to the result vector. We stop when all
+     * possibilities are found
+     */
+    public synchronized int scan(byte[] data, int offset, HitList result) throws Exception {
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (result == null) {</span>
+<span class="nc" id="L71">            throw new Exception(&quot;Null result vector in 3rd parameter of scan()&quot;);</span>
+        }
+        // reset the state machine
+<span class="fc" id="L74">        State state = root;</span>
+<span class="fc" id="L75">        int curPos = offset;</span>
+<span class="pc bpc" id="L76" title="1 of 4 branches missed.">        while (state != null &amp;&amp; curPos &gt;= 0) {</span>
+            // Save any matches for this state.
+            // get the next character
+<span class="fc" id="L79">            byte ch = data[curPos];</span>
+            // move to the next state. Really complicated, right?
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">            if (ch &lt; 0) {</span>
+<span class="nc" id="L82">                state = state.nextStates[256 + (int) ch];</span>
+            } else {
+<span class="fc" id="L84">                state = state.nextStates[ch];</span>
+            }
+            // move the the previous character
+<span class="fc bfc" id="L87" title="All 4 branches covered.">            if (state != null &amp;&amp; state.matches != null) {</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">                for (int i = 0; i &lt; state.matches.length; i++) {</span>
+<span class="fc" id="L89">                    int id = state.matches[i];</span>
+<span class="fc" id="L90">                    Hit tmp = new Hit(curPos, id);</span>
+<span class="fc" id="L91">                    result.add(tmp);</span>
+                }
+            }
+<span class="fc" id="L94">            curPos--;</span>
+<span class="fc" id="L95">        }</span>
+<span class="fc" id="L96">        return curPos;</span>
+    }
+
+    /*
+     * This class implements a state machine that can learn character sequences.
+     */
+    public class State {
+        // Each state has 256 transitions leaving it to new states based
+        // on a single ascii character. If there is no next state for a
+        // character, then the next state will be null.
+<span class="fc" id="L106">        public State[] nextStates = new State[256];</span>
+        // Each state can be visited by a single character. This is it!
+        public byte gotHereBy;
+        // A list of keyword ids that are matched at this state.
+<span class="fc" id="L110">        @Nullable</span>
+        public int[] matches = null;
+
+        // constructor
+<span class="fc" id="L114">        public State(byte gotHereBy) {</span>
+<span class="fc" id="L115">            this.gotHereBy = gotHereBy;</span>
+<span class="fc" id="L116">        }</span>
+
+        public void learn(byte[] word, int id) throws Exception {
+<span class="fc" id="L119">            learn(word, word.length - 1, id);</span>
+<span class="fc" id="L120">        }</span>
+
+        /**
+         * Walk through the keyword backwards. Adding states to the root (or current state) when they don't exists. At the end,
+         * record the keyword id in the ending state.
+         * 
+         * Warning this is recursive, but that is OK for small keywords.
+         */
+        public void learn(byte[] word, int wordLoc, int id) throws Exception {
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">            if (word == null) {</span>
+<span class="nc" id="L130">                throw new Exception(&quot;null keyword in BackwardsTreeScanner.learn()&quot;);</span>
+            }
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">            if (wordLoc &gt;= word.length) {</span>
+<span class="nc" id="L133">                throw new Exception(&quot;char pos &gt; word length:&quot; + wordLoc + &quot;&gt;&quot; + word.length);</span>
+            }
+<span class="fc bfc" id="L135" title="All 2 branches covered.">            if (wordLoc &lt; 0) {</span>
+                // we are finished because this is the first character,
+                // so save the id in this state. We want the matches to be
+                // in an array so this is a little harder than a vector thing.
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">                if (matches == null) {</span>
+<span class="fc" id="L140">                    matches = new int[0];</span>
+                }
+<span class="fc" id="L142">                int[] newMatches = new int[matches.length + 1];</span>
+<span class="fc" id="L143">                System.arraycopy(matches, 0, newMatches, 0, matches.length);</span>
+<span class="fc" id="L144">                matches = newMatches;</span>
+<span class="fc" id="L145">                matches[matches.length - 1] = id;</span>
+<span class="fc" id="L146">            } else {</span>
+                // Get the next character in the word
+<span class="fc" id="L148">                byte nextChar = word[wordLoc];</span>
+                // See if the state already exists
+<span class="fc" id="L150">                State nextState = nextStates[nextChar];</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">                if (nextState == null) {</span>
+                    // Make a new state because it isn't there yet.
+<span class="fc" id="L153">                    nextState = nextStates[nextChar] = new State(nextChar);</span>
+                }
+                // Learn the rest of the keyword in the new state.
+<span class="fc" id="L156">                nextState.learn(word, wordLoc - 1, id);</span>
+            }
+<span class="fc" id="L158">        }</span>
+
+        public void print(PrintStream out) {
+<span class="nc" id="L161">            print(out, &quot;root:&quot;);</span>
+<span class="nc" id="L162">        }</span>
+
+        // Make a pretty picture.
+        public void print(PrintStream out, String prefix) {
+<span class="nc bnc" id="L166" title="All 4 branches missed.">            if (gotHereBy &lt; ' ' || gotHereBy &gt; '~') {</span>
+<span class="nc" id="L167">                out.println(prefix + &quot;-&gt; &quot; + &quot;(byte)&quot; + gotHereBy);</span>
+            } else {
+<span class="nc" id="L169">                out.println(prefix + &quot;-&gt; &quot; + (char) gotHereBy);</span>
+            }
+<span class="nc bnc" id="L171" title="All 2 branches missed.">            if (matches != null) {</span>
+<span class="nc" id="L172">                out.print(prefix + &quot;ids [&quot;);</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">                for (int match : matches) {</span>
+<span class="nc" id="L174">                    out.print(&quot; &quot; + match);</span>
+                }
+<span class="nc" id="L176">                out.println(&quot; ]&quot;);</span>
+            }
+<span class="nc bnc" id="L178" title="All 2 branches missed.">            for (State nextState : nextStates) {</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">                if (nextState != null) {</span>
+<span class="nc" id="L180">                    nextState.print(out, prefix + &quot;  &quot;);</span>
+                }
+            }
+<span class="nc" id="L183">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

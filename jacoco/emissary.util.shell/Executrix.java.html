@@ -1,0 +1,1410 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Executrix.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.shell</a> &gt; <span class="el_source">Executrix.java</span></div><h1>Executrix.java</h1><pre class="source lang-java linenums">package emissary.util.shell;
+
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.directory.KeyManipulator;
+import emissary.util.io.FileManipulator;
+
+import com.google.common.primitives.Ints;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.nio.BufferUnderflowException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.Map;
+import javax.annotation.Nullable;
+
+import static emissary.core.constants.Configurations.PLACE_NAME;
+import static emissary.core.constants.Configurations.SERVICE_KEY;
+
+/**
+ * This class wraps up things related to exec-ing of external processes and reading and writing disk files.
+ */
+@SuppressWarnings(&quot;AvoidObjectArrays&quot;)
+public class Executrix {
+<span class="fc" id="L42">    private static final Logger logger = LoggerFactory.getLogger(Executrix.class);</span>
+
+    private static final int DEFAULT_VM_SIZE_LIMIT = 200000;
+    private static final int DEFAULT_CPU_TIME_LIMIT = 300;
+    private static final long DEFAULT_PROCESS_MAX_MILLIS = 300 * 1000L; // 5 min
+
+<span class="fc" id="L48">    public enum OUTPUT_TYPE {</span>
+<span class="fc" id="L49">        STD, FILE</span>
+    }
+
+    protected String command;
+    protected String inFileEnding;
+    protected String outFileEnding;
+    protected String output;
+    protected String order;
+    protected String numArgs;
+    protected String tmpDir;
+    protected File tmpDirFile;
+    protected int minimumDataSize;
+    protected int maximumDataSize;
+    protected String placeName;
+    protected int vmSizeLimit;
+    protected int cpuTimeLimit;
+    protected long processMaxMillis;
+
+    // Pieces and parts of file and path names
+    public static final int DIR = 0;
+    public static final int BASE = 1;
+    public static final int BASE_PATH = 2;
+    public static final int IN = 3;
+    public static final int OUT = 4;
+    public static final int INPATH = 5;
+    public static final int OUTPATH = 6;
+
+    /**
+     * Create using all defaults
+     */
+<span class="fc" id="L79">    public Executrix() {</span>
+<span class="fc" id="L80">        configure(null);</span>
+<span class="fc" id="L81">    }</span>
+
+    /**
+     * Create configuring from config source
+     * 
+     * @param configG the configuration items to use
+     */
+<span class="fc" id="L88">    public Executrix(final Configurator configG) {</span>
+<span class="fc" id="L89">        configure(configG);</span>
+<span class="fc" id="L90">    }</span>
+
+    /**
+     * Configure all the extra command stuff along with the normal config Config Items read here are:
+     * 
+     * &lt;ul&gt;
+     * &lt;li&gt;EXEC_COMMAND: the command to execute&lt;/li&gt;
+     * &lt;li&gt;IN_FILE_ENDING: extension of input file, default is none&lt;/li&gt;
+     * &lt;li&gt;OUT_FILE_ENDING: extension of output file, default is .out if input extension is blank, none otherwise&lt;/li&gt;
+     * &lt;li&gt;OUTPUT_TYPE: FILE or STD for where the output of EXEC_COMMAND goes, default STD&lt;/li&gt;
+     * &lt;li&gt;ORDER: default is NORMAL&lt;/li&gt;
+     * &lt;li&gt;NUM_ARGS: obsolete&lt;/li&gt;
+     * &lt;li&gt;TEMP_DIR: default is java.io.tmpdir&lt;/li&gt;
+     * &lt;li&gt;MINIMUM_DATA_SIZE: default is 0&lt;/li&gt;
+     * &lt;li&gt;MAXIMUM_DATA_SIZE: default is 64*1024&lt;/li&gt;
+     * &lt;li&gt;PLACE_NAME: also required by places in general&lt;/li&gt;
+     * &lt;li&gt;VM_SIZE_LIMIT: default is 200000 for ulimit argument&lt;/li&gt;
+     * &lt;li&gt;CPU_TIME_LIMIT: default is 300 seconds for ulimit argument&lt;/li&gt;
+     * &lt;li&gt;PROCESS_MAX_MILLIS: default is 300000 (5 Min) for process Watchdog. Set to 0 to disable watchdog use&lt;/li&gt;
+     * &lt;/ul&gt;
+     * 
+     * @param configGArg the configuration stream
+     */
+    protected void configure(@Nullable final Configurator configGArg) {
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        final Configurator configG = (configGArg != null) ? configGArg : new ServiceConfigGuide();</span>
+
+<span class="fc" id="L116">        this.command = configG.findStringEntry(&quot;EXEC_COMMAND&quot;, &quot;echo 'YouForGotToSetEXEC_COMMAND' | tee bla.txt&quot;);</span>
+<span class="fc" id="L117">        this.inFileEnding = configG.findStringEntry(&quot;IN_FILE_ENDING&quot;, &quot;&quot;);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        this.outFileEnding = configG.findStringEntry(&quot;OUT_FILE_ENDING&quot;, this.inFileEnding.isEmpty() ? &quot;.out&quot; : &quot;&quot;);</span>
+<span class="fc" id="L119">        this.output = configG.findStringEntry(&quot;OUTPUT_TYPE&quot;, &quot;STD&quot;);</span>
+<span class="fc" id="L120">        this.order = configG.findStringEntry(&quot;ORDER&quot;, &quot;NORMAL&quot;);</span>
+<span class="fc" id="L121">        this.numArgs = configG.findStringEntry(&quot;NUM_ARGS&quot;, &quot;&quot;);</span>
+<span class="fc" id="L122">        this.tmpDir = configG.findStringEntry(&quot;TEMP_DIR&quot;, System.getProperty(&quot;java.io.tmpdir&quot;, &quot;/tmp&quot;));</span>
+<span class="fc" id="L123">        this.tmpDirFile = new File(this.tmpDir);</span>
+<span class="fc" id="L124">        this.minimumDataSize = configG.findIntEntry(&quot;MINIMUM_DATA_SIZE&quot;, 0);</span>
+<span class="fc" id="L125">        this.maximumDataSize = configG.findIntEntry(&quot;MAXIMUM_DATA_SIZE&quot;, 64 * 1024);</span>
+<span class="fc" id="L126">        this.placeName = configG.findStringEntry(PLACE_NAME, null);</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        if (this.placeName == null) {</span>
+<span class="fc" id="L128">            final String key = configG.findStringEntry(SERVICE_KEY, null);</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">            this.placeName = key == null ? &quot;UNKNOWN&quot; : KeyManipulator.getServiceName(key);</span>
+        }
+<span class="fc" id="L131">        this.placeName = this.placeName.replace(' ', '_');</span>
+<span class="fc" id="L132">        this.vmSizeLimit = configG.findIntEntry(&quot;VM_SIZE_LIMIT&quot;, DEFAULT_VM_SIZE_LIMIT);</span>
+<span class="fc" id="L133">        this.cpuTimeLimit = configG.findIntEntry(&quot;CPU_TIME_LIMIT&quot;, DEFAULT_CPU_TIME_LIMIT);</span>
+        // Set to 0 to disable watchdog monitoring
+<span class="fc" id="L135">        this.processMaxMillis = configG.findLongEntry(&quot;PROCESS_MAX_MILLIS&quot;, DEFAULT_PROCESS_MAX_MILLIS);</span>
+<span class="fc" id="L136">    }</span>
+
+    /**
+     * Make a set of temp file names (does not do any disk activity)
+     */
+    public String[] makeTempFilenames() {
+<span class="fc" id="L142">        final String[] names = new String[7];</span>
+<span class="fc" id="L143">        final String dir = FileManipulator.mkTempFile(this.tmpDir, this.placeName);</span>
+<span class="fc" id="L144">        final String base = Long.toString(System.nanoTime());</span>
+<span class="fc" id="L145">        names[DIR] = dir;</span>
+<span class="fc" id="L146">        names[BASE] = base;</span>
+<span class="fc" id="L147">        names[BASE_PATH] = dir + File.separator + base;</span>
+<span class="fc" id="L148">        names[IN] = base + this.inFileEnding;</span>
+<span class="fc" id="L149">        names[OUT] = base + this.outFileEnding;</span>
+<span class="fc" id="L150">        names[INPATH] = dir + File.separator + base + this.inFileEnding;</span>
+<span class="fc" id="L151">        names[OUTPATH] = dir + File.separator + base + this.outFileEnding;</span>
+<span class="fc" id="L152">        return names;</span>
+    }
+
+    /**
+     * Read entire file from disk to a byte array
+     * 
+     * @param theFileName the name of the file to read
+     * @throws IOException on error
+     * @see #readFile(String,int)
+     */
+    public static byte[] readFile(final String theFileName) throws IOException {
+<span class="fc" id="L163">        return readFile(theFileName, -1);</span>
+    }
+
+    /**
+     * Read portion of a file from disk to a byte array
+     * 
+     * @param theFileName the name of the file to read
+     * @param length the max bytes to read or -1 for all
+     * @throws IOException on error
+     */
+    public static byte[] readFile(final String theFileName, final int length) throws IOException {
+<span class="fc" id="L174">        try (RandomAccessFile raf = new RandomAccessFile(theFileName, &quot;r&quot;)) {</span>
+<span class="fc bfc" id="L175" title="All 4 branches covered.">            byte[] theContent = new byte[length == -1 || length &gt;= raf.length() ? Ints.saturatedCast(raf.length()) : length];</span>
+<span class="fc" id="L176">            raf.readFully(theContent);</span>
+<span class="fc" id="L177">            return theContent;</span>
+        }
+    }
+
+    /**
+     * Write byte array slice to a file, swallow exception
+     * 
+     * @param theContent bytes to write
+     * @param pos starting position in theContent byte array
+     * @param len number of bytes to write
+     * @param filename the file to write to
+     * @param append if true we append to the file
+     * @return true if it worked
+     */
+    public static boolean writeDataToFile(@Nullable final byte[] theContent, final int pos, final int len, @Nullable final String filename,
+            final boolean append) {
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        if (filename == null) {</span>
+<span class="fc" id="L194">            return false;</span>
+        }
+
+<span class="fc" id="L197">        final File dir = new File(filename).getParentFile();</span>
+<span class="pc bpc" id="L198" title="1 of 4 branches missed.">        if (dir != null &amp;&amp; !dir.exists()) {</span>
+<span class="fc" id="L199">            final boolean status = dir.mkdirs();</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">            if (!status) {</span>
+<span class="nc" id="L201">                logger.warn(&quot;Unable to create directory path to file {}&quot;, filename);</span>
+<span class="nc" id="L202">                return false;</span>
+            }
+        }
+
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">        if (filename.isEmpty()) {</span>
+<span class="nc" id="L207">            logger.warn(&quot;Empty file name in writeFile:{}&quot;, filename);</span>
+<span class="nc" id="L208">            return false;</span>
+        }
+<span class="fc bfc" id="L210" title="All 2 branches covered.">        if (theContent == null) {</span>
+<span class="fc" id="L211">            logger.warn(&quot;Null content in writeFile:{}&quot;, filename);</span>
+<span class="fc" id="L212">            return false;</span>
+        }
+        try {
+<span class="fc" id="L215">            writeFile(theContent, pos, len, filename, append);</span>
+<span class="fc" id="L216">            return true;</span>
+<span class="nc" id="L217">        } catch (IOException e) {</span>
+<span class="nc" id="L218">            logger.error(&quot;writeDataToFile({}) exception&quot;, filename, e);</span>
+        }
+<span class="nc" id="L220">        return false;</span>
+    }
+
+    /**
+     * Write byte array data to a file, swallow exception
+     * 
+     * @param theContent bytes to write
+     * @param theFileName the file to write to
+     * @return true if it worked
+     */
+    public static boolean writeDataToFile(@Nullable final byte[] theContent, final String theFileName) {
+<span class="fc bfc" id="L231" title="All 2 branches covered.">        if (theContent == null) {</span>
+<span class="fc" id="L232">            logger.warn(&quot;Null content in writeDataToFile({})&quot;, theFileName);</span>
+<span class="fc" id="L233">            return false;</span>
+        }
+<span class="fc" id="L235">        return writeDataToFile(theContent, 0, theContent.length, theFileName, false);</span>
+    }
+
+    /**
+     * Write byte array data to a file, swallow exception
+     * 
+     * @param theContent bytes to write
+     * @param theFileName the file to write to
+     * @param append if true we append to the file
+     * @return true if it worked
+     */
+    public static boolean writeDataToFile(@Nullable final byte[] theContent, final String theFileName, final boolean append) {
+<span class="fc bfc" id="L247" title="All 2 branches covered.">        if (theContent == null) {</span>
+<span class="fc" id="L248">            logger.warn(&quot;Null content in writeDataToFile({})&quot;, theFileName);</span>
+<span class="fc" id="L249">            return false;</span>
+        }
+<span class="fc" id="L251">        return writeDataToFile(theContent, 0, theContent.length, theFileName, append);</span>
+    }
+
+    /**
+     * Write byte array slice to file
+     * 
+     * @param theContent source data
+     * @param pos starting offset of slice
+     * @param len length of slice
+     * @param filename destination filename
+     * @param append true if existing file should be appended to
+     */
+    public static void writeFile(final byte[] theContent, final int pos, final int len, final String filename, final boolean append)
+            throws IOException {
+<span class="fc" id="L265">        try (final FileOutputStream theOutput = new FileOutputStream(filename, append);</span>
+<span class="fc" id="L266">                final BufferedOutputStream theStream = new BufferedOutputStream(theOutput)) {</span>
+<span class="fc" id="L267">            theStream.write(theContent, pos, len);</span>
+        }
+<span class="fc" id="L269">    }</span>
+
+    /**
+     * Write byte array data to file
+     * 
+     * @param theContent source data
+     * @param theFileName destination filename
+     */
+    public static void writeFile(final byte[] theContent, final String theFileName) throws IOException {
+<span class="nc" id="L278">        writeFile(theContent, 0, theContent.length, theFileName, false);</span>
+<span class="nc" id="L279">    }</span>
+
+    /**
+     * Write byte array data to file with append flag
+     * 
+     * @param theContent source data
+     * @param theFileName destination filename
+     * @param append true if existing file should be appended to
+     */
+    public static void writeFile(final byte[] theContent, final String theFileName, final boolean append) throws IOException {
+<span class="nc" id="L289">        writeFile(theContent, 0, theContent.length, theFileName, append);</span>
+<span class="nc" id="L290">    }</span>
+
+    /**
+     * Read data from file name passed in and return data read in a byte array. Just like readFile but does not throw an
+     * exception
+     * 
+     * @param theFileName disk location to read from
+     * @return byte array containing the data or null on io exception
+     * @see #readFile(String)
+     */
+    public static byte[] readDataFromFile(final String theFileName) {
+<span class="fc" id="L301">        return readDataFromFile(theFileName, false);</span>
+    }
+
+    /**
+     * Read data from file name passed in and return data read in a byte array. Just like readFile but does not throw an
+     * exception
+     * 
+     * @param theFileName disk location to read from
+     * @param quiet don't log any exceptions if true
+     * @return byte array containing the data or null on io exception
+     * @see #readFile(String)
+     */
+    @Nullable
+    public static byte[] readDataFromFile(final String theFileName, final boolean quiet) {
+        try {
+<span class="fc" id="L316">            return readFile(theFileName, -1);</span>
+<span class="fc" id="L317">        } catch (IOException e) {</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">            if (!quiet) {</span>
+<span class="fc" id="L319">                logger.warn(&quot;readDataFromFile({}) Exception: &quot;, theFileName, e);</span>
+            }
+<span class="fc" id="L321">            return null;</span>
+        }
+    }
+
+    /**
+     * Read data from random access file passed in and return data read in a byte array.
+     * 
+     * @param raf the random access file
+     * @return byte array containing the data or null on io exception
+     */
+    public static byte[] readDataFromFile(final RandomAccessFile raf) {
+<span class="fc" id="L332">        return readDataFromFile(raf, 0, -1);</span>
+    }
+
+    /**
+     * Read data from random access file passed in and return data read in a byte array.
+     * 
+     * @param raf the random access file
+     * @param offset the offset in the channel
+     * @param length the maximum byte count to read or -1 for all
+     * @return byte array containing the data or null on io exception
+     */
+    @Nullable
+    public static byte[] readDataFromFile(final RandomAccessFile raf, final int offset, final int length) {
+        // Seek to offset specified
+        try {
+<span class="fc" id="L347">            raf.seek(offset);</span>
+<span class="nc" id="L348">        } catch (IOException ex) {</span>
+<span class="nc" id="L349">            logger.warn(&quot;Seek to {} on file failed&quot;, offset, ex);</span>
+<span class="nc" id="L350">            return null;</span>
+<span class="fc" id="L351">        }</span>
+
+        final long remain;
+        try {
+<span class="fc" id="L355">            remain = raf.length() - raf.getFilePointer();</span>
+<span class="nc" id="L356">        } catch (IOException iox) {</span>
+<span class="nc" id="L357">            logger.warn(&quot;Cannot get size of file&quot;, iox);</span>
+<span class="nc" id="L358">            return null;</span>
+<span class="fc" id="L359">        }</span>
+
+        // Size the result array
+        final byte[] data;
+<span class="fc bfc" id="L363" title="All 6 branches covered.">        if ((remain &gt; 0) &amp;&amp; ((remain &lt; length) || (length == -1))) {</span>
+<span class="fc" id="L364">            data = new byte[(int) remain];</span>
+<span class="pc bpc" id="L365" title="1 of 4 branches missed.">        } else if (length &gt; 0 &amp;&amp; remain &gt; 0) {</span>
+<span class="fc" id="L366">            data = new byte[length];</span>
+        } else {
+<span class="fc" id="L368">            return null;</span>
+        }
+
+        // Grab the data from the raf
+        try {
+<span class="fc" id="L373">            raf.readFully(data);</span>
+<span class="nc" id="L374">        } catch (EOFException ex) {</span>
+<span class="nc" id="L375">            logger.warn(&quot;RandomAccessFile underflow trying for {}&quot;, data.length, ex);</span>
+<span class="nc" id="L376">        } catch (IOException ex) {</span>
+<span class="nc" id="L377">            logger.warn(&quot;Unable to read from random access file&quot;, ex);</span>
+<span class="pc" id="L378">        }</span>
+<span class="fc" id="L379">        return data;</span>
+    }
+
+    /**
+     * Read all byte data from a channel and return in an array
+     * 
+     * @param channel the channel containing the data
+     * @return bytes of data or null on exception
+     */
+    public static byte[] readDataFromChannel(final SeekableByteChannel channel) {
+<span class="fc" id="L389">        return readDataFromChannel(channel, 0, -1);</span>
+    }
+
+    /**
+     * Read byte data from a channel and return in an array
+     * 
+     * @param channel the channel containing the data
+     * @param offset the offset in the channel
+     * @param length the maximum byte count to read or -1 for all
+     * @return bytes of data or null on exception
+     */
+    @Nullable
+    public static byte[] readDataFromChannel(@Nullable final SeekableByteChannel channel, final long offset, final int length) {
+<span class="pc bpc" id="L402" title="1 of 2 branches missed.">        if (channel == null) {</span>
+<span class="nc" id="L403">            return null;</span>
+        }
+
+        final long size;
+        try {
+<span class="fc" id="L408">            size = channel.size();</span>
+<span class="nc" id="L409">        } catch (IOException iox) {</span>
+<span class="nc" id="L410">            logger.warn(&quot;Unable to get channel size&quot;, iox);</span>
+<span class="nc" id="L411">            return null;</span>
+<span class="fc" id="L412">        }</span>
+
+<span class="pc bpc" id="L414" title="1 of 4 branches missed.">        if ((offset &gt;= 0) &amp;&amp; (offset &lt; size)) {</span>
+            try {
+<span class="fc" id="L416">                channel.position(offset);</span>
+<span class="nc" id="L417">            } catch (IOException iox) {</span>
+<span class="nc" id="L418">                logger.warn(&quot;Cannot position channel to offset {}&quot;, offset, iox);</span>
+<span class="nc" id="L419">                return null;</span>
+<span class="fc" id="L420">            }</span>
+        } else {
+<span class="fc" id="L422">            logger.warn(&quot;Negative or out of bounds offset supplied&quot;);</span>
+<span class="fc" id="L423">            return null;</span>
+        }
+
+<span class="fc" id="L426">        long remain = -1L;</span>
+        try {
+<span class="fc" id="L428">            remain = size - channel.position();</span>
+<span class="nc" id="L429">        } catch (IOException iox) {</span>
+<span class="nc" id="L430">            logger.warn(&quot;Cannot get size of channel&quot;, iox);</span>
+<span class="fc" id="L431">        }</span>
+
+        // Size the result array
+        final byte[] data;
+<span class="fc bfc" id="L435" title="All 4 branches covered.">        if ((remain &lt; length) || (length == -1)) {</span>
+<span class="fc" id="L436">            data = new byte[(int) remain];</span>
+        } else {
+<span class="fc" id="L438">            data = new byte[length];</span>
+        }
+
+        // Grab the data from the channel
+        try {
+<span class="fc" id="L443">            final ByteBuffer buf = ByteBuffer.wrap(data);</span>
+<span class="fc" id="L444">            int totRead = 0;</span>
+<span class="fc bfc" id="L445" title="All 2 branches covered.">            while (totRead &lt; data.length) {</span>
+<span class="fc" id="L446">                int read = channel.read(buf);</span>
+<span class="pc bpc" id="L447" title="1 of 2 branches missed.">                if (read == -1) {</span>
+<span class="nc" id="L448">                    break;</span>
+                }
+<span class="fc" id="L450">                totRead += read;</span>
+<span class="fc" id="L451">            }</span>
+<span class="nc" id="L452">        } catch (BufferUnderflowException ex) {</span>
+<span class="nc" id="L453">            logger.warn(&quot;Buffer underflow trying for {}&quot;, data.length, ex);</span>
+<span class="nc" id="L454">        } catch (IOException iox) {</span>
+<span class="nc" id="L455">            logger.warn(&quot;Unable to read from channel&quot;, iox);</span>
+<span class="pc" id="L456">        }</span>
+<span class="fc" id="L457">        return data;</span>
+    }
+
+    /**
+     * Copy file given string names
+     * 
+     * @param infile the file to copy from
+     * @param outfile the file to copy to
+     */
+    public static void copyFile(final String infile, final String outfile) throws IOException {
+<span class="fc" id="L467">        final File fin = new File(infile);</span>
+<span class="fc" id="L468">        final File fout = new File(outfile);</span>
+<span class="fc" id="L469">        copyFile(fin, fout);</span>
+<span class="fc" id="L470">    }</span>
+
+    /**
+     * Copy file given file objects
+     * 
+     * @param frm the file to copy from
+     * @param to the file to copy to
+     */
+    public static void copyFile(final File frm, final File to) throws IOException {
+<span class="fc" id="L479">        final byte[] buf = new byte[1024];</span>
+<span class="fc" id="L480">        try (InputStream fis = Files.newInputStream(frm.toPath());</span>
+<span class="fc" id="L481">                OutputStream fos = new BufferedOutputStream(Files.newOutputStream(to.toPath()))) {</span>
+            int len;
+<span class="fc bfc" id="L483" title="All 2 branches covered.">            while ((len = fis.read(buf)) != -1) {</span>
+<span class="fc" id="L484">                fos.write(buf, 0, len);</span>
+            }
+        }
+<span class="fc" id="L487">    }</span>
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the string command to execute
+     * @return process exit status
+     */
+    public int execute(final String cmd) {
+<span class="nc" id="L496">        return execute(new String[] {cmd}, (StringBuilder) null, (StringBuilder) null, (String) null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the string command to execute
+     * @param out destination for the standard output as a string
+     * @return process exit status
+     */
+    public int execute(final String cmd, final StringBuffer out) {
+<span class="nc" id="L507">        return execute(new String[] {cmd}, out, (StringBuffer) null, (String) null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the string command to execute
+     * @param out destination for the standard output as a string
+     * @return process exit status
+     */
+    public int execute(final String cmd, final StringBuilder out) {
+<span class="nc" id="L518">        return execute(new String[] {cmd}, out, (StringBuilder) null, (String) null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the string command to execute
+     * @param out destination for the standard output as a string
+     * @param err destination for the standard error
+     * @return process exit status
+     */
+    public int execute(final String cmd, final StringBuffer out, final StringBuffer err) {
+<span class="nc" id="L530">        return execute(new String[] {cmd}, out, err, (String) null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the string command to execute
+     * @param out destination for the standard output as a string
+     * @param err destination for the standard error
+     * @return process exit status
+     */
+    public int execute(final String cmd, final StringBuilder out, final StringBuilder err) {
+<span class="nc" id="L542">        return execute(new String[] {cmd}, out, err, (String) null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the string command to execute
+     * @param out destination for the standard output as a string
+     * @param err destination for the standard error
+     * @param charset character set of the output stream
+     * @return process exit status
+     */
+    public int execute(final String cmd, final StringBuffer out, final StringBuffer err, final String charset) {
+<span class="nc" id="L555">        return execute(new String[] {cmd}, out, err, charset);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the string command to execute
+     * @param out destination for the standard output as a string
+     * @param err destination for the standard error
+     * @param charset character set of the output stream
+     * @return process exit status
+     */
+    public int execute(final String cmd, final StringBuilder out, final StringBuilder err, final String charset) {
+<span class="nc" id="L568">        return execute(new String[] {cmd}, out, err, charset);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the string command to execute
+     * @param data the input data to the command
+     * @return process exit status
+     */
+    public int execute(final String cmd, final byte[] data) {
+<span class="fc" id="L579">        return execute(new String[] {cmd}, data, null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the string command to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output as a string
+     * @return process exit status
+     */
+    public int execute(final String cmd, final byte[] data, final StringBuilder out) {
+<span class="fc" id="L591">        return execute(new String[] {cmd}, data, out, null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the string command to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output as a string
+     * @param err the destination to capture the standard error
+     * @return process exit status
+     */
+    public int execute(final String cmd, final byte[] data, final StringBuilder out, final StringBuilder err) {
+<span class="fc" id="L604">        return execute(new String[] {cmd}, data, out, err, null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the string command to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output as a string
+     * @param err the destination to capture the standard error
+     * @param charset character set of the output
+     * @return process exit status
+     */
+    public int execute(final String cmd, final byte[] data, final StringBuilder out, final StringBuilder err, final String charset) {
+<span class="fc" id="L618">        return execute(new String[] {cmd}, data, out, err, charset, null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the command and arguments to execute
+     * @return process exit status
+     */
+    public int execute(final String[] cmd) {
+<span class="fc" id="L628">        return execute(cmd, (StringBuilder) null, (StringBuilder) null, (String) null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the command and arguments to execute
+     * @param out the destination to capture the standard output as a string
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final StringBuffer out) {
+<span class="nc" id="L639">        return execute(cmd, out, (StringBuffer) null, (String) null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the command and arguments to execute
+     * @param out the destination to capture the standard output as a string
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final StringBuilder out) {
+<span class="fc" id="L650">        return execute(cmd, out, (StringBuilder) null, (String) null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the command and arguments to execute
+     * @param out the destination to capture the standard output as a string
+     * @param charset character set of the output
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final StringBuffer out, final String charset) {
+<span class="nc" id="L662">        return execute(cmd, out, (StringBuffer) null, charset);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the command and arguments to execute
+     * @param out the destination to capture the standard output as a string
+     * @param err the destination to capture the standard error
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final StringBuffer out, final StringBuffer err) {
+<span class="nc" id="L674">        return execute(cmd, out, err, (String) null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the command and arguments to execute
+     * @param out the destination to capture the standard output as a string
+     * @param err the destination to capture the standard error
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final StringBuilder out, final StringBuilder err) {
+<span class="fc" id="L686">        return execute(cmd, out, err, (String) null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the command and arguments to execute
+     * @param out the destination to capture the standard output as a string
+     * @param err the destination to capture the standard error
+     * @param charset character set of the output
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, @Nullable final StringBuffer out, @Nullable final StringBuffer err, @Nullable final String charset) {
+<span class="nc bnc" id="L699" title="All 2 branches missed.">        final StringBuilder bout = (out != null) ? new StringBuilder() : null;</span>
+<span class="nc bnc" id="L700" title="All 2 branches missed.">        final StringBuilder berr = (err != null) ? new StringBuilder() : null;</span>
+
+<span class="nc" id="L702">        final int status = execute(cmd, bout, berr, charset);</span>
+
+<span class="nc bnc" id="L704" title="All 4 branches missed.">        if ((out != null) &amp;&amp; (bout != null)) {</span>
+<span class="nc" id="L705">            out.append(bout.toString());</span>
+        }
+<span class="nc bnc" id="L707" title="All 4 branches missed.">        if ((err != null) &amp;&amp; (berr != null)) {</span>
+<span class="nc" id="L708">            err.append(berr.toString());</span>
+        }
+<span class="nc" id="L710">        return status;</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the command and arguments to execute
+     * @param out the destination to capture the standard output as a string
+     * @param err the destination to capture the standard error
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, @Nullable final StringBuilder out, @Nullable final StringBuilder err, @Nullable final String charset) {
+<span class="fc" id="L722">        return execute(cmd, out, err, charset, null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     * 
+     * @param cmd the command and arguments to execute
+     * @param out the destination to capture the standard output as a string
+     * @param err the destination to capture the standard error
+     * @param env environment variables for the new process supplied in name=value format.
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final StringBuilder out, final StringBuilder err, final String charset,
+            @Nullable final Map&lt;String, String&gt; env) {
+<span class="fc" id="L736">        return execute(cmd, null, out, err, charset, env);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the command and arguments to execute
+     * @param data the input data to the command
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final byte[] data) {
+<span class="nc" id="L747">        return execute(cmd, data, null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the command and arguments to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output as a string
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final byte[] data, @Nullable final StringBuilder out) {
+<span class="fc" id="L759">        return execute(cmd, data, out, null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the command and arguments to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output as a string
+     * @param err the destination to capture the standard error
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final byte[] data, final StringBuilder out, @Nullable final StringBuilder err) {
+<span class="fc" id="L772">        return execute(cmd, data, out, err, null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the command and arguments to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output as a string
+     * @param err the destination to capture the standard error
+     * @param charset character set of the output
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final byte[] data, final StringBuilder out, final StringBuilder err, @Nullable final String charset) {
+<span class="fc" id="L786">        return execute(cmd, data, out, err, charset, null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the command and arguments to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output as a string
+     * @param err the destination to capture the standard error
+     * @param charset character set of the output
+     * @param env environment variables for the new process supplied in name=value format.
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, @Nullable final byte[] data, @Nullable final StringBuilder out, @Nullable final StringBuilder err,
+            @Nullable final String charset, @Nullable final Map&lt;String, String&gt; env) {
+<span class="fc" id="L802">        return execute(new ExecuteConfig.SbExecuteConfig(cmd, data, out, err, charset, env));</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec and captures binary output
+     *
+     * @param cmd the command and arguments to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output as bytes
+     * @param err the destination to capture the standard error
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, @Nullable final byte[] data, @Nullable final ByteArrayOutputStream out,
+            @Nullable final StringBuilder err) {
+<span class="fc" id="L816">        return execute(cmd, data, out, err, null, null);</span>
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec and captures binary output
+     *
+     * @param cmd the command and arguments to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output as bytes
+     * @param err the destination to capture the standard error
+     * @param charset character set of the output
+     * @param env environment variables for the new process supplied in name=value format.
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, @Nullable final byte[] data, @Nullable final ByteArrayOutputStream out, @Nullable final StringBuilder err,
+            @Nullable final String charset, @Nullable final Map&lt;String, String&gt; env) {
+<span class="fc" id="L832">        return execute(new ExecuteConfig.BaosExecuteConfig(cmd, data, out, err, charset, env));</span>
+    }
+
+    private int execute(ExecuteConfig eConfig) {
+<span class="fc" id="L836">        int exitValue = -1;</span>
+<span class="fc" id="L837">        ExecuteWatchdog dog = null;</span>
+        try {
+<span class="fc" id="L839">            final ProcessBuilder pb = eConfig.getProcessBuilder();</span>
+<span class="fc" id="L840">            final Process p = pb.start();</span>
+<span class="fc" id="L841">            final ProcessReader stdOutThread = eConfig.getStdOutProcessReader(p);</span>
+<span class="fc" id="L842">            final ProcessReader stdErrThread = eConfig.getStdErrProcessReader(p);</span>
+
+            // pass context to child threads so the info is available for any messages logged on those threads
+<span class="fc" id="L845">            stdOutThread.setContextMap(MDC.getCopyOfContextMap());</span>
+<span class="fc" id="L846">            stdErrThread.setContextMap(MDC.getCopyOfContextMap());</span>
+
+<span class="fc" id="L848">            stdOutThread.start();</span>
+<span class="fc" id="L849">            stdErrThread.start();</span>
+<span class="fc" id="L850">            streamData(p, eConfig.getData());</span>
+
+            // kill process if it's not done after 5 minutes - would prefer to
+            // pass in a timeout value
+<span class="fc bfc" id="L854" title="All 2 branches covered.">            if (this.processMaxMillis &gt;= 1) {</span>
+<span class="fc" id="L855">                dog = new ExecuteWatchdog(this.processMaxMillis);</span>
+<span class="fc" id="L856">                dog.start(p);</span>
+            }
+<span class="fc" id="L858">            p.waitFor();</span>
+<span class="fc" id="L859">            stdOutThread.join();</span>
+<span class="fc" id="L860">            stdErrThread.join();</span>
+<span class="fc" id="L861">            stdOutThread.finish();</span>
+<span class="fc" id="L862">            stdErrThread.finish();</span>
+<span class="fc" id="L863">            exitValue = p.exitValue();</span>
+<span class="nc" id="L864">        } catch (IOException e) {</span>
+<span class="nc" id="L865">            logger.warn(&quot;Failure during execution: {}, external command={}&quot;, e, Arrays.asList(eConfig.getCmd()));</span>
+<span class="nc" id="L866">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L867">            logger.warn(&quot;Interrupted during execution: {}, external command={}&quot;, e, Arrays.asList(eConfig.getCmd()));</span>
+<span class="nc" id="L868">            Thread.currentThread().interrupt();</span>
+        } finally {
+<span class="fc bfc" id="L870" title="All 2 branches covered.">            if (dog != null) {</span>
+<span class="fc" id="L871">                dog.stop();</span>
+<span class="fc" id="L872">                dog = null;</span>
+            }
+        }
+<span class="fc" id="L875">        return exitValue;</span>
+    }
+
+
+    private static void streamData(Process p, byte[] data) throws IOException {
+<span class="fc" id="L880">        try (OutputStream os = new BufferedOutputStream(new DataOutputStream(p.getOutputStream()))) {</span>
+<span class="fc bfc" id="L881" title="All 2 branches covered.">            if (ArrayUtils.isNotEmpty(data)) {</span>
+<span class="fc" id="L882">                os.write(data);</span>
+<span class="fc" id="L883">                os.flush();</span>
+            }
+        }
+<span class="fc" id="L886">    }</span>
+
+    /**
+     * Write data out for processing into a new subdir under our configured temp area
+     * 
+     * @param data the bytes to write
+     * @return the tempNames structure that was created
+     */
+    public String[] writeDataToNewTempDir(final byte[] data) {
+<span class="fc" id="L895">        return writeDataToNewTempDir(data, 0, data.length);</span>
+    }
+
+    /**
+     * Write data out for processing into a new subdir under our configured temp area
+     * 
+     * @param data the bytes to write
+     * @param start offset in array to start writing
+     * @param len length of data to write
+     * @return the tempNames structure that was created
+     */
+    public String[] writeDataToNewTempDir(final byte[] data, final int start, final int len) {
+<span class="fc" id="L907">        final String[] tnames = makeTempFilenames();</span>
+<span class="fc" id="L908">        writeDataToFile(data, start, len, tnames[INPATH], false);</span>
+<span class="fc" id="L909">        return tnames;</span>
+    }
+
+    /**
+     * Write data out for processing into a new subdir under our configured temp area
+     *
+     * @param data the bytes to write
+     * @param dirn the string name of a new tmp directory to use
+     * @return the file that was created
+     */
+    @Nullable
+    public File writeDataToNewTempDir(final byte[] data, final String dirn) {
+<span class="nc" id="L921">        final File dir = new File(dirn);</span>
+<span class="nc bnc" id="L922" title="All 2 branches missed.">        if (!dir.mkdirs()) {</span>
+<span class="nc" id="L923">            logger.warn(&quot;Unable to create directory path for file {}&quot;, dirn);</span>
+<span class="nc" id="L924">            return null;</span>
+        }
+
+        // Make tmp file in new tmp dir
+<span class="nc" id="L928">        final String inputFileName = FileManipulator.mkTempFile(dirn) + getInFileEnding();</span>
+
+        // Write it out
+<span class="nc" id="L931">        writeDataToFile(data, 0, data.length, inputFileName, false);</span>
+
+<span class="nc" id="L933">        return new File(inputFileName);</span>
+    }
+
+    /**
+     * Write data out for processing into a new subdir under our configured temp area
+     *
+     * @param dirn the string name of a new tmp directory to use
+     * @param data the bytes to write
+     * @return the file that was created
+     * @deprecated use {@link #writeDataToNewTempDir(byte[], String)}
+     */
+    @Nullable
+    @Deprecated
+    @SuppressWarnings(&quot;InconsistentOverloads&quot;)
+    public File writeDataToNewTempDir(final String dirn, final byte[] data) {
+<span class="nc" id="L948">        return writeDataToNewTempDir(data, dirn);</span>
+    }
+
+    /**
+     * Gets the value of command that this instance will execute adding configured limits and configured paths to the
+     * configuration value
+     * 
+     * @return the value of command
+     */
+    public String getCommand() {
+<span class="fc" id="L958">        return this.command;</span>
+    }
+
+    /**
+     * Gets the value of command that this instance will execute adding configured limits and supplied paths to the
+     * configuration value
+     * 
+     * @param tmpNames set of input/output directory names
+     * @return the value of command
+     */
+    public String[] getCommand(final String[] tmpNames) {
+<span class="fc" id="L969">        return getCommand(tmpNames, getCommand(), this.cpuTimeLimit, this.vmSizeLimit);</span>
+    }
+
+    /**
+     * Gets the value of a command that can be executed adding configured limits and supplied paths to the configuration
+     * value
+     *
+     * @param tmpNames set of input/output directory names
+     * @param commandArg a command string to work with
+     * @return the value of command
+     */
+    public String[] getCommand(final String[] tmpNames, final String commandArg) {
+<span class="fc" id="L981">        return getCommand(tmpNames, commandArg, this.cpuTimeLimit, this.vmSizeLimit);</span>
+    }
+
+    /**
+     * Gets the value of a command that can be executed adding supplied limits and supplied paths to the configuration value
+     * The values in the command string that can be replaced are &amp;lt;INPUT_PATH&amp;gt;, &amp;lt;OUTPUT_PATH&amp;gt;,
+     * &amp;lt;INPUT_NAME&amp;gt;, and &amp;lt;OUTPUT_NAME&amp;gt;. On unix systems it is wrapped like
+     * &lt;code&gt;/bin/sh -c ulimit -c 0; ulimit -v val; your command&lt;/code&gt;
+     * 
+     * @param tmpNames set of input/output directory names
+     * @param commandArg a command string to work with
+     * @param cpuLimit the cpu limit for the ulimit command
+     * @param vmSzLimit for the ulimit command
+     * @return the value of command
+     */
+    public String[] getCommand(final String[] tmpNames, final String commandArg, final int cpuLimit, final int vmSzLimit) {
+<span class="fc" id="L997">        String c = commandArg;</span>
+<span class="fc" id="L998">        c = c.replaceAll(&quot;&lt;INPUT_PATH&gt;&quot;, tmpNames[INPATH]);</span>
+<span class="fc" id="L999">        c = c.replaceAll(&quot;&lt;OUTPUT_PATH&gt;&quot;, tmpNames[OUTPATH]);</span>
+<span class="fc" id="L1000">        c = c.replaceAll(&quot;&lt;INPUT_NAME&gt;&quot;, tmpNames[IN]);</span>
+<span class="fc" id="L1001">        c = c.replaceAll(&quot;&lt;OUTPUT_NAME&gt;&quot;, tmpNames[OUT]);</span>
+
+        // Run the command in shell limiting the core file size to 0 and the specified vm size
+<span class="fc" id="L1004">        String ulimitv = &quot;&quot;;</span>
+<span class="pc bpc" id="L1005" title="1 of 2 branches missed.">        if (!SystemUtils.IS_OS_MAC) {</span>
+<span class="nc" id="L1006">            ulimitv = &quot;ulimit -v &quot; + vmSzLimit + &quot;; &quot;;</span>
+        }
+<span class="fc" id="L1008">        return new String[] {&quot;/bin/sh&quot;, &quot;-c&quot;, &quot;ulimit -c 0; &quot; + ulimitv + &quot;cd &quot; + tmpNames[DIR] + &quot;; &quot; + c};</span>
+    }
+
+    /**
+     * Gets the value of a command that can be executed adding configured limits and supplied paths to the configuration
+     * value
+     *
+     * @param commandArg a command string to work with
+     * @param tmpNames set of input/output directory names
+     * @return the value of command
+     * @deprecated use {@link #getCommand(String[], String)}
+     */
+    @Deprecated
+    @SuppressWarnings(&quot;InconsistentOverloads&quot;)
+    public String[] getCommand(final String commandArg, final String[] tmpNames) {
+<span class="nc" id="L1023">        return getCommand(tmpNames, commandArg);</span>
+    }
+
+    /**
+     * Gets the value of a command that can be executed adding supplied limits and supplied paths to the configuration value
+     * The values in the command string that can be replaced are &amp;lt;INPUT_PATH&amp;gt;, &amp;lt;OUTPUT_PATH&amp;gt;,
+     * &amp;lt;INPUT_NAME&amp;gt;, and &amp;lt;OUTPUT_NAME&amp;gt;. On unix systems it is wrapped like
+     * &lt;code&gt;/bin/sh -c ulimit -c 0; ulimit -v val; your command&lt;/code&gt;
+     *
+     * @param commandArg a command string to work with
+     * @param tmpNames set of input/output directory names
+     * @param cpuLimit the cpu limit for the ulimit command
+     * @param vmSzLimit for the ulimit command
+     * @return the value of command
+     * @deprecated use {@link #getCommand(String[], String, int, int)}
+     */
+    @Deprecated
+    @SuppressWarnings(&quot;InconsistentOverloads&quot;)
+    public String[] getCommand(final String commandArg, final String[] tmpNames, final int cpuLimit, final int vmSzLimit) {
+<span class="nc" id="L1042">        return getCommand(tmpNames, commandArg, cpuLimit, vmSzLimit);</span>
+    }
+
+    /**
+     * Sets the value of command that this instance will execute
+     * 
+     * @param argCommand Value to assign to this.command
+     */
+    public void setCommand(final String argCommand) {
+<span class="fc" id="L1051">        this.command = argCommand;</span>
+<span class="fc" id="L1052">    }</span>
+
+    /**
+     * Gets the value of inFileEnding
+     * 
+     * @return the value of inFileEnding
+     */
+    public String getInFileEnding() {
+<span class="nc" id="L1060">        return this.inFileEnding;</span>
+    }
+
+    /**
+     * Sets the value of inFileEnding
+     * 
+     * @param argInFileEnding Value to assign to this.inFileEnding
+     */
+    public void setInFileEnding(final String argInFileEnding) {
+<span class="fc" id="L1069">        this.inFileEnding = argInFileEnding;</span>
+<span class="fc" id="L1070">    }</span>
+
+    /**
+     * Gets the value of outFileEnding
+     * 
+     * @return the value of outFileEnding
+     */
+    public String getOutFileEnding() {
+<span class="nc" id="L1078">        return this.outFileEnding;</span>
+    }
+
+    /**
+     * Sets the value of outFileEnding
+     * 
+     * @param argOutFileEnding Value to assign to this.outFileEnding
+     */
+    public void setOutFileEnding(final String argOutFileEnding) {
+<span class="fc" id="L1087">        this.outFileEnding = argOutFileEnding;</span>
+<span class="fc" id="L1088">    }</span>
+
+    /**
+     * Gets the value of output type (STD or FILE)
+     * 
+     * @return the value of output
+     */
+    public String getOutput() {
+<span class="fc" id="L1096">        return this.output;</span>
+    }
+
+    /**
+     * Sets the value of output type (STD or FILE)
+     * 
+     * @param argOutput Value to assign to this.output
+     */
+    public void setOutput(final String argOutput) {
+<span class="nc bnc" id="L1105" title="All 4 branches missed.">        if (&quot;FILE&quot;.equals(argOutput) || &quot;STD&quot;.equals(argOutput)) {</span>
+<span class="nc" id="L1106">            this.output = argOutput;</span>
+        } else {
+<span class="nc" id="L1108">            throw new IllegalArgumentException(&quot;Output type must be FILE or STD&quot;);</span>
+        }
+<span class="nc" id="L1110">    }</span>
+
+    /**
+     * Set the output type to STD
+     */
+    public void setOutputStd() {
+<span class="nc" id="L1116">        this.output = &quot;STD&quot;;</span>
+<span class="nc" id="L1117">    }</span>
+
+    /**
+     * Set the output type to FILE
+     */
+    public void setOutputFile() {
+<span class="fc" id="L1123">        this.output = &quot;FILE&quot;;</span>
+<span class="fc" id="L1124">    }</span>
+
+    /**
+     * Gets the value of order of arguments method
+     * 
+     * @return the value of order
+     */
+    public String getOrder() {
+<span class="nc" id="L1132">        return this.order;</span>
+    }
+
+    /**
+     * Sets the value of order, NORMAL or REVERSE
+     * 
+     * @param argOrder Value to assign to this.order
+     */
+    public void setOrder(final String argOrder) {
+<span class="fc" id="L1141">        this.order = argOrder;</span>
+<span class="fc" id="L1142">    }</span>
+
+    /**
+     * Gets the value of numArgs
+     * 
+     * @return the value of numArgs
+     */
+    public String getNumArgs() {
+<span class="nc" id="L1150">        return this.numArgs;</span>
+    }
+
+    /**
+     * Sets the value of numArgs
+     * 
+     * @param argNumArgs Value to assign to this.numArgs
+     */
+    public void setNumArgs(final String argNumArgs) {
+<span class="nc" id="L1159">        this.numArgs = argNumArgs;</span>
+<span class="nc" id="L1160">    }</span>
+
+    /**
+     * Gets the value of tmpDir
+     * 
+     * @return the value of tmpDir
+     */
+    public String getTmpDir() {
+<span class="fc" id="L1168">        return this.tmpDir;</span>
+    }
+
+    /**
+     * Sets the value of tmpDir
+     * 
+     * @param argTmpDir Value to assign to this.tempDir
+     */
+    public void setTmpDir(final String argTmpDir) {
+<span class="fc" id="L1177">        this.tmpDir = argTmpDir;</span>
+<span class="fc" id="L1178">    }</span>
+
+    /**
+     * Gets the value of tmpDirFile
+     * 
+     * @return the value of tmpDirFile
+     */
+    public File getTmpDirFile() {
+<span class="nc" id="L1186">        return this.tmpDirFile;</span>
+    }
+
+    /**
+     * Sets the value of tmpDirFile
+     * 
+     * @param argTmpDirFile Value to assign to this.tmpDirFile
+     */
+    public void setTmpDirFile(final File argTmpDirFile) {
+<span class="fc" id="L1195">        this.tmpDirFile = argTmpDirFile;</span>
+<span class="fc" id="L1196">    }</span>
+
+    /**
+     * Gets the value of minimumDataSize
+     * 
+     * @return the value of minimumDataSize
+     */
+    public int getMinimumDataSize() {
+<span class="nc" id="L1204">        return this.minimumDataSize;</span>
+    }
+
+    /**
+     * Sets the value of minimumDataSize
+     * 
+     * @param argMinimumDataSize Value to assign to this.minimumDataSize
+     */
+    public void setMinimumDataSize(final int argMinimumDataSize) {
+<span class="nc" id="L1213">        this.minimumDataSize = argMinimumDataSize;</span>
+<span class="nc" id="L1214">    }</span>
+
+    /**
+     * Gets the value of maximumDataSize
+     * 
+     * @return the value of maximumDataSize
+     */
+    public int getMaximumDataSize() {
+<span class="nc" id="L1222">        return this.maximumDataSize;</span>
+    }
+
+    /**
+     * Sets the value of maximumDataSize
+     * 
+     * @param argMaximumDataSize Value to assign to this.maximumDataSize
+     */
+    public void setMaximumDataSize(final int argMaximumDataSize) {
+<span class="nc" id="L1231">        this.maximumDataSize = argMaximumDataSize;</span>
+<span class="nc" id="L1232">    }</span>
+
+    /**
+     * Recursively remove up all files in a directory and then remove the directory itself.
+     * 
+     * @param dir the directory to remove
+     * @return true if it works, false otherwise
+     */
+    public static boolean cleanupDirectory(final String dir) {
+<span class="fc" id="L1241">        return cleanupDirectory(new File(dir));</span>
+    }
+
+    /**
+     * Recursively remove up all files in a directory and then remove the directory itself. If the passed directory does not
+     * exist then it will return true. If the passed directory is actually a file it will try and delete that. If an IO
+     * problem happens listing the files then it will return false.
+     * 
+     * @param dir the directory to remove
+     * @return true if it works, false otherwise
+     */
+    @SuppressWarnings(&quot;CatchingUnchecked&quot;)
+    public static boolean cleanupDirectory(final File dir) {
+<span class="fc bfc" id="L1254" title="All 2 branches covered.">        if (!dir.exists()) {</span>
+<span class="fc" id="L1255">            return true;</span>
+<span class="fc bfc" id="L1256" title="All 2 branches covered.">        } else if (dir.isFile()) {</span>
+<span class="fc" id="L1257">            boolean deleted = dir.delete();</span>
+<span class="pc bpc" id="L1258" title="2 of 4 branches missed.">            if (!deleted &amp;&amp; dir.exists()) {</span>
+<span class="fc" id="L1259">                deleted = dir.delete();</span>
+            }
+<span class="pc bpc" id="L1261" title="3 of 4 branches missed.">            if (!deleted &amp;&amp; dir.exists()) {</span>
+<span class="nc" id="L1262">                logger.warn(&quot;Cannot delete {}&quot;, dir.getAbsolutePath());</span>
+<span class="nc" id="L1263">                return false;</span>
+            }
+<span class="fc" id="L1265">            return true;</span>
+        } else {
+<span class="fc" id="L1267">            final File[] files = dir.listFiles();</span>
+<span class="fc bfc" id="L1268" title="All 2 branches covered.">            if (files == null) {</span>
+                // null is returned if it is not a dir or an IOException occurs. As the logic prevents a non dir path
+                // getting here an IOException happened.
+<span class="fc" id="L1271">                return false;</span>
+            }
+<span class="fc bfc" id="L1273" title="All 2 branches covered.">            for (final File f : files) {</span>
+<span class="fc bfc" id="L1274" title="All 2 branches covered.">                if (f.isDirectory()) {</span>
+<span class="fc" id="L1275">                    cleanupDirectory(f);</span>
+                } else {
+<span class="fc" id="L1277">                    logger.debug(&quot;Deleting {}&quot;, f.getAbsolutePath());</span>
+<span class="fc" id="L1278">                    boolean deleted = f.delete();</span>
+<span class="pc bpc" id="L1279" title="3 of 4 branches missed.">                    if (!deleted &amp;&amp; f.exists()) {</span>
+<span class="nc" id="L1280">                        deleted = f.delete();</span>
+                    }
+<span class="pc bpc" id="L1282" title="3 of 4 branches missed.">                    if (!deleted &amp;&amp; f.exists()) {</span>
+<span class="nc" id="L1283">                        logger.warn(&quot;Cannot delete {}&quot;, f.getAbsolutePath());</span>
+                    }
+                }
+            }
+<span class="fc" id="L1287">            logger.debug(&quot;Deleting {}&quot;, dir.getAbsolutePath());</span>
+
+            try {
+
+                // Try 1
+<span class="fc" id="L1292">                boolean deleted = dir.delete();</span>
+
+                // Try 2
+<span class="pc bpc" id="L1295" title="3 of 4 branches missed.">                if (!deleted &amp;&amp; dir.exists()) {</span>
+                    try {
+<span class="nc" id="L1297">                        Thread.sleep(10);</span>
+<span class="nc" id="L1298">                    } catch (InterruptedException ignore) {</span>
+<span class="nc" id="L1299">                        Thread.currentThread().interrupt();</span>
+<span class="nc" id="L1300">                    }</span>
+<span class="nc bnc" id="L1301" title="All 2 branches missed.">                    if (dir.exists()) {</span>
+<span class="nc" id="L1302">                        deleted = dir.delete();</span>
+                    }
+                }
+
+                // Try 3
+<span class="pc bpc" id="L1307" title="3 of 4 branches missed.">                if (!deleted &amp;&amp; dir.exists()) {</span>
+                    try {
+<span class="nc" id="L1309">                        Thread.sleep(10);</span>
+<span class="nc" id="L1310">                    } catch (InterruptedException ignore) {</span>
+<span class="nc" id="L1311">                        Thread.currentThread().interrupt();</span>
+<span class="nc" id="L1312">                    }</span>
+<span class="nc bnc" id="L1313" title="All 2 branches missed.">                    if (dir.exists()) {</span>
+<span class="nc" id="L1314">                        logger.debug(&quot;Temporary directory is still there. doing rm-rf {}&quot;, dir.getAbsolutePath());</span>
+<span class="nc" id="L1315">                        new Executrix().execute(new String[] {&quot;rm&quot;, &quot;-rf&quot;, dir.getAbsolutePath()});</span>
+                    }
+                }
+<span class="nc" id="L1318">            } catch (Exception ex) {</span>
+<span class="nc" id="L1319">                logger.debug(&quot;Unable to remove directory {}&quot;, dir.getAbsolutePath(), ex);</span>
+<span class="fc" id="L1320">            }</span>
+
+<span class="pc bpc" id="L1322" title="1 of 2 branches missed.">            return !dir.exists();</span>
+        }
+    }
+
+    public void setProcessMaxMillis(final long millis) {
+<span class="fc" id="L1327">        this.processMaxMillis = millis;</span>
+<span class="fc" id="L1328">    }</span>
+
+    public long getProcessMaxMillis() {
+<span class="nc" id="L1331">        return this.processMaxMillis;</span>
+    }
+
+    private abstract static class ExecuteConfig {
+
+        final String[] cmd;
+        final byte[] data;
+        final StringBuilder err;
+        final String charset;
+        final Map&lt;String, String&gt; env;
+
+<span class="fc" id="L1342">        public ExecuteConfig(String[] cmd, byte[] data, StringBuilder err, String charset, Map&lt;String, String&gt; env) {</span>
+<span class="fc" id="L1343">            this.cmd = cmd;</span>
+<span class="fc" id="L1344">            this.data = data;</span>
+<span class="fc" id="L1345">            this.err = err;</span>
+<span class="fc" id="L1346">            this.charset = charset;</span>
+<span class="fc" id="L1347">            this.env = env;</span>
+<span class="fc" id="L1348">        }</span>
+
+        public String[] getCmd() {
+<span class="nc" id="L1351">            return cmd;</span>
+        }
+
+        public byte[] getData() {
+<span class="fc" id="L1355">            return data;</span>
+        }
+
+        public ProcessBuilder getProcessBuilder() {
+<span class="fc" id="L1359">            logger.debug(&quot;Executing command: {}&quot;, Arrays.asList(cmd));</span>
+<span class="fc" id="L1360">            final ProcessBuilder pb = new ProcessBuilder(cmd);</span>
+<span class="fc bfc" id="L1361" title="All 2 branches covered.">            if (env != null) {</span>
+<span class="fc" id="L1362">                pb.environment().putAll(env);</span>
+            }
+<span class="fc" id="L1364">            return pb;</span>
+
+        }
+
+        @SuppressWarnings(&quot;MethodCanBeStatic&quot;)
+        public ProcessReader getStdOutProcessReader(Process p) {
+<span class="fc" id="L1370">            return new ReadOutputLogger(&quot;stdOut&quot;, p.getInputStream());</span>
+        }
+
+        public ProcessReader getStdErrProcessReader(Process p) {
+<span class="fc bfc" id="L1374" title="All 2 branches covered.">            return err == null ? new ReadOutputLogger(&quot;stdErr&quot;, p.getErrorStream()) : new ReadOutputBuffer(p.getErrorStream(), err, charset);</span>
+        }
+
+        private static class SbExecuteConfig extends ExecuteConfig {
+            final StringBuilder out;
+
+            public SbExecuteConfig(String[] cmd, byte[] data, StringBuilder out, StringBuilder err, String charset, Map&lt;String, String&gt; env) {
+<span class="fc" id="L1381">                super(cmd, data, err, charset, env);</span>
+<span class="fc" id="L1382">                this.out = out;</span>
+<span class="fc" id="L1383">            }</span>
+
+            @Override
+            public ProcessReader getStdOutProcessReader(Process p) {
+<span class="fc bfc" id="L1387" title="All 2 branches covered.">                return out == null ? super.getStdOutProcessReader(p) : new ReadOutputBuffer(p.getInputStream(), out);</span>
+            }
+
+        }
+
+        private static class BaosExecuteConfig extends ExecuteConfig {
+            final ByteArrayOutputStream out;
+
+            public BaosExecuteConfig(String[] cmd, byte[] data, ByteArrayOutputStream out, StringBuilder err, String charset,
+                    Map&lt;String, String&gt; env) {
+<span class="fc" id="L1397">                super(cmd, data, err, charset, env);</span>
+<span class="fc" id="L1398">                this.out = out;</span>
+<span class="fc" id="L1399">            }</span>
+
+            @Override
+            public ProcessReader getStdOutProcessReader(Process p) {
+<span class="pc bpc" id="L1403" title="1 of 2 branches missed.">                return out == null ? super.getStdOutProcessReader(p) : new ReadBinaryOutputBuffer(p.getInputStream(), out);</span>
+            }
+        }
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

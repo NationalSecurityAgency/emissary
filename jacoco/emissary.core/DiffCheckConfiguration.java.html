@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DiffCheckConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core</a> &gt; <span class="el_source">DiffCheckConfiguration.java</span></div><h1>DiffCheckConfiguration.java</h1><pre class="source lang-java linenums">package emissary.core;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
+
+/**
+ * Utility class to help simplify configuration of {@link IBaseDataObjectDiffHelper}
+ */
+public class DiffCheckConfiguration {
+    /**
+     * Possible configuration options
+     */
+<span class="fc" id="L15">    public enum DiffCheckOptions {</span>
+<span class="fc" id="L16">        DATA, TIMESTAMP, INTERNAL_ID, TRANSFORM_HISTORY, KEY_VALUE_PARAMETER_DIFF, DETAILED_PARAMETER_DIFF</span>
+    }
+
+    /**
+     * Stateful field of 'enabled' options
+     */
+    private final Set&lt;DiffCheckOptions&gt; enabled;
+
+    /**
+     * Start building a new configuration
+     * 
+     * @return a new builder instance
+     */
+    public static DiffCheckConfiguration.DiffCheckBuilder configure() {
+<span class="fc" id="L30">        return new DiffCheckConfiguration.DiffCheckBuilder();</span>
+    }
+
+    /**
+     * Helper method to simplify only enable checking of data
+     * 
+     * @return a new config instance which only enables checking data
+     */
+    public static DiffCheckConfiguration onlyCheckData() {
+<span class="fc" id="L39">        return new DiffCheckConfiguration(EnumSet.of(DiffCheckOptions.DATA));</span>
+    }
+
+    /**
+     * Check if data should be diffed
+     * 
+     * @return if checking data is enabled
+     */
+    public boolean checkData() {
+<span class="fc" id="L48">        return enabled.contains(DiffCheckOptions.DATA);</span>
+    }
+
+    /**
+     * Check if the timestamp should be diffed
+     * 
+     * @return if checking timestamps is enabled
+     */
+    public boolean checkTimestamp() {
+<span class="fc" id="L57">        return enabled.contains(DiffCheckOptions.TIMESTAMP);</span>
+    }
+
+    /**
+     * Check if the internal ID should be diffed
+     * 
+     * @return if checking the internal ID is enabled
+     */
+    public boolean checkInternalId() {
+<span class="fc" id="L66">        return enabled.contains(DiffCheckOptions.INTERNAL_ID);</span>
+    }
+
+    /**
+     * Check if the transform history should be diffed
+     * 
+     * @return if checking the transform history is enabled
+     */
+    public boolean checkTransformHistory() {
+<span class="fc" id="L75">        return enabled.contains(DiffCheckOptions.TRANSFORM_HISTORY);</span>
+    }
+
+    /**
+     * Check if parameter diff should produce detailed output
+     * 
+     * @return if performing a detailed parameter diff
+     */
+    public boolean performDetailedParameterDiff() {
+<span class="fc" id="L84">        return enabled.contains(DiffCheckOptions.DETAILED_PARAMETER_DIFF);</span>
+    }
+
+    /**
+     * Check if parameter diff should produce non-matching key/value output
+     * 
+     * @return if performing a key/value parameter diff
+     */
+    public boolean performKeyValueParameterDiff() {
+<span class="fc" id="L93">        return enabled.contains(DiffCheckOptions.KEY_VALUE_PARAMETER_DIFF);</span>
+    }
+
+    /**
+     * Accessor for enabled options
+     * 
+     * @return the enabled options
+     */
+    public Set&lt;DiffCheckOptions&gt; getEnabled() {
+<span class="fc" id="L102">        return enabled;</span>
+    }
+
+    /**
+     * Private constructor to skip builder pattern
+     * 
+     * @param enabled set of pre-configured options
+     */
+<span class="fc" id="L110">    private DiffCheckConfiguration(final EnumSet&lt;DiffCheckOptions&gt; enabled) {</span>
+<span class="fc" id="L111">        this.enabled = Collections.unmodifiableSet(enabled);</span>
+<span class="fc" id="L112">    }</span>
+
+    /**
+     * Builder class for {@link DiffCheckConfiguration}
+     */
+    public static class DiffCheckBuilder {
+
+        /**
+         * Internal state whilst building
+         */
+        private final EnumSet&lt;DiffCheckOptions&gt; building;
+
+        /**
+         * Finish building and create the final DiffCheckConfiguration object
+         * 
+         * @return a new Configuration instance with the enabled options
+         */
+        public DiffCheckConfiguration build() {
+<span class="fc" id="L130">            return new DiffCheckConfiguration(building);</span>
+        }
+
+        /**
+         * Provide explicit list of options to enable
+         * 
+         * @param options to enable explicitly
+         * @return a new Configuration instance with the enabled options
+         */
+        public DiffCheckConfiguration explicit(final DiffCheckOptions... options) {
+<span class="fc" id="L140">            reset();</span>
+<span class="fc" id="L141">            building.addAll(Arrays.asList(options));</span>
+
+<span class="fc bfc" id="L143" title="All 4 branches covered.">            if (building.contains(DiffCheckOptions.DETAILED_PARAMETER_DIFF) &amp;&amp; building.contains(DiffCheckOptions.KEY_VALUE_PARAMETER_DIFF)) {</span>
+<span class="fc" id="L144">                throw new IllegalArgumentException(&quot;Cannot contain DETAILED_PARAMETER_DIFF and KEY_VALUE_PARAMETER_DIFF!&quot;);</span>
+            }
+
+<span class="fc" id="L147">            return build();</span>
+        }
+
+        /**
+         * Private constructor
+         */
+<span class="fc" id="L153">        private DiffCheckBuilder() {</span>
+<span class="fc" id="L154">            building = EnumSet.noneOf(DiffCheckOptions.class);</span>
+<span class="fc" id="L155">        }</span>
+
+        /**
+         * Reset the list of enabled options
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder reset() {
+<span class="fc" id="L163">            building.clear();</span>
+<span class="fc" id="L164">            return this;</span>
+        }
+
+        /**
+         * Enable data for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder enableData() {
+<span class="fc" id="L173">            building.add(DiffCheckOptions.DATA);</span>
+<span class="fc" id="L174">            return this;</span>
+        }
+
+        /**
+         * Disable data for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder disableData() {
+<span class="fc" id="L183">            building.remove(DiffCheckOptions.DATA);</span>
+<span class="fc" id="L184">            return this;</span>
+        }
+
+        /**
+         * Enable timestamp for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder enableTimestamp() {
+<span class="fc" id="L193">            building.add(DiffCheckOptions.TIMESTAMP);</span>
+<span class="fc" id="L194">            return this;</span>
+        }
+
+        /**
+         * Disable timestamp for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder disableTimestamp() {
+<span class="fc" id="L203">            building.remove(DiffCheckOptions.TIMESTAMP);</span>
+<span class="fc" id="L204">            return this;</span>
+        }
+
+        /**
+         * Enable internal ID for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder enableInternalId() {
+<span class="fc" id="L213">            building.add(DiffCheckOptions.INTERNAL_ID);</span>
+<span class="fc" id="L214">            return this;</span>
+        }
+
+        /**
+         * Disable internal ID for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder disableInternalId() {
+<span class="fc" id="L223">            building.remove(DiffCheckOptions.INTERNAL_ID);</span>
+<span class="fc" id="L224">            return this;</span>
+        }
+
+        /**
+         * Enable transform history for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder enableTransformHistory() {
+<span class="fc" id="L233">            building.add(DiffCheckOptions.TRANSFORM_HISTORY);</span>
+<span class="fc" id="L234">            return this;</span>
+        }
+
+        /**
+         * Disable transform history for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder disableTransformHistory() {
+<span class="fc" id="L243">            building.remove(DiffCheckOptions.TRANSFORM_HISTORY);</span>
+<span class="fc" id="L244">            return this;</span>
+        }
+
+        /**
+         * Enable transform history for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder enableKeyValueParameterDiff() {
+<span class="fc" id="L253">            building.add(DiffCheckOptions.KEY_VALUE_PARAMETER_DIFF);</span>
+<span class="fc" id="L254">            building.remove(DiffCheckOptions.DETAILED_PARAMETER_DIFF);</span>
+<span class="fc" id="L255">            return this;</span>
+        }
+
+        /**
+         * Disable transform history for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder disableKeyValueParameterDiff() {
+<span class="fc" id="L264">            building.remove(DiffCheckOptions.KEY_VALUE_PARAMETER_DIFF);</span>
+<span class="fc" id="L265">            return this;</span>
+        }
+
+        /**
+         * Enable transform history for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder enableDetailedParameterDiff() {
+<span class="fc" id="L274">            building.add(DiffCheckOptions.DETAILED_PARAMETER_DIFF);</span>
+<span class="fc" id="L275">            building.remove(DiffCheckOptions.KEY_VALUE_PARAMETER_DIFF);</span>
+<span class="fc" id="L276">            return this;</span>
+        }
+
+        /**
+         * Disable transform history for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder disableDetailedParameterDiff() {
+<span class="fc" id="L285">            building.remove(DiffCheckOptions.DETAILED_PARAMETER_DIFF);</span>
+<span class="fc" id="L286">            return this;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

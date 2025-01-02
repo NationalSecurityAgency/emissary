@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SeekableByteChannelHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core.channels</a> &gt; <span class="el_source">SeekableByteChannelHelper.java</span></div><h1>SeekableByteChannelHelper.java</h1><pre class="source lang-java linenums">package emissary.core.channels;
+
+import emissary.core.IBaseDataObject;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Path;
+
+/**
+ * Helper methods to handle {@link java.nio.channels.SeekableByteChannel} objects
+ */
+public final class SeekableByteChannelHelper {
+<span class="fc" id="L20">    private static final Logger logger = LoggerFactory.getLogger(SeekableByteChannelHelper.class);</span>
+
+    /** Channel factory backed by an empty byte array. Used for situations when a BDO should have its payload discarded. */
+<span class="fc" id="L23">    public static final SeekableByteChannelFactory EMPTY_CHANNEL_FACTORY = memory(new byte[0]);</span>
+
+    private SeekableByteChannelHelper() {}
+
+    /**
+     * Make an existing factory immutable.
+     * 
+     * @param sbcf to make immutable
+     * @return the wrapped factory
+     */
+    public static SeekableByteChannelFactory immutable(final SeekableByteChannelFactory sbcf) {
+<span class="fc" id="L34">        return ImmutableChannelFactory.create(sbcf);</span>
+    }
+
+    /**
+     * Create an in memory SBC factory which can be used to create any number of channels based on the provided bytes
+     * without storing them multiple times.
+     * 
+     * @param bytes to use with the channel
+     * @return the factory
+     */
+    public static SeekableByteChannelFactory memory(final byte[] bytes) {
+<span class="fc" id="L45">        return InMemoryChannelFactory.create(bytes);</span>
+    }
+
+    /**
+     * Create a file SBC factory.
+     * 
+     * @param path to the file.
+     * @return the factory
+     */
+    public static SeekableByteChannelFactory file(final Path path) {
+<span class="fc" id="L55">        return FileChannelFactory.create(path);</span>
+    }
+
+    /**
+     * Create a fill SBC factory.
+     * 
+     * @param size of the SeekableByteChannel
+     * @param value of each element in the SeekableByteChannel.
+     * @return the factory
+     */
+    public static SeekableByteChannelFactory fill(final long size, final byte value) {
+<span class="fc" id="L66">        return FillChannelFactory.create(size, value);</span>
+    }
+
+    /**
+     * Create an InputStream SBC factory.
+     * 
+     * @param size of the SeekableByteChannel
+     * @param inputStreamFactory creates the needed InputStreams.
+     * @return the factory
+     */
+    public static SeekableByteChannelFactory inputStream(final long size, final InputStreamFactory inputStreamFactory) {
+<span class="fc" id="L77">        return InputStreamChannelFactory.create(size, inputStreamFactory);</span>
+    }
+
+    /**
+     * Given a BDO, create a byte array with as much data as possible.
+     * 
+     * @param ibdo to get the data from
+     * @param maxSize to limit the byte array to
+     * @return a byte array of the data from the BDO sized up to maxSize (so could truncate data)
+     */
+    public static byte[] getByteArrayFromBdo(final IBaseDataObject ibdo, final int maxSize) {
+<span class="fc" id="L88">        try (final SeekableByteChannel sbc = ibdo.getChannelFactory().create()) {</span>
+<span class="fc" id="L89">            final long truncatedBy = sbc.size() - maxSize;</span>
+<span class="fc bfc" id="L90" title="All 4 branches covered.">            if (truncatedBy &gt; 0 &amp;&amp; logger.isWarnEnabled()) {</span>
+<span class="fc" id="L91">                logger.warn(&quot;Returned data for [{}] will be truncated by {} bytes due to size constraints of byte arrays&quot;, ibdo.shortName(),</span>
+<span class="fc" id="L92">                        truncatedBy);</span>
+            }
+<span class="fc" id="L94">            return getByteArrayFromChannel(ibdo.getChannelFactory(), maxSize);</span>
+<span class="fc" id="L95">        } catch (final IOException ioe) {</span>
+<span class="fc" id="L96">            logger.error(&quot;Error when fetching from byte channel factory on object {}&quot;, ibdo.shortName(), ioe);</span>
+<span class="fc" id="L97">            ibdo.setData(new byte[0]);</span>
+<span class="fc" id="L98">            return new byte[0];</span>
+        }
+    }
+
+    /**
+     * Given a channel factory, create a byte array with as much data as possible.
+     * 
+     * @param sbcf to get the data from
+     * @param maxSize to limit the byte array to
+     * @return a byte array of the data from the factory sized up to maxSize (so could truncate data)
+     * @throws IOException if we couldn't read all the data
+     */
+    public static byte[] getByteArrayFromChannel(final SeekableByteChannelFactory sbcf, final int maxSize) throws IOException {
+<span class="fc" id="L111">        try (final SeekableByteChannel sbc = sbcf.create()) {</span>
+<span class="fc" id="L112">            final int byteArraySize = (int) Math.min(sbc.size(), maxSize);</span>
+<span class="fc" id="L113">            final ByteBuffer buff = ByteBuffer.allocate(byteArraySize);</span>
+
+<span class="fc" id="L115">            IOUtils.readFully(sbc, buff);</span>
+<span class="fc" id="L116">            return buff.array();</span>
+        }
+    }
+
+    /**
+     * Provided with an existing input stream, check how far we can read into it.
+     * 
+     * Note that the inputStream is read as-is, so if the stream is not at the start, this method won't take that into
+     * account. If we can successfully read the stream, the position of the provided stream will of course change.
+     * 
+     * Don't wrap the provided stream with anything such as BufferedInputStream as this will cause read errors prematurely,
+     * unless this is acceptable.
+     * 
+     * @param inputStream to read - caller must handle closing this object
+     * @return position of last successful read (which could be the size of the stream)
+     */
+    public static long available(final InputStream inputStream) {
+<span class="fc" id="L133">        long totalBytesRead = 0;</span>
+        try {
+<span class="fc bfc" id="L135" title="All 2 branches covered.">            for (; inputStream.read() != -1; totalBytesRead++) {</span>
+                // Do nothing.
+            }
+<span class="fc" id="L138">        } catch (final IOException ioe) {</span>
+            // Do nothing.
+<span class="fc" id="L140">        }</span>
+
+<span class="fc" id="L142">        return totalBytesRead;</span>
+    }
+
+    /**
+     * Reads data from an input stream into a buffer
+     * 
+     * @param inputStream to read from
+     * @param byteBuffer to read into
+     * @param bytesToSkip within the {@code is} to get to the next read location
+     * @throws IOException if an error occurs
+     */
+    public static int getFromInputStream(final InputStream inputStream, final ByteBuffer byteBuffer, final long bytesToSkip) throws IOException {
+<span class="fc" id="L154">        Validate.notNull(inputStream, &quot;Required: inputStream&quot;);</span>
+<span class="fc" id="L155">        Validate.notNull(byteBuffer, &quot;Required: byteBuffer&quot;);</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        Validate.isTrue(bytesToSkip &gt; -1, &quot;Required: bytesToSkip &gt; -1&quot;);</span>
+
+        // Skip to position if we're not already there
+<span class="fc" id="L159">        IOUtils.skipFully(inputStream, bytesToSkip);</span>
+
+        // Read direct into buffer's array if possible, otherwise copy through an internal buffer
+<span class="fc" id="L162">        final int bytesToRead = byteBuffer.remaining();</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">        if (byteBuffer.hasArray()) {</span>
+<span class="fc" id="L164">            final int bytesRead = inputStream.read(byteBuffer.array(), byteBuffer.arrayOffset() + byteBuffer.position(), bytesToRead);</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">            if (bytesRead &gt; 0) {</span>
+<span class="fc" id="L166">                byteBuffer.position(byteBuffer.position() + bytesRead);</span>
+            }
+<span class="fc" id="L168">            return bytesRead;</span>
+        } else {
+<span class="fc" id="L170">            final byte[] internalBuff = new byte[bytesToRead];</span>
+<span class="fc" id="L171">            final int bytesRead = inputStream.read(internalBuff);</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">            if (bytesRead &gt; 0) {</span>
+<span class="fc" id="L173">                byteBuffer.put(internalBuff, 0, bytesRead);</span>
+            }
+<span class="fc" id="L175">            return bytesRead;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

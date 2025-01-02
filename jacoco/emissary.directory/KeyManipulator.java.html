@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KeyManipulator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.directory</a> &gt; <span class="el_source">KeyManipulator.java</span></div><h1>KeyManipulator.java</h1><pre class="source lang-java linenums">package emissary.directory;
+
+import emissary.place.IServiceProviderPlace;
+
+import java.io.Serializable;
+import javax.annotation.Nullable;
+
+/**
+ * A class of utility methods for manipulating dictionary keys. Keys are stored in the dictionary with the following
+ * format:
+ *
+ * &lt;code&gt;dataType.serviceName.serviceType.location$expense&lt;/code&gt;
+ * 
+ * Example: UNKNOWN.servicename.ID.tcp://host.dom.com:8001/FilePlace$5050
+ * 
+ * &lt;table&gt;
+ * &lt;caption&gt;For the example key above the return values are as follows:&lt;/caption&gt;
+ * &lt;tr&gt;
+ * &lt;td&gt;routine&lt;/td&gt;
+ * &lt;td&gt;return value&lt;/td&gt;
+ * &lt;/tr&gt;
+ * &lt;tr&gt;
+ * &lt;td&gt;dataType&lt;/td&gt;
+ * &lt;td&gt;UNKOWN&lt;/td&gt;
+ * &lt;/tr&gt;
+ * &lt;tr&gt;
+ * &lt;td&gt;serviceName&lt;/td&gt;
+ * &lt;td&gt;servicename&lt;/td&gt;
+ * &lt;/tr&gt;
+ * &lt;tr&gt;
+ * &lt;td&gt;serviceType&lt;/td&gt;
+ * &lt;td&gt;ID&lt;/td&gt;
+ * &lt;/tr&gt;
+ * &lt;tr&gt;
+ * &lt;td&gt;serviceHost&lt;/td&gt;
+ * &lt;td&gt;host.dom.com:8001&lt;/td&gt;
+ * &lt;/tr&gt;
+ * &lt;tr&gt;
+ * &lt;td&gt;serviceHostURL&lt;/td&gt;
+ * &lt;td&gt;http://host.dom.com:8001/&lt;/td&gt;
+ * &lt;/tr&gt;
+ * &lt;tr&gt;
+ * &lt;td&gt;serviceLocation&lt;/td&gt;
+ * &lt;td&gt;http://host.dom.com:8001/FilePlace&lt;/td&gt;
+ * &lt;/tr&gt;
+ * &lt;tr&gt;
+ * &lt;td&gt;expense&lt;/td&gt;
+ * &lt;td&gt;5050&lt;/td&gt;
+ * &lt;/tr&gt;
+ * &lt;tr&gt;
+ * &lt;td&gt;serviceClassname&lt;/td&gt;
+ * &lt;td&gt;FilePlace&lt;/td&gt;
+ * &lt;/tr&gt;
+ * &lt;tr&gt;
+ * &lt;td&gt;dataID&lt;/td&gt;
+ * &lt;td&gt;UNKOWN::ID&lt;/td&gt;
+ * &lt;/tr&gt;
+ * &lt;tr&gt;
+ * &lt;td&gt;defaultDirectoryKey&lt;/td&gt;
+ * &lt;td&gt;*.*.*.http://host.dom.com:8001/DirectoryPlace&lt;/td&gt;
+ * &lt;/tr&gt;
+ * &lt;/table&gt;
+ *
+ */
+public class KeyManipulator implements Serializable {
+
+    // Serializable
+    static final long serialVersionUID = 2456659383313218695L;
+
+    /**
+     * How we separate portions of the key
+     */
+    public static final char SEPARATOR = '.';
+    public static final char HOSTSEPARATOR = ':';
+    public static final char CLASSSEPARATOR = '/';
+    public static final String DOLLAR = &quot;$&quot;;
+    public static final String DATAIDSEPARATOR = &quot;::&quot;;
+    public static final String WILDCARD_THREE = &quot;*.*.*.&quot;;
+
+    /**
+     * How many portions (separated by SEPARATOR) are in a complete key
+     */
+    public static final int NUMTUPLES = 4;
+
+    private static final String doubleSlash = &quot;//&quot;;
+
+    /**
+     * Make a key from parts
+     *
+     * @param dataType the first part of the key
+     * @param serviceName the second part of the key
+     * @param serviceType the third part of the key
+     * @param serviceLocation the fourth part of the key
+     */
+    public static String makeKey(final String dataType, final String serviceName, final String serviceType, final String serviceLocation) {
+<span class="fc" id="L96">        return dataType + SEPARATOR + serviceName + SEPARATOR + serviceType + SEPARATOR + serviceLocation;</span>
+    }
+
+    /**
+     * Return the data type field from a dictionary formatted key.
+     */
+    public static String getDataType(final String key) {
+<span class="fc" id="L103">        final int firstSeparator = key.indexOf(SEPARATOR);</span>
+
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        if (firstSeparator &gt;= 0) {</span>
+<span class="fc" id="L106">            return key.substring(0, firstSeparator);</span>
+        }
+<span class="fc" id="L108">        return &quot;&quot;;</span>
+    }
+
+    public static String getDataId(final String key) {
+<span class="fc" id="L112">        return getDataType(key) + DATAIDSEPARATOR + getServiceType(key);</span>
+    }
+
+    public static String getServiceTypeFromDataId(final String dataid) {
+<span class="fc" id="L116">        final int pos = dataid.indexOf(DATAIDSEPARATOR);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        if (pos &gt; -1) {</span>
+<span class="fc" id="L118">            return dataid.substring(pos + DATAIDSEPARATOR.length());</span>
+        }
+<span class="fc" id="L120">        return &quot;&quot;;</span>
+    }
+
+    /**
+     * Performs wildcard (? | *) string matching for dictionary key searches.
+     */
+    public static boolean gmatch(final String s, final String p) {
+<span class="fc" id="L127">        return gmatch2(s.toCharArray(), p.toCharArray(), 0, 0);</span>
+    }
+
+    /**
+     * Performs wildcard (? | *) character array matching for dictionary key searches.
+     */
+    public static boolean gmatch(final char[] s, final char[] p) {
+<span class="fc" id="L134">        return gmatch2(s, p, 0, 0);</span>
+    }
+
+    private static boolean gmatch2(final char[] s, final char[] p, final int spos, final int ppos) {
+        // fastest interpreted version
+<span class="fc bfc" id="L139" title="All 2 branches covered.">        if (p.length == ppos) {</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">            return s.length == spos;</span>
+        }
+<span class="fc bfc" id="L142" title="All 2 branches covered.">        if (s.length == spos) {</span>
+<span class="fc" id="L143">            return false;</span>
+        }
+<span class="fc" id="L145">        final char scc = s[spos];</span>
+<span class="fc" id="L146">        final char c = p[ppos];</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        if (c == '?') {</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">            if (scc &gt; 0) {</span>
+<span class="fc" id="L149">                return gmatch2(s, p, spos + 1, ppos + 1);</span>
+            }
+<span class="nc" id="L151">            return false;</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        } else if (c == '*') {</span>
+<span class="fc" id="L153">            final int ppos2 = ppos + 1;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">            if (p.length == ppos2) {</span>
+<span class="fc" id="L155">                return true;</span>
+            }
+<span class="fc" id="L157">            int spos2 = spos;</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">            while (s.length &gt; ++spos2) {</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">                if (p[ppos2] == s[spos2]) {</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">                    if (gmatch2(s, p, spos2, ppos2)) {</span>
+<span class="fc" id="L161">                        return true;</span>
+                    }
+                }
+            }
+<span class="fc" id="L165">            return false;</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">        } else if (c == scc) {</span>
+<span class="fc" id="L167">            return gmatch2(s, p, spos + 1, ppos + 1);</span>
+        } else {
+<span class="fc" id="L169">            return false;</span>
+        }
+    }
+
+    /**
+     * Return whether the key passed in is complete or not This is useful in determining if the key must be wildcarded for a
+     * query.
+     *
+     * @param key the key to check
+     */
+    public static boolean isKeyComplete(final String key) {
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        if (numTuplesInKey(key) &lt; KeyManipulator.NUMTUPLES) {</span>
+<span class="fc" id="L181">            return false;</span>
+        }
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        if (getServiceHost(key).length() == 0) {</span>
+<span class="fc" id="L184">            return false;</span>
+        }
+<span class="fc" id="L186">        return true;</span>
+    }
+
+    /**
+     * Return the number of tuples in the Key passed in
+     */
+    public static int numTuplesInKey(final String key) {
+<span class="fc" id="L193">        int count = 0;</span>
+<span class="fc" id="L194">        final byte[] keyBytes = key.getBytes();</span>
+
+<span class="fc bfc" id="L196" title="All 2 branches covered.">        for (int i = 0; i &lt; keyBytes.length; i++) {</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">            if (keyBytes[i] == KeyManipulator.SEPARATOR) {</span>
+<span class="fc" id="L198">                count++;</span>
+            }
+            // Dont count separators in the hostname portion
+<span class="fc bfc" id="L201" title="All 6 branches covered.">            if ((i &gt; 0) &amp;&amp; (keyBytes[i] == CLASSSEPARATOR) &amp;&amp; (keyBytes[i - 1] == CLASSSEPARATOR)) {</span>
+<span class="fc" id="L202">                break;</span>
+            }
+        }
+
+        // There is one more tuple than separators x.x.x.x
+<span class="fc" id="L207">        return count + 1;</span>
+    }
+
+    /**
+     * Attempt to set out some rules for a key to allow validation
+     *
+     * @param key the putative key
+     * @return true if key is valid
+     */
+    public static boolean isValid(@Nullable final String key) {
+<span class="pc bpc" id="L217" title="1 of 4 branches missed.">        return (key != null) &amp;&amp; (numTuplesInKey(key) == 4);</span>
+    }
+
+    /**
+     * Returns the class name from a dictionary formatted key
+     */
+    public static String getServiceClassname(final String key) {
+<span class="fc" id="L224">        final String location = getServiceLocation(key);</span>
+<span class="fc" id="L225">        final int sep = location.lastIndexOf(CLASSSEPARATOR);</span>
+
+<span class="pc bpc" id="L227" title="1 of 2 branches missed.">        if (sep &gt;= 0) {</span>
+<span class="fc" id="L228">            return location.substring(sep + 1);</span>
+        }
+<span class="nc" id="L230">        return &quot;&quot;;</span>
+    }
+
+    /**
+     * Returns the hostname:port from a dictionary formatted key
+     */
+    public static String getServiceHost(final String key) {
+<span class="fc" id="L237">        final String location = getServiceLocation(key);</span>
+<span class="fc" id="L238">        final int ds = location.indexOf(doubleSlash);</span>
+
+<span class="fc bfc" id="L240" title="All 2 branches covered.">        if (ds &gt; -1) {</span>
+<span class="fc" id="L241">            final int cs = location.indexOf(CLASSSEPARATOR, ds + 2);</span>
+
+<span class="fc bfc" id="L243" title="All 2 branches covered.">            if (cs &gt; -1) {</span>
+<span class="fc" id="L244">                return location.substring(ds + 2, cs);</span>
+            }
+<span class="fc" id="L246">            return &quot;&quot;;</span>
+        }
+<span class="fc" id="L248">        return &quot;&quot;;</span>
+    }
+
+    /**
+     * Returns the protocol://hostname:port/ from a dictionary formatted key
+     */
+    public static String getServiceHostUrl(final String key) {
+<span class="fc" id="L255">        final String location = getServiceLocation(key);</span>
+<span class="fc" id="L256">        final int ds = location.lastIndexOf(CLASSSEPARATOR);</span>
+
+<span class="fc bfc" id="L258" title="All 2 branches covered.">        if (ds &gt; -1) {</span>
+<span class="fc" id="L259">            return location.substring(0, ds + 1);</span>
+        }
+<span class="fc" id="L261">        return &quot;&quot;;</span>
+    }
+
+    /**
+     * Returns true if k1 and k2 are local to each other
+     *
+     * @param k1 key for first place
+     * @param k2 key for second place
+     * @return true if local to each other
+     */
+    public static boolean isLocalTo(final String k1, final String k2) {
+<span class="fc" id="L272">        return getServiceHostUrl(k1).equals(getServiceHostUrl(k2));</span>
+    }
+
+    /**
+     * Returns the service location (host:port/className) field from a dictionary formatted key.
+     */
+    public static String getServiceLocation(final String key) {
+<span class="fc" id="L279">        final int firstSeparator = key.indexOf(SEPARATOR);</span>
+<span class="fc" id="L280">        final int secondSeparator = key.indexOf(SEPARATOR, firstSeparator + 1);</span>
+<span class="fc" id="L281">        final int thirdSeparator = key.indexOf(SEPARATOR, secondSeparator + 1);</span>
+<span class="fc" id="L282">        final int fourthSeparator = key.indexOf(DOLLAR, thirdSeparator + 1);</span>
+
+<span class="fc bfc" id="L284" title="All 2 branches covered.">        if ((thirdSeparator &gt;= 0)) {</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">            if (fourthSeparator &gt; 0) {</span>
+<span class="fc" id="L286">                return key.substring(thirdSeparator + 1, fourthSeparator);</span>
+            }
+<span class="fc" id="L288">            return key.substring(thirdSeparator + 1);</span>
+        }
+<span class="fc" id="L290">        return &quot;&quot;;</span>
+    }
+
+    /**
+     * Return the expense of the service
+     */
+    public static int getExpense(final String key) {
+<span class="fc" id="L297">        return getExpense(key, -1);</span>
+    }
+
+    public static int getExpense(final String key, final int dflt) {
+<span class="fc" id="L301">        final int pos = key.lastIndexOf(DOLLAR);</span>
+<span class="fc" id="L302">        int expense = dflt;</span>
+        try {
+<span class="fc" id="L304">            expense = Integer.parseInt(key.substring(pos + 1));</span>
+<span class="fc" id="L305">        } catch (NumberFormatException e) {</span>
+            // It's optional...
+<span class="fc" id="L307">        }</span>
+<span class="fc" id="L308">        return expense;</span>
+    }
+
+    /**
+     * Add expense record onto a key
+     */
+    public static String addExpense(final String key, final int expense) {
+<span class="fc bfc" id="L315" title="All 2 branches covered.">        if (getExpense(key, -99) == expense) {</span>
+<span class="fc" id="L316">            return key;</span>
+        }
+
+<span class="fc bfc" id="L319" title="All 2 branches covered.">        if (key.indexOf(DOLLAR) &gt; -1) {</span>
+<span class="fc" id="L320">            return key.substring(0, key.lastIndexOf(DOLLAR) + 1) + expense;</span>
+        }
+
+<span class="fc" id="L323">        return key + DOLLAR + expense;</span>
+    }
+
+    /**
+     * Strip the expense from a key if present
+     *
+     * @param key any key
+     * @return the modified key
+     */
+    public static String removeExpense(final String key) {
+<span class="fc" id="L333">        final int pos = key.indexOf(DOLLAR);</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">        if (pos != -1) {</span>
+<span class="fc" id="L335">            return key.substring(0, pos);</span>
+        }
+<span class="fc" id="L337">        return key;</span>
+    }
+
+    /**
+     * Returns the service name field from a dictionary formatted key.
+     */
+    public static String getServiceName(final String key) {
+<span class="fc" id="L344">        final int firstSeparator = key.indexOf(SEPARATOR);</span>
+<span class="fc" id="L345">        final int secondSeparator = key.indexOf(SEPARATOR, firstSeparator + 1);</span>
+
+<span class="pc bpc" id="L347" title="1 of 4 branches missed.">        if ((firstSeparator &gt;= 0) &amp;&amp; (secondSeparator &gt;= 0)) {</span>
+<span class="fc" id="L348">            return key.substring(firstSeparator + 1, secondSeparator);</span>
+        }
+<span class="fc" id="L350">        return &quot;&quot;;</span>
+    }
+
+    /**
+     * Returns the service type field from a dictionary formatted key.
+     */
+    public static String getServiceType(final String key) {
+<span class="fc" id="L357">        final int firstSeparator = key.indexOf(SEPARATOR);</span>
+<span class="fc" id="L358">        final int secondSeparator = key.indexOf(SEPARATOR, firstSeparator + 1);</span>
+<span class="fc" id="L359">        final int thirdSeparator = key.indexOf(SEPARATOR, secondSeparator + 1);</span>
+
+<span class="pc bpc" id="L361" title="1 of 4 branches missed.">        if ((secondSeparator &gt;= 0) &amp;&amp; (thirdSeparator &gt;= 0)) {</span>
+<span class="fc" id="L362">            return key.substring(secondSeparator + 1, thirdSeparator);</span>
+        }
+<span class="fc" id="L364">        return &quot;&quot;;</span>
+    }
+
+    /**
+     * Add in the remote overhead to the &quot;to&quot; key if it was a move
+     *
+     * @param from the key we came from
+     * @param to the key we went to
+     * @return the &amp;quot;to&amp;quot; key with remote overhead or as it was
+     */
+    public static String addRemoteCostIfMoved(final String from, final String to) {
+
+        // If no move, just return the &quot;to&quot; key
+<span class="fc bfc" id="L377" title="All 2 branches covered.">        if (getServiceHost(from).equals(getServiceHost(to))) {</span>
+<span class="fc" id="L378">            return to;</span>
+        }
+
+        // Add remote overhead to the &quot;to&quot; key
+<span class="fc" id="L382">        return addExpense(to, getExpense(to) + IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD);</span>
+    }
+
+    /**
+     * Mangle origKey such that the host on proxyKey becomes a proxy for it
+     *
+     * @param origKey the original key
+     * @param proxyKey the key representing the place that wants to proxy
+     * @param dfltExp default expense to use if origKey has none or -1 for no dflt
+     * @return a key with the original data type, service type and service name and expense but the new place location from
+     *         proxyKey
+     */
+    public static String makeProxyKey(final String origKey, final String proxyKey, final int dfltExp) {
+<span class="fc bfc" id="L395" title="All 4 branches covered.">        if (isLocalTo(origKey, proxyKey) &amp;&amp; dfltExp &gt; -1) {</span>
+<span class="fc" id="L396">            return addExpense(origKey, getExpense(origKey, dfltExp));</span>
+        }
+<span class="fc" id="L398">        final int newExp = getExpense(origKey, dfltExp);</span>
+<span class="fc" id="L399">        return getDataType(origKey) + SEPARATOR + getServiceName(origKey) + SEPARATOR + getServiceType(origKey) + SEPARATOR</span>
+<span class="fc bfc" id="L400" title="All 2 branches covered.">                + getServiceLocation(proxyKey) + (newExp &gt; -1 ? (DOLLAR + newExp) : &quot;&quot;);</span>
+    }
+
+    /**
+     * Build a key to the directory of the place represented by the key
+     *
+     * @param key the key of the place to find a directory for
+     */
+    public static String getDefaultDirectoryKey(final String key) {
+<span class="fc" id="L409">        return WILDCARD_THREE + KeyManipulator.getServiceHostUrl(key) + &quot;DirectoryPlace&quot;;</span>
+    }
+
+
+    public static String getHostMatchKey(final String key) {
+<span class="fc" id="L414">        return WILDCARD_THREE + KeyManipulator.getServiceHostUrl(key) + &quot;*&quot;;</span>
+    }
+
+    public static String makeSproutKey(final String placeKey) {
+<span class="fc" id="L418">        return &quot;*.*.&quot; + IServiceProviderPlace.SPROUT_KEY + &quot;.&quot; + getServiceLocation(placeKey) + DOLLAR + &quot;0&quot;;</span>
+    }
+
+    /** This class is not meant to be instantiated. */
+    private KeyManipulator() {}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HtmlEscape.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.transform.decode</a> &gt; <span class="el_source">HtmlEscape.java</span></div><h1>HtmlEscape.java</h1><pre class="source lang-java linenums">package emissary.transform.decode;
+
+import emissary.util.ByteUtil;
+import emissary.util.CharacterCounterSet;
+import emissary.util.HtmlEntityMap;
+import emissary.util.shell.Executrix;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.annotation.Nullable;
+
+@Deprecated
+@SuppressWarnings(&quot;all&quot;)
+public class HtmlEscape {
+
+    /* our logger */
+<span class="fc" id="L22">    private static final Logger logger = LoggerFactory.getLogger(HtmlEscape.class);</span>
+
+    private static final int LONGEST_ENTITY_NAME = 33; // &amp;CounterClockwiseContourIntegral;
+
+    /**
+     * Html Entity mapper
+     */
+<span class="fc" id="L29">    private final static HtmlEntityMap HTML_ENTITY_MAP = new HtmlEntityMap();</span>
+
+    /**
+     * Pattern for HTML escaped char finding in strings
+     */
+<span class="fc" id="L34">    private final static Pattern HESC_PATTERN = Pattern.compile(&quot;&amp;#([xX]?)(\\p{XDigit}{2,5});&quot;);</span>
+
+    /**
+     * Unescape some HTML data without counting what was done
+     *
+     * @param data the array of bytes containing HTML escaped characters
+     * @return modified byte array
+     */
+    public static byte[] unescapeHtml(byte[] data) {
+<span class="fc" id="L43">        return unescapeHtml(data, null);</span>
+    }
+
+    /**
+     * Unescape some HTML data, turning &lt;code&gt;&amp;amp;#xxxx;&lt;/code&gt; into UNICODE characters Because this operation inserts java
+     * Character objects into the byte array, it probably only makes sense to send in data that already matches the platform
+     * encoding (i.e. UTF-8 for normal usage). Otherwise the result will be a mixed up mess of multiple character sets that
+     * cannot possibly be understood or displayed properly.
+     *
+     * @param data the array of bytes containing HTML escaped characters
+     * @param counters to measure what is changed
+     * @return modified byte array
+     */
+    public static byte[] unescapeHtml(@Nullable byte[] data, @Nullable CharacterCounterSet counters) {
+
+<span class="fc" id="L58">        ByteArrayOutputStream baos = null;</span>
+<span class="fc" id="L59">        byte[] returnBytes = null;</span>
+<span class="fc bfc" id="L60" title="All 4 branches covered.">        if (data == null || data.length == 0) {</span>
+<span class="fc" id="L61">            return new byte[0];</span>
+        }
+
+        try {
+<span class="fc" id="L65">            baos = new ByteArrayOutputStream();</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">            for (int i = 0; i &lt; data.length; i++) {</span>
+                // Grab one encoded character
+<span class="pc bpc" id="L68" title="1 of 6 branches missed.">                if (data[i] == '&amp;' &amp;&amp; i + 3 &lt; data.length &amp;&amp; data[i + 1] == '#') {</span>
+<span class="fc" id="L69">                    int j = i + 2;</span>
+<span class="fc" id="L70">                    boolean isHex = false;</span>
+
+                    // Determine if &amp;#xnnnn; or &amp;#nnnn;
+<span class="pc bpc" id="L73" title="1 of 4 branches missed.">                    if (data[j] == 'X' || data[j] == 'x') {</span>
+<span class="fc" id="L74">                        j++;</span>
+<span class="fc" id="L75">                        isHex = true;</span>
+                    }
+
+<span class="fc" id="L78">                    int startPos = j;</span>
+
+                    // Jump to end of digits, find a semi-colon
+<span class="pc bpc" id="L81" title="2 of 6 branches missed.">                    while (j &lt; data.length &amp;&amp; ByteUtil.isHexadecimal(data[j]) &amp;&amp; j &lt; startPos + 5) {</span>
+<span class="fc" id="L82">                        j++;</span>
+                    }
+
+<span class="pc bpc" id="L85" title="2 of 4 branches missed.">                    if (j &lt; data.length &amp;&amp; data[j] == ';') {</span>
+                        // Try to convert it
+<span class="fc" id="L87">                        char[] c = unescapeHtmlChar(new String(data, startPos, j - startPos), isHex);</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">                        if (c != null) {</span>
+                            // write a codepoint
+<span class="fc" id="L90">                            String s = new String(c);</span>
+<span class="fc" id="L91">                            baos.write(s.getBytes());</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">                            if (counters != null) {</span>
+<span class="fc" id="L93">                                counters.count(s);</span>
+                            }
+<span class="fc" id="L95">                            i = j;</span>
+<span class="fc" id="L96">                        } else {</span>
+                            // Do no harm if the conversion fails
+<span class="nc" id="L98">                            baos.write(data[i]);</span>
+                        }
+<span class="fc" id="L100">                    } else {</span>
+<span class="nc" id="L101">                        baos.write(data[i]);</span>
+                    }
+<span class="fc" id="L103">                } else {</span>
+<span class="fc" id="L104">                    baos.write(data[i]);</span>
+                }
+            }
+<span class="fc" id="L107">            returnBytes = baos.toByteArray();</span>
+<span class="fc" id="L108">            baos.close();</span>
+<span class="nc" id="L109">        } catch (IOException e) {</span>
+<span class="nc" id="L110">            logger.debug(&quot;Cannot decode HTML bytes&quot;, e);</span>
+<span class="fc" id="L111">        }</span>
+<span class="fc" id="L112">        return returnBytes;</span>
+    }
+
+    /**
+     * Unescape some HTML data without counting what was changed
+     *
+     * @param s the string of characters possibly containing escaped HTML
+     * @return the new String without escaped HTML
+     */
+    public static String unescapeHtml(String s) {
+<span class="fc" id="L122">        return unescapeHtml(s, null);</span>
+    }
+
+    /**
+     * Unescape some HTML data, turning &lt;code&gt;$#xxxx;&lt;/code&gt; into UNICODE characters
+     *
+     * @param s the string of characters possibly containing escaped HTML
+     * @param counters to measure what is changed
+     * @return the new String without escaped HTML
+     */
+    public static String unescapeHtml(@Nullable String s, @Nullable CharacterCounterSet counters) {
+<span class="fc bfc" id="L133" title="All 4 branches covered.">        if (s == null || s.length() == 0) {</span>
+<span class="fc" id="L134">            return &quot;&quot;;</span>
+        }
+
+<span class="fc" id="L137">        StringBuffer sb = new StringBuffer(s.length());</span>
+<span class="fc" id="L138">        Matcher m = HESC_PATTERN.matcher(s);</span>
+
+        // Match each occurrence
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        while (m.find()) {</span>
+            // Grab digits from first match group
+<span class="fc" id="L143">            String hexModifier = m.group(1);</span>
+<span class="pc bpc" id="L144" title="1 of 4 branches missed.">            boolean isHex = hexModifier != null &amp;&amp; hexModifier.length() &gt; 0;</span>
+<span class="fc" id="L145">            String encodedChar = m.group(2);</span>
+<span class="fc" id="L146">            char[] c = unescapeHtmlChar(encodedChar, isHex);</span>
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">            if (c != null) {</span>
+                // Append non-matching portion plus decoded char
+<span class="fc" id="L149">                m.appendReplacement(sb, &quot;&quot;);</span>
+<span class="fc" id="L150">                sb.append(c);</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">                if (counters != null) {</span>
+<span class="nc" id="L152">                    counters.count(new String(c));</span>
+                }
+            } else {
+                // It failed, append non-match plus original match
+<span class="nc" id="L156">                m.appendReplacement(sb, &quot;$0&quot;);</span>
+            }
+<span class="fc" id="L158">        }</span>
+
+        // Append terminal portion
+<span class="fc" id="L161">        m.appendTail(sb);</span>
+
+        // Return the new string
+<span class="fc" id="L164">        return sb.toString();</span>
+    }
+
+
+    /**
+     * Unescape one HTML character or null if we cannot convert
+     *
+     * @param s the four digit number from the HTML encoding
+     * @param isHex true if the digits are in hex
+     * @return the Unicode codepoint in a[] char or null
+     */
+    @Nullable
+    public static char[] unescapeHtmlChar(String s, boolean isHex) {
+<span class="fc" id="L177">        int num = -1;</span>
+        try {
+<span class="fc bfc" id="L179" title="All 2 branches covered.">            num = Integer.parseInt(s, isHex ? 16 : 10);</span>
+<span class="fc" id="L180">        } catch (NumberFormatException ex) {</span>
+<span class="fc" id="L181">            logger.debug(&quot;Failed to parse char&quot;, ex);</span>
+<span class="fc" id="L182">            return null;</span>
+<span class="fc" id="L183">        }</span>
+        // Turn the number into a Unicode codepoint
+        try {
+<span class="fc" id="L186">            return Character.toChars(num);</span>
+<span class="nc" id="L187">        } catch (Exception ex) {</span>
+<span class="nc" id="L188">            logger.debug(&quot;Cannot toChars: not a valid Unicode code point&quot;, ex);</span>
+<span class="nc" id="L189">            return null;</span>
+        }
+    }
+
+    /**
+     * Unescape HTML entities without counting what was changed
+     *
+     * @param s the string to find entities in
+     */
+    public static String unescapeEntities(String s) {
+<span class="fc" id="L199">        return unescapeEntities(s, null);</span>
+    }
+
+    /**
+     * Unescape HTML entities like &amp;amp;nbsp; into normal characters Also handle broken entities like &amp;amp;;nbsp; and
+     * &amp;amp;nbsp (extra semi-colon and missing semi-colon respectively)
+     *
+     * @param s the string to find entities in
+     * @param counters to measure what was changed
+     */
+    public static String unescapeEntities(String s, @Nullable CharacterCounterSet counters) {
+<span class="fc" id="L210">        int slen = s.length();</span>
+<span class="fc" id="L211">        StringBuilder sb = new StringBuilder(s.length());</span>
+
+<span class="fc bfc" id="L213" title="All 2 branches covered.">        for (int i = 0; i &lt; slen; i++) {</span>
+<span class="fc" id="L214">            char c = s.charAt(i);</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">            if (c != '&amp;') {</span>
+<span class="fc" id="L216">                sb.append(c);</span>
+            } else {
+<span class="fc" id="L218">                int spos = i;</span>
+<span class="fc" id="L219">                int j = spos + 1;</span>
+<span class="pc bpc" id="L220" title="1 of 8 branches missed.">                while (j &lt; slen &amp;&amp; j &lt; (spos + LONGEST_ENTITY_NAME) &amp;&amp; s.charAt(j) != ';' &amp;&amp; s.charAt(j) != ' ') {</span>
+<span class="fc" id="L221">                    j++;</span>
+                }
+
+<span class="fc bfc" id="L224" title="All 4 branches covered.">                if (j &lt; slen &amp;&amp; j == spos + 1) // broken case with extra semicolon</span>
+                {
+<span class="fc" id="L226">                    spos++;</span>
+<span class="fc" id="L227">                    j = spos + 1;</span>
+<span class="pc bpc" id="L228" title="1 of 8 branches missed.">                    while (j &lt; slen &amp;&amp; j &lt; (spos + LONGEST_ENTITY_NAME) &amp;&amp; s.charAt(j) != ';' &amp;&amp; s.charAt(j) != ' ') {</span>
+<span class="fc" id="L229">                        j++;</span>
+                    }
+                }
+
+<span class="pc bpc" id="L233" title="1 of 2 branches missed.">                if (j &lt; slen + 1) {</span>
+<span class="fc" id="L234">                    String ent = null;</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">                    if (j &lt; slen) {</span>
+<span class="pc bpc" id="L236" title="1 of 4 branches missed.">                        if (s.charAt(j) == ';' || s.charAt(j) == ' ') {</span>
+<span class="fc" id="L237">                            ent = s.substring(spos + 1, j);</span>
+                        }
+                    } else {
+                        // all the rest
+<span class="fc" id="L241">                        ent = s.substring(spos + 1);</span>
+                    }
+
+<span class="pc bpc" id="L244" title="1 of 2 branches missed.">                    if (ent != null) {</span>
+<span class="fc" id="L245">                        String val = getValueForHtmlEntity(ent);</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">                        if (val != null) {</span>
+<span class="fc" id="L247">                            sb.append(val);</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">                            if (counters != null) {</span>
+<span class="fc" id="L249">                                counters.count(val);</span>
+                            }
+<span class="fc bfc" id="L251" title="All 2 branches covered.">                            if (j &gt;= slen) {</span>
+<span class="fc" id="L252">                                i = slen; // all done</span>
+                            } else {
+<span class="fc bfc" id="L254" title="All 2 branches covered.">                                i = s.charAt(j) == ' ' ? (j - 1) : j;</span>
+                            }
+                        } else {
+<span class="fc" id="L257">                            sb.append(c);</span>
+                        }
+<span class="fc" id="L259">                    } else {</span>
+<span class="nc" id="L260">                        sb.append(c);</span>
+                    }
+<span class="fc" id="L262">                } else {</span>
+<span class="nc" id="L263">                    sb.append(c);</span>
+                }
+            }
+        }
+<span class="fc" id="L267">        return sb.toString();</span>
+    }
+
+
+    /**
+     * Unescape HTML entities without measuring what was changed
+     */
+    public static byte[] unescapeEntities(byte[] s) {
+<span class="fc" id="L275">        return unescapeEntities(s, null);</span>
+    }
+
+    /**
+     * Unescape HTML Entities like &amp;amp;nbsp; into normal characters Also handle broken entities like &amp;amp;;nbsp; and
+     * &amp;amp;nbsp (extra semi-colon and missing semi-colon respectively)
+     */
+    public static byte[] unescapeEntities(byte[] s, @Nullable CharacterCounterSet counters) {
+<span class="fc" id="L283">        ByteArrayOutputStream baos = new ByteArrayOutputStream();</span>
+<span class="fc" id="L284">        int slen = s.length;</span>
+
+<span class="fc bfc" id="L286" title="All 2 branches covered.">        for (int i = 0; i &lt; slen; i++) {</span>
+<span class="fc bfc" id="L287" title="All 4 branches covered.">            if (i + 4 &lt; slen &amp;&amp; s[i] == '&amp;') {</span>
+<span class="fc" id="L288">                int spos = i;</span>
+<span class="fc" id="L289">                int epos = spos + 1;</span>
+<span class="pc bpc" id="L290" title="1 of 8 branches missed.">                while (epos &lt; slen &amp;&amp; epos &lt; spos + LONGEST_ENTITY_NAME &amp;&amp; s[epos] != ';' &amp;&amp; s[epos] != ' ') {</span>
+<span class="fc" id="L291">                    epos++;</span>
+                }
+
+<span class="fc bfc" id="L294" title="All 2 branches covered.">                if (epos == spos + 1) // broken case with extra semi-colon</span>
+                {
+<span class="fc" id="L296">                    spos++;</span>
+<span class="fc" id="L297">                    epos = spos + 1;</span>
+<span class="pc bpc" id="L298" title="1 of 8 branches missed.">                    while (epos &lt; slen &amp;&amp; epos &lt; spos + LONGEST_ENTITY_NAME &amp;&amp; s[epos] != ';' &amp;&amp; s[epos] != ' ') {</span>
+<span class="fc" id="L299">                        epos++;</span>
+                    }
+                }
+
+<span class="fc" id="L303">                String val = HTML_ENTITY_MAP.getValueForHtmlEntity(new String(s, spos + 1, epos - (spos + 1)));</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">                if (val != null) {</span>
+                    try {
+<span class="fc" id="L306">                        baos.write(val.getBytes());</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">                        if (counters != null) {</span>
+<span class="fc" id="L308">                            counters.count(val);</span>
+                        }
+                        // if we used the space as a terminator, keep the
+                        // space in the output, even though we consumed it
+<span class="fc bfc" id="L312" title="All 2 branches covered.">                        if (epos &lt; slen) {</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">                            i = s[epos] == ' ' ? (epos - 1) : epos;</span>
+                        } else {
+<span class="fc" id="L315">                            i = slen;</span>
+                        }
+<span class="nc" id="L317">                    } catch (IOException iox) {</span>
+<span class="nc" id="L318">                        logger.debug(&quot;Error writing unescaped bytes&quot;, iox);</span>
+<span class="nc" id="L319">                        baos.write(s[i]);</span>
+<span class="pc" id="L320">                    }</span>
+                } else {
+<span class="fc" id="L322">                    baos.write(s[i]);</span>
+                }
+<span class="fc" id="L324">            } else {</span>
+<span class="fc" id="L325">                baos.write(s[i]);</span>
+            }
+        }
+<span class="fc" id="L328">        return baos.toByteArray();</span>
+    }
+
+    @Nullable
+    private static String getValueForHtmlEntity(String entity) {
+<span class="fc" id="L333">        String s = HTML_ENTITY_MAP.getValueForHtmlEntity(entity);</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">        if (s != null) {</span>
+<span class="fc" id="L335">            return s;</span>
+        }
+<span class="fc" id="L337">        return null;</span>
+    }
+
+    /** This class is not meant to be instantiated. */
+    private HtmlEscape() {}
+
+    @SuppressWarnings(&quot;SystemOut&quot;)
+    public static void main(String[] args) {
+<span class="nc" id="L345">        boolean useString = false;</span>
+<span class="nc" id="L346">        int i = 0;</span>
+<span class="nc bnc" id="L347" title="All 4 branches missed.">        if (args.length &gt; 0 &amp;&amp; args[i].equals(&quot;-s&quot;)) {</span>
+<span class="nc" id="L348">            System.out.println(&quot;Switching to string mode&quot;);</span>
+<span class="nc" id="L349">            useString = true;</span>
+<span class="nc" id="L350">            i++;</span>
+        }
+
+<span class="nc bnc" id="L353" title="All 2 branches missed.">        for (; i &lt; args.length; i++) {</span>
+<span class="nc" id="L354">            byte[] content = Executrix.readDataFromFile(args[i]);</span>
+<span class="nc bnc" id="L355" title="All 2 branches missed.">            if (content == null) {</span>
+<span class="nc" id="L356">                System.out.println(args[i] + &quot;: Unreadable&quot;);</span>
+<span class="nc" id="L357">                continue;</span>
+            }
+
+<span class="nc" id="L360">            System.out.println(args[i]);</span>
+<span class="nc bnc" id="L361" title="All 2 branches missed.">            if (useString) {</span>
+<span class="nc" id="L362">                String escaped = HtmlEscape.unescapeHtml(new String(content));</span>
+<span class="nc" id="L363">                escaped = HtmlEscape.unescapeEntities(escaped);</span>
+<span class="nc" id="L364">                System.out.println(escaped);</span>
+<span class="nc" id="L365">            } else {</span>
+<span class="nc" id="L366">                byte[] escaped = HtmlEscape.unescapeHtml(content);</span>
+<span class="nc" id="L367">                escaped = HtmlEscape.unescapeEntities(escaped);</span>
+<span class="nc" id="L368">                System.out.write(escaped, 0, escaped.length);</span>
+<span class="nc" id="L369">                System.out.println();</span>
+            }
+        }
+<span class="nc" id="L372">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

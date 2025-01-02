@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmissaryClient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.client</a> &gt; <span class="el_source">EmissaryClient.java</span></div><h1>EmissaryClient.java</h1><pre class="source lang-java linenums">package emissary.client;
+
+import emissary.client.EmissaryResponse.EmissaryResponseHandler;
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+
+import com.google.common.annotations.VisibleForTesting;
+import jakarta.ws.rs.core.MediaType;
+import org.apache.hc.client5.http.auth.AuthCache;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.Credentials;
+import org.apache.hc.client5.http.auth.StandardAuthScheme;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.Cookie;
+import org.apache.hc.client5.http.entity.EntityBuilder;
+import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
+import org.apache.hc.core5.util.Timeout;
+import org.eclipse.jetty.util.security.Password;
+import org.glassfish.jersey.server.filter.CsrfProtectionFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
+
+/**
+ * Base class of all the actions that use HttpClient.
+ */
+@SuppressWarnings(&quot;NonFinalStaticField&quot;)
+public class EmissaryClient {
+
+    public static final String DEFAULT_CONTEXT = &quot;emissary&quot;;
+    public static final String JETTY_USER_FILE_PROPERTY_NAME = &quot;emissary.jetty.users.file&quot;;
+<span class="fc" id="L49">    public static final int DEFAULT_CONNECTION_TIMEOUT = (int) TimeUnit.MINUTES.toMillis(100L); // 2 X 50 min</span>
+<span class="fc" id="L50">    public static final int DEFAULT_CONNECTION_MANAGER_TIMEOUT = (int) TimeUnit.MINUTES.toMillis(2L);</span>
+<span class="fc" id="L51">    public static final int DEFAULT_SOCKET_TIMEOUT = (int) TimeUnit.MINUTES.toMillis(1L);</span>
+    public static final int DEFAULT_RETRIES = 3;
+    public static final String DEFAULT_USERNAME = &quot;emissary&quot;;
+    public static final String DEFAULT_PASSWORD = &quot;password&quot;;
+    public static final String CSRF_HEADER_PARAM = CsrfProtectionFilter.HEADER_NAME;
+
+<span class="fc" id="L57">    private static final Logger LOGGER = LoggerFactory.getLogger(EmissaryClient.class);</span>
+
+<span class="fc" id="L59">    private static final PoolingHttpClientConnectionManager CONNECTION_MANAGER = HTTPConnectionFactory.getFactory().getDefaultConnectionManager();</span>
+    // some default objects to use
+<span class="fc" id="L61">    private static final BasicCredentialsProvider CRED_PROV = new BasicCredentialsProvider();</span>
+    protected static final int ANY_PORT = -1;
+    @Nullable
+<span class="fc" id="L64">    protected static final String ANY_HOST = null;</span>
+
+    @Nullable
+<span class="fc" id="L67">    private static CloseableHttpClient staticClient = null;</span>
+    @Nullable
+<span class="fc" id="L69">    private static RequestConfig staticRequestConfig = null;</span>
+    @Nullable
+<span class="fc" id="L71">    private static ConnectionConfig staticConnectionConfig = null;</span>
+
+    // static config variables
+<span class="fc" id="L74">    public static String context = DEFAULT_CONTEXT;</span>
+<span class="fc" id="L75">    protected static int retries = DEFAULT_RETRIES;</span>
+<span class="fc" id="L76">    protected static String username = DEFAULT_USERNAME;</span>
+    // How long to wait while establishing a connection (ms)
+<span class="fc" id="L78">    protected static int connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;</span>
+    // How long to wait for a connection from the pool (ms)
+<span class="fc" id="L80">    protected static int connectionManagerTimeout = DEFAULT_CONNECTION_MANAGER_TIMEOUT;</span>
+    // How long to wait on a data read in a connection (ms)
+<span class="fc" id="L82">    protected static int socketTimeout = DEFAULT_SOCKET_TIMEOUT;</span>
+    // class is thread-safe
+<span class="fc" id="L84">    protected static final AuthCache AUTH_CACHE = new BasicAuthCache();</span>
+
+    private final CloseableHttpClient client;
+    private final RequestConfig requestConfig;
+    private ConnectionConfig connectionConfig;
+
+    static {
+<span class="fc" id="L91">        configure();</span>
+<span class="fc" id="L92">    }</span>
+
+    @VisibleForTesting
+    protected static void configure() {
+<span class="fc" id="L96">        LOGGER.debug(&quot;Configuring EmissaryClient&quot;);</span>
+
+        // parse configs
+        try {
+<span class="fc" id="L100">            final Configurator c = ConfigUtil.getConfigInfo(EmissaryClient.class);</span>
+<span class="fc" id="L101">            retries = c.findIntEntry(&quot;retries&quot;, DEFAULT_RETRIES);</span>
+<span class="fc" id="L102">            username = c.findStringEntry(&quot;username&quot;, DEFAULT_USERNAME);</span>
+<span class="fc" id="L103">            connectionTimeout = c.findIntEntry(&quot;connectionTimeout&quot;, DEFAULT_CONNECTION_TIMEOUT);</span>
+<span class="fc" id="L104">            connectionManagerTimeout = c.findIntEntry(&quot;connectionManagerTimeout&quot;, DEFAULT_CONNECTION_MANAGER_TIMEOUT);</span>
+<span class="fc" id="L105">            socketTimeout = c.findIntEntry(&quot;socketTimeout&quot;, DEFAULT_SOCKET_TIMEOUT);</span>
+<span class="fc" id="L106">            context = c.findStringEntry(&quot;context&quot;, DEFAULT_CONTEXT);</span>
+<span class="fc" id="L107">        } catch (IOException iox) {</span>
+<span class="fc" id="L108">            LOGGER.warn(&quot;Cannot read EmissaryClient properties, configuring defaults: {}&quot;, iox.getMessage());</span>
+<span class="fc" id="L109">            retries = DEFAULT_RETRIES;</span>
+<span class="fc" id="L110">            username = DEFAULT_USERNAME;</span>
+<span class="fc" id="L111">            connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;</span>
+<span class="fc" id="L112">            connectionManagerTimeout = DEFAULT_CONNECTION_MANAGER_TIMEOUT;</span>
+<span class="fc" id="L113">            socketTimeout = DEFAULT_SOCKET_TIMEOUT;</span>
+<span class="fc" id="L114">            context = DEFAULT_CONTEXT;</span>
+<span class="fc" id="L115">        }</span>
+
+        // Read the jetty user realm formatted property file for the password
+        // Value for password remains unchanged if there is a problem
+        try {
+<span class="fc" id="L120">            String userPropertiesFile = System.getProperty(JETTY_USER_FILE_PROPERTY_NAME);</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">            if (null == userPropertiesFile) {</span>
+<span class="fc" id="L122">                LOGGER.debug(&quot;System property '{}' not set, using default jetty-users.properties&quot;, JETTY_USER_FILE_PROPERTY_NAME);</span>
+<span class="fc" id="L123">                userPropertiesFile = &quot;jetty-users.properties&quot;;</span>
+            }
+<span class="fc" id="L125">            LOGGER.debug(&quot;Reading password from {}&quot;, userPropertiesFile);</span>
+<span class="fc" id="L126">            final Properties props = ConfigUtil.getPropertyInfo(userPropertiesFile);</span>
+<span class="fc" id="L127">            String pass = DEFAULT_PASSWORD;</span>
+<span class="fc" id="L128">            final String value = props.getProperty(username, pass);</span>
+<span class="pc bpc" id="L129" title="2 of 4 branches missed.">            if (value != null &amp;&amp; value.indexOf(',') != -1) {</span>
+<span class="fc" id="L130">                pass = value.substring(0, value.indexOf(',')).trim();</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">            } else if (pass.equals(value)) {</span>
+<span class="nc" id="L132">                LOGGER.error(&quot;Error reading password from {}&quot;, userPropertiesFile);</span>
+            }
+            // Supply default credentials for anyone we want to connect to
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">            final String decodedPassword = pass.startsWith(&quot;OBF:&quot;) ? Password.deobfuscate(pass) : pass;</span>
+<span class="fc" id="L136">            final Credentials cred = new UsernamePasswordCredentials(username, decodedPassword.toCharArray());</span>
+<span class="fc" id="L137">            CRED_PROV.setCredentials(new AuthScope(ANY_HOST, ANY_PORT), cred);</span>
+<span class="nc" id="L138">        } catch (IOException iox) {</span>
+<span class="nc" id="L139">            LOGGER.error(&quot;Cannot read {} in EmissaryClient, defaulting credentials&quot;, System.getProperty(JETTY_USER_FILE_PROPERTY_NAME));</span>
+<span class="nc" id="L140">            final Credentials cred = new UsernamePasswordCredentials(username, DEFAULT_PASSWORD.toCharArray());</span>
+<span class="nc" id="L141">            final AuthScope authScope = new AuthScope(ANY_HOST, ANY_PORT);</span>
+<span class="nc" id="L142">            CRED_PROV.setCredentials(authScope, cred);</span>
+<span class="fc" id="L143">        }</span>
+
+        staticRequestConfig =
+<span class="fc" id="L146">                RequestConfig.custom()</span>
+<span class="fc" id="L147">                        .setConnectionRequestTimeout(Timeout.ofMilliseconds(connectionManagerTimeout))</span>
+<span class="fc" id="L148">                        .setTargetPreferredAuthSchemes(Collections.singleton(StandardAuthScheme.DIGEST))</span>
+<span class="fc" id="L149">                        .setProxyPreferredAuthSchemes(Collections.singleton(StandardAuthScheme.DIGEST))</span>
+<span class="fc" id="L150">                        .build();</span>
+
+<span class="fc" id="L152">        staticConnectionConfig = ConnectionConfig.custom()</span>
+<span class="fc" id="L153">                .setConnectTimeout(Timeout.ofMilliseconds(connectionTimeout))</span>
+<span class="fc" id="L154">                .setSocketTimeout(Timeout.ofMilliseconds(socketTimeout)).build();</span>
+
+<span class="fc" id="L156">        CONNECTION_MANAGER.setDefaultConnectionConfig(staticConnectionConfig);</span>
+
+        staticClient =
+<span class="fc" id="L159">                HttpClientBuilder.create().setConnectionManager(CONNECTION_MANAGER).setDefaultCredentialsProvider(CRED_PROV)</span>
+<span class="fc" id="L160">                        .setDefaultRequestConfig(staticRequestConfig).build();</span>
+
+<span class="fc" id="L162">    }</span>
+
+    public EmissaryClient() {
+<span class="fc" id="L165">        this(staticClient, staticRequestConfig, staticConnectionConfig);</span>
+<span class="fc" id="L166">    }</span>
+
+    public EmissaryClient(RequestConfig requestConfig, ConnectionConfig connectionConfig) {
+<span class="nc" id="L169">        this(staticClient, requestConfig, connectionConfig);</span>
+<span class="nc" id="L170">    }</span>
+
+    public EmissaryClient(CloseableHttpClient client) {
+<span class="fc" id="L173">        this(client, staticRequestConfig, staticConnectionConfig);</span>
+<span class="fc" id="L174">    }</span>
+
+<span class="fc" id="L176">    public EmissaryClient(CloseableHttpClient client, RequestConfig requestConfig, ConnectionConfig connectionConfig) {</span>
+<span class="fc" id="L177">        this.client = client;</span>
+<span class="fc" id="L178">        this.requestConfig = requestConfig;</span>
+<span class="fc" id="L179">        this.connectionConfig = connectionConfig;</span>
+<span class="fc" id="L180">    }</span>
+
+    public EmissaryResponse send(final HttpUriRequestBase method) {
+<span class="fc" id="L183">        return send(method, null);</span>
+    }
+
+    /**
+     * Sends a request to the web server. The request can be any HttpMethod. Adds the specified cookie to the Http State
+     *
+     * @param method the method to be sent
+     * @param cookie a cookie to set on the request
+     */
+    public EmissaryResponse send(final HttpUriRequestBase method, @Nullable final Cookie cookie) {
+        try {
+<span class="fc" id="L194">            LOGGER.debug(&quot;Sending {} to {}&quot;, method.getMethod(), method.getUri());</span>
+<span class="nc" id="L195">        } catch (URISyntaxException e) {</span>
+<span class="nc" id="L196">            LOGGER.debug(&quot;Sending {} and failed to retrieve URI&quot;, method.getMethod());</span>
+<span class="fc" id="L197">        }</span>
+
+<span class="fc" id="L199">        HttpClientContext localContext = HttpClientContext.create();</span>
+<span class="fc" id="L200">        localContext.setAttribute(HttpClientContext.AUTH_CACHE, EmissaryClient.AUTH_CACHE);</span>
+
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">        if (cookie != null) {</span>
+<span class="nc" id="L203">            localContext.getCookieStore().addCookie(cookie);</span>
+        }
+
+        try {
+            // This is thread safe. The client is instantiated in a static block above
+            // with a connection pool. Calling new EmissaryClient().send allows you
+            // to use a different context and request config per request
+<span class="fc" id="L210">            method.setConfig(requestConfig);</span>
+<span class="fc" id="L211">            CloseableHttpClient thisClient = getHttpClient();</span>
+<span class="fc" id="L212">            return thisClient.execute(method, localContext, new EmissaryResponseHandler());</span>
+<span class="fc" id="L213">        } catch (IOException e) {</span>
+<span class="fc" id="L214">            LOGGER.debug(&quot;Problem processing request:&quot;, e);</span>
+<span class="fc" id="L215">            BasicClassicHttpResponse response = new BasicClassicHttpResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());</span>
+<span class="fc" id="L216">            response.setEntity(EntityBuilder.create().setText(e.getClass() + &quot;: &quot; + e.getMessage()).setContentEncoding(MediaType.TEXT_PLAIN).build());</span>
+<span class="fc" id="L217">            return new EmissaryResponse(response);</span>
+        }
+    }
+
+    protected CloseableHttpClient getHttpClient() {
+<span class="fc" id="L222">        return client;</span>
+    }
+
+    protected RequestConfig getRequestConfig() {
+<span class="fc" id="L226">        return requestConfig;</span>
+    }
+
+    protected ConnectionConfig getConnectionConfig() {
+<span class="fc" id="L230">        return connectionConfig;</span>
+    }
+
+
+    public void setConnectionTimeout(int timeout) {
+<span class="pc bpc" id="L235" title="1 of 2 branches missed.">        if (timeout &gt; 0) {</span>
+<span class="fc" id="L236">            connectionConfig = ConnectionConfig.copy(connectionConfig).setConnectTimeout(Timeout.ofMilliseconds(timeout)).build();</span>
+        } else {
+<span class="nc" id="L238">            LOGGER.warn(&quot;Tried to set timeout to {}&quot;, timeout);</span>
+        }
+<span class="fc" id="L240">    }</span>
+
+    protected String getCsrfToken() {
+<span class="fc" id="L243">        return DEFAULT_CONTEXT;</span>
+    }
+
+    public HttpPost createHttpPost(String uri, String context, String endpoint) {
+<span class="fc" id="L247">        return createHttpPost(uri + context + endpoint, getCsrfToken());</span>
+    }
+
+    public HttpPost createHttpPost(String uri) {
+<span class="nc" id="L251">        return createHttpPost(uri, getCsrfToken());</span>
+    }
+
+    public HttpPost createHttpPost(String uri, String csrfToken) {
+<span class="fc" id="L255">        HttpPost method = new HttpPost(uri);</span>
+<span class="fc" id="L256">        setCsrfHeader(method, csrfToken);</span>
+<span class="fc" id="L257">        return method;</span>
+    }
+
+    public HttpUriRequestBase setCsrfHeader(HttpUriRequestBase request, String csrfToken) {
+<span class="fc" id="L261">        return setCsrfHeader(request, CSRF_HEADER_PARAM, csrfToken);</span>
+    }
+
+    public HttpUriRequestBase setCsrfHeader(HttpUriRequestBase request, String csrfParam, String csrfToken) {
+<span class="fc" id="L265">        request.addHeader(csrfParam, csrfToken);</span>
+<span class="fc" id="L266">        return request;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

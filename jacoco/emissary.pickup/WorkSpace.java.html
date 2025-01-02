@@ -1,0 +1,1493 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WorkSpace.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.pickup</a> &gt; <span class="el_source">WorkSpace.java</span></div><h1>WorkSpace.java</h1><pre class="source lang-java linenums">package emissary.pickup;
+
+import emissary.client.EmissaryResponse;
+import emissary.command.BaseCommand;
+import emissary.command.FeedCommand;
+import emissary.command.ServerCommand;
+import emissary.core.EmissaryException;
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+import emissary.directory.DirectoryAdapter;
+import emissary.directory.DirectoryEntry;
+import emissary.directory.DirectoryPlace;
+import emissary.directory.EmissaryNode;
+import emissary.directory.IDirectoryPlace;
+import emissary.directory.KeyManipulator;
+import emissary.pool.AgentPool;
+import emissary.server.EmissaryServer;
+import emissary.server.mvc.adapters.WorkSpaceAdapter;
+import emissary.util.Version;
+import emissary.util.io.FileFind;
+
+import org.apache.hc.core5.http.HttpStatus;
+import org.eclipse.jetty.server.Server;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import javax.annotation.Nullable;
+
+/**
+ * Recursively process input and distribute files to one or more remote PickUp client instances when they ask for a
+ * bundle of work to do.
+ * &lt;p&gt;
+ * The work bundles, emissary.pickup.WorkBundle objects, are placed on a queue for sending to consumers by the producer
+ * here. Once a WorkBundle has been requested and sent to a consumer (i.e. FilePickUpClient) it is placed on a pending
+ * queue tagged with the consumer id until the consumer notifies this WorkSpace that the work has been completed. If the
+ * consumer goes away without notification, then the work is moved back to the outbound queue and given to another
+ * consumer.
+ */
+public class WorkSpace implements Runnable {
+    /** Our logger */
+<span class="fc" id="L59">    protected static final Logger logger = LoggerFactory.getLogger(WorkSpace.class);</span>
+
+    protected FeedCommand feedCommand;
+
+    /**
+     * Pickup places we will send to, loaded and modified by directory observation during runtime
+     */
+<span class="fc" id="L66">    protected List&lt;String&gt; pups = new CopyOnWriteArrayList&lt;&gt;();</span>
+
+    /**
+     * Initial pattern for finding pickup places
+     */
+<span class="fc" id="L71">    protected String pattern = System.getProperty(CLZ + &quot;.clientPattern&quot;, &quot;*.FILE_PICK_UP_CLIENT.INPUT.*&quot;);</span>
+
+    /** The directory observer for the pattern */
+    protected WorkSpaceDirectoryWatcher watcher;
+
+    // Process control
+<span class="fc" id="L77">    protected static final String CLZ = WorkSpace.class.getName();</span>
+<span class="fc" id="L78">    protected boolean wantDirectories = Boolean.getBoolean(CLZ + &quot;.includeDirectories&quot;);</span>
+<span class="fc" id="L79">    protected boolean debug = Boolean.getBoolean(CLZ + &quot;.debug&quot;);</span>
+<span class="fc" id="L80">    protected boolean simpleMode = false;</span>
+<span class="fc" id="L81">    protected String outputRootPath = System.getProperty(&quot;outputRoot&quot;, null);</span>
+<span class="fc" id="L82">    protected String eatPrefix = System.getProperty(&quot;eatPrefix&quot;, null);</span>
+<span class="fc" id="L83">    protected int numberOfBundlesToSkip = Integer.getInteger(CLZ + &quot;.skip&quot;, 0);</span>
+<span class="fc" id="L84">    protected boolean skipDotFiles = Boolean.getBoolean(CLZ + &quot;.skipDotFiles&quot;);</span>
+<span class="fc" id="L85">    protected boolean loop = false;</span>
+<span class="fc" id="L86">    protected boolean useRetryStrategy = false;</span>
+    protected static final int MAX_BUNDLE_RETRIES = 5;
+<span class="fc" id="L88">    protected PriorityQueue&lt;PriorityDirectory&gt; myDirectories = new PriorityQueue&lt;&gt;();</span>
+
+    // Stats tracking, map of stats per remote pick up place
+<span class="fc" id="L91">    protected WorkSpaceStats stats = new WorkSpaceStats();</span>
+
+    // Thread to notify clients that there is work to do
+<span class="fc" id="L94">    @Nullable</span>
+    protected ClientNotifier notifier = null;
+
+    // Process control for collector thread
+<span class="fc" id="L98">    protected boolean timeToQuit = false;</span>
+<span class="fc" id="L99">    protected boolean collectorThreadHasQuit = false;</span>
+<span class="fc" id="L100">    protected boolean jettyStartedHere = false;</span>
+    protected static final float MEM_THRESHOLD = 0.80f;
+<span class="fc" id="L102">    protected long loopPauseTime = 60000L;</span>
+<span class="fc" id="L103">    protected long pendingHangTime = 600000L;</span>
+    protected static final long NOTIFIER_PAUSE_TIME = 1000L;
+<span class="fc" id="L105">    protected int retryCount = 0;</span>
+<span class="fc" id="L106">    protected boolean useFileTimestamps = false;</span>
+<span class="fc" id="L107">    @Nullable</span>
+    protected String projectBase = null;
+
+    /**
+     * How many file names to send per remote message, should be 10% or less of the size of the PickUpPlace.MAX_QUE Helps
+     * prevent blocking if it's not a factor of the PickUpPlace.MAX_QUE size
+     */
+<span class="fc" id="L114">    protected int filesPerMessage = Integer.getInteger(CLZ + &quot;.filesPerBundle&quot;, 5);</span>
+
+<span class="fc" id="L116">    protected long maxBundleSize = Long.getLong(CLZ + &quot;.maxSizePerBundle&quot;, -1);</span>
+
+    // Metrics collection
+<span class="fc" id="L119">    protected long filesProcessed = 0;</span>
+<span class="fc" id="L120">    protected long bundlesProcessed = 0;</span>
+<span class="fc" id="L121">    protected long bytesProcessed = 0;</span>
+
+    // Data tracking
+<span class="fc" id="L124">    protected String dataCaseId = System.getProperty(&quot;caseId&quot;, null);</span>
+<span class="fc" id="L125">    protected boolean caseClosed = false;</span>
+
+    // List of WorkBundle objects we are going to distribute
+<span class="fc" id="L128">    protected PriorityQueue&lt;WorkBundle&gt; outbound = new PriorityQueue&lt;&gt;();</span>
+
+    // List of WorkBundle objects that are pending completion notice
+    // Keyed by bundleId to quickly remove items that are processed
+    // normally (the expected case)
+<span class="fc" id="L133">    protected Map&lt;String, WorkBundle&gt; pending = new HashMap&lt;&gt;();</span>
+
+    // Keep track of files we have seen that are either outbound or pending
+    // so that we can avoid using file timestamps in the collector loop
+<span class="fc" id="L137">    protected Map&lt;String, Long&gt; filesSeen = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L138">    protected Map&lt;String, Long&gt; filesDone = new HashMap&lt;&gt;();</span>
+
+    // Used to synchronize access to the pending and outbound queues
+    // One lock to rule them all
+<span class="fc" id="L142">    @SuppressWarnings(&quot;ConstantField&quot;)</span>
+    protected final Object QLOCK = new Object(); // NOSONAR
+
+    // How we register in the namespace and advertise ourselves
+    protected static final String DEFAULT_WORK_SPACE_NAME = &quot;WorkSpace&quot;;
+<span class="fc" id="L147">    protected String workSpaceName = DEFAULT_WORK_SPACE_NAME;</span>
+
+    protected String workSpaceUrl;
+    protected String workSpaceKey;
+
+    /**
+     * Command line entry point for sending files to a list of remote TreePickUpPlaces
+     */
+    public static void main(final String[] args) {
+        try {
+<span class="nc" id="L157">            final WorkSpace ws = new WorkSpace(BaseCommand.parse(FeedCommand.class, args));</span>
+<span class="nc" id="L158">            ws.run();</span>
+<span class="nc" id="L159">            logger.info(&quot;Workspace has completed the mission [ +1 health ].&quot;);</span>
+<span class="nc" id="L160">            ws.shutDown();</span>
+<span class="nc" id="L161">        } catch (Exception e) {</span>
+<span class="nc" id="L162">            logger.error(&quot;Bad commandline arguments, check the FeedCommand help&quot;, e);</span>
+<span class="nc" id="L163">        }</span>
+<span class="nc" id="L164">        System.exit(0);</span>
+<span class="nc" id="L165">    }</span>
+
+    /**
+     * Construct the space
+     */
+    @SuppressWarnings(&quot;CheckedExceptionNotThrown&quot;)
+<span class="fc" id="L171">    public WorkSpace() throws Exception {</span>
+
+<span class="fc" id="L173">    }</span>
+
+<span class="fc" id="L175">    public WorkSpace(FeedCommand feedCommand) {</span>
+<span class="fc" id="L176">        this.feedCommand = feedCommand;</span>
+        // TODO make setting of all parameters use setters
+<span class="fc" id="L178">        this.loop = this.feedCommand.isLoop();</span>
+<span class="fc" id="L179">        this.setRetryStrategy(this.feedCommand.isRetry());</span>
+<span class="fc" id="L180">        this.setFileTimestampUsage(this.feedCommand.isFileTimestamp());</span>
+<span class="fc" id="L181">        this.workSpaceName = this.feedCommand.getWorkspaceName();</span>
+<span class="fc" id="L182">        this.simpleMode = this.feedCommand.isSimple();</span>
+<span class="fc" id="L183">        this.projectBase = this.feedCommand.getProjectBase().toAbsolutePath().toString();</span>
+<span class="fc" id="L184">        this.pattern = this.feedCommand.getClientPattern();</span>
+<span class="fc" id="L185">        this.outputRootPath = this.feedCommand.getOutputRoot();</span>
+<span class="fc" id="L186">        this.eatPrefix = this.feedCommand.getEatPrefix();</span>
+<span class="fc" id="L187">        this.filesPerMessage = this.feedCommand.getBundleSize();</span>
+<span class="fc" id="L188">        this.dataCaseId = this.feedCommand.getCaseId();</span>
+<span class="fc" id="L189">        this.setSkipDotFiles(this.feedCommand.isSkipDotFile());</span>
+<span class="fc" id="L190">        this.wantDirectories = this.feedCommand.isIncludeDirs();</span>
+<span class="fc" id="L191">        this.setSimpleMode(this.feedCommand.isSimple());</span>
+<span class="fc" id="L192">        this.myDirectories.addAll(this.feedCommand.getPriorityDirectories());</span>
+
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        if (null != this.feedCommand.getSort()) {</span>
+<span class="fc" id="L195">            this.outbound = new PriorityQueue&lt;&gt;(11, this.feedCommand.getSort());</span>
+        }
+
+<span class="fc" id="L198">        configure();</span>
+<span class="fc" id="L199">        startJetty();</span>
+<span class="fc" id="L200">        initializeService();</span>
+<span class="fc" id="L201">    }</span>
+
+    protected void startJetty() {
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">        if (!EmissaryServer.isStarted()) {</span>
+            // TODO investigate passing the feedCommand object directly to the serverCommand
+<span class="fc" id="L206">            List&lt;String&gt; args = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L207">            args.add(&quot;-b&quot;);</span>
+<span class="fc" id="L208">            args.add(projectBase);</span>
+<span class="fc" id="L209">            args.add(&quot;--agents&quot;);</span>
+<span class="fc" id="L210">            args.add(&quot;1&quot;); // feed don't need agents</span>
+<span class="fc" id="L211">            args.add(&quot;-h&quot;);</span>
+<span class="fc" id="L212">            args.add(this.feedCommand.getHost());</span>
+<span class="fc" id="L213">            args.add(&quot;-p&quot;);</span>
+<span class="fc" id="L214">            args.add(String.valueOf(this.feedCommand.getPort()));</span>
+            // feed doesn't make sense in standalone
+<span class="fc" id="L216">            args.add(&quot;-m&quot;);</span>
+<span class="fc" id="L217">            args.add(&quot;cluster&quot;);</span>
+<span class="fc" id="L218">            args.add(&quot;--flavor&quot;);</span>
+<span class="fc" id="L219">            args.add(this.feedCommand.getFlavor());</span>
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">            if (this.feedCommand.isSslEnabled()) {</span>
+<span class="nc" id="L221">                args.add(&quot;--ssl&quot;);</span>
+            }
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">            if (this.feedCommand.isSniHostCheckDisabled()) {</span>
+<span class="nc" id="L224">                args.add(&quot;--disableSniHostCheck&quot;);</span>
+            }
+            try {
+                // To ensure the feed command starts correctly, depends on a node-{feedCommand.getPort}.cfg file
+<span class="fc" id="L228">                ServerCommand cmd = BaseCommand.parse(ServerCommand.class, args);</span>
+<span class="fc" id="L229">                Server server = new EmissaryServer(cmd).startServer();</span>
+<span class="fc" id="L230">                final boolean jettyStatus = server.isStarted();</span>
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">                if (!jettyStatus) {</span>
+<span class="nc" id="L232">                    logger.error(&quot;Cannot start the Workspace due to EmissaryServer not starting!&quot;);</span>
+                } else {
+<span class="fc" id="L234">                    logger.info(&quot;Workspace is up and running&quot;);</span>
+<span class="fc" id="L235">                    this.jettyStartedHere = true;</span>
+                }
+<span class="nc" id="L237">            } catch (EmissaryException e) {</span>
+<span class="nc" id="L238">                logger.error(&quot;Error starting EmissaryServer! WorkSpace will not start!&quot;, e);</span>
+<span class="fc" id="L239">            }</span>
+<span class="fc" id="L240">        } else {</span>
+<span class="nc" id="L241">            logger.info(&quot;EmissaryServer is already running, Workspace should be up.&quot;);</span>
+        }
+<span class="fc" id="L243">    }</span>
+
+    protected void initializeService() {
+        // Load existing pickup client list
+        try {
+<span class="fc" id="L248">            this.pups.addAll(getPickUpClients(this.pattern));</span>
+<span class="fc" id="L249">            logger.info(&quot;Found {} initial clients using {} in {}&quot;, this.pups.size(), this.pattern, getKey());</span>
+<span class="fc" id="L250">            logger.debug(&quot;Initial pickups : {}&quot;, this.pups);</span>
+<span class="nc" id="L251">        } catch (EmissaryException ex) {</span>
+<span class="nc" id="L252">            logger.error(&quot;Cannot lookup pickup places using pattern {} in {}&quot;, this.pattern, getKey(), ex);</span>
+<span class="fc" id="L253">        }</span>
+
+        // Hook our observer onto the local directory,
+        // so we keep in sync with any changes to the clients
+<span class="fc" id="L257">        this.watcher = new WorkSpaceDirectoryWatcher(this.pattern);</span>
+        try {
+<span class="fc" id="L259">            DirectoryAdapter.register(this.watcher);</span>
+<span class="nc" id="L260">        } catch (EmissaryException ex) {</span>
+<span class="nc" id="L261">            logger.error(&quot;Cannot register directory observer&quot;, ex);</span>
+<span class="fc" id="L262">        }</span>
+
+        // Must be before we start processing files and directories
+<span class="fc" id="L265">        initializeCase();</span>
+<span class="fc" id="L266">    }</span>
+
+    /**
+     * Start collection of files and monitoring system progress
+     */
+    @Override
+    public void run() {
+        // Start the collection of files
+<span class="nc" id="L274">        startCollector();</span>
+
+        // Start client notifier
+<span class="nc" id="L277">        startNotifier();</span>
+
+        // Start monitoring the system until all work is done
+<span class="nc" id="L280">        monitorProgress();</span>
+
+<span class="nc" id="L282">        logger.debug(&quot;Ending the WorkSpace run method&quot;);</span>
+<span class="nc" id="L283">    }</span>
+
+    /**
+     * Stop the work space
+     */
+    public void stop() {
+<span class="fc" id="L289">        this.timeToQuit = true;</span>
+<span class="fc" id="L290">    }</span>
+
+    /**
+     * Shut down services that were started here
+     */
+    public void shutDown() {
+<span class="fc" id="L296">        stop();</span>
+<span class="pc bpc" id="L297" title="1 of 2 branches missed.">        if (this.jettyStartedHere) {</span>
+<span class="nc" id="L298">            final EmissaryNode node = new EmissaryNode();</span>
+<span class="nc bnc" id="L299" title="All 2 branches missed.">            if (node.isValid()) {</span>
+                try {
+<span class="nc" id="L301">                    final EmissaryServer s = EmissaryServer.lookup();</span>
+<span class="nc" id="L302">                    s.getServer().stop();</span>
+<span class="nc" id="L303">                } catch (NamespaceException ex) {</span>
+<span class="nc" id="L304">                    logger.error(&quot;Cannot find jetty server&quot;, ex);</span>
+<span class="nc" id="L305">                } catch (Exception ex) {</span>
+<span class="nc" id="L306">                    logger.error(&quot;Jetty cannot be shutdown&quot;, ex);</span>
+<span class="nc" id="L307">                }</span>
+            }
+            try {
+<span class="nc" id="L310">                AgentPool.lookup().close();</span>
+<span class="nc" id="L311">            } catch (NamespaceException ex) {</span>
+<span class="nc" id="L312">                logger.debug(&quot;Agent pool namespace lookup failed&quot;, ex);</span>
+<span class="nc" id="L313">            }</span>
+        }
+<span class="fc" id="L315">    }</span>
+
+    /**
+     * Set the pending hang time, how long to wait after outbound queue is empty
+     *
+     * @param pendingHangTime in millis
+     */
+    public void setPendingHangTime(final long pendingHangTime) {
+<span class="nc" id="L323">        this.pendingHangTime = pendingHangTime;</span>
+<span class="nc" id="L324">    }</span>
+
+    /**
+     * Set the loop pause time when loop is true
+     *
+     * @param pauseTimeMillis pause interval in millis
+     */
+    public void setPauseTime(final long pauseTimeMillis) {
+<span class="nc" id="L332">        this.loopPauseTime = pauseTimeMillis;</span>
+<span class="nc" id="L333">    }</span>
+
+    /**
+     * Set or unset looping
+     */
+    public void setLoop(final boolean on) {
+<span class="nc" id="L339">        this.loop = on;</span>
+<span class="nc" id="L340">    }</span>
+
+    /**
+     * Get the value of the loop indicator
+     */
+    public boolean getLoop() {
+<span class="nc" id="L346">        return this.loop;</span>
+    }
+
+    /**
+     * Set the use of file timestamps to control whether a file is new enough to be added to the queue
+     */
+    public void setFileTimestampUsage(final boolean value) {
+<span class="fc" id="L353">        this.useFileTimestamps = value;</span>
+<span class="fc" id="L354">    }</span>
+
+    /**
+     * Return whether fileTimestamps can be used for collector queue control
+     */
+    public boolean getFileTimestampUsage() {
+<span class="nc" id="L360">        return this.useFileTimestamps;</span>
+    }
+
+    /**
+     * Set Retry strategy on or off
+     */
+    public void setRetryStrategy(final boolean on) {
+<span class="fc" id="L367">        this.useRetryStrategy = on;</span>
+<span class="fc" id="L368">    }</span>
+
+    /**
+     * Get value of the retry strategy indicator
+     *
+     * @return true if retry strategy in use
+     */
+    public boolean getRetryStrategy() {
+<span class="nc" id="L376">        return this.useRetryStrategy;</span>
+    }
+
+    /**
+     * Add directory at specified priority to be monitored
+     */
+    public void addDirectory(final String dir, final int priority) {
+<span class="nc" id="L383">        addDirectory(new PriorityDirectory(dir, priority));</span>
+<span class="nc" id="L384">    }</span>
+
+    /**
+     * Add specified PriorityDirectory object to be monitored
+     */
+    public void addDirectory(final PriorityDirectory dir) {
+<span class="nc" id="L390">        this.myDirectories.add(dir);</span>
+<span class="nc" id="L391">        logger.debug(&quot;Adding input directory {}&quot;, dir);</span>
+<span class="nc" id="L392">    }</span>
+
+    public List&lt;String&gt; getDirectories() {
+<span class="fc" id="L395">        final List&lt;String&gt; l = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L396">        final PriorityDirectory[] pds = this.myDirectories.toArray(new PriorityDirectory[0]);</span>
+<span class="fc" id="L397">        Arrays.sort(pds);</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        for (final PriorityDirectory pd : pds) {</span>
+<span class="fc" id="L399">            l.add(pd.toString());</span>
+        }
+<span class="fc" id="L401">        return l;</span>
+    }
+
+    /**
+     * Set directory processing flag. When true directory entries are retrieved from the input area just like normal files.
+     *
+     * @see emissary.util.io.FileFind
+     * @param on the new value for directory retrieval
+     */
+    public void setDirectoryProcessing(final boolean on) {
+<span class="nc" id="L411">        this.wantDirectories = on;</span>
+<span class="nc" id="L412">    }</span>
+
+    /**
+     * Reset the eatprefix for this workspace
+     *
+     * @param prefix the new prefix
+     */
+    public void setEatPrefix(final String prefix) {
+<span class="nc" id="L420">        logger.debug(&quot;Reset eatPrefix to {}&quot;, prefix);</span>
+<span class="nc" id="L421">        this.eatPrefix = prefix;</span>
+<span class="nc" id="L422">        normalizeEatPrefix();</span>
+<span class="nc" id="L423">    }</span>
+
+    /**
+     * Make sure the eatPrefix is in canonical form
+     */
+    protected void normalizeEatPrefix() {
+<span class="pc bpc" id="L429" title="2 of 4 branches missed.">        if (this.eatPrefix != null &amp;&amp; this.eatPrefix.contains(&quot;//&quot;)) {</span>
+<span class="nc" id="L430">            this.eatPrefix = this.eatPrefix.replaceAll(&quot;/+&quot;, &quot;/&quot;);</span>
+        }
+<span class="fc" id="L432">    }</span>
+
+    /**
+     * Reset the outputRoot
+     *
+     * @param value the new outputRoot value
+     */
+    public void setOutputRoot(final String value) {
+<span class="nc" id="L440">        logger.debug(&quot;Reset outputRoot to {}&quot;, value);</span>
+<span class="nc" id="L441">        this.outputRootPath = value;</span>
+<span class="nc" id="L442">    }</span>
+
+    /**
+     * Get the value of the configured outputRoot
+     */
+    public String getOutputRoot() {
+<span class="nc" id="L448">        return this.outputRootPath;</span>
+    }
+
+    /**
+     * Reset the case id
+     *
+     * @param value the new value for caseId
+     */
+    public void setCaseId(final String value) {
+<span class="nc" id="L457">        logger.debug(&quot;Reset caseId to {}&quot;, value);</span>
+<span class="nc" id="L458">        this.dataCaseId = value;</span>
+<span class="nc" id="L459">    }</span>
+
+    /**
+     * Reset the skipDotFiles flag
+     *
+     * @param value the new value for the skipDotFiles flag
+     */
+    public void setSkipDotFiles(final boolean value) {
+<span class="fc" id="L467">        this.skipDotFiles = value;</span>
+<span class="fc" id="L468">    }</span>
+
+    /**
+     * Set the debug flag
+     *
+     * @param value the new value for the debug flag
+     */
+    public void setDebugFlag(final boolean value) {
+<span class="nc" id="L476">        this.debug = value;</span>
+<span class="nc" id="L477">    }</span>
+
+    /**
+     * Set the simple mode flag
+     *
+     * @param value the new value for the flag
+     */
+    public void setSimpleMode(final boolean value) {
+<span class="fc" id="L485">        this.simpleMode = value;</span>
+<span class="fc" id="L486">    }</span>
+
+    /**
+     * Get the value of the simple mode flag
+     */
+    public boolean getSimpleMode() {
+<span class="fc" id="L492">        return this.simpleMode;</span>
+    }
+
+    /**
+     * Set the pattern for finding pickup clients
+     *
+     * @param thePattern the new pattern
+     * @see emissary.directory.KeyManipulator#gmatch(String,String)
+     */
+    public void setPattern(@Nullable final String thePattern) throws Exception {
+
+<span class="nc bnc" id="L503" title="All 4 branches missed.">        if ((this.pattern != null) &amp;&amp; this.pattern.equals(thePattern)) {</span>
+<span class="nc" id="L504">            logger.debug(&quot;The pattern is already set to {}&quot;, thePattern);</span>
+<span class="nc" id="L505">            return;</span>
+        }
+
+<span class="nc" id="L508">        this.pattern = thePattern;</span>
+
+        // Clear out old pick up clients
+<span class="nc" id="L511">        logger.warn(&quot;Clearing client list so we can look for new pattern {} in {}&quot;, thePattern, getKey());</span>
+<span class="nc" id="L512">        this.pups.clear();</span>
+
+        // Find new ones
+<span class="nc" id="L515">        this.pups.addAll(getPickUpClients(this.pattern));</span>
+
+        // Set up a new observer on the directory
+<span class="nc bnc" id="L518" title="All 2 branches missed.">        if (this.watcher != null) {</span>
+<span class="nc" id="L519">            DirectoryAdapter.remove(this.watcher);</span>
+        }
+<span class="nc" id="L521">        this.watcher = new WorkSpaceDirectoryWatcher(this.pattern);</span>
+<span class="nc" id="L522">        DirectoryAdapter.register(this.watcher);</span>
+<span class="nc" id="L523">    }</span>
+
+    /**
+     * Configure the Processor. The *.cfg file is optional
+     */
+    protected void configure() {
+<span class="fc" id="L529">        final EmissaryNode node = new EmissaryNode();</span>
+<span class="pc bpc" id="L530" title="1 of 2 branches missed.">        if (node.isValid()) {</span>
+<span class="fc" id="L531">            this.workSpaceUrl = node.getNodeScheme() + &quot;://&quot; + node.getNodeName() + &quot;:&quot; + node.getNodePort() + &quot;/&quot; + this.workSpaceName;</span>
+        } else {
+<span class="nc" id="L533">            this.workSpaceUrl = &quot;http://localhost:8001/&quot; + this.workSpaceName;</span>
+<span class="nc" id="L534">            logger.warn(&quot;WorkSpace is not running in a valid emissary node. Using URL {}&quot;, this.workSpaceUrl);</span>
+        }
+<span class="fc" id="L536">        this.workSpaceKey = &quot;WORKSPACE.WORK_SPACE.INPUT.&quot; + this.workSpaceUrl;</span>
+
+<span class="fc" id="L538">        normalizeEatPrefix();</span>
+
+        // Need to bind so WorkSpaceTakeWorker can find us on the callback
+        // The url we use to bind is in the advertisement to clients
+<span class="fc" id="L542">        Namespace.bind(this.workSpaceUrl, this);</span>
+<span class="fc" id="L543">    }</span>
+
+
+    /**
+     * Get the initial list of pickup client places from the local directory. Our observer will keep us in sync after this
+     * initial pull. This method does not cause clients to be notified.
+     *
+     * @param thePattern the key pattern to match for places of interest
+     */
+    protected Set&lt;String&gt; getPickUpClients(final String thePattern) throws EmissaryException {
+<span class="fc" id="L553">        final Set&lt;String&gt; thePups = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L554">        final IDirectoryPlace dir = DirectoryPlace.lookup();</span>
+<span class="fc" id="L555">        final List&lt;DirectoryEntry&gt; list = dir.getMatchingEntries(thePattern);</span>
+<span class="pc bpc" id="L556" title="1 of 2 branches missed.">        for (final DirectoryEntry d : list) {</span>
+<span class="nc" id="L557">            thePups.add(d.getKey());</span>
+<span class="nc" id="L558">            logger.info(&quot;Adding pickup client {}&quot;, d.getKey());</span>
+<span class="nc" id="L559">        }</span>
+<span class="fc" id="L560">        logger.debug(&quot;Found {} initial pickup client entries&quot;, thePups.size());</span>
+<span class="fc" id="L561">        return thePups;</span>
+    }
+
+    /**
+     * Start the file collector threads, one per directory
+     */
+    public void startCollector() {
+<span class="nc bnc" id="L568" title="All 2 branches missed.">        for (final PriorityDirectory pd : this.myDirectories) {</span>
+<span class="nc" id="L569">            final WorkSpaceCollector collector = new WorkSpaceCollector(pd);</span>
+<span class="nc" id="L570">            final Thread collectorThread = new Thread(collector, &quot;WorkSpace Collector &quot; + pd);</span>
+<span class="nc" id="L571">            collectorThread.setDaemon(true);</span>
+<span class="nc" id="L572">            collectorThread.start();</span>
+<span class="nc" id="L573">            logger.debug(&quot;Started WorkSpace Collector thread on {}&quot;, pd);</span>
+<span class="nc" id="L574">        }</span>
+<span class="nc" id="L575">    }</span>
+
+    /**
+     * Start the client notification Thread*
+     */
+    public void startNotifier() {
+<span class="nc" id="L581">        this.notifier = new ClientNotifier();</span>
+<span class="nc" id="L582">        final Thread notifierThread = new Thread(this.notifier, &quot;WorkSpace Client Notifier&quot;);</span>
+<span class="nc" id="L583">        notifierThread.setDaemon(true);</span>
+<span class="nc" id="L584">        notifierThread.start();</span>
+<span class="nc" id="L585">        logger.debug(&quot;Started Client Notifier thread&quot;);</span>
+<span class="nc" id="L586">    }</span>
+
+    /**
+     * Rotate the list of pickups so that the same old one isn't always first on the list.
+     */
+    protected void rotatePickUps() {
+        // Move element(0) to the tail and shift all to the left
+<span class="nc" id="L593">        Collections.rotate(this.pups, -1);</span>
+<span class="nc" id="L594">    }</span>
+
+    /**
+     * Notify pick up place that data is available
+     *
+     * @return number of successful notices
+     */
+    protected int notifyPickUps() {
+<span class="nc" id="L602">        int successCount = 0;</span>
+<span class="nc bnc" id="L603" title="All 2 branches missed.">        for (final String pup : this.pups) {</span>
+<span class="nc" id="L604">            final boolean status = notifyPickUp(pup);</span>
+<span class="nc bnc" id="L605" title="All 2 branches missed.">            if (status) {</span>
+<span class="nc" id="L606">                successCount++;</span>
+            }
+<span class="nc bnc" id="L608" title="All 2 branches missed.">            if (getOutboundQueueSize() == 0) {</span>
+<span class="nc" id="L609">                break;</span>
+            }
+<span class="nc" id="L611">        }</span>
+<span class="nc" id="L612">        logger.debug(&quot;Notified {} of {} pickup places&quot;, successCount, this.pups.size());</span>
+<span class="nc" id="L613">        return successCount;</span>
+    }
+
+    /**
+     * Add one pickup and notify of work to be done
+     */
+    protected void addPickUp(final String pup) {
+<span class="pc bpc" id="L620" title="1 of 2 branches missed.">        if (!this.pups.contains(pup)) {</span>
+<span class="fc" id="L621">            this.pups.add(pup);</span>
+<span class="pc bpc" id="L622" title="1 of 2 branches missed.">            if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L623">                logger.debug(&quot;Adding pickup {}, new size={}: {}&quot;, pup, this.pups.size(), this.pups);</span>
+            }
+        } else {
+<span class="nc" id="L626">            logger.debug(&quot;Not adding {} already on list size {}&quot;, pup, this.pups.size());</span>
+        }
+<span class="fc" id="L628">    }</span>
+
+    /**
+     * Notify one pickup
+     *
+     * @param pup the key of the one to notify
+     */
+    protected boolean notifyPickUp(final String pup) {
+<span class="nc" id="L636">        final WorkSpaceAdapter tpa = new WorkSpaceAdapter();</span>
+<span class="nc" id="L637">        logger.debug(&quot;Sending notice to {}&quot;, pup);</span>
+
+<span class="nc" id="L639">        boolean notified = false;</span>
+<span class="nc" id="L640">        int tryCount = 0;</span>
+
+<span class="nc bnc" id="L642" title="All 4 branches missed.">        while (!notified &amp;&amp; tryCount &lt; 5) {</span>
+<span class="nc" id="L643">            final EmissaryResponse status = tpa.outboundOpenWorkSpace(pup, this.workSpaceKey);</span>
+
+            // TODO Consider putting this method in the response
+<span class="nc bnc" id="L646" title="All 2 branches missed.">            if (status.getStatus() != HttpStatus.SC_OK) {</span>
+<span class="nc" id="L647">                logger.warn(&quot;Failed to notify {} on try {}: {}&quot;, pup, tryCount, status.getContentString());</span>
+                try {
+<span class="nc" id="L649">                    Thread.sleep((tryCount + 1) * 100L);</span>
+<span class="nc" id="L650">                } catch (InterruptedException ignore) {</span>
+<span class="nc" id="L651">                    Thread.currentThread().interrupt();</span>
+<span class="nc" id="L652">                }</span>
+            } else {
+<span class="nc" id="L654">                notified = true;</span>
+            }
+<span class="nc" id="L656">            tryCount++;</span>
+<span class="nc" id="L657">        }</span>
+
+<span class="nc bnc" id="L659" title="All 2 branches missed.">        if (logger.isInfoEnabled()) {</span>
+<span class="nc bnc" id="L660" title="All 2 branches missed.">            logger.info(&quot;Notified {} in {} attempts: {}&quot;, pup, tryCount, (notified ? &quot;SUCCESS&quot; : &quot;FAILED&quot;));</span>
+        }
+
+<span class="nc" id="L663">        return notified;</span>
+    }
+
+    /**
+     * Return the registration key for this work space
+     */
+    public String getKey() {
+<span class="fc" id="L670">        return this.workSpaceKey;</span>
+    }
+
+    /**
+     * Return the workspace name
+     */
+    public String getNamespaceName() {
+<span class="nc" id="L677">        return this.workSpaceName;</span>
+    }
+
+    /**
+     * Remove a pickup, if it had work bundles pending completion transfer them back to the outbound queue
+     *
+     * @param remoteKey the directory observer string key that was removed
+     */
+    protected void removePickUp(final String remoteKey) {
+<span class="fc" id="L686">        this.pups.remove(remoteKey);</span>
+<span class="pc bpc" id="L687" title="1 of 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L688">            logger.debug(&quot;Removed pickup {}, size={}: {}&quot;, remoteKey, this.pups.size(), this.pups);</span>
+        }
+<span class="fc" id="L690">        int pendCount = 0;</span>
+<span class="fc" id="L691">        final String remoteName = KeyManipulator.getServiceHost(remoteKey);</span>
+<span class="fc" id="L692">        synchronized (this.QLOCK) {</span>
+            // NB: no enhanced for loop with Iterator.remove()
+<span class="fc bfc" id="L694" title="All 2 branches covered.">            for (Iterator&lt;String&gt; i = this.pending.keySet().iterator(); i.hasNext();) {</span>
+<span class="fc" id="L695">                final String id = i.next();</span>
+<span class="fc" id="L696">                final WorkBundle wb = this.pending.get(id);</span>
+<span class="pc bpc" id="L697" title="1 of 2 branches missed.">                if (remoteName.equals(wb.getSentTo())) {</span>
+<span class="fc" id="L698">                    i.remove(); // remove from pending</span>
+<span class="fc" id="L699">                    wb.setSentTo(null); // clear in progress indicator</span>
+<span class="fc" id="L700">                    this.retryCount++;</span>
+<span class="pc bpc" id="L701" title="1 of 2 branches missed.">                    if (wb.incrementErrorCount() &lt;= MAX_BUNDLE_RETRIES) {</span>
+<span class="fc" id="L702">                        logger.debug(&quot;Removing pending bundle {} from pending pool, re-adding to outbound with errorCount={}&quot;, wb.getBundleId(),</span>
+<span class="fc" id="L703">                                wb.getErrorCount());</span>
+<span class="fc" id="L704">                        addOutboundBundle(wb); // send to outbound again</span>
+<span class="fc" id="L705">                        pendCount++;</span>
+
+                        // Set overall counts back to normal
+<span class="fc" id="L708">                        this.bundlesProcessed--;</span>
+                    } else {
+<span class="nc" id="L710">                        logger.error(&quot;Bundle {} associated with too many failures, permanently discarding&quot;, wb);</span>
+                    }
+                }
+<span class="fc" id="L713">            }</span>
+<span class="fc" id="L714">        }</span>
+<span class="pc bpc" id="L715" title="1 of 2 branches missed.">        if (pendCount &gt; 0) {</span>
+<span class="fc" id="L716">            logger.info(&quot;Moved {} items back to outbound queue from {}&quot;, pendCount, remoteName);</span>
+        }
+<span class="fc" id="L718">    }</span>
+
+    /**
+     * Method called by remote PickUp client instances when they are ready to receive data from this WorkSpace Access via
+     * emissary.comms.http.WorkSpaceApapter
+     *
+     * @param remoteKey key of the requesting PickUp place
+     * @return WorkBundle at the head of the list or null if empty
+     */
+    public WorkBundle take(final String remoteKey) {
+<span class="fc" id="L728">        final String remoteName = KeyManipulator.getServiceHost(remoteKey);</span>
+        WorkBundle item;
+<span class="fc" id="L730">        synchronized (this.QLOCK) {</span>
+<span class="fc bfc" id="L731" title="All 2 branches covered.">            if (getOutboundQueueSize() == 0) {</span>
+                // Empty WorkBundle will let them know to stop asking us
+<span class="fc" id="L733">                logger.info(&quot;Sent shutdown msg to {}&quot;, remoteName);</span>
+<span class="fc" id="L734">                this.stats.shutDownSent(remoteName);</span>
+<span class="fc" id="L735">                item = new WorkBundle();</span>
+            } else {
+                // transfer from outbound to pending list and
+                // record who the work was given to track
+                // completion status
+<span class="fc" id="L740">                this.stats.bump(remoteName);</span>
+<span class="fc" id="L741">                item = this.outbound.poll();</span>
+<span class="fc" id="L742">                item.setSentTo(remoteName);</span>
+<span class="fc" id="L743">                this.pending.put(item.getBundleId(), item);</span>
+<span class="fc" id="L744">                logger.info(&quot;Gave bundle {} to {}&quot;, item, remoteName);</span>
+<span class="fc" id="L745">                final WorkBundle nextItem = this.outbound.peek();</span>
+<span class="pc bpc" id="L746" title="1 of 4 branches missed.">                if (nextItem != null &amp;&amp; logger.isInfoEnabled()) {</span>
+<span class="fc" id="L747">                    logger.info(&quot;After take: new top differs to prior by [oldest/youngest/size]=[{}/{}/{}]&quot;,</span>
+<span class="fc" id="L748">                            nextItem.getOldestFileModificationTime() - item.getOldestFileModificationTime(),</span>
+<span class="fc" id="L749">                            nextItem.getYoungestFileModificationTime() - item.getYoungestFileModificationTime(),</span>
+<span class="fc" id="L750">                            nextItem.getTotalFileSize() - item.getTotalFileSize());</span>
+                }
+            }
+<span class="fc" id="L753">        }</span>
+<span class="fc" id="L754">        return item;</span>
+    }
+
+    /**
+     * Add a new bundle of work to the pending queue
+     *
+     * @param wb the new bundle
+     */
+    protected void addOutboundBundle(final WorkBundle wb) {
+        int sz;
+<span class="fc" id="L764">        synchronized (this.QLOCK) {</span>
+<span class="fc" id="L765">            this.bundlesProcessed++;</span>
+<span class="fc" id="L766">            sz = this.outbound.size();</span>
+<span class="fc" id="L767">            this.outbound.add(wb);</span>
+<span class="fc" id="L768">            addFilesSeen(wb.getFileNameList());</span>
+<span class="fc" id="L769">        }</span>
+
+<span class="pc bpc" id="L771" title="1 of 2 branches missed.">        if (logger.isInfoEnabled()) {</span>
+<span class="fc" id="L772">            logger.info(&quot;Adding workbundle {} size {} filesSeen {}&quot;, wb, (sz + 1), this.filesSeen.size());</span>
+        }
+<span class="fc" id="L774">    }</span>
+
+    /**
+     * Show items that are pending completion (debug)
+     *
+     * @deprecated use {@link #showPendingItemsList()}
+     */
+    @Deprecated
+    @SuppressWarnings(&quot;AvoidObjectArrays&quot;)
+    public String[] showPendingItems() {
+<span class="nc" id="L784">        return showPendingItemsList().toArray(new String[0]);</span>
+    }
+
+    /**
+     * Show items that are pending completion (debug)
+     */
+    public List&lt;String&gt; showPendingItemsList() {
+<span class="nc" id="L791">        final List&lt;String&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L792">        synchronized (this.QLOCK) {</span>
+<span class="nc bnc" id="L793" title="All 2 branches missed.">            for (final Map.Entry&lt;String, WorkBundle&gt; entry : this.pending.entrySet()) {</span>
+<span class="nc" id="L794">                list.add(entry.getValue().toString());</span>
+<span class="nc" id="L795">            }</span>
+<span class="nc" id="L796">        }</span>
+<span class="nc" id="L797">        return list;</span>
+    }
+
+    /**
+     * Clear the pending queue
+     *
+     * @return number of items removed
+     */
+    public int clearPendingQueue() {
+<span class="nc" id="L806">        final int size = getPendingQueueSize();</span>
+
+<span class="nc bnc" id="L808" title="All 2 branches missed.">        if (size &gt; 0) {</span>
+<span class="nc" id="L809">            synchronized (this.QLOCK) {</span>
+<span class="nc" id="L810">                logger.debug(&quot;Clearing pending queue of {} items&quot;, size);</span>
+<span class="nc bnc" id="L811" title="All 2 branches missed.">                for (final Map.Entry&lt;String, WorkBundle&gt; entry : this.pending.entrySet()) {</span>
+<span class="nc" id="L812">                    removeFilesSeen(entry.getValue().getFileNameList());</span>
+<span class="nc" id="L813">                }</span>
+<span class="nc" id="L814">                this.pending.clear();</span>
+<span class="nc" id="L815">                logger.debug(&quot;Cleared filesSeen leaving {} items&quot;, this.filesSeen.size());</span>
+<span class="nc" id="L816">            }</span>
+        }
+<span class="nc" id="L818">        return size;</span>
+    }
+
+    /**
+     * Receive notice that a bundle was completed Normally called from emissary.server.mvc.adapters.WorkSpaceAdapter when a
+     * bundle completion message is received from the remote client doing the processing.
+     *
+     * @param remoteName the name of the place that did the processing
+     * @param bundleId the unique id of the bundle that was completed
+     * @param itWorked true if processed normally
+     * @return true if the item was removed from the pending list
+     */
+    public boolean workCompleted(final String remoteName, final String bundleId, final boolean itWorked) {
+        WorkBundle item;
+
+<span class="fc" id="L833">        synchronized (this.QLOCK) {</span>
+<span class="fc" id="L834">            item = this.pending.remove(bundleId);</span>
+<span class="pc bpc" id="L835" title="1 of 2 branches missed.">            if (item != null) {</span>
+<span class="nc" id="L836">                addFilesDone(item.getFileNameList());</span>
+<span class="nc" id="L837">                removeFilesSeen(item.getFileNameList());</span>
+<span class="nc" id="L838">                logger.debug(&quot;Removed {} from filesSeen leaving {}&quot;, item.size(), this.filesSeen.size());</span>
+            }
+<span class="fc" id="L840">        }</span>
+<span class="pc bpc" id="L841" title="1 of 2 branches missed.">        if (item == null) {</span>
+<span class="fc" id="L842">            logger.info(&quot;Unknown bundle completed: {}&quot;, bundleId);</span>
+<span class="nc bnc" id="L843" title="All 2 branches missed.">        } else if (!itWorked) {</span>
+<span class="nc" id="L844">            item.setSentTo(null); // clear in progress indicator</span>
+<span class="nc bnc" id="L845" title="All 2 branches missed.">            if (item.incrementErrorCount() &gt; MAX_BUNDLE_RETRIES) {</span>
+<span class="nc" id="L846">                logger.error(&quot;Bundle {} has too many errors, permanently discarded&quot;, item);</span>
+            } else {
+<span class="nc" id="L848">                addOutboundBundle(item); // send to outbound again</span>
+            }
+        }
+<span class="pc bpc" id="L851" title="1 of 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L852">            logger.debug(&quot;Bundle {} completed by {}{}&quot;, bundleId, remoteName,</span>
+<span class="nc bnc" id="L853" title="All 4 branches missed.">                    (itWorked ? &quot;&quot; : (&quot; but failed for the &quot; + (item != null ? item.getErrorCount() : -1) + &quot; time&quot;)));</span>
+        }
+<span class="pc bpc" id="L855" title="1 of 2 branches missed.">        return item != null;</span>
+    }
+
+    /**
+     * begin the case processing, does nothing in this implementation
+     */
+    protected void initializeCase() {
+        // Don't care in this implementation
+<span class="fc" id="L863">        logger.debug(&quot;In base initializeCase implementation (do nothing)&quot;);</span>
+<span class="fc" id="L864">    }</span>
+
+    /**
+     * end the case processing does nothing in this implementation
+     */
+    protected void closeCase() {
+        // Don't care in this implementation
+<span class="nc" id="L871">        this.caseClosed = true;</span>
+<span class="nc" id="L872">        logger.debug(&quot;In base closeCase implementation (do nothing)&quot;);</span>
+<span class="nc" id="L873">    }</span>
+
+    /**
+     * handle getting a directory in the recursive descent
+     *
+     * @param dir File for which isDirectory returns true
+     */
+    protected void processDirectory(final File dir) {
+        // We don't care in this implementation
+<span class="nc" id="L882">        logger.debug(&quot;got a directory processDirectory({})&quot;, dir);</span>
+<span class="nc" id="L883">    }</span>
+
+    /**
+     * Add each fileName and its respective lastModifiedDate to the filesSeen list
+     *
+     * @param fileNames the collection of file name strings to add
+     */
+    protected void addFilesSeen(final Collection&lt;String&gt; fileNames) {
+<span class="fc bfc" id="L891" title="All 2 branches covered.">        for (final String fn : fileNames) {</span>
+<span class="fc" id="L892">            this.filesSeen.put(fn, getFileModificationDate(fn));</span>
+<span class="fc" id="L893">        }</span>
+<span class="fc" id="L894">    }</span>
+
+    /**
+     * Add each fileName and its respective lastModifiedDate to the filesDone list
+     *
+     * @param fileNames the collection of file name strings to add
+     */
+    protected void addFilesDone(final Collection&lt;String&gt; fileNames) {
+<span class="nc bnc" id="L902" title="All 2 branches missed.">        for (final String fn : fileNames) {</span>
+<span class="nc" id="L903">            this.filesDone.put(fn, getFileModificationDate(fn));</span>
+<span class="nc" id="L904">        }</span>
+<span class="nc" id="L905">    }</span>
+
+    /**
+     * Remove each fileName from the filesSeen list without regard to the timestamp
+     *
+     * @param fileNames the collection of file name strings to remove
+     */
+    protected void removeFilesSeen(final Collection&lt;String&gt; fileNames) {
+<span class="nc bnc" id="L913" title="All 2 branches missed.">        for (final String fn : fileNames) {</span>
+<span class="nc" id="L914">            this.filesSeen.remove(fn);</span>
+<span class="nc" id="L915">        }</span>
+<span class="nc" id="L916">    }</span>
+
+    /**
+     * Lookup a lastModified date for a file
+     *
+     * @param fn the filename
+     * @return the long representing the date of last modification or 0L if an error, or it does not exist
+     */
+    protected long getFileModificationDate(final String fn) {
+<span class="fc" id="L925">        return new File(fn).lastModified();</span>
+    }
+
+    protected long getFileSize(final String fn) {
+<span class="nc" id="L929">        return new File(fn).length();</span>
+    }
+
+    /**
+     * Monitoring progress of the WorkSpace. Indicate some stats once in a while and do not let the foreground thread
+     * terminate while there is still work on the outbound queue or the pending lists.
+     */
+    protected void monitorProgress() {
+<span class="nc" id="L937">        long outboundEmptyTimestamp = -1L;</span>
+
+        // Do while outbound or pending work exists or collector is
+        // still running
+        while (true) {
+<span class="nc" id="L942">            final int outboundSize = getOutboundQueueSize();</span>
+<span class="nc" id="L943">            int pendingSize = getPendingQueueSize();</span>
+<span class="nc bnc" id="L944" title="All 6 branches missed.">            final boolean reallyQuit = this.timeToQuit &amp;&amp; (outboundSize == 0) &amp;&amp; (pendingSize == 0);</span>
+
+            // Rmember when outbound becomes empty
+<span class="nc bnc" id="L947" title="All 4 branches missed.">            if (outboundSize == 0 &amp;&amp; outboundEmptyTimestamp == -1L) {</span>
+<span class="nc" id="L948">                outboundEmptyTimestamp = System.currentTimeMillis();</span>
+<span class="nc bnc" id="L949" title="All 4 branches missed.">            } else if (outboundSize &gt; 0 &amp;&amp; outboundEmptyTimestamp &gt; 0L) {</span>
+<span class="nc" id="L950">                outboundEmptyTimestamp = -1L;</span>
+            }
+
+            // See if it is time to give up on pending items
+<span class="nc bnc" id="L954" title="All 6 branches missed.">            if ((outboundSize == 0) &amp;&amp; !this.loop &amp;&amp; ((outboundEmptyTimestamp + this.pendingHangTime) &lt; System.currentTimeMillis())) {</span>
+<span class="nc bnc" id="L955" title="All 2 branches missed.">                if (logger.isInfoEnabled()) {</span>
+<span class="nc" id="L956">                    logger.info(&quot;Giving up on {} items due to timeout&quot;, pendingSize);</span>
+<span class="nc bnc" id="L957" title="All 2 branches missed.">                    for (final Map.Entry&lt;String, WorkBundle&gt; entry : this.pending.entrySet()) {</span>
+<span class="nc" id="L958">                        logger.info(&quot;Pending item {}: {}&quot;, entry.getKey(), entry.getValue());</span>
+<span class="nc" id="L959">                    }</span>
+                }
+<span class="nc" id="L961">                clearPendingQueue();</span>
+<span class="nc" id="L962">                pendingSize = 0;</span>
+            }
+
+            // All work is done and collector has finished
+<span class="nc bnc" id="L966" title="All 2 branches missed.">            if (outboundSize + pendingSize == 0) {</span>
+<span class="nc bnc" id="L967" title="All 2 branches missed.">                if (reallyQuit) {</span>
+<span class="nc" id="L968">                    break;</span>
+                }
+<span class="nc" id="L970">                publishStats();</span>
+            }
+
+            // Else sleep a while
+            try {
+<span class="nc bnc" id="L975" title="All 2 branches missed.">                for (int si = 0; si &lt; 3000; si++) {</span>
+<span class="nc" id="L976">                    Thread.sleep(10L);</span>
+<span class="nc bnc" id="L977" title="All 2 branches missed.">                    if (reallyQuit) {</span>
+<span class="nc" id="L978">                        break;</span>
+                    }
+                }
+<span class="nc" id="L981">            } catch (InterruptedException ex) {</span>
+<span class="nc" id="L982">                Thread.currentThread().interrupt();</span>
+<span class="nc" id="L983">            }</span>
+
+<span class="nc bnc" id="L985" title="All 2 branches missed.">            if (!this.timeToQuit) {</span>
+<span class="nc" id="L986">                publishStats();</span>
+            }
+<span class="nc" id="L988">        }</span>
+
+        // Case closing actions
+<span class="nc" id="L991">        closeCase();</span>
+<span class="nc" id="L992">    }</span>
+
+    /**
+     * Output some information to the logger on what we have been doing lately
+     */
+    public void publishStats() {
+<span class="nc" id="L998">        logger.info(getStatsMessage());</span>
+<span class="nc bnc" id="L999" title="All 2 branches missed.">        for (Iterator&lt;String&gt; i = this.stats.machinesUsed(); i.hasNext();) {</span>
+<span class="nc" id="L1000">            final String machine = i.next();</span>
+<span class="nc" id="L1001">            logger.info(&quot;Machine {} took {} bundles&quot;, machine, this.stats.getCountUsed(machine));</span>
+<span class="nc" id="L1002">        }</span>
+<span class="nc" id="L1003">    }</span>
+
+    /**
+     * Return the current stats to the caller
+     */
+    public String getStatsMessage() {
+<span class="nc" id="L1009">        final int outboundSize = getOutboundQueueSize();</span>
+<span class="nc" id="L1010">        final int pendingSize = getPendingQueueSize();</span>
+
+<span class="nc" id="L1012">        return &quot;WorkSpace has outbound=&quot; + outboundSize + &quot;, pending=&quot; + pendingSize + &quot;, total bundles / files / bytes = &quot; + this.bundlesProcessed</span>
+<span class="nc" id="L1013">                + &quot; / &quot; + this.filesProcessed + &quot; / &quot; + this.bytesProcessed + &quot; , #clients=&quot; + getPickUpPlaceCount();</span>
+    }
+
+    /**
+     * Return how many files processed so far
+     */
+    public long getFilesProcessed() {
+<span class="nc" id="L1020">        return this.filesProcessed;</span>
+    }
+
+    /**
+     * Return how many bytes processed so far
+     */
+    public long getBytesProcessed() {
+<span class="nc" id="L1027">        return this.bytesProcessed;</span>
+    }
+
+    /**
+     * Return how many pickup places are being fed
+     */
+    public int getPickUpPlaceCount() {
+<span class="fc" id="L1034">        return this.pups.size();</span>
+    }
+
+    /**
+     * Return how many bundles processed so far
+     */
+    public long getBundlesProcessed() {
+<span class="fc" id="L1041">        return this.bundlesProcessed;</span>
+    }
+
+    /**
+     * Return size of outbound queue
+     */
+    public int getOutboundQueueSize() {
+<span class="fc" id="L1048">        synchronized (this.QLOCK) {</span>
+<span class="fc" id="L1049">            return this.outbound.size();</span>
+        }
+    }
+
+    public int getRetriedCount() {
+<span class="fc" id="L1054">        return this.retryCount;</span>
+    }
+
+    /**
+     * Return size of pending completion queue
+     */
+    public int getPendingQueueSize() {
+<span class="fc" id="L1061">        synchronized (this.QLOCK) {</span>
+<span class="fc" id="L1062">            return this.pending.size();</span>
+        }
+    }
+
+    /**
+     * Overridable point to get the version string for output periodically when looping
+     *
+     * @return the version info
+     */
+    protected String getVersionString() {
+<span class="nc" id="L1072">        return &quot;Emissary version: &quot; + new Version();</span>
+    }
+
+    public class ClientNotifier implements Runnable {
+        /**
+         * Create the notifier Runnable
+         */
+<span class="nc" id="L1079">        public ClientNotifier() {}</span>
+
+        @Override
+        public void run() {
+            while (true) {
+<span class="nc" id="L1084">                final int qsize = getOutboundQueueSize();</span>
+<span class="nc bnc" id="L1085" title="All 2 branches missed.">                if (qsize &gt; 0) {</span>
+<span class="nc" id="L1086">                    final long start = System.currentTimeMillis();</span>
+<span class="nc bnc" id="L1087" title="All 2 branches missed.">                    if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L1088">                        logger.debug(&quot;ClientNotification starting with #clients={} outbound={}&quot;, getPickUpPlaceCount(), qsize);</span>
+                    }
+<span class="nc" id="L1090">                    notifyPickUps();</span>
+<span class="nc bnc" id="L1091" title="All 2 branches missed.">                    if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L1092">                        final long end = System.currentTimeMillis();</span>
+<span class="nc" id="L1093">                        logger.debug(&quot;ClientNotification took {}s for #clients={}&quot;, (end - start) / 1000.0, getPickUpPlaceCount());</span>
+                    }
+                }
+
+                try {
+<span class="nc" id="L1098">                    Thread.sleep(NOTIFIER_PAUSE_TIME);</span>
+<span class="nc" id="L1099">                    rotatePickUps();</span>
+<span class="nc" id="L1100">                } catch (InterruptedException ignore) {</span>
+<span class="nc" id="L1101">                    Thread.currentThread().interrupt();</span>
+<span class="nc" id="L1102">                }</span>
+
+<span class="nc" id="L1104">                final int outboundSize = getOutboundQueueSize();</span>
+<span class="nc" id="L1105">                final int pendingSize = getPendingQueueSize();</span>
+<span class="nc bnc" id="L1106" title="All 8 branches missed.">                if (WorkSpace.this.timeToQuit &amp;&amp; (outboundSize == 0) &amp;&amp; (pendingSize == 0) &amp;&amp; WorkSpace.this.collectorThreadHasQuit) {</span>
+<span class="nc" id="L1107">                    break;</span>
+                }
+<span class="nc" id="L1109">            }</span>
+
+<span class="nc" id="L1111">            logger.debug(&quot;Off the end of the ClientNotifier run loop&quot;);</span>
+<span class="nc" id="L1112">        }</span>
+    }
+
+    /**
+     * A runnable to collect files into WorkBundles and put them on the outbound queue
+     */
+    public class WorkSpaceCollector implements Runnable {
+
+        protected PriorityDirectory myDirectory;
+
+        /**
+         * Create the collector runnable
+         */
+<span class="nc" id="L1125">        public WorkSpaceCollector(final PriorityDirectory myDirectory) {</span>
+<span class="nc" id="L1126">            this.myDirectory = myDirectory;</span>
+<span class="nc" id="L1127">        }</span>
+
+        /**
+         * Pull all the files into bundles, emit some stats, and notify the PickUp client instances to start work. When the list
+         * of file bundles is empty we can quit or loop around again.
+         */
+        @Override
+        public void run() {
+<span class="nc" id="L1135">            long versionOutputTime = System.currentTimeMillis();</span>
+            long start;
+            long stop;
+<span class="nc" id="L1138">            long minFileTime = 0L;</span>
+
+            // Run the processing
+<span class="nc" id="L1141">            long lastFileCollect = 0L;</span>
+<span class="nc" id="L1142">            int loopCount = 0;</span>
+
+<span class="nc" id="L1144">            logger.info(&quot;Running Workspace from {}&quot;, getVersionString());</span>
+
+            do {
+<span class="nc" id="L1147">                start = System.currentTimeMillis();</span>
+                // every hour
+<span class="nc bnc" id="L1149" title="All 2 branches missed.">                if (start - versionOutputTime &gt; 3600000) {</span>
+<span class="nc" id="L1150">                    logger.info(&quot;Continuing Workspace from {}&quot;, getVersionString());</span>
+<span class="nc" id="L1151">                    versionOutputTime = start;</span>
+                }
+
+<span class="nc" id="L1154">                final WorkBundle paths = new WorkBundle(WorkSpace.this.outputRootPath, WorkSpace.this.eatPrefix);</span>
+<span class="nc" id="L1155">                paths.setCaseId(WorkSpace.this.dataCaseId);</span>
+<span class="nc" id="L1156">                paths.setSimpleMode(getSimpleMode());</span>
+
+<span class="nc" id="L1158">                logger.debug(&quot;Processing files in {}&quot;, this.myDirectory.getDirectoryName());</span>
+
+<span class="nc" id="L1160">                final int collectCount =</span>
+<span class="nc" id="L1161">                        collectFiles(this.myDirectory, WorkSpace.this.wantDirectories, paths, WorkSpace.this.numberOfBundlesToSkip, minFileTime,</span>
+                                WorkSpace.this.skipDotFiles);
+
+                // Set times, so we don't redistribute files next loop
+                // if configured to use timestamps
+<span class="nc bnc" id="L1166" title="All 2 branches missed.">                if (WorkSpace.this.useFileTimestamps) {</span>
+<span class="nc" id="L1167">                    lastFileCollect = System.currentTimeMillis();</span>
+                }
+<span class="nc" id="L1169">                stop = System.currentTimeMillis();</span>
+<span class="nc" id="L1170">                loopCount++;</span>
+
+                // We can only skip bundles on the first time through
+<span class="nc" id="L1173">                WorkSpace.this.numberOfBundlesToSkip = 0;</span>
+
+<span class="nc" id="L1175">                logger.info(&quot;Collected {} file bundles in {}s in loop iteration {}, {} items in outbound queue&quot;, collectCount,</span>
+<span class="nc" id="L1176">                        ((stop - start) / 1000.0), loopCount, WorkSpace.this.outbound.size());</span>
+
+<span class="nc bnc" id="L1178" title="All 4 branches missed.">                if ((collectCount == 0) &amp;&amp; WorkSpace.this.loop) {</span>
+                    // Wait pause time seconds and try again if looping
+                    try {
+<span class="nc" id="L1181">                        Thread.sleep(WorkSpace.this.loopPauseTime);</span>
+<span class="nc" id="L1182">                    } catch (InterruptedException ioex) {</span>
+<span class="nc" id="L1183">                        Thread.currentThread().interrupt();</span>
+<span class="nc" id="L1184">                    }</span>
+<span class="nc" id="L1185">                    continue;</span>
+                }
+
+                // time shift for next loop if configured to use tstamps
+<span class="nc bnc" id="L1189" title="All 2 branches missed.">                if (WorkSpace.this.useFileTimestamps) {</span>
+<span class="nc" id="L1190">                    minFileTime = lastFileCollect;</span>
+                }
+
+<span class="nc bnc" id="L1193" title="All 4 branches missed.">            } while (WorkSpace.this.loop &amp;&amp; !WorkSpace.this.timeToQuit);</span>
+
+<span class="nc" id="L1195">            logger.debug(&quot;Off the end of the WorkSpaceCollector run method&quot;);</span>
+<span class="nc" id="L1196">            WorkSpace.this.collectorThreadHasQuit = true;</span>
+<span class="nc" id="L1197">        }</span>
+
+        /**
+         * Load WorkBundle objects into our linked list of bundles Also process all directories if so instructed
+         *
+         * @return count of how many bundles collected for outbound queue
+         */
+        protected int collectFiles(final PriorityDirectory dir, final boolean wantDirectories, final WorkBundle basePath,
+                final int numberOfBundlesToSkipArg, final long minFileTime, final boolean skipDotFilesArg) {
+<span class="nc" id="L1206">            int skipped = 0;</span>
+<span class="nc" id="L1207">            int collected = 0;</span>
+<span class="nc" id="L1208">            int fileCount = 0;</span>
+<span class="nc" id="L1209">            long bytesInBundle = 0;</span>
+
+            try {
+<span class="nc" id="L1212">                int ffOptions = FileFind.FILES_FLAG;</span>
+<span class="nc bnc" id="L1213" title="All 2 branches missed.">                if (wantDirectories) {</span>
+<span class="nc" id="L1214">                    ffOptions |= FileFind.DIRECTORIES_FLAG;</span>
+                }
+<span class="nc" id="L1216">                final FileFind ff = new FileFind(ffOptions);</span>
+<span class="nc" id="L1217">                final Iterator&lt;?&gt; f = ff.find(dir.getDirectoryName());</span>
+
+<span class="nc" id="L1219">                WorkBundle paths = new WorkBundle(basePath);</span>
+<span class="nc" id="L1220">                paths.setPriority(dir.getPriority());</span>
+<span class="nc" id="L1221">                paths.setSimpleMode(getSimpleMode());</span>
+
+<span class="nc bnc" id="L1223" title="All 2 branches missed.">                while (f.hasNext()) {</span>
+                    // If the outbound queue has a lot of stuff pending
+                    // and memory is getting tight, just to sleep until
+                    // the situation eases
+<span class="nc" id="L1227">                    pauseCollector();</span>
+
+<span class="nc" id="L1229">                    final File next = (File) f.next();</span>
+<span class="nc" id="L1230">                    final String fileName = next.getPath();</span>
+
+                    // We should only be getting these if we asked for them.
+                    // We should only use them if we are not resuming a previous run.
+<span class="nc bnc" id="L1234" title="All 4 branches missed.">                    if (next.isDirectory() &amp;&amp; numberOfBundlesToSkipArg == 0) {</span>
+<span class="nc" id="L1235">                        logger.debug(&quot;Doing directory {}&quot;, fileName);</span>
+<span class="nc" id="L1236">                        processDirectory(next);</span>
+<span class="nc" id="L1237">                        continue;</span>
+                    }
+
+                    // Can we read the file?
+<span class="nc bnc" id="L1241" title="All 4 branches missed.">                    if (!next.isFile() &amp;&amp; !next.canRead()) {</span>
+<span class="nc" id="L1242">                        logger.debug(&quot;Cannot access file: {}&quot;, fileName);</span>
+<span class="nc" id="L1243">                        continue;</span>
+                    }
+
+                    // Skip dot files possibly
+                    // TODO Maybe we want to change this to explicitly look for &quot;.&quot; instead of isHidden
+<span class="nc bnc" id="L1248" title="All 4 branches missed.">                    if (skipDotFilesArg &amp;&amp; Files.isHidden(Paths.get(fileName))) {</span>
+<span class="nc" id="L1249">                        logger.debug(&quot;Skipping dot file {}&quot;, fileName);</span>
+<span class="nc" id="L1250">                        continue;</span>
+                    }
+
+                    // Is file too old? (If we aren't configured to use
+                    // tstamps minFileTime will always be 0L
+<span class="nc bnc" id="L1255" title="All 2 branches missed.">                    if (next.lastModified() &lt; minFileTime) {</span>
+<span class="nc" id="L1256">                        continue;</span>
+                    }
+
+<span class="nc" id="L1259">                    synchronized (WorkSpace.this.QLOCK) {</span>
+<span class="nc bnc" id="L1260" title="All 2 branches missed.">                        if (WorkSpace.this.filesDone.containsKey(fileName)) {</span>
+<span class="nc" id="L1261">                            WorkSpace.this.filesDone.remove(fileName);</span>
+<span class="nc" id="L1262">                            continue;</span>
+<span class="nc bnc" id="L1263" title="All 2 branches missed.">                        } else if (WorkSpace.this.filesSeen.containsKey(fileName)</span>
+<span class="nc bnc" id="L1264" title="All 2 branches missed.">                                &amp;&amp; WorkSpace.this.filesSeen.get(fileName) == next.lastModified()) {</span>
+<span class="nc" id="L1265">                            logger.debug(&quot;Skipping file already seen {}, touch file to force add&quot;, fileName);</span>
+<span class="nc" id="L1266">                            continue;</span>
+                        }
+<span class="nc" id="L1268">                    }</span>
+
+<span class="nc" id="L1270">                    logger.debug(&quot;Adding filename to bundle {}&quot;, fileName);</span>
+
+                    // add file to workbundle (at least 1)
+<span class="nc bnc" id="L1273" title="All 2 branches missed.">                    if (workbundleHasRoom(paths, bytesInBundle)) {</span>
+<span class="nc" id="L1274">                        logger.debug(&quot;Added file to workbundle: {}&quot;, fileName);</span>
+<span class="nc" id="L1275">                        paths.addFileName(fileName, getFileModificationDate(fileName), getFileSize(fileName));</span>
+<span class="nc" id="L1276">                        bytesInBundle += next.length();</span>
+<span class="nc" id="L1277">                        WorkSpace.this.filesProcessed++; // overall</span>
+<span class="nc" id="L1278">                        fileCount++; // this loop</span>
+<span class="nc" id="L1279">                        WorkSpace.this.bytesProcessed += next.length(); // overall</span>
+                    }
+                    // if bundle is full, create a new empty and
+                    // move it to the outbound queue.
+<span class="nc bnc" id="L1283" title="All 2 branches missed.">                    if (!workbundleHasRoom(paths, bytesInBundle)) {</span>
+<span class="nc" id="L1284">                        logger.debug(&quot;Workbundle full, adding it to outbound queue&quot;);</span>
+<span class="nc bnc" id="L1285" title="All 2 branches missed.">                        if (skipped &lt; numberOfBundlesToSkipArg) {</span>
+<span class="nc" id="L1286">                            skipped++;</span>
+                        } else {
+<span class="nc" id="L1288">                            addOutboundBundle(paths);</span>
+<span class="nc" id="L1289">                            collected++;</span>
+                        }
+                        // create new empty work bundle
+<span class="nc" id="L1292">                        paths = new WorkBundle(basePath);</span>
+<span class="nc" id="L1293">                        paths.setPriority(dir.getPriority());</span>
+<span class="nc" id="L1294">                        paths.setSimpleMode(getSimpleMode());</span>
+<span class="nc" id="L1295">                        bytesInBundle = 0;</span>
+                    }
+
+<span class="nc" id="L1298">                } // end while f.hasNext()</span>
+
+                // Send residual files, not a complete set perhaps
+<span class="nc bnc" id="L1301" title="All 2 branches missed.">                if (paths.size() &gt; 0) {</span>
+<span class="nc bnc" id="L1302" title="All 2 branches missed.">                    if (skipped &lt; numberOfBundlesToSkipArg) {</span>
+<span class="nc" id="L1303">                        logger.info(&quot;Skipping last bundle&quot;);</span>
+                    } else {
+<span class="nc" id="L1305">                        addOutboundBundle(paths);</span>
+<span class="nc" id="L1306">                        collected++;</span>
+                    }
+                }
+                // clear the files done list
+<span class="nc" id="L1310">                synchronized (WorkSpace.this.QLOCK) {</span>
+<span class="nc" id="L1311">                    WorkSpace.this.filesDone.clear();</span>
+<span class="nc" id="L1312">                }</span>
+<span class="nc" id="L1313">            } catch (Exception e) {</span>
+<span class="nc" id="L1314">                logger.error(&quot;System error&quot;, e);</span>
+<span class="nc" id="L1315">                return collected;</span>
+<span class="nc" id="L1316">            }</span>
+
+<span class="nc bnc" id="L1318" title="All 2 branches missed.">            if (!WorkSpace.this.outbound.isEmpty()) {</span>
+<span class="nc" id="L1319">                logger.info(&quot;Processed {} files into {} bundles, skipping {} bundles.&quot;, fileCount, collected, skipped);</span>
+            }
+<span class="nc" id="L1321">            return collected;</span>
+        }
+
+        /**
+         * Convenience method to check if there is room in the work bundle to add more files.
+         *
+         * @param bundle the bundle to check
+         * @param bytesInBundle the current count of bytes in the bundle.
+         * @return true if bundle does not exceed max byte size, or max file count.
+         */
+        private boolean workbundleHasRoom(final WorkBundle bundle, final long bytesInBundle) {
+
+            // must have a min size of 1 file, but cannot be over the
+            // max byte size, or max file count
+<span class="nc bnc" id="L1335" title="All 8 branches missed.">            boolean bReturn = (bundle.size() &lt;= 0)</span>
+                    || (((WorkSpace.this.maxBundleSize &lt;= -1) || (bytesInBundle &lt; WorkSpace.this.maxBundleSize))
+                            &amp;&amp; ((WorkSpace.this.filesPerMessage &lt;= -1) || (bundle
+<span class="nc bnc" id="L1338" title="All 2 branches missed.">                                    .size() &lt; WorkSpace.this.filesPerMessage)));</span>
+
+<span class="nc" id="L1340">            logger.debug(&quot;workbundle has room = {}&quot;, bReturn);</span>
+<span class="nc" id="L1341">            return bReturn;</span>
+        }
+
+        /**
+         * Check memory (heap) usage and wait for it to go below the threshold. We must be able to collect at least 500 file
+         * bundles to trigger this mechanism.
+         */
+        protected void pauseCollector() {
+<span class="nc" id="L1349">            final int initialQueueSize = getOutboundQueueSize();</span>
+<span class="nc bnc" id="L1350" title="All 2 branches missed.">            if (initialQueueSize &lt; 500) {</span>
+<span class="nc" id="L1351">                return;</span>
+            }
+<span class="nc" id="L1353">            final long intv = 30000;</span>
+<span class="nc" id="L1354">            final MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();</span>
+<span class="nc" id="L1355">            MemoryUsage heap = mbean.getHeapMemoryUsage();</span>
+<span class="nc" id="L1356">            int count = 0;</span>
+<span class="nc bnc" id="L1357" title="All 4 branches missed.">            while ((((double) heap.getUsed() / (double) heap.getCommitted()) &gt; MEM_THRESHOLD) &amp;&amp; (getOutboundQueueSize() &gt; 500)) {</span>
+<span class="nc" id="L1358">                logger.debug(&quot;Collection memory threshold exceeded {}&quot;, heap);</span>
+                try {
+<span class="nc" id="L1360">                    Thread.sleep(intv);</span>
+<span class="nc" id="L1361">                } catch (InterruptedException ex) {</span>
+<span class="nc" id="L1362">                    Thread.currentThread().interrupt();</span>
+<span class="nc" id="L1363">                }</span>
+<span class="nc" id="L1364">                count++;</span>
+<span class="nc" id="L1365">                heap = mbean.getHeapMemoryUsage();</span>
+            }
+
+<span class="nc bnc" id="L1368" title="All 4 branches missed.">            if (count &gt; 0 &amp;&amp; logger.isDebugEnabled()) {</span>
+<span class="nc" id="L1369">                logger.debug(</span>
+                        &quot;Paused collector {} times for {}s waiting for memory usage to go below threshold {} resuming at {}, queueSize was/is={}/{}&quot;,
+<span class="nc" id="L1371">                        count, (intv / 1000), MEM_THRESHOLD, heap, initialQueueSize, getOutboundQueueSize());</span>
+            }
+<span class="nc" id="L1373">        }</span>
+    }
+
+    /**
+     * Collect per pickup statistics for this run
+     */
+<span class="fc" id="L1379">    public static class WorkSpaceStats {</span>
+<span class="fc" id="L1380">        final Map&lt;String, Integer&gt; remoteMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L1381">        final Set&lt;String&gt; shutDownSent = new HashSet&lt;&gt;();</span>
+
+        /**
+         * Increment the bundle count for the machine when it takes one
+         *
+         * @param machine the remote pickup
+         */
+        public void bump(final String machine) {
+<span class="fc" id="L1389">            Integer count = this.remoteMap.get(machine);</span>
+<span class="fc bfc" id="L1390" title="All 2 branches covered.">            if (count == null) {</span>
+<span class="fc" id="L1391">                count = 1;</span>
+            } else {
+<span class="fc" id="L1393">                count = count + 1;</span>
+            }
+<span class="fc" id="L1395">            this.remoteMap.put(machine, count);</span>
+<span class="fc" id="L1396">        }</span>
+
+        /**
+         * Indicate that shutdown msg was sent to machine
+         *
+         * @param machine the remote name
+         */
+        public void shutDownSent(final String machine) {
+<span class="fc" id="L1404">            this.shutDownSent.add(machine);</span>
+<span class="fc" id="L1405">        }</span>
+
+        /**
+         * Count how many machines got shut down msg
+         */
+        public int getShutDownCount() {
+<span class="nc" id="L1411">            return this.shutDownSent.size();</span>
+        }
+
+        /**
+         * Iterate over set of machines used
+         */
+        public Iterator&lt;String&gt; machinesUsed() {
+<span class="nc" id="L1418">            return this.remoteMap.keySet().iterator();</span>
+        }
+
+        /**
+         * Count of machines used
+         */
+        public int getCountUsed(final String machine) {
+<span class="nc" id="L1425">            final Integer count = this.remoteMap.get(machine);</span>
+<span class="nc bnc" id="L1426" title="All 2 branches missed.">            return (count == null) ? 0 : count;</span>
+        }
+    }
+
+    /**
+     * Watch the directory for changes to pickup up client places
+     */
+    public class WorkSpaceDirectoryWatcher extends DirectoryAdapter {
+        /**
+         * Watch the directory for registrations that match pattern
+         *
+         * @param pattern the pattern to match
+         */
+<span class="fc" id="L1439">        public WorkSpaceDirectoryWatcher(final String pattern) {</span>
+<span class="fc" id="L1440">            super(pattern);</span>
+<span class="fc" id="L1441">            logger.debug(&quot;PickupClient pattern is {}&quot;, pattern);</span>
+<span class="fc" id="L1442">        }</span>
+
+        /**
+         * Accept registration notices that match our pattern
+         *
+         * @param observableKey the reporting directory
+         * @param placeKey the key of the matching registered place
+         */
+        @Override
+        public void placeRegistered(final String observableKey, final String placeKey) {
+<span class="nc" id="L1452">            final String k = KeyManipulator.removeExpense(placeKey);</span>
+<span class="nc" id="L1453">            logger.debug(&quot;Registration message from {}&quot;, k);</span>
+<span class="nc bnc" id="L1454" title="All 4 branches missed.">            if (WorkSpace.this.pups.contains(k) &amp;&amp; WorkSpace.this.useRetryStrategy) {</span>
+                // This covers the case where the pickup dies and restarts
+                // before the Heartbeat mechanism figures out there was
+                // a problem.
+<span class="nc" id="L1458">                logger.info(&quot;Already known pickup {} must be reinitialized to clear pending work.&quot;, k);</span>
+<span class="nc" id="L1459">                removePickUp(k);</span>
+            }
+
+<span class="nc bnc" id="L1462" title="All 2 branches missed.">            if (!WorkSpace.this.pups.contains(k)) {</span>
+<span class="nc" id="L1463">                logger.info(&quot;New pickup place {}&quot;, k);</span>
+            }
+
+            // add to list and maybe send open msg. Dup places
+            // will not be added but might be re-notified
+<span class="nc" id="L1468">            addPickUp(k);</span>
+
+<span class="nc" id="L1470">        }</span>
+
+        /**
+         * Accept deregistration notices that match our pattern
+         *
+         * @param observableKey the reporting directory
+         * @param placeKey the key of the matching deregistered place
+         */
+        @Override
+        public void placeDeregistered(final String observableKey, final String placeKey) {
+<span class="nc" id="L1480">            final String k = KeyManipulator.removeExpense(placeKey);</span>
+<span class="nc" id="L1481">            logger.debug(&quot;DeRegistration message from {}&quot;, k);</span>
+<span class="nc bnc" id="L1482" title="All 2 branches missed.">            if (!WorkSpace.this.pups.contains(k)) {</span>
+<span class="nc" id="L1483">                logger.info(&quot;Unknown pickup deregistered {}&quot;, k);</span>
+            } else {
+<span class="nc" id="L1485">                logger.info(&quot;Pickup place {} is gone&quot;, k);</span>
+<span class="nc bnc" id="L1486" title="All 2 branches missed.">                if (WorkSpace.this.useRetryStrategy) {</span>
+<span class="nc" id="L1487">                    removePickUp(k);</span>
+                }
+            }
+<span class="nc" id="L1490">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

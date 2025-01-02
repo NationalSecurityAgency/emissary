@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NamespaceAction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.server.mvc</a> &gt; <span class="el_source">NamespaceAction.java</span></div><h1>NamespaceAction.java</h1><pre class="source lang-java linenums">package emissary.server.mvc;
+
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import org.glassfish.jersey.server.mvc.Template;
+
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
+@Path(&quot;&quot;)
+// context is emissary
+<span class="fc" id="L21">public class NamespaceAction {</span>
+
+
+    @GET
+    @Path(&quot;/Namespace.action&quot;)
+    @Produces(MediaType.TEXT_HTML)
+    @Template(name = &quot;/namespace&quot;)
+    public Map&lt;String, Object&gt; getNamespace(@Context HttpServletRequest request) {
+<span class="fc" id="L29">        Map&lt;String, Object&gt; model = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L30">        Set&lt;NamespaceInfo&gt; namespaces = new LinkedHashSet&lt;&gt;();</span>
+
+<span class="fc" id="L32">        int rowCount = 0;</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        for (String key : Namespace.keySet()) {</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">            String clz = rowCount++ % 2 == 0 ? &quot;even&quot; : &quot;odd&quot;;</span>
+<span class="fc" id="L35">            String context = request.getContextPath();</span>
+<span class="fc" id="L36">            namespaces.add(new NamespaceInfo(key, clz, context));</span>
+<span class="fc" id="L37">        }</span>
+
+<span class="fc" id="L39">        model.put(&quot;namespaces&quot;, namespaces);</span>
+
+<span class="fc" id="L41">        return model;</span>
+    }
+
+    static class NamespaceInfo {
+        final String key;
+        final String clz;
+        final Object value;
+        final String valueClassName;
+        final String dumpUrl;
+        final String transferUrl;
+        final boolean isDir;
+
+<span class="fc" id="L53">        public NamespaceInfo(String key, String clz, String context) {</span>
+<span class="fc" id="L54">            this.key = key;</span>
+<span class="fc" id="L55">            this.clz = clz;</span>
+            Object tempValue;
+            try {
+<span class="fc" id="L58">                tempValue = Namespace.lookup(key);</span>
+<span class="nc" id="L59">            } catch (NamespaceException e) {</span>
+<span class="nc" id="L60">                tempValue = e.getMessage();</span>
+<span class="fc" id="L61">            }</span>
+<span class="fc" id="L62">            this.value = tempValue;</span>
+<span class="fc" id="L63">            this.valueClassName = this.value.getClass().getName();</span>
+<span class="fc" id="L64">            this.isDir = key.contains(&quot;DirectoryPlace&quot;);</span>
+<span class="fc" id="L65">            this.dumpUrl = context + &quot;/DumpDirectory.action?targetDir=&quot; + key;</span>
+<span class="fc" id="L66">            this.transferUrl = context + &quot;/TransferDirectory.action?targetDir=&quot; + key;</span>
+<span class="fc" id="L67">        }</span>
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

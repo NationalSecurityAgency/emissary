@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IBaseDataObjectXmlHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core</a> &gt; <span class="el_source">IBaseDataObjectXmlHelper.java</span></div><h1>IBaseDataObjectXmlHelper.java</h1><pre class="source lang-java linenums">package emissary.core;
+
+import emissary.core.IBaseDataObjectXmlCodecs.ElementDecoders;
+import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
+import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.kff.KffDataObjectHandler;
+import emissary.util.xml.AbstractJDOMUtil;
+
+import org.apache.commons.lang3.Validate;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+
+import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
+import static emissary.core.constants.IbdoXmlElementNames.ATTACHMENT_ELEMENT_PREFIX;
+import static emissary.core.constants.IbdoXmlElementNames.BIRTH_ORDER;
+import static emissary.core.constants.IbdoXmlElementNames.BROKEN;
+import static emissary.core.constants.IbdoXmlElementNames.CLASSIFICATION;
+import static emissary.core.constants.IbdoXmlElementNames.CURRENT_FORM;
+import static emissary.core.constants.IbdoXmlElementNames.DATA;
+import static emissary.core.constants.IbdoXmlElementNames.EXTRACTED_RECORD_ELEMENT_PREFIX;
+import static emissary.core.constants.IbdoXmlElementNames.FILENAME;
+import static emissary.core.constants.IbdoXmlElementNames.FONT_ENCODING;
+import static emissary.core.constants.IbdoXmlElementNames.FOOTER;
+import static emissary.core.constants.IbdoXmlElementNames.HEADER;
+import static emissary.core.constants.IbdoXmlElementNames.HEADER_ENCODING;
+import static emissary.core.constants.IbdoXmlElementNames.ID;
+import static emissary.core.constants.IbdoXmlElementNames.NUM_CHILDREN;
+import static emissary.core.constants.IbdoXmlElementNames.NUM_SIBLINGS;
+import static emissary.core.constants.IbdoXmlElementNames.OUTPUTABLE;
+import static emissary.core.constants.IbdoXmlElementNames.PARAMETER;
+import static emissary.core.constants.IbdoXmlElementNames.PRIORITY;
+import static emissary.core.constants.IbdoXmlElementNames.PROCESSING_ERROR;
+import static emissary.core.constants.IbdoXmlElementNames.RESULT;
+import static emissary.core.constants.IbdoXmlElementNames.SETUP;
+import static emissary.core.constants.IbdoXmlElementNames.TRANSACTION_ID;
+import static emissary.core.constants.IbdoXmlElementNames.VIEW;
+import static emissary.core.constants.IbdoXmlElementNames.WORK_BUNDLE_ID;
+
+/**
+ * This class helps convert IBaseDataObjects to and from XML.
+ */
+public final class IBaseDataObjectXmlHelper {
+    /**
+     * Logger instance
+     */
+<span class="fc" id="L52">    private static final Logger LOGGER = LoggerFactory.getLogger(IBaseDataObjectXmlHelper.class);</span>
+
+    private IBaseDataObjectXmlHelper() {}
+
+    /**
+     * Setup a typical BDO
+     * 
+     * @param sbcf initial channel factory for the data
+     * @param classification initial classification string
+     * @param formAndFileType initial form and file type
+     * @param kff an existing Kff handler
+     * @return a typical BDO with the specified data
+     */
+    public static IBaseDataObject createStandardInitialIbdo(final IBaseDataObject ibdo, final SeekableByteChannelFactory sbcf,
+            final String classification, final String formAndFileType, final KffDataObjectHandler kff) {
+<span class="fc" id="L67">        final IBaseDataObject tempIbdo = DataObjectFactory.getInstance();</span>
+
+        // We want to return the ibdo with the data field equal to null. This can only
+        // be accomplished if the data is never set. Therefore, we have to set the data
+        // on a separate ibdo, hash the ibdo and then transfer just the parameters back
+        // to the original ibdo.
+<span class="fc" id="L73">        tempIbdo.setChannelFactory(sbcf);</span>
+<span class="fc" id="L74">        kff.hash(tempIbdo);</span>
+<span class="fc" id="L75">        ibdo.setParameters(tempIbdo.getParameters());</span>
+
+<span class="fc" id="L77">        ibdo.setCurrentForm(formAndFileType);</span>
+<span class="fc" id="L78">        ibdo.setFileType(formAndFileType);</span>
+<span class="fc" id="L79">        ibdo.setClassification(classification);</span>
+
+<span class="fc" id="L81">        return ibdo;</span>
+    }
+
+    /**
+     * Creates an IBaseDataObject and associated children from an XML document.
+     * 
+     * @param document containing the IBaseDataObject and children descriptions.
+     * @param children the list where the children will be added.
+     * @param decoders used to decode XML into ibdo.
+     * @return the IBaseDataObject.
+     */
+    public static IBaseDataObject ibdoFromXml(final Document document, final List&lt;IBaseDataObject&gt; children, final ElementDecoders decoders) {
+<span class="fc" id="L93">        Validate.notNull(document, &quot;Required document != null!&quot;);</span>
+<span class="fc" id="L94">        Validate.notNull(children, &quot;Required children != null!&quot;);</span>
+<span class="fc" id="L95">        Validate.notNull(decoders, &quot;Required: decoders not null!&quot;);</span>
+
+<span class="fc" id="L97">        final Element root = document.getRootElement();</span>
+<span class="fc" id="L98">        final Element answersElement = root.getChild(ANSWERS);</span>
+<span class="fc" id="L99">        final IBaseDataObject parentIbdo = DataObjectFactory.getInstance();</span>
+<span class="fc" id="L100">        final List&lt;Element&gt; answerChildren = answersElement.getChildren();</span>
+
+<span class="fc" id="L102">        ibdoFromXmlMainElements(answersElement, parentIbdo, decoders);</span>
+
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        for (final Element answerChild : answerChildren) {</span>
+<span class="fc" id="L105">            final IBaseDataObject childIbdo = DataObjectFactory.getInstance();</span>
+<span class="fc" id="L106">            final String childName = answerChild.getName();</span>
+
+<span class="fc bfc" id="L108" title="All 2 branches covered.">            if (childName.startsWith(EXTRACTED_RECORD_ELEMENT_PREFIX)) {</span>
+<span class="fc" id="L109">                parentIbdo.addExtractedRecord(ibdoFromXmlMainElements(answerChild, childIbdo, decoders));</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">            } else if (childName.startsWith(ATTACHMENT_ELEMENT_PREFIX)) {</span>
+<span class="fc" id="L111">                children.add(ibdoFromXmlMainElements(answerChild, childIbdo, decoders));</span>
+            }
+<span class="fc" id="L113">        }</span>
+
+<span class="fc" id="L115">        return parentIbdo;</span>
+    }
+
+    /**
+     * Creates an IBaseDataObject from an XML element excluding Extracted Records and children.
+     * 
+     * @param element to create IBaseDataObject from.
+     * @param ibdo to apply the element values to.
+     * @param decoders used to decode XML into ibdo.
+     * @return the IBaseDataObject that was passed in.
+     */
+    public static IBaseDataObject ibdoFromXmlMainElements(final Element element, final IBaseDataObject ibdo,
+            final ElementDecoders decoders) {
+<span class="fc" id="L128">        Validate.notNull(element, &quot;Required: element not null!&quot;);</span>
+<span class="fc" id="L129">        Validate.notNull(ibdo, &quot;Required: ibdo not null!&quot;);</span>
+<span class="fc" id="L130">        Validate.notNull(decoders, &quot;Required: decoders not null!&quot;);</span>
+
+        try {
+<span class="fc" id="L133">            decoders.decodeInteger(element, ibdo, BIRTH_ORDER);</span>
+<span class="fc" id="L134">            decoders.decodeString(element, ibdo, BROKEN);</span>
+<span class="fc" id="L135">            decoders.decodeString(element, ibdo, CLASSIFICATION);</span>
+<span class="fc" id="L136">            decoders.decodeString(element, ibdo, CURRENT_FORM);</span>
+<span class="fc" id="L137">            decoders.decodeSeekableByteChannelFactory(element, ibdo, DATA);</span>
+<span class="fc" id="L138">            decoders.decodeString(element, ibdo, FILENAME);</span>
+<span class="fc" id="L139">            decoders.decodeString(element, ibdo, FONT_ENCODING);</span>
+<span class="fc" id="L140">            decoders.decodeByteArray(element, ibdo, FOOTER);</span>
+<span class="fc" id="L141">            decoders.decodeByteArray(element, ibdo, HEADER);</span>
+<span class="fc" id="L142">            decoders.decodeString(element, ibdo, HEADER_ENCODING);</span>
+<span class="fc" id="L143">            decoders.decodeString(element, ibdo, ID);</span>
+<span class="fc" id="L144">            decoders.decodeInteger(element, ibdo, NUM_CHILDREN);</span>
+<span class="fc" id="L145">            decoders.decodeInteger(element, ibdo, NUM_SIBLINGS);</span>
+<span class="fc" id="L146">            decoders.decodeBoolean(element, ibdo, OUTPUTABLE);</span>
+<span class="fc" id="L147">            decoders.decodeStringObject(element, ibdo, PARAMETER);</span>
+<span class="fc" id="L148">            decoders.decodeInteger(element, ibdo, PRIORITY);</span>
+<span class="fc" id="L149">            decoders.decodeString(element, ibdo, PROCESSING_ERROR);</span>
+<span class="fc" id="L150">            decoders.decodeString(element, ibdo, TRANSACTION_ID);</span>
+<span class="fc" id="L151">            decoders.decodeStringByteArray(element, ibdo, VIEW);</span>
+<span class="fc" id="L152">            decoders.decodeString(element, ibdo, WORK_BUNDLE_ID);</span>
+<span class="fc" id="L153">        } catch (IOException e) {</span>
+<span class="fc" id="L154">            LOGGER.error(&quot;Failed to parse XML!&quot;, e);</span>
+<span class="fc" id="L155">        }</span>
+
+<span class="fc" id="L157">        return ibdo;</span>
+    }
+
+    /**
+     * Creates an XML Element from a parent IBaseDataObject and a list of children IBaseDataObjects.
+     * 
+     * @param parent the parent IBaseDataObject
+     * @param children the children IBaseDataObjects.
+     * @param initialIbdo the initial IBaseDataObject.
+     * @param encoders used to encode ibdo into XML.
+     * @return the XML Element.
+     */
+    public static Element xmlElementFromIbdo(final IBaseDataObject parent, final List&lt;IBaseDataObject&gt; children,
+            final IBaseDataObject initialIbdo, final ElementEncoders encoders) {
+<span class="fc" id="L171">        Validate.notNull(parent, &quot;Required: parent != null!&quot;);</span>
+<span class="fc" id="L172">        Validate.notNull(children, &quot;Required: children != null!&quot;);</span>
+<span class="fc" id="L173">        Validate.notNull(initialIbdo, &quot;Required: initialIbdo != null!&quot;);</span>
+<span class="fc" id="L174">        Validate.notNull(encoders, &quot;Required: encoders not null!&quot;);</span>
+
+<span class="fc" id="L176">        final Element rootElement = new Element(RESULT);</span>
+<span class="fc" id="L177">        final Element setupElement = new Element(SETUP);</span>
+
+<span class="fc" id="L179">        rootElement.addContent(setupElement);</span>
+
+<span class="fc" id="L181">        xmlFromIbdoMainElements(initialIbdo, setupElement, encoders);</span>
+
+<span class="fc" id="L183">        final Element answersElement = new Element(ANSWERS);</span>
+
+<span class="fc" id="L185">        rootElement.addContent(answersElement);</span>
+
+<span class="fc" id="L187">        xmlFromIbdoMainElements(parent, answersElement, encoders);</span>
+
+<span class="fc" id="L189">        final List&lt;IBaseDataObject&gt; extractedRecords = parent.getExtractedRecords();</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        if (extractedRecords != null) {</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">            for (int i = 0; i &lt; extractedRecords.size(); i++) {</span>
+<span class="fc" id="L192">                final IBaseDataObject extractedRecord = extractedRecords.get(i);</span>
+<span class="fc" id="L193">                final Element extractElement = new Element(EXTRACTED_RECORD_ELEMENT_PREFIX + (i + 1));</span>
+
+<span class="fc" id="L195">                xmlFromIbdoMainElements(extractedRecord, extractElement, encoders);</span>
+
+<span class="fc" id="L197">                answersElement.addContent(extractElement);</span>
+            }
+        }
+
+<span class="fc bfc" id="L201" title="All 2 branches covered.">        for (int i = 0; i &lt; children.size(); i++) {</span>
+<span class="fc" id="L202">            final IBaseDataObject child = children.get(i);</span>
+<span class="fc" id="L203">            final Element childElement = new Element(ATTACHMENT_ELEMENT_PREFIX + (i + 1));</span>
+
+<span class="fc" id="L205">            xmlFromIbdoMainElements(child, childElement, encoders);</span>
+
+<span class="fc" id="L207">            answersElement.addContent(childElement);</span>
+        }
+
+<span class="fc" id="L210">        return rootElement;</span>
+    }
+
+    /**
+     * Creates an XML string from a parent IBaseDataObject and a list of children IBaseDataObjects.
+     * 
+     * @param parent the parent IBaseDataObject
+     * @param children the children IBaseDataObjects.
+     * @param initialIbdo the initial IBaseDataObject.
+     * @param encoders used to encode ibdo into XML.
+     * @return the XML string.
+     */
+    public static String xmlFromIbdo(final IBaseDataObject parent, final List&lt;IBaseDataObject&gt; children,
+            final IBaseDataObject initialIbdo, final ElementEncoders encoders) {
+<span class="fc" id="L224">        final Element rootElement = xmlElementFromIbdo(parent, children, initialIbdo, encoders);</span>
+
+<span class="fc" id="L226">        return AbstractJDOMUtil.toString(new Document(rootElement));</span>
+    }
+
+    /**
+     * Creates xml from the IBaseDataObject excluding the extracted records and children.
+     * 
+     * @param ibdo to create xml from.
+     * @param element to add the xml to.
+     * @param encoders used to encode ibdo into XML.
+     */
+    public static void xmlFromIbdoMainElements(final IBaseDataObject ibdo, final Element element, final ElementEncoders encoders) {
+<span class="fc" id="L237">        Validate.notNull(ibdo, &quot;Required: ibdo not null!&quot;);</span>
+<span class="fc" id="L238">        Validate.notNull(element, &quot;Required: element not null!&quot;);</span>
+<span class="fc" id="L239">        Validate.notNull(encoders, &quot;Required: encoders not null!&quot;);</span>
+
+<span class="fc" id="L241">        encoders.seekableByteChannelFactoryEncoder.encode(Collections.singletonList(ibdo.getChannelFactory()), element, DATA);</span>
+<span class="fc" id="L242">        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getBirthOrder()), element, BIRTH_ORDER);</span>
+<span class="fc" id="L243">        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getBroken()), element, BROKEN);</span>
+<span class="fc" id="L244">        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getClassification()), element, CLASSIFICATION);</span>
+<span class="fc" id="L245">        encoders.stringEncoder.encode(ibdo.getAllCurrentForms(), element, CURRENT_FORM);</span>
+<span class="fc" id="L246">        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getFilename()), element, FILENAME);</span>
+<span class="fc" id="L247">        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getFontEncoding()), element, FONT_ENCODING);</span>
+<span class="fc" id="L248">        encoders.byteArrayEncoder.encode(Collections.singletonList(ibdo.footer()), element, FOOTER);</span>
+<span class="fc" id="L249">        encoders.byteArrayEncoder.encode(Collections.singletonList(ibdo.header()), element, HEADER);</span>
+<span class="fc" id="L250">        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getHeaderEncoding()), element, HEADER_ENCODING);</span>
+<span class="fc" id="L251">        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getId()), element, ID);</span>
+<span class="fc" id="L252">        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getNumChildren()), element, NUM_CHILDREN);</span>
+<span class="fc" id="L253">        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getNumSiblings()), element, NUM_SIBLINGS);</span>
+<span class="fc" id="L254">        encoders.booleanEncoder.encode(Collections.singletonList(ibdo.isOutputable()), element, OUTPUTABLE);</span>
+<span class="fc" id="L255">        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getPriority()), element, PRIORITY);</span>
+<span class="fc" id="L256">        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getProcessingError()), element, PROCESSING_ERROR);</span>
+<span class="fc" id="L257">        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getTransactionId()), element, TRANSACTION_ID);</span>
+<span class="fc" id="L258">        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getWorkBundleId()), element, WORK_BUNDLE_ID);</span>
+<span class="fc" id="L259">        encoders.stringObjectEncoder.encode(Collections.singletonList(ibdo.getParameters()), element, PARAMETER);</span>
+<span class="fc" id="L260">        encoders.stringByteArrayEncoder.encode(Collections.singletonList(ibdo.getAlternateViews()), element, VIEW);</span>
+<span class="fc" id="L261">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

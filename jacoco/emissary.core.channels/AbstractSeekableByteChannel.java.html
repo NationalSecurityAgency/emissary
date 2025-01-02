@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractSeekableByteChannel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core.channels</a> &gt; <span class="el_source">AbstractSeekableByteChannel.java</span></div><h1>AbstractSeekableByteChannel.java</h1><pre class="source lang-java linenums">package emissary.core.channels;
+
+import org.apache.commons.lang3.Validate;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.NonWritableChannelException;
+import java.nio.channels.SeekableByteChannel;
+
+/**
+ * Core implementation of the {@link SeekableByteChannel} interface
+ */
+public abstract class AbstractSeekableByteChannel implements SeekableByteChannel {
+    /**
+     * Boolean describing whether the SeekableByteChannel is open or closed.
+     */
+<span class="fc" id="L19">    private boolean open = true;</span>
+    /**
+     * The current position of the SeekableByteChannel.
+     */
+<span class="fc" id="L23">    private long position = 0;</span>
+
+    /**
+     * Used during {@link #read(ByteBuffer)} to calculate resizing a ByteBuffer
+     */
+<span class="fc" id="L28">    private static final BigInteger bigIntMaxValue = BigInteger.valueOf(Integer.MAX_VALUE);</span>
+
+    /**
+     * Create a new SBC
+     */
+<span class="fc" id="L33">    protected AbstractSeekableByteChannel() {}</span>
+
+    /**
+     * Real close implementation
+     * 
+     * @throws IOException if an error occurs
+     */
+    protected abstract void closeImpl() throws IOException;
+
+    /**
+     * Real read implementation. The provided byteBuffer will be properly sized (limited) on the way in.
+     * 
+     * @param byteBuffer to read from the SBC into.
+     * @return the number of bytes read
+     * @throws IOException if an error occurs
+     */
+    protected abstract int readImpl(ByteBuffer byteBuffer) throws IOException;
+
+    /**
+     * Real size implementation
+     * 
+     * @return the size of the channel
+     * @throws IOException if an error occurs
+     */
+    protected abstract long sizeImpl() throws IOException;
+
+    /**
+     * Close the channel and mark as such
+     */
+    @Override
+    public final void close() throws IOException {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (open) {</span>
+<span class="fc" id="L65">            open = false;</span>
+<span class="fc" id="L66">            closeImpl();</span>
+        }
+<span class="fc" id="L68">    }</span>
+
+    /**
+     * Determine whether the channel is marked as open/closed
+     * 
+     * @return if the channel is open
+     */
+    @Override
+    public final boolean isOpen() {
+<span class="fc" id="L77">        return open;</span>
+    }
+
+    /**
+     * If the channel is open, return the current position
+     * 
+     * @return the current position if the channel is still open
+     */
+    @Override
+    public final long position() throws IOException {
+<span class="fc" id="L87">        checkOpen(open);</span>
+<span class="fc" id="L88">        return position;</span>
+    }
+
+    /**
+     * Set the position of the channel. Must be greater than -1, can be beyond the length of the channel.
+     * 
+     * @param position to set within the channel
+     */
+    @Override
+    public final SeekableByteChannel position(final long position) throws IOException {
+<span class="fc" id="L98">        checkOpen(open);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        Validate.isTrue(position &gt;= 0, &quot;Required: position &gt;= 0&quot;);</span>
+<span class="fc" id="L100">        this.position = position;</span>
+<span class="fc" id="L101">        return this;</span>
+    }
+
+    /**
+     * Read bytes from the channel into the provided buffer, if the channel is still open.
+     * 
+     * Relies on the implementation provided by the extending class to actually carry out the read.
+     * 
+     * @param byteBuffer to read into
+     * @throws IOException if an error occurs
+     */
+    @Override
+    public final int read(final ByteBuffer byteBuffer) throws IOException {
+<span class="fc" id="L114">        checkOpen(open);</span>
+<span class="fc" id="L115">        Validate.notNull(byteBuffer, &quot;Required: byteBuffer != null&quot;);</span>
+
+        // If we're at the end of the file, early return
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (!hasRemaining()) {</span>
+<span class="fc" id="L119">            return -1;</span>
+        }
+
+        // Remaining bytes in this channel
+<span class="fc" id="L123">        final long channelRemaining = remaining();</span>
+        // Remaining bytes in the provided buffer
+<span class="fc" id="L125">        final int byteBufferRemaining = byteBuffer.remaining();</span>
+        // Store off the current limit in case we need to update it
+<span class="fc" id="L127">        final int byteBufferLimit = byteBuffer.limit();</span>
+
+        // If the byte buffer has more bytes left than the channel, we want to right-size it for
+        // implementations to be able to 'simply' just read into the byteBuffer.
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        if (byteBufferRemaining &gt; channelRemaining) {</span>
+            // Get the new limit in a safe way to avoid arithmetic exception issues
+<span class="fc" id="L133">            final int newLimit = BigInteger.valueOf(channelRemaining).add(BigInteger.valueOf(byteBuffer.position()))</span>
+<span class="fc" id="L134">                    .min(bigIntMaxValue).intValue();</span>
+            // Update the limit of the byteBuffer temporarily whilst we carry out the read
+            // This will be reset to the original limit before returning
+<span class="fc" id="L137">            byteBuffer.limit(newLimit);</span>
+        }
+
+        try {
+            // Actually carry out the read, and keep how many bytes read for later return
+<span class="fc" id="L142">            final int bytesRead = readImpl(byteBuffer);</span>
+            // Update position of channel
+<span class="fc" id="L144">            position(position() + bytesRead);</span>
+            // Return the amount of bytes read from the channel
+<span class="fc" id="L146">            return bytesRead;</span>
+        } finally {
+            // Update limit of byteBuffer, which may have been reduced to ensure a safe read
+<span class="fc" id="L149">            byteBuffer.limit(byteBufferLimit);</span>
+        }
+    }
+
+    /**
+     * Whether this channel has any bytes remaining.
+     * 
+     * @return true if there are bytes remaining
+     * @throws IOException if an error occurs
+     */
+    public final boolean hasRemaining() throws IOException {
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        return remaining() &gt; 0;</span>
+    }
+
+    /**
+     * The amount of bytes remaining in this channel (size - current position).
+     * 
+     * @return amount of bytes remaining
+     * @throws IOException if an error occurs
+     */
+    public final long remaining() throws IOException {
+<span class="fc" id="L170">        return size() - position();</span>
+    }
+
+    /**
+     * Return the size of the channel if the channel is still open.
+     * 
+     * This adheres to the {@link SeekableByteChannel} specification.
+     * 
+     * @throws IOException if an error occurs
+     */
+    @Override
+    public final long size() throws IOException {
+<span class="fc" id="L182">        checkOpen(open);</span>
+<span class="fc" id="L183">        return sizeImpl();</span>
+    }
+
+    /**
+     * Block truncation of the channel, keep it immutable. Will throw {@link NonWritableChannelException}
+     * 
+     * @param size to set the channel to
+     * @throws IOException if an error occurs
+     */
+    @Override
+    @SuppressWarnings(&quot;CheckedExceptionNotThrown&quot;)
+    public final SeekableByteChannel truncate(final long size) throws IOException {
+<span class="fc" id="L195">        throw new NonWritableChannelException();</span>
+    }
+
+    /**
+     * Block writing of the channel, keep it immutable. Will throw {@link NonWritableChannelException}
+     * 
+     * @param byteBuffer to write from
+     */
+    @Override
+    @SuppressWarnings(&quot;CheckedExceptionNotThrown&quot;)
+    public final int write(final ByteBuffer byteBuffer) throws IOException {
+<span class="fc" id="L206">        throw new NonWritableChannelException();</span>
+    }
+
+    /**
+     * Validate the channel is still open, otherwise throw a {@link ClosedChannelException}
+     * 
+     * @param open if the channel is open or not
+     * @throws IOException if an error occurs
+     */
+    private static void checkOpen(final boolean open) throws IOException {
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        if (!open) {</span>
+<span class="fc" id="L217">            throw new ClosedChannelException();</span>
+        }
+<span class="fc" id="L219">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

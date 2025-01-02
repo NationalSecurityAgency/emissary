@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FilePickUpPlace.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.pickup.file</a> &gt; <span class="el_source">FilePickUpPlace.java</span></div><h1>FilePickUpPlace.java</h1><pre class="source lang-java linenums">package emissary.pickup.file;
+
+import emissary.pickup.IPickUp;
+import emissary.pickup.PickUpPlace;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Monitor one or more directories and pickup files for the system
+ */
+public class FilePickUpPlace extends PickUpPlace implements IPickUp {
+
+    // How often to check directories in millis
+<span class="pc" id="L16">    protected int pollingInterval = 30000;</span>
+
+    // List of FileDataServer objects
+<span class="pc" id="L19">    protected List&lt;FileDataServer&gt; theDataServer = new ArrayList&lt;&gt;();</span>
+
+    // How many files the FileDataServer should group
+    protected static final int DEFAULT_BUNDLE_SIZE = 20;
+    protected int bundleSize;
+
+    // Input directories to poll
+    protected String[] inputDataDirs;
+
+    /**
+     * Create using default configuration
+     */
+    public FilePickUpPlace() throws IOException {
+<span class="fc" id="L32">        super();</span>
+<span class="fc" id="L33">        configurePlace();</span>
+<span class="fc" id="L34">        startDataServer();</span>
+<span class="fc" id="L35">    }</span>
+
+    /**
+     * Create, configure, and register
+     */
+    public FilePickUpPlace(String configInfo, String dir, String placeLoc) throws IOException {
+
+<span class="nc" id="L42">        super(configInfo, dir, placeLoc);</span>
+<span class="nc" id="L43">        configurePlace();</span>
+<span class="nc" id="L44">        startDataServer();</span>
+<span class="nc" id="L45">    }</span>
+
+    /**
+     * Configure this place
+     * &lt;ul&gt;
+     * &lt;li&gt;POLLING_INTERVAL: how long to sleep between directory polls&lt;/li&gt;
+     * &lt;li&gt;BUNDLE_SIZE: how many files to group in a bundle&lt;/li&gt;
+     * &lt;li&gt;INPUT_DATA: one or more directories to pull files from&lt;/li&gt;
+     * &lt;/ul&gt;
+     */
+    protected void configurePlace() {
+<span class="fc" id="L56">        pollingInterval = configG.findIntEntry(&quot;POLLING_INTERVAL&quot;, pollingInterval);</span>
+<span class="fc" id="L57">        bundleSize = configG.findIntEntry(&quot;BUNDLE_SIZE&quot;, DEFAULT_BUNDLE_SIZE);</span>
+<span class="fc" id="L58">        List&lt;String&gt; params = configG.findEntries(&quot;INPUT_DATA&quot;);</span>
+<span class="fc" id="L59">        inputDataDirs = params.toArray(new String[0]);</span>
+<span class="fc" id="L60">    }</span>
+
+    /**
+     * Shutdown the directory monitoring threads and close resources
+     */
+    @Override
+    public void shutDown() {
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (FileDataServer fileDataServer : theDataServer) {</span>
+<span class="fc" id="L68">            logger.info(&quot;*** Stopping FilePickUpPlace &quot;);</span>
+<span class="fc" id="L69">            fileDataServer.shutdown();</span>
+<span class="fc" id="L70">        }</span>
+<span class="fc" id="L71">        super.shutDown();</span>
+<span class="fc" id="L72">    }</span>
+
+    /**
+     * Pause the DataServers
+     */
+    @Override
+    public void pause() {
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        for (FileDataServer i : theDataServer) {</span>
+<span class="nc" id="L80">            logger.info(&quot;*** Pausing {} for {}&quot;, i.getClass().getName(), getClass().getName());</span>
+<span class="nc" id="L81">            i.pause();</span>
+<span class="nc" id="L82">        }</span>
+<span class="nc" id="L83">    }</span>
+
+    /**
+     * Unpause the DataServers
+     */
+    @Override
+    public void unpause() {
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        for (FileDataServer i : theDataServer) {</span>
+<span class="nc" id="L91">            logger.info(&quot;*** Unpausing {} for {}&quot;, i.getClass().getName(), getClass().getName());</span>
+<span class="nc" id="L92">            i.unpause();</span>
+<span class="nc" id="L93">        }</span>
+<span class="nc" id="L94">    }</span>
+
+
+    /**
+     * Check the status of the DataServers
+     *
+     * @return true if any data server is paused, false otherwise
+     */
+    @Override
+    public boolean isPaused() {
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        for (FileDataServer i : theDataServer) {</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            if (i.isPaused()) {</span>
+<span class="nc" id="L106">                return true;</span>
+            }
+<span class="nc" id="L108">        }</span>
+<span class="nc" id="L109">        return false;</span>
+    }
+
+    /**
+     * For each input directory start a new server thread.
+     */
+    @SuppressWarnings(&quot;ThreadPriorityCheck&quot;)
+    public void startDataServer() {
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        for (int i = 0; i &lt; inputDataDirs.length; i++) {</span>
+<span class="fc" id="L118">            FileDataServer fds = new FileDataServer(inputDataDirs[i], this, pollingInterval);</span>
+
+            // Tell it how many files to pick up at a time
+<span class="fc" id="L121">            fds.setBundleSize(bundleSize);</span>
+
+            // Set priority below agent processing
+<span class="fc" id="L124">            fds.setPriority(Thread.NORM_PRIORITY - 1);</span>
+
+            // It's a thread so use the start method
+<span class="fc" id="L127">            fds.start();</span>
+
+            // Add it to our list
+<span class="fc" id="L130">            theDataServer.add(fds);</span>
+        }
+<span class="fc" id="L132">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

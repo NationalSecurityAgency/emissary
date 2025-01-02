@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MobileAgentFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.pool</a> &gt; <span class="el_source">MobileAgentFactory.java</span></div><h1>MobileAgentFactory.java</h1><pre class="source lang-java linenums">package emissary.pool;
+
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.Factory;
+import emissary.core.IMobileAgent;
+import emissary.core.MobileAgent;
+import emissary.core.Namespace;
+
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+
+public class MobileAgentFactory implements PooledObjectFactory&lt;IMobileAgent&gt; {
+
+    // This is the default class when nothing else is
+    // configured or passed on a constructor. This value
+    // can be overridden from the AgentPool.cfg file
+    static final String DEFAULT_CLASS_STRING = &quot;emissary.core.MobileAgent&quot;;
+
+    public static final String AGENT_NAME = &quot;MobileAgent&quot;;
+
+    // This is the class we are going to be pooling
+    // The value can be set by constructor, by public setter
+    // or from the value in DEFAULT_CLASS_STRING
+<span class="fc" id="L30">    String classString = DEFAULT_CLASS_STRING;</span>
+
+    int maxAgentMoveErrors;
+    int maxAgentItinerary;
+
+<span class="fc" id="L35">    private static final Logger logger = LoggerFactory.getLogger(MobileAgentFactory.class);</span>
+
+    // Thread group for every agent produced by this factory
+<span class="fc" id="L38">    private static final AgentThreadGroup threadGroup = new AgentThreadGroup(&quot;Agent Threads&quot;);</span>
+
+    // True if created objects should be registered in namespace
+<span class="fc" id="L41">    private boolean useNamespace = true;</span>
+
+    // Track how many objects created here
+<span class="fc" id="L44">    private long objectsCreated = 0;</span>
+
+    protected void configure() {
+        // Setup the DEFAULT_CLASS_STRING value by peeking at the config file
+        try {
+<span class="fc" id="L49">            Configurator conf = ConfigUtil.getConfigInfo(AgentPool.class);</span>
+<span class="fc" id="L50">            classString = conf.findStringEntry(&quot;agent.class&quot;, DEFAULT_CLASS_STRING);</span>
+
+<span class="fc" id="L52">            maxAgentMoveErrors = conf.findIntEntry(&quot;agent.move.errors&quot;, MobileAgent.DEFAULT_MAX_MOVE_ERRORS);</span>
+<span class="fc" id="L53">            maxAgentItinerary = conf.findIntEntry(&quot;agent.max.itinerary&quot;, MobileAgent.DEFAULT_MAX_ITINERARY_STEPS);</span>
+<span class="nc" id="L54">        } catch (IOException e) {</span>
+<span class="nc" id="L55">            logger.debug(&quot;Cannot read AgentPool.cfg, taking default values&quot;);</span>
+<span class="fc" id="L56">        }</span>
+<span class="fc" id="L57">    }</span>
+
+    /**
+     * create a new instance of the mobile agent factory for use by the pool
+     */
+    public MobileAgentFactory() {
+<span class="fc" id="L63">        super();</span>
+<span class="fc" id="L64">        configure();</span>
+<span class="fc" id="L65">        logger.debug(&quot;Factory will create {} agents&quot;, classString);</span>
+<span class="fc" id="L66">    }</span>
+
+    /**
+     * create a new instance of the mobile agent factory using the specified class as the implementation du jour
+     * 
+     * @param clazz the class of mobile agent to use
+     */
+    public MobileAgentFactory(String clazz) {
+<span class="fc" id="L74">        super();</span>
+<span class="fc" id="L75">        configure();</span>
+<span class="fc" id="L76">        setClassString(clazz);</span>
+<span class="fc" id="L77">        logger.debug(&quot;Factory will create {} agents&quot;, classString);</span>
+<span class="fc" id="L78">    }</span>
+
+    /**
+     * Set whether created mobile agents should be registered in the global namespace or not
+     * 
+     * @param arg true if registration in namespace is desired
+     */
+    public void setUseNamespace(boolean arg) {
+<span class="nc" id="L86">        this.useNamespace = arg;</span>
+<span class="nc" id="L87">    }</span>
+
+    /**
+     * called by the pool to get an instance of the specified implementation
+     * 
+     * @return a newly Factory.create()ed instance
+     */
+    @Override
+    public PooledObject&lt;IMobileAgent&gt; makeObject() {
+<span class="fc" id="L96">        logger.debug(&quot;Calling MobileAgentFactory.makeObject for {}&quot;, getClassString());</span>
+        IMobileAgent agent;
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        String aname = AGENT_NAME + &quot;-&quot; + (objectsCreated &lt; 10 ? &quot;0&quot; : &quot;&quot;) + objectsCreated;</span>
+        try {
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">            if (useNamespace) {</span>
+<span class="fc" id="L101">                agent = (IMobileAgent) Factory.createV(getClassString(), aname, threadGroup, aname);</span>
+            } else {
+<span class="nc" id="L103">                agent = (IMobileAgent) Factory.create(getClassString(), threadGroup, aname);</span>
+            }
+<span class="fc" id="L105">            agent.setMaxItinerarySteps(maxAgentItinerary);</span>
+<span class="fc" id="L106">            agent.setMaxMoveErrors(maxAgentMoveErrors);</span>
+<span class="nc" id="L107">        } catch (Throwable t) {</span>
+<span class="nc" id="L108">            logger.error(&quot;Unable to Factory.create(&quot; + getClassString() + &quot;) with a threadGroup argument&quot;, t);</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">            if (useNamespace) {</span>
+<span class="nc" id="L110">                agent = (IMobileAgent) Factory.createV(getClassString(), aname);</span>
+            } else {
+<span class="nc" id="L112">                agent = (IMobileAgent) Factory.create(getClassString());</span>
+            }
+<span class="fc" id="L114">        }</span>
+<span class="fc" id="L115">        objectsCreated++;</span>
+<span class="fc" id="L116">        return new DefaultPooledObject&lt;&gt;(agent);</span>
+    }
+
+    /**
+     * Called by the pool to activate an object
+     *
+     * @param o the object to be activated in the pool
+     */
+    @Override
+    public void activateObject(PooledObject&lt;IMobileAgent&gt; o) {
+<span class="fc" id="L126">        logger.trace(&quot;Activating {}&quot;, o.getObject().getName());</span>
+        // no code
+<span class="fc" id="L128">    }</span>
+
+    /**
+     * Called by the pool to passivate an object
+     *
+     * @param o the object to be passivated in the pool
+     */
+    @Override
+    public void passivateObject(PooledObject&lt;IMobileAgent&gt; o) {
+<span class="fc" id="L137">        logger.trace(&quot;Passivating {}&quot;, o.getObject().getName());</span>
+        // no code
+<span class="fc" id="L139">    }</span>
+
+    /**
+     * called by the pool when it is configured to validate objects
+     * 
+     * @param o the object to validate, should be instance of the specified implementation for this factory
+     * @return IMobileAgent.isInUse() with proper checking
+     */
+    @Override
+    public boolean validateObject(PooledObject&lt;IMobileAgent&gt; o) {
+<span class="nc" id="L149">        logger.debug(&quot;Validating {}&quot;, o.getObject().getName());</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">        return !o.getObject().isInUse();</span>
+    }
+
+    /**
+     * Called by the pool to destroy an object
+     * 
+     * @param o the object to be removed from the pool and destroyed
+     */
+    @Override
+    public void destroyObject(PooledObject&lt;IMobileAgent&gt; o) {
+<span class="fc" id="L160">        IMobileAgent a = o.getObject();</span>
+<span class="fc" id="L161">        logger.info(&quot;Stopping agent {}&quot;, a.getName());</span>
+<span class="fc" id="L162">        a.killAgentAsync();</span>
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">        if (useNamespace) {</span>
+<span class="fc" id="L164">            Namespace.unbind(o.getObject().getName());</span>
+        }
+<span class="fc" id="L166">        logger.info(&quot;Stopped agent {}&quot;, a.getName());</span>
+<span class="fc" id="L167">    }</span>
+
+    /**
+     * Set the class implementing IMobileAgent
+     * 
+     * @param s the name of the implementing class
+     */
+    public void setClassString(String s) {
+<span class="fc" id="L175">        classString = s;</span>
+<span class="fc" id="L176">    }</span>
+
+    /**
+     * Get the current class for IMobileAgent we are using
+     * 
+     * @return the current implementation class string
+     */
+    public String getClassString() {
+<span class="fc" id="L184">        return classString;</span>
+    }
+
+    /**
+     * Debug info
+     */
+    @Override
+    public String toString() {
+<span class="nc" id="L192">        return &quot;MobileAgentFactory created &quot; + objectsCreated + &quot; &quot; + getClassString() + &quot; instances&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

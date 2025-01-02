@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransformHistory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core</a> &gt; <span class="el_source">TransformHistory.java</span></div><h1>TransformHistory.java</h1><pre class="source lang-java linenums">package emissary.core;
+
+import emissary.directory.KeyManipulator;
+import emissary.place.IServiceProviderPlace;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.Serializable;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+
+import static emissary.place.IServiceProviderPlace.SPROUT_KEY;
+
+public class TransformHistory implements Serializable {
+
+    private static final long serialVersionUID = -7252497842562281631L;
+
+    private final List&lt;History&gt; history;
+
+<span class="fc" id="L26">    public TransformHistory() {</span>
+<span class="fc" id="L27">        history = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L28">    }</span>
+
+<span class="fc" id="L30">    public TransformHistory(TransformHistory history) {</span>
+<span class="fc" id="L31">        this.history = new ArrayList&lt;&gt;(history.history);</span>
+<span class="fc" id="L32">    }</span>
+
+    /**
+     * Replace history with the new history
+     *
+     * @param keys of new history strings to use
+     */
+    public void set(List&lt;String&gt; keys) {
+<span class="fc" id="L40">        clear();</span>
+<span class="fc" id="L41">        addAll(keys.stream().map(History::new).collect(Collectors.toList()));</span>
+<span class="fc" id="L42">    }</span>
+
+    /**
+     * Replace history with the new history
+     *
+     * @param history of new history strings to use
+     */
+    public void set(TransformHistory history) {
+<span class="fc" id="L50">        clear();</span>
+<span class="fc" id="L51">        addAll(history.history);</span>
+<span class="fc" id="L52">    }</span>
+
+    private void addAll(List&lt;History&gt; history) {
+<span class="fc" id="L55">        this.history.addAll(history);</span>
+<span class="fc" id="L56">    }</span>
+
+    /**
+     * Appends the new key to the transform history. This is called by MobileAgent before moving to the new place. It
+     * usually adds the four-tuple of a place's key
+     *
+     * @see emissary.core.MobileAgent#agentControl
+     * @param key the new value to append
+     */
+    public void append(final String key) {
+<span class="fc" id="L66">        append(key, false);</span>
+<span class="fc" id="L67">    }</span>
+
+    /**
+     * Appends the new key to the transform history. This is called by MobileAgent before moving to the new place. It
+     * usually adds the four-tuple of a place's key. Coordinated history keys are meant for informational purposes and have
+     * no bearing on the routing algorithm. It is important to list the places visited in coordination, but should not
+     * report as the last place visited.
+     *
+     * @see emissary.core.MobileAgent#agentControl
+     * @param key the new value to append
+     * @param coordinated true if history entry is for informational purposes only
+     */
+    public void append(String key, boolean coordinated) {
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (coordinated) {</span>
+<span class="fc" id="L81">            History last = lastVisit();</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">            if (last != null) {</span>
+<span class="fc" id="L83">                last.addCoordinated(key);</span>
+            }
+<span class="fc" id="L85">        } else {</span>
+<span class="fc" id="L86">            history.add(new History(key));</span>
+        }
+
+<span class="fc" id="L89">    }</span>
+
+    /**
+     * Clear the transformation history
+     */
+    public void clear() {
+<span class="fc" id="L95">        history.clear();</span>
+<span class="fc" id="L96">    }</span>
+
+    /**
+     * For backwards compatibility, only return the history that does not contain the coordinated places
+     *
+     * @return List of places visited sans coordination places
+     */
+    public List&lt;String&gt; get() {
+<span class="fc" id="L104">        return get(false);</span>
+    }
+
+    /**
+     * Return the transform history, optionally including coordinated places
+     *
+     * @return List of places visited
+     */
+    public List&lt;String&gt; get(boolean includeCoordinated) {
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        if (includeCoordinated) {</span>
+<span class="fc" id="L114">            List&lt;String&gt; keys = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L115">            history.forEach(k -&gt; {</span>
+<span class="fc" id="L116">                keys.add(k.getKey());</span>
+<span class="fc" id="L117">                keys.addAll(k.getCoordinated());</span>
+<span class="fc" id="L118">            });</span>
+<span class="fc" id="L119">            return keys;</span>
+        } else {
+<span class="fc" id="L121">            return history.stream()</span>
+<span class="fc" id="L122">                    .map(History::getKey)</span>
+<span class="fc" id="L123">                    .collect(Collectors.toList());</span>
+        }
+    }
+
+    /**
+     * Return the full history object
+     *
+     * @return history object
+     */
+    public List&lt;History&gt; getHistory() {
+<span class="fc" id="L133">        return Collections.unmodifiableList(history);</span>
+    }
+
+    /**
+     * Get the last place visited (does not include places visited during coordination)
+     *
+     * @return last place visited
+     */
+    @Nullable
+    public History lastVisit() {
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        if (CollectionUtils.isEmpty(history)) {</span>
+<span class="fc" id="L144">            return null;</span>
+        }
+<span class="fc" id="L146">        return history.get(history.size() - 1);</span>
+    }
+
+    /**
+     * Get the second-to-last place visited (does not include places visited during coordination)
+     *
+     * @return second-to-last place visited
+     */
+    @Nullable
+    public History penultimateVisit() {
+<span class="fc bfc" id="L156" title="All 4 branches covered.">        if (CollectionUtils.isEmpty(history) || history.size() &lt; 2) {</span>
+<span class="fc" id="L157">            return null;</span>
+        }
+<span class="fc" id="L159">        return history.get(history.size() - 2);</span>
+    }
+
+    /**
+     * Test to see if a place has been visited (does not include places visited during coordination)
+     *
+     * @return true is place has been visited
+     */
+    public boolean hasVisited(final String pattern) {
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (final History hist : history) {</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">            if (KeyManipulator.gmatch(hist.getKey(), pattern)) {</span>
+<span class="fc" id="L170">                return true;</span>
+            }
+<span class="fc" id="L172">        }</span>
+<span class="fc" id="L173">        return false;</span>
+    }
+
+    /**
+     * True if this payload hasn't had any processing yet. Does not count parent processing as being for this payload.
+     *
+     * @return true if not yet started
+     */
+    public boolean beforeStart() {
+<span class="fc bfc" id="L182" title="All 2 branches covered.">        if (history.isEmpty()) {</span>
+<span class="fc" id="L183">            return true;</span>
+        }
+<span class="fc" id="L185">        final String s = history.get(history.size() - 1).getKey();</span>
+<span class="fc" id="L186">        return s.contains(IServiceProviderPlace.SPROUT_KEY);</span>
+    }
+
+    public int size() {
+<span class="nc" id="L190">        return size(false);</span>
+    }
+
+    public int size(boolean includeCoordinated) {
+<span class="fc" id="L194">        int size = history.size();</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">        if (includeCoordinated) {</span>
+<span class="fc" id="L196">            size += (int) history.stream().mapToLong(h -&gt; h.coordinated.size()).sum();</span>
+        }
+<span class="fc" id="L198">        return size;</span>
+    }
+
+    public Deque&lt;String&gt; format() {
+<span class="fc" id="L202">        Deque&lt;String&gt; formattedHistory = new ArrayDeque&lt;&gt;();</span>
+
+<span class="fc" id="L204">        String prevDataAndServiceType = &quot;&quot;;</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        for (final History h : this.history) {</span>
+<span class="fc" id="L206">            String key = h.getKey();</span>
+<span class="fc" id="L207">            String currentDataAndServiceType = &quot;&quot;;</span>
+<span class="fc" id="L208">            StringBuilder displayStrings = new StringBuilder();</span>
+
+<span class="fc bfc" id="L210" title="All 2 branches covered.">            if (key.contains(SPROUT_KEY)) {</span>
+<span class="fc" id="L211">                displayStrings.append(StringUtils.substringBefore(formattedHistory.removeLast(), &quot;.&quot;)).append(&quot;.&quot;)</span>
+<span class="fc" id="L212">                        .append(KeyManipulator.getServiceType(key)).append(&quot;: &quot;);</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">                while (!formattedHistory.isEmpty()) {</span>
+<span class="fc" id="L214">                    String last = formattedHistory.removeLast();</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">                    if (last.contains(SPROUT_KEY)) {</span>
+<span class="fc" id="L216">                        formattedHistory.add(last);</span>
+<span class="fc" id="L217">                        break;</span>
+                    }
+<span class="fc" id="L219">                }</span>
+            } else {
+<span class="fc" id="L221">                currentDataAndServiceType = KeyManipulator.getDataType(key) + &quot;.&quot; + KeyManipulator.getServiceType(key);</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">                if (currentDataAndServiceType.equals(prevDataAndServiceType)) {</span>
+<span class="fc" id="L223">                    displayStrings.append(formattedHistory.removeLast()).append(&quot;, &quot;);</span>
+                } else {
+<span class="fc" id="L225">                    displayStrings.append(currentDataAndServiceType).append(&quot;: &quot;);</span>
+                }
+            }
+
+<span class="fc" id="L229">            displayStrings.append(KeyManipulator.getServiceClassname(key));</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">            if (CollectionUtils.isNotEmpty(h.getCoordinated())) {</span>
+<span class="fc" id="L231">                displayStrings</span>
+<span class="fc" id="L232">                        .append(h.getCoordinated().stream().map(KeyManipulator::getServiceClassname).collect(Collectors.joining(&quot;, &quot;, &quot;(&quot;, &quot;)&quot;)));</span>
+            }
+
+<span class="fc" id="L235">            formattedHistory.add(displayStrings.toString());</span>
+<span class="fc" id="L236">            prevDataAndServiceType = currentDataAndServiceType;</span>
+<span class="fc" id="L237">        }</span>
+<span class="fc" id="L238">        return formattedHistory;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L243">        final StringBuilder myOutput = new StringBuilder();</span>
+<span class="fc" id="L244">        final String ls = System.lineSeparator();</span>
+<span class="fc" id="L245">        myOutput.append(&quot;transform history (&quot;).append(size(true)).append(&quot;) :&quot;).append(ls);</span>
+<span class="fc" id="L246">        history.forEach(x -&gt; myOutput.append(x.toString()).append(ls));</span>
+<span class="fc" id="L247">        return myOutput.toString();</span>
+    }
+
+    public static class History {
+        String key;
+<span class="pc" id="L252">        List&lt;String&gt; coordinated = new ArrayList&lt;&gt;();</span>
+
+        /**
+         * Needed to support Kryo deserialization
+         */
+<span class="nc" id="L257">        private History() {}</span>
+
+<span class="fc" id="L259">        public History(String key) {</span>
+<span class="fc" id="L260">            this.key = key;</span>
+<span class="fc" id="L261">        }</span>
+
+        public String getKey() {
+<span class="fc" id="L264">            return getKey(false);</span>
+        }
+
+        public String getKey(boolean stripUrl) {
+<span class="fc bfc" id="L268" title="All 2 branches covered.">            return stripUrl ? stripUrl(key) : key;</span>
+        }
+
+        public List&lt;String&gt; getCoordinated() {
+<span class="fc" id="L272">            return getCoordinated(false);</span>
+        }
+
+        public List&lt;String&gt; getCoordinated(boolean stripUrl) {
+<span class="fc bfc" id="L276" title="All 2 branches covered.">            return stripUrl ? coordinated.stream().map(History::stripUrl).collect(Collectors.toUnmodifiableList())</span>
+<span class="fc" id="L277">                    : Collections.unmodifiableList(coordinated);</span>
+        }
+
+        public void addCoordinated(String key) {
+<span class="fc" id="L281">            coordinated.add(key);</span>
+<span class="fc" id="L282">        }</span>
+
+        protected static String stripUrl(String key) {
+<span class="fc" id="L285">            return StringUtils.substringBefore(key, &quot;.http&quot;);</span>
+        }
+
+        @Override
+        public String toString() {
+<span class="fc" id="L290">            StringBuilder hist = new StringBuilder(&quot;        -&gt; &quot; + getKey());</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">            for (String coord : coordinated) {</span>
+<span class="fc" id="L292">                hist.append(System.lineSeparator()).append(&quot;           +--&gt; &quot;).append(coord);</span>
+<span class="fc" id="L293">            }</span>
+<span class="fc" id="L294">            return hist.toString();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

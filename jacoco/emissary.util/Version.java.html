@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Version.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util</a> &gt; <span class="el_source">Version.java</span></div><h1>Version.java</h1><pre class="source lang-java linenums">package emissary.util;
+
+import emissary.config.ConfigUtil;
+import emissary.util.io.ResourceReader;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+
+public final class Version {
+<span class="fc" id="L15">    private static final Logger logger = LoggerFactory.getLogger(Version.class);</span>
+
+<span class="fc" id="L17">    private String version = &quot;missing version&quot;;</span>
+<span class="fc" id="L18">    private String timestamp = &quot;missing timestamp&quot;;</span>
+
+    /**
+     * Build a version object DO NOT call a logger from here
+     */
+<span class="fc" id="L23">    public Version() {</span>
+<span class="fc" id="L24">        readHardWiredConfigInfo();</span>
+<span class="fc" id="L25">    }</span>
+
+    /**
+     * Read hardwired config info. Cannot be overridden using the normal emissary.config.pkg or emissary.config.dir methods.
+     * Does not create a Configurator due to logging restrictions on this method.
+     */
+    private void readHardWiredConfigInfo() {
+        // This configurator is not overridable by the normal config.pkg or config.dir mechanisms
+<span class="fc" id="L33">        String rez = Version.class.getName().replace('.', '/') + ConfigUtil.CONFIG_FILE_ENDING;</span>
+<span class="fc" id="L34">        try (InputStream rstream = new ResourceReader().getResourceAsStream(rez)) {</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">            if (rstream != null) {</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">                for (String line : IOUtils.readLines(rstream, Charset.defaultCharset())) {</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">                    if (line.startsWith(&quot;emissary_version&quot;)) {</span>
+<span class="fc" id="L38">                        version = getVal(line);</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">                    } else if (line.startsWith(&quot;emissary_build&quot;)) {</span>
+<span class="fc" id="L40">                        timestamp = getVal(line);</span>
+                    }
+<span class="fc" id="L42">                }</span>
+            }
+<span class="nc" id="L44">        } catch (IOException ignore) {</span>
+            // ignore
+<span class="fc" id="L46">        }</span>
+<span class="fc" id="L47">    }</span>
+
+    /**
+     * Do not call a logger method from here!
+     */
+    private static String getVal(String line) {
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">        if (!line.contains(&quot; = &quot;)) {</span>
+<span class="nc" id="L54">            return line;</span>
+        }
+<span class="fc" id="L56">        return line.substring(line.indexOf(&quot; = &quot;) + 3).replaceAll(&quot;\&quot;&quot;, &quot;&quot;);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L61">        return version + &quot; &quot; + timestamp;</span>
+    }
+
+    public String getVersion() {
+<span class="fc" id="L65">        return version;</span>
+    }
+
+    public String getTimestamp() {
+<span class="nc" id="L69">        return timestamp;</span>
+    }
+
+    public static void main(String[] args) {
+<span class="nc" id="L73">        logger.info(&quot;Emissary version {}&quot;, new Version());</span>
+<span class="nc" id="L74">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

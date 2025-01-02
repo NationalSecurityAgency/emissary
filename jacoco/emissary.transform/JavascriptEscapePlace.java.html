@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JavascriptEscapePlace.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.transform</a> &gt; <span class="el_source">JavascriptEscapePlace.java</span></div><h1>JavascriptEscapePlace.java</h1><pre class="source lang-java linenums">/***********************************************************
+ * This place transforms \\uxxxx Javascript escape 
+ * stuff into normal unicode (utf-8 characters)
+ **/
+
+package emissary.transform;
+
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.place.ServiceProviderPlace;
+import emissary.transform.decode.JavascriptEscape;
+import emissary.util.DataUtil;
+
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.io.IOException;
+
+import static emissary.core.constants.Configurations.OUTPUT_FORM;
+
+@Deprecated
+public class JavascriptEscapePlace extends ServiceProviderPlace {
+
+    /**
+     * Can be overridden from config file
+     */
+<span class="pc" id="L26">    private String outputForm = Form.UNKNOWN;</span>
+
+    /**
+     * Configure one with specified location
+     * 
+     * @param cfgInfo the name of the config file or resource
+     * @param dir the name of the controlling directory
+     * @param placeLoc the string name for this place
+     */
+    public JavascriptEscapePlace(String cfgInfo, String dir, String placeLoc) throws IOException {
+<span class="nc" id="L36">        super(cfgInfo, dir, placeLoc);</span>
+<span class="nc" id="L37">        configurePlace();</span>
+<span class="nc" id="L38">    }</span>
+
+    /**
+     * Configure one with default location
+     * 
+     * @param cfgInfo the name of the config file or resource
+     */
+    public JavascriptEscapePlace(String cfgInfo) throws IOException {
+<span class="nc" id="L46">        super(cfgInfo, &quot;TestJavascriptEscapePlace.example.com:8001&quot;);</span>
+<span class="nc" id="L47">        configurePlace();</span>
+<span class="nc" id="L48">    }</span>
+
+    /**
+     * Constructor with default config
+     */
+    public JavascriptEscapePlace() throws IOException {
+<span class="fc" id="L54">        super();</span>
+<span class="fc" id="L55">        configurePlace();</span>
+<span class="fc" id="L56">    }</span>
+
+    /**
+     * Take care of special place configuration
+     */
+    protected void configurePlace() {
+<span class="fc" id="L62">        outputForm = configG.findStringEntry(OUTPUT_FORM, outputForm);</span>
+<span class="fc" id="L63">    }</span>
+
+    /**
+     * Consume a dataObject and return a modified one.
+     */
+    @Override
+    public void process(IBaseDataObject d) {
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (DataUtil.isEmpty(d)) {</span>
+<span class="nc" id="L71">            logger.debug(&quot;empty data&quot;);</span>
+<span class="nc" id="L72">            return;</span>
+        }
+<span class="fc" id="L74">        String incomingForm = d.currentForm();</span>
+
+<span class="fc" id="L76">        logger.debug(&quot;JavascriptEscapePlace just got a {}&quot;, incomingForm);</span>
+
+<span class="fc" id="L78">        byte[] newData = JavascriptEscape.unescape(d.data());</span>
+
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (ArrayUtils.isNotEmpty(newData)) {</span>
+<span class="fc" id="L81">            d.setData(newData);</span>
+
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">            if (outputForm != null) {</span>
+<span class="fc" id="L84">                d.setCurrentForm(outputForm);</span>
+            }
+        } else {
+<span class="nc" id="L87">            logger.warn(&quot;error doing JavascriptEscape, unable to decode&quot;);</span>
+<span class="nc" id="L88">            d.pushCurrentForm(Form.ERROR);</span>
+        }
+<span class="fc" id="L90">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

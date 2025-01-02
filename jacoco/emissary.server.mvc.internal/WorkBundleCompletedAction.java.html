@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WorkBundleCompletedAction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.server.mvc.internal</a> &gt; <span class="el_source">WorkBundleCompletedAction.java</span></div><h1>WorkBundleCompletedAction.java</h1><pre class="source lang-java linenums">package emissary.server.mvc.internal;
+
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+import emissary.pickup.WorkSpace;
+import emissary.server.mvc.adapters.RequestUtil;
+
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static emissary.server.mvc.adapters.WorkSpaceAdapter.CLIENT_NAME;
+import static emissary.server.mvc.adapters.WorkSpaceAdapter.SPACE_NAME;
+import static emissary.server.mvc.adapters.WorkSpaceAdapter.WORK_BUNDLE_ID;
+import static emissary.server.mvc.adapters.WorkSpaceAdapter.WORK_BUNDLE_STATUS;
+
+/**
+ * Web-tier worker to call into the TreeSpace with notification that a work bundle was completed
+ */
+@Path(&quot;&quot;)
+// context is /emissary, set in EmissaryServer
+<span class="fc" id="L29">public class WorkBundleCompletedAction {</span>
+<span class="fc" id="L30">    private final Logger logger = LoggerFactory.getLogger(this.getClass());</span>
+
+    /*
+     * &lt;!-- Notify a WorkSpace that work was completed --&gt; &lt;Use-Case source=&quot;*&quot; action=&quot;/WorkBundleCompleted.action&quot;&gt; &lt;Work
+     * type=&quot;Bean&quot; target=&quot;emissary.comms.http.worker.LogWorker&quot;/&gt; &lt;Work type=&quot;Bean&quot;
+     * target=&quot;emissary.comms.http.worker.BundleCompletedWorker&quot;/&gt; &lt;View status=&quot;0&quot; view=&quot;/success.jsp&quot;/&gt; &lt;View status=&quot;-1&quot;
+     * view=&quot;/error.jsp&quot;/&gt; &lt;/Use-Case&gt;
+     */
+
+    @POST
+    @Path(&quot;/WorkBundleCompleted.action&quot;)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response postWorkBundleCompleted(@FormParam(CLIENT_NAME) String placeName, @FormParam(SPACE_NAME) String spaceName,
+            @FormParam(WORK_BUNDLE_ID) String bundleId, @FormParam(WORK_BUNDLE_STATUS) boolean itWorked) {
+<span class="fc" id="L45">        String cleanPlaceName = RequestUtil.sanitizeParameter(placeName);</span>
+<span class="fc" id="L46">        String cleanSpaceName = RequestUtil.sanitizeParameter(spaceName);</span>
+<span class="fc" id="L47">        String cleanBundleId = RequestUtil.sanitizeParameter(bundleId);</span>
+<span class="pc bpc" id="L48" title="2 of 6 branches missed.">        if (StringUtils.isBlank(cleanPlaceName) || StringUtils.isBlank(cleanSpaceName) || StringUtils.isBlank(cleanBundleId)</span>
+<span class="fc bfc" id="L49" title="All 4 branches covered.">                || !cleanSpaceName.startsWith(&quot;WORKSPACE.WORK_SPACE.INPUT.&quot;) || !cleanPlaceName.startsWith(&quot;INITIAL.FILE_PICK_UP_CLIENT.INPUT.&quot;)) {</span>
+<span class="fc" id="L50">            return Response</span>
+<span class="fc" id="L51">                    .serverError()</span>
+<span class="fc" id="L52">                    .entity(&quot;Bad params: &quot; + CLIENT_NAME + &quot; - &quot; + cleanPlaceName + &quot;, &quot; + SPACE_NAME + &quot; - &quot; + cleanSpaceName + &quot;, &quot; + WORK_BUNDLE_ID</span>
+                            + &quot; - &quot; + cleanBundleId)
+<span class="fc" id="L54">                    .build();</span>
+        }
+
+        try {
+<span class="fc" id="L58">            return workBundleCompleted(cleanSpaceName, cleanPlaceName, cleanBundleId, itWorked);</span>
+<span class="fc" id="L59">        } catch (NamespaceException e) {</span>
+<span class="fc" id="L60">            logger.error(&quot;There was a problem while processing the WorkBundle&quot;, e);</span>
+<span class="fc" id="L61">            return Response.serverError().entity(&quot;There was a problem while processing the WorkBundle: &quot; + e.getMessage()).build();</span>
+        }
+    }
+
+    private static Response workBundleCompleted(String spaceName, String placeName, String bundleId, boolean itWorked) throws NamespaceException {
+        // Look up the place reference
+        // TODO Figure out why we have to remove the key prefix now
+<span class="fc" id="L68">        final String workspaceNamespaceKey = spaceName.substring(&quot;WORKSPACE.WORK_SPACE.INPUT.&quot;.length());</span>
+<span class="fc" id="L69">        final WorkSpace space = (WorkSpace) Namespace.lookup(workspaceNamespaceKey);</span>
+
+        // TODO Figure out why we have to remove the key prefix now
+<span class="fc" id="L72">        String pickupClientNamespaceKey = placeName.substring(&quot;INITIAL.FILE_PICK_UP_CLIENT.INPUT.&quot;.length());</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (space.workCompleted(pickupClientNamespaceKey, bundleId, itWorked)) {</span>
+            // old success from BundleCompletedWorker
+            // return WORKER_SUCCESS;
+<span class="fc" id="L76">            return Response.ok().entity(&quot;Work Bundle Completed&quot;).build();</span>
+        } else {
+            // old failure from BundleCompletedWorker
+            // return new WorkerStatus(WorkerStatus.FAILURE, &quot;BundleCompletedWorker exception&quot;, e);
+<span class="fc" id="L80">            return Response.serverError().entity(&quot;Work Bundle not completed&quot;).build();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BaseResponseEntity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.client.response</a> &gt; <span class="el_source">BaseResponseEntity.java</span></div><h1>BaseResponseEntity.java</h1><pre class="source lang-java linenums">package emissary.client.response;
+
+import jakarta.xml.bind.annotation.XmlAccessOrder;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorOrder;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+import javax.annotation.Nullable;
+
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)
+<span class="fc" id="L16">public class BaseResponseEntity implements Serializable, BaseEntity {</span>
+
+    private static final long serialVersionUID = 3432436269155177605L;
+
+<span class="fc" id="L20">    @XmlElement(name = &quot;errors&quot;)</span>
+    private final Set&lt;String&gt; errors = new HashSet&lt;&gt;();
+
+    @Override
+    public void addError(String error) {
+<span class="fc" id="L25">        errors.add(error);</span>
+<span class="fc" id="L26">    }</span>
+
+    @Override
+    public Set&lt;String&gt; getErrors() {
+<span class="fc" id="L30">        return this.errors;</span>
+    }
+
+    @Override
+    public void append(BaseEntity entity) {
+        // This method is here so you consume a call from a peer
+<span class="nc" id="L36">        addErrors(entity.getErrors());</span>
+<span class="nc" id="L37">    }</span>
+
+    protected void addErrors(@Nullable Set&lt;String&gt; errors) {
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        if (errors != null) {</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">            for (String err : errors) {</span>
+<span class="nc" id="L42">                this.addError(err);</span>
+<span class="nc" id="L43">            }</span>
+        }
+<span class="nc" id="L45">    }</span>
+
+    @Override
+    public void dumpToConsole() {
+        // no-op
+<span class="nc" id="L50">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

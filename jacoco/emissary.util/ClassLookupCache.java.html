@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClassLookupCache.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util</a> &gt; <span class="el_source">ClassLookupCache.java</span></div><h1>ClassLookupCache.java</h1><pre class="source lang-java linenums">package emissary.util;
+
+import java.lang.ref.SoftReference;
+import javax.annotation.Nullable;
+
+/**
+ * This implements a simple caching mechanism for {@link Class#forName(String)}. For example if the same class name is
+ * looked up repeatedly, using this cache may be able to avoid a lot of JVM reflection overhead.
+ *
+ * &lt;p&gt;
+ * To use this, just call {@link ClassLookupCache#lookup(String)} where you would normally use
+ * {@link Class#forName(String)}. There are also methods for directly manipulating the cache but most uses can avoid
+ * those.
+ *
+ * &lt;p&gt;
+ * Note that the cache implementation may have a small capacity and/or be thread-specific, so storing something in the
+ * cache does not &lt;i&gt;guarantee&lt;/i&gt; that it will be indefinitely cached or that the cached value will be visible to other
+ * threads.
+ */
+public final class ClassLookupCache {
+
+    /**
+     * A binding from a name string to a {@link Class} object.
+     *
+     * @param &lt;T&gt; The object type that will be produced by the class.
+     */
+    private static final class NamedClass&lt;T&gt; {
+
+        /** The class name. */
+        private final String className;
+
+        /** A class object that matches {@link #className}. */
+        private final Class&lt;T&gt; clazz;
+
+        /**
+         * Create a new binding between a class name and a matching object.
+         *
+         * @param className the class name.
+         * @param clazz A class object that matches {@code className}.
+         */
+<span class="fc" id="L41">        private NamedClass(final String className, final Class&lt;T&gt; clazz) {</span>
+<span class="fc" id="L42">            this.className = className;</span>
+<span class="fc" id="L43">            this.clazz = clazz;</span>
+<span class="fc" id="L44">        }</span>
+
+        /**
+         * Get the class object, if it has the given name.
+         *
+         * @param desiredName The class name to check.
+         * @return If this instance has the given {@code desiredName}, this returns its {@link Class} object. Otherwise
+         *         {@code null}.
+         */
+        @Nullable
+        public Class&lt;T&gt; getClass(final String desiredName) {
+<span class="fc bfc" id="L55" title="All 2 branches covered.">            return this.className.equals(desiredName) ? this.clazz : null;</span>
+        }
+
+        /**
+         * Get a binding between a class name and a matching object.
+         *
+         * &lt;p&gt;
+         * The reason we use a static builder method is that it can handle wildcards such as {@code &lt;?&gt;} more easily than when
+         * calling the constructor directly.
+         *
+         * @param className the class name.
+         * @param clazz A class object that matches {@code className}.
+         * @return A binding between the given name and class object.
+         */
+        public static &lt;T&gt; NamedClass&lt;T&gt; getInstance(final String className, final Class&lt;T&gt; clazz) {
+<span class="fc" id="L70">            return new NamedClass&lt;&gt;(className, clazz);</span>
+        }
+    }
+
+    /**
+     * A cached class object. If a thread is asked to repeatedly construct the same type of object, we can cache the class
+     * name lookup so that subsequent constructions can get to the {@link Class} object without doing a full lookup in the
+     * JVM.
+     */
+<span class="fc" id="L79">    private static final ThreadLocal&lt;SoftReference&lt;NamedClass&lt;?&gt;&gt;&gt; cachedLookupResult = new ThreadLocal&lt;&gt;();</span>
+
+    /**
+     * Look up a class in the cache.
+     *
+     * @param className The class name to find.
+     * @return If the class name is currently known to the cache, the corresponding {@link Class} object is returned.
+     *         Otherwise {@code null}.
+     */
+    @Nullable
+    public static Class&lt;?&gt; get(final String className) {
+        // Currently there is at most one cached lookup per thread, so
+        // we can just check if the current thread knows about the
+        // given class name.
+<span class="fc" id="L93">        final SoftReference&lt;NamedClass&lt;?&gt;&gt; softResult = cachedLookupResult.get();</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        if (softResult == null) {</span>
+<span class="fc" id="L95">            return null; // Nothing is currently cached in this thread.</span>
+        }
+
+<span class="fc" id="L98">        final NamedClass&lt;?&gt; actualResult = softResult.get();</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if (actualResult == null) {</span>
+<span class="nc" id="L100">            return null; // There was something cached but it's been lost.</span>
+        }
+
+        // We do have a cached lookup. It can be used iff it matches
+        // the given name.
+<span class="fc" id="L105">        return actualResult.getClass(className);</span>
+    }
+
+    /**
+     * Store a class lookup in the cache.
+     *
+     * @param className The class name.
+     * @param clazz The class. Assumed to match {@code className}.
+     */
+    public static void put(final String className, final Class&lt;?&gt; clazz) {
+<span class="fc" id="L115">        cachedLookupResult.set(new SoftReference&lt;&gt;(NamedClass.getInstance(className, clazz)));</span>
+<span class="fc" id="L116">    }</span>
+
+    /**
+     * Look up a class by name. This is basically a utility method that can be called instead of
+     * {@link Class#forName(String)}, and will try to use the cache to speed up the lookups.
+     *
+     * @param className The class name to get.
+     * @return The {@link Class} object corresponding to {@code className}.
+     * @throws ClassNotFoundException If the class name could not be resolved.
+     */
+    public static Class&lt;?&gt; lookup(final String className) throws ClassNotFoundException {
+<span class="fc" id="L127">        final Class&lt;?&gt; cachedResult = get(className);</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        if (cachedResult != null) {</span>
+            // We found the class in the cache.
+<span class="fc" id="L130">            return cachedResult;</span>
+        } else {
+            // The given class name is not currently cached, so look
+            // it up directly.
+<span class="fc" id="L134">            final Class&lt;?&gt; uncachedResult = Class.forName(className);</span>
+
+            // If we reach here, the class was found. Cache the
+            // result before returning.
+<span class="fc" id="L138">            put(className, uncachedResult);</span>
+<span class="fc" id="L139">            return uncachedResult;</span>
+        }
+    }
+
+    /**
+     * Destroy the ThreadLocal cache object
+     */
+    public static void unload() {
+<span class="nc" id="L147">        cachedLookupResult.remove();</span>
+<span class="nc" id="L148">    }</span>
+
+    /** This is a static utility class, so prevent instantiation. */
+    private ClassLookupCache() {}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

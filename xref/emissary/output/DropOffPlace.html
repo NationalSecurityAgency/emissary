@@ -138,7 +138,7 @@
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>                 } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>                     logger.error(<span class="jxr_string">"Misconfigured filter {} is not an IDropOffFilter instance, ignoring it"</span>, clazz);
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>                 }
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>             } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>             } <strong class="jxr_keyword">catch</strong> (RuntimeException ex) {
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>                 logger.error(<span class="jxr_string">"Unable to create or initialize {}"</span>, clazz, ex);
 <a class="jxr_linenumber" name="L135" href="#L135">135</a>             }
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>         }
@@ -207,7 +207,7 @@
 <a class="jxr_linenumber" name="L199" href="#L199">199</a> 
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>                 <em class="jxr_comment">// Process the payload item with HDcontext=true</em>
 <a class="jxr_linenumber" name="L201" href="#L201">201</a>                 processData(d, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>             } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>             } <strong class="jxr_keyword">catch</strong> (RuntimeException e) {
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>                 logger.error(<span class="jxr_string">"Place.process threw:"</span>, e);
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>                 d.addProcessingError(<span class="jxr_string">"agentProcessHD("</span> + myKey + <span class="jxr_string">"): "</span> + e);
 <a class="jxr_linenumber" name="L205" href="#L205">205</a> 
@@ -443,7 +443,7 @@
 <a class="jxr_linenumber" name="L435" href="#L435">435</a>                     filterStatus = IDropOffFilter.STATUS_SUCCESS;
 <a class="jxr_linenumber" name="L436" href="#L436">436</a>                 }
 <a class="jxr_linenumber" name="L437" href="#L437">437</a>                 logger.debug(<span class="jxr_string">"Filter {} took {}s - {}"</span>, filter.getFilterName(), ((System.currentTimeMillis() - start) / 1000.0), filterStatus);
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>             } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>             } <strong class="jxr_keyword">catch</strong> (RuntimeException e) {
 <a class="jxr_linenumber" name="L439" href="#L439">439</a>                 logger.error(<span class="jxr_string">"Filter {} failed"</span>, filter.getFilterName(), e);
 <a class="jxr_linenumber" name="L440" href="#L440">440</a>             }
 <a class="jxr_linenumber" name="L441" href="#L441">441</a> 
@@ -467,46 +467,58 @@
 <a class="jxr_linenumber" name="L459" href="#L459">459</a> <em class="jxr_javadoccomment">     * Provide access to filter names</em>
 <a class="jxr_linenumber" name="L460" href="#L460">460</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L461" href="#L461">461</a> <em class="jxr_javadoccomment">     * @return an array of filter names or an empty array if none</em>
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>     <strong class="jxr_keyword">public</strong> String[] getFilterNames() {
-<a class="jxr_linenumber" name="L464" href="#L464">464</a>         <strong class="jxr_keyword">final</strong> List&lt;String&gt; fnames = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L465" href="#L465">465</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IDropOffFilter" href="../../emissary/output/filter/IDropOffFilter.html#IDropOffFilter">IDropOffFilter</a> f : <strong class="jxr_keyword">this</strong>.outputFilters) {
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>             fnames.add(f.getFilterName());
-<a class="jxr_linenumber" name="L467" href="#L467">467</a>         }
-<a class="jxr_linenumber" name="L468" href="#L468">468</a>         <strong class="jxr_keyword">return</strong> fnames.toArray(<strong class="jxr_keyword">new</strong> String[0]);
-<a class="jxr_linenumber" name="L469" href="#L469">469</a>     }
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> 
-<a class="jxr_linenumber" name="L471" href="#L471">471</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L472" href="#L472">472</a> <em class="jxr_javadoccomment">     * Provide access to filter by name</em>
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> <em class="jxr_javadoccomment">     * @return the named filter or null if none by that name</em>
-<a class="jxr_linenumber" name="L475" href="#L475">475</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L476" href="#L476">476</a>     @Nullable
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>     <strong class="jxr_keyword">public</strong> <a name="IDropOffFilter" href="../../emissary/output/filter/IDropOffFilter.html#IDropOffFilter">IDropOffFilter</a> getFilter(<strong class="jxr_keyword">final</strong> String name) {
-<a class="jxr_linenumber" name="L478" href="#L478">478</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IDropOffFilter" href="../../emissary/output/filter/IDropOffFilter.html#IDropOffFilter">IDropOffFilter</a> f : <strong class="jxr_keyword">this</strong>.outputFilters) {
-<a class="jxr_linenumber" name="L479" href="#L479">479</a>             <strong class="jxr_keyword">if</strong> (f.getFilterName().equals(name)) {
-<a class="jxr_linenumber" name="L480" href="#L480">480</a>                 <strong class="jxr_keyword">return</strong> f;
-<a class="jxr_linenumber" name="L481" href="#L481">481</a>             }
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>         }
-<a class="jxr_linenumber" name="L483" href="#L483">483</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>     }
-<a class="jxr_linenumber" name="L485" href="#L485">485</a> 
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>     <strong class="jxr_keyword">public</strong> <a name="DropOffUtil" href="../../emissary/output/DropOffUtil.html#DropOffUtil">DropOffUtil</a> getDropOffUtil() {
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.dropOffUtil;
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>     }
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> 
-<a class="jxr_linenumber" name="L490" href="#L490">490</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> <em class="jxr_javadoccomment">     * Add a filter</em>
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L493" href="#L493">493</a> <em class="jxr_javadoccomment">     * @param filter the new filter to add, must already be configured and initialized</em>
-<a class="jxr_linenumber" name="L494" href="#L494">494</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addFilter(<strong class="jxr_keyword">final</strong> <a name="IDropOffFilter" href="../../emissary/output/filter/IDropOffFilter.html#IDropOffFilter">IDropOffFilter</a> filter) {
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>         <strong class="jxr_keyword">this</strong>.outputFilters.add(filter);
-<a class="jxr_linenumber" name="L497" href="#L497">497</a>     }
-<a class="jxr_linenumber" name="L498" href="#L498">498</a> 
-<a class="jxr_linenumber" name="L499" href="#L499">499</a> }
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">     * @deprecated use {@link #getFilterNamesList()}</em>
+<a class="jxr_linenumber" name="L463" href="#L463">463</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L464" href="#L464">464</a>     @Deprecated
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>     @SuppressWarnings(<span class="jxr_string">"AvoidObjectArrays"</span>)
+<a class="jxr_linenumber" name="L466" href="#L466">466</a>     <strong class="jxr_keyword">public</strong> String[] getFilterNames() {
+<a class="jxr_linenumber" name="L467" href="#L467">467</a>         <strong class="jxr_keyword">return</strong> getFilterNamesList().toArray(<strong class="jxr_keyword">new</strong> String[0]);
+<a class="jxr_linenumber" name="L468" href="#L468">468</a>     }
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> 
+<a class="jxr_linenumber" name="L470" href="#L470">470</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> <em class="jxr_javadoccomment">     * Provide access to filter names</em>
+<a class="jxr_linenumber" name="L472" href="#L472">472</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> <em class="jxr_javadoccomment">     * @return a list of filter names or an empty list if none</em>
+<a class="jxr_linenumber" name="L474" href="#L474">474</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>     <strong class="jxr_keyword">public</strong> List&lt;String&gt; getFilterNamesList() {
+<a class="jxr_linenumber" name="L476" href="#L476">476</a>         <strong class="jxr_keyword">final</strong> List&lt;String&gt; fnames = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IDropOffFilter" href="../../emissary/output/filter/IDropOffFilter.html#IDropOffFilter">IDropOffFilter</a> f : <strong class="jxr_keyword">this</strong>.outputFilters) {
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>             fnames.add(f.getFilterName());
+<a class="jxr_linenumber" name="L479" href="#L479">479</a>         }
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>         <strong class="jxr_keyword">return</strong> fnames;
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>     }
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> 
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> <em class="jxr_javadoccomment">     * Provide access to filter by name</em>
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> <em class="jxr_javadoccomment">     * @return the named filter or null if none by that name</em>
+<a class="jxr_linenumber" name="L487" href="#L487">487</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L488" href="#L488">488</a>     @Nullable
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>     <strong class="jxr_keyword">public</strong> <a name="IDropOffFilter" href="../../emissary/output/filter/IDropOffFilter.html#IDropOffFilter">IDropOffFilter</a> getFilter(<strong class="jxr_keyword">final</strong> String name) {
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IDropOffFilter" href="../../emissary/output/filter/IDropOffFilter.html#IDropOffFilter">IDropOffFilter</a> f : <strong class="jxr_keyword">this</strong>.outputFilters) {
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>             <strong class="jxr_keyword">if</strong> (f.getFilterName().equals(name)) {
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>                 <strong class="jxr_keyword">return</strong> f;
+<a class="jxr_linenumber" name="L493" href="#L493">493</a>             }
+<a class="jxr_linenumber" name="L494" href="#L494">494</a>         }
+<a class="jxr_linenumber" name="L495" href="#L495">495</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L496" href="#L496">496</a>     }
+<a class="jxr_linenumber" name="L497" href="#L497">497</a> 
+<a class="jxr_linenumber" name="L498" href="#L498">498</a>     <strong class="jxr_keyword">public</strong> <a name="DropOffUtil" href="../../emissary/output/DropOffUtil.html#DropOffUtil">DropOffUtil</a> getDropOffUtil() {
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.dropOffUtil;
+<a class="jxr_linenumber" name="L500" href="#L500">500</a>     }
+<a class="jxr_linenumber" name="L501" href="#L501">501</a> 
+<a class="jxr_linenumber" name="L502" href="#L502">502</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> <em class="jxr_javadoccomment">     * Add a filter</em>
+<a class="jxr_linenumber" name="L504" href="#L504">504</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L505" href="#L505">505</a> <em class="jxr_javadoccomment">     * @param filter the new filter to add, must already be configured and initialized</em>
+<a class="jxr_linenumber" name="L506" href="#L506">506</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L507" href="#L507">507</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addFilter(<strong class="jxr_keyword">final</strong> <a name="IDropOffFilter" href="../../emissary/output/filter/IDropOffFilter.html#IDropOffFilter">IDropOffFilter</a> filter) {
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>         <strong class="jxr_keyword">this</strong>.outputFilters.add(filter);
+<a class="jxr_linenumber" name="L509" href="#L509">509</a>     }
+<a class="jxr_linenumber" name="L510" href="#L510">510</a> 
+<a class="jxr_linenumber" name="L511" href="#L511">511</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

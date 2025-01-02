@@ -360,80 +360,81 @@
 <a class="jxr_linenumber" name="L352" href="#L352">352</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L353" href="#L353">353</a> <em class="jxr_javadoccomment">     * Add child continuations</em>
 <a class="jxr_linenumber" name="L354" href="#L354">354</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addDependencyLayer(<a name="MagicNumber" href="../../../emissary/util/magic/MagicNumber.html#MagicNumber">MagicNumber</a>[] dependencyLayer) {
-<a class="jxr_linenumber" name="L356" href="#L356">356</a>         <strong class="jxr_keyword">if</strong> (dependencies == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L357" href="#L357">357</a>             dependencies = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>         }
-<a class="jxr_linenumber" name="L359" href="#L359">359</a>         dependencies.add(dependencyLayer);
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>     }
-<a class="jxr_linenumber" name="L361" href="#L361">361</a> 
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L363" href="#L363">363</a> <em class="jxr_javadoccomment">     * Re-creates the string magic number entry for this number only</em>
-<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">     * @return a String represention of the entry</em>
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L367" href="#L367">367</a>     @Override
-<a class="jxr_linenumber" name="L368" href="#L368">368</a>     <strong class="jxr_keyword">public</strong> String toString() {
-<a class="jxr_linenumber" name="L369" href="#L369">369</a> 
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>         StringBuilder sb = <strong class="jxr_keyword">new</strong> StringBuilder();
-<a class="jxr_linenumber" name="L371" href="#L371">371</a>         sb.append(<span class="jxr_string">"&gt;"</span>.repeat(Math.max(0, depth)));
-<a class="jxr_linenumber" name="L372" href="#L372">372</a>         <strong class="jxr_keyword">if</strong> (offsetUnary &gt; 0) {
-<a class="jxr_linenumber" name="L373" href="#L373">373</a>             sb.append(offsetUnary);
-<a class="jxr_linenumber" name="L374" href="#L374">374</a>         }
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> 
-<a class="jxr_linenumber" name="L376" href="#L376">376</a>         <strong class="jxr_keyword">if</strong> (offset == 0) {
-<a class="jxr_linenumber" name="L377" href="#L377">377</a>             sb.append(<span class="jxr_string">"0"</span>);
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L379" href="#L379">379</a>             sb.append(MagicMath.HEX_PREFIX);
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>             sb.append(Integer.toHexString(offset));
-<a class="jxr_linenumber" name="L381" href="#L381">381</a>         }
-<a class="jxr_linenumber" name="L382" href="#L382">382</a> 
-<a class="jxr_linenumber" name="L383" href="#L383">383</a>         sb.append('\t');
-<a class="jxr_linenumber" name="L384" href="#L384">384</a>         sb.append(MagicNumberFactory.resolveReverseDataType(dataType));
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>         <strong class="jxr_keyword">if</strong> (mask != <strong class="jxr_keyword">null</strong> &amp;&amp; mask.length &gt; 0) {
-<a class="jxr_linenumber" name="L386" href="#L386">386</a>             sb.append('&amp;');
-<a class="jxr_linenumber" name="L387" href="#L387">387</a>             sb.append(MagicMath.byteArrayToHexString(mask));
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>         }
-<a class="jxr_linenumber" name="L389" href="#L389">389</a> 
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>         sb.append('\t');
-<a class="jxr_linenumber" name="L391" href="#L391">391</a>         <strong class="jxr_keyword">if</strong> (unaryOperator == MAGICOPERATOR_EQUAL_LTHAN) {
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>             sb.append(<span class="jxr_string">"&lt;="</span>);
-<a class="jxr_linenumber" name="L393" href="#L393">393</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (unaryOperator == MAGICOPERATOR_EQUAL_GTHAN) {
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>             sb.append(<span class="jxr_string">"&gt;="</span>);
-<a class="jxr_linenumber" name="L395" href="#L395">395</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>             sb.append(unaryOperator);
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>         }
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>         sb.append(MagicMath.byteArrayToHexString(value));
-<a class="jxr_linenumber" name="L399" href="#L399">399</a> 
-<a class="jxr_linenumber" name="L400" href="#L400">400</a>         sb.append('\t');
-<a class="jxr_linenumber" name="L401" href="#L401">401</a>         sb.append(description);
-<a class="jxr_linenumber" name="L402" href="#L402">402</a>         <strong class="jxr_keyword">return</strong> sb.toString();
-<a class="jxr_linenumber" name="L403" href="#L403">403</a>     }
-<a class="jxr_linenumber" name="L404" href="#L404">404</a> 
-<a class="jxr_linenumber" name="L405" href="#L405">405</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     * Private method to create the string plus continuations</em>
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>     <strong class="jxr_keyword">private</strong> String toString(@Nullable StringBuilder sbuf, <strong class="jxr_keyword">int</strong> depth) {
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>         StringBuilder sb = sbuf;
-<a class="jxr_linenumber" name="L410" href="#L410">410</a>         <strong class="jxr_keyword">int</strong> d = depth;
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>         <strong class="jxr_keyword">if</strong> (sb == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>             sb = <strong class="jxr_keyword">new</strong> StringBuilder(description);
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>         }
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>         <strong class="jxr_keyword">if</strong> (dependencies == <strong class="jxr_keyword">null</strong> || d &gt;= dependencies.size()) {
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>             <strong class="jxr_keyword">return</strong> sb.toString();
-<a class="jxr_linenumber" name="L416" href="#L416">416</a>         }
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>         <a name="MagicNumber" href="../../../emissary/util/magic/MagicNumber.html#MagicNumber">MagicNumber</a>[] dependentItems = dependencies.get(d);
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>         <strong class="jxr_keyword">for</strong> (<a name="MagicNumber" href="../../../emissary/util/magic/MagicNumber.html#MagicNumber">MagicNumber</a> dependentItem : dependentItems) {
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>             sb.append('\n');
-<a class="jxr_linenumber" name="L420" href="#L420">420</a>             sb.append(dependentItem.toString());
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>         }
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>         <strong class="jxr_keyword">return</strong> toString(sb, d + 1);
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>     }
-<a class="jxr_linenumber" name="L424" href="#L424">424</a> 
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>     @SuppressWarnings(<span class="jxr_string">"AvoidObjectArrays"</span>)
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addDependencyLayer(<a name="MagicNumber" href="../../../emissary/util/magic/MagicNumber.html#MagicNumber">MagicNumber</a>[] dependencyLayer) {
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>         <strong class="jxr_keyword">if</strong> (dependencies == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>             dependencies = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>         }
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>         dependencies.add(dependencyLayer);
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>     }
+<a class="jxr_linenumber" name="L362" href="#L362">362</a> 
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">     * Re-creates the string magic number entry for this number only</em>
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">     * @return a String represention of the entry</em>
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>     @Override
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>     <strong class="jxr_keyword">public</strong> String toString() {
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> 
+<a class="jxr_linenumber" name="L371" href="#L371">371</a>         StringBuilder sb = <strong class="jxr_keyword">new</strong> StringBuilder();
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>         sb.append(<span class="jxr_string">"&gt;"</span>.repeat(Math.max(0, depth)));
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>         <strong class="jxr_keyword">if</strong> (offsetUnary &gt; 0) {
+<a class="jxr_linenumber" name="L374" href="#L374">374</a>             sb.append(offsetUnary);
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>         }
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> 
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>         <strong class="jxr_keyword">if</strong> (offset == 0) {
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>             sb.append(<span class="jxr_string">"0"</span>);
+<a class="jxr_linenumber" name="L379" href="#L379">379</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>             sb.append(MagicMath.HEX_PREFIX);
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>             sb.append(Integer.toHexString(offset));
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>         }
+<a class="jxr_linenumber" name="L383" href="#L383">383</a> 
+<a class="jxr_linenumber" name="L384" href="#L384">384</a>         sb.append('\t');
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>         sb.append(MagicNumberFactory.resolveReverseDataType(dataType));
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>         <strong class="jxr_keyword">if</strong> (mask != <strong class="jxr_keyword">null</strong> &amp;&amp; mask.length &gt; 0) {
+<a class="jxr_linenumber" name="L387" href="#L387">387</a>             sb.append('&amp;');
+<a class="jxr_linenumber" name="L388" href="#L388">388</a>             sb.append(MagicMath.byteArrayToHexString(mask));
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>         }
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> 
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>         sb.append('\t');
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>         <strong class="jxr_keyword">if</strong> (unaryOperator == MAGICOPERATOR_EQUAL_LTHAN) {
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>             sb.append(<span class="jxr_string">"&lt;="</span>);
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (unaryOperator == MAGICOPERATOR_EQUAL_GTHAN) {
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>             sb.append(<span class="jxr_string">"&gt;="</span>);
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>             sb.append(unaryOperator);
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>         }
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>         sb.append(MagicMath.byteArrayToHexString(value));
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> 
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>         sb.append('\t');
+<a class="jxr_linenumber" name="L402" href="#L402">402</a>         sb.append(description);
+<a class="jxr_linenumber" name="L403" href="#L403">403</a>         <strong class="jxr_keyword">return</strong> sb.toString();
+<a class="jxr_linenumber" name="L404" href="#L404">404</a>     }
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> 
+<a class="jxr_linenumber" name="L406" href="#L406">406</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">     * Private method to create the string plus continuations</em>
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>     <strong class="jxr_keyword">private</strong> String toString(@Nullable StringBuilder sbuf, <strong class="jxr_keyword">int</strong> depth) {
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>         StringBuilder sb = sbuf;
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>         <strong class="jxr_keyword">int</strong> d = depth;
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>         <strong class="jxr_keyword">if</strong> (sb == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>             sb = <strong class="jxr_keyword">new</strong> StringBuilder(description);
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>         }
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>         <strong class="jxr_keyword">if</strong> (dependencies == <strong class="jxr_keyword">null</strong> || d &gt;= dependencies.size()) {
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>             <strong class="jxr_keyword">return</strong> sb.toString();
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>         }
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>         <a name="MagicNumber" href="../../../emissary/util/magic/MagicNumber.html#MagicNumber">MagicNumber</a>[] dependentItems = dependencies.get(d);
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>         <strong class="jxr_keyword">for</strong> (<a name="MagicNumber" href="../../../emissary/util/magic/MagicNumber.html#MagicNumber">MagicNumber</a> dependentItem : dependentItems) {
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>             sb.append('\n');
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>             sb.append(dependentItem.toString());
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>         }
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>         <strong class="jxr_keyword">return</strong> toString(sb, d + 1);
+<a class="jxr_linenumber" name="L424" href="#L424">424</a>     }
 <a class="jxr_linenumber" name="L425" href="#L425">425</a> 
-<a class="jxr_linenumber" name="L426" href="#L426">426</a> }
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> 
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

@@ -76,7 +76,7 @@
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>          <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> dataObject = DataObjectFactory.getInstance(<strong class="jxr_keyword">new</strong> Object[] {theData, sName});
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>          <em class="jxr_comment">// Pop default form if we have something to say</em>
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>          <strong class="jxr_keyword">if</strong> (initialForms != <strong class="jxr_keyword">null</strong> &amp;&amp; initialForms.size() &gt; 0) {
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          <strong class="jxr_keyword">if</strong> (initialForms != <strong class="jxr_keyword">null</strong> &amp;&amp; !initialForms.isEmpty()) {
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>              dataObject.popCurrentForm();
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>              <em class="jxr_comment">// Add our stuff to the form stack</em>
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>              <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = initialForms.size() - 1; j &gt;= 0; j--) {
@@ -85,7 +85,7 @@
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>          }
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>          List&lt;String&gt; sessionForms = session.getInitialForms();
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>          <strong class="jxr_keyword">if</strong> (sessionForms != <strong class="jxr_keyword">null</strong> &amp;&amp; sessionForms.size() &gt; 0) {
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          <strong class="jxr_keyword">if</strong> (sessionForms != <strong class="jxr_keyword">null</strong> &amp;&amp; !sessionForms.isEmpty()) {
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>              dataObject.popCurrentForm();
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>              <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = sessionForms.size() - 1; j &gt;= 0; j--) {
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>                  dataObject.pushCurrentForm(sessionForms.get(j));
@@ -147,6 +147,6 @@
 <a class="jxr_linenumber" name="L139" href="#L139">139</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

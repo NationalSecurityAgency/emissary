@@ -37,7 +37,7 @@
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">protected</strong> String alternateView = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> addAsMetaData = false;
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> perlChop = false;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> NUKE_ALL_PROXIES = false;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> nukeAllProxies = false;
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> keepFilesDebug = false;
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">protected</strong> String charset = <span class="jxr_string">"8859_1"</span>;
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>      <strong class="jxr_keyword">protected</strong> String logfilename;
@@ -120,7 +120,7 @@
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>             addAsMetaData = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>         }
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>         perlChop = configG.findBooleanEntry(<span class="jxr_string">"PERL_CHOP"</span>, false);
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>         NUKE_ALL_PROXIES = configG.findBooleanEntry(<span class="jxr_string">"NUKE_ALL_PROXIES"</span>, false);
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>         nukeAllProxies = configG.findBooleanEntry(<span class="jxr_string">"NUKE_ALL_PROXIES"</span>, false);
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>         keepFilesDebug = configG.findBooleanEntry(<span class="jxr_string">"KEEP_FILES_DEBUG"</span>, false);
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>         charset = configG.findStringEntry(<span class="jxr_string">"OUTPUT_CHARSET"</span>, charset);
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>         executrix = <strong class="jxr_keyword">new</strong> <a name="Executrix" href="../../emissary/util/shell/Executrix.html#Executrix">Executrix</a>(configG);
@@ -429,7 +429,7 @@
 <a class="jxr_linenumber" name="L421" href="#L421">421</a>                 asMetaDataHook(tData, metaDataTag, outputData);
 <a class="jxr_linenumber" name="L422" href="#L422">422</a>             } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L423" href="#L423">423</a>                 asDataHook(tData, outputData);
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>                 <strong class="jxr_keyword">if</strong> (NUKE_ALL_PROXIES) {
+<a class="jxr_linenumber" name="L424" href="#L424">424</a>                 <strong class="jxr_keyword">if</strong> (nukeAllProxies) {
 <a class="jxr_linenumber" name="L425" href="#L425">425</a>                     nukeMyProxies(tData);
 <a class="jxr_linenumber" name="L426" href="#L426">426</a>                     <strong class="jxr_keyword">if</strong> (newForm != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L427" href="#L427">427</a>                         tData.pushCurrentForm(newForm);
@@ -457,6 +457,6 @@
 <a class="jxr_linenumber" name="L449" href="#L449">449</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

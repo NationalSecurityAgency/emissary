@@ -85,7 +85,7 @@
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">protected</strong> List&lt;String&gt; initialFormValues = Collections.emptyList();
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>      <em class="jxr_comment">// Metadata items that should always be copied to children</em>
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>      <strong class="jxr_keyword">protected</strong> Set&lt;String&gt; ALWAYS_COPY_METADATA_VALS = <strong class="jxr_keyword">new</strong> HashSet&lt;&gt;();
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>      <strong class="jxr_keyword">protected</strong> Set&lt;String&gt; alwaysCopyMetadataVals = <strong class="jxr_keyword">new</strong> HashSet&lt;&gt;();
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> useObjectTraceLogger = false;
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  
@@ -180,7 +180,7 @@
 <a class="jxr_linenumber" name="L172" href="#L172">172</a>         logger.debug(<span class="jxr_string">"Pickup Canonical HOLD =&gt; {}, Pickup Canonical DONE =&gt; {}, Pickup Canonical ERROR =&gt; {}"</span>, holdingArea, doneArea, errorArea);
 <a class="jxr_linenumber" name="L173" href="#L173">173</a> 
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>         initialFormValues = configG.findEntries(<span class="jxr_string">"INITIAL_FORM"</span>);
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>         <strong class="jxr_keyword">if</strong> (initialFormValues.size() &lt; 1) {
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>         <strong class="jxr_keyword">if</strong> (initialFormValues.isEmpty()) {
 <a class="jxr_linenumber" name="L176" href="#L176">176</a>             initialFormValues.add(Form.UNKNOWN);
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>         }
 <a class="jxr_linenumber" name="L178" href="#L178">178</a> 
@@ -191,7 +191,7 @@
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>             logger.warn(<span class="jxr_string">"Cannot find agent pool!"</span>);
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>         }
 <a class="jxr_linenumber" name="L185" href="#L185">185</a> 
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>         ALWAYS_COPY_METADATA_VALS = configG.findEntriesAsSet(<span class="jxr_string">"ALWAYS_COPY_METADATA"</span>);
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>         alwaysCopyMetadataVals = configG.findEntriesAsSet(<span class="jxr_string">"ALWAYS_COPY_METADATA"</span>);
 <a class="jxr_linenumber" name="L187" href="#L187">187</a> 
 <a class="jxr_linenumber" name="L188" href="#L188">188</a>         <em class="jxr_comment">// Whether or not to use the objectTrace logger</em>
 <a class="jxr_linenumber" name="L189" href="#L189">189</a>         useObjectTraceLogger = configG.findBooleanEntry(<span class="jxr_string">"USE_OBJECT_TRACE_LOGGER"</span>, useObjectTraceLogger);
@@ -721,53 +721,54 @@
 <a class="jxr_linenumber" name="L713" href="#L713">713</a> <em class="jxr_javadoccomment">     * @return mobile agent assigned to pool</em>
 <a class="jxr_linenumber" name="L714" href="#L714">714</a> <em class="jxr_javadoccomment">     * @throws EmissaryException when an agent cannot be obtained</em>
 <a class="jxr_linenumber" name="L715" href="#L715">715</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L716" href="#L716">716</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="IMobileAgent" href="../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a> assignToPooledAgent(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload, @Nullable <a name="AgentPool" href="../../emissary/pool/AgentPool.html#AgentPool">AgentPool</a> agentPool, <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> startingLocation,
-<a class="jxr_linenumber" name="L717" href="#L717">717</a>             <strong class="jxr_keyword">long</strong> timeoutMs) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
-<a class="jxr_linenumber" name="L718" href="#L718">718</a>         <a name="IMobileAgent" href="../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a> agent = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L719" href="#L719">719</a>         <strong class="jxr_keyword">long</strong> startTime = System.currentTimeMillis();
-<a class="jxr_linenumber" name="L720" href="#L720">720</a>         <strong class="jxr_keyword">boolean</strong> warningGiven = false;
-<a class="jxr_linenumber" name="L721" href="#L721">721</a>         <strong class="jxr_keyword">int</strong> loopCount = 0;
-<a class="jxr_linenumber" name="L722" href="#L722">722</a> 
-<a class="jxr_linenumber" name="L723" href="#L723">723</a>         MDC.put(MDCConstants.SHORT_NAME, payload.shortName());
-<a class="jxr_linenumber" name="L724" href="#L724">724</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L725" href="#L725">725</a> 
-<a class="jxr_linenumber" name="L726" href="#L726">726</a>             <strong class="jxr_keyword">if</strong> (agentPool == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L727" href="#L727">727</a>                 agentPool = AgentPool.lookup();
-<a class="jxr_linenumber" name="L728" href="#L728">728</a>             }
-<a class="jxr_linenumber" name="L729" href="#L729">729</a> 
-<a class="jxr_linenumber" name="L730" href="#L730">730</a>             <strong class="jxr_keyword">do</strong> {
-<a class="jxr_linenumber" name="L731" href="#L731">731</a>                 loopCount++;
-<a class="jxr_linenumber" name="L732" href="#L732">732</a>                 <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L733" href="#L733">733</a>                     agent = agentPool.borrowAgent();
-<a class="jxr_linenumber" name="L734" href="#L734">734</a>                 } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L735" href="#L735">735</a>                     <strong class="jxr_keyword">if</strong> (!warningGiven) {
-<a class="jxr_linenumber" name="L736" href="#L736">736</a>                         slogger.debug(<span class="jxr_string">"Cannot get agent from pool, trying again "</span>, e);
-<a class="jxr_linenumber" name="L737" href="#L737">737</a>                         warningGiven = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L738" href="#L738">738</a>                     }
-<a class="jxr_linenumber" name="L739" href="#L739">739</a>                 }
-<a class="jxr_linenumber" name="L740" href="#L740">740</a>             } <strong class="jxr_keyword">while</strong> (agent == <strong class="jxr_keyword">null</strong> &amp;&amp; (timeoutMs &lt; 0 || (startTime + timeoutMs) &lt; System.currentTimeMillis()));
-<a class="jxr_linenumber" name="L741" href="#L741">741</a> 
-<a class="jxr_linenumber" name="L742" href="#L742">742</a>             <strong class="jxr_keyword">if</strong> (agent == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L743" href="#L743">743</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a>(<span class="jxr_string">"No agent found for "</span> + payload.shortName() + <span class="jxr_string">" after "</span> + loopCount + <span class="jxr_string">" tries."</span>);
-<a class="jxr_linenumber" name="L744" href="#L744">744</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (loopCount &gt; 1) {
-<a class="jxr_linenumber" name="L745" href="#L745">745</a>                 slogger.info(<span class="jxr_string">"Found agent after {} tries"</span>, loopCount);
-<a class="jxr_linenumber" name="L746" href="#L746">746</a>             }
-<a class="jxr_linenumber" name="L747" href="#L747">747</a> 
-<a class="jxr_linenumber" name="L748" href="#L748">748</a>             agent.go(payload, startingLocation);
-<a class="jxr_linenumber" name="L749" href="#L749">749</a>             Thread.yield();
-<a class="jxr_linenumber" name="L750" href="#L750">750</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L751" href="#L751">751</a>             MDC.remove(MDCConstants.SHORT_NAME);
-<a class="jxr_linenumber" name="L752" href="#L752">752</a>         }
-<a class="jxr_linenumber" name="L753" href="#L753">753</a> 
-<a class="jxr_linenumber" name="L754" href="#L754">754</a>         <strong class="jxr_keyword">return</strong> agent;
-<a class="jxr_linenumber" name="L755" href="#L755">755</a>     }
-<a class="jxr_linenumber" name="L756" href="#L756">756</a> 
-<a class="jxr_linenumber" name="L757" href="#L757">757</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> implementsPickUpPlace(Class&lt;? <strong class="jxr_keyword">extends</strong> Object&gt; clazz) {
-<a class="jxr_linenumber" name="L758" href="#L758">758</a>         <strong class="jxr_keyword">return</strong> ClassComparator.isaImplementation(clazz, IPickUpPlace.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L759" href="#L759">759</a>     }
-<a class="jxr_linenumber" name="L760" href="#L760">760</a> }
+<a class="jxr_linenumber" name="L716" href="#L716">716</a>     @SuppressWarnings(<span class="jxr_string">"ThreadPriorityCheck"</span>)
+<a class="jxr_linenumber" name="L717" href="#L717">717</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="IMobileAgent" href="../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a> assignToPooledAgent(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload, @Nullable <a name="AgentPool" href="../../emissary/pool/AgentPool.html#AgentPool">AgentPool</a> agentPool, <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> startingLocation,
+<a class="jxr_linenumber" name="L718" href="#L718">718</a>             <strong class="jxr_keyword">long</strong> timeoutMs) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
+<a class="jxr_linenumber" name="L719" href="#L719">719</a>         <a name="IMobileAgent" href="../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a> agent = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L720" href="#L720">720</a>         <strong class="jxr_keyword">long</strong> startTime = System.currentTimeMillis();
+<a class="jxr_linenumber" name="L721" href="#L721">721</a>         <strong class="jxr_keyword">boolean</strong> warningGiven = false;
+<a class="jxr_linenumber" name="L722" href="#L722">722</a>         <strong class="jxr_keyword">int</strong> loopCount = 0;
+<a class="jxr_linenumber" name="L723" href="#L723">723</a> 
+<a class="jxr_linenumber" name="L724" href="#L724">724</a>         MDC.put(MDCConstants.SHORT_NAME, payload.shortName());
+<a class="jxr_linenumber" name="L725" href="#L725">725</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L726" href="#L726">726</a> 
+<a class="jxr_linenumber" name="L727" href="#L727">727</a>             <strong class="jxr_keyword">if</strong> (agentPool == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L728" href="#L728">728</a>                 agentPool = AgentPool.lookup();
+<a class="jxr_linenumber" name="L729" href="#L729">729</a>             }
+<a class="jxr_linenumber" name="L730" href="#L730">730</a> 
+<a class="jxr_linenumber" name="L731" href="#L731">731</a>             <strong class="jxr_keyword">do</strong> {
+<a class="jxr_linenumber" name="L732" href="#L732">732</a>                 loopCount++;
+<a class="jxr_linenumber" name="L733" href="#L733">733</a>                 <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L734" href="#L734">734</a>                     agent = agentPool.borrowAgent();
+<a class="jxr_linenumber" name="L735" href="#L735">735</a>                 } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L736" href="#L736">736</a>                     <strong class="jxr_keyword">if</strong> (!warningGiven) {
+<a class="jxr_linenumber" name="L737" href="#L737">737</a>                         slogger.debug(<span class="jxr_string">"Cannot get agent from pool, trying again "</span>, e);
+<a class="jxr_linenumber" name="L738" href="#L738">738</a>                         warningGiven = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L739" href="#L739">739</a>                     }
+<a class="jxr_linenumber" name="L740" href="#L740">740</a>                 }
+<a class="jxr_linenumber" name="L741" href="#L741">741</a>             } <strong class="jxr_keyword">while</strong> (agent == <strong class="jxr_keyword">null</strong> &amp;&amp; (timeoutMs &lt; 0 || (startTime + timeoutMs) &lt; System.currentTimeMillis()));
+<a class="jxr_linenumber" name="L742" href="#L742">742</a> 
+<a class="jxr_linenumber" name="L743" href="#L743">743</a>             <strong class="jxr_keyword">if</strong> (agent == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L744" href="#L744">744</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a>(<span class="jxr_string">"No agent found for "</span> + payload.shortName() + <span class="jxr_string">" after "</span> + loopCount + <span class="jxr_string">" tries."</span>);
+<a class="jxr_linenumber" name="L745" href="#L745">745</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (loopCount &gt; 1) {
+<a class="jxr_linenumber" name="L746" href="#L746">746</a>                 slogger.info(<span class="jxr_string">"Found agent after {} tries"</span>, loopCount);
+<a class="jxr_linenumber" name="L747" href="#L747">747</a>             }
+<a class="jxr_linenumber" name="L748" href="#L748">748</a> 
+<a class="jxr_linenumber" name="L749" href="#L749">749</a>             agent.go(payload, startingLocation);
+<a class="jxr_linenumber" name="L750" href="#L750">750</a>             Thread.yield();
+<a class="jxr_linenumber" name="L751" href="#L751">751</a>         } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L752" href="#L752">752</a>             MDC.remove(MDCConstants.SHORT_NAME);
+<a class="jxr_linenumber" name="L753" href="#L753">753</a>         }
+<a class="jxr_linenumber" name="L754" href="#L754">754</a> 
+<a class="jxr_linenumber" name="L755" href="#L755">755</a>         <strong class="jxr_keyword">return</strong> agent;
+<a class="jxr_linenumber" name="L756" href="#L756">756</a>     }
+<a class="jxr_linenumber" name="L757" href="#L757">757</a> 
+<a class="jxr_linenumber" name="L758" href="#L758">758</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> implementsPickUpPlace(Class&lt;? <strong class="jxr_keyword">extends</strong> Object&gt; clazz) {
+<a class="jxr_linenumber" name="L759" href="#L759">759</a>         <strong class="jxr_keyword">return</strong> ClassComparator.isaImplementation(clazz, IPickUpPlace.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L760" href="#L760">760</a>     }
+<a class="jxr_linenumber" name="L761" href="#L761">761</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

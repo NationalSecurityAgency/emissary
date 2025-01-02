@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FilePickUpPlaceHealthCheck.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core</a> &gt; <span class="el_source">FilePickUpPlaceHealthCheck.java</span></div><h1>FilePickUpPlaceHealthCheck.java</h1><pre class="source lang-java linenums">package emissary.core;
+
+import emissary.pickup.file.FilePickUpPlace;
+
+import com.codahale.metrics.health.HealthCheck;
+import org.apache.commons.io.filefilter.HiddenFileFilter;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.lang.reflect.Field;
+
+/**
+ * A health check that warns if the input data queue is larger than a given threshold or if the aggregate file size is
+ * larger than a given threshold. This only applies to FilePickUpPlace.
+ */
+public class FilePickUpPlaceHealthCheck extends HealthCheck {
+
+    /**
+     * How many files to allow in the queue before we deem the situation unhealthy
+     */
+<span class="fc" id="L21">    protected int maxFileCountBeforeUnhealthy = Integer.MAX_VALUE; // default is unbounded</span>
+
+    /**
+     * How large we let the aggregate file size to get before we deem the situation unhealthy
+     */
+<span class="fc" id="L26">    protected long maxAggregateFileSizeBeforeUnhealthy = Long.MAX_VALUE; // default is unbounded</span>
+
+<span class="fc" id="L28">    public FilePickUpPlaceHealthCheck(final int maxFileCountBeforeUnhealthy, final long maxAggregateFileSizeBeforeUnhealthy) {</span>
+<span class="fc" id="L29">        this.maxFileCountBeforeUnhealthy = maxFileCountBeforeUnhealthy;</span>
+<span class="fc" id="L30">        this.maxAggregateFileSizeBeforeUnhealthy = maxAggregateFileSizeBeforeUnhealthy;</span>
+<span class="fc" id="L31">    }</span>
+
+    @Override
+    protected Result check() throws Exception {
+
+<span class="fc" id="L36">        int aggregateFileCount = 0; // how many things we think are in the queue</span>
+<span class="fc" id="L37">        long aggregateFileSize = 0; // aggregate file size across all files</span>
+
+        try {
+<span class="fc" id="L40">            final FilePickUpPlace pup = (FilePickUpPlace) Namespace.lookup(&quot;FilePickUpPlace&quot;); // if no exception, will</span>
+                                                                                               // not be
+                                                                                               // null
+
+            // Get the inputDirs by reflection, result should be a String[]
+<span class="fc" id="L45">            final Field inputDirField = pup.getClass().getDeclaredField(&quot;inputDataDirs&quot;);</span>
+<span class="fc" id="L46">            inputDirField.setAccessible(true); // make it so we can read it</span>
+
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">            if (inputDirField.getType().isArray()) {</span>
+                // This better be a String[], but we are not checking for the String part
+<span class="fc" id="L50">                final String[] inputDirs = (String[]) inputDirField.get(pup);</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">                if (inputDirs != null) {</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">                    for (int dirIdx = 0; dirIdx &lt; inputDirs.length; dirIdx++) {</span>
+<span class="fc" id="L53">                        final File inputDir = new File(inputDirs[dirIdx]);</span>
+<span class="pc bpc" id="L54" title="2 of 4 branches missed.">                        if ((inputDir != null) &amp;&amp; inputDir.isDirectory()) {</span>
+<span class="nc" id="L55">                            final File[] files = inputDir.listFiles((FileFilter) HiddenFileFilter.VISIBLE);</span>
+<span class="nc" id="L56">                            aggregateFileCount += files.length;</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">                            if (files != null) {</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">                                for (int fileIdx = 0; fileIdx &lt; files.length; fileIdx++) {</span>
+<span class="nc" id="L59">                                    aggregateFileSize += files[fileIdx].length();</span>
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Check either condition
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">            if (aggregateFileCount &gt; this.maxFileCountBeforeUnhealthy) {</span>
+<span class="nc" id="L69">                return Result.unhealthy(&quot;Large number of files backed up for FilePickUpPlace = &quot; + aggregateFileCount);</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">            } else if (aggregateFileSize &gt; this.maxAggregateFileSizeBeforeUnhealthy) {</span>
+<span class="nc" id="L71">                return Result.unhealthy(&quot;Large aggregate file size backed up for FilePickUpPlace = &quot; + aggregateFileSize);</span>
+            }
+
+<span class="fc" id="L74">        } catch (NamespaceException ne) {</span>
+            // This gets throw if can't find FilePickUpPlace, assume it is not configured
+            // and things are healthy
+<span class="nc" id="L77">        } catch (NoSuchFieldException nsfe) {</span>
+            // Possibly thrown by getDeclaredField, assume FilePickUpPlace implementation has changed
+<span class="nc" id="L79">        } catch (SecurityException se) {</span>
+            // Possibly thrown by getDeclaredField - would prevent our access to the field
+<span class="nc" id="L81">        } catch (NullPointerException npe) {</span>
+            // A variety of methods throw NPEs
+<span class="nc" id="L83">        } catch (IllegalArgumentException iae) {</span>
+            // Thrown by get()
+<span class="nc" id="L85">        } catch (IllegalAccessException iae) {</span>
+            // Also thrown by get()
+<span class="nc" id="L87">        } catch (ExceptionInInitializerError eiie) {</span>
+            // Also thrown by get()
+<span class="pc" id="L89">        }</span>
+
+        // If we get here, we assume things are OK
+<span class="fc" id="L92">        return Result.healthy(&quot;FilePickUpPlace appears to be healthy&quot;);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChecksumResults.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.kff</a> &gt; <span class="el_source">ChecksumResults.java</span></div><h1>ChecksumResults.java</h1><pre class="source lang-java linenums">package emissary.kff;
+
+import emissary.util.Hexl;
+
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import javax.annotation.Nullable;
+
+/**
+ * This class is a value object to store the results of both a CRC32 and a message digest computation.
+ */
+<span class="fc" id="L15">public class ChecksumResults implements Serializable {</span>
+
+    // serializable
+    static final long serialVersionUID = -8187329704593435586L;
+
+<span class="fc" id="L20">    private long crc = -1L;</span>
+<span class="fc" id="L21">    @Nullable</span>
+    private String ssdeep = null;
+<span class="fc" id="L23">    Map&lt;String, byte[]&gt; hashComp = new TreeMap&lt;&gt;();</span>
+
+    /**
+     * Gets the value of crc
+     *
+     * @see #getHashString(String)
+     * @return the value of crc
+     */
+    public long getCrc() {
+<span class="fc" id="L32">        return this.crc;</span>
+    }
+
+    /**
+     * Sets the value of crc
+     *
+     * @param argCrc Value to assign to this.crc
+     */
+    public void setCrc(long argCrc) {
+<span class="fc" id="L41">        this.crc = argCrc;</span>
+<span class="fc" id="L42">    }</span>
+
+    /**
+     * Gets the value of ssdeep
+     *
+     * @see #getHashString(String)
+     * @return the value of ssdeep
+     */
+    public String getSsdeep() {
+<span class="fc" id="L51">        return this.ssdeep;</span>
+    }
+
+    /**
+     * Sets the value of ssdeep
+     *
+     * @param ssdeep Value to assign to this.ssdeep
+     */
+    public void setSsdeep(String ssdeep) {
+<span class="fc" id="L60">        this.ssdeep = ssdeep;</span>
+<span class="fc" id="L61">    }</span>
+
+    /**
+     * Gets the value of requested computation
+     *
+     * @param alg name of algorithm producing desired results
+     * @return the value of hash in bytes
+     */
+    public byte[] getHash(String alg) {
+<span class="pc bpc" id="L70" title="1 of 4 branches missed.">        if (&quot;CRC32&quot;.equals(alg) &amp;&amp; crc &gt; -1L) {</span>
+<span class="fc" id="L71">            return Long.toString(crc).getBytes();</span>
+        }
+<span class="pc bpc" id="L73" title="1 of 4 branches missed.">        if (&quot;SSDEEP&quot;.equals(alg) &amp;&amp; ssdeep != null) {</span>
+<span class="fc" id="L74">            return ssdeep.getBytes();</span>
+        }
+<span class="fc" id="L76">        return hashComp.get(alg);</span>
+    }
+
+    /**
+     * Gets the formatted value of one of the hashes
+     *
+     * @param alg name of algorithm producing desired results
+     * @return the formatted value of hash
+     */
+    @Nullable
+    public String getHashString(String alg) {
+<span class="fc" id="L87">        byte[] comp = hashComp.get(alg);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        if (comp == null) {</span>
+<span class="pc bpc" id="L89" title="3 of 4 branches missed.">            if (&quot;CRC32&quot;.equals(alg) &amp;&amp; crc &gt; -1L) {</span>
+<span class="nc" id="L90">                return Long.toString(crc);</span>
+            }
+<span class="pc bpc" id="L92" title="2 of 4 branches missed.">            if (&quot;SSDEEP&quot;.equals(alg) &amp;&amp; ssdeep != null) {</span>
+<span class="fc" id="L93">                return ssdeep;</span>
+            }
+<span class="nc" id="L95">            return null;</span>
+        }
+
+<span class="fc" id="L98">        return Hexl.toUnformattedHexString(comp);</span>
+    }
+
+    /**
+     * Sets the value of hash
+     *
+     * @param alg the name of the algorithm producing the hash
+     * @param argHash Value to assign to this.hash
+     */
+    public void setHash(String alg, byte[] argHash) {
+<span class="fc" id="L108">        hashComp.put(alg, argHash);</span>
+<span class="fc" id="L109">    }</span>
+
+    /**
+     * Get names of digest results present
+     * 
+     * @return Set of string algorithm names
+     */
+    public Set&lt;String&gt; getResultsPresent() {
+<span class="fc" id="L117">        Set&lt;String&gt; set = new TreeSet&lt;&gt;(hashComp.keySet());</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (crc &gt; -1L) {</span>
+<span class="fc" id="L119">            set.add(&quot;CRC32&quot;);</span>
+        }
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (ssdeep != null) {</span>
+<span class="fc" id="L122">            set.add(&quot;SSDEEP&quot;);</span>
+        }
+<span class="fc" id="L124">        return set;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

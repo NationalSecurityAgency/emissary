@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataIdentifier.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.parser</a> &gt; <span class="el_source">DataIdentifier.java</span></div><h1>DataIdentifier.java</h1><pre class="source lang-java linenums">package emissary.parser;
+
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.util.shell.Executrix;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
+
+/**
+ * A simple base class for doing data type identification This simple implementation can only match constant strings
+ * against data. The things to match are read from a config file
+ */
+public class DataIdentifier {
+    // Logger
+<span class="fc" id="L22">    private static final Logger logger = LoggerFactory.getLogger(DataIdentifier.class);</span>
+
+    // Default value
+    public static final String UNKNOWN_TYPE = &quot;simple&quot;;
+
+    // Size of string to test
+<span class="fc" id="L28">    @SuppressWarnings(&quot;ConstantField&quot;)</span>
+    protected int DATA_ID_STR_SZ = 100;
+
+    // Things we know how to identify
+<span class="fc" id="L32">    protected Map&lt;String, String&gt; typesMap = new HashMap&lt;&gt;();</span>
+
+    /**
+     * Create the id engine
+     */
+<span class="fc" id="L37">    public DataIdentifier() {</span>
+<span class="fc" id="L38">        configure(null);</span>
+<span class="fc" id="L39">    }</span>
+
+    /**
+     * Create the id engine with the specified config info
+     */
+<span class="fc" id="L44">    public DataIdentifier(Configurator config) {</span>
+<span class="fc" id="L45">        configure(config);</span>
+<span class="fc" id="L46">    }</span>
+
+    protected void configure(@Nullable Configurator config) {
+        try {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            if (config == null) {</span>
+<span class="fc" id="L51">                config = ConfigUtil.getConfigInfo(this.getClass());</span>
+            }
+<span class="fc" id="L53">            typesMap = config.findStringMatchMap(&quot;TYPE_&quot;, Configurator.PRESERVE_CASE);</span>
+<span class="fc" id="L54">            logger.debug(&quot;Configured with &quot; + typesMap.size() + &quot; identifiction types&quot;);</span>
+<span class="fc" id="L55">        } catch (IOException iox) {</span>
+<span class="fc" id="L56">            logger.debug(&quot;No configuration info found&quot;);</span>
+<span class="fc" id="L57">        }</span>
+<span class="fc" id="L58">    }</span>
+
+    /**
+     * Return a slice as string for testing
+     * 
+     * @param data the bytes to slice
+     * @param limit max length to use for testing
+     */
+    protected String getTestString(byte[] data, int limit) {
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (data.length &lt; limit) {</span>
+<span class="fc" id="L68">            return new String(data);</span>
+        }
+<span class="fc" id="L70">        return new String(data, 0, limit);</span>
+    }
+
+    /**
+     * Return a slice as string for testing
+     * 
+     * @param data the bytes to slice
+     * @return the slice
+     */
+    protected String getTestString(byte[] data) {
+<span class="fc" id="L80">        return getTestString(data, DATA_ID_STR_SZ);</span>
+    }
+
+    /**
+     * Identify the data in the array
+     * 
+     * @param data array of data to identify
+     */
+    public String identify(byte[] data) {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        for (Map.Entry&lt;String, String&gt; entry : typesMap.entrySet()) {</span>
+<span class="fc" id="L90">            byte[] pattern = entry.getValue().getBytes();</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">            if (data.length &lt; pattern.length) {</span>
+<span class="fc" id="L92">                continue;</span>
+            }
+<span class="fc" id="L94">            boolean match = true;</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">            for (int i = 0; i &lt; pattern.length; i++) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">                if (data[i] != pattern[i]) {</span>
+<span class="fc" id="L97">                    match = false;</span>
+<span class="fc" id="L98">                    break;</span>
+                }
+            }
+<span class="fc bfc" id="L101" title="All 2 branches covered.">            if (match) {</span>
+<span class="fc" id="L102">                logger.debug(&quot;Data identified as &quot; + entry.getKey());</span>
+<span class="fc" id="L103">                return entry.getKey();</span>
+            }
+<span class="fc" id="L105">        }</span>
+<span class="fc" id="L106">        logger.debug(&quot;No identification possible, returning UNKNOWN_TYPE&quot;);</span>
+<span class="fc" id="L107">        return UNKNOWN_TYPE;</span>
+    }
+
+    /**
+     * Get the size of data that is required for an id This is the maximum amount of data that the id algorithm will use,
+     * more or less can be sent,
+     * 
+     * @see #getTestString(byte[])
+     */
+    public int getTestStringMaxSize() {
+<span class="fc" id="L117">        return DATA_ID_STR_SZ;</span>
+    }
+
+    @SuppressWarnings(&quot;SystemOut&quot;)
+    public static void main(String[] args) throws Exception {
+<span class="nc" id="L122">        DataIdentifier dataIdentifier = new DataIdentifier();</span>
+
+<span class="nc bnc" id="L124" title="All 2 branches missed.">        for (String filename : args) {</span>
+<span class="nc" id="L125">            RandomAccessFile raf = new RandomAccessFile(filename, &quot;r&quot;);</span>
+<span class="nc" id="L126">            byte[] data = Executrix.readDataFromFile(raf, 0, dataIdentifier.getTestStringMaxSize());</span>
+<span class="nc" id="L127">            String result = dataIdentifier.identify(data);</span>
+<span class="nc" id="L128">            System.out.println(filename + &quot; : &quot; + result);</span>
+        }
+<span class="nc" id="L130">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

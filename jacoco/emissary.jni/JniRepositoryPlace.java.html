@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JniRepositoryPlace.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.jni</a> &gt; <span class="el_source">JniRepositoryPlace.java</span></div><h1>JniRepositoryPlace.java</h1><pre class="source lang-java linenums">package emissary.jni;
+
+import emissary.core.IBaseDataObject;
+import emissary.place.ServiceProviderPlace;
+
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
+
+public class JniRepositoryPlace extends ServiceProviderPlace {
+
+<span class="nc" id="L18">    protected List&lt;String&gt; libraryDirectoryString = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L19">    protected List&lt;File&gt; libraryDirectoryFile = new ArrayList&lt;&gt;();</span>
+
+    /**
+     * The remote constructor
+     */
+    public JniRepositoryPlace(final String cfgInfo, final String dir, final String placeLoc) throws IOException {
+<span class="nc" id="L25">        super(cfgInfo, dir, placeLoc);</span>
+<span class="nc" id="L26">        configurePlace();</span>
+
+<span class="nc" id="L28">        logger.info(&quot;JniRepository: Prioritized repository list: {}&quot;, this.libraryDirectoryString);</span>
+<span class="nc" id="L29">    }</span>
+
+    /**
+     * The static standalone (test) constructor
+     */
+    public JniRepositoryPlace(final String cfgInfo) throws IOException {
+<span class="nc" id="L35">        super(cfgInfo, &quot;TestJniRepositoryPlace.host.domain.com:8003&quot;);</span>
+<span class="nc" id="L36">        configurePlace();</span>
+<span class="nc" id="L37">    }</span>
+
+    /**
+     * Set up place specific information from the config file, load JNI, etc.
+     */
+    private void configurePlace() {
+
+        // Set libraryDirectory from JniRepositoryPlace.cfg
+<span class="nc" id="L45">        this.libraryDirectoryString = configG.findEntries(&quot;LIBRARY_DIRECTORY&quot;);</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (this.libraryDirectoryString.isEmpty()) {</span>
+<span class="nc" id="L47">            logger.warn(&quot;JniRepository: No LIBRARY_DIRECTORY indicators.&quot;);</span>
+        }
+
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        for (int i = 0; i &lt; this.libraryDirectoryString.size(); i++) {</span>
+<span class="nc" id="L51">            this.libraryDirectoryFile.add(new File(this.libraryDirectoryString.get(i)));</span>
+
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            if (!this.libraryDirectoryFile.get(i).isDirectory()) {</span>
+<span class="nc" id="L54">                logger.warn(&quot;Invalid libraryDirectory: {} is not a directory.&quot;, this.libraryDirectoryString.get(i));</span>
+<span class="nc" id="L55">                this.libraryDirectoryFile.set(i, null);</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">            } else if (!this.libraryDirectoryFile.get(i).canRead()) {</span>
+<span class="nc" id="L57">                logger.warn(&quot;Invalid libraryDirectory: {} is not readable.&quot;, this.libraryDirectoryString.get(i));</span>
+<span class="nc" id="L58">                this.libraryDirectoryFile.set(i, null);</span>
+            }
+        }
+<span class="nc" id="L61">    }</span>
+
+    /**
+     * Allow other places to ask if we have a certain library available.
+     */
+
+    public/* synchronized */boolean nativeLibraryQuery(final String query) {
+
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        for (final File dir : this.libraryDirectoryFile) {</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">            if (dir == null) {</span>
+<span class="nc" id="L71">                continue;</span>
+            }
+
+<span class="nc" id="L74">            final String[] fileList = dir.list((dir1, name) -&gt; name.equals(query));</span>
+
+<span class="nc bnc" id="L76" title="All 4 branches missed.">            if ((fileList != null) &amp;&amp; (fileList.length &gt; 0)) {</span>
+<span class="nc" id="L77">                return true;</span>
+            }
+<span class="nc" id="L79">        }</span>
+<span class="nc" id="L80">        return false;</span>
+    }
+
+    /**
+     * The query string is the name of a native library to serve back. The requesting place is searching for a native
+     * library (.so or .dll) to use. If we have what the requestor is looking for in our libraryDirectory, serve it back to
+     * them as an array of bytes.
+     */
+    @Nullable
+    public /* synchronized */ byte[] nativeLibraryDeliver(final String query) throws RemoteException {
+
+<span class="nc" id="L91">        final File nativeLib = nativeLibraryLookup(query);</span>
+
+<span class="nc bnc" id="L93" title="All 6 branches missed.">        if ((nativeLib == null) || !nativeLib.isFile() || !nativeLib.canRead()) {</span>
+<span class="nc" id="L94">            logger.warn(&quot;NativeLibraryDeliver did not find file {}&quot;, query);</span>
+<span class="nc" id="L95">            return null;</span>
+        }
+
+<span class="nc" id="L98">        try (final InputStream theFile = Files.newInputStream(nativeLib.toPath());</span>
+<span class="nc" id="L99">                final DataInputStream theStream = new DataInputStream(theFile)) {</span>
+<span class="nc" id="L100">            final byte[] theContent = new byte[theStream.available()];</span>
+<span class="nc" id="L101">            theStream.readFully(theContent);</span>
+<span class="nc" id="L102">            return theContent;</span>
+<span class="nc" id="L103">        } catch (Exception e) {</span>
+<span class="nc" id="L104">            throw new RemoteException(&quot;Repository failure&quot;, e);</span>
+        }
+    }
+
+    /**
+     * Provide the last modified timestamp for a remote file
+     */
+    public/* synchronized */long lastModified(final String query) {
+
+<span class="nc" id="L113">        final File theFile = nativeLibraryLookup(query);</span>
+
+<span class="nc bnc" id="L115" title="All 2 branches missed.">        if (theFile == null) {</span>
+<span class="nc" id="L116">            return 0L;</span>
+        }
+<span class="nc" id="L118">        return theFile.lastModified();</span>
+    }
+
+    /**
+     * Lookup the requested file in the repository either for delivery or timestamp checking
+     */
+    @Nullable
+    private File nativeLibraryLookup(final String query) {
+
+<span class="nc" id="L127">        String[] fileList = null;</span>
+<span class="nc" id="L128">        int theElement = -1;</span>
+
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        for (int i = 0; i &lt; this.libraryDirectoryFile.size(); i++) {</span>
+<span class="nc" id="L131">            final File dir = this.libraryDirectoryFile.get(i);</span>
+
+<span class="nc bnc" id="L133" title="All 2 branches missed.">            if (dir == null) {</span>
+<span class="nc" id="L134">                continue;</span>
+            }
+
+<span class="nc" id="L137">            fileList = dir.list((dir1, name) -&gt; name.equals(query));</span>
+
+<span class="nc bnc" id="L139" title="All 4 branches missed.">            if (fileList == null || fileList.length == 0) {</span>
+<span class="nc" id="L140">                continue;</span>
+            }
+
+<span class="nc" id="L143">            theElement = i;</span>
+<span class="nc" id="L144">            break;</span>
+        }
+
+<span class="nc bnc" id="L147" title="All 6 branches missed.">        if (fileList == null || fileList.length == 0 || theElement == -1) {</span>
+<span class="nc" id="L148">            return null;</span>
+        }
+
+<span class="nc" id="L151">        return new File(this.libraryDirectoryFile.get(theElement), fileList[0]);</span>
+    }
+
+    /**
+     * Satisfy the needs of ServiceProviderPlace even though we do not expect any agents to visit here right now.
+     */
+    @Override
+<span class="nc" id="L158">    public void process(final IBaseDataObject theDataObject) {}</span>
+
+    /**
+     * Test standalone main
+     */
+
+    @SuppressWarnings(&quot;SystemOut&quot;)
+    public static void main(final String[] argv) {
+
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        if (argv.length &lt; 1) {</span>
+<span class="nc" id="L168">            System.err.println(&quot;usage: java JniRepositoryPlace file.cfg query ...&quot;);</span>
+<span class="nc" id="L169">            return;</span>
+        }
+
+        final JniRepositoryPlace jnirepositoryplace;
+        try {
+<span class="nc" id="L174">            jnirepositoryplace = new JniRepositoryPlace(argv[0]);</span>
+<span class="nc" id="L175">        } catch (IOException e) {</span>
+<span class="nc" id="L176">            System.err.println(&quot;Cannot make JniRepositoryPlace: &quot; + e);</span>
+<span class="nc" id="L177">            return;</span>
+<span class="nc" id="L178">        }</span>
+
+<span class="nc bnc" id="L180" title="All 2 branches missed.">        for (int i = 1; i &lt; argv.length; i++) {</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">            System.err.println(argv[i] + &quot;:&quot; + (jnirepositoryplace.nativeLibraryQuery(argv[i]) ? &quot;&quot; : &quot; not&quot;) + &quot; found&quot;);</span>
+        }
+<span class="nc" id="L183">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

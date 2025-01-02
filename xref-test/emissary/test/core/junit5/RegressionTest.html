@@ -190,7 +190,7 @@
 <a class="jxr_linenumber" name="L182" href="#L182">182</a>         <em class="jxr_comment">// touch up alternate views to match how their bytes would have encoded into the answer file</em>
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>         <strong class="jxr_keyword">for</strong> (Entry&lt;String, byte[]&gt; entry : <strong class="jxr_keyword">new</strong> TreeMap&lt;&gt;(payload.getAlternateViews()).entrySet()) {
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>             Optional&lt;String&gt; viewSha256 = hashBytesIfNonPrintable(entry.getValue());
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>             viewSha256.ifPresent(s -&gt; payload.addAlternateView(entry.getKey(), s.getBytes(StandardCharsets.ISO_8859_1)));
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>             viewSha256.ifPresent(s -&gt; payload.addAlternateView(entry.getKey(), s.getBytes(StandardCharsets.UTF_8)));
 <a class="jxr_linenumber" name="L186" href="#L186">186</a>         }
 <a class="jxr_linenumber" name="L187" href="#L187">187</a> 
 <a class="jxr_linenumber" name="L188" href="#L188">188</a>         <em class="jxr_comment">// touch up primary view if necessary</em>
@@ -241,7 +241,7 @@
 <a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_javadoccomment">     * @return a value optionally containing the generated hash</em>
 <a class="jxr_linenumber" name="L234" href="#L234">234</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L235" href="#L235">235</a>     <strong class="jxr_keyword">protected</strong> Optional&lt;String&gt; hashBytesIfNonPrintable(byte[] bytes) {
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>         <strong class="jxr_keyword">if</strong> (ArrayUtils.isNotEmpty(bytes) &amp;&amp; ByteUtil.hasNonPrintableValues(bytes)) {
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>         <strong class="jxr_keyword">if</strong> (ArrayUtils.isNotEmpty(bytes) &amp;&amp; ByteUtil.containsNonIndexableBytes(bytes)) {
 <a class="jxr_linenumber" name="L237" href="#L237">237</a>             <strong class="jxr_keyword">return</strong> Optional.ofNullable(ByteUtil.sha256Bytes(bytes));
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>         }
 <a class="jxr_linenumber" name="L239" href="#L239">239</a> 
@@ -351,6 +351,6 @@
 <a class="jxr_linenumber" name="L343" href="#L343">343</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

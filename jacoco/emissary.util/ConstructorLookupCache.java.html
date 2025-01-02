@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConstructorLookupCache.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util</a> &gt; <span class="el_source">ConstructorLookupCache.java</span></div><h1>ConstructorLookupCache.java</h1><pre class="source lang-java linenums">package emissary.util;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.ref.SoftReference;
+import java.lang.reflect.Constructor;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
+
+/**
+ * This implements a simple caching mechanism for {@link Constructor} lookups. For example if the same class constructor
+ * is looked up repeatedly, using this cache may be able to avoid a lot of JVM reflection overhead.
+ *
+ * &lt;p&gt;
+ * Note that the cache implementation may have a small capacity and/or be thread-specific, so storing something in the
+ * cache does not &lt;i&gt;guarantee&lt;/i&gt; that it will be indefinitely cached or that the cached value will be visible to other
+ * threads.
+ */
+@SuppressWarnings(&quot;AvoidObjectArrays&quot;)
+public final class ConstructorLookupCache {
+
+<span class="fc" id="L25">    private static final Logger logger = LoggerFactory.getLogger(ConstructorLookupCache.class);</span>
+
+    /**
+     * Represents a known result for looking up a class constructor that can handle a specific set of argument types.
+     */
+    private static final class KnownConstructor {
+
+        /** The class being constructed. */
+        private final Class&lt;?&gt; clazz;
+
+        /** The argument types that will be passed to the constructor. */
+        private final Class&lt;?&gt;[] argTypes;
+
+        /**
+         * A constructor for {@link #clazz} that accepts the argument types from {@link #argTypes}.
+         */
+        private final Constructor&lt;?&gt; constructor;
+
+        /**
+         * Create a binding between a class, some constructor argument types, and a constructor.
+         *
+         * @param clazz The class being constructed.
+         * @param argTypes The argument types that will be passed to the constructor.
+         * @param constructor A constructor for {@code clazz} that can accept the argument types specified in {@code argTypes}.
+         */
+<span class="fc" id="L50">        public KnownConstructor(final Class&lt;?&gt; clazz, final Class&lt;?&gt;[] argTypes, final Constructor&lt;?&gt; constructor) {</span>
+<span class="fc" id="L51">            this.clazz = clazz;</span>
+<span class="fc" id="L52">            this.argTypes = argTypes;</span>
+<span class="fc" id="L53">            this.constructor = constructor;</span>
+<span class="fc" id="L54">        }</span>
+
+        /**
+         * Get the stored constructor if it matches the given class and argument types.
+         *
+         * @param desiredClazz The type of class being constructed.
+         * @param desiredArgTypes The argument types that will be passed to the constructor.
+         * @return If the class and argument types match the ones that are stored, this returns the stored constructor that is
+         *         assumed to be compatible with those argument types and create an object of the given type; otherwise
+         *         {@code null}.
+         */
+        @Nullable
+        public Constructor&lt;?&gt; getConstructor(final Class&lt;?&gt; desiredClazz, final Class&lt;?&gt;[] desiredArgTypes) {
+            // The stored class has to match the desired class.
+<span class="fc bfc" id="L68" title="All 2 branches covered.">            if (!this.clazz.equals(desiredClazz)) {</span>
+<span class="fc" id="L69">                return null; // Non-matching class.</span>
+            }
+
+            // The stored argument count has to match the desired
+            // argument count.
+<span class="fc" id="L74">            final Class&lt;?&gt;[] myArgTypes = this.argTypes;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">            if (myArgTypes.length != desiredArgTypes.length) {</span>
+<span class="fc" id="L76">                return null; // The number of arguments doesn't match.</span>
+            }
+
+            // The stored argument types have to match the desired
+            // argument types.
+<span class="fc bfc" id="L81" title="All 2 branches covered.">            for (int i = 0; i &lt; myArgTypes.length; i++) {</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">                if (myArgTypes[i] == null) {</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">                    if (desiredArgTypes[i] != null) {</span>
+<span class="fc" id="L84">                        return null; // Non-matching null argument type.</span>
+                    }
+<span class="fc bfc" id="L86" title="All 2 branches covered.">                } else if (!myArgTypes[i].equals(desiredArgTypes[i])) {</span>
+<span class="fc" id="L87">                    return null; // Non-matching non-null argument type.</span>
+                }
+            }
+
+            // At this point we know that we have the desired class
+            // and arguments.
+<span class="fc" id="L93">            return this.constructor;</span>
+        }
+    }
+
+    /**
+     * A cached constructor lookup result. If a thread is asked to invoke the same constructor repeatedly, we can cache the
+     * result of the lookup to avoid some costly reflection calls.
+     */
+<span class="fc" id="L101">    private static final ThreadLocal&lt;SoftReference&lt;KnownConstructor&gt;&gt; cachedConstructorLookup = new ThreadLocal&lt;&gt;();</span>
+
+    /** A table mapping boxed classes to their primitive types. */
+<span class="fc" id="L104">    private static final Map&lt;Class&lt;?&gt;, Class&lt;?&gt;&gt; primClass = new HashMap&lt;&gt;();</span>
+
+    // Initialize the mappings.
+    static {
+<span class="fc" id="L108">        primClass.put(Integer.class, Integer.TYPE);</span>
+<span class="fc" id="L109">        primClass.put(Boolean.class, Boolean.TYPE);</span>
+<span class="fc" id="L110">        primClass.put(Float.class, Float.TYPE);</span>
+<span class="fc" id="L111">        primClass.put(Character.class, Character.TYPE);</span>
+<span class="fc" id="L112">        primClass.put(Long.class, Long.TYPE);</span>
+<span class="fc" id="L113">        primClass.put(Double.class, Double.TYPE);</span>
+<span class="fc" id="L114">        primClass.put(Byte.class, Byte.TYPE);</span>
+<span class="fc" id="L115">    }</span>
+
+    /**
+     * Convert a boxed type into its primitive type.
+     * 
+     * @param clazz The type of interest.
+     * @return If {@code clazz} is a boxed primitive, return the primitive type; otherwise just return {@code clazz}.
+     */
+    private static Class&lt;?&gt; getPrim(final Class&lt;?&gt; clazz) {
+<span class="fc" id="L124">        final Class&lt;?&gt; prim = primClass.get(clazz);</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">        return (prim != null) ? prim : clazz;</span>
+    }
+
+    /**
+     * Look for a constructor for the given class type which can accept the given argument types, without using the lookup
+     * cache.
+     *
+     * @param clazz The type of object that will be constructed.
+     * @param argTypes The types of the arguments that will be passed to the class constructor.
+     * @return If {@code clazz} has a constructor that can accept the argument types in {@code argTypes}, this returns the
+     *         matching constructor; otherwise {@code null}.
+     */
+    @Nullable
+    private static Constructor&lt;?&gt; directConstructorLookup(final Class&lt;?&gt; clazz, final Class&lt;?&gt;[] argTypes) {
+        // Look for an exact match.
+        try {
+<span class="fc" id="L141">            return clazz.getConstructor(argTypes);</span>
+<span class="fc" id="L142">        } catch (NoSuchMethodException e) {</span>
+<span class="fc" id="L143">            logger.debug(&quot;No constructor for [{}] in Factory.create())&quot;, clazz.getName());</span>
+        }
+
+        // There was no exact match, so look through the existing
+        // constructors for an assignable match.
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        NEXT_CANDIDATE_CONSTRUCTOR: for (final Constructor&lt;?&gt; candidate : clazz.getConstructors()) {</span>
+<span class="fc" id="L149">            final Class&lt;?&gt;[] ctypes = candidate.getParameterTypes();</span>
+
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">            if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L152">                logger.debug(&quot;Checking:{}, {}&quot;, clazz.getName(), clazz);</span>
+<span class="nc" id="L153">                logger.debug(&quot;   types   :{}&quot;, Arrays.toString(ctypes));</span>
+<span class="nc" id="L154">                logger.debug(&quot;   numParms:{} =? {}&quot;, ctypes.length, argTypes.length);</span>
+            }
+
+            // If the candidate constructor doesn't have the same
+            // number of arguments, it definitely isn't compatible
+            // with the desired argument types.
+<span class="fc bfc" id="L160" title="All 2 branches covered.">            if (ctypes.length != argTypes.length) {</span>
+<span class="fc" id="L161">                continue NEXT_CANDIDATE_CONSTRUCTOR;</span>
+            }
+
+            // The candidate takes the right number of arguments, so
+            // compare its expected types to the types that will be
+            // passed. If the given type is not assignable to the
+            // expected type, then this constructor is not compatible.
+<span class="fc bfc" id="L168" title="All 2 branches covered.">            for (int j = 0; j &lt; argTypes.length; j++) {</span>
+<span class="fc" id="L169">                final Class&lt;?&gt; a = ctypes[j];</span>
+<span class="fc" id="L170">                final Class&lt;?&gt; b = argTypes[j];</span>
+
+<span class="pc bpc" id="L172" title="1 of 4 branches missed.">                if ((a != null) &amp;&amp; (b != null)) {</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">                    if (a.isAssignableFrom(b)) {</span>
+<span class="fc" id="L174">                        logger.debug(&quot;   param={}  assignable {}&quot;, a, b);</span>
+                    } else {
+<span class="fc" id="L176">                        final Class&lt;?&gt; bPrim = getPrim(b);</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">                        if (a.isAssignableFrom(bPrim)) {</span>
+<span class="fc" id="L178">                            logger.debug(&quot;   param={}  assignable {}&quot;, a, b);</span>
+                        } else {
+<span class="fc" id="L180">                            logger.debug(&quot;   param={}  !assignable {}&quot;, a, b);</span>
+<span class="fc" id="L181">                            continue NEXT_CANDIDATE_CONSTRUCTOR;</span>
+                        }
+                    }
+                }
+            }
+
+            // If we reach here, the current candidate constructor is
+            // a compatible match.
+<span class="fc" id="L189">            return candidate;</span>
+        }
+
+        // None of the class's available constructors are compatible
+        // with the given argument types.
+<span class="fc" id="L194">        return null;</span>
+    }
+
+    /**
+     * Look for a constructor in the cache.
+     *
+     * @param clazz The class to be constructed.
+     * @param argTypes The argument types that the caller intends to pass to the constructor.
+     * @return If a matching constructor is in the cache, return it. Otherwise {@code null}.
+     */
+    @Nullable
+    public static Constructor&lt;?&gt; get(final Class&lt;?&gt; clazz, final Class&lt;?&gt;[] argTypes) {
+        // Currently there is at most one cached lookup per thread, so
+        // we can just check if the current thread knows about the
+        // given class and constructor arguments.
+<span class="fc" id="L209">        final SoftReference&lt;KnownConstructor&gt; softResult = cachedConstructorLookup.get();</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">        if (softResult == null) {</span>
+<span class="fc" id="L211">            return null; // Nothing is currently cached in this thread.</span>
+        }
+
+<span class="fc" id="L214">        final KnownConstructor knownResult = softResult.get();</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">        if (knownResult == null) {</span>
+<span class="nc" id="L216">            return null; // There was something cached but it's been lost.</span>
+        }
+
+        // We do have a cached lookup. It can be used iff it matches the
+        // given class and constructor arguments.
+<span class="fc" id="L221">        return knownResult.getConstructor(clazz, argTypes);</span>
+    }
+
+    /**
+     * Store a constructor lookup in the cache.
+     *
+     * @param clazz The class to be constructed.
+     * @param argTypes The argument types that the caller intends to pass to the constructor.
+     * @param constructor A constructor for {@code clazz} that can accept the argument types specified in {@code argTypes}.
+     */
+    public static void put(final Class&lt;?&gt; clazz, final Class&lt;?&gt;[] argTypes, final Constructor&lt;?&gt; constructor) {
+<span class="fc" id="L232">        cachedConstructorLookup.set(new SoftReference&lt;&gt;(new KnownConstructor(clazz, argTypes, constructor)));</span>
+<span class="fc" id="L233">    }</span>
+
+    /**
+     * Look for a constructor for the given class type which can accept the given argument types.
+     *
+     * @param clazz The class to be constructed.
+     * @param argTypes The argument types that the caller intends to pass to the constructor.
+     * @return A matching constructor for the specified class, or {@code null} if no such constructor was found.
+     */
+    public static Constructor&lt;?&gt; lookup(final Class&lt;?&gt; clazz, final Class&lt;?&gt;[] argTypes) {
+<span class="fc" id="L243">        final Constructor&lt;?&gt; cachedConstructor = get(clazz, argTypes);</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">        if (cachedConstructor != null) {</span>
+            // We found the constructor in the cache.
+<span class="fc" id="L246">            return cachedConstructor;</span>
+        } else {
+            // The desired constructor is not currently cached, so
+            // look it up directly.
+<span class="fc" id="L250">            final Constructor&lt;?&gt; uncachedConstructor = directConstructorLookup(clazz, argTypes);</span>
+
+            // If we got a result, cache it before returning.
+<span class="fc bfc" id="L253" title="All 2 branches covered.">            if (uncachedConstructor != null) {</span>
+<span class="fc" id="L254">                put(clazz, argTypes, uncachedConstructor);</span>
+            }
+<span class="fc" id="L256">            return uncachedConstructor;</span>
+        }
+    }
+
+    /**
+     * Destroy the ThreadLocal cache object
+     */
+    public static void unload() {
+<span class="nc" id="L264">        cachedConstructorLookup.remove();</span>
+<span class="nc" id="L265">    }</span>
+
+    /** This is a static utility class, so prevent instantiation. */
+    private ConstructorLookupCache() {}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

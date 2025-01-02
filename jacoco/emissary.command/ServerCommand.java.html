@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServerCommand.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.command</a> &gt; <span class="el_source">ServerCommand.java</span></div><h1>ServerCommand.java</h1><pre class="source lang-java linenums">package emissary.command;
+
+import emissary.client.EmissaryResponse;
+import emissary.command.converter.ProjectBaseConverter;
+import emissary.command.validator.ServerModeValidator;
+import emissary.core.EmissaryException;
+import emissary.core.EmissaryRuntimeException;
+import emissary.server.EmissaryServer;
+import emissary.server.api.Pause;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+
+import java.nio.file.Path;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Set;
+
+import static emissary.directory.EmissaryNode.STRICT_STARTUP_MODE;
+
+@Command(description = &quot;Start an Emissary jetty server&quot;, subcommands = {HelpCommand.class})
+<span class="fc" id="L24">public class ServerCommand extends ServiceCommand {</span>
+<span class="fc" id="L25">    private static final Logger LOG = LoggerFactory.getLogger(ServerCommand.class);</span>
+
+    public static final String COMMAND_NAME = &quot;server&quot;;
+
+    public static final int DEFAULT_PORT = 8001;
+
+<span class="fc" id="L31">    private String mode = &quot;standalone&quot;;</span>
+
+    @Option(names = {&quot;-m&quot;, &quot;--mode&quot;}, description = &quot;mode: standalone or cluster\nDefault: ${DEFAULT-VALUE}&quot;, defaultValue = &quot;standalone&quot;)
+    @SuppressWarnings(&quot;unused&quot;)
+    private void setMode(String value) {
+<span class="fc" id="L36">        ServerModeValidator smv = new ServerModeValidator();</span>
+<span class="fc" id="L37">        smv.validate(&quot;mode&quot;, value);</span>
+<span class="fc" id="L38">        mode = value;</span>
+<span class="fc" id="L39">    }</span>
+
+    @Option(names = &quot;--staticDir&quot;, description = &quot;path to static assets, loaded from classpath otherwise&quot;, converter = ProjectBaseConverter.class)
+    private Path staticDir;
+
+    @Option(names = {&quot;-a&quot;, &quot;--agents&quot;}, description = &quot;number of mobile agents (default is based on memory)\nDefault: ${DEFAULT-VALUE}&quot;)
+    private int agents;
+
+<span class="fc" id="L47">    @Option(names = {&quot;--dumpJettyBeans&quot;}, description = &quot;dump all the jetty beans that loaded\nDefault: ${DEFAULT-VALUE}&quot;)</span>
+    private boolean dumpJettyBeans = false;
+
+<span class="fc" id="L50">    @Option(names = {&quot;--strict&quot;}, description = &quot;If one Place fails to start, shut down the entire server\nDefault: ${DEFAULT-VALUE}&quot;)</span>
+    private boolean strictMode = false;
+
+    @Override
+    public String getCommandName() {
+<span class="fc" id="L55">        return COMMAND_NAME;</span>
+    }
+
+    @Override
+    public int getDefaultPort() {
+<span class="fc" id="L60">        return DEFAULT_PORT;</span>
+    }
+
+    public String getMode() {
+<span class="fc" id="L64">        return mode;</span>
+    }
+
+    public Path getStaticDir() {
+<span class="fc" id="L68">        return staticDir;</span>
+    }
+
+    public int getAgents() {
+<span class="fc" id="L72">        return agents;</span>
+    }
+
+    public boolean shouldDumpJettyBeans() {
+<span class="fc" id="L76">        return dumpJettyBeans;</span>
+    }
+
+    /**
+     * If strictMode is set to true, the server will shut down if a Place fails to start
+     * 
+     * @return strictMode
+     */
+    public boolean shouldStrictMode() {
+<span class="fc" id="L85">        return strictMode;</span>
+    }
+
+    @Override
+    public void setupCommand() {
+<span class="fc" id="L90">        setupHttp();</span>
+<span class="fc" id="L91">        reinitLogback();</span>
+        try {
+<span class="fc" id="L93">            setupServer();</span>
+<span class="nc" id="L94">        } catch (EmissaryException e) {</span>
+<span class="nc" id="L95">            LOG.error(&quot;Got an exception&quot;, e);</span>
+<span class="nc" id="L96">            throw new EmissaryRuntimeException(e);</span>
+<span class="fc" id="L97">        }</span>
+<span class="fc" id="L98">    }</span>
+
+    public void setupServer() throws EmissaryException {
+        String flavorMode;
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (getFlavor() == null) {</span>
+<span class="fc" id="L103">            flavorMode = getMode().toUpperCase(Locale.getDefault());</span>
+        } else {
+<span class="fc" id="L105">            flavorMode = getMode().toUpperCase(Locale.getDefault()) + &quot;,&quot; + getFlavor();</span>
+        }
+
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if (shouldStrictMode()) {</span>
+<span class="nc" id="L109">            System.setProperty(STRICT_STARTUP_MODE, &quot;true&quot;);</span>
+        }
+
+        // Must maintain insertion order
+<span class="fc" id="L113">        Set&lt;String&gt; flavorSet = new LinkedHashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        for (String f : flavorMode.split(&quot;,&quot;)) {</span>
+<span class="fc" id="L115">            flavorSet.add(f.toUpperCase(Locale.getDefault()));</span>
+        }
+
+<span class="pc bpc" id="L118" title="3 of 4 branches missed.">        if (flavorSet.contains(&quot;STANDALONE&quot;) &amp;&amp; flavorSet.contains(&quot;CLUSTER&quot;)) {</span>
+<span class="nc" id="L119">            throw new IllegalArgumentException(&quot;Can not run a server in both STANDALONE and CLUSTER&quot;);</span>
+        } else {
+<span class="fc" id="L121">            overrideFlavor(String.join(&quot;,&quot;, flavorSet));</span>
+        }
+<span class="fc" id="L123">    }</span>
+
+    @Override
+    protected void startService() {
+        try {
+<span class="nc" id="L128">            LOG.info(&quot;Running Emissary Server&quot;);</span>
+<span class="nc" id="L129">            new EmissaryServer(this).startServer();</span>
+<span class="nc" id="L130">        } catch (EmissaryException e) {</span>
+<span class="nc" id="L131">            LOG.error(&quot;Unable to start server&quot;, e);</span>
+<span class="nc" id="L132">        }</span>
+<span class="nc" id="L133">    }</span>
+
+    @Override
+    protected void pauseService() {
+<span class="nc" id="L137">        setServerState(Pause.PAUSE);</span>
+<span class="nc" id="L138">    }</span>
+
+    @Override
+    protected void unpauseService() {
+<span class="nc" id="L142">        setServerState(Pause.UNPAUSE);</span>
+<span class="nc" id="L143">    }</span>
+
+    protected void setServerState(String state) {
+<span class="nc" id="L146">        LOG.debug(&quot;Setting state to {} for EmissaryServer&quot;, state);</span>
+<span class="nc" id="L147">        EmissaryResponse response = performPost(&quot;/api/&quot; + state);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">        if (response.getStatus() != 200) {</span>
+<span class="nc" id="L149">            LOG.error(&quot;Setting Emissary server state to {} failed -- {}&quot;, state, response.getContentString());</span>
+        } else {
+<span class="nc" id="L151">            LOG.info(&quot;Setting Emissary server state to {} successful&quot;, state);</span>
+        }
+<span class="nc" id="L153">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

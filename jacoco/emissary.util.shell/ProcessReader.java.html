@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProcessReader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.shell</a> &gt; <span class="el_source">ProcessReader.java</span></div><h1>ProcessReader.java</h1><pre class="source lang-java linenums">/*
+ * ProcessReader.java
+ *
+ * Created on November 19, 2001, 5:28 PM
+ */
+
+package emissary.util.shell;
+
+import org.slf4j.MDC;
+
+import java.util.Map;
+
+<span class="fc" id="L13">public abstract class ProcessReader extends Thread {</span>
+
+    private Map&lt;String, String&gt; contextMap;
+
+    public abstract void finish();
+
+    /**
+     * Allows parent threads to pass state values retrieved through a call to {@link MDC#getCopyOfContextMap()}
+     * 
+     * @param contextMap Map of captured point-in-time state values
+     */
+    public void setContextMap(Map&lt;String, String&gt; contextMap) {
+<span class="fc" id="L25">        this.contextMap = contextMap;</span>
+<span class="fc" id="L26">    }</span>
+
+    /**
+     * Applies logger context to the current thread. This method should only be called from within the overridden
+     * {@link Thread#run()} method, since the context is backed by a {@link ThreadLocal ThreadLocal&amp;lt;T&amp;gt;} map.
+     */
+    protected final void applyLogContextMap() {
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (contextMap != null) {</span>
+<span class="fc" id="L34">            MDC.setContextMap(contextMap);</span>
+        }
+<span class="fc" id="L36">    }</span>
+
+    /**
+     * Wrapper method to ensure that the {@link #applyLogContextMap()} method is always invoked before executing the core
+     * functionality of ProcessReader subclasses
+     */
+    @Override
+    public void run() {
+<span class="fc" id="L44">        applyLogContextMap();</span>
+<span class="fc" id="L45">        runImpl();</span>
+<span class="fc" id="L46">    }</span>
+
+    /**
+     * Abstract method that subclasses should override to implement their core thread-specific functionality
+     */
+    abstract void runImpl();
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

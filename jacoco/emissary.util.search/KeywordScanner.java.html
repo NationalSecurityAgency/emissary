@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KeywordScanner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.search</a> &gt; <span class="el_source">KeywordScanner.java</span></div><h1>KeywordScanner.java</h1><pre class="source lang-java linenums">package emissary.util.search;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
+
+/**
+ * Provides the ability to find specified {@code byte[]} patterns inside a larger {@code byte[]}.
+ */
+public class KeywordScanner {
+<span class="fc" id="L13">    private final int[] skip = new int[256];</span>
+<span class="fc" id="L14">    private int dataLength = -1;</span>
+    private byte[] data;
+    private byte[] pattern;
+<span class="fc" id="L17">    private int patternLength = -1;</span>
+<span class="fc" id="L18">    private int lastByte = 0;</span>
+<span class="fc" id="L19">    private int lastPosition = 0;</span>
+<span class="fc" id="L20">    private boolean caseSensitive = true;</span>
+
+    public KeywordScanner() {
+<span class="fc" id="L23">        this(new byte[0]);</span>
+<span class="fc" id="L24">    }</span>
+
+    /**
+     * Initializes a new {@code KeywordScanner} object with the provided data bytes.
+     * 
+     * @param data the data to be scanned
+     */
+<span class="fc" id="L31">    public KeywordScanner(final byte[] data) {</span>
+<span class="fc" id="L32">        resetData(data);</span>
+<span class="fc" id="L33">    }</span>
+
+    public void resetData(String data) {
+<span class="fc" id="L36">        resetData(data, StandardCharsets.UTF_8);</span>
+<span class="fc" id="L37">    }</span>
+
+    public void resetData(String data, String charsetName) {
+<span class="fc" id="L40">        resetData(data, Charset.forName(charsetName));</span>
+<span class="fc" id="L41">    }</span>
+
+    public void resetData(String data, Charset charset) {
+<span class="fc" id="L44">        resetData(data.getBytes(charset));</span>
+<span class="fc" id="L45">    }</span>
+
+    /**
+     * Reset the byte array. Use of this method avoids having to instantiate a new KeywordScanner.
+     * 
+     * @param data - bytes to match against
+     */
+    public void resetData(@Nullable byte[] data) {
+<span class="fc" id="L53">        this.data = data;</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (data != null) {</span>
+<span class="fc" id="L55">            this.dataLength = data.length;</span>
+        } else {
+<span class="fc" id="L57">            this.dataLength = -1;</span>
+        }
+<span class="fc" id="L59">    }</span>
+
+    /**
+     * Returns the first occurrence of the provided pattern in the data.
+     * 
+     * @param patternArg the byte pattern to scan for, null returns -1
+     * @return the index in the data where the pattern begins, -1 if not found
+     */
+    public int indexOf(final byte[] patternArg) {
+<span class="fc" id="L68">        return indexOf(patternArg, 0, this.dataLength);</span>
+    }
+
+    /**
+     * Returns the first occurrence of the provided pattern in the data, starting from the specified index.
+     * &lt;p&gt;
+     * There is no restriction on the value of {@code start}. If it is negative, it has the same effect as if it were zero:
+     * the entire data will be scanned. If it is greater than the length of the data, it has the same effect as if it were
+     * equal to the length of the data: -1 is returned.
+     * 
+     * @param patternArg the byte pattern to scan for, null returns -1
+     * @param start the index to start searching from, negative values treated as 0
+     * @return the index in the data where the pattern begins, -1 if not found
+     */
+    public int indexOf(final byte[] patternArg, final int start) {
+<span class="fc" id="L83">        return indexOf(patternArg, start, this.dataLength);</span>
+    }
+
+    /**
+     * Returns the first occurrence of the provided pattern in the data, starting from the specified index and stopping at
+     * the specified index.
+     * &lt;p&gt;
+     * There is no restriction on the value of {@code start}. If it is negative, it has the same effect as if it were zero:
+     * the entire data may be scanned. If it is greater than the length of the data, it has the same effect as if it were
+     * equal to the length of the data: -1 is returned.
+     * &lt;p&gt;
+     * If the value of {@code stop} is negative, greater than the data length, or less than or equal to the start value, -1
+     * is returned.
+     * 
+     * @param patternArg the byte pattern to scan for, null returns -1
+     * @param start the index to start searching from, negative values treated as 0
+     * @param stop the index to stop searching at, exclusive, negative value returns -1
+     * @return the index in the data where the pattern begins, -1 if not found
+     */
+    public int indexOf(@Nullable final byte[] patternArg, final int start, final int stop) {
+<span class="fc bfc" id="L103" title="All 6 branches covered.">        if ((start &gt;= this.dataLength) || (stop &gt; this.dataLength) || (patternArg == null)) {</span>
+<span class="fc" id="L104">            return -1;</span>
+        }
+        // Adjust the actual start index to 0 if a negative value is provided.
+<span class="fc" id="L107">        final int actualStart = Math.max(start, 0);</span>
+<span class="fc" id="L108">        this.pattern = patternArg;</span>
+<span class="fc" id="L109">        this.patternLength = patternArg.length;</span>
+<span class="fc" id="L110">        analyze();</span>
+<span class="fc" id="L111">        final int position = match(actualStart, stop);</span>
+<span class="fc" id="L112">        this.lastPosition = position;</span>
+<span class="fc" id="L113">        return position;</span>
+    }
+
+    /**
+     * Returns a list of occurrences of the provided pattern in the data.
+     *
+     * @param patternArg the byte pattern to scan for, null returns empty list
+     * @return index list of positions in the data where the pattern begins, empty list if not found
+     */
+    public List&lt;Integer&gt; listIndexOf(final byte[] patternArg) {
+<span class="fc" id="L123">        return listIndexOf(patternArg, 0, this.dataLength);</span>
+    }
+
+    /**
+     * Returns a list of occurrences of the provided pattern in the data, starting from the specified index.
+     * &lt;p&gt;
+     * There is no restriction on the value of {@code start}. If it is negative, it has the same effect as if it were zero:
+     * the entire data will be scanned. If it is greater than the length of the data, it has the same effect as if it were
+     * equal to the length of the data: empty list returned.
+     *
+     * @param patternArg the byte pattern to scan for, null returns empty list
+     * @param start the index to start searching from, negative values treated as 0
+     * @return index list of positions in the data where the pattern begins, empty list if not found
+     */
+    public List&lt;Integer&gt; listIndexOf(final byte[] patternArg, final int start) {
+<span class="fc" id="L138">        return listIndexOf(patternArg, start, this.dataLength);</span>
+    }
+
+    /**
+     * Returns a list of occurrences of the provided pattern in the data, starting from the specified index and stopping at
+     * the specified index.
+     * &lt;p&gt;
+     * There is no restriction on the value of {@code start}. If it is negative, it has the same effect as if it were zero:
+     * the entire data may be scanned. If it is greater than the length of the data, it has the same effect as if it were
+     * equal to the length of the data: an empty list is returned.
+     * &lt;p&gt;
+     * If the value of {@code stop} is negative, greater than the data length, or less than or equal to the start value, an
+     * empty list is returned
+     * 
+     * @param patternArg the byte pattern to scan for, null returns empty list
+     * @param start the index to start searching from, negative values treated as 0
+     * @param stop the index to stop searching at, exclusive, negative value returns empty list
+     * @return index list of positions in the data where the pattern begins, empty list if not found
+     */
+    public List&lt;Integer&gt; listIndexOf(@Nullable final byte[] patternArg, final int start, final int stop) {
+<span class="fc" id="L158">        List&lt;Integer&gt; matches = new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L159" title="3 of 6 branches missed.">        if ((start &gt;= this.dataLength) || (stop &gt; this.dataLength) || (patternArg == null)) {</span>
+<span class="nc" id="L160">            return List.of();</span>
+        }
+<span class="fc" id="L162">        int newStart = start;</span>
+        int actualStart;
+<span class="fc" id="L164">        int position = 0;</span>
+<span class="fc" id="L165">        this.pattern = patternArg;</span>
+<span class="fc" id="L166">        this.patternLength = patternArg.length;</span>
+
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">        while (position &gt; -1) {</span>
+<span class="fc" id="L169">            actualStart = Math.max(newStart, 0);</span>
+<span class="fc" id="L170">            analyze();</span>
+<span class="fc" id="L171">            position = match(actualStart, stop);</span>
+<span class="fc" id="L172">            this.lastPosition = position;</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">            if (position == -1) {</span>
+<span class="fc" id="L174">                break;</span>
+            } else {
+<span class="fc" id="L176">                matches.add(position);</span>
+<span class="fc" id="L177">                newStart = position + this.patternLength;</span>
+            }
+        }
+
+<span class="fc" id="L181">        return matches;</span>
+    }
+
+    /**
+     * Find the next occurrence of the set pattern, stopping at the specified index.
+     * &lt;p&gt;
+     * If the value of {@code stop} is negative, greater than or equal to the data length, or less than the previously found
+     * index: -1 is returned.
+     * &lt;p&gt;
+     * This method should follow a call to one of the {@code indexOf} methods. These methods will set the pattern and return
+     * the index of the first occurrence of the provided pattern. Calls to this method will then return the index of
+     * subsequent occurrences. Without first establishing a pattern in this way, -1 will be returned.
+     * 
+     * @param stop the index to stop searching at, exclusive, negative value returns -1
+     * @return the index, less than the stop index, where the next occurrence of the pattern is found, -1 if not found
+     */
+    public int findNext(final int stop) {
+<span class="fc bfc" id="L198" title="All 2 branches covered.">        if (stop &gt;= this.dataLength) {</span>
+<span class="fc" id="L199">            return -1;</span>
+        }
+<span class="fc bfc" id="L201" title="All 4 branches covered.">        if ((this.lastPosition &gt; stop) || (this.lastPosition &lt; 0)) {</span>
+<span class="fc" id="L202">            return -1;</span>
+        }
+        // if a pattern has not been set, just return -1
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        if (this.pattern == null) {</span>
+<span class="fc" id="L206">            return -1;</span>
+        }
+<span class="fc" id="L208">        final int position = match((this.lastPosition + 1), stop);</span>
+<span class="fc" id="L209">        this.lastPosition = position;</span>
+<span class="fc" id="L210">        return position;</span>
+    }
+
+    /**
+     * Find the next occurrence of the set pattern.
+     * &lt;p&gt;
+     * This method should follow a call to one of the {@code indexOf} methods. These methods will set the pattern and return
+     * the index of the first occurrence of the provided pattern. Calls to this method will then return the index of
+     * subsequent occurrences. Without first establishing a pattern in this way, -1 will be returned.
+     * 
+     * @return the index where the next occurrence of the pattern is found, -1 if not found
+     */
+    public int findNext() {
+<span class="fc" id="L223">        return findNext(this.dataLength - 1);</span>
+    }
+
+    /**
+     * Sets the case sensitivity of the scanner.
+     * 
+     * @param theCase if set to false, the scanner will ignore case. Default is true.
+     */
+    public void setCaseSensitive(final boolean theCase) {
+<span class="fc" id="L232">        this.caseSensitive = theCase;</span>
+<span class="fc" id="L233">    }</span>
+
+    /**
+     * Returns the case sensitivity set for the scanner.
+     * 
+     * @return true if the scanner is case-sensitive, false otherwise
+     */
+    public boolean isCaseSensitive() {
+<span class="fc" id="L241">        return this.caseSensitive;</span>
+    }
+
+    private int get256Value(final byte b) {
+<span class="fc bfc" id="L245" title="All 2 branches covered.">        return caseSensitive ? Byte.toUnsignedInt(b) : lowercase(Byte.toUnsignedInt(b));</span>
+    }
+
+    private void analyze() {
+<span class="fc bfc" id="L249" title="All 2 branches covered.">        for (int i = 0; i &lt; 256; i++) {</span>
+<span class="fc" id="L250">            this.skip[i] = this.patternLength;</span>
+        }
+<span class="fc bfc" id="L252" title="All 2 branches covered.">        for (int i = 0; i &lt; this.patternLength - 1; i++) {</span>
+<span class="fc" id="L253">            this.skip[get256Value(this.pattern[i])] = this.patternLength - i - 1;</span>
+        }
+<span class="fc" id="L255">        this.lastByte = get256Value(this.pattern[this.patternLength - 1]);</span>
+<span class="fc" id="L256">    }</span>
+
+    private int match(final int start, final int stop) {
+
+<span class="fc" id="L260">        int matchIndex = -1;</span>
+<span class="fc" id="L261">        int position = start + this.patternLength - 1;</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">        while (position &lt; stop) {</span>
+<span class="fc" id="L263">            int currentByte = get256Value(this.data[position]);</span>
+<span class="fc bfc" id="L264" title="All 4 branches covered.">            if (currentByte == this.lastByte &amp;&amp; isSame(position)) {</span>
+<span class="fc" id="L265">                matchIndex = position + 1 - this.patternLength;</span>
+<span class="fc" id="L266">                break;</span>
+
+            }
+<span class="fc" id="L269">            position += this.skip[currentByte];</span>
+<span class="fc" id="L270">        }</span>
+
+<span class="fc" id="L272">        return matchIndex;</span>
+    }
+
+    private static int lowercase(final int i) {
+<span class="fc bfc" id="L276" title="All 4 branches covered.">        if ((i &gt;= 'A') &amp;&amp; (i &lt;= 'Z')) {</span>
+<span class="fc" id="L277">            return i + 32;</span>
+        } else {
+<span class="fc" id="L279">            return i;</span>
+        }
+    }
+
+    private boolean isSame(final int pos) {
+<span class="fc bfc" id="L284" title="All 2 branches covered.">        for (int i = 0; i &lt; this.patternLength; i++) {</span>
+<span class="fc" id="L285">            int patternByte = this.pattern[i];</span>
+<span class="fc" id="L286">            int dataByte = this.data[pos - this.patternLength + 1 + i];</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">            if (!this.caseSensitive) {</span>
+<span class="fc" id="L288">                patternByte = lowercase(patternByte);</span>
+<span class="fc" id="L289">                dataByte = lowercase(dataByte);</span>
+            }
+<span class="fc bfc" id="L291" title="All 2 branches covered.">            if (patternByte != dataByte) {</span>
+<span class="fc" id="L292">                return false;</span>
+            }
+        }
+<span class="fc" id="L295">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

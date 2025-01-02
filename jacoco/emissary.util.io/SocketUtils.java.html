@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SocketUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.io</a> &gt; <span class="el_source">SocketUtils.java</span></div><h1>SocketUtils.java</h1><pre class="source lang-java linenums">package emissary.util.io;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+public class SocketUtils {
+
+    public static final String RCS_ID = &quot;$Id$&quot;;
+
+    public static void sendString(String str, DataOutputStream os) throws IOException {
+<span class="nc" id="L12">        os.writeInt(str.length());</span>
+<span class="nc" id="L13">        os.write(str.getBytes(), 0, str.length());</span>
+<span class="nc" id="L14">    }</span>
+
+    public static String readString(DataInputStream is) throws IOException {
+<span class="nc" id="L17">        int contentSize = is.readInt();</span>
+<span class="nc" id="L18">        byte[] theContent = new byte[contentSize];</span>
+<span class="nc" id="L19">        is.readFully(theContent);</span>
+<span class="nc" id="L20">        return new String(theContent);</span>
+    }
+
+    public static void sendByteArray(byte[] bb, DataOutputStream os) throws IOException {
+<span class="nc" id="L24">        os.writeInt(bb.length);</span>
+<span class="nc" id="L25">        os.write(bb, 0, bb.length);</span>
+<span class="nc" id="L26">    }</span>
+
+    public static byte[] readByteArray(DataInputStream theStream) throws IOException {
+<span class="nc" id="L29">        int contentSize = theStream.readInt();</span>
+<span class="nc" id="L30">        byte[] theContent = new byte[contentSize];</span>
+<span class="nc" id="L31">        theStream.readFully(theContent);</span>
+<span class="nc" id="L32">        return theContent;</span>
+    }
+
+    /** This class is not meant to be instantiated. */
+    private SocketUtils() {}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

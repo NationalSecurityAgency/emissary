@@ -1,0 +1,1212 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServiceProviderPlace.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.place</a> &gt; <span class="el_source">ServiceProviderPlace.java</span></div><h1>ServiceProviderPlace.java</h1><pre class="source lang-java linenums">package emissary.place;
+
+import emissary.config.ConfigEntry;
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.EmissaryException;
+import emissary.core.Family;
+import emissary.core.Form;
+import emissary.core.HDMobileAgent;
+import emissary.core.IBaseDataObject;
+import emissary.core.MobileAgent;
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+import emissary.core.ResourceException;
+import emissary.core.ResourceWatcher;
+import emissary.directory.DirectoryEntry;
+import emissary.directory.DirectoryPlace;
+import emissary.directory.EmissaryNode;
+import emissary.directory.IDirectoryPlace;
+import emissary.directory.KeyManipulator;
+import emissary.directory.WildcardEntry;
+import emissary.kff.KffDataObjectHandler;
+import emissary.log.MDCConstants;
+import emissary.parser.SessionParser;
+import emissary.server.EmissaryServer;
+import emissary.server.mvc.adapters.DirectoryAdapter;
+import emissary.util.JMXUtil;
+
+import com.codahale.metrics.Timer;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+
+import static emissary.core.constants.Configurations.PLACE_NAME;
+import static emissary.core.constants.Configurations.PLACE_RESOURCE_LIMIT_MILLIS;
+import static emissary.core.constants.Configurations.SERVICE_COST;
+import static emissary.core.constants.Configurations.SERVICE_DESCRIPTION;
+import static emissary.core.constants.Configurations.SERVICE_KEY;
+import static emissary.core.constants.Configurations.SERVICE_NAME;
+import static emissary.core.constants.Configurations.SERVICE_PROXY;
+import static emissary.core.constants.Configurations.SERVICE_PROXY_DENY;
+import static emissary.core.constants.Configurations.SERVICE_QUALITY;
+import static emissary.core.constants.Configurations.SERVICE_TYPE;
+
+/**
+ * Concrete instances of ServiceProviderPlace can be created by the emissary.admin.PlaceStarter and registered with the
+ * emissary.directory.IDirectoryPlace to make their respective services available and a specified cost and quality
+ * throughout the system.
+ */
+public abstract class ServiceProviderPlace implements IServiceProviderPlace,
+        ServiceProviderPlaceMBean {
+
+    /**
+     * Container for all configuration parameters read from the configuration file for this place. The net result is that
+     * many name value pairs are loaded from one or more files. See ServiceConfigGuide for details.
+     *
+     * @see emissary.config.ServiceConfigGuide
+     */
+    @Nullable
+    protected Configurator configG;
+
+    /**
+     * A &lt;i&gt;&lt;b&gt;local&lt;/b&gt;&lt;/i&gt; reference to the directory that this place resides in. Every JVM that contains 'places' must
+     * have a local directory
+     *
+     * @see emissary.directory.DirectoryPlace
+     */
+    @Nullable
+    protected String dirPlace;
+<span class="fc" id="L83">    @Nullable</span>
+    protected IDirectoryPlace localDirPlace = null;
+
+    /**
+     * set of keys for this place read from configG. Each of the values defined by
+     * SERVICE_PROXY.SERCVICE_TYPE.SERVICE_NAME.PLACE_LOCATION$EXPENSE from the config file or KEY values from the config
+     * file.
+     */
+<span class="fc" id="L91">    protected List&lt;String&gt; keys = new ArrayList&lt;&gt;();</span>
+
+    /**
+     * List of denied places in SERVICE_PROXY_DENY
+     */
+<span class="fc" id="L96">    protected List&lt;String&gt; denyList = new ArrayList&lt;&gt;();</span>
+
+    // Items that are going to be deprecated, but here now to
+    // make the transition easier, for compatibility
+<span class="fc" id="L100">    @Nullable</span>
+    protected String myKey = null;
+<span class="fc" id="L102">    protected int serviceCost = -1;</span>
+<span class="fc" id="L103">    protected int serviceQuality = -1;</span>
+<span class="fc" id="L104">    @Nullable</span>
+    protected String placeName = null;
+
+    /**
+     * Text description of what the place does, usually from config file
+     */
+    @Nullable
+    protected String serviceDescription;
+
+    /**
+     * Static context logger
+     */
+<span class="fc" id="L116">    protected static final Logger slogger = LoggerFactory.getLogger(ServiceProviderPlace.class);</span>
+
+    /**
+     * Dynamic context logger uses run-time classname as category
+     */
+    protected Logger logger;
+
+    /**
+     * Set up handler for rehashing
+     */
+<span class="fc" id="L126">    @Nullable</span>
+    protected KffDataObjectHandler kff = null;
+
+    private static final String DOT = &quot;.&quot;;
+    private static final String UNUSED_PROXY = &quot;UNUSABLE-XyZZy&quot;;
+
+    /**
+     * These are used to track process vs processHD implementations to know whether one can proxy for the other one
+     */
+<span class="fc" id="L135">    protected boolean processMethodImplemented = false;</span>
+<span class="fc" id="L136">    protected boolean heavyDutyMethodImplemented = false;</span>
+
+    /**
+     * Create a place and register it in the local directory. The default config must contain at least one SERVICE_KEY
+     * element used to know where that is and how to name it. If the old style config with SERVICE_PROXY etc is used then
+     * the PlaceName becomes the runtime class name of the instance without the package.
+     */
+    public ServiceProviderPlace() throws IOException {
+<span class="fc" id="L144">        super();</span>
+<span class="fc" id="L145">        String placeLocation = this.getClass().getSimpleName();</span>
+<span class="fc" id="L146">        configG = loadConfigurator(placeLocation);</span>
+<span class="fc" id="L147">        setupPlace(null, placeLocation);</span>
+<span class="fc" id="L148">    }</span>
+
+    /**
+     * Create a place and register it at the location specified. The location key contains the name of the place which is
+     * used to configure it. The local directory instance is found in the local Namespace.
+     *
+     * @param thePlaceLocation string name of our location
+     */
+    public ServiceProviderPlace(String thePlaceLocation) throws IOException {
+<span class="fc" id="L157">        super();</span>
+<span class="fc" id="L158">        configG = loadConfigurator(thePlaceLocation);</span>
+<span class="fc" id="L159">        setupPlace(null, thePlaceLocation);</span>
+<span class="fc" id="L160">    }</span>
+
+    /**
+     * Create the place the normal way
+     *
+     * @param configFile file name for config data
+     * @param theDir string name of our directory
+     * @param thePlaceLocation string name of our location
+     */
+    protected ServiceProviderPlace(String configFile, @Nullable String theDir, String thePlaceLocation) throws IOException {
+<span class="fc" id="L170">        super();</span>
+<span class="fc" id="L171">        configG = loadConfigurator(configFile, thePlaceLocation);</span>
+<span class="fc" id="L172">        setupPlace(theDir, thePlaceLocation);</span>
+<span class="fc" id="L173">    }</span>
+
+    /**
+     * Construct with config data from a stream
+     *
+     * @param configStream stream of config data
+     * @param theDir string name of our directory
+     * @param thePlaceLocation string name of our location
+     */
+    protected ServiceProviderPlace(InputStream configStream, @Nullable String theDir, String thePlaceLocation) throws IOException {
+<span class="fc" id="L183">        super();</span>
+<span class="fc" id="L184">        configG = loadConfigurator(configStream, thePlaceLocation);</span>
+<span class="fc" id="L185">        setupPlace(theDir, thePlaceLocation);</span>
+<span class="fc" id="L186">    }</span>
+
+    /**
+     * Construct with config data from a stream on the local directory
+     *
+     * @param configStream stream of config data
+     */
+    protected ServiceProviderPlace(InputStream configStream) throws IOException {
+<span class="fc" id="L194">        super();</span>
+<span class="fc" id="L195">        String placeLocation = this.getClass().getSimpleName();</span>
+<span class="fc" id="L196">        configG = loadConfigurator(configStream, placeLocation);</span>
+<span class="fc" id="L197">        setupPlace(null, placeLocation);</span>
+<span class="fc" id="L198">    }</span>
+
+    /**
+     * Create the place with no directory
+     *
+     * @param configFile string name of config data file
+     * @param placeLocation string name of our location
+     */
+    protected ServiceProviderPlace(String configFile, String placeLocation) throws IOException {
+<span class="fc" id="L207">        this(configFile, null, placeLocation);</span>
+<span class="fc" id="L208">    }</span>
+
+
+    /**
+     * Create the place with no directory
+     *
+     * @param configStream stream of config data
+     * @param placeLocation string name of our location
+     */
+    protected ServiceProviderPlace(InputStream configStream, String placeLocation) throws IOException {
+<span class="fc" id="L218">        this(configStream, null, placeLocation);</span>
+<span class="fc" id="L219">    }</span>
+
+    /**
+     * Load the configurator
+     *
+     * @param configStream the stream to use or null to auto configure
+     */
+    protected Configurator loadConfigurator(@Nullable InputStream configStream, String placeLocation) throws IOException {
+        // Read the configuration stream
+<span class="fc bfc" id="L228" title="All 2 branches covered.">        if (configStream != null) {</span>
+            // Use supplied stream
+<span class="fc" id="L230">            return ConfigUtil.getConfigInfo(configStream);</span>
+        }
+<span class="fc" id="L232">        return loadConfigurator(placeLocation);</span>
+    }
+
+    /**
+     * Load the configurator
+     *
+     * @param configFileName the file name to use or null to auto configure
+     */
+    protected Configurator loadConfigurator(@Nullable String configFileName, String placeLocation) throws IOException {
+        // Read the configuration stream
+<span class="fc bfc" id="L242" title="All 2 branches covered.">        if (configFileName != null) {</span>
+            // Use supplied stream
+<span class="fc" id="L244">            return ConfigUtil.getConfigInfo(configFileName);</span>
+        }
+<span class="fc" id="L246">        return loadConfigurator(placeLocation);</span>
+    }
+
+    /**
+     * Load the configurator, figuring out whence automatically
+     */
+    protected Configurator loadConfigurator(@Nullable String placeLocation) throws IOException {
+<span class="pc bpc" id="L253" title="1 of 2 branches missed.">        if (placeLocation == null) {</span>
+<span class="nc" id="L254">            placeLocation = this.getClass().getSimpleName();</span>
+        }
+
+        // Extract config data stream name from place location
+        // and try finding config info with and without the
+        // package name of this class (in that order)
+<span class="fc" id="L260">        String myPackage = this.getClass().getPackage().getName();</span>
+<span class="fc" id="L261">        List&lt;String&gt; configLocs = new ArrayList&lt;&gt;();</span>
+        // Dont use KeyManipulator for this, only works when hostname/fqdn has dots
+<span class="fc" id="L263">        int pos = placeLocation.lastIndexOf(&quot;/&quot;);</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">        String serviceClass = (pos &gt; -1 ? placeLocation.substring(pos + 1) : placeLocation);</span>
+<span class="fc" id="L265">        configLocs.add(myPackage + DOT + serviceClass + ConfigUtil.CONFIG_FILE_ENDING);</span>
+<span class="fc" id="L266">        configLocs.add(serviceClass + ConfigUtil.CONFIG_FILE_ENDING);</span>
+<span class="fc" id="L267">        return ConfigUtil.getConfigInfo(configLocs);</span>
+    }
+
+    /**
+     * Help the constructor get the place running
+     *
+     * @param theDir name of our directory
+     */
+    protected void setupPlace(@Nullable String theDir, String placeLocation) throws IOException {
+
+        // Customize the logger to the runtime class
+<span class="fc" id="L278">        logger = LoggerFactory.getLogger(this.getClass());</span>
+
+        // The order of the following initialization calls
+        // is touchy. NPE all over if you mess up here.
+
+        // Set ServicePlace config items
+<span class="fc" id="L284">        configureServicePlace(placeLocation);</span>
+
+        // Backwards compatibility setup items
+<span class="fc" id="L287">        DirectoryEntry firstentry = new DirectoryEntry(keys.get(0));</span>
+<span class="fc" id="L288">        myKey = firstentry.getKey();</span>
+<span class="fc" id="L289">        serviceCost = firstentry.getCost();</span>
+<span class="fc" id="L290">        serviceQuality = firstentry.getQuality();</span>
+<span class="fc" id="L291">        placeName = firstentry.getServiceLocation();</span>
+
+
+        // configure directory references
+<span class="fc bfc" id="L295" title="All 2 branches covered.">        if (!(this instanceof DirectoryPlace)) {</span>
+<span class="fc" id="L296">            localizeDirectory(theDir);</span>
+<span class="fc" id="L297">            logger.debug(&quot;Our localizedDirectory is {}&quot;, dirPlace);</span>
+        } else {
+<span class="fc" id="L299">            logger.debug(&quot;Not localizing directory since we are a directory&quot;);</span>
+        }
+
+        // Set up kff if we need it
+<span class="fc bfc" id="L303" title="All 4 branches covered.">        if (this instanceof RehashingPlace || this instanceof MultiFileServerPlace) {</span>
+<span class="fc" id="L304">            initKff();</span>
+        }
+
+        // Bind to the namespace before registering
+        // our keys. This allows incoming traffic to find
+        // us as soon as they see the keys
+<span class="fc bfc" id="L310" title="All 2 branches covered.">        for (String key : keys) {</span>
+<span class="fc" id="L311">            String bindKey = KeyManipulator.getServiceLocation(key);</span>
+<span class="fc" id="L312">            logger.debug(&quot;Binding myself into the namespace as {}&quot;, bindKey);</span>
+<span class="fc" id="L313">            Namespace.bind(bindKey, this);</span>
+<span class="fc" id="L314">        }</span>
+
+        // Register with the directory
+        // This pushes all our keys out to the directory which
+        // sends them on in turn to peers, &amp;c. in the p2p network
+<span class="fc" id="L319">        register();</span>
+
+        // register MBean with JMX
+<span class="fc" id="L322">        JMXUtil.registerMBean(this);</span>
+
+        // Verify and warn of incorrect process/processHeavyDuty implementation
+<span class="fc" id="L325">        verifyProcessImplementationProvided();</span>
+<span class="fc" id="L326">    }</span>
+
+    /**
+     * Get a local reference to the directory.
+     *
+     * @param theDir key for the directory to use, if null will look up default name
+     * @return true if it worked
+     */
+    private boolean localizeDirectory(@Nullable String theDir) {
+        // Get a local (non proxy) copy of the directory if possible!
+        // Looking up both if nothing is provided
+<span class="fc bfc" id="L337" title="All 2 branches covered.">        if (theDir == null) {</span>
+            try {
+<span class="fc" id="L339">                localDirPlace = DirectoryPlace.lookup();</span>
+<span class="fc" id="L340">                dirPlace = localDirPlace.toString();</span>
+<span class="fc" id="L341">            } catch (EmissaryException ex) {</span>
+<span class="pc bpc" id="L342" title="3 of 4 branches missed.">                if (EmissaryServer.exists() &amp;&amp; !(this instanceof DirectoryPlace)) {</span>
+<span class="nc" id="L343">                    logger.warn(&quot;Unable to find DirectoryPlace in local namespace&quot;, ex);</span>
+<span class="nc" id="L344">                    return false;</span>
+                }
+<span class="fc" id="L346">            }</span>
+        } else {
+<span class="fc" id="L348">            dirPlace = theDir;</span>
+<span class="fc" id="L349">            localDirPlace = null;</span>
+            try {
+<span class="fc" id="L351">                String myUrl = KeyManipulator.getServiceHostUrl(keys.get(0));</span>
+<span class="fc" id="L352">                String dirUrl = KeyManipulator.getServiceHostUrl(dirPlace);</span>
+<span class="pc bpc" id="L353" title="1 of 2 branches missed.">                if (StringUtils.equals(dirUrl, myUrl)) {</span>
+<span class="nc" id="L354">                    localDirPlace = (IDirectoryPlace) Namespace.lookup(KeyManipulator.getServiceLocation(theDir));</span>
+                } else {
+<span class="nc" id="L356">                    logger.debug(&quot;Not localizing directory since dirPlace {} is not equal to myUrl {}&quot;, dirPlace, myUrl);</span>
+                }
+<span class="fc" id="L358">            } catch (EmissaryException ex) {</span>
+<span class="fc" id="L359">                logger.error(&quot;Exception attempting to get local reference to directory&quot;, ex);</span>
+<span class="fc" id="L360">                return false;</span>
+<span class="nc" id="L361">            }</span>
+        }
+<span class="fc" id="L363">        return true;</span>
+    }
+
+    /**
+     * Initialize the Kff Handler with our policy settings
+     */
+    protected synchronized void initKff() {
+<span class="fc" id="L370">        kff =</span>
+                new KffDataObjectHandler(KffDataObjectHandler.TRUNCATE_KNOWN_DATA, KffDataObjectHandler.SET_FORM_WHEN_KNOWN,
+                        KffDataObjectHandler.SET_FILE_TYPE);
+<span class="fc" id="L373">    }</span>
+
+    /**
+     * Set the logger to use, allows easier mocking among other things
+     *
+     * @param l the logger instance to use
+     */
+    public void setLogger(Logger l) {
+<span class="fc" id="L381">        this.logger = l;</span>
+<span class="fc" id="L382">    }</span>
+
+    /**
+     * Return an encapsulation of our key and cost structure Only good for the top key on the list
+     *
+     * @return a DirectoryEntry for this place
+     */
+    @Override
+    public DirectoryEntry getDirectoryEntry() {
+<span class="fc" id="L391">        return new DirectoryEntry(keys.get(0), serviceDescription, serviceCost, serviceQuality);</span>
+    }
+
+    /**
+     * Configuration items read here are:
+     *
+     * &lt;ul&gt;
+     * &lt;li&gt;PLACE_NAME: place name portion of key, required&lt;/li&gt;
+     * &lt;li&gt;SERVICE_NAME: service name portion of key, required&lt;/li&gt;
+     * &lt;li&gt;SERVICE_TYPE: service type portion of key, required&lt;/li&gt;
+     * &lt;li&gt;SERVICE_DESCRIPTION: description of place, required&lt;/li&gt;
+     * &lt;li&gt;SERVICE_COST: cost of service provided, required&lt;/li&gt;
+     * &lt;li&gt;SERVICE_QUALITY: quality of service provided, required&lt;/li&gt;
+     * &lt;li&gt;SERVICE_PROXY: list of service proxy types for key&lt;/li&gt;
+     * &lt;li&gt;SERVICE_KEY: full 4 part keys with expense&lt;/li&gt;
+     * &lt;/ul&gt;
+     *
+     * @param placeLocation the specified placeLocation or a full four part key to register with
+     */
+    protected void configureServicePlace(@Nullable String placeLocation) throws IOException {
+<span class="fc" id="L411">        serviceDescription = configG.findStringEntry(SERVICE_DESCRIPTION);</span>
+<span class="pc bpc" id="L412" title="1 of 4 branches missed.">        if (serviceDescription == null || serviceDescription.length() == 0) {</span>
+<span class="fc" id="L413">            serviceDescription = &quot;Description not available&quot;;</span>
+        }
+
+<span class="fc bfc" id="L416" title="All 2 branches covered.">        if (placeLocation == null) {</span>
+<span class="fc" id="L417">            placeLocation = this.getClass().getSimpleName();</span>
+        }
+
+<span class="fc" id="L420">        String locationPart = placeLocation;</span>
+<span class="fc bfc" id="L421" title="All 2 branches covered.">        if (KeyManipulator.isKeyComplete(placeLocation)) {</span>
+<span class="fc" id="L422">            keys.add(placeLocation); // save as first in list</span>
+<span class="fc" id="L423">            locationPart = KeyManipulator.getServiceLocation(placeLocation);</span>
+<span class="fc bfc" id="L424" title="All 2 branches covered.">        } else if (!placeLocation.contains(&quot;://&quot;)) {</span>
+<span class="fc" id="L425">            EmissaryNode node = new EmissaryNode();</span>
+<span class="fc" id="L426">            locationPart = &quot;http://&quot; + node.getNodeName() + &quot;:&quot; + node.getNodePort() + &quot;/&quot; + placeLocation;</span>
+        }
+
+
+        // Build keys the old fashioned way from parts specified in the config
+<span class="fc" id="L431">        String placeName = configG.findStringEntry(PLACE_NAME);</span>
+<span class="fc" id="L432">        String serviceName = configG.findStringEntry(SERVICE_NAME);</span>
+<span class="fc" id="L433">        String serviceType = configG.findStringEntry(SERVICE_TYPE);</span>
+<span class="fc" id="L434">        int serviceCost = configG.findIntEntry(SERVICE_COST, -1);</span>
+<span class="fc" id="L435">        int serviceQuality = configG.findIntEntry(SERVICE_QUALITY, -1);</span>
+
+        // Bah.
+<span class="pc bpc" id="L438" title="1 of 4 branches missed.">        if (placeName != null &amp;&amp; placeName.length() == 0) {</span>
+<span class="nc" id="L439">            placeName = null;</span>
+        }
+<span class="pc bpc" id="L441" title="1 of 4 branches missed.">        if (serviceName != null &amp;&amp; serviceName.length() == 0) {</span>
+<span class="nc" id="L442">            serviceName = null;</span>
+        }
+<span class="pc bpc" id="L444" title="1 of 4 branches missed.">        if (serviceType != null &amp;&amp; serviceType.length() == 0) {</span>
+<span class="nc" id="L445">            serviceType = null;</span>
+        }
+
+<span class="pc bpc" id="L448" title="2 of 10 branches missed.">        if (placeName != null &amp;&amp; serviceName != null &amp;&amp; serviceType != null &amp;&amp; serviceCost &gt; -1 &amp;&amp; serviceQuality &gt; -1) {</span>
+            // pick up the proxies(save full 4-tuple keys!)
+<span class="fc bfc" id="L450" title="All 2 branches covered.">            for (String sp : configG.findEntries(SERVICE_PROXY)) {</span>
+<span class="fc" id="L451">                DirectoryEntry de = new DirectoryEntry(sp, serviceName, serviceType, locationPart, serviceDescription, serviceCost, serviceQuality);</span>
+<span class="fc" id="L452">                keys.add(de.getFullKey());</span>
+<span class="fc" id="L453">            }</span>
+            // pick up the denied proxies(save full 4-tuple keys!)
+<span class="fc bfc" id="L455" title="All 2 branches covered.">            for (String sp : configG.findEntries(SERVICE_PROXY_DENY)) {</span>
+<span class="fc" id="L456">                DirectoryEntry de = new DirectoryEntry(sp, serviceName, serviceType, locationPart, serviceDescription, serviceCost, serviceQuality);</span>
+<span class="fc" id="L457">                denyList.add(de.getDataType());</span>
+<span class="fc" id="L458">            }</span>
+        } else {
+            // May be configured the new way, but warn if there is a mixture of
+            // null and non-null items using the old-fashioned way. Perhaps the
+            // user just missed one of them
+<span class="fc" id="L463">            int nullCount = 0;</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">            if (placeName == null) {</span>
+<span class="fc" id="L465">                nullCount++;</span>
+            }
+<span class="fc bfc" id="L467" title="All 2 branches covered.">            if (serviceName == null) {</span>
+<span class="fc" id="L468">                nullCount++;</span>
+            }
+<span class="fc bfc" id="L470" title="All 2 branches covered.">            if (serviceType == null) {</span>
+<span class="fc" id="L471">                nullCount++;</span>
+            }
+<span class="fc bfc" id="L473" title="All 2 branches covered.">            if (serviceCost == -1) {</span>
+<span class="fc" id="L474">                nullCount++;</span>
+            }
+<span class="fc bfc" id="L476" title="All 2 branches covered.">            if (serviceQuality == -1) {</span>
+<span class="fc" id="L477">                nullCount++;</span>
+            }
+
+<span class="pc bpc" id="L480" title="1 of 4 branches missed.">            if (nullCount &gt; 0 &amp;&amp; nullCount &lt; 5) {</span>
+<span class="fc" id="L481">                throw new IOException(</span>
+                        &quot;Missing configuration items. Please check SERVICE_NAME, SERVICE_TYPE, PLACE_NAME, SERVICE_COST, SERVICE_QUALITY&quot;);
+
+            }
+        }
+
+        // Now build any keys the new way
+<span class="fc bfc" id="L488" title="All 2 branches covered.">        for (String k : configG.findEntries(SERVICE_KEY)) {</span>
+<span class="fc bfc" id="L489" title="All 2 branches covered.">            if (KeyManipulator.isKeyComplete(k)) {</span>
+<span class="fc" id="L490">                keys.add(k);</span>
+            } else {
+<span class="fc" id="L492">                logger.warn(&quot;SERVICE_KEY '{}' is missing parts and cannot be used&quot;, k);</span>
+            }
+<span class="fc" id="L494">        }</span>
+
+        // Make sure some keys were defined one way or the other
+<span class="fc bfc" id="L497" title="All 2 branches covered.">        if (keys.isEmpty()) {</span>
+<span class="fc" id="L498">            throw new IOException(&quot;NO keys were defined. Please configure at least one &quot;</span>
+                    + &quot;SERVICE_KEY or SERVICE_NAME/SERVICE_TYPE/SERVICE_PROXY group&quot;);
+        }
+<span class="fc" id="L501">    }</span>
+
+    /**
+     * Delegate nextKey to our directory
+     *
+     * @param dataId key to entryMap in directory, dataType::serviceType
+     * @param lastEntry place agent visited last, this is not stateless
+     * @return List of DirectoryEntry with next places to go
+     */
+    @Override
+    @Nullable
+    public List&lt;DirectoryEntry&gt; nextKeys(final String dataId, final IBaseDataObject payload, final DirectoryEntry lastEntry) {
+<span class="pc bpc" id="L513" title="1 of 2 branches missed.">        if (localDirPlace != null) {</span>
+<span class="nc" id="L514">            return localDirPlace.nextKeys(dataId, payload, lastEntry);</span>
+        }
+<span class="fc" id="L516">        logger.error(&quot;No local directory in place {} with dir={}&quot;, keys.get(0), dirPlace);</span>
+<span class="fc" id="L517">        return null;</span>
+    }
+
+    /**
+     * The ServiceProviderPlace facade for visiting agents
+     *
+     * @param payload dataobject from a MobileAgent
+     */
+    @Override
+    public void agentProcessCall(IBaseDataObject payload) throws ResourceException {
+        try {
+<span class="fc" id="L528">            process(payload);</span>
+<span class="fc" id="L529">            rehash(payload);</span>
+<span class="nc" id="L530">        } catch (ResourceException r) {</span>
+<span class="nc" id="L531">            throw r;</span>
+<span class="nc" id="L532">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L533">            logger.error(&quot;Place.process exception&quot;, e);</span>
+<span class="fc" id="L534">        }</span>
+<span class="fc" id="L535">    }</span>
+
+    /**
+     * &quot;HD&quot; agent calls this method when visiting the place. If you use emissary.core.MobileAgent this method is never
+     * called. Should be overridden by concrete places that wish to process bulk data in a different manner than one payload
+     * at a time.
+     *
+     * @param payloadList list of IBaseDataObject from an HDMobileAgent
+     * @return list of IBaseDataObject &quot;sprouts&quot;
+     */
+    @Override
+    public List&lt;IBaseDataObject&gt; agentProcessHeavyDuty(List&lt;IBaseDataObject&gt; payloadList) throws Exception {
+
+<span class="fc" id="L548">        logger.debug(&quot;Entering agentProcessHeavyDuty with {} payload items&quot;, payloadList.size());</span>
+
+<span class="fc" id="L550">        List&lt;IBaseDataObject&gt; list = new ArrayList&lt;&gt;();</span>
+
+        // For each incoming payload object
+<span class="fc bfc" id="L553" title="All 2 branches covered.">        for (IBaseDataObject dataObject : payloadList) {</span>
+            try {
+                // Process the payload item
+<span class="fc" id="L556">                List&lt;IBaseDataObject&gt; l = agentProcessHeavyDuty(dataObject);</span>
+<span class="pc bpc" id="L557" title="1 of 2 branches missed.">                if (!l.isEmpty()) {</span>
+<span class="nc" id="L558">                    dataObject.setNumChildren(dataObject.getNumChildren() + l.size());</span>
+                }
+
+                // Accumulate results in a list to return
+<span class="fc" id="L562">                list.addAll(l);</span>
+<span class="nc" id="L563">            } catch (Exception e) {</span>
+<span class="nc" id="L564">                logger.error(&quot;Place.process exception&quot;, e);</span>
+<span class="nc" id="L565">                dataObject.addProcessingError(&quot;agentProcessHD(&quot; + keys.get(0) + &quot;): &quot; + e);</span>
+<span class="nc" id="L566">                dataObject.replaceCurrentForm(Form.ERROR);</span>
+<span class="fc" id="L567">            }</span>
+<span class="fc" id="L568">        }</span>
+
+        // Some debug output
+<span class="pc bpc" id="L571" title="1 of 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc bnc" id="L572" title="All 2 branches missed.">            for (IBaseDataObject d : list) {</span>
+<span class="nc" id="L573">                logger.debug(&quot;Returning child {} -&gt; {}&quot;, d.shortName(), d.getAllCurrentForms());</span>
+<span class="nc" id="L574">            }</span>
+        }
+
+<span class="fc" id="L577">        return list;</span>
+    }
+
+    /**
+     * &quot;HD&quot; method called only by HDMobileAgent for a single incoming payload
+     *
+     * @param payload data object to process
+     * @return List of IBaseDataObject &quot;sprouts&quot;
+     */
+    @Override
+    public List&lt;IBaseDataObject&gt; agentProcessHeavyDuty(IBaseDataObject payload) throws Exception {
+<span class="fc" id="L588">        MDC.put(MDCConstants.SHORT_NAME, payload.shortName());</span>
+<span class="fc" id="L589">        MDC.put(MDCConstants.SERVICE_LOCATION, this.getKey());</span>
+        try {
+<span class="fc" id="L591">            List&lt;IBaseDataObject&gt; l = processHeavyDuty(payload);</span>
+<span class="fc" id="L592">            rehash(payload);</span>
+<span class="fc" id="L593">            return l;</span>
+<span class="nc" id="L594">        } catch (Exception e) {</span>
+<span class="nc" id="L595">            logger.error(&quot;Place.process threw:&quot;, e);</span>
+<span class="nc" id="L596">            throw e;</span>
+        }
+    }
+
+    /**
+     * Rehash the payload if this is a rehashing place
+     *
+     * @param payload the payload to evaluate and rehash
+     */
+    protected void rehash(@Nullable IBaseDataObject payload) {
+        // Recompute hash if marker interface is enabled
+<span class="pc bpc" id="L607" title="2 of 6 branches missed.">        if (this instanceof RehashingPlace &amp;&amp; kff != null &amp;&amp; payload != null) {</span>
+<span class="fc" id="L608">            kff.hash(payload);</span>
+<span class="fc" id="L609">            payload.setParameter(SessionParser.ORIG_DOC_SIZE_KEY, &quot;&quot; + payload.dataLength());</span>
+        }
+<span class="fc" id="L611">    }</span>
+
+
+    /**
+     * Convenience method to process a single payload when there is no expecation of decomposing any new payload objects
+     * from what was provided
+     */
+    @Override
+    public void process(IBaseDataObject payload) throws ResourceException {
+<span class="pc bpc" id="L620" title="1 of 2 branches missed.">        if (heavyDutyMethodImplemented) {</span>
+<span class="fc" id="L621">            List&lt;IBaseDataObject&gt; children = processHeavyDuty(payload);</span>
+<span class="pc bpc" id="L622" title="2 of 4 branches missed.">            if (children != null &amp;&amp; !children.isEmpty()) {</span>
+<span class="nc" id="L623">                logger.error(&quot;Sprouting is no longer supported, lost {} children&quot;, children.size());</span>
+            }
+<span class="fc" id="L625">        } else {</span>
+<span class="nc" id="L626">            throw new IllegalStateException(&quot;Neither process nor processHeavyDuty appears to be implemented&quot;);</span>
+        }
+<span class="fc" id="L628">    }</span>
+
+    /**
+     * Process a payload and return a list of new items decomosed from it (or an empty list) What happens here and what is
+     * ultimately expected depends on the workflow stage of the place registration, and the type of job it is expected to
+     * do.
+     *
+     * @param payload the BaseDataObject to process
+     * @return list of BaseDataObject that represent the children (if any)
+     */
+    @Override
+    public List&lt;IBaseDataObject&gt; processHeavyDuty(IBaseDataObject payload) throws ResourceException {
+<span class="pc bpc" id="L640" title="1 of 2 branches missed.">        if (processMethodImplemented) {</span>
+<span class="fc" id="L641">            process(payload);</span>
+<span class="fc" id="L642">            return Collections.emptyList();</span>
+        } else {
+<span class="nc" id="L644">            throw new IllegalStateException(&quot;Neither process nor processHeavyDuty appears to be implemented&quot;);</span>
+        }
+    }
+
+    /**
+     * This method must be called during setup of the place to ensure that one of the two implementations is provided by the
+     * declaring class.
+     */
+    protected void verifyProcessImplementationProvided() {
+
+<span class="fc" id="L654">        Class&lt;?&gt; c = this.getClass();</span>
+<span class="fc bfc" id="L655" title="All 2 branches covered.">        while (!c.isAssignableFrom(ServiceProviderPlace.class)) {</span>
+<span class="fc bfc" id="L656" title="All 2 branches covered.">            for (Method m : c.getDeclaredMethods()) {</span>
+<span class="fc" id="L657">                String mname = m.getName();</span>
+<span class="fc" id="L658">                String rname = m.getReturnType().getName();</span>
+<span class="fc" id="L659">                Class&lt;?&gt;[] params = m.getParameterTypes();</span>
+
+<span class="fc bfc" id="L661" title="All 4 branches covered.">                if (params.length == 1 &amp;&amp; params[0].isAssignableFrom(IBaseDataObject.class)) {</span>
+<span class="pc bpc" id="L662" title="1 of 4 branches missed.">                    if (mname.equals(&quot;process&quot;) &amp;&amp; rname.equals(&quot;void&quot;)) {</span>
+<span class="fc" id="L663">                        processMethodImplemented = true;</span>
+<span class="pc bpc" id="L664" title="1 of 4 branches missed.">                    } else if (mname.equals(&quot;processHeavyDuty&quot;) &amp;&amp; rname.equals(List.class.getName())) {</span>
+<span class="fc" id="L665">                        heavyDutyMethodImplemented = true;</span>
+                    }
+                }
+            }
+
+<span class="fc bfc" id="L670" title="All 4 branches covered.">            if (heavyDutyMethodImplemented || processMethodImplemented) {</span>
+<span class="fc" id="L671">                logger.debug(&quot;Found enough process implementation at level {}&quot;, c.getName());</span>
+<span class="fc" id="L672">                break;</span>
+            } else {
+<span class="fc" id="L674">                c = c.getSuperclass();</span>
+            }
+        }
+
+<span class="fc bfc" id="L678" title="All 6 branches covered.">        if (!processMethodImplemented &amp;&amp; !heavyDutyMethodImplemented &amp;&amp; !(this instanceof AgentsNotSupportedPlace)) {</span>
+<span class="fc" id="L679">            logger.error(&quot;It appears that neither process nor processHeavyDuty is implemented. &quot;</span>
+                    + &quot;If that is incorrect you can directly set one of the corresponding &quot;
+                    + &quot;boolean flags or override verifyProcessImplementationProvided or &quot;
+                    + &quot;implement AgentsNotSupported to turn this message off&quot;);
+        }
+<span class="fc" id="L684">    }</span>
+
+    /**
+     * Convenience method a lot of places use. Removes all items from the current form stack that this place has proxies for
+     *
+     * @param d a data object whose current form will be expunged of my proxies
+     * @return count of how many items removed
+     */
+    protected int nukeMyProxies(IBaseDataObject d) {
+<span class="fc" id="L693">        List&lt;String&gt; nukem = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L694">        int sz = d.currentFormSize();</span>
+<span class="fc" id="L695">        Set&lt;String&gt; serviceProxies = getProxies();</span>
+
+<span class="fc bfc" id="L697" title="All 2 branches covered.">        if (serviceProxies.contains(&quot;*&quot;)) {</span>
+<span class="fc" id="L698">            d.replaceCurrentForm(null); // clear it out</span>
+<span class="fc" id="L699">            return sz;</span>
+        }
+
+        // listem
+<span class="fc bfc" id="L703" title="All 2 branches covered.">        for (int i = 0; i &lt; sz; i++) {</span>
+<span class="fc" id="L704">            String form = d.currentFormAt(i);</span>
+<span class="fc bfc" id="L705" title="All 2 branches covered.">            if (serviceProxies.contains(form)) {</span>
+<span class="fc" id="L706">                nukem.add(form);</span>
+            } else {
+                // cardem
+<span class="fc" id="L709">                WildcardEntry wc = new WildcardEntry(form);</span>
+<span class="fc bfc" id="L710" title="All 2 branches covered.">                if (!Collections.disjoint(wc.asSet(), serviceProxies)) {</span>
+<span class="fc" id="L711">                    nukem.add(form);</span>
+                }
+            }
+        }
+
+        // nukem
+<span class="fc bfc" id="L717" title="All 2 branches covered.">        for (String f : nukem) {</span>
+<span class="fc" id="L718">            int pos = d.searchCurrentForm(f);</span>
+<span class="pc bpc" id="L719" title="1 of 2 branches missed.">            if (pos != -1) {</span>
+<span class="fc" id="L720">                d.deleteCurrentFormAt(pos);</span>
+            }
+<span class="fc" id="L722">        }</span>
+
+<span class="fc" id="L724">        return nukem.size();</span>
+    }
+
+    /**
+     * Return a set of the service proxies
+     *
+     * @return set of string values
+     */
+    @Override
+    public Set&lt;String&gt; getProxies() {
+<span class="fc" id="L734">        Set&lt;String&gt; s = new TreeSet&lt;&gt;();</span>
+<span class="fc bfc" id="L735" title="All 2 branches covered.">        for (String k : keys) {</span>
+<span class="fc" id="L736">            s.add(KeyManipulator.getDataType(k));</span>
+<span class="fc" id="L737">        }</span>
+<span class="fc" id="L738">        s.remove(UNUSED_PROXY);</span>
+<span class="fc" id="L739">        return s;</span>
+    }
+
+    /**
+     * Get the keys that this place instance is registered with
+     */
+    @Override
+    public Set&lt;String&gt; getKeys() {
+<span class="fc" id="L747">        Set&lt;String&gt; s = new TreeSet&lt;&gt;();</span>
+<span class="fc bfc" id="L748" title="All 2 branches covered.">        for (String k : keys) {</span>
+<span class="fc bfc" id="L749" title="All 2 branches covered.">            if (!k.startsWith(UNUSED_PROXY)) {</span>
+<span class="fc" id="L750">                s.add(k);</span>
+            }
+<span class="fc" id="L752">        }</span>
+<span class="fc" id="L753">        return s;</span>
+    }
+
+    /**
+     * Return the first service proxy on the list
+     *
+     * @return SERVICE_PROXY value from first key on list
+     */
+    @Override
+    public String getPrimaryProxy() {
+<span class="fc" id="L763">        String s = KeyManipulator.getDataType(keys.get(0));</span>
+<span class="fc bfc" id="L764" title="All 2 branches covered.">        if (s.equals(UNUSED_PROXY)) {</span>
+<span class="fc" id="L765">            s = &quot;&quot;;</span>
+        }
+<span class="fc" id="L767">        return s;</span>
+    }
+
+
+    /**
+     * Key for string form
+     */
+    @Override
+    public String toString() {
+<span class="fc" id="L776">        return keys.get(0) + &quot;[&quot; + keys.size() + &quot;]&quot;;</span>
+    }
+
+    /**
+     * Fulfill IServiceProviderPlace
+     */
+    @Override
+    public String getKey() {
+<span class="fc" id="L784">        return KeyManipulator.removeExpense(keys.get(0));</span>
+    }
+
+    /**
+     * Add a service proxy to a running place. Duplicates are ignored.
+     *
+     * @param serviceProxy the new proxy string to add
+     */
+    @Override
+    public void addServiceProxy(String serviceProxy) {
+        // Add new one to the top key in the list
+<span class="fc" id="L795">        DirectoryEntry de = new DirectoryEntry(keys.get(0));</span>
+<span class="fc" id="L796">        boolean keyAdded = false;</span>
+<span class="pc bpc" id="L797" title="1 of 2 branches missed.">        if (!de.getDataType().equals(serviceProxy)) {</span>
+            // Clear out the placeholder
+<span class="fc bfc" id="L799" title="All 2 branches covered.">            if (de.getDataType().equals(UNUSED_PROXY)) {</span>
+<span class="fc" id="L800">                keys.remove(0);</span>
+            }
+
+<span class="fc" id="L803">            de.setDataType(serviceProxy);</span>
+
+<span class="fc bfc" id="L805" title="All 2 branches covered.">            if (!keys.contains(de.getFullKey())) {</span>
+<span class="fc" id="L806">                keys.add(de.getFullKey());</span>
+
+                // Register the new proxy in the directory
+<span class="fc" id="L809">                logger.debug(&quot;Registering new key {}&quot;, de.getKey());</span>
+<span class="fc" id="L810">                register(de.getFullKey());</span>
+<span class="fc" id="L811">                keyAdded = true;</span>
+            }
+        }
+
+<span class="fc bfc" id="L815" title="All 2 branches covered.">        if (!keyAdded) {</span>
+<span class="fc" id="L816">            logger.debug(&quot;Duplicate service proxy {} ignored&quot;, serviceProxy);</span>
+        }
+<span class="fc" id="L818">    }</span>
+
+    /**
+     * Add another key to the place
+     *
+     * @param key the key to add
+     */
+    @Override
+    public void addKey(String key) {
+<span class="fc bfc" id="L827" title="All 2 branches covered.">        if (KeyManipulator.isValid(key)) {</span>
+<span class="fc" id="L828">            DirectoryEntry de = new DirectoryEntry(keys.get(0));</span>
+<span class="pc bpc" id="L829" title="1 of 2 branches missed.">            if (de.getDataType().equals(UNUSED_PROXY)) {</span>
+<span class="nc" id="L830">                keys.remove(0);</span>
+            }
+
+<span class="fc" id="L833">            logger.debug(&quot;Adding and registering new key {}&quot;, key);</span>
+<span class="fc" id="L834">            keys.add(key);</span>
+<span class="fc" id="L835">            register(key);</span>
+<span class="fc" id="L836">        } else {</span>
+<span class="fc" id="L837">            logger.warn(&quot;Invalid key cannot be added: {}&quot;, key);</span>
+        }
+<span class="fc" id="L839">    }</span>
+
+    /**
+     * Register a single service proxy key
+     *
+     * @param key the new key to register
+     */
+    protected void register(String key) {
+<span class="fc" id="L847">        logger.debug(&quot;Registering key {}&quot;, key);</span>
+        // Cannot register if we have no directory
+        // If we are the directory, its no problem though
+<span class="pc bpc" id="L850" title="1 of 2 branches missed.">        if (dirPlace == null) {</span>
+<span class="nc bnc" id="L851" title="All 2 branches missed.">            if (!(this instanceof IDirectoryPlace)) {</span>
+<span class="nc" id="L852">                logger.debug(&quot;Directory is null: cannot register anything. Illegal configuration.&quot;);</span>
+            }
+<span class="nc" id="L854">            return;</span>
+        }
+
+        // Register place and all proxies by building up a list
+        // of our interests to send to the directory
+<span class="fc" id="L859">        List&lt;String&gt; keylist = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L860">        keylist.add(key);</span>
+<span class="fc" id="L861">        registerWithDirectory(keylist);</span>
+<span class="fc" id="L862">    }</span>
+
+    /**
+     * Register our interest in all of our serviceProxies Sends only one message to the directory to cover all service
+     * proxies (a scalability issue for large systems)
+     */
+    protected void register() {
+<span class="fc" id="L869">        logger.debug(&quot;Registering: {}&quot;, this);</span>
+
+        // Cannot register if we have no directory
+        // If we are the directory, its no problem though
+<span class="fc bfc" id="L873" title="All 2 branches covered.">        if (dirPlace == null) {</span>
+<span class="fc bfc" id="L874" title="All 2 branches covered.">            if (!(this instanceof IDirectoryPlace)) {</span>
+<span class="fc" id="L875">                logger.debug(&quot;Directory is null: cannot register anything. Illegal configuration.&quot;);</span>
+            }
+<span class="fc" id="L877">            return;</span>
+        }
+
+        // Register place and all proxies by building up a list
+        // of our current interests to send to the directory
+<span class="fc" id="L882">        registerWithDirectory(new ArrayList&lt;&gt;(keys));</span>
+<span class="fc" id="L883">    }</span>
+
+    /**
+     * Register keys with the directory
+     *
+     * @param keylist the keys to register
+     */
+    protected void registerWithDirectory(List&lt;String&gt; keylist) {
+        try {
+<span class="fc bfc" id="L892" title="All 2 branches covered.">            if (localDirPlace == null) {</span>
+                // This should never happen, we require a local
+                // directory on every JVM...
+<span class="fc" id="L895">                logger.error(&quot;Key registration requires a DirectoryPlace in every Emissary Node&quot;);</span>
+            } else {
+<span class="fc" id="L897">                logger.debug(&quot;Registering my {} keys {}&quot;, keylist.size(), keylist);</span>
+<span class="fc" id="L898">                localDirPlace.addPlaces(keylist);</span>
+            }
+<span class="nc" id="L900">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L901">            logger.warn(&quot;Register ERROR for keys {}&quot;, keylist, e);</span>
+<span class="fc" id="L902">        }</span>
+<span class="fc" id="L903">    }</span>
+
+
+    /**
+     * Deregister keys from the directory
+     *
+     * @param keys the keys to register
+     */
+    protected void deregisterFromDirectory(List&lt;String&gt; keys) {
+        try {
+<span class="fc bfc" id="L913" title="All 4 branches covered.">            if (localDirPlace == null &amp;&amp; dirPlace != null) {</span>
+                // This should never happen, we require a local
+                // directory on every JVM...
+<span class="fc" id="L916">                logger.debug(&quot;Deregistering my {} proxies {} from remote dir {}&quot;, keys.size(), keys, dirPlace);</span>
+<span class="fc" id="L917">                DirectoryAdapter da = new DirectoryAdapter();</span>
+<span class="fc" id="L918">                da.outboundRemovePlaces(dirPlace, keys, false);</span>
+<span class="fc bfc" id="L919" title="All 2 branches covered.">            } else if (localDirPlace != null) {</span>
+<span class="fc" id="L920">                logger.debug(&quot;Deregistering my {} proxies {}&quot;, keys.size(), keys);</span>
+<span class="fc" id="L921">                localDirPlace.removePlaces(keys);</span>
+            }
+<span class="nc" id="L923">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L924">            logger.warn(&quot;Deregister ERROR keys={}&quot;, keys, e);</span>
+<span class="fc" id="L925">        }</span>
+<span class="fc" id="L926">    }</span>
+
+
+    /**
+     * Remove a service proxy from the running place. Proxy strings not found registered will be ignored Will remove all
+     * keys that match the supplied proxy
+     *
+     * @param serviceProxy the proxy string to remove
+     */
+    @Override
+    public void removeServiceProxy(String serviceProxy) {
+        // List of keys to deregister
+<span class="fc" id="L938">        List&lt;String&gt; keylist = new ArrayList&lt;&gt;();</span>
+
+        // nb. no enhanced for loop due to remove
+<span class="fc bfc" id="L941" title="All 2 branches covered.">        for (Iterator&lt;String&gt; i = keys.iterator(); i.hasNext();) {</span>
+<span class="fc" id="L942">            String k = i.next();</span>
+<span class="fc" id="L943">            String kproxy = KeyManipulator.getDataType(k);</span>
+<span class="fc bfc" id="L944" title="All 2 branches covered.">            if (kproxy.equals(serviceProxy)) {</span>
+<span class="fc" id="L945">                keylist.add(KeyManipulator.removeExpense(k));</span>
+<span class="fc" id="L946">                i.remove();</span>
+            }
+<span class="fc" id="L948">        }</span>
+<span class="fc bfc" id="L949" title="All 2 branches covered.">        if (!keylist.isEmpty()) {</span>
+<span class="fc" id="L950">            deregisterFromDirectory(keylist);</span>
+        } else {
+<span class="fc" id="L952">            logger.debug(&quot;Unknown service proxy {} ignored&quot;, serviceProxy);</span>
+        }
+
+        // Make sure we leave something on the keys list
+<span class="pc bpc" id="L956" title="1 of 4 branches missed.">        if (keys.isEmpty() &amp;&amp; !keylist.isEmpty()) {</span>
+<span class="fc" id="L957">            DirectoryEntry de = new DirectoryEntry(keylist.get(0));</span>
+<span class="fc" id="L958">            de.setCost(serviceCost);</span>
+<span class="fc" id="L959">            de.setQuality(serviceQuality);</span>
+<span class="fc" id="L960">            de.setDataType(UNUSED_PROXY);</span>
+<span class="fc" id="L961">            keys.add(de.getFullKey());</span>
+        }
+<span class="fc" id="L963">    }</span>
+
+    /**
+     * Remove and deregister a key
+     *
+     * @param key the full key (with expense) to deregister
+     */
+    @Override
+    public void removeKey(String key) {
+<span class="fc" id="L972">        String keyWithOutExpense = KeyManipulator.removeExpense(key);</span>
+
+<span class="fc bfc" id="L974" title="All 2 branches covered.">        if (keys.remove(key)) {</span>
+<span class="fc" id="L975">            List&lt;String&gt; keylist = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L976">            keylist.add(keyWithOutExpense);</span>
+<span class="fc" id="L977">            deregisterFromDirectory(keylist);</span>
+
+<span class="pc bpc" id="L979" title="1 of 2 branches missed.">            if (keys.isEmpty()) {</span>
+<span class="fc" id="L980">                DirectoryEntry de = new DirectoryEntry(key);</span>
+<span class="fc" id="L981">                de.setDataType(UNUSED_PROXY);</span>
+<span class="fc" id="L982">                keys.add(de.getFullKey());</span>
+            }
+<span class="fc" id="L984">        } else {</span>
+<span class="fc" id="L985">            logger.debug(&quot;Key specified for removal not found: {}&quot;, key);</span>
+        }
+<span class="fc" id="L987">    }</span>
+
+    /**
+     * Stop all threads if any. Can be overridden by, deregister from directory, and remove from the namespace. derived
+     * classes if needed
+     */
+    @Override
+    public void shutDown() {
+<span class="fc" id="L995">        logger.debug(&quot;Called shutDown()&quot;);</span>
+
+        // Remove from directory a list of keys without expense
+<span class="fc" id="L998">        deregisterFromDirectory(keys.stream().map(KeyManipulator::removeExpense).collect(Collectors.toList()));</span>
+
+        // Unbind from namespace
+<span class="fc" id="L1001">        unbindFromNamespace();</span>
+<span class="fc" id="L1002">    }</span>
+
+    protected void unbindFromNamespace() {
+<span class="fc" id="L1005">        keys.stream().map(KeyManipulator::getServiceLocation).forEach(Namespace::unbind);</span>
+<span class="fc" id="L1006">    }</span>
+
+    /**
+     * Return the place name
+     *
+     * @return string key of this place
+     */
+    @Override
+    public String getPlaceName() {
+<span class="fc" id="L1015">        return KeyManipulator.getServiceClassname(keys.get(0));</span>
+    }
+
+    /**
+     * Get custom resource limitation in millis if specified
+     *
+     * @return -2 if not specified, or long millis if specified
+     */
+    @Override
+    public long getResourceLimitMillis() {
+<span class="fc" id="L1025">        return configG.findLongEntry(PLACE_RESOURCE_LIMIT_MILLIS, -2L);</span>
+    }
+
+    /**
+     * Get the agent that is currently responsible for this thread
+     *
+     * @return the live instance of the mobile agent thread
+     */
+    @Override
+    public MobileAgent getAgent() throws NamespaceException {
+<span class="fc" id="L1035">        return (MobileAgent) Namespace.lookup(Thread.currentThread().getName());</span>
+    }
+
+    @Override
+    public List&lt;String&gt; getRunningConfig() {
+<span class="fc" id="L1040">        List&lt;String&gt; runningConfigList = new ArrayList&lt;&gt;();</span>
+
+<span class="pc bpc" id="L1042" title="1 of 2 branches missed.">        if (configG != null) {</span>
+<span class="fc bfc" id="L1043" title="All 2 branches covered.">            for (ConfigEntry c : configG.getEntries()) {</span>
+<span class="fc" id="L1044">                runningConfigList.add(&quot;Key: &quot; + c.getKey() + &quot; Value: &quot; + c.getValue());</span>
+<span class="fc" id="L1045">            }</span>
+        }
+<span class="fc" id="L1047">        return runningConfigList;</span>
+    }
+
+    @Override
+    public String getPlaceStats() {
+        ResourceWatcher resource;
+        Timer placeStats;
+<span class="fc" id="L1054">        String placeStatStr = &quot;UNAVAILABLE&quot;;</span>
+        try {
+<span class="fc" id="L1056">            resource = ResourceWatcher.lookup();</span>
+<span class="fc" id="L1057">            String statsKey = getPlaceName();</span>
+<span class="fc" id="L1058">            placeStats = resource.getStat(statsKey);</span>
+
+<span class="pc bpc" id="L1060" title="1 of 2 branches missed.">            if (placeStats != null) {</span>
+<span class="fc" id="L1061">                placeStatStr = placeStats.getSnapshot().toString();</span>
+            }
+<span class="nc" id="L1063">        } catch (NamespaceException ne) {</span>
+<span class="nc" id="L1064">            logger.error(&quot;Exception occurred while trying to lookup resource&quot;, ne);</span>
+<span class="fc" id="L1065">        }</span>
+<span class="fc" id="L1066">        return placeStatStr;</span>
+    }
+
+    @Override
+    public void dumpRunningConfig() {
+<span class="fc" id="L1071">        logger.info(&quot;Dumping Running Config for {}:&quot;, placeName);</span>
+<span class="fc" id="L1072">        logger.info(&quot;===============&quot;);</span>
+<span class="fc" id="L1073">        logger.info(&quot;{}&quot;, getRunningConfig());</span>
+<span class="fc" id="L1074">        logger.info(&quot;===============&quot;);</span>
+<span class="fc" id="L1075">    }</span>
+
+    @Override
+    public void dumpPlaceStats() {
+<span class="fc" id="L1079">        logger.info(&quot;Dumping Places Stats for {}:&quot;, placeName);</span>
+<span class="fc" id="L1080">        logger.info(&quot;===============&quot;);</span>
+<span class="fc" id="L1081">        logger.info(&quot;{}&quot;, getPlaceStats());</span>
+<span class="fc" id="L1082">        logger.info(&quot;===============&quot;);</span>
+<span class="fc" id="L1083">    }</span>
+
+    /**
+     * Leverage our insider knowledge of how emissary MobileAgents work in conjunction with the namespace to reach around
+     * the back door of the system and get the TLD for the current payload You should only call this if
+     * payload.shortName().indexOf(Family.SEP) &amp;gt; -1
+     */
+    @Nullable
+    protected IBaseDataObject getTld() {
+        try {
+<span class="fc" id="L1093">            MobileAgent agent = getAgent();</span>
+
+<span class="pc bpc" id="L1095" title="1 of 2 branches missed.">            if (agent instanceof HDMobileAgent) {</span>
+<span class="fc" id="L1096">                Object payload = ((HDMobileAgent) agent).getPayloadForTransport();</span>
+<span class="pc bpc" id="L1097" title="1 of 2 branches missed.">                if (payload instanceof List) {</span>
+<span class="fc" id="L1098">                    List&lt;?&gt; familyTree = (List&lt;?&gt;) payload;</span>
+<span class="pc bpc" id="L1099" title="1 of 2 branches missed.">                    for (Object familyMember : familyTree) {</span>
+<span class="pc bpc" id="L1100" title="1 of 2 branches missed.">                        if (familyMember instanceof IBaseDataObject) {</span>
+<span class="fc" id="L1101">                            IBaseDataObject member = (IBaseDataObject) familyMember;</span>
+<span class="fc bfc" id="L1102" title="All 2 branches covered.">                            if (!member.shortName().contains(Family.SEP)) {</span>
+<span class="fc" id="L1103">                                return member;</span>
+                            }
+<span class="fc" id="L1105">                        } else {</span>
+<span class="nc" id="L1106">                            logger.debug(&quot;Family members are not the right class - {}&quot;, familyMember.getClass().getName());</span>
+                        }
+<span class="fc" id="L1108">                    }</span>
+<span class="nc" id="L1109">                } else {</span>
+<span class="nc" id="L1110">                    logger.debug(&quot;Agent is transporting unknown data type - {}&quot;, payload.getClass().getName());</span>
+                }
+<span class="nc" id="L1112">            } else {</span>
+<span class="nc" id="L1113">                logger.debug(&quot;System is operating with {} so there is no hope of getting the family tree&quot;, agent.getClass().getName());</span>
+            }
+<span class="nc" id="L1115">        } catch (Exception ex) {</span>
+<span class="nc" id="L1116">            logger.debug(&quot;Could not get controlling agent&quot;, ex);</span>
+<span class="nc" id="L1117">        }</span>
+
+        // Nothing found?
+<span class="nc" id="L1120">        return null;</span>
+    }
+
+    @Override
+    public boolean isDenied(String s) {
+<span class="fc" id="L1125">        return denyList.contains(s);</span>
+    }
+
+    /**
+     * This method should return a list of all the parameters that a subclass Place will potentially modify (this includes
+     * adding, removing, or changing the value of).
+     *
+     * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.
+     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will
+     * become abstract.
+     *
+     * @return a List&amp;lt;String&amp;gt; of all parameter names that a Place will add, remove, or change the value of
+     */
+    protected List&lt;String&gt; getParametersModified() {
+<span class="nc" id="L1139">        return Collections.emptyList();</span>
+    }
+
+    /**
+     * This method should return a list of all the alternate views that a subclass Place will potentially modify (this
+     * includes adding, removing, or changing the value of).
+     *
+     * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.
+     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will
+     * become abstract.
+     *
+     * @return a List&amp;lt;String&amp;gt; of all alternate view names that a Place will add, remove, or change the value of
+     */
+    protected List&lt;String&gt; getAlternateViewsModified() {
+<span class="nc" id="L1153">        return Collections.emptyList();</span>
+    }
+
+    /**
+     * This method should return a list of all the output forms that a subclass Place will potentially output
+     *
+     * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.
+     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will
+     * become abstract.
+     *
+     * @return a List&amp;lt;String&amp;gt; of all output forms that a Place may output
+     */
+    protected List&lt;String&gt; getOutputForms() {
+<span class="nc" id="L1166">        return Collections.emptyList();</span>
+    }
+
+    /**
+     * This method should return a list of all the file types that a subclass Place will potentially output
+     *
+     * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.
+     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will
+     * become abstract.
+     *
+     * @return a List&amp;lt;String&amp;gt; of all file types that a Place may output
+     */
+    protected List&lt;String&gt; getFileTypes() {
+<span class="nc" id="L1179">        return Collections.emptyList();</span>
+    }
+
+    /**
+     * This method should return true if the Place may alter the IBaseDataObject data[] (i.e.PrimaryView) in any way, and
+     * false otherwise
+     *
+     * @return true if the data[] member may be altered by the Place, false otherwise
+     */
+    protected boolean changesPrimaryView() {
+<span class="nc" id="L1189">        return false;</span>
+    }
+
+    /**
+     * This method should return true if the Place may create any &quot;extracted&quot; records, and false otherwise
+     *
+     * @return true if the Place may create &quot;extracted&quot; records, false otherwise
+     */
+    protected boolean createsExtractedRecords() {
+<span class="nc" id="L1198">        return false;</span>
+    }
+
+    /**
+     * This method should return true if the Place may sprout &quot;child&quot; IBaseDataObjects, and false otherwise
+     *
+     * @return true if the Place may sprout children, false otherwise
+     */
+    protected boolean sproutsChildren() {
+<span class="nc" id="L1207">        return false;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

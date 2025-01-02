@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WorkBundle.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.pickup</a> &gt; <span class="el_source">WorkBundle.java</span></div><h1>WorkBundle.java</h1><pre class="source lang-java linenums">package emissary.pickup;
+
+import emissary.util.xml.SaferJDOMUtil;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+import javax.annotation.Nullable;
+
+/**
+ * Used to communicate between the TreePickUpPlace and TreeSpace about a set of files to process.
+ * &lt;p&gt;
+ * Two times are tracked for the files in each work bundle - the &quot;youngest&quot; modification time and the &quot;oldest&quot;
+ * modification time, both initially entered as time from the epoch. However, the concept of &quot;youngest&quot; and &quot;oldest&quot; is
+ * relative to the construction time, so that:
+ * &lt;p&gt;
+ * getOldestFileModificationTime() &amp;lt;= getYoungestFileModificationTime()
+ */
+public final class WorkBundle implements Comparable&lt;WorkBundle&gt; {
+
+<span class="fc" id="L30">    private static final Logger logger = LoggerFactory.getLogger(WorkBundle.class);</span>
+
+    static final int MAX_UNITS = 1024;
+
+    // Unique ID for this work bundle
+    String bundleId;
+
+    // Configured output root for finding data on remote side
+    String outputRoot;
+
+    // Configuration passed to remote side for producing output name
+    String eatPrefix;
+
+    // Database case id for the work in this bundle
+<span class="fc" id="L44">    @Nullable</span>
+    String caseId = null;
+
+    // Priority of this work bundle
+<span class="fc" id="L48">    int priority = Priority.DEFAULT;</span>
+
+    // Flag to note if the bundle is in simple mode
+<span class="fc" id="L51">    boolean simpleMode = false;</span>
+
+<span class="fc" id="L53">    List&lt;WorkUnit&gt; workUnitList = new ArrayList&lt;&gt;();</span>
+
+    // Where being processed
+    String sentTo;
+
+    // Cumulative errors in processing tries
+<span class="fc" id="L59">    int errorCount = 0;</span>
+
+    /**
+     * The oldest file in the bundle in millis since epoch
+     */
+<span class="fc" id="L64">    long oldestFileModificationTime = Long.MAX_VALUE;</span>
+
+    /**
+     * The youngest file in the bundle in millis since epoch
+     */
+<span class="fc" id="L69">    long youngestFileModificationTime = Long.MIN_VALUE;</span>
+
+    // Aggregate file size
+<span class="fc" id="L72">    long totalFileSize = 0L;</span>
+
+    /**
+     * Public default constructor
+     */
+<span class="fc" id="L77">    public WorkBundle() {</span>
+<span class="fc" id="L78">        bundleId = generateId();</span>
+<span class="fc" id="L79">    }</span>
+
+    /**
+     * Public constructor with args
+     * 
+     * @param outputRoot root directory for files
+     * @param eatPrefix used when constructing output name
+     */
+<span class="fc" id="L87">    public WorkBundle(String outputRoot, String eatPrefix) {</span>
+<span class="fc" id="L88">        bundleId = generateId();</span>
+<span class="fc" id="L89">        this.outputRoot = outputRoot;</span>
+<span class="fc" id="L90">        this.eatPrefix = eatPrefix;</span>
+<span class="fc" id="L91">    }</span>
+
+    /**
+     * Build one as a copy of another, generating a new unique id for the copy. Transient fields sentTo and errorCount are
+     * not copied by this constructor
+     * 
+     * @param that the work bundle to copy
+     */
+<span class="fc" id="L99">    public WorkBundle(WorkBundle that) {</span>
+<span class="fc" id="L100">        this.bundleId = that.bundleId;</span>
+<span class="fc" id="L101">        this.outputRoot = that.getOutputRoot();</span>
+<span class="fc" id="L102">        this.eatPrefix = that.getEatPrefix();</span>
+<span class="fc" id="L103">        this.caseId = that.getCaseId();</span>
+<span class="fc" id="L104">        this.sentTo = that.sentTo;</span>
+<span class="fc" id="L105">        this.errorCount = that.errorCount;</span>
+<span class="fc" id="L106">        this.priority = that.getPriority();</span>
+<span class="fc" id="L107">        this.simpleMode = that.getSimpleMode();</span>
+<span class="fc" id="L108">        this.oldestFileModificationTime = that.oldestFileModificationTime;</span>
+<span class="fc" id="L109">        this.youngestFileModificationTime = that.youngestFileModificationTime;</span>
+<span class="fc" id="L110">        this.totalFileSize = that.totalFileSize;</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        if (!that.getWorkUnitList().isEmpty()) {</span>
+<span class="fc" id="L112">            this.addWorkUnits(that.getWorkUnitList());</span>
+        }
+<span class="fc" id="L114">        resetBundleId();</span>
+<span class="fc" id="L115">    }</span>
+
+    /**
+     * Deserialize a WorkBundle from a DataInputStream
+     *
+     * @param in the stream to read from
+     * @return the deserialized WorkBundle
+     * @throws IOException if there is a problem reading the stream or it contains more than &lt;code&gt;MAX_UNITS&lt;/code&gt; work
+     *         units.
+     */
+    public static WorkBundle readFromStream(DataInputStream in) throws IOException {
+<span class="fc" id="L126">        WorkBundle wb = new WorkBundle();</span>
+<span class="fc" id="L127">        wb.bundleId = readUtfOrNull(in);</span>
+<span class="fc" id="L128">        wb.outputRoot = readUtfOrNull(in);</span>
+<span class="fc" id="L129">        wb.eatPrefix = readUtfOrNull(in);</span>
+<span class="fc" id="L130">        wb.caseId = readUtfOrNull(in);</span>
+<span class="fc" id="L131">        wb.sentTo = readUtfOrNull(in);</span>
+<span class="fc" id="L132">        wb.errorCount = in.readInt();</span>
+<span class="fc" id="L133">        wb.priority = in.readInt();</span>
+<span class="fc" id="L134">        wb.simpleMode = in.readBoolean();</span>
+<span class="fc" id="L135">        wb.oldestFileModificationTime = in.readLong();</span>
+<span class="fc" id="L136">        wb.youngestFileModificationTime = in.readLong();</span>
+<span class="fc" id="L137">        wb.totalFileSize = in.readLong();</span>
+<span class="fc" id="L138">        int workUnitSize = in.readInt();</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">        if (workUnitSize &gt; MAX_UNITS) {</span>
+<span class="fc" id="L140">            throw new IOException(</span>
+                    &quot;Exception when reading: WorkBundle may not contain more then &quot; + MAX_UNITS + &quot; WorkUnits (saw: &quot; + workUnitSize + &quot;).&quot;);
+        }
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        for (int i = 0; i &lt; workUnitSize; i++) {</span>
+<span class="fc" id="L144">            wb.addWorkUnit(WorkUnit.readFromStream(in));</span>
+        }
+<span class="fc" id="L146">        return wb;</span>
+    }
+
+    /**
+     * Serialize this WorkBundle to a DataOutputStream
+     *
+     * @param out the stream to write to.
+     * @throws IOException if there is a problem writing to the stream.
+     */
+    public void writeToStream(DataOutputStream out) throws IOException {
+<span class="fc" id="L156">        writeUtfOrNull(bundleId, out);</span>
+<span class="fc" id="L157">        writeUtfOrNull(outputRoot, out);</span>
+<span class="fc" id="L158">        writeUtfOrNull(eatPrefix, out);</span>
+<span class="fc" id="L159">        writeUtfOrNull(caseId, out);</span>
+<span class="fc" id="L160">        writeUtfOrNull(sentTo, out);</span>
+<span class="fc" id="L161">        out.writeInt(errorCount);</span>
+<span class="fc" id="L162">        out.writeInt(priority);</span>
+<span class="fc" id="L163">        out.writeBoolean(simpleMode);</span>
+<span class="fc" id="L164">        out.writeLong(oldestFileModificationTime);</span>
+<span class="fc" id="L165">        out.writeLong(youngestFileModificationTime);</span>
+<span class="fc" id="L166">        out.writeLong(totalFileSize);</span>
+<span class="fc" id="L167">        out.writeInt(workUnitList.size());</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">        if (workUnitList.size() &gt; MAX_UNITS) {</span>
+<span class="nc" id="L169">            throw new IOException(</span>
+<span class="nc" id="L170">                    &quot;Exception when writing: WorkBundle may not contain more then &quot; + MAX_UNITS + &quot; WorkUnits (saw: &quot; + workUnitList.size() + &quot;).&quot;);</span>
+        }
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        for (WorkUnit u : workUnitList) {</span>
+<span class="fc" id="L173">            u.writeToStream(out);</span>
+<span class="fc" id="L174">        }</span>
+<span class="fc" id="L175">    }</span>
+
+    @Nullable
+    static String readUtfOrNull(DataInputStream in) throws IOException {
+<span class="fc bfc" id="L179" title="All 2 branches covered.">        if (in.readBoolean()) {</span>
+<span class="fc" id="L180">            return in.readUTF();</span>
+        }
+<span class="fc" id="L182">        return null;</span>
+    }
+
+    static void writeUtfOrNull(@Nullable String s, DataOutputStream out) throws IOException {
+<span class="fc bfc" id="L186" title="All 2 branches covered.">        out.writeBoolean(s != null);</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        if (s != null) {</span>
+<span class="fc" id="L188">            out.writeUTF(s);</span>
+        }
+<span class="fc" id="L190">    }</span>
+
+    /**
+     * Set the work bundle id
+     * 
+     * @param val the new value to set as bundle id
+     */
+    public void setBundleId(String val) {
+<span class="fc" id="L198">        this.bundleId = val;</span>
+<span class="fc" id="L199">    }</span>
+
+    /**
+     * Reset the unique id
+     * 
+     * @return a copy of the new id
+     */
+    public String resetBundleId() {
+<span class="fc" id="L207">        bundleId = generateId();</span>
+<span class="fc" id="L208">        return bundleId;</span>
+    }
+
+    /**
+     * Get the work bundle id
+     */
+    public String getBundleId() {
+<span class="fc" id="L215">        return bundleId;</span>
+    }
+
+    /**
+     * Generate a new unique id
+     * 
+     * @return the new id value
+     */
+    static String generateId() {
+<span class="fc" id="L224">        return UUID.randomUUID().toString();</span>
+    }
+
+    /**
+     * Gets the value of outputRoot
+     * 
+     * @return the value of outputRoot
+     */
+    public String getOutputRoot() {
+<span class="fc" id="L233">        return this.outputRoot;</span>
+    }
+
+    /**
+     * Sets the value of outputRoot
+     * 
+     * @param argOutputRoot Value to assign to this.outputRoot
+     */
+    public void setOutputRoot(@Nullable String argOutputRoot) {
+<span class="fc" id="L242">        this.outputRoot = argOutputRoot;</span>
+<span class="fc" id="L243">    }</span>
+
+    /**
+     * Gets the value of eatPrefix
+     * 
+     * @return the value of eatPrefix
+     */
+    public String getEatPrefix() {
+<span class="fc" id="L251">        return this.eatPrefix;</span>
+    }
+
+    /**
+     * Sets the value of eatPrefix
+     * 
+     * @param argEatPrefix Value to assign to this.eatPrefix
+     */
+    public void setEatPrefix(@Nullable String argEatPrefix) {
+<span class="fc" id="L260">        this.eatPrefix = argEatPrefix;</span>
+<span class="fc" id="L261">    }</span>
+
+    /**
+     * Gets the list of WorkUnits in bundle
+     * 
+     * @return the list of WorkUnits
+     */
+    public List&lt;WorkUnit&gt; getWorkUnitList() {
+<span class="fc" id="L269">        return new ArrayList&lt;&gt;(workUnitList);</span>
+    }
+
+    /**
+     * Gets an iterator over work units
+     * 
+     * @return iterator of WorkUnit
+     */
+    public Iterator&lt;WorkUnit&gt; getWorkUnitIterator() {
+<span class="fc" id="L278">        return workUnitList.iterator();</span>
+    }
+
+    /**
+     * Add a workUnit to the list.
+     *
+     * @param workUnit the workUnit to add
+     * @return number of WorkUnits in list after add
+     * @throws IllegalStateException if adding the unit would cause the bundle to contain more than &lt;code&gt;MAX_UNITS&lt;/code&gt;
+     *         work units
+     */
+    public int addWorkUnit(WorkUnit workUnit) {
+<span class="fc bfc" id="L290" title="All 2 branches covered.">        if (workUnitList.size() &gt;= MAX_UNITS) {</span>
+<span class="fc" id="L291">            throw new IllegalStateException(&quot;WorkBundle may not contain more than &quot; + MAX_UNITS + &quot; WorkUnits.&quot;);</span>
+        }
+<span class="fc" id="L293">        workUnitList.add(workUnit);</span>
+<span class="fc" id="L294">        return size();</span>
+    }
+
+    /**
+     * Add a workunit to the list
+     * 
+     * @param workUnit the workUnit to add
+     * @param fileModificationTimeInMillis the file modification time in milliseconds since epoch
+     * @param fileSize the size of the file added.
+     * @throws IllegalStateException if adding the unit would cause the bundle to contain more than &lt;code&gt;MAX_UNITS&lt;/code&gt;
+     *         work units
+     * @return number of files in this set after update
+     */
+    public int addWorkUnit(WorkUnit workUnit, long fileModificationTimeInMillis, long fileSize) {
+<span class="fc" id="L308">        addWorkUnit(workUnit);</span>
+
+<span class="pc bpc" id="L310" title="1 of 2 branches missed.">        if (fileModificationTimeInMillis &lt; oldestFileModificationTime) {</span>
+<span class="fc" id="L311">            oldestFileModificationTime = fileModificationTimeInMillis;</span>
+        }
+<span class="fc bfc" id="L313" title="All 2 branches covered.">        if (fileModificationTimeInMillis &gt; youngestFileModificationTime) {</span>
+<span class="fc" id="L314">            youngestFileModificationTime = fileModificationTimeInMillis;</span>
+        }
+<span class="fc" id="L316">        totalFileSize += fileSize;</span>
+<span class="fc" id="L317">        return size();</span>
+    }
+
+    /**
+     * Add from a list, without adjusting file modification time tracking.
+     * 
+     * @param list a list of WorkUnits to add to this bundle
+     * @return the total size of WorkUnits in this bundle
+     * @throws IllegalStateException if adding the units would cause the bundle to contain more than &lt;code&gt;MAX_UNITS&lt;/code&gt;
+     *         work units
+     */
+    int addWorkUnits(List&lt;WorkUnit&gt; list) { // This appears to only be used by unit tests and the copy constructor
+<span class="fc bfc" id="L329" title="All 2 branches covered.">        if (workUnitList.size() + list.size() &gt; MAX_UNITS) {</span>
+<span class="fc" id="L330">            throw new IllegalStateException(&quot;WorkBundle may not contain more than &quot; + MAX_UNITS + &quot; WorkUnits.&quot;);</span>
+        }
+<span class="fc" id="L332">        workUnitList.addAll(list);</span>
+<span class="fc" id="L333">        return workUnitList.size();</span>
+    }
+
+    /**
+     * Gets the list of file names
+     * 
+     * @return the string values of filenames
+     */
+    public List&lt;String&gt; getFileNameList() {
+<span class="fc" id="L342">        ArrayList&lt;String&gt; fileNameList = new ArrayList&lt;&gt;(workUnitList.size());</span>
+<span class="fc bfc" id="L343" title="All 2 branches covered.">        for (WorkUnit workUnit : workUnitList) {</span>
+<span class="fc" id="L344">            fileNameList.add(workUnit.getFileName());</span>
+<span class="fc" id="L345">        }</span>
+
+<span class="fc" id="L347">        return fileNameList;</span>
+    }
+
+    /**
+     * Gets an iterator over file names
+     * 
+     * @return iterator of String filename values
+     */
+    public Iterator&lt;String&gt; getFileNameIterator() {
+<span class="fc" id="L356">        return getFileNameList().iterator();</span>
+    }
+
+    /**
+     * Add a file to the list, without adjusting file modification time tracking.
+     * 
+     * @param file string file name consistent with outputRoot
+     * @return number of files in this set after update
+     * @throws IllegalStateException if adding the file would cause the bundle to contain more than &lt;code&gt;MAX_UNITS&lt;/code&gt;
+     *         work units
+     */
+    public int addFileName(String file) {
+<span class="fc" id="L368">        return addWorkUnit(new WorkUnit(file));</span>
+    }
+
+    /**
+     * Add a file to the list
+     * 
+     * @param file string file name consistent with outputRoot
+     * @param fileModificationTimeInMillis the file modification time in milliseconds since epoch
+     * @param fileSize the size of the file being added
+     * @return number of files in this set after update
+     * @throws IllegalStateException if adding the file would cause the bundle to contain more than &lt;code&gt;MAX_UNITS&lt;/code&gt;
+     *         work units
+     */
+    public int addFileName(String file, long fileModificationTimeInMillis, long fileSize) {
+<span class="fc" id="L382">        return addWorkUnit(new WorkUnit(file), fileModificationTimeInMillis, fileSize);</span>
+    }
+
+    /**
+     * Add files to the list, without adjusting file modification time tracking.
+     * 
+     * @param file string file names consistent with outputRoot
+     * @return number of files in this set after update
+     * @throws IllegalStateException if adding the files would cause the bundle to contain more than &lt;code&gt;MAX_UNITS&lt;/code&gt;
+     *         work units
+     */
+    int addFileNames(String[] file) { // This appears to only be used by unit tests
+<span class="fc bfc" id="L394" title="All 2 branches covered.">        for (String f : file) {</span>
+<span class="fc" id="L395">            addWorkUnit(new WorkUnit(f));</span>
+        }
+<span class="fc" id="L397">        return size();</span>
+    }
+
+    /**
+     * Add from a list, without adjusting file modification time tracking.
+     * 
+     * @param list the list of files to add
+     * @throws IllegalStateException if adding the files would cause the bundle to contain more than &lt;code&gt;MAX_UNITS&lt;/code&gt;
+     *         work units
+     */
+    int addFileNames(List&lt;String&gt; list) { // This appears to only be used by unit tests and the copy
+                                          // constructor
+<span class="fc bfc" id="L409" title="All 2 branches covered.">        for (String file : list) {</span>
+<span class="fc" id="L410">            addWorkUnit(new WorkUnit(file));</span>
+<span class="fc" id="L411">        }</span>
+<span class="fc" id="L412">        return size();</span>
+    }
+
+    /**
+     * Get the number of files contained
+     */
+    public int size() {
+<span class="fc" id="L419">        return workUnitList.size();</span>
+    }
+
+    /**
+     * Clear the files from the list
+     */
+    void clearFiles() {
+        // This is only used for testing
+<span class="fc" id="L427">        workUnitList.clear();</span>
+<span class="fc" id="L428">        oldestFileModificationTime = Long.MAX_VALUE;</span>
+<span class="fc" id="L429">        youngestFileModificationTime = Long.MIN_VALUE;</span>
+<span class="fc" id="L430">        totalFileSize = 0L;</span>
+<span class="fc" id="L431">    }</span>
+
+    /**
+     * Gets the value of caseId
+     * 
+     * @return the value of caseId
+     */
+    public String getCaseId() {
+<span class="fc" id="L439">        return this.caseId;</span>
+    }
+
+    /**
+     * Sets the value of caseId
+     * 
+     * @param argCaseId Value to assign to this.caseId
+     */
+    public void setCaseId(@Nullable String argCaseId) {
+<span class="fc" id="L448">        this.caseId = argCaseId;</span>
+<span class="fc" id="L449">    }</span>
+
+    /**
+     * Set the transient sentTo indicating inprogress work
+     */
+    public void setSentTo(@Nullable String place) {
+<span class="fc" id="L455">        this.sentTo = place;</span>
+<span class="fc" id="L456">    }</span>
+
+    /**
+     * Get the transient sentTo
+     */
+    public String getSentTo() {
+<span class="fc" id="L462">        return sentTo;</span>
+    }
+
+    /**
+     * Get the transient error count
+     */
+    public int getErrorCount() {
+<span class="fc" id="L469">        return errorCount;</span>
+    }
+
+    /**
+     * Increment the error count
+     * 
+     * @return the new value
+     */
+    public int incrementErrorCount() {
+<span class="fc" id="L478">        return ++errorCount;</span>
+    }
+
+    /**
+     * Set a new value for the error count
+     */
+    public void setErrorCount(int val) {
+<span class="fc" id="L485">        errorCount = val;</span>
+<span class="fc" id="L486">    }</span>
+
+    /**
+     * Set a new priority
+     */
+    public void setPriority(int val) {
+<span class="fc" id="L492">        priority = val;</span>
+<span class="fc" id="L493">    }</span>
+
+    /**
+     * Get the priority
+     */
+    public int getPriority() {
+<span class="fc" id="L499">        return priority;</span>
+    }
+
+    /**
+     * Set the value for the simple flag
+     * 
+     * @param val the new value for the flag
+     */
+    public void setSimpleMode(boolean val) {
+<span class="fc" id="L508">        simpleMode = val;</span>
+<span class="fc" id="L509">    }</span>
+
+    /**
+     * Get the value for the simple mode flag
+     */
+    public boolean getSimpleMode() {
+<span class="fc" id="L515">        return simpleMode;</span>
+    }
+
+    public long getOldestFileModificationTime() {
+<span class="fc" id="L519">        return oldestFileModificationTime;</span>
+    }
+
+    public void setOldestFileModificationTime(long oldestFileModificationTime) {
+<span class="fc" id="L523">        this.oldestFileModificationTime = oldestFileModificationTime;</span>
+<span class="fc" id="L524">    }</span>
+
+    public long getYoungestFileModificationTime() {
+<span class="fc" id="L527">        return youngestFileModificationTime;</span>
+    }
+
+    public void setYoungestFileModificationTime(long youngestFileModificationTime) {
+<span class="fc" id="L531">        this.youngestFileModificationTime = youngestFileModificationTime;</span>
+<span class="fc" id="L532">    }</span>
+
+    public long getTotalFileSize() {
+<span class="fc" id="L535">        return totalFileSize;</span>
+    }
+
+    public void setTotalFileSize(long totalFileSize) {
+<span class="fc" id="L539">        this.totalFileSize = totalFileSize;</span>
+<span class="fc" id="L540">    }</span>
+
+    /**
+     * Compare in priority order, lower numbers mean high priority data Note: this comparator imposes ordering that is
+     * inconsistent with equals
+     */
+    @Override
+    public int compareTo(WorkBundle that) {
+<span class="fc bfc" id="L548" title="All 2 branches covered.">        if (this.getPriority() &lt; that.getPriority()) {</span>
+<span class="fc" id="L549">            return -1;</span>
+<span class="fc bfc" id="L550" title="All 2 branches covered.">        } else if (that.getPriority() &lt; this.getPriority()) {</span>
+<span class="fc" id="L551">            return 1;</span>
+        } else {
+<span class="fc" id="L553">            return 0;</span>
+        }
+    }
+
+    /**
+     * Provide string version
+     */
+    @Override
+    public String toString() {
+<span class="fc" id="L562">        return &quot;WorkBundle[id=&quot; + getBundleId() + &quot;, pri=&quot; + getPriority() + &quot;, files=&quot; + getFileNameList().toString() + &quot;, eatPrefix=&quot;</span>
+<span class="fc" id="L563">                + getEatPrefix()</span>
+<span class="fc" id="L564">                + &quot;, outputRoot=&quot; + getOutputRoot() + &quot;, sentTo=&quot; + getSentTo() + &quot;, errorCount=&quot; + getErrorCount() + &quot;, totalFileSize=&quot;</span>
+<span class="fc" id="L565">                + getTotalFileSize() + &quot;, oldestModTime=&quot; + getOldestFileModificationTime() + &quot;, youngModTime=&quot; + getYoungestFileModificationTime()</span>
+<span class="fc" id="L566">                + &quot;, simple=&quot; + getSimpleMode() + &quot;, caseId=&quot; + getCaseId() + &quot;, size=&quot; + size() + &quot;]&quot;;</span>
+    }
+
+    public String toXml() {
+<span class="fc" id="L570">        Element root = new Element(&quot;workBundle&quot;);</span>
+<span class="fc" id="L571">        root.addContent(SaferJDOMUtil.simpleElement(&quot;bundleId&quot;, getBundleId()));</span>
+<span class="fc" id="L572">        root.addContent(SaferJDOMUtil.simpleElement(&quot;outputRoot&quot;, getOutputRoot()));</span>
+<span class="fc" id="L573">        root.addContent(SaferJDOMUtil.simpleElement(&quot;eatPrefix&quot;, getEatPrefix()));</span>
+<span class="fc" id="L574">        root.addContent(SaferJDOMUtil.simpleElement(&quot;caseId&quot;, getCaseId()));</span>
+<span class="fc" id="L575">        root.addContent(SaferJDOMUtil.simpleElement(&quot;sentTo&quot;, getSentTo()));</span>
+<span class="fc" id="L576">        root.addContent(SaferJDOMUtil.simpleElement(&quot;errorCount&quot;, getErrorCount()));</span>
+<span class="fc" id="L577">        root.addContent(SaferJDOMUtil.simpleElement(&quot;priority&quot;, getPriority()));</span>
+<span class="fc" id="L578">        root.addContent(SaferJDOMUtil.simpleElement(&quot;simpleMode&quot;, getSimpleMode()));</span>
+<span class="fc" id="L579">        root.addContent(SaferJDOMUtil.simpleElement(&quot;oldestFileModificationTime&quot;, getOldestFileModificationTime()));</span>
+<span class="fc" id="L580">        root.addContent(SaferJDOMUtil.simpleElement(&quot;youngestFileModificationTime&quot;, getYoungestFileModificationTime()));</span>
+<span class="fc" id="L581">        root.addContent(SaferJDOMUtil.simpleElement(&quot;totalFileSize&quot;, getTotalFileSize()));</span>
+
+<span class="fc bfc" id="L583" title="All 2 branches covered.">        for (WorkUnit wu : workUnitList) {</span>
+<span class="fc" id="L584">            Element workunit = new Element(&quot;workUnit&quot;);</span>
+<span class="fc" id="L585">            workunit.addContent(SaferJDOMUtil.simpleElement(&quot;workFileName&quot;, wu.getFileName()));</span>
+<span class="fc bfc" id="L586" title="All 2 branches covered.">            if (wu.getTransactionId() != null) {</span>
+<span class="fc" id="L587">                workunit.addContent(SaferJDOMUtil.simpleElement(&quot;transactionId&quot;, wu.getTransactionId()));</span>
+            }
+<span class="fc" id="L589">            workunit.addContent(SaferJDOMUtil.simpleElement(&quot;failedToParse&quot;, wu.failedToParse()));</span>
+<span class="fc" id="L590">            workunit.addContent(SaferJDOMUtil.simpleElement(&quot;failedToProcess&quot;, wu.failedToProcess()));</span>
+
+<span class="fc" id="L592">            root.addContent(workunit);</span>
+<span class="fc" id="L593">        }</span>
+
+<span class="fc" id="L595">        Document jdom = new Document(root);</span>
+<span class="fc" id="L596">        return SaferJDOMUtil.toString(jdom);</span>
+    }
+
+    /**
+     * Build a WorkBundle object from xml
+     * 
+     * @param xml the xml string representing a WorkBundle
+     * @return the constructed WorkBundle or null on error
+     */
+    @Nullable
+    public static WorkBundle buildWorkBundle(String xml) {
+        Document jdoc;
+        try {
+<span class="fc" id="L609">            jdoc = SaferJDOMUtil.createDocument(xml);</span>
+<span class="fc" id="L610">            return buildWorkBundle(jdoc);</span>
+<span class="nc" id="L611">        } catch (Exception ex) {</span>
+<span class="nc" id="L612">            logger.error(&quot;Cannot make WorkBundle from &quot; + xml, ex);</span>
+<span class="nc" id="L613">            return null;</span>
+        }
+    }
+
+    /**
+     * Build a WorkBundle object from a jdom document
+     * 
+     * @param jdom the jdom document representing a work bundle object
+     * @return the constructed WorkBundle or null on error
+     */
+    @Nullable
+    private static WorkBundle buildWorkBundle(Document jdom) {
+<span class="fc" id="L625">        Element root = jdom.getRootElement();</span>
+<span class="pc bpc" id="L626" title="1 of 2 branches missed.">        if (root == null) {</span>
+<span class="nc" id="L627">            logger.error(&quot;Document does not have a root element!&quot;);</span>
+<span class="nc" id="L628">            return null;</span>
+        }
+
+<span class="fc" id="L631">        WorkBundle wb = new WorkBundle();</span>
+<span class="fc" id="L632">        wb.setBundleId(root.getChildTextTrim(&quot;bundleId&quot;));</span>
+<span class="fc" id="L633">        String s = root.getChildTextTrim(&quot;outputRoot&quot;);</span>
+<span class="pc bpc" id="L634" title="1 of 4 branches missed.">        if (s != null &amp;&amp; s.length() &gt; 0) {</span>
+<span class="fc" id="L635">            wb.setOutputRoot(s);</span>
+        } else {
+<span class="fc" id="L637">            wb.setOutputRoot(null);</span>
+        }
+
+<span class="fc" id="L640">        s = root.getChildTextTrim(&quot;eatPrefix&quot;);</span>
+<span class="pc bpc" id="L641" title="1 of 4 branches missed.">        if (s != null &amp;&amp; s.length() &gt; 0) {</span>
+<span class="fc" id="L642">            wb.setEatPrefix(s);</span>
+        } else {
+<span class="fc" id="L644">            wb.setEatPrefix(null);</span>
+        }
+
+<span class="fc" id="L647">        s = root.getChildTextTrim(&quot;caseId&quot;);</span>
+<span class="pc bpc" id="L648" title="1 of 4 branches missed.">        if (s != null &amp;&amp; s.length() &gt; 0) {</span>
+<span class="fc" id="L649">            wb.setCaseId(s);</span>
+        } else {
+<span class="fc" id="L651">            wb.setCaseId(null);</span>
+        }
+
+<span class="fc" id="L654">        s = root.getChildTextTrim(&quot;sentTo&quot;);</span>
+<span class="pc bpc" id="L655" title="2 of 4 branches missed.">        if (s != null &amp;&amp; s.length() &gt; 0) {</span>
+<span class="nc" id="L656">            wb.setSentTo(s);</span>
+        } else {
+<span class="fc" id="L658">            wb.setSentTo(null);</span>
+        }
+
+<span class="fc" id="L661">        wb.setPriority(SaferJDOMUtil.getChildIntValue(root, &quot;priority&quot;));</span>
+<span class="fc" id="L662">        wb.setSimpleMode(SaferJDOMUtil.getChildBooleanValue(root, &quot;simpleMode&quot;));</span>
+<span class="fc" id="L663">        wb.setOldestFileModificationTime(SaferJDOMUtil.getChildLongValue(root, &quot;oldestFileModificationTime&quot;));</span>
+<span class="fc" id="L664">        wb.setYoungestFileModificationTime(SaferJDOMUtil.getChildLongValue(root, &quot;youngestFileModificationTime&quot;));</span>
+<span class="fc" id="L665">        wb.setTotalFileSize(SaferJDOMUtil.getChildLongValue(root, &quot;totalFileSize&quot;));</span>
+<span class="fc" id="L666">        String serr = root.getChildTextTrim(&quot;errorCount&quot;);</span>
+<span class="pc bpc" id="L667" title="2 of 4 branches missed.">        if (serr != null &amp;&amp; serr.length() &gt; 0) {</span>
+<span class="fc" id="L668">            wb.setErrorCount(Integer.parseInt(serr));</span>
+        }
+
+<span class="fc bfc" id="L671" title="All 2 branches covered.">        for (Element wu : root.getChildren(&quot;workUnit&quot;)) {</span>
+<span class="fc" id="L672">            String filename = wu.getChildTextTrim(&quot;workFileName&quot;);</span>
+<span class="fc" id="L673">            String transactionId = wu.getChildTextTrim(&quot;transactionId&quot;);</span>
+<span class="fc" id="L674">            boolean failedToParse = Boolean.parseBoolean(wu.getChildTextTrim(&quot;failedToParse&quot;));</span>
+<span class="fc" id="L675">            boolean failedToProcess = Boolean.parseBoolean(wu.getChildTextTrim(&quot;failedToProcess&quot;));</span>
+<span class="fc" id="L676">            wb.addWorkUnit(new WorkUnit(filename, transactionId, failedToParse, failedToProcess));</span>
+<span class="fc" id="L677">        }</span>
+
+<span class="fc" id="L679">        return wb;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FastBoyerMoore.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.search</a> &gt; <span class="el_source">FastBoyerMoore.java</span></div><h1>FastBoyerMoore.java</h1><pre class="source lang-java linenums">package emissary.util.search;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.annotation.Nullable;
+
+@SuppressWarnings(&quot;AvoidObjectArrays&quot;)
+public class FastBoyerMoore {
+<span class="fc" id="L14">    private static final Logger logger = LoggerFactory.getLogger(FastBoyerMoore.class);</span>
+    public byte[][] keywords;
+    int minKeywordLength;
+<span class="pc" id="L17">    int[] lookup = new int[259];</span>
+    transient BackwardsTreeScanner scanner;
+<span class="pc" id="L19">    @Nullable</span>
+    byte[] data = null;
+    BackwardsTreeScanner.State root;
+
+    // copy constructor
+
+<span class="nc" id="L25">    private FastBoyerMoore() {}</span>
+
+    public FastBoyerMoore(final FastBoyerMoore original) {
+<span class="nc" id="L28">        this();</span>
+<span class="nc" id="L29">        this.keywords = original.keywords;</span>
+<span class="nc" id="L30">        this.minKeywordLength = original.minKeywordLength;</span>
+<span class="nc" id="L31">        this.lookup = original.lookup;</span>
+<span class="nc" id="L32">        this.root = original.root;</span>
+<span class="nc" id="L33">        this.scanner = new BackwardsTreeScanner(original.scanner);</span>
+<span class="nc" id="L34">    }</span>
+
+<span class="nc" id="L36">    public FastBoyerMoore(final String[] keywordStrings) throws Exception {</span>
+<span class="nc" id="L37">        this.keywords = new byte[keywordStrings.length][];</span>
+<span class="nc" id="L38">        this.minKeywordLength = Integer.MAX_VALUE;</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        for (int i = 0; i &lt; this.keywords.length; i++) {</span>
+<span class="nc" id="L40">            this.keywords[i] = keywordStrings[i].getBytes();</span>
+<span class="nc" id="L41">            this.minKeywordLength = Math.min(this.minKeywordLength, this.keywords[i].length);</span>
+        }
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        for (int i = 0; i &lt; this.lookup.length; i++) {</span>
+<span class="nc" id="L44">            this.lookup[i] = this.minKeywordLength;</span>
+        }
+        // each keyword
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        for (int i = 0; i &lt; this.keywords.length; i++) {</span>
+<span class="nc" id="L48">            final byte[] kw = this.keywords[i];</span>
+            // each keyword character
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            for (int j = 0; j &lt; kw.length - 1; j++) {</span>
+<span class="nc" id="L51">                this.lookup[kw[j]] = Math.min(this.lookup[kw[j]], kw.length - j - 1);</span>
+            }
+        }
+<span class="nc" id="L54">        this.data = null;</span>
+<span class="nc" id="L55">        this.scanner = new BackwardsTreeScanner(keywordStrings);</span>
+<span class="nc" id="L56">        this.root = this.scanner.getRoot();</span>
+<span class="nc" id="L57">    }</span>
+
+<span class="fc" id="L59">    public FastBoyerMoore(final String[][] keywordStrings) throws Exception {</span>
+<span class="fc" id="L60">        this.minKeywordLength = Integer.MAX_VALUE;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (int i = 0; i &lt; keywordStrings.length; i++) {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            for (int j = 0; j &lt; keywordStrings[i].length; j++) {</span>
+<span class="fc" id="L63">                this.minKeywordLength = Math.min(this.minKeywordLength, keywordStrings[i][j].length());</span>
+            }
+        }
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        for (int i = 0; i &lt; this.lookup.length; i++) {</span>
+<span class="fc" id="L67">            this.lookup[i] = this.minKeywordLength;</span>
+        }
+        // each keyword
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        for (int i = 0; i &lt; keywordStrings.length; i++) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">            for (int j = 0; j &lt; keywordStrings[i].length; j++) {</span>
+<span class="fc" id="L72">                final byte[] kw = keywordStrings[i][j].getBytes();</span>
+                // each keyword character
+<span class="fc bfc" id="L74" title="All 2 branches covered.">                for (int k = 0; k &lt; kw.length - 1; k++) {</span>
+<span class="fc" id="L75">                    this.lookup[kw[k]] = Math.min(this.lookup[kw[k]], kw.length - k - 1);</span>
+                }
+            }
+        }
+<span class="fc" id="L79">        this.data = null;</span>
+<span class="fc" id="L80">        this.scanner = new BackwardsTreeScanner(keywordStrings);</span>
+<span class="fc" id="L81">        this.root = this.scanner.getRoot();</span>
+<span class="fc" id="L82">    }</span>
+
+    public void setData(final byte[] dataArg) {
+<span class="nc" id="L85">        this.scanner.setData(dataArg);</span>
+<span class="nc" id="L86">        this.data = dataArg;</span>
+<span class="nc" id="L87">    }</span>
+
+    public void scan(final byte[] dataArg, final int start, final int end, final Collection&lt;int[]&gt; result) {
+<span class="nc" id="L90">        this.data = dataArg;</span>
+<span class="nc" id="L91">        this.scanner.setData(dataArg);</span>
+<span class="nc" id="L92">        scan(start, end, result);</span>
+<span class="nc" id="L93">    }</span>
+
+    public void scan(final int start, final int end, final Collection&lt;int[]&gt; result) {
+<span class="nc" id="L96">        final int actualEnd = Math.min(end, this.data.length);</span>
+<span class="nc" id="L97">        int pos = start;</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        while (pos &lt; actualEnd) {</span>
+<span class="nc" id="L99">            final int ch = this.data[pos] &amp; 0x7f;</span>
+<span class="nc" id="L100">            final int jump = this.lookup[ch];</span>
+<span class="nc" id="L101">            BackwardsTreeScanner.State state = this.root.nextStates[ch];</span>
+<span class="nc" id="L102">            int curPos = pos - 1;</span>
+<span class="nc bnc" id="L103" title="All 4 branches missed.">            while ((state != null) &amp;&amp; (curPos &gt;= 0)) {</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">                if (state.matches != null) {</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">                    for (int i = 0; i &lt; state.matches.length; i++) {</span>
+<span class="nc" id="L106">                        final int id = state.matches[i];</span>
+<span class="nc" id="L107">                        final int[] tmp = new int[3];</span>
+<span class="nc" id="L108">                        tmp[0] = curPos + 1;</span>
+<span class="nc" id="L109">                        tmp[1] = id;</span>
+<span class="nc" id="L110">                        tmp[2] = pos - curPos;</span>
+<span class="nc" id="L111">                        result.add(tmp);</span>
+                    }
+                }
+<span class="nc" id="L114">                final int ch2 = this.data[curPos] &amp; 0x7f;</span>
+<span class="nc" id="L115">                state = state.nextStates[ch2];</span>
+<span class="nc" id="L116">                curPos--;</span>
+<span class="nc" id="L117">            }</span>
+<span class="nc bnc" id="L118" title="All 4 branches missed.">            if ((state != null) &amp;&amp; (curPos == -1)) {</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">                for (int i = 0; i &lt; state.matches.length; i++) {</span>
+<span class="nc" id="L120">                    final int id = state.matches[i];</span>
+<span class="nc" id="L121">                    final int[] tmp = new int[3];</span>
+<span class="nc" id="L122">                    tmp[0] = curPos + 1;</span>
+<span class="nc" id="L123">                    tmp[1] = id;</span>
+<span class="nc" id="L124">                    tmp[2] = pos - curPos;</span>
+<span class="nc" id="L125">                    result.add(tmp);</span>
+                }
+            }
+<span class="nc" id="L128">            pos += jump;</span>
+<span class="nc" id="L129">        }</span>
+<span class="nc" id="L130">    }</span>
+
+    public int staticSingleScan(final byte[] dataArg, final int start, final int end, final Collection&lt;int[]&gt; result) {
+<span class="fc" id="L133">        final int actualEnd = Math.min(end, dataArg.length);</span>
+<span class="fc" id="L134">        boolean found = false;</span>
+<span class="fc" id="L135">        int pos = start;</span>
+<span class="fc bfc" id="L136" title="All 4 branches covered.">        while ((pos &lt; actualEnd) &amp;&amp; !found) {</span>
+<span class="fc" id="L137">            final int ch = dataArg[pos] &amp; 0x7f;</span>
+<span class="fc" id="L138">            final int jump = this.lookup[ch];</span>
+<span class="fc" id="L139">            BackwardsTreeScanner.State state = this.root.nextStates[ch];</span>
+<span class="fc" id="L140">            int curPos = pos - 1;</span>
+<span class="pc bpc" id="L141" title="1 of 4 branches missed.">            while ((state != null) &amp;&amp; (curPos &gt;= 0)) {</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">                if (state.matches != null) {</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">                    for (int i = 0; i &lt; state.matches.length; i++) {</span>
+<span class="fc" id="L144">                        final int id = state.matches[i];</span>
+<span class="fc" id="L145">                        final int[] tmp = new int[3];</span>
+<span class="fc" id="L146">                        tmp[0] = curPos + 1;</span>
+<span class="fc" id="L147">                        tmp[1] = id;</span>
+<span class="fc" id="L148">                        tmp[2] = pos - curPos;</span>
+<span class="fc" id="L149">                        result.add(tmp);</span>
+<span class="fc" id="L150">                        found = true;</span>
+                    }
+                }
+<span class="fc" id="L153">                final int ch2 = dataArg[curPos] &amp; 0x7f;</span>
+<span class="fc" id="L154">                state = state.nextStates[ch2];</span>
+<span class="fc" id="L155">                curPos--;</span>
+<span class="fc" id="L156">            }</span>
+<span class="pc bpc" id="L157" title="5 of 6 branches missed.">            if ((state != null) &amp;&amp; (state.matches != null) &amp;&amp; (curPos == -1)) {</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">                for (int i = 0; i &lt; state.matches.length; i++) {</span>
+<span class="nc" id="L159">                    final int id = state.matches[i];</span>
+<span class="nc" id="L160">                    final int[] tmp = new int[3];</span>
+<span class="nc" id="L161">                    tmp[0] = curPos + 1;</span>
+<span class="nc" id="L162">                    tmp[1] = id;</span>
+<span class="nc" id="L163">                    tmp[2] = pos - curPos;</span>
+<span class="nc" id="L164">                    result.add(tmp);</span>
+<span class="nc" id="L165">                    found = true;</span>
+                }
+            }
+<span class="fc" id="L168">            pos += jump;</span>
+<span class="fc" id="L169">        }</span>
+<span class="fc" id="L170">        return pos;</span>
+    }
+
+    public static final int ID = 1;
+    public static final int LOC = 0;
+    public static final int LENGTH = 2;
+
+    public static void main(final String[] args) {
+        try {
+            // a list of interesting keywords. */
+<span class="nc" id="L180">            final String[][] keys = {{&quot;\nABCD&quot;}, // 0,1,2,3,4</span>
+                    {&quot;\nABC&quot;}, // 5 6 7 8
+                    {&quot;\nAB&quot;}, // 9 10 11
+                    {&quot;\n//xyz//&quot;}, // 12 13 14 15 16 17 18 19
+                    {&quot;\nxxxxx&quot;}, // 20 21 22 23 24 25
+                    {&quot;\nabcdefghi&quot;}, // 26 27 28 29 30 31 32 33 34 35
+                    {&quot;\nabcde&quot;, &quot;\nabcdefg&quot;}}; // 36 37 38 39 41 41 42 43 44 45
+            // A string for holding the test data to be searched
+<span class="nc" id="L188">            final StringBuilder dataString = new StringBuilder();</span>
+            // The thing we are testing
+<span class="nc" id="L190">            final FastBoyerMoore scanner = new FastBoyerMoore(keys);</span>
+            // Make up an interesting string. The second half should never match.
+<span class="nc bnc" id="L192" title="All 2 branches missed.">            for (int i = 0; i &lt; keys.length; i++) {</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">                for (int j = 0; j &lt; keys[i].length; j++) {</span>
+<span class="nc" id="L194">                    dataString.append(keys[i][j]);</span>
+                }
+            }
+            // for (int i = 0;i&lt;keys.length;i++)dataString +=keys[i].toString().substring(0,2);
+            // A byte array version of the data.
+<span class="nc" id="L199">            final byte[] dataBytes = dataString.toString().getBytes();</span>
+
+            // A vector for holding the results.
+<span class="nc" id="L202">            final List&lt;int[]&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L203">            scanner.setData(dataBytes);</span>
+<span class="nc" id="L204">            scanner.scan(0, dataBytes.length, result);</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">            for (int i = 0; i &lt; result.size(); i++) {</span>
+<span class="nc" id="L206">                final int[] tmp = result.get(i);</span>
+<span class="nc" id="L207">                logger.info(&quot;Hit At: {} id: {} l: {}&quot;, tmp[0], tmp[1], tmp[2]);</span>
+            }
+<span class="nc" id="L209">        } catch (Exception e) {</span>
+<span class="nc" id="L210">            logger.error(&quot;Exception in test&quot;, e);</span>
+<span class="nc" id="L211">        }</span>
+<span class="nc" id="L212">    }</span>
+
+    /**
+     * This class implements a tree state machine scanner that searches text backwards starting from the end. A list of
+     * strings is provided as the keywords to be searched. This class is usefull for a relatively small set of keywords.
+     * Larger keyword lists can be used if you have memory!
+     *
+     * @author ce
+     * @version 1.0
+     */
+    public static class BackwardsTreeScanner {
+        /** Original list of keywords storred in byte array form. */
+        // byte[][] keywords;
+        /** Root node of tree state diagram. Always start a search from here! */
+<span class="pc" id="L226">        State root = new State((byte) 0);</span>
+<span class="pc" id="L227">        @Nullable</span>
+        byte[] data = null;
+
+<span class="nc" id="L230">        public BackwardsTreeScanner(final BackwardsTreeScanner o) {</span>
+<span class="nc" id="L231">            this.root = o.root;</span>
+<span class="nc" id="L232">        }</span>
+
+<span class="fc" id="L234">        public BackwardsTreeScanner(final String[][] keywordStrings) throws Exception {</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">            for (int i = 0; i &lt; keywordStrings.length; i++) {</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">                for (int j = 0; j &lt; keywordStrings[i].length; j++) {</span>
+<span class="fc" id="L237">                    this.root.learn(keywordStrings[i][j].getBytes(), i);</span>
+                }
+            }
+            // this.root.print(System.out);
+<span class="fc" id="L241">        }</span>
+
+<span class="nc" id="L243">        public BackwardsTreeScanner(final String[] keywordStrings) throws Exception {</span>
+            // make byte arrays
+<span class="nc" id="L245">            final byte[][] keywords = new byte[keywordStrings.length][];</span>
+            // and learn them
+<span class="nc bnc" id="L247" title="All 2 branches missed.">            for (int i = 0; i &lt; keywords.length; i++) {</span>
+<span class="nc" id="L248">                keywords[i] = keywordStrings[i].getBytes();</span>
+<span class="nc" id="L249">                this.root.learn(keywordStrings[i].getBytes(), i);</span>
+            }
+            // this.root.print(System.out);
+<span class="nc" id="L252">        }</span>
+
+        public static void main(final String[] args) {
+            try {
+                // a list of interesting keywords. */
+<span class="nc" id="L257">                final String[][] keys = {{&quot;\nABCD&quot;, &quot;\nABC&quot;, &quot;\nAB&quot;, &quot;\n//xyz//&quot;, &quot;\nxxxxx&quot;, &quot;\nabcdefghi&quot;}, {&quot;\nabcde&quot;, &quot;\nabcdefg&quot;}};</span>
+
+                // The thing we are testing
+<span class="nc" id="L260">                final BackwardsTreeScanner scanner = new BackwardsTreeScanner(keys);</span>
+                // A string for holding the test data to be searched
+<span class="nc" id="L262">                final StringBuilder dataString = new StringBuilder();</span>
+                // Make up an interesting string. The second half should never match.
+<span class="nc bnc" id="L264" title="All 2 branches missed.">                for (int i = 0; i &lt; keys.length; i++) {</span>
+<span class="nc bnc" id="L265" title="All 2 branches missed.">                    for (int j = 0; j &lt; keys[i].length; j++) {</span>
+<span class="nc" id="L266">                        dataString.append(keys[i][j]);</span>
+                    }
+                }
+                // for (int i = 0;i&lt;keys.length;i++)dataString +=keys[i].toString().substring(0,2);
+                // A byte array version of the data.
+<span class="nc" id="L271">                final byte[] dataBytes = dataString.toString().getBytes();</span>
+
+                // A vector for holding the results.
+<span class="nc" id="L274">                final List&lt;int[]&gt; hits = new ArrayList&lt;&gt;();</span>
+                /*
+                 * loop through the data from beginint to end calling scan at each position. This shows how to use scan(), but in
+                 * general this should be used more effediently (with a boyer more algorithm or something.
+                 */
+<span class="nc bnc" id="L279" title="All 2 branches missed.">                for (int pos = 1; pos &lt; dataBytes.length; pos++) {</span>
+<span class="nc" id="L280">                    scanner.scan(dataBytes, pos, hits);</span>
+<span class="nc bnc" id="L281" title="All 2 branches missed.">                    for (int i = 0; i &lt; hits.size(); i++) {</span>
+<span class="nc" id="L282">                        final int[] tmp = hits.get(i);</span>
+<span class="nc" id="L283">                        logger.info(&quot;Hit At: {} id: {} l: {}&quot;, tmp[0], tmp[1], tmp[2]);</span>
+                    }
+<span class="nc" id="L285">                    hits.clear();</span>
+                }
+<span class="nc" id="L287">            } catch (Exception e) {</span>
+<span class="nc" id="L288">                logger.error(&quot;Exception in test&quot;, e);</span>
+<span class="nc" id="L289">            }</span>
+<span class="nc" id="L290">        }</span>
+
+        public static void main2(final String[] args) {
+            try {
+                // a list of interesting keywords. */
+<span class="nc" id="L295">                final String[] keys = {&quot;\nABCD&quot;, &quot;\nABC&quot;, &quot;\nAB&quot;, &quot;\n//xyz//&quot;, &quot;\nxxxxx&quot;, &quot;\nabcdefghi&quot;, &quot;\nabcde&quot;, &quot;\nabcdefg&quot;};</span>
+                // A string for holding the test data to be searched
+<span class="nc" id="L297">                final StringBuilder dataString = new StringBuilder();</span>
+                // The thing we are testing
+<span class="nc" id="L299">                final BackwardsTreeScanner scanner = new BackwardsTreeScanner(keys);</span>
+                // Make up an interesting string. The second half should never match.
+<span class="nc bnc" id="L301" title="All 2 branches missed.">                for (int i = 0; i &lt; keys.length; i++) {</span>
+<span class="nc" id="L302">                    dataString.append(keys[i]);</span>
+                }
+                // for (int i = 0;i&lt;keys.length;i++)dataString +=keys[i].toString().substring(0,2);
+                // A byte array version of the data.
+<span class="nc" id="L306">                final byte[] dataBytes = dataString.toString().getBytes();</span>
+
+                // A vector for holding the results.
+<span class="nc" id="L309">                final List&lt;int[]&gt; hits = new ArrayList&lt;&gt;();</span>
+                /*
+                 * loop through the data from beginint to end calling scan at each position. This shows how to use scan(), but in
+                 * general this should be used more effediently (with a boyer more algorithm or something.
+                 */
+<span class="nc bnc" id="L314" title="All 2 branches missed.">                for (int pos = 1; pos &lt; dataBytes.length; pos++) {</span>
+<span class="nc" id="L315">                    scanner.scan(dataBytes, pos, hits);</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">                    for (int i = 0; i &lt; hits.size(); i++) {</span>
+<span class="nc" id="L317">                        final int[] tmp = hits.get(i);</span>
+<span class="nc" id="L318">                        logger.info(&quot;Hit At: {} id: {}&quot;, tmp[0], tmp[1]);</span>
+                    }
+<span class="nc" id="L320">                    hits.clear();</span>
+                }
+<span class="nc" id="L322">            } catch (Exception e) {</span>
+<span class="nc" id="L323">                logger.error(&quot;Exception in test&quot;, e);</span>
+<span class="nc" id="L324">            }</span>
+<span class="nc" id="L325">        }</span>
+
+        public synchronized State getRoot() {
+<span class="fc" id="L328">            return this.root;</span>
+        }
+
+        public synchronized void setData(final byte[] dataArg) {
+<span class="nc" id="L332">            this.data = dataArg;</span>
+<span class="nc" id="L333">        }</span>
+
+        /**
+         * This scans the byte array backwards from the offset. Each hit is added to the result vector. We stop when all
+         * posibilities are found
+         */
+        public synchronized int scan(final byte[] dataArg, final int offset, final Collection&lt;int[]&gt; result) {
+<span class="nc" id="L340">            this.data = dataArg;</span>
+<span class="nc" id="L341">            return scan(offset, result);</span>
+        }
+
+        public synchronized int scan(final int curPosArg, final Collection&lt;int[]&gt; result) {
+<span class="nc bnc" id="L345" title="All 2 branches missed.">            if (!(curPosArg &lt; this.data.length)) {</span>
+<span class="nc" id="L346">                return curPosArg;</span>
+            }
+<span class="nc" id="L348">            State state = this.root;</span>
+<span class="nc" id="L349">            int length = 0;</span>
+<span class="nc" id="L350">            int curPos = curPosArg;</span>
+<span class="nc bnc" id="L351" title="All 4 branches missed.">            while ((state != null) &amp;&amp; (curPos &gt;= 0)) {</span>
+<span class="nc bnc" id="L352" title="All 4 branches missed.">                if (curPos &gt; this.data.length || curPos &lt; 0) {</span>
+<span class="nc" id="L353">                    return curPos;</span>
+                }
+<span class="nc" id="L355">                int ch = this.data[curPos];</span>
+<span class="nc bnc" id="L356" title="All 2 branches missed.">                if (ch &lt; 0) {</span>
+<span class="nc" id="L357">                    ch += Byte.MAX_VALUE - Byte.MIN_VALUE;</span>
+                }
+<span class="nc" id="L359">                state = state.nextStates[ch];</span>
+<span class="nc" id="L360">                length++;</span>
+<span class="nc bnc" id="L361" title="All 4 branches missed.">                if (state != null &amp;&amp; state.matches != null) {</span>
+<span class="nc bnc" id="L362" title="All 2 branches missed.">                    for (int i = 0; i &lt; state.matches.length; i++) {</span>
+<span class="nc" id="L363">                        final int id = state.matches[i];</span>
+<span class="nc" id="L364">                        final int[] tmp = new int[3];</span>
+<span class="nc" id="L365">                        tmp[0] = curPos;</span>
+<span class="nc" id="L366">                        tmp[1] = id;</span>
+<span class="nc" id="L367">                        tmp[2] = length;</span>
+<span class="nc" id="L368">                        result.add(tmp);</span>
+                    }
+                }
+<span class="nc" id="L371">                curPos--;</span>
+<span class="nc" id="L372">            }</span>
+<span class="nc" id="L373">            return curPos;</span>
+        }
+
+        /*
+         * This class implements a state machine that can learn character sequences.
+         */
+        public class State {
+
+            // Each state has 256 transitions leaving it to new states based
+            // on a single ascii character. If there is no next state for a
+            // character, then the next state will be null.
+<span class="fc" id="L384">            public State[] nextStates = new State[256];</span>
+
+            // Each state can be visited by a single character. This is it!
+            public int gotHereBy;
+
+            // A list of keyword ids that are matched at this state.
+<span class="fc" id="L390">            @Nullable</span>
+            public int[] matches = null;
+
+            // constructor
+<span class="fc" id="L394">            public State(final int gotHereBy) {</span>
+<span class="fc" id="L395">                this.gotHereBy = gotHereBy;</span>
+<span class="fc" id="L396">            }</span>
+
+            public void learn(final byte[] word, final int id) throws Exception {
+<span class="fc" id="L399">                learn(word, word.length - 1, id);</span>
+<span class="fc" id="L400">            }</span>
+
+            /**
+             * Walk throught he keyword backwards. Adding states to the root (or current state) when they don't exists. At the end,
+             * record the keyowrd id in the ending state.
+             *
+             * Warning this is recursive, but thats OK for small keywords.
+             */
+            public void learn(final byte[] word, final int wordLoc, final int id) throws Exception {
+<span class="pc bpc" id="L409" title="1 of 2 branches missed.">                if (word == null) {</span>
+<span class="nc" id="L410">                    throw new Exception(&quot;null keyword in BackwardsTreeScanner.learn()&quot;);</span>
+                }
+<span class="pc bpc" id="L412" title="1 of 2 branches missed.">                if (wordLoc &gt;= word.length) {</span>
+<span class="nc" id="L413">                    throw new Exception(&quot;char pos &gt; word length:&quot; + wordLoc + &quot;&gt;&quot; + word.length);</span>
+                }
+<span class="fc bfc" id="L415" title="All 2 branches covered.">                if (wordLoc &lt; 0) {</span>
+                    // we are finished because this is the first character,
+                    // so save the id in this state. We want the matches to be
+                    // in an array so this is a little harder than a vector thing.
+<span class="pc bpc" id="L419" title="1 of 2 branches missed.">                    if (this.matches == null) {</span>
+<span class="fc" id="L420">                        this.matches = new int[0];</span>
+                    }
+<span class="fc" id="L422">                    final int[] newMatches = new int[this.matches.length + 1];</span>
+<span class="fc" id="L423">                    System.arraycopy(this.matches, 0, newMatches, 0, this.matches.length);</span>
+<span class="fc" id="L424">                    this.matches = newMatches;</span>
+<span class="fc" id="L425">                    this.matches[this.matches.length - 1] = id;</span>
+<span class="fc" id="L426">                } else {</span>
+                    // Get the next character in the word
+<span class="fc" id="L428">                    int nextChar = word[wordLoc];</span>
+<span class="pc bpc" id="L429" title="1 of 2 branches missed.">                    if (nextChar &lt; 0) {</span>
+<span class="nc" id="L430">                        nextChar += Byte.MAX_VALUE - Byte.MIN_VALUE;</span>
+                    }
+
+                    // See if the state already exists
+<span class="fc" id="L434">                    State nextState = this.nextStates[nextChar];</span>
+<span class="fc bfc" id="L435" title="All 2 branches covered.">                    if (nextState == null) {</span>
+                        // Make a new state because it isn't there yet.
+<span class="fc" id="L437">                        nextState = this.nextStates[nextChar] = new State(nextChar);</span>
+                    }
+                    // Learn the rest of the keyword in the new state.
+<span class="fc" id="L440">                    nextState.learn(word, wordLoc - 1, id);</span>
+                }
+<span class="fc" id="L442">            }</span>
+
+            public void print(final PrintStream out) {
+<span class="nc" id="L445">                print(out, &quot;root:&quot;);</span>
+<span class="nc" id="L446">            }</span>
+
+            // Make a pretty picture.
+            public void print(final PrintStream out, final String prefix) {
+<span class="nc bnc" id="L450" title="All 4 branches missed.">                if ((this.gotHereBy &lt; ' ') || (this.gotHereBy &gt; '~')) {</span>
+<span class="nc" id="L451">                    out.println(prefix + &quot;-&gt; &quot; + &quot;(byte)&quot; + this.gotHereBy);</span>
+                } else {
+<span class="nc" id="L453">                    out.println(prefix + &quot;-&gt; &quot; + (char) this.gotHereBy);</span>
+                }
+<span class="nc bnc" id="L455" title="All 2 branches missed.">                if (this.matches != null) {</span>
+<span class="nc" id="L456">                    out.print(prefix + &quot;ids [&quot;);</span>
+<span class="nc bnc" id="L457" title="All 2 branches missed.">                    for (int i = 0; i &lt; this.matches.length; i++) {</span>
+<span class="nc" id="L458">                        out.print(&quot; &quot; + this.matches[i]);</span>
+                    }
+<span class="nc" id="L460">                    out.println(&quot; ]&quot;);</span>
+                }
+<span class="nc bnc" id="L462" title="All 2 branches missed.">                for (int i = 0; i &lt; this.nextStates.length; i++) {</span>
+<span class="nc bnc" id="L463" title="All 2 branches missed.">                    if (this.nextStates[i] != null) {</span>
+<span class="nc" id="L464">                        this.nextStates[i].print(out, prefix + &quot;  &quot;);</span>
+                    }
+                }
+<span class="nc" id="L467">            }</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

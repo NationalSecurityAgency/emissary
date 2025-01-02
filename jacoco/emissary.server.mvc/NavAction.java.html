@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NavAction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.server.mvc</a> &gt; <span class="el_source">NavAction.java</span></div><h1>NavAction.java</h1><pre class="source lang-java linenums">package emissary.server.mvc;
+
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import org.glassfish.jersey.server.mvc.Template;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Path(&quot;&quot;)
+// context is emissary
+public class NavAction {
+
+    EmissaryNav nav;
+
+<span class="nc" id="L23">    public NavAction() throws IOException {</span>
+<span class="nc" id="L24">        Configurator config = ConfigUtil.getConfigInfo(this.getClass());</span>
+<span class="nc" id="L25">        nav = new EmissaryNav();</span>
+<span class="nc" id="L26">        nav.setAppName(config.findStringEntry(&quot;APP_NAME&quot;, &quot;Emissary&quot;));</span>
+<span class="nc" id="L27">        nav.setAppVersion(config.findStringEntry(&quot;APP_VERSION&quot;, &quot;&quot;));</span>
+<span class="nc" id="L28">        nav.setNavItems(config.findStringMatchMap(&quot;NAV_ITEM_&quot;, true, true));</span>
+<span class="nc" id="L29">        nav.setNavButtons(config.findStringMatchMap(&quot;NAV_BUTTON_&quot;, true, true));</span>
+<span class="nc" id="L30">    }</span>
+
+    @GET
+    @Path(&quot;/Nav.action&quot;)
+    @Produces(MediaType.TEXT_HTML)
+    @Template(name = &quot;/nav&quot;)
+    public EmissaryNav nav() {
+<span class="nc" id="L37">        return nav;</span>
+    }
+
+<span class="nc" id="L40">    public static class EmissaryNav {</span>
+
+        String appName;
+        String appVersion;
+        List&lt;NavItem&gt; navItems;
+        List&lt;NavItem&gt; navButtons;
+
+        public String getAppName() {
+<span class="nc" id="L48">            return appName;</span>
+        }
+
+        public void setAppName(String appName) {
+<span class="nc" id="L52">            this.appName = appName;</span>
+<span class="nc" id="L53">        }</span>
+
+        public String getAppVersion() {
+<span class="nc" id="L56">            return appVersion;</span>
+        }
+
+        public void setAppVersion(String appVersion) {
+<span class="nc" id="L60">            this.appVersion = appVersion;</span>
+<span class="nc" id="L61">        }</span>
+
+        public List&lt;NavItem&gt; getNavItems() {
+<span class="nc" id="L64">            return navItems;</span>
+        }
+
+        public void setNavItems(Map&lt;String, String&gt; navItems) {
+<span class="nc" id="L68">            this.navItems = convert(navItems);</span>
+<span class="nc" id="L69">        }</span>
+
+        public List&lt;NavItem&gt; getNavButtons() {
+<span class="nc" id="L72">            return navButtons;</span>
+        }
+
+        public void setNavButtons(Map&lt;String, String&gt; navButtons) {
+<span class="nc" id="L76">            this.navButtons = convert(navButtons);</span>
+<span class="nc" id="L77">        }</span>
+
+        protected static List&lt;NavItem&gt; convert(Map&lt;String, String&gt; map) {
+<span class="nc" id="L80">            return map.entrySet().stream().map(e -&gt; new NavItem(e.getKey(), e.getValue())).collect(Collectors.toList());</span>
+        }
+
+        public static class NavItem {
+
+            String display;
+            String link;
+
+<span class="nc" id="L88">            public NavItem(String display, String link) {</span>
+<span class="nc" id="L89">                this.display = display;</span>
+<span class="nc" id="L90">                this.link = link;</span>
+<span class="nc" id="L91">            }</span>
+
+            public String getDisplay() {
+<span class="nc" id="L94">                return display;</span>
+            }
+
+            public void setDisplay(String display) {
+<span class="nc" id="L98">                this.display = display;</span>
+<span class="nc" id="L99">            }</span>
+
+            public String getLink() {
+<span class="nc" id="L102">                return link;</span>
+            }
+
+            public void setLink(String link) {
+<span class="nc" id="L106">                this.link = link;</span>
+<span class="nc" id="L107">            }</span>
+        }
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

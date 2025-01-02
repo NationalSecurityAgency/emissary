@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LoggingChannelFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core.channels</a> &gt; <span class="el_source">LoggingChannelFactory.java</span></div><h1>LoggingChannelFactory.java</h1><pre class="source lang-java linenums">package emissary.core.channels;
+
+import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicLong;
+
+/**
+ * This class creates a SeekableByteChannelFactory for logging accesses to every method on the SeekableByteChannel. It
+ * is intended only for development/debugging purposes.
+ */
+public final class LoggingChannelFactory {
+    private LoggingChannelFactory() {}
+
+    /**
+     * Creates a SeekableByteChannelFactory for logging accesses to every method on the SeekableByteChannel.
+     * 
+     * @param seekableByteChannelFactory that creates the SeekableByteChannel to wrap.
+     * @param identifier that is added to the log message.
+     * @param logger to use for logging.
+     * @param logStackTrace specifies whether a stack trace should be added to the log message.
+     * @return the logging SeekableByteChannelFactory
+     */
+    public static SeekableByteChannelFactory create(final SeekableByteChannelFactory seekableByteChannelFactory,
+            final String identifier, final Logger logger, final boolean logStackTrace) {
+<span class="fc" id="L30">        return new LoggingChannelFactoryImpl(seekableByteChannelFactory, identifier, logger, logStackTrace);</span>
+    }
+
+    /**
+     * The SeekableByteChannelFactory for creating logging SeekableByteChannels.
+     */
+    private static class LoggingChannelFactoryImpl implements SeekableByteChannelFactory {
+        /**
+         * The SeekableByteChannel that is being wrapped.
+         */
+        private final SeekableByteChannelFactory seekableByteChannelFactory;
+        /**
+         * An identifier add to the log message.
+         */
+        private final String identifier;
+        /**
+         * The logger to be used for logging.
+         */
+        private final Logger logger;
+        /**
+         * Determines whether a stack trace should also be logged.
+         */
+        private final boolean logStackTrace;
+        /**
+         * A one-up counter for identifying each instance.
+         */
+<span class="fc" id="L56">        private final AtomicLong currentInstance = new AtomicLong(0);</span>
+
+        private LoggingChannelFactoryImpl(final SeekableByteChannelFactory seekableByteChannelFactory,
+<span class="fc" id="L59">                final String identifier, final Logger logger, final boolean logStackTrace) {</span>
+<span class="fc" id="L60">            Validate.notNull(seekableByteChannelFactory, &quot;Required: seekableByteChannelFactory not null!&quot;);</span>
+<span class="fc" id="L61">            Validate.notNull(identifier, &quot;Required: identifier not null!&quot;);</span>
+<span class="fc" id="L62">            Validate.notNull(logger, &quot;Required: logger not null!&quot;);</span>
+
+<span class="fc" id="L64">            this.seekableByteChannelFactory = seekableByteChannelFactory;</span>
+<span class="fc" id="L65">            this.identifier = identifier;</span>
+<span class="fc" id="L66">            this.logger = logger;</span>
+<span class="fc" id="L67">            this.logStackTrace = logStackTrace;</span>
+<span class="fc" id="L68">        }</span>
+
+        @Override
+        public SeekableByteChannel create() {
+<span class="fc" id="L72">            return new LoggingSeekableByteChannel(seekableByteChannelFactory.create(),</span>
+<span class="fc" id="L73">                    identifier + &quot; : &quot; + currentInstance.getAndIncrement(), logger, logStackTrace);</span>
+        }
+    }
+
+    /**
+     * This SeekableByteChannel wraps another SeekableByteChannel and logs all methods calls.
+     */
+    private static class LoggingSeekableByteChannel implements SeekableByteChannel {
+        /**
+         * The SeekableByteChannel that is being wrapped.
+         */
+        private final SeekableByteChannel seekableByteChannel;
+        /**
+         * The prefix added to the log statement.
+         */
+        private final String prefix;
+        /**
+         * The logger to be used for logging.
+         */
+        private final Logger logger;
+        /**
+         * Determines whether a stack trace should also be logged.
+         */
+        private final boolean logStackTrace;
+
+        /**
+         * Constructs a SeekableByteChannel that wraps another SeekableByteChannel and logs all methods calls.
+         * 
+         * @param seekableByteChannel to be wrapped.
+         * @param prefix added to the log statement.
+         * @param logger to be used for logging.
+         * @param logStackTrace determines whether a stack trace should also be logged.
+         */
+        private LoggingSeekableByteChannel(final SeekableByteChannel seekableByteChannel, final String prefix,
+<span class="fc" id="L107">                final Logger logger, final boolean logStackTrace) {</span>
+<span class="fc" id="L108">            this.seekableByteChannel = seekableByteChannel;</span>
+<span class="fc" id="L109">            this.prefix = prefix;</span>
+<span class="fc" id="L110">            this.logger = logger;</span>
+<span class="fc" id="L111">            this.logStackTrace = logStackTrace;</span>
+
+<span class="fc" id="L113">            log(logger, logStackTrace, &quot;{} : created : lST={}&quot;, prefix, logStackTrace);</span>
+<span class="fc" id="L114">        }</span>
+
+        @Override
+        public boolean isOpen() {
+<span class="fc" id="L118">            final boolean open = seekableByteChannel.isOpen();</span>
+
+<span class="fc" id="L120">            log(logger, logStackTrace, &quot;{} : isOpen : o={}&quot;, prefix, open);</span>
+
+<span class="fc" id="L122">            return open;</span>
+        }
+
+        @Override
+        public void close() throws IOException {
+<span class="fc" id="L127">            log(logger, logStackTrace, &quot;{} : close&quot;, prefix);</span>
+
+<span class="fc" id="L129">            seekableByteChannel.close();</span>
+<span class="fc" id="L130">        }</span>
+
+        @Override
+        public int read(final ByteBuffer byteBuffer) throws IOException {
+<span class="fc" id="L134">            final int bbP = byteBuffer.position();</span>
+<span class="fc" id="L135">            final int bbC = byteBuffer.capacity();</span>
+<span class="fc" id="L136">            final long sbcP = seekableByteChannel.position();</span>
+
+<span class="fc" id="L138">            final int bytesRead = seekableByteChannel.read(byteBuffer);</span>
+
+<span class="fc" id="L140">            log(logger, logStackTrace, &quot;{} : read : bbP={} bbC={} sbcP={} : r={}&quot;, prefix, bbP, bbC, sbcP, bytesRead);</span>
+
+<span class="fc" id="L142">            return bytesRead;</span>
+        }
+
+        @Override
+        public int write(final ByteBuffer byteBuffer) throws IOException {
+<span class="fc" id="L147">            final int bbP = byteBuffer.position();</span>
+<span class="fc" id="L148">            final int bbC = byteBuffer.capacity();</span>
+<span class="fc" id="L149">            final long sbcP = seekableByteChannel.position();</span>
+
+<span class="fc" id="L151">            final int bytesWritten = seekableByteChannel.write(byteBuffer);</span>
+
+<span class="fc" id="L153">            log(logger, logStackTrace, &quot;{} : write : bbP={} bbC={} sbcP={} : bW={}&quot;, prefix, bbP, bbC, sbcP,</span>
+<span class="fc" id="L154">                    bytesWritten);</span>
+
+<span class="fc" id="L156">            return bytesWritten;</span>
+        }
+
+        @Override
+        public long position() throws IOException {
+<span class="fc" id="L161">            final long position = seekableByteChannel.position();</span>
+
+<span class="fc" id="L163">            log(logger, logStackTrace, &quot;{} : position : p={}&quot;, prefix, position);</span>
+
+<span class="fc" id="L165">            return position;</span>
+        }
+
+        @Override
+        public SeekableByteChannel position(final long newPosition) throws IOException {
+<span class="fc" id="L170">            log(logger, logStackTrace, &quot;{} : position : nP={}&quot;, prefix, newPosition);</span>
+
+<span class="fc" id="L172">            return seekableByteChannel.position(newPosition);</span>
+        }
+
+        @Override
+        public long size() throws IOException {
+<span class="fc" id="L177">            final long size = seekableByteChannel.size();</span>
+
+<span class="fc" id="L179">            log(logger, logStackTrace, &quot;{} : size : s={}&quot;, prefix, size);</span>
+
+<span class="fc" id="L181">            return size;</span>
+        }
+
+        @Override
+        public SeekableByteChannel truncate(final long size) throws IOException {
+<span class="fc" id="L186">            log(logger, logStackTrace, &quot;{} : truncate : s={}&quot;, prefix, size);</span>
+
+<span class="fc" id="L188">            return seekableByteChannel.truncate(size);</span>
+        }
+
+        private static void log(final Logger logger, final boolean logStackTrace, final String format,
+                final Object... arguments) {
+<span class="fc bfc" id="L193" title="All 2 branches covered.">            if (logStackTrace) {</span>
+<span class="fc" id="L194">                final Object[] newArguments = Arrays.copyOf(arguments, arguments.length + 1);</span>
+
+                // &quot;Throwable&quot; is used since this class should only be used during development.
+<span class="fc" id="L197">                newArguments[newArguments.length - 1] = new Throwable(&quot;DEBUG&quot;);</span>
+
+<span class="fc" id="L199">                logger.info(format, newArguments);</span>
+<span class="fc" id="L200">            } else {</span>
+<span class="fc" id="L201">                logger.info(format, arguments);</span>
+            }
+<span class="fc" id="L203">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

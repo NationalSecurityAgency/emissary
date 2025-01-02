@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SessionParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.parser</a> &gt; <span class="el_source">SessionParser.java</span></div><h1>SessionParser.java</h1><pre class="source lang-java linenums">package emissary.parser;
+
+/**
+ * Base for all session parsers returned from ParserFactory
+ */
+<span class="fc" id="L6">public abstract class SessionParser {</span>
+    public static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 10;
+    public static final long MAX_ARRAY_SIZE_LONG = MAX_ARRAY_SIZE;
+    public static final String ORIG_DOC_SIZE_KEY = &quot;OrigDocumentSize&quot;;
+
+<span class="fc" id="L11">    protected boolean fullyParsed = false;</span>
+
+    /**
+     * Indicates if the data has been fully parsed or not.
+     * 
+     * @return boolean, indicating parsing status.
+     */
+    public boolean isFullyParsed() {
+<span class="fc" id="L19">        return fullyParsed;</span>
+    }
+
+    /**
+     * Set the fully parsed indicator
+     * 
+     * @param fullyParsed the new value
+     */
+    public void setFullyParsed(boolean fullyParsed) {
+<span class="fc" id="L28">        this.fullyParsed = fullyParsed;</span>
+<span class="fc" id="L29">    }</span>
+
+    /**
+     * Get session name or null if none can be provided
+     * 
+     * @param session the decomposed session to get the name for
+     * @return session name or null if the parser cannot know
+     */
+    public String getSessionName(DecomposedSession session) {
+<span class="nc" id="L38">        return null;</span>
+    }
+
+    /**
+     * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from the
+     * session data for the next session in the data
+     * 
+     * @return the next session from the input
+     */
+    public abstract DecomposedSession getNextSession() throws ParserException;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

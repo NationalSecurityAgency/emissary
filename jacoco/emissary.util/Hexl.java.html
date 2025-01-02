@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Hexl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util</a> &gt; <span class="el_source">Hexl.java</span></div><h1>Hexl.java</h1><pre class="source lang-java linenums">package emissary.util;
+
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.IOUtils;
+
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+/**
+ * Pretend to be Emacs hexl mode
+ */
+public class Hexl {
+
+    static final int CHARS_PER_LINE = 16;
+    static final int COUNTER_SIZE = 4;
+    static final String printable = &quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&amp;*()_+|~-=\\`{}[]:;&lt;&gt;?,./'\&quot;&quot;;
+
+    /**
+     * Unformatted hex string
+     */
+    public static String toUnformattedHexString(byte[] data) {
+<span class="fc" id="L25">        return Hex.encodeHexString(data);</span>
+    }
+
+
+    /**
+     * Print out the whole byte array as hex
+     */
+    public static String toHexString(byte[] data) {
+<span class="nc" id="L33">        return toHexString(data, data.length);</span>
+    }
+
+    /**
+     * Print out a portion of the data as a hexdump for debugging
+     * 
+     * @param limit how many bytes of data to print starting from 0
+     */
+    public static String toHexString(byte[] data, int limit) {
+
+<span class="nc" id="L43">        StringBuilder output = new StringBuilder(2048);</span>
+
+<span class="nc" id="L45">        int stop = data.length;</span>
+
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        if (limit &lt; stop) {</span>
+<span class="nc" id="L48">            stop = limit;</span>
+        }
+
+<span class="nc" id="L51">        int lineCount = 0;</span>
+
+<span class="nc" id="L53">        byte[] rhs = new byte[CHARS_PER_LINE];</span>
+
+<span class="nc" id="L55">        int j = 0;</span>
+
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        for (int i = 0; i &lt; stop; i++, j++) {</span>
+
+
+            // end a line
+<span class="nc bnc" id="L61" title="All 2 branches missed.">            if (j &gt;= CHARS_PER_LINE) {</span>
+<span class="nc" id="L62">                output.append(&quot;  &quot;).append(new String(rhs));</span>
+<span class="nc" id="L63">                output.append(System.getProperty(&quot;line.separator&quot;, &quot;\n&quot;));</span>
+<span class="nc" id="L64">                j = 0;</span>
+<span class="nc" id="L65">                lineCount++;</span>
+            }
+
+            // start a new line
+<span class="nc bnc" id="L69" title="All 2 branches missed.">            if (j == 0) {</span>
+<span class="nc" id="L70">                String s = Integer.toHexString(lineCount);</span>
+<span class="nc" id="L71">                int pad = COUNTER_SIZE - s.length();</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">                while (pad-- &gt; 0) {</span>
+<span class="nc" id="L73">                    output.append(&quot;0&quot;);</span>
+                }
+<span class="nc" id="L75">                output.append(s);</span>
+<span class="nc" id="L76">                output.append(&quot;: &quot;);</span>
+            }
+
+<span class="nc" id="L79">            String s = Integer.toHexString(data[i] &amp; 0xff);</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">            if (s.length() &lt; 2) {</span>
+<span class="nc" id="L81">                output.append(&quot;0&quot;).append(s);</span>
+            } else {
+<span class="nc" id="L83">                output.append(s);</span>
+            }
+
+            // Group hex entries
+<span class="nc bnc" id="L87" title="All 2 branches missed.">            if (j % 2 != 0) {</span>
+<span class="nc" id="L88">                output.append(&quot; &quot;);</span>
+            }
+
+            // Build the rhs
+<span class="nc bnc" id="L92" title="All 2 branches missed.">            if (printable.indexOf(data[i]) &gt; -1) {</span>
+<span class="nc" id="L93">                rhs[j] = data[i];</span>
+            } else {
+<span class="nc" id="L95">                rhs[j] = (byte) '.';</span>
+            }
+        }
+
+<span class="nc" id="L99">        int pad = ((CHARS_PER_LINE * 2) + (CHARS_PER_LINE / 2) + 1) - ((j * 2) + (j / 2) - 1);</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        while (pad-- &gt; 0) {</span>
+<span class="nc" id="L101">            output.append(&quot; &quot;);</span>
+        }
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        while (j &lt; CHARS_PER_LINE) {</span>
+<span class="nc" id="L104">            rhs[j++] = (byte) ' ';</span>
+        }
+<span class="nc" id="L106">        output.append(new String(rhs));</span>
+
+<span class="nc" id="L108">        return output.toString();</span>
+    }
+
+    /** This class is not meant to be instantiated. */
+    private Hexl() {}
+
+    @SuppressWarnings(&quot;SystemOut&quot;)
+    public static void main(String[] argv) {
+
+<span class="nc bnc" id="L117" title="All 2 branches missed.">        if (argv.length &lt; 1) {</span>
+<span class="nc" id="L118">            System.err.println(&quot;usage: java emissary.util.Hexl datafile1 datafile2 ...&quot;);</span>
+<span class="nc" id="L119">            return;</span>
+        }
+
+        byte[] theContent;
+
+<span class="nc bnc" id="L124" title="All 2 branches missed.">        for (int i = 0; i &lt; argv.length; i++) {</span>
+
+<span class="nc" id="L126">            try (InputStream theFile = Files.newInputStream(Paths.get(argv[i]));</span>
+<span class="nc" id="L127">                    DataInputStream theStream = new DataInputStream(theFile)) {</span>
+<span class="nc" id="L128">                theContent = IOUtils.toByteArray(theStream);</span>
+<span class="nc" id="L129">            } catch (IOException e) {</span>
+<span class="nc" id="L130">                System.err.println(&quot;Error reading from &quot; + argv[i]);</span>
+<span class="nc" id="L131">                continue;</span>
+<span class="nc" id="L132">            }</span>
+
+<span class="nc" id="L134">            System.out.println(&quot;File &quot; + argv[i]);</span>
+<span class="nc" id="L135">            System.out.println(toHexString(theContent));</span>
+        }
+<span class="nc" id="L137">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

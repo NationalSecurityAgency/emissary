@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>QueServer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.pickup</a> &gt; <span class="el_source">QueServer.java</span></div><h1>QueServer.java</h1><pre class="source lang-java linenums">package emissary.pickup;
+
+import emissary.core.Pausable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+
+/**
+ * Monitor thread for a PickupQueue and return items for processing. Operates in pull mode from a PickupSpace or push
+ * mode just monitoring the queue
+ */
+public abstract class QueServer extends Pausable {
+    // Logger
+<span class="fc" id="L16">    private static final Logger logger = LoggerFactory.getLogger(QueServer.class);</span>
+
+    // Poll interval in millis
+    public static final long DEFAULT_POLLING_INTERVAL = 1000L;
+<span class="fc" id="L20">    protected long pollingInterval = DEFAULT_POLLING_INTERVAL;</span>
+
+    // Loop control
+<span class="fc" id="L23">    protected boolean timeToShutdown = false;</span>
+
+    // The queue this thread will monitor
+    protected final PickupQueue queue;
+
+    // For Pull mode from a PickupSpace
+    protected IPickUpSpace space;
+
+    /**
+     * Create
+     * 
+     * @param space the pickupspace controller
+     * @param queue the queue this thread monitors
+     */
+    public QueServer(IPickUpSpace space, PickupQueue queue) {
+<span class="nc" id="L38">        this(space, queue, DEFAULT_POLLING_INTERVAL);</span>
+<span class="nc" id="L39">    }</span>
+
+    /**
+     * Create with polling interval
+     * 
+     * @param space the pickupspace controller
+     * @param queue the queue this thread monitors
+     * @param pollingInterval value in millis
+     */
+    public QueServer(IPickUpSpace space, PickupQueue queue, long pollingInterval) {
+<span class="nc" id="L49">        this(space, queue, pollingInterval, &quot;PickupQueServer&quot;);</span>
+<span class="nc" id="L50">    }</span>
+
+    /**
+     * Create with polling interval and thread name
+     * 
+     * @param space the pickupspace controller
+     * @param queue the queue this thread monitors
+     * @param pollingInterval value in millis
+     * @param name value to supply to Thread name
+     */
+    @SuppressWarnings(&quot;ThreadPriorityCheck&quot;)
+    public QueServer(IPickUpSpace space, PickupQueue queue, long pollingInterval, String name) {
+<span class="fc" id="L62">        super(name);</span>
+<span class="fc" id="L63">        this.space = space;</span>
+<span class="fc" id="L64">        this.queue = queue;</span>
+<span class="fc" id="L65">        this.pollingInterval = pollingInterval;</span>
+<span class="fc" id="L66">        this.setPriority(Thread.NORM_PRIORITY + 1);</span>
+<span class="fc" id="L67">    }</span>
+
+
+    /**
+     * Processing loop to monitor the queue
+     */
+    @Override
+    public void run() {
+<span class="fc" id="L75">        logger.debug(&quot;Starting the QueServer run method&quot;);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        while (!timeToShutdown) {</span>
+            // Process something on the queue
+            try {
+<span class="fc" id="L79">                checkQue();</span>
+<span class="nc" id="L80">            } catch (RuntimeException e) {</span>
+<span class="nc" id="L81">                logger.warn(&quot;Exception in checkQue():&quot; + e, e);</span>
+<span class="fc" id="L82">            }</span>
+
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">            if (checkPaused()) {</span>
+                // check to see if we want to stop taking work
+<span class="nc" id="L86">                continue;</span>
+<span class="pc bpc" id="L87" title="1 of 4 branches missed.">            } else if (space.getSpaceCount() &gt; 0 &amp;&amp; queue.canHold(1)) {</span>
+                // If pull mode and we have room for one more.
+<span class="fc" id="L89">                logger.debug(&quot;Que can hold more, trying take()&quot;);</span>
+<span class="fc" id="L90">                boolean status = space.take();</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">                if (status) {</span>
+                    try {
+<span class="nc" id="L93">                        Thread.sleep(pollingInterval);</span>
+<span class="nc" id="L94">                    } catch (InterruptedException ignore) {</span>
+<span class="nc" id="L95">                        Thread.currentThread().interrupt();</span>
+<span class="nc" id="L96">                    }</span>
+<span class="nc" id="L97">                    continue;</span>
+                }
+<span class="fc" id="L99">            } else {</span>
+                // We must be in push mode or the queue is full,
+                // just monitor the queue and try again
+<span class="fc" id="L102">                logger.debug(&quot;Que full or push mode, waiting, space = &quot; + space + &quot; spacenames = &quot; + space.getSpaceNames() + &quot;, queCanHold(1)? = &quot;</span>
+<span class="fc" id="L103">                        + queue.canHold(1));</span>
+                try {
+<span class="fc" id="L105">                    synchronized (queue) {</span>
+<span class="fc" id="L106">                        queue.wait(pollingInterval);</span>
+<span class="fc" id="L107">                    }</span>
+<span class="nc" id="L108">                } catch (InterruptedException e) {</span>
+<span class="nc" id="L109">                    logger.debug(&quot;Woke me up so lets check the queue!&quot;);</span>
+<span class="nc" id="L110">                    Thread.currentThread().interrupt();</span>
+<span class="pc" id="L111">                }</span>
+            }
+        }
+<span class="fc" id="L114">        logger.debug(&quot;Off the end of the QueServer.run method&quot;);</span>
+<span class="fc" id="L115">    }</span>
+
+    /**
+     * Check the queue for waiting objects and process them
+     */
+    @SuppressWarnings(&quot;ThreadPriorityCheck&quot;)
+    public void checkQue() {
+<span class="fc" id="L122">        WorkBundle paths = queue.deque();</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        while (paths != null) {</span>
+<span class="fc" id="L124">            logger.debug(&quot;checkQue got a work bundle &quot; + paths);</span>
+
+            // We have work so parse it out and wait for the next agent.
+            // This will send the work on the agent's thread.
+            // Once the agents are sent we notify the
+            // workspace of completion of this bundle
+            try {
+<span class="fc" id="L131">                boolean status = processQueueItem(paths);</span>
+<span class="fc" id="L132">                logger.debug(&quot;Initiating bundle completed msg for {}, status={}&quot;, paths.getBundleId(), status);</span>
+<span class="fc" id="L133">                space.bundleCompleted(paths.getBundleId(), status);</span>
+<span class="nc" id="L134">            } catch (RuntimeException e) {</span>
+<span class="nc" id="L135">                StringBuilder fnb = new StringBuilder();</span>
+                // Report filenames on error
+<span class="nc bnc" id="L137" title="All 2 branches missed.">                for (Iterator&lt;String&gt; i = paths.getFileNameIterator(); i.hasNext();) {</span>
+<span class="nc" id="L138">                    String fn = i.next();</span>
+<span class="nc" id="L139">                    fnb.append(fn).append(&quot;,&quot;);</span>
+<span class="nc" id="L140">                }</span>
+<span class="nc" id="L141">                logger.warn(&quot;Processing exception on {}&quot;, fnb.toString(), e);</span>
+<span class="nc" id="L142">                logger.debug(&quot;Initiating bundle failed msg for {}&quot;, paths.getBundleId());</span>
+<span class="nc" id="L143">                space.bundleCompleted(paths.getBundleId(), false);</span>
+<span class="fc" id="L144">            }</span>
+
+            // Yield but don't go back to sleep if
+            // there is still work to do
+<span class="fc" id="L148">            Thread.yield();</span>
+<span class="fc" id="L149">            paths = queue.deque();</span>
+        }
+<span class="fc" id="L151">        logger.debug(&quot;QueServer.checkQue ran out of data&quot;);</span>
+<span class="fc" id="L152">    }</span>
+
+    /**
+     * Action to take when an item is removed from queue
+     * 
+     * @param path the bundle from the queue
+     * @return true if it worked
+     */
+    public abstract boolean processQueueItem(WorkBundle path);
+
+    /**
+     * Schedule this thread to stop soon
+     */
+    public void shutdown() {
+<span class="fc" id="L166">        this.timeToShutdown = true;</span>
+<span class="fc" id="L167">    }</span>
+
+    /**
+     * Pass through to get size of injected queue
+     * 
+     * @return size of the queue
+     */
+    public int getQueSize() {
+<span class="nc" id="L175">        return queue.getQueSize();</span>
+    }
+
+    /**
+     * Pass through to enqueue a work bundle on the injected queue
+     * 
+     * @param bundle the work bundle to enqueue
+     * @return true if it was enqueued, false if we are too busy to handle it
+     */
+    public boolean enque(WorkBundle bundle) {
+<span class="nc" id="L185">        return queue.enque(bundle);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

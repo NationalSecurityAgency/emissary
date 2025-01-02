@@ -93,7 +93,7 @@
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>                  <strong class="jxr_keyword">synchronized</strong> (lock) {
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>                      entity.append(response);
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>                  }
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>              } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>              } <strong class="jxr_keyword">catch</strong> (RuntimeException e) {
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>                  LOG.error(<span class="jxr_string">"Problem hitting agents endpoint: {}\n{}"</span>, hostAndPort, e.getMessage());
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>                  <strong class="jxr_keyword">synchronized</strong> (lock) {
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>                      entity.addError(e.getMessage());
@@ -122,6 +122,6 @@
 <a class="jxr_linenumber" name="L114" href="#L114">114</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

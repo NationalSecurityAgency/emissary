@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FillChannelFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core.channels</a> &gt; <span class="el_source">FillChannelFactory.java</span></div><h1>FillChannelFactory.java</h1><pre class="source lang-java linenums">package emissary.core.channels;
+
+import org.apache.commons.lang3.Validate;
+
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
+import java.util.Arrays;
+
+/**
+ * This class creates a SeekableByteChannel of the designated size with each element having the designated value.
+ */
+public class FillChannelFactory {
+    private FillChannelFactory() {}
+
+    /**
+     * Creates an instance of the factory with the designated size and value.
+     * 
+     * @param size of the SeekableByteChannel.
+     * @param value of each element in the seekable byte channel.
+     * @return an immutable version of the seekable byte channel with the designated value.
+     */
+    public static SeekableByteChannelFactory create(final long size, final byte value) {
+<span class="fc" id="L23">        return SeekableByteChannelHelper.immutable(new FillChannelFactoryImpl(size, value));</span>
+    }
+
+    /**
+     * The SeekableByteChannelFactory implementation that returns a &quot;fill&quot; SeekableByteChannel.
+     */
+    private static final class FillChannelFactoryImpl implements SeekableByteChannelFactory {
+
+        /**
+         * The size of the SeekableByteChannel that is returned.
+         */
+        private final long size;
+
+        /**
+         * The value of each element in the SeekableByteChannel that is returned.
+         */
+        private final byte value;
+
+<span class="fc" id="L41">        private FillChannelFactoryImpl(final long size, final byte value) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">            Validate.isTrue(size &gt;= 0, &quot;Required: size &gt;= 0&quot;);</span>
+
+<span class="fc" id="L44">            this.size = size;</span>
+<span class="fc" id="L45">            this.value = value;</span>
+<span class="fc" id="L46">        }</span>
+
+        @Override
+        public SeekableByteChannel create() {
+<span class="fc" id="L50">            return new FillChannel(size, value);</span>
+        }
+    }
+
+    /**
+     * The implementation of the &quot;fill&quot; SeekableByteChannel.
+     */
+    private static final class FillChannel extends AbstractSeekableByteChannel {
+
+        /**
+         * The value of each element in the SeekableByteChannel.
+         */
+        private final byte value;
+
+        private final long size;
+
+<span class="fc" id="L66">        private FillChannel(final long size, final byte value) {</span>
+<span class="fc" id="L67">            this.size = size;</span>
+<span class="fc" id="L68">            this.value = value;</span>
+<span class="fc" id="L69">        }</span>
+
+        @Override
+        protected long sizeImpl() {
+<span class="fc" id="L73">            return size;</span>
+        }
+
+        @Override
+        protected void closeImpl() {
+            // Nothing to do.
+<span class="fc" id="L79">        }</span>
+
+        @Override
+        @SuppressWarnings(&quot;ByteBufferBackingArray&quot;)
+        protected int readImpl(final ByteBuffer byteBuffer) {
+<span class="fc" id="L84">            final int bytesToFill = byteBuffer.remaining();</span>
+
+<span class="fc bfc" id="L86" title="All 2 branches covered.">            if (byteBuffer.hasArray()) {</span>
+<span class="fc" id="L87">                Arrays.fill(byteBuffer.array(), byteBuffer.position(), byteBuffer.position() + bytesToFill, value);</span>
+<span class="fc" id="L88">                byteBuffer.position(byteBuffer.position() + bytesToFill);</span>
+            } else {
+<span class="fc bfc" id="L90" title="All 2 branches covered.">                for (int i = 0; i &lt; bytesToFill; i++) {</span>
+<span class="fc" id="L91">                    byteBuffer.put(value);</span>
+                }
+            }
+
+<span class="fc" id="L95">            return bytesToFill;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

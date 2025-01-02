@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExtractResource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.config</a> &gt; <span class="el_source">ExtractResource.java</span></div><h1>ExtractResource.java</h1><pre class="source lang-java linenums">package emissary.config;
+
+import emissary.util.io.ResourceReader;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+/**
+ * This class assists users and integrators by extracting the named resource and putting it into the config directory
+ */
+<span class="nc" id="L18">public class ExtractResource {</span>
+    /** Our logger */
+<span class="nc" id="L20">    protected static final Logger logger = LoggerFactory.getLogger(ExtractResource.class);</span>
+
+    /** The output path for extraction, the first config dir */
+<span class="nc" id="L23">    protected String outputDirectory = ConfigUtil.getFirstConfigDir();</span>
+
+    /**
+     * Set the output directory for extraction to a new value Default is obtained from ConfigUtil#getConfigDir
+     */
+    public void setOutputDirectory(final String dir) {
+<span class="nc" id="L29">        this.outputDirectory = dir;</span>
+<span class="nc" id="L30">    }</span>
+
+    /**
+     * Return the extraction output directory
+     */
+    public String getOutputDirectory() {
+<span class="nc" id="L36">        return this.outputDirectory;</span>
+    }
+
+    public String getResource(final String theResource) throws IOException {
+<span class="nc" id="L40">        String resource = theResource;</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        if (!hasFileEnding(resource)) {</span>
+<span class="nc" id="L42">            resource += ConfigUtil.CONFIG_FILE_ENDING;</span>
+        }
+<span class="nc" id="L44">        logger.debug(&quot;Reading &quot; + resource);</span>
+        final String result;
+<span class="nc" id="L46">        try (final InputStream is = ConfigUtil.getConfigStream(resource);</span>
+<span class="nc" id="L47">                final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {</span>
+<span class="nc" id="L48">            final byte[] buf = new byte[4096];</span>
+<span class="nc" id="L49">            int thisReadOp = 0;</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            while ((thisReadOp = is.read(buf)) &gt; -1) {</span>
+<span class="nc" id="L51">                baos.write(buf, 0, thisReadOp);</span>
+            }
+<span class="nc" id="L53">            result = baos.toString();</span>
+        }
+<span class="nc" id="L55">        return result;</span>
+    }
+
+    public void writeResource(final String theResource) throws IOException {
+<span class="nc" id="L59">        String resource = theResource;</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (!hasFileEnding(resource)) {</span>
+<span class="nc" id="L61">            resource += ConfigUtil.CONFIG_FILE_ENDING;</span>
+        }
+<span class="nc" id="L63">        final String rezdata = getResource(resource);</span>
+<span class="nc" id="L64">        final String outputPath = this.outputDirectory + &quot;/&quot; + resource.replaceAll(&quot;/&quot;, &quot;.&quot;);</span>
+<span class="nc" id="L65">        logger.debug(&quot;Writing &quot; + outputPath);</span>
+<span class="nc" id="L66">        try (final BufferedOutputStream os = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {</span>
+<span class="nc" id="L67">            os.write(rezdata.getBytes());</span>
+        }
+<span class="nc" id="L69">    }</span>
+
+    private static boolean hasFileEnding(final String resource) {
+<span class="nc bnc" id="L72" title="All 4 branches missed.">        return resource.endsWith(ResourceReader.CONFIG_SUFFIX) || resource.endsWith(ResourceReader.PROP_SUFFIX)</span>
+<span class="nc bnc" id="L73" title="All 4 branches missed.">                || resource.endsWith(ResourceReader.XML_SUFFIX) || resource.endsWith(ResourceReader.JS_SUFFIX);</span>
+    }
+
+    /**
+     * Run from the command line specifying a set of resources to be extracted
+     */
+    @SuppressWarnings(&quot;SystemOut&quot;)
+    public static void main(final String[] args) {
+<span class="nc" id="L81">        final ExtractResource ex = new ExtractResource();</span>
+
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (args.length == 0) {</span>
+<span class="nc" id="L84">            printUsage();</span>
+<span class="nc" id="L85">            return;</span>
+        }
+
+<span class="nc" id="L88">        int i = 0;</span>
+
+        // Process arguments
+<span class="nc bnc" id="L91" title="All 4 branches missed.">        while (i &lt; args.length &amp;&amp; args[i].startsWith(&quot;-&quot;)) {</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">            if (&quot;-o&quot;.equals(args[i])) {</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">                if (args.length &gt;= i + 1) {</span>
+<span class="nc" id="L94">                    ex.setOutputDirectory(args[++i]);</span>
+                } else {
+<span class="nc" id="L96">                    printUsage();</span>
+<span class="nc" id="L97">                    return;</span>
+                }
+<span class="nc bnc" id="L99" title="All 2 branches missed.">            } else if (&quot;--&quot;.equals(args[i])) {</span>
+<span class="nc" id="L100">                i++;</span>
+<span class="nc" id="L101">                break;</span>
+            } else {
+<span class="nc" id="L103">                printUsage();</span>
+<span class="nc" id="L104">                return;</span>
+            }
+<span class="nc" id="L106">            i++;</span>
+        }
+
+        // Process remaining args as resource names
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        for (; i &lt; args.length; i++) {</span>
+            try {
+<span class="nc" id="L112">                ex.writeResource(args[i]);</span>
+<span class="nc" id="L113">            } catch (IOException iox) {</span>
+<span class="nc" id="L114">                logger.error(&quot;{}: {}&quot;, args[i], iox.toString());</span>
+<span class="nc" id="L115">            }</span>
+        }
+<span class="nc" id="L117">    }</span>
+
+    @SuppressWarnings(&quot;SystemOut&quot;)
+    private static void printUsage() {
+<span class="nc" id="L121">        System.out.println(&quot;Usage: scripts/run.sh &quot; + ExtractResource.class.getName() + &quot; [ -o output_directory ] package/to/Resource[.cfg] ...&quot;);</span>
+<span class="nc" id="L122">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

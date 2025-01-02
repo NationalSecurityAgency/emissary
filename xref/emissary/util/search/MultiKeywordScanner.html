@@ -147,7 +147,7 @@
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>         <strong class="jxr_keyword">for</strong> (position = start + <strong class="jxr_keyword">this</strong>.standardSkip - 1; position &lt; stop; position += <strong class="jxr_keyword">this</strong>.skipTable[get256Value(dataArg[position])]) {
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>             <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>                 <strong class="jxr_keyword">this</strong>.treeScanner.scan(dataArg, position, hits);
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>                 <strong class="jxr_keyword">if</strong> (hits.size() &gt; 0) {
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>                 <strong class="jxr_keyword">if</strong> (!hits.isEmpty()) {
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>                     <strong class="jxr_keyword">break</strong>;
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>                 }
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>             } <strong class="jxr_keyword">catch</strong> (Exception e) {
@@ -163,6 +163,6 @@
 <a class="jxr_linenumber" name="L155" href="#L155">155</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

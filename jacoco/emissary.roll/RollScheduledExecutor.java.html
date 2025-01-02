@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RollScheduledExecutor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.roll</a> &gt; <span class="el_source">RollScheduledExecutor.java</span></div><h1>RollScheduledExecutor.java</h1><pre class="source lang-java linenums">package emissary.roll;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.Delayed;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RunnableScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+/**
+ * Scheduled Executor to support unhandled execution Exceptions. The intention of Rollable tasks is that they run for
+ * the life of the process without exception. We don't track the individual futures to reduce complexity and instead
+ * will log uncaught errors here.
+ */
+public class RollScheduledExecutor extends ScheduledThreadPoolExecutor {
+<span class="fc" id="L20">    static final Logger log = LoggerFactory.getLogger(RollScheduledExecutor.class);</span>
+
+    public RollScheduledExecutor(int corePoolSize, ThreadFactory threadFactory) {
+<span class="fc" id="L23">        super(corePoolSize, threadFactory);</span>
+<span class="fc" id="L24">    }</span>
+
+    @Override
+    protected &lt;V&gt; RunnableScheduledFuture&lt;V&gt; decorateTask(Runnable runnable, RunnableScheduledFuture&lt;V&gt; task) {
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">        if (runnable instanceof Roller) {</span>
+<span class="fc" id="L29">            return new RollFuture&lt;&gt;(task, (Roller) runnable);</span>
+        } else {
+<span class="nc" id="L31">            return super.decorateTask(runnable, task);</span>
+        }
+    }
+
+    @Override
+    protected void afterExecute(Runnable r, Throwable t) {
+<span class="fc" id="L37">        super.afterExecute(r, t);</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        if (r instanceof RollFuture) {</span>
+<span class="fc" id="L39">            RollFuture&lt;?&gt; f = (RollFuture&lt;?&gt;) r;</span>
+            try {
+                // we don't want to block if we're scheduled for another run
+<span class="fc bfc" id="L42" title="All 2 branches covered.">                if (f.isDone()) {</span>
+<span class="fc" id="L43">                    f.get();</span>
+                }
+<span class="nc" id="L45">            } catch (InterruptedException ex) {</span>
+                // shouldn't happen;
+<span class="nc" id="L47">                log.warn(&quot;Thread Interrupted&quot;, ex);</span>
+<span class="nc" id="L48">                Thread.currentThread().interrupt();</span>
+<span class="fc" id="L49">            } catch (ExecutionException ee) {</span>
+<span class="fc" id="L50">                Throwable ex = ee.getCause();</span>
+<span class="fc" id="L51">                Rollable rollable = f.r.getRollable();</span>
+<span class="fc" id="L52">                log.error(&quot;Unhandled Throwable in Rollable, {}. To String: {}&quot;, rollable.getClass(), rollable.toString(), ex);</span>
+<span class="pc" id="L53">            }</span>
+        }
+<span class="fc" id="L55">    }</span>
+
+    /**
+     * Wrapper for the Future to give us a handle to our Rollable object.
+     */
+    static class RollFuture&lt;V&gt; implements RunnableScheduledFuture&lt;V&gt; {
+        private final RunnableScheduledFuture&lt;V&gt; rsf;
+        final Roller r;
+
+<span class="fc" id="L64">        public RollFuture(RunnableScheduledFuture&lt;V&gt; rsf, Roller r) {</span>
+<span class="fc" id="L65">            this.rsf = rsf;</span>
+<span class="fc" id="L66">            this.r = r;</span>
+<span class="fc" id="L67">        }</span>
+
+        @Override
+        public boolean isPeriodic() {
+<span class="fc" id="L71">            return rsf.isPeriodic();</span>
+        }
+
+        @Override
+        public void run() {
+<span class="fc" id="L76">            rsf.run();</span>
+<span class="fc" id="L77">        }</span>
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+<span class="fc" id="L81">            return rsf.cancel(mayInterruptIfRunning);</span>
+        }
+
+        @Override
+        public boolean isCancelled() {
+<span class="nc" id="L86">            return rsf.isCancelled();</span>
+        }
+
+        @Override
+        public boolean isDone() {
+<span class="fc" id="L91">            return rsf.isDone();</span>
+        }
+
+        @Override
+        public V get() throws InterruptedException, ExecutionException {
+<span class="fc" id="L96">            return rsf.get();</span>
+        }
+
+        @Override
+        public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+<span class="nc" id="L101">            return rsf.get(timeout, unit);</span>
+        }
+
+        @Override
+        public long getDelay(TimeUnit unit) {
+<span class="fc" id="L106">            return rsf.getDelay(unit);</span>
+        }
+
+        @Override
+        public int compareTo(Delayed o) {
+<span class="fc" id="L111">            return rsf.compareTo(o);</span>
+        }
+
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

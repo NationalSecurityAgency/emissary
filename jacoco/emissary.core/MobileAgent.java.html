@@ -1,0 +1,915 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MobileAgent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core</a> &gt; <span class="el_source">MobileAgent.java</span></div><h1>MobileAgent.java</h1><pre class="source lang-java linenums">package emissary.core;
+
+import emissary.directory.DirectoryEntry;
+import emissary.directory.DirectoryPlace;
+import emissary.directory.KeyManipulator;
+import emissary.log.MDCConstants;
+import emissary.place.CoordinationPlace;
+import emissary.place.EmptyFormPlace;
+import emissary.place.IServiceProviderPlace;
+import emissary.pool.AgentPool;
+import emissary.pool.AgentThreadGroup;
+import emissary.util.JMXUtil;
+import emissary.util.PayloadUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nullable;
+
+/**
+ * An autonomous hunk of software
+ */
+public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
+
+    // Serializable
+    static final long serialVersionUID = 2656898442450171891L;
+
+    // Our logger
+<span class="fc" id="L36">    protected static final Logger logger = LoggerFactory.getLogger(MobileAgent.class);</span>
+
+    // Probe logger
+<span class="fc" id="L39">    protected static final Logger probeLogger = LoggerFactory.getLogger(MobileAgent.class.getPackage().toString() + &quot;.PROBE&quot;);</span>
+
+    // The thread we plan to run on (we are autonomous, in a limited sense)
+<span class="fc" id="L42">    @Nullable</span>
+    protected transient Thread thread = null;
+
+    // Name for our threads
+    public static final String AGENT_THREAD = &quot;MobileAgent-&quot;;
+    @SuppressWarnings(&quot;NonFinalStaticField&quot;)
+<span class="fc" id="L48">    private static int agentCounter = 0;</span>
+
+    // For tracking errors
+    public static final int DEFAULT_MAX_MOVE_ERRORS = 3;
+<span class="fc" id="L52">    protected int maxMoveErrors = DEFAULT_MAX_MOVE_ERRORS;</span>
+
+    // For stopping infinite loops
+    public static final int DEFAULT_MAX_ITINERARY_STEPS = 100;
+<span class="fc" id="L56">    protected int maxItinerarySteps = DEFAULT_MAX_ITINERARY_STEPS;</span>
+
+    // Stages of processing
+    protected static final String ERROR_FORM = Form.ERROR;
+    protected static final String DONE_FORM = Form.DONE;
+
+    // What we carry around with us
+<span class="fc" id="L63">    @Nullable</span>
+    protected IBaseDataObject payload = null;
+
+    // Track if the MobileAgent is currently in use
+<span class="fc" id="L67">    protected AtomicBoolean idle = new AtomicBoolean(true);</span>
+
+    // Place we are at now
+<span class="fc" id="L70">    @Nullable</span>
+    protected transient IServiceProviderPlace arrivalPlace = null;
+<span class="fc" id="L72">    protected boolean processFirstPlace = false;</span>
+<span class="fc" id="L73">    @Nullable</span>
+    protected String lastPlaceProcessed = null;
+
+    // ID string for this agent
+<span class="fc" id="L77">    protected static final String NO_AGENT_ID = &quot;No_AgentID_Set&quot;.intern();</span>
+<span class="fc" id="L78">    protected transient String agentId = NO_AGENT_ID;</span>
+<span class="fc" id="L79">    private static final String TG_ID = &quot;Agent Threads&quot;.intern();</span>
+
+    // This might not be needed anymore, not carried with agent on a move...
+<span class="fc" id="L82">    final Set&lt;String&gt; visitedPlaces = new HashSet&lt;&gt;();</span>
+
+    // To externally control the runnable loop
+<span class="fc" id="L85">    protected transient volatile boolean timeToQuit = false;</span>
+
+    // Queue of DirectoryEntry keys to be processed
+<span class="fc" id="L88">    protected Deque&lt;DirectoryEntry&gt; nextKeyQueue = new ArrayDeque&lt;&gt;();</span>
+
+    // Track moveErrors on all parts of a given payload
+<span class="fc" id="L91">    protected int moveErrorsOccurred = 0;</span>
+
+    /**
+     * Still have an uncaught exception handler but not really in a true ThreadGroup with other agents
+     */
+    public MobileAgent() {
+<span class="fc" id="L97">        this(new AgentThreadGroup(TG_ID), AGENT_THREAD + agentCounter++);</span>
+<span class="fc" id="L98">    }</span>
+
+    /**
+     * Create a new reusable Agent
+     *
+     * @param threadGroup group we operate it
+     * @param threadName symbolic name for this agent thread
+     */
+    @SuppressWarnings(&quot;ThreadPriorityCheck&quot;)
+<span class="fc" id="L107">    public MobileAgent(final ThreadGroup threadGroup, final String threadName) {</span>
+<span class="fc" id="L108">        logger.debug(&quot;Constructing agent {}&quot;, threadName);</span>
+<span class="fc" id="L109">        this.thread = new Thread(threadGroup, this, threadName);</span>
+<span class="fc" id="L110">        this.thread.setPriority(Thread.NORM_PRIORITY);</span>
+<span class="fc" id="L111">        this.thread.setDaemon(true);</span>
+<span class="fc" id="L112">        this.thread.start();</span>
+
+<span class="fc" id="L114">        JMXUtil.registerMBean(this);</span>
+<span class="fc" id="L115">    }</span>
+
+    /**
+     * Report this agents name for logging purposes
+     */
+    @Override
+    public String getName() {
+<span class="fc" id="L122">        return this.thread.getName();</span>
+    }
+
+    /**
+     * Runnable interface, starts this agent running on its own thread. It will wait unless it has a payload and a place to
+     * start with. You can set both of these items at once using the &lt;em&gt;go&lt;/em&gt; method, which will then notify us to come
+     * out of the wait state and process the payload
+     */
+    @Override
+    public void run() {
+<span class="fc" id="L132">        logger.debug(&quot;Starting the 'run' loop&quot;);</span>
+<span class="fc" id="L133">        synchronized (this) {</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">            while (!this.timeToQuit) {</span>
+
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">                if (!isInUse()) {</span>
+                    try {
+                        // MAX time in case we miss a notify
+                        // we bail out every 60 seconds just
+                        // as a last resort
+<span class="fc" id="L141">                        wait(60000);</span>
+<span class="nc" id="L142">                    } catch (InterruptedException e) {</span>
+<span class="nc" id="L143">                        Thread.currentThread().interrupt();</span>
+<span class="fc" id="L144">                    }</span>
+                }
+
+                // Allow communications threads to take priority
+                // Thread.yield();
+
+<span class="fc bfc" id="L150" title="All 2 branches covered.">                if (isInUse()) {</span>
+<span class="fc" id="L151">                    logger.debug(&quot;Starting work for {}&quot;, agentId());</span>
+<span class="fc" id="L152">                    MDC.put(MDCConstants.SHORT_NAME, getPayload().shortName());</span>
+                    try {
+<span class="fc" id="L154">                        agentControl(this.arrivalPlace);</span>
+<span class="nc" id="L155">                    } catch (Throwable throwable) {</span>
+<span class="nc" id="L156">                        logger.error(&quot;Problem with agent&quot;, throwable);</span>
+                    } finally {
+                        // prevent an interrupted thread from returning the agent
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">                        if (!this.timeToQuit) {</span>
+<span class="fc" id="L160">                            agentReturn();</span>
+<span class="fc" id="L161">                            MDC.clear(); // clear all MDC context</span>
+                        }
+<span class="fc" id="L163">                    }</span>
+                }
+            }
+<span class="fc" id="L166">        }</span>
+<span class="fc" id="L167">    }</span>
+
+    /**
+     * Call this method to permanently stop the running thread when we finish what we are doing
+     */
+    @Override
+    public void killAgent() {
+<span class="fc" id="L174">        logger.debug(&quot;killAgent called on {}&quot;, getName());</span>
+<span class="fc" id="L175">        synchronized (this) {</span>
+<span class="fc" id="L176">            this.timeToQuit = true;</span>
+<span class="fc" id="L177">            notifyAll();</span>
+<span class="fc" id="L178">        }</span>
+<span class="fc" id="L179">    }</span>
+
+    /**
+     * Kill asynchronously
+     */
+    @Override
+    @SuppressWarnings({&quot;Interruption&quot;, &quot;ThreadPriorityCheck&quot;})
+    public void killAgentAsync() {
+<span class="fc" id="L187">        logger.debug(&quot;killAgentAsync called on {}&quot;, getName());</span>
+<span class="fc" id="L188">        this.timeToQuit = true;</span>
+        try {
+<span class="fc" id="L190">            this.thread.setPriority(Thread.MIN_PRIORITY);</span>
+<span class="fc" id="L191">            this.thread.interrupt();</span>
+<span class="nc" id="L192">        } catch (RuntimeException ignored) {</span>
+            // empty catch block
+<span class="fc" id="L194">        }</span>
+<span class="fc" id="L195">    }</span>
+
+    /**
+     * Report whether we are busy or not
+     */
+    @Override
+    public boolean isInUse() {
+<span class="fc bfc" id="L202" title="All 2 branches covered.">        return !this.idle.get();</span>
+    }
+
+    /**
+     * Set the current place we should kick off with
+     */
+    protected synchronized void setArrivalPlace(@Nullable final IServiceProviderPlace p) {
+<span class="fc" id="L209">        this.arrivalPlace = p;</span>
+<span class="fc" id="L210">    }</span>
+
+    /**
+     * Set the payload
+     */
+    protected synchronized void setPayload(@Nullable final IBaseDataObject p) {
+<span class="fc" id="L216">        this.payload = p;</span>
+<span class="fc" id="L217">    }</span>
+
+    /**
+     * Return the ID
+     */
+    @Override
+    public String agentId() {
+<span class="fc" id="L224">        return this.agentId;</span>
+    }
+
+    /**
+     * Clear out the payload and other private stuff
+     */
+    protected synchronized void clear() {
+<span class="fc" id="L231">        logger.debug(&quot;Clearing payload&quot;);</span>
+<span class="fc" id="L232">        setPayload(null);</span>
+<span class="fc" id="L233">        setAgentId(NO_AGENT_ID);</span>
+<span class="fc" id="L234">        this.moveErrorsOccurred = 0;</span>
+<span class="fc" id="L235">        this.nextKeyQueue.clear();</span>
+<span class="fc" id="L236">        clearParallelTrackingInfo();</span>
+<span class="fc" id="L237">    }</span>
+
+    protected void clearParallelTrackingInfo() {
+<span class="fc" id="L240">        this.visitedPlaces.clear();</span>
+<span class="fc" id="L241">    }</span>
+
+    protected void addParallelTrackingInfo(final String t) {
+<span class="fc" id="L244">        this.visitedPlaces.add(t);</span>
+<span class="fc" id="L245">    }</span>
+
+    protected boolean checkParallelTrackingFor(final String type) {
+<span class="fc" id="L248">        return this.visitedPlaces.contains(type);</span>
+    }
+
+    /**
+     * Return a reference to the payload of this agent
+     */
+    @Override
+    public synchronized IBaseDataObject getPayload() {
+<span class="nc" id="L256">        return this.payload;</span>
+    }
+
+    /**
+     * The main control loop to determine and go through an itinerary until the payload is finished (no where else to go)
+     *
+     * @param currentPlaceArg where we are now
+     */
+    protected void agentControl(final IServiceProviderPlace currentPlaceArg) {
+<span class="nc" id="L265">        logger.debug(&quot;In agentControl {} for {}&quot;, currentPlaceArg, this.agentId);</span>
+<span class="nc" id="L266">        DirectoryEntry newEntry = currentPlaceArg.getDirectoryEntry();</span>
+
+<span class="nc" id="L268">        IServiceProviderPlace currentPlace = currentPlaceArg;</span>
+<span class="nc" id="L269">        final IBaseDataObject mypayload = getPayload();</span>
+<span class="nc" id="L270">        int loopCount = 0;</span>
+<span class="nc" id="L271">        boolean controlError = false;</span>
+
+<span class="nc bnc" id="L273" title="All 8 branches missed.">        while (currentPlace != null &amp;&amp; newEntry != null &amp;&amp; mypayload != null &amp;&amp; !this.timeToQuit) {</span>
+            // One based counter
+<span class="nc" id="L275">            loopCount++;</span>
+
+            // First time in, we just have the pickup place where we started
+            // our mission. We dont process there, just use it to call through
+            // to the directory, so skip the processing. See the difference
+            // between the go() and arrive() methods for details
+<span class="nc bnc" id="L281" title="All 6 branches missed.">            if ((loopCount &gt; 1 || getProcessFirstPlace()) &amp;&amp; !controlError) {</span>
+<span class="nc" id="L282">                atPlace(currentPlace, mypayload);</span>
+            }
+
+            // Choose next place
+<span class="nc" id="L286">            controlError = false;</span>
+<span class="nc" id="L287">            newEntry = getNextKey(currentPlace, mypayload);</span>
+
+            // Nothing to do, bail out,
+            // normal processing termination
+<span class="nc bnc" id="L291" title="All 2 branches missed.">            if (newEntry == null) {</span>
+<span class="nc" id="L292">                break;</span>
+            }
+
+            // Record what we are doing in the history log
+<span class="nc bnc" id="L296" title="All 4 branches missed.">            if (loopCount == 1 &amp;&amp; !getProcessFirstPlace()) {</span>
+                // Use arrivalPlace for MobileAgent.send()
+<span class="nc" id="L298">                recordHistory(currentPlace, this.payload);</span>
+<span class="nc" id="L299">                recordHistory(newEntry, this.payload);</span>
+            } else {
+<span class="nc" id="L301">                recordHistory(newEntry, this.payload);</span>
+            }
+
+            // A local place, around the loop and hit it
+<span class="nc bnc" id="L305" title="All 2 branches missed.">            if (newEntry.isLocal()) {</span>
+<span class="nc" id="L306">                logger.debug(&quot;Choosing local place {}&quot;, newEntry.getFullKey());</span>
+<span class="nc" id="L307">                currentPlace = newEntry.getLocalPlace();</span>
+<span class="nc" id="L308">                continue;</span>
+            }
+
+<span class="nc" id="L311">            controlError = true;</span>
+<span class="nc bnc" id="L312" title="All 4 branches missed.">            if (++this.moveErrorsOccurred &gt; this.maxMoveErrors || this.payload.transformHistory().size() &gt; this.maxItinerarySteps) {</span>
+<span class="nc" id="L313">                logger.error(&quot;Too many move errors, giving up&quot;);</span>
+<span class="nc" id="L314">                newEntry = null;</span>
+<span class="nc" id="L315">                break;</span>
+            }
+
+<span class="nc bnc" id="L318" title="All 2 branches missed.">            if (!KeyManipulator.isKeyComplete(mypayload.currentForm())) {</span>
+                // Let it try going to the ERROR place, if any
+<span class="nc" id="L320">                purgeNonFinalForms(mypayload);</span>
+<span class="nc" id="L321">                mypayload.replaceCurrentForm(ERROR_FORM);</span>
+            } else {
+                // It was a full key, just pop it and try what
+                // is next on the list. People who ask for full
+                // key moves should be made aware of this somehow
+<span class="nc" id="L326">                mypayload.popCurrentForm();</span>
+<span class="nc bnc" id="L327" title="All 2 branches missed.">                if (mypayload.currentFormSize() == 0) {</span>
+<span class="nc" id="L328">                    mypayload.replaceCurrentForm(ERROR_FORM);</span>
+                }
+            }
+        }
+
+<span class="nc" id="L333">        logger.debug(&quot;Out of the control loop&quot;);</span>
+
+        // If null we are completely finished, or the payload
+        // is just moving to another machine to continue
+        // Either way, log it and let this agent go back to
+        // the pool
+<span class="nc bnc" id="L339" title="All 2 branches missed.">        if (newEntry == null) {</span>
+<span class="nc" id="L340">            logAgentCompletion(mypayload);</span>
+        }
+<span class="nc" id="L342">    }</span>
+
+    /**
+     * Do work now that we have arrived at the specified place
+     *
+     * @param place the place we are asking to work for us
+     * @param payloadArg the data for the place to operate on
+     */
+    protected void atPlace(final IServiceProviderPlace place, final IBaseDataObject payloadArg) {
+<span class="nc" id="L351">        logger.debug(&quot;In atPlace {} with {}&quot;, place, payloadArg.shortName());</span>
+
+<span class="nc" id="L353">        try (TimedResource timer = resourceWatcherStart(place)) {</span>
+<span class="nc bnc" id="L354" title="All 2 branches missed.">            assert timer != null; // to silence an unused resource warning</span>
+
+<span class="nc" id="L356">            this.lastPlaceProcessed = place.getDirectoryEntry().getKey();</span>
+<span class="nc bnc" id="L357" title="All 2 branches missed.">            if (this.moveErrorsOccurred &gt; 0) {</span>
+<span class="nc" id="L358">                payloadArg.setParameter(&quot;AGENT_MOVE_ERRORS&quot;, Integer.toString(this.moveErrorsOccurred));</span>
+            }
+
+<span class="nc" id="L361">            place.agentProcessCall(payloadArg);</span>
+
+<span class="nc bnc" id="L363" title="All 2 branches missed.">            if (this.moveErrorsOccurred &gt; 0) {</span>
+<span class="nc" id="L364">                payloadArg.deleteParameter(&quot;AGENT_MOVE_ERRORS&quot;);</span>
+            }
+<span class="nc" id="L366">            logger.debug(&quot;done with agentProcessCall for {}&quot;, place);</span>
+<span class="nc" id="L367">        } catch (Throwable problem) {</span>
+<span class="nc" id="L368">            logger.warn(&quot;** {} place caught problem:&quot;, place, problem);</span>
+<span class="nc" id="L369">            payloadArg.addProcessingError(&quot;atPlace(&quot; + place + &quot;): &quot; + problem);</span>
+<span class="nc" id="L370">            payloadArg.replaceCurrentForm(ERROR_FORM);</span>
+        } finally {
+<span class="nc bnc" id="L372" title="All 4 branches missed.">            if (!(place instanceof EmptyFormPlace) &amp;&amp; payloadArg.currentFormSize() == 0) {</span>
+<span class="nc" id="L373">                logger.error(&quot;Place {} left an empty form stack, changing it to ERROR&quot;, place);</span>
+<span class="nc" id="L374">                payloadArg.addProcessingError(place + &quot; left an empty form stack&quot;);</span>
+<span class="nc" id="L375">                payloadArg.pushCurrentForm(ERROR_FORM);</span>
+            }
+<span class="nc" id="L377">            checkInterrupt(place);</span>
+        }
+<span class="nc" id="L379">    }</span>
+
+    protected final void checkInterrupt(final IServiceProviderPlace place) {
+<span class="pc bpc" id="L382" title="1 of 2 branches missed.">        if (Thread.interrupted()) {</span>
+            // this should NEVER happen. if it does, we've done something bad
+<span class="nc bnc" id="L384" title="All 2 branches missed.">            if (this.thread != Thread.currentThread()) {</span>
+<span class="nc" id="L385">                logger.error(&quot;MobileAgent thread instance is not the current thread. Instance thread: {} \tCurrent thread: {}&quot;, this.thread,</span>
+<span class="nc" id="L386">                        Thread.currentThread());</span>
+            }
+            // Log only when interrupted by the ResourceWatcher, not during shutdown.
+<span class="nc bnc" id="L389" title="All 2 branches missed.">            if (!this.timeToQuit) {</span>
+<span class="nc" id="L390">                logger.warn(&quot;Place {} was interrupted during execution. Adjust place time out or modify code accordingly.&quot;, place);</span>
+            } else {
+                // It must be time to quit so re-interrupt the current thread
+<span class="nc" id="L393">                Thread.currentThread().interrupt();</span>
+            }
+        }
+<span class="fc" id="L396">    }</span>
+
+    protected TimedResource resourceWatcherStart(final IServiceProviderPlace place) {
+<span class="fc" id="L399">        TimedResource tr = TimedResource.EMPTY;</span>
+        // CoordinationPlaces are tracked individually
+<span class="pc bpc" id="L401" title="1 of 2 branches missed.">        if (!(place instanceof CoordinationPlace)) {</span>
+            try {
+<span class="nc" id="L403">                tr = ResourceWatcher.lookup().starting(this, place);</span>
+<span class="fc" id="L404">            } catch (EmissaryException ex) {</span>
+<span class="fc" id="L405">                logger.debug(&quot;No resource monitoring enabled&quot;);</span>
+<span class="nc" id="L406">            }</span>
+        }
+<span class="pc bpc" id="L408" title="1 of 2 branches missed.">        return (tr == null) ? TimedResource.EMPTY : tr;</span>
+    }
+
+    /**
+     * Clean up, idle, and return agent to pool
+     */
+    protected synchronized void agentReturn() {
+<span class="fc" id="L415">        clear();</span>
+<span class="fc" id="L416">        setArrivalPlace(null);</span>
+<span class="fc" id="L417">        this.lastPlaceProcessed = null;</span>
+<span class="fc" id="L418">        this.idle.set(true);</span>
+<span class="fc" id="L419">        AgentPool pool = null;</span>
+        try {
+<span class="fc" id="L421">            pool = AgentPool.lookup();</span>
+<span class="fc" id="L422">            pool.returnAgent(this);</span>
+<span class="nc" id="L423">        } catch (Exception e) {</span>
+<span class="nc" id="L424">            logger.error(&quot;Cannot get return agent to pool&quot;, e);</span>
+<span class="fc" id="L425">        }</span>
+<span class="fc" id="L426">    }</span>
+
+    /**
+     * Get the next key from the directory with error handling Can return null if there is no place to handle the form
+     *
+     * @param place the place we will use to access the directory
+     * @param payloadArg the current payload we care about
+     * @return the SDE answer from the directory
+     */
+    @Nullable
+    protected DirectoryEntry getNextKey(@Nullable final IServiceProviderPlace place, @Nullable final IBaseDataObject payloadArg) {
+
+<span class="fc" id="L438">        logger.debug(&quot;start getNextKey&quot;);</span>
+
+        // Check for bad preconditions.
+<span class="fc bfc" id="L441" title="All 4 branches covered.">        if (payloadArg == null || place == null) {</span>
+<span class="fc" id="L442">            logger.warn(&quot;Null payload or place in getNextKey&quot;);</span>
+<span class="fc" id="L443">            return null;</span>
+        }
+
+        // Stop looping from occurring
+<span class="fc bfc" id="L447" title="All 2 branches covered.">        if (payloadArg.transformHistory().size() &gt; this.maxItinerarySteps &amp;&amp;</span>
+<span class="pc bpc" id="L448" title="1 of 2 branches missed.">                !ERROR_FORM.equals(payloadArg.currentForm())) {</span>
+<span class="fc" id="L449">            payloadArg.replaceCurrentForm(ERROR_FORM);</span>
+<span class="fc" id="L450">            payloadArg.addProcessingError(&quot;Agent stopped due to larger than max transform history size (looping?)&quot;);</span>
+        }
+
+        // Perhaps we already have additional keys to process
+        // from the last time we asked the directory. If so,
+        // choose the next one and spit it out
+<span class="fc bfc" id="L456" title="All 2 branches covered.">        if (!this.nextKeyQueue.isEmpty()) {</span>
+<span class="fc" id="L457">            logger.debug(&quot;Returning next key from stack size={}&quot;, this.nextKeyQueue.size());</span>
+<span class="fc" id="L458">            return this.nextKeyQueue.removeFirst();</span>
+        }
+
+        // We would need a current form of the payload to continue
+<span class="fc bfc" id="L462" title="All 2 branches covered.">        if (payloadArg.currentFormSize() &lt; 1) {</span>
+<span class="fc" id="L463">            logger.debug(&quot;No current forms on payload {}&quot;, payloadArg.shortName());</span>
+<span class="fc" id="L464">            return null;</span>
+        }
+
+        // Maybe we are done, if so quit now
+<span class="fc bfc" id="L468" title="All 2 branches covered.">        if (payloadArg.currentForm().startsWith(DONE_FORM)) {</span>
+<span class="fc" id="L469">            return null;</span>
+        }
+
+        // If we are in the error condition,
+        // clean up and try for error drop off
+<span class="fc" id="L474">        final String curKey = payloadArg.currentForm();</span>
+<span class="fc bfc" id="L475" title="All 2 branches covered.">        if (ERROR_FORM.equals(curKey)) {</span>
+<span class="fc bfc" id="L476" title="All 4 branches covered.">            if (payloadArg.currentFormSize() &gt; 1 &amp;&amp; ERROR_FORM.equals(payloadArg.currentFormAt(1))) {</span>
+<span class="fc" id="L477">                logger.error(&quot;ERROR handling place produced an error, purging all current forms&quot;);</span>
+<span class="fc bfc" id="L478" title="All 2 branches covered.">                while (payloadArg.currentFormSize() &gt; 0) {</span>
+<span class="fc" id="L479">                    payloadArg.popCurrentForm();</span>
+                }
+<span class="fc" id="L481">                payloadArg.appendTransformHistory(&quot;ERROR.SKIP.*.http://Previous_Error_Bypass$99999&quot;);</span>
+            } else {
+<span class="fc bfc" id="L483" title="All 2 branches covered.">                if (payloadArg.currentFormSize() &gt; 1) {</span>
+<span class="fc" id="L484">                    logger.warn(&quot;Got current form of ERROR, clearing form stack on {}: {}&quot;, payloadArg.shortName(), payloadArg.getAllCurrentForms());</span>
+                }
+<span class="fc" id="L486">                purgeNonFinalForms(payloadArg);</span>
+            }
+        }
+
+        // If we have a fully specified key as current form
+        // just go there and process
+<span class="fc bfc" id="L492" title="All 2 branches covered.">        if (KeyManipulator.isKeyComplete(curKey)) {</span>
+<span class="fc" id="L493">            logger.debug(&quot;Got current full key form of {}&quot;, curKey);</span>
+<span class="fc" id="L494">            return new DirectoryEntry(curKey);</span>
+        }
+
+        /* Get the last entry from the payload */
+<span class="fc" id="L498">        DirectoryEntry lastEntry = payloadArg.getLastPlaceVisited();</span>
+
+<span class="fc" id="L500">        final List&lt;String&gt; dataForms = payloadArg.getAllCurrentForms();</span>
+<span class="fc" id="L501">        logger.debug(&quot;&gt;&gt;&gt; Current forms for {} are {}&quot;, payloadArg.shortName(), dataForms);</span>
+
+        /* Get the last service type from the last key */
+<span class="fc" id="L504">        String lastServiceType = Stage.getStageName(0);</span>
+<span class="fc bfc" id="L505" title="All 2 branches covered.">        if (lastEntry != null) {</span>
+            // lastServiceType = KeyManipulator.serviceType(lastEntry.key());
+<span class="fc" id="L507">            lastServiceType = lastEntry.getServiceType();</span>
+        }
+
+<span class="fc" id="L510">        logger.debug(&quot;Payload reports lastEntry is {} with serviceType {}&quot;, lastEntry, lastServiceType);</span>
+
+        // For Analyze type, don't allow it to go back to ID
+        // *.INPUT.* and *.&lt;SPROUT&gt;.* are not in the list so will
+        // both start at 0
+<span class="fc" id="L515">        int startType = typeLookup(lastServiceType);</span>
+
+        // If we came from transform we can start at the beginning again
+<span class="fc bfc" id="L518" title="All 4 branches covered.">        if (lastEntry != null &amp;&amp; startType != 0) {</span>
+<span class="fc bfc" id="L519" title="All 2 branches covered.">            if (&quot;TRANSFORM&quot;.equals(lastEntry.getServiceType())) {</span>
+<span class="fc" id="L520">                startType = 0;</span>
+            }
+        }
+
+<span class="fc" id="L524">        DirectoryEntry curEntry = null;</span>
+<span class="fc bfc" id="L525" title="All 2 branches covered.">        for (int curType = startType; curType &lt; Stage.values().length; curType++) {</span>
+            // Search the form stack starting with the top.
+<span class="fc" id="L527">            final String stageName = Stage.getStageName(curType);</span>
+<span class="fc bfc" id="L528" title="All 2 branches covered.">            for (String form : dataForms) {</span>
+
+                // Test a full key form to see if it is the correct stage to be chosen
+<span class="pc bpc" id="L531" title="1 of 2 branches missed.">                if (KeyManipulator.isKeyComplete(form)) {</span>
+<span class="nc bnc" id="L532" title="All 2 branches missed.">                    if (KeyManipulator.getServiceType(form).equals(stageName)) {</span>
+<span class="nc" id="L533">                        logger.debug(&quot;Choosing cur form {} in stage {}&quot;, form, stageName);</span>
+<span class="nc" id="L534">                        payloadArg.pullFormToTop(form);</span>
+<span class="nc" id="L535">                        return new DirectoryEntry(form);</span>
+                    }
+                }
+
+<span class="fc" id="L539">                String formId = form + KeyManipulator.DATAIDSEPARATOR + stageName;</span>
+<span class="fc" id="L540">                curEntry = nextKeyFromDirectory(formId, place, lastEntry, payloadArg);</span>
+
+                // Process through the parallel service type once per place max
+                // no matter how many forms would route there
+<span class="fc bfc" id="L544" title="All 4 branches covered.">                if (curEntry != null &amp;&amp; isParallelServiceType(curType)) {</span>
+<span class="fc" id="L545">                    boolean parallelEntryRejected = false;</span>
+                    do {
+<span class="fc" id="L547">                        parallelEntryRejected = false;</span>
+<span class="fc" id="L548">                        logger.debug(</span>
+                                &quot;curEntry isParallel with curType={}, curEntry={}, visitedPlace={}, serviceName={}, lastServiceType={}, curTypeName={}&quot;,
+<span class="fc" id="L550">                                curType, curEntry.getFullKey(), this.visitedPlaces, curEntry.getServiceName(), lastServiceType,</span>
+                                stageName);
+<span class="pc bpc" id="L552" title="1 of 4 branches missed.">                        if (this.visitedPlaces.isEmpty() || stageName.equals(lastServiceType)) {</span>
+<span class="pc bpc" id="L553" title="1 of 2 branches missed.">                            if (checkParallelTrackingFor(curEntry.getServiceName())) {</span>
+<span class="nc" id="L554">                                lastEntry = new DirectoryEntry(curEntry);</span>
+<span class="nc" id="L555">                                lastEntry.setDataType(form);</span>
+<span class="nc" id="L556">                                formId = lastEntry.getDataId();</span>
+<span class="nc" id="L557">                                parallelEntryRejected = true;</span>
+<span class="nc" id="L558">                                logger.debug(&quot;Rejecting parallel entry found for {}: visitedPlaces={}&quot;, lastEntry.getFullKey(), this.visitedPlaces);</span>
+<span class="nc" id="L559">                                curEntry = nextKeyFromDirectory(formId, place, lastEntry, payloadArg);</span>
+                            } else {
+<span class="fc" id="L561">                                addParallelTrackingInfo(curEntry.getServiceName());</span>
+<span class="fc" id="L562">                                logger.debug(&quot;Added parallel tracking = {}&quot;, this.visitedPlaces);</span>
+                            }
+                        } else {
+<span class="nc" id="L565">                            clearParallelTrackingInfo();</span>
+<span class="nc" id="L566">                            logger.debug(&quot;Cleared parallel tracking info&quot;);</span>
+                        }
+<span class="pc bpc" id="L568" title="3 of 4 branches missed.">                    } while (parallelEntryRejected &amp;&amp; curEntry != null);</span>
+                }
+
+<span class="fc bfc" id="L571" title="All 2 branches covered.">                if (curEntry != null) {</span>
+<span class="fc" id="L572">                    logger.debug(&quot;===== --- *** Doing {}.{}--{}&quot;, stageName, formId, curEntry.getServiceName());</span>
+<span class="fc" id="L573">                    payloadArg.pullFormToTop(form);</span>
+<span class="fc" id="L574">                    return curEntry;</span>
+                }
+<span class="fc" id="L576">            }</span>
+        }
+<span class="fc" id="L578">        return null;</span>
+    }
+
+    /**
+     * Evaluate parallel attribute of specified type index
+     */
+    protected boolean isParallelServiceType(final int typeSetPosition) {
+<span class="fc" id="L585">        return Stage.isParallelStage(typeSetPosition);</span>
+    }
+
+    /**
+     * Get index in typeSet for specified string, 0 if not found
+     */
+    public static int typeLookup(final String s) {
+<span class="fc" id="L592">        Stage stage = Stage.getByName(s);</span>
+<span class="fc bfc" id="L593" title="All 2 branches covered.">        int idx = (stage == null) ? 0 : stage.ordinal();</span>
+<span class="pc bpc" id="L594" title="1 of 2 branches missed.">        if (idx &lt; 0) {</span>
+<span class="nc" id="L595">            idx = 0; // failsafe</span>
+        }
+<span class="fc" id="L597">        return idx;</span>
+    }
+
+    /**
+     * Communicate with the directory through the current place to get the next place to go. These are all local calls since
+     * all the local directories have all the information
+     *
+     * This call may cause several key entries to be returned from the directory. All will be put on an internal queue and
+     * the first one will be returned to the caller. Caller knows to look on the internal queue for additional entries
+     * before calling this method again.
+     */
+    protected DirectoryEntry nextKeyFromDirectory(final String dataId, final IServiceProviderPlace place, final DirectoryEntry lastEntry,
+            final IBaseDataObject payloadArg) {
+
+        try {
+<span class="fc" id="L612">            logger.debug(&quot;Trying nextKey for {} with last={}, atPlace={}&quot;, dataId, lastEntry, place);</span>
+
+            // Query the directory
+<span class="fc" id="L615">            final List&lt;DirectoryEntry&gt; entries = place.nextKeys(dataId, payloadArg, lastEntry);</span>
+
+            // Add the entries returned to the queue
+<span class="fc bfc" id="L618" title="All 4 branches covered.">            if ((entries != null) &amp;&amp; !entries.isEmpty()) {</span>
+<span class="fc" id="L619">                this.nextKeyQueue.addAll(entries);</span>
+<span class="fc" id="L620">                logger.debug(&quot;Added {} new key entries from the directory for {}&quot;, entries.size(), dataId);</span>
+            }
+
+<span class="nc" id="L623">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L624">            logger.warn(&quot;cannot get key, I was working on: {}&quot;, payloadArg.shortName(), e);</span>
+            // Returning instead of throwing will allow
+            // the next form to be tried.
+<span class="fc" id="L627">        }</span>
+
+        // Dequeue first item and return it to the caller
+<span class="fc" id="L630">        DirectoryEntry tmpEntry = null;</span>
+<span class="fc bfc" id="L631" title="All 2 branches covered.">        if (!this.nextKeyQueue.isEmpty()) {</span>
+<span class="fc" id="L632">            tmpEntry = this.nextKeyQueue.removeFirst();</span>
+        }
+<span class="fc" id="L634">        logger.debug(&quot;nextKeyFromDirectory found {}&quot;, tmpEntry);</span>
+<span class="fc" id="L635">        return tmpEntry;</span>
+    }
+
+    /**
+     * Build the unique agent ID for carrying this payload around mostly used in error reporting
+     *
+     * @param theId usually comes from the shortName of the payload
+     */
+    protected void setAgentId(@Nullable final String theId) {
+<span class="fc" id="L644">        final long t = (System.currentTimeMillis() % 10000);</span>
+<span class="fc" id="L645">        final String id = &quot;Agent-&quot; + t;</span>
+<span class="pc bpc" id="L646" title="1 of 2 branches missed.">        this.agentId = id + &quot;-&quot; + ((theId != null) ? theId : &quot;blah&quot;);</span>
+<span class="fc" id="L647">    }</span>
+
+    /**
+     * A little more than the name implies, this method sets the things required for an idle agent to get moving again. This
+     * is to be used when starting the agent from a pickup place because although we start with an initial 'place' we don't
+     * use it for processing, just to get the nextKey from the directory there.
+     *
+     * @param payloadArg the real payload, existing if any will be cleared
+     * @param arrivalPlaceArg the place we start at
+     */
+    @Override
+    public synchronized void go(final Object payloadArg, final IServiceProviderPlace arrivalPlaceArg) {
+<span class="nc" id="L659">        clear();</span>
+<span class="nc" id="L660">        go(payloadArg, arrivalPlaceArg, false);</span>
+<span class="nc" id="L661">    }</span>
+
+    /**
+     * Private implementation for both of the above arrive and go methods, uses the setProcessFirstPlace to communicate on
+     * which path we entered to the agent's thread
+     *
+     * @param dataObject the real payload
+     * @param arrivalPlaceArg the place we start at
+     * @param processAtFirstPlace true if we should call process on arrivalPlaceArg
+     */
+    protected synchronized void go(@Nullable final Object dataObject, @Nullable final IServiceProviderPlace arrivalPlaceArg,
+            final boolean processAtFirstPlace) {
+        // Check conditions
+<span class="pc bpc" id="L674" title="3 of 4 branches missed.">        if (dataObject != null &amp;&amp; !(dataObject instanceof IBaseDataObject)) {</span>
+<span class="nc" id="L675">            throw new IllegalArgumentException(&quot;Illegal payload sent to MobileAgent, &quot; + &quot;cannot handle &quot; + dataObject.getClass().getName());</span>
+        }
+
+<span class="fc" id="L678">        this.idle.set(false);</span>
+
+<span class="fc" id="L680">        setProcessFirstPlace(processAtFirstPlace);</span>
+
+        // Allow this to be null to that derived classes
+        // can handle the setting of their payload and still
+        // be able to use this method
+<span class="pc bpc" id="L685" title="1 of 2 branches missed.">        if (dataObject != null) {</span>
+<span class="nc" id="L686">            final IBaseDataObject d = (IBaseDataObject) dataObject;</span>
+<span class="nc" id="L687">            logger.debug(&quot;Setting payload {}&quot;, d.shortName());</span>
+<span class="nc" id="L688">            setPayload(d);</span>
+<span class="nc" id="L689">            setAgentId(d.shortName());</span>
+        }
+
+        // Likewise...
+<span class="pc bpc" id="L693" title="1 of 2 branches missed.">        if (arrivalPlaceArg != null) {</span>
+<span class="fc" id="L694">            setArrivalPlace(arrivalPlaceArg);</span>
+
+            // If a &quot;go&quot; rather an an &quot;arrive&quot;, log the arrivalPlaceArg
+            // on the transform history of the payload
+<span class="pc bpc" id="L698" title="1 of 2 branches missed.">            if (!processAtFirstPlace) {</span>
+<span class="nc" id="L699">                logger.debug(&quot;Adding history for arrival place {}&quot;, arrivalPlaceArg.getKey());</span>
+<span class="nc" id="L700">                recordHistory(arrivalPlaceArg, getPayload());</span>
+            }
+        }
+
+        // the run() loop now takes over on the agent's thread and we return
+        // control of the currentThread to the caller of this method
+<span class="fc" id="L706">        notifyAll();</span>
+<span class="fc" id="L707">    }</span>
+
+    /**
+     * Provide access to the move-error counter for the MoveAdapter
+     */
+    @Override
+    public int getMoveErrorCount() {
+<span class="nc" id="L714">        return this.moveErrorsOccurred;</span>
+    }
+
+    /**
+     * Provide access to the itinerary queue for the MoveAdapter
+     */
+    @Override
+    public DirectoryEntry[] getItineraryQueueItems() {
+<span class="nc" id="L722">        return this.nextKeyQueue.toArray(new DirectoryEntry[0]);</span>
+    }
+
+    /**
+     * This is for an already in process agent arriving at a new place from a &quot;moveTo&quot;. This is different than the above
+     * method because we presume we have arrived at this place in order to do some processing here, not just because we got
+     * picked up by it. So we don't need to get a key first, just start processing.
+     *
+     * @param dataObject the real payload, exisitng if any will be cleared
+     * @param arrivalPlaceArg the place we start at
+     * @param moveErrorCount transported move error counter
+     * @param queuedItineraryItems transported itinerary items list of DirectoryEntry
+     */
+    @Override
+    public synchronized void arrive(final Object dataObject, final IServiceProviderPlace arrivalPlaceArg, final int moveErrorCount,
+            final List&lt;DirectoryEntry&gt; queuedItineraryItems) throws Exception {
+
+<span class="nc bnc" id="L739" title="All 2 branches missed.">        if (dataObject instanceof IBaseDataObject) {</span>
+<span class="nc" id="L740">            clear();</span>
+<span class="nc" id="L741">            this.moveErrorsOccurred = moveErrorCount;</span>
+<span class="nc" id="L742">            this.nextKeyQueue.addAll(queuedItineraryItems);</span>
+<span class="nc" id="L743">            go(dataObject, arrivalPlaceArg, true);</span>
+        } else {
+<span class="nc" id="L745">            throw new Exception(&quot;Illegal payload sent to MobileAgent, cannot handle &quot; + dataObject.getClass().getName());</span>
+        }
+<span class="nc" id="L747">    }</span>
+
+    /**
+     * Delete all forms on the stack that are not final. This is called in error conditions to try and break out of loops or
+     * terminate other badness and zip to the end
+     *
+     * @param payloadArg the dataobject to work on
+     */
+    protected static void purgeNonFinalForms(final IBaseDataObject payloadArg) {
+<span class="fc" id="L756">        int i = 0;</span>
+<span class="fc bfc" id="L757" title="All 2 branches covered.">        while (i &lt; payloadArg.currentFormSize()) {</span>
+<span class="fc" id="L758">            final String form = payloadArg.getAllCurrentForms().get(i);</span>
+<span class="fc bfc" id="L759" title="All 2 branches covered.">            if (form.equals(ERROR_FORM)) {</span>
+<span class="fc" id="L760">                i++;</span>
+<span class="fc" id="L761">                continue;</span>
+            }
+<span class="fc" id="L763">            final String pseudoKey = payloadArg.currentFormAt(i) + &quot;.SKIP.*.http://Previous_Error_Bypass$100&quot;;</span>
+
+<span class="fc" id="L765">            logger.debug(&quot;Removed {} because of ERROR.SKIP&quot;, payloadArg.currentFormAt(i));</span>
+<span class="fc" id="L766">            payloadArg.appendTransformHistory(pseudoKey);</span>
+<span class="fc" id="L767">            payloadArg.deleteCurrentFormAt(i);</span>
+<span class="fc" id="L768">        }</span>
+<span class="fc" id="L769">    }</span>
+
+    /**
+     * Make a nice log message when we are done with the payload
+     *
+     * @param payloadArg the one we just finished with
+     */
+    protected void logAgentCompletion(final IBaseDataObject payloadArg) {
+        // Keep this at a nice high level, above the debug chatter
+<span class="fc" id="L778">        final Object isProbe = payloadArg.getParameter(&quot;DIRECTORY_PROBE&quot;);</span>
+<span class="pc bpc" id="L779" title="1 of 2 branches missed.">        final Logger dest = (isProbe == null) ? logger : probeLogger;</span>
+
+<span class="pc bpc" id="L781" title="1 of 2 branches missed.">        if (dest.isInfoEnabled()) {</span>
+<span class="fc" id="L782">            dest.info(PayloadUtil.getPayloadDisplayString(payloadArg));</span>
+        }
+<span class="fc" id="L784">    }</span>
+
+    /**
+     * Record the processing history in the data object
+     *
+     * @param place where the processing is taking place
+     * @param payloadArg the dataobject that is being processed
+     */
+    protected void recordHistory(final IServiceProviderPlace place, final IBaseDataObject payloadArg) {
+<span class="fc" id="L793">        recordHistory(place.getDirectoryEntry(), payloadArg);</span>
+<span class="fc" id="L794">    }</span>
+
+    /**
+     * Record the processing history in the data object
+     *
+     * @param placeEntry where the processing is taking place
+     * @param payloadArg the data object that is being processed
+     */
+    protected void recordHistory(final DirectoryEntry placeEntry, final IBaseDataObject payloadArg) {
+
+<span class="fc" id="L804">        String placeKey = null;</span>
+<span class="fc" id="L805">        final String cf = payloadArg.currentForm();</span>
+<span class="fc" id="L806">        final DirectoryEntry dnew = new DirectoryEntry(placeEntry);</span>
+<span class="pc bpc" id="L807" title="1 of 2 branches missed.">        if (!KeyManipulator.isKeyComplete(cf)) {</span>
+            // Splice this current form into the place key
+            // for a proper representation of why we are here
+<span class="fc" id="L810">            dnew.setDataType(cf);</span>
+<span class="fc" id="L811">            placeKey = dnew.getFullKey();</span>
+        } else {
+            // We already have a full key in the current form
+            // just need to figure out the current cost
+<span class="nc bnc" id="L815" title="All 2 branches missed.">            if (!payloadArg.beforeStart()) {</span>
+<span class="nc" id="L816">                final DirectoryEntry lpv = payloadArg.getLastPlaceVisited();</span>
+
+                // Subtract one remote overhead if this represents a move
+<span class="nc" id="L819">                int exp = lpv.getExpense();</span>
+<span class="nc bnc" id="L820" title="All 4 branches missed.">                if (!KeyManipulator.getServiceHostUrl(cf).equals(lpv.getServiceHostUrl()) &amp;&amp; exp &gt; DirectoryPlace.REMOTE_EXPENSE_OVERHEAD) {</span>
+<span class="nc" id="L821">                    exp -= DirectoryPlace.REMOTE_EXPENSE_OVERHEAD;</span>
+                }
+
+                // Current form cannot perhaps handle the cost, but
+                // we need it here for the xform history
+<span class="nc bnc" id="L826" title="All 2 branches missed.">                if (exp &gt; 0) {</span>
+<span class="nc" id="L827">                    placeKey = cf + KeyManipulator.DOLLAR + exp;</span>
+                } else {
+<span class="nc" id="L829">                    placeKey = cf;</span>
+                }
+<span class="nc" id="L831">            } else {</span>
+                // Full part key in current form and before start.
+                // Must use key from &quot;Sending Place&quot; rather than
+                // current form here
+<span class="nc" id="L835">                placeKey = dnew.getFullKey();</span>
+            }
+        }
+
+<span class="fc" id="L839">        payloadArg.appendTransformHistory(placeKey);</span>
+
+<span class="fc" id="L841">        logger.debug(&quot;Appended {} to history which now has size {}&quot;, placeKey, payloadArg.transformHistory().size());</span>
+<span class="fc" id="L842">    }</span>
+
+    /**
+     * Setter for processFirstPlace
+     *
+     * @param arg the new value for processFirstPlace
+     */
+    protected void setProcessFirstPlace(final boolean arg) {
+<span class="fc" id="L850">        this.processFirstPlace = arg;</span>
+<span class="fc" id="L851">    }</span>
+
+    /**
+     * Getter for processFirstPlace
+     *
+     * @return the value of processFirstPlace
+     */
+    protected boolean getProcessFirstPlace() {
+<span class="fc" id="L859">        return this.processFirstPlace;</span>
+    }
+
+    @Override
+    public void dumpPlaceStats() {
+<span class="nc" id="L864">        ResourceWatcher rw = null;</span>
+        try {
+<span class="nc" id="L866">            rw = ResourceWatcher.lookup();</span>
+<span class="nc" id="L867">        } catch (NamespaceException ne) {</span>
+<span class="nc" id="L868">            logger.error(&quot;Exception occurred while trying to lookup resource&quot;, ne);</span>
+<span class="nc" id="L869">            return;</span>
+<span class="nc" id="L870">        }</span>
+
+<span class="nc" id="L872">        logger.info(&quot;Dumping All Stats for {}:&quot;, AGENT_THREAD);</span>
+<span class="nc" id="L873">        logger.info(&quot;===============&quot;);</span>
+<span class="nc" id="L874">        rw.logStats(logger);</span>
+<span class="nc" id="L875">        logger.info(&quot;===============&quot;);</span>
+<span class="nc" id="L876">    }</span>
+
+    /**
+     * Get the number of move errors
+     */
+    @Override
+    public int getMaxMoveErrors() {
+<span class="nc" id="L883">        return this.maxMoveErrors;</span>
+    }
+
+    /**
+     * Set the maximum number of move attempts that can error out before this instance will quit trying and set the workflow
+     * to be an ERROR condition
+     *
+     * @param value the maximum number of move failures
+     */
+    @Override
+    public void setMaxMoveErrors(final int value) {
+<span class="fc" id="L894">        this.maxMoveErrors = value;</span>
+<span class="fc" id="L895">    }</span>
+
+    /**
+     * Get the maximum number of itinerary steps
+     */
+    @Override
+    public int getMaxItinerarySteps() {
+<span class="fc" id="L902">        return this.maxItinerarySteps;</span>
+    }
+
+    /**
+     * Set the maximum number of itinerary steps before this instance will turn the workflow into an ERROR condition
+     *
+     * @param value the new maximum number of steps
+     */
+    @Override
+    public void setMaxItinerarySteps(final int value) {
+<span class="fc" id="L912">        this.maxItinerarySteps = value;</span>
+<span class="fc" id="L913">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -118,7 +118,7 @@
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>     @Override
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>     @Nullable
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>     <strong class="jxr_keyword">public</strong> String getSpaceName() {
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>         <strong class="jxr_keyword">if</strong> (openSpaceNames.size() &gt; 0) {
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>         <strong class="jxr_keyword">if</strong> (!openSpaceNames.isEmpty()) {
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>             <strong class="jxr_keyword">return</strong> openSpaceNames.get(0);
 <a class="jxr_linenumber" name="L115" href="#L115">115</a>         } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
@@ -149,7 +149,7 @@
 <a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>     @Override
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> take() {
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>         <strong class="jxr_keyword">if</strong> (openSpaceNames.size() == 0) {
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>         <strong class="jxr_keyword">if</strong> (openSpaceNames.isEmpty()) {
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>             logger.debug(<span class="jxr_string">"Cannot perform 'take' when no spaces are available"</span>);
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>             <strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>         }
@@ -163,7 +163,7 @@
 <a class="jxr_linenumber" name="L155" href="#L155">155</a>             <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a> path = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L156" href="#L156">156</a>             <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L157" href="#L157">157</a>                 path = tpa.outboundWorkSpaceTake(openSpaceName, myKey);
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>             } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>             } <strong class="jxr_keyword">catch</strong> (RuntimeException ex) {
 <a class="jxr_linenumber" name="L159" href="#L159">159</a>                 logger.error(<span class="jxr_string">"Failed to take work from "</span> + openSpaceName, ex);
 <a class="jxr_linenumber" name="L160" href="#L160">160</a>             }
 <a class="jxr_linenumber" name="L161" href="#L161">161</a> 
@@ -208,7 +208,7 @@
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>             closeSpace(s);
 <a class="jxr_linenumber" name="L201" href="#L201">201</a>         }
 <a class="jxr_linenumber" name="L202" href="#L202">202</a> 
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>         <strong class="jxr_keyword">if</strong> (closers.size() &gt; 0) {
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>         <strong class="jxr_keyword">if</strong> (!closers.isEmpty()) {
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>             logger.debug(<span class="jxr_string">"Cleaned up "</span> + closers.size() + <span class="jxr_string">" workspace instances, "</span> + openSpaceNames.size() + <span class="jxr_string">" remaining"</span>);
 <a class="jxr_linenumber" name="L205" href="#L205">205</a>         }
 <a class="jxr_linenumber" name="L206" href="#L206">206</a>     }
@@ -261,6 +261,6 @@
 <a class="jxr_linenumber" name="L253" href="#L253">253</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

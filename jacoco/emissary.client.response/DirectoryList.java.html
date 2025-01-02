@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DirectoryList.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.client.response</a> &gt; <span class="el_source">DirectoryList.java</span></div><h1>DirectoryList.java</h1><pre class="source lang-java linenums">package emissary.client.response;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+@XmlAccessorType(XmlAccessType.NONE)
+public class DirectoryList implements Serializable {
+    private static final long serialVersionUID = -6660679929326876133L;
+
+<span class="fc" id="L18">    private static final Logger logger = LoggerFactory.getLogger(DirectoryList.class);</span>
+
+    @XmlElement(name = &quot;directoryPlace&quot;)
+    private String directoryPlace;
+
+    @XmlElement(name = &quot;entries&quot;)
+    private SortedSet&lt;Directory&gt; entries;
+
+<span class="fc" id="L26">    public DirectoryList() {</span>
+<span class="fc" id="L27">        entries = new TreeSet&lt;&gt;();</span>
+<span class="fc" id="L28">    }</span>
+
+<span class="nc" id="L30">    public DirectoryList(String directoryPlace, SortedSet&lt;Directory&gt; entries) {</span>
+<span class="nc" id="L31">        this.directoryPlace = directoryPlace;</span>
+<span class="nc" id="L32">        this.entries = entries;</span>
+<span class="nc" id="L33">    }</span>
+
+    public String getDirectoryPlace() {
+<span class="fc" id="L36">        return directoryPlace;</span>
+    }
+
+    public void setDirectoryPlace(String directoryPlace) {
+<span class="fc" id="L40">        this.directoryPlace = directoryPlace;</span>
+<span class="fc" id="L41">    }</span>
+
+    public Set&lt;Directory&gt; getEntries() {
+<span class="fc" id="L44">        return entries;</span>
+    }
+
+    public void setEntries(SortedSet&lt;Directory&gt; entries) {
+<span class="nc" id="L48">        this.entries = entries;</span>
+<span class="nc" id="L49">    }</span>
+
+    public void addEntries(Directory entry) {
+<span class="fc" id="L52">        this.entries.add(entry);</span>
+<span class="fc" id="L53">    }</span>
+
+    public void dumpToConsole() {
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if (getDirectoryPlace() != null) {</span>
+<span class="nc" id="L57">            StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L58">            sb.append(&quot;DirectoryPlace: &quot;).append(&quot;\n&quot;);</span>
+<span class="nc" id="L59">            sb.append(&quot;  &quot;).append(getDirectoryPlace()).append(&quot;\n&quot;).append(&quot;Entries: &quot;);</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">            for (Directory entry : getEntries()) {</span>
+<span class="nc" id="L61">                sb.append(&quot;\n  &quot;).append(entry).append(&quot;$&quot;).append(entry.getExpense());</span>
+<span class="nc" id="L62">            }</span>
+<span class="nc" id="L63">            logger.info(&quot;{}&quot;, sb);</span>
+        }
+<span class="nc" id="L65">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

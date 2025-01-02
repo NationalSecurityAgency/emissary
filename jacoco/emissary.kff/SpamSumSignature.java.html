@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SpamSumSignature.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.kff</a> &gt; <span class="el_source">SpamSumSignature.java</span></div><h1>SpamSumSignature.java</h1><pre class="source lang-java linenums">package emissary.kff;
+
+/**
+ * A java port of the ssdeep code for &quot;fuzzy hashing&quot;. http://ssdeep.sourceforge.net There are a number of ports out
+ * there that all look basically the same. This one is from
+ * https://opensourceprojects.eu/p/triplecheck/code/23/tree/tool/src/ssdeep/
+ * 
+ * A new ssdeep hash gets calculated and saved at each level of unwrapping.
+ */
+
+public class SpamSumSignature {
+    /*****************************************************
+     * FIELDS
+     *****************************************************/
+    private/* uint */long blockSize;
+    private final byte[] hash1;
+    private final byte[] hash2;
+
+    /*****************************************************
+     * UTILS
+     *****************************************************/
+    /**
+     * &lt;p&gt;
+     * Change a string into an array of bytes
+     */
+    public static byte[] getBytes(String str) {
+<span class="fc" id="L27">        byte[] r = new byte[str.length()];</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        for (int i = 0; i &lt; r.length; i++) {</span>
+<span class="fc" id="L29">            r[i] = (byte) str.charAt(i);</span>
+        }
+<span class="fc" id="L31">        return r;</span>
+    }
+
+    /**
+     * &lt;p&gt;
+     * Change a string into an array of bytes
+     */
+    public static String getString(byte[] hsh) {
+<span class="fc" id="L39">        String r = &quot;&quot;;</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        for (int i = 0; i &lt; hsh.length; i++) {</span>
+<span class="fc" id="L41">            r += (char) hsh[i];</span>
+        }
+<span class="fc" id="L43">        return r;</span>
+    }
+
+    /*****************************************************
+     * CONSTRUCTOR
+     *****************************************************/
+
+    /**
+     * &lt;p&gt;
+     * Initializes a new instance of the {@code SpamSumSignature} class.
+     * 
+     * @param signature The signature.
+     */
+<span class="fc" id="L56">    public SpamSumSignature(String signature) {</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if (null == signature) {</span>
+<span class="nc" id="L58">            throw new IllegalArgumentException(&quot;Signature string cannot be null or empty.&quot; + &quot;\r\nParameter name: &quot; + &quot;signature&quot;);</span>
+        }
+
+<span class="fc" id="L61">        int idx1 = signature.indexOf(':');</span>
+<span class="fc" id="L62">        int idx2 = signature.indexOf(':', idx1 + 1);</span>
+
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        if (idx1 &lt; 0) {</span>
+<span class="nc" id="L65">            throw new IllegalArgumentException(&quot;Signature is not valid.&quot; + &quot;\r\nParameter name: &quot; + &quot;signature&quot;);</span>
+        }
+
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">        if (idx2 &lt; 0) {</span>
+<span class="nc" id="L69">            throw new IllegalArgumentException(&quot;Signature is not valid.&quot; + &quot;\r\nParameter name: &quot; + &quot;signature&quot;);</span>
+        }
+
+<span class="fc" id="L72">        blockSize = Integer.parseInt(signature.substring(0, 0 + idx1));</span>
+<span class="fc" id="L73">        hash1 = getBytes(signature.substring(idx1 + 1, idx1 + 1 + idx2 - idx1 - 1));</span>
+<span class="fc" id="L74">        hash2 = getBytes(signature.substring(idx2 + 1));</span>
+<span class="fc" id="L75">    }</span>
+
+<span class="fc" id="L77">    public SpamSumSignature(long blockSize, byte[] hash1, byte[] hash2) {</span>
+<span class="fc" id="L78">        this.blockSize = blockSize;</span>
+<span class="fc" id="L79">        this.hash1 = hash1;</span>
+<span class="fc" id="L80">        this.hash2 = hash2;</span>
+<span class="fc" id="L81">    }</span>
+
+    /*****************************************************
+     * METHODS
+     *****************************************************/
+
+    @Override
+    public boolean equals(Object obj) {
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (!(obj instanceof SpamSumSignature)) {</span>
+<span class="nc" id="L90">            return false;</span>
+        }
+
+<span class="nc" id="L93">        return this.isEqual((SpamSumSignature) obj);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L98">        return super.hashCode();</span>
+    }
+
+    public boolean isEqual(SpamSumSignature other) {
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (this.blockSize != other.blockSize) {</span>
+<span class="nc" id="L103">            return false;</span>
+        }
+
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (this.hash1.length != other.hash1.length) {</span>
+<span class="nc" id="L107">            return false;</span>
+        }
+
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        if (this.hash2.length != other.hash2.length) {</span>
+<span class="nc" id="L111">            return false;</span>
+        }
+
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        for (int idx = 0; idx &lt; hash1.length; idx++) {</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">            if (this.hash1[idx] != other.hash1[idx]) {</span>
+<span class="nc" id="L116">                return false;</span>
+            }
+        }
+
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        for (int idx = 0; idx &lt; hash2.length; idx++) {</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">            if (this.hash2[idx] != other.hash2[idx]) {</span>
+<span class="nc" id="L122">                return false;</span>
+            }
+        }
+
+<span class="nc" id="L126">        return true;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L131">        String hashText1 = getString(hash1);</span>
+<span class="fc" id="L132">        String hashText2 = getString(hash2);</span>
+<span class="fc" id="L133">        return blockSize + &quot;:&quot; + hashText1 + &quot;:&quot; + hashText2;</span>
+    }
+
+    /*****************************************************
+     * PROPERTIES
+     *****************************************************/
+
+    /**
+     * &lt;p&gt;
+     * Gets the size of the block. Value: The size of the block.
+     */
+    public/* uint */long getBlockSize() {
+<span class="fc" id="L145">        return blockSize;</span>
+    }
+
+    /**
+     * &lt;p&gt;
+     * Gets the first hash part. Value: The first hash part.
+     */
+    public byte[] getHashPart1() {
+<span class="fc" id="L153">        return hash1;</span>
+    }
+
+    /**
+     * &lt;p&gt;
+     * Gets the second hash part. Value: The second hash part.
+     */
+    public byte[] getHashPart2() {
+<span class="fc" id="L161">        return hash2;</span>
+    }
+
+    @SuppressWarnings(&quot;SystemOut&quot;)
+    public static void main(String[] args) {
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        if (args.length != 2) {</span>
+<span class="nc" id="L167">            System.out.println(&quot;Usage: SpamSumSignature ssdeep1 ssdeep2\nUse the full ssdeep value (xx:yyy:zzz).&quot;</span>
+                    + &quot;\nReturns the score between the two values.&quot;);
+<span class="nc" id="L169">            System.exit(1);</span>
+        }
+<span class="nc" id="L171">        SpamSumSignature sss1 = new SpamSumSignature(args[0]);</span>
+<span class="nc" id="L172">        SpamSumSignature sss2 = new SpamSumSignature(args[1]);</span>
+<span class="nc" id="L173">        Ssdeep ssdeep = new Ssdeep();</span>
+<span class="nc" id="L174">        System.out.println(&quot;&quot; + ssdeep.compare(sss1, sss2));</span>
+<span class="nc" id="L175">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ResourceWatcher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core</a> &gt; <span class="el_source">ResourceWatcher.java</span></div><h1>ResourceWatcher.java</h1><pre class="source lang-java linenums">package emissary.core;
+
+import emissary.place.IServiceProviderPlace;
+
+import com.codahale.metrics.ExponentiallyDecayingReservoir;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Queue;
+import java.util.SortedMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
+
+/**
+ * Track mobile agents and make them obey resource limitations
+ */
+public class ResourceWatcher implements Runnable {
+<span class="fc" id="L26">    protected static final Logger LOG = LoggerFactory.getLogger(ResourceWatcher.class);</span>
+
+    public static final String DEFAULT_NAMESPACE_NAME = &quot;ResourceWatcher&quot;;
+
+    // This is a default that can be modified for every place
+<span class="fc" id="L31">    protected long timeLimitMillis = TimeUnit.SECONDS.toMillis(30);</span>
+
+    // Time limit can be overidden per place by config
+    // This structure is a cache of place timeouts that have
+    // been gathered, stored by class place name (not class name,
+    // as some classes function in different ways (e.g. UnixCommandPlace)
+<span class="fc" id="L37">    protected Map&lt;String, Long&gt; placeTimeLimits = new ConcurrentHashMap&lt;&gt;();</span>
+
+    // The thread we plan to run on
+<span class="fc" id="L40">    @Nullable</span>
+    protected transient Thread monitor = null;
+
+    // Loop control
+<span class="fc" id="L44">    protected boolean timeToQuit = false;</span>
+
+    protected MetricRegistry metrics;
+
+<span class="fc" id="L48">    protected MetricsFormatter metricsFormatter = MetricsFormatter.builder().withDurationUnit(TimeUnit.MILLISECONDS).withRateUnit(TimeUnit.SECONDS)</span>
+<span class="fc" id="L49">            .build();</span>
+
+    // Things we are tracking
+<span class="fc" id="L52">    protected Queue&lt;TimedResource&gt; tracking = new LinkedBlockingQueue&lt;&gt;();</span>
+
+    public ResourceWatcher() {
+<span class="fc" id="L55">        this(new MetricsManager());</span>
+<span class="fc" id="L56">    }</span>
+
+    /**
+     * Create a resource watcher set it running and bind into the NamespaceException
+     */
+    @SuppressWarnings(&quot;ThreadPriorityCheck&quot;)
+<span class="fc" id="L62">    public ResourceWatcher(final MetricsManager metricsManager) {</span>
+<span class="fc" id="L63">        this.metrics = metricsManager.getMetricRegistry();</span>
+<span class="fc" id="L64">        final Thread thread = new Thread(this, &quot;ResourceWatcher&quot;);</span>
+<span class="fc" id="L65">        thread.setPriority(Thread.NORM_PRIORITY);</span>
+<span class="fc" id="L66">        thread.setDaemon(true);</span>
+<span class="fc" id="L67">        Namespace.bind(DEFAULT_NAMESPACE_NAME, this);</span>
+<span class="fc" id="L68">        thread.start();</span>
+<span class="fc" id="L69">    }</span>
+
+
+    private long getPlaceDuration(final IServiceProviderPlace place) {
+<span class="fc" id="L73">        String placeName = place.getPlaceName();</span>
+<span class="fc" id="L74">        Long allowedDuration = placeTimeLimits.get(placeName);</span>
+        // Read and cache the duration for this place
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (allowedDuration == null) {</span>
+<span class="fc" id="L77">            final long d = place.getResourceLimitMillis();</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">            allowedDuration = d &gt;= -1 ? d : timeLimitMillis;</span>
+<span class="fc" id="L79">            placeTimeLimits.put(placeName, allowedDuration);</span>
+        }
+<span class="fc" id="L81">        return allowedDuration;</span>
+    }
+
+    /**
+     * Register an agent to start tracking it
+     * 
+     * @param agent the agent to track
+     * @param place place executing
+     * @return TimedResource for the place and agent
+     */
+    public TimedResource starting(final IMobileAgent agent, final IServiceProviderPlace place) {
+<span class="fc" id="L92">        TimedResource tr = new TimedResource(agent, place, getPlaceDuration(place), metrics.timer(place.getPlaceName()));</span>
+<span class="fc" id="L93">        tracking.offer(tr);</span>
+<span class="fc" id="L94">        return tr;</span>
+    }
+
+    /**
+     * Lookup the default ResourceWatcher in the Namespace
+     * 
+     * @return The registered ResourceWatcher
+     */
+    public static ResourceWatcher lookup() throws NamespaceException {
+<span class="fc" id="L103">        return (ResourceWatcher) Namespace.lookup(DEFAULT_NAMESPACE_NAME);</span>
+    }
+
+    /**
+     * Safely stop the monitoring Thread
+     */
+    public void quit() {
+<span class="fc" id="L110">        LOG.info(&quot;Stopping resource watcher...&quot;);</span>
+<span class="fc" id="L111">        this.timeToQuit = true;</span>
+<span class="fc" id="L112">    }</span>
+
+    /**
+     * Set the default time limit in millis
+     * 
+     * @param limit the new value
+     */
+    public void setTimeLimitMillis(final long limit) {
+<span class="nc" id="L120">        this.timeLimitMillis = limit;</span>
+<span class="nc" id="L121">    }</span>
+
+    /**
+     * Get the default time limit in millis
+     * 
+     * @return time limit
+     */
+    public long getTimeLimitMillis() {
+<span class="nc" id="L129">        return this.timeLimitMillis;</span>
+    }
+
+    /**
+     * Runnable interface where we get to monitor stuff
+     */
+    @Override
+    public void run() {
+<span class="fc" id="L137">        LOG.debug(&quot;ResourceWatcher is starting&quot;);</span>
+
+<span class="fc bfc" id="L139" title="All 2 branches covered.">        while (!this.timeToQuit) {</span>
+            // Delay this loop
+            try {
+<span class="fc" id="L142">                Thread.sleep(100);</span>
+<span class="nc" id="L143">            } catch (InterruptedException ignore) {</span>
+<span class="nc" id="L144">                Thread.currentThread().interrupt();</span>
+<span class="fc" id="L145">            }</span>
+<span class="fc" id="L146">            Iterator&lt;TimedResource&gt; it = tracking.iterator();</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            while (it.hasNext()) {</span>
+<span class="fc" id="L148">                final long now = System.currentTimeMillis();</span>
+<span class="fc" id="L149">                final TimedResource val = it.next();</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">                if (val.checkState(now)) {</span>
+<span class="fc" id="L151">                    it.remove();</span>
+                }
+<span class="fc" id="L153">            }</span>
+<span class="fc" id="L154">        }</span>
+<span class="fc" id="L155">        Namespace.unbind(DEFAULT_NAMESPACE_NAME);</span>
+<span class="fc" id="L156">        LOG.info(&quot;Resource watcher stopped.&quot;);</span>
+<span class="fc" id="L157">    }</span>
+
+    public void logStats(final Logger loggerArg) {
+<span class="nc bnc" id="L160" title="All 2 branches missed.">        for (final Map.Entry&lt;String, Timer&gt; e : this.metrics.getTimers().entrySet()) {</span>
+            // We only want to log stats for places that have had events
+<span class="nc bnc" id="L162" title="All 2 branches missed.">            if (e.getValue().getCount() &gt; 0) {</span>
+<span class="nc" id="L163">                loggerArg.info(this.metricsFormatter.formatTimer(e.getKey(), e.getValue()));</span>
+            }
+<span class="nc" id="L165">        }</span>
+<span class="nc" id="L166">    }</span>
+
+    public void resetStats() {
+        // We use reflection to reset the histograms that track finished events, but leaves the namespace for active timers
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        for (Timer timer : this.metrics.getTimers().values()) {</span>
+            try {
+<span class="fc" id="L172">                Field histogramField = Timer.class.getDeclaredField(&quot;histogram&quot;);</span>
+<span class="fc" id="L173">                histogramField.setAccessible(true);</span>
+<span class="fc" id="L174">                histogramField.set(timer, new Histogram(new ExponentiallyDecayingReservoir()));</span>
+<span class="nc" id="L175">            } catch (NoSuchFieldException | IllegalAccessException e) {</span>
+<span class="nc" id="L176">                LOG.error(&quot;Issue resetting placeStats in ResourceWatcher&quot;, e);</span>
+<span class="fc" id="L177">            }</span>
+<span class="fc" id="L178">        }</span>
+<span class="fc" id="L179">    }</span>
+
+    public SortedMap&lt;String, Timer&gt; getStats() {
+<span class="fc" id="L182">        return this.metrics.getTimers();</span>
+    }
+
+    public Timer getStat(final String statKey) {
+<span class="fc" id="L186">        return this.metrics.timer(statKey);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L191">        return &quot;Watching &quot; + this.tracking.size() + &quot; agents with default time limit &quot; + this.timeLimitMillis + &quot;ms&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

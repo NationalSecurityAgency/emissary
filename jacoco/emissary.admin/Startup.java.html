@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Startup.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.admin</a> &gt; <span class="el_source">Startup.java</span></div><h1>Startup.java</h1><pre class="source lang-java linenums">package emissary.admin;
+
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.core.EmissaryException;
+import emissary.core.EmissaryRuntimeException;
+import emissary.core.Namespace;
+import emissary.directory.DirectoryEntry;
+import emissary.directory.DirectoryPlace;
+import emissary.directory.EmissaryNode;
+import emissary.directory.IDirectoryPlace;
+import emissary.directory.KeyManipulator;
+import emissary.pickup.PickUpPlace;
+import emissary.place.CoordinationPlace;
+import emissary.place.IServiceProviderPlace;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import javax.annotation.Nullable;
+
+public class Startup {
+
+    public static final int DIRECTORYSTART = 0;
+    public static final int DIRECTORYADD = 1;
+    public static final int DIRECTORYDELETE = 2;
+    public static final String ACTIONADD = &quot;-add&quot;;
+    public static final String ACTIONDELETE = &quot;-delete&quot;;
+    public static final String ACTIONSTART = &quot;-start&quot;;
+
+    private static final String PARALLEL_PLACE_STARTUP_CONFIG = &quot;PARALLEL_PLACE_STARTUP&quot;;
+    @SuppressWarnings(&quot;NonFinalStaticField&quot;)
+<span class="fc" id="L48">    static int directoryAction = DIRECTORYADD;</span>
+
+    // If we are an emissary node these will be present
+    private final EmissaryNode node;
+
+    // Our logger
+<span class="fc" id="L54">    private static final Logger logger = LoggerFactory.getLogger(Startup.class);</span>
+
+    // The startup config object
+<span class="fc" id="L57">    @Nullable</span>
+    protected Configurator hostsConfig = null;
+
+    // Successfully started directories
+<span class="fc" id="L61">    protected final Map&lt;String, String&gt; localDirectories = new ConcurrentHashMap&lt;&gt;();</span>
+
+    // Failed directories
+<span class="fc" id="L64">    protected final Map&lt;String, String&gt; failedLocalDirectories = new ConcurrentHashMap&lt;&gt;();</span>
+
+<span class="fc" id="L66">    protected final Set&lt;String&gt; failedPlaces = ConcurrentHashMap.newKeySet();</span>
+
+    // Collection of the places as they finish coming up
+<span class="fc" id="L69">    protected static final Map&lt;String, String&gt; places = new ConcurrentHashMap&lt;&gt;();</span>
+
+    // Collection of places that are being started
+<span class="fc" id="L72">    protected final Set&lt;String&gt; placesToStart = ConcurrentHashMap.newKeySet();</span>
+
+    // sorted lists of the place types, grouped by hostname
+<span class="fc" id="L75">    protected final Map&lt;String, Set&lt;String&gt;&gt; placeLists = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="fc" id="L76">    protected final Map&lt;String, Set&lt;String&gt;&gt; pickupLists = new ConcurrentHashMap&lt;&gt;();</span>
+
+    // sets to keep track of possible invisible place startup
+<span class="fc" id="L79">    protected static final Set&lt;String&gt; activeDirPlaces = new LinkedHashSet&lt;&gt;();</span>
+<span class="fc" id="L80">    protected static final Set&lt;String&gt; placeAlreadyStarted = new LinkedHashSet&lt;&gt;();</span>
+
+    // invisible place startups occurred in strict mode
+    @SuppressWarnings(&quot;NonFinalStaticField&quot;)
+<span class="fc" id="L84">    protected static boolean invisPlacesStartedInStrictMode = false;</span>
+
+    /**
+     * n return the full DNS name and port without the protocol part
+     */
+    public static String placeHost(final String key) {
+<span class="fc" id="L90">        return KeyManipulator.getServiceHost(key);</span>
+    }
+
+    /**
+     * return the type of place specified Key manipulator does not work on this, though it seems to if the key has dots in
+     * the hostname like many do.
+     */
+    public static String placeName(final String key) {
+<span class="fc" id="L98">        final int pos = key.lastIndexOf(&quot;/&quot;);</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if (pos != -1) {</span>
+<span class="fc" id="L100">            return key.substring(pos + 1);</span>
+        }
+<span class="nc" id="L102">        return key;</span>
+    }
+
+    /**
+     * Set the action based on the command line argument
+     */
+    public static int setAction(final String optarg) {
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (ACTIONADD.equalsIgnoreCase(optarg)) {</span>
+<span class="nc" id="L110">            return DIRECTORYADD;</span>
+        }
+
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (ACTIONDELETE.equalsIgnoreCase(optarg)) {</span>
+<span class="nc" id="L114">            return DIRECTORYDELETE;</span>
+        }
+
+        // default
+<span class="nc" id="L118">        return DIRECTORYSTART;</span>
+    }
+
+    private static String makeConfig(final String path, final String file) {
+<span class="nc bnc" id="L122" title="All 4 branches missed.">        if (file.startsWith(&quot;/&quot;) &amp;&amp; new File(file).exists()) {</span>
+<span class="nc" id="L123">            return file;</span>
+        }
+<span class="nc" id="L125">        return ConfigUtil.getConfigFile(path, file);</span>
+    }
+
+    /**
+     * The main entry point
+     */
+    @SuppressWarnings(&quot;SystemOut&quot;)
+    public static void main(final String[] args) throws IOException, EmissaryException {
+
+
+        //
+        // Evaluate arguments to the static main
+        //
+        // Need config path and startup config file on command line
+<span class="nc bnc" id="L139" title="All 4 branches missed.">        if (args.length &lt; 1 || args.length &gt; 3) {</span>
+<span class="nc" id="L140">            System.err.println(&quot;Usage: java emissary.admin.Startup &quot; + &quot;[-start|-add|-delete] [config_path] config_file&quot;);</span>
+<span class="nc" id="L141">            return;</span>
+        }
+
+        final String startupConfigFile;
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if (args.length == 1) {</span>
+<span class="nc" id="L146">            directoryAction = setAction(ACTIONSTART);</span>
+<span class="nc bnc" id="L147" title="All 4 branches missed.">            if (args[0].startsWith(&quot;/&quot;) || args[0].toUpperCase(Locale.getDefault()).startsWith(&quot;HTTP&quot;)) {</span>
+<span class="nc" id="L148">                startupConfigFile = args[0];</span>
+            } else {
+<span class="nc" id="L150">                startupConfigFile = ConfigUtil.getConfigFile(args[0]);</span>
+            }
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        } else if (args.length == 2) {</span>
+<span class="nc" id="L153">            directoryAction = setAction(ACTIONSTART);</span>
+<span class="nc" id="L154">            startupConfigFile = makeConfig(args[0], args[1]);</span>
+        } else {
+<span class="nc" id="L156">            directoryAction = setAction(args[0]);</span>
+<span class="nc" id="L157">            startupConfigFile = makeConfig(args[1], args[2]);</span>
+        }
+
+<span class="nc" id="L160">        final Startup start = new Startup(startupConfigFile, new EmissaryNode());</span>
+<span class="nc" id="L161">        start.start();</span>
+
+<span class="nc" id="L163">        logger.info(&quot;The system is up and running fine. All ahead Warp-7.&quot;);</span>
+<span class="nc" id="L164">    }</span>
+
+
+    /**
+     * Start the system
+     */
+    public void start() throws EmissaryException {
+<span class="fc" id="L171">        final boolean bootStatus = bootstrap();</span>
+
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">        if (!bootStatus) {</span>
+<span class="nc" id="L174">            throw new EmissaryException(&quot;Unable to bootstrap the system&quot;);</span>
+        }
+
+        // bootstrap now only starts the processing places (this allows
+        // derived classes to hold off starting the pickup places until
+        // they've completed their own set-up). So we have to startup
+        // the pickup places here.
+<span class="fc" id="L181">        startPickUpPlaces();</span>
+
+<span class="pc bpc" id="L183" title="3 of 4 branches missed.">        if (!verifyNoInvisiblePlacesStarted() &amp;&amp; node.isStrictStartupMode()) {</span>
+<span class="nc" id="L184">            invisPlacesStartedInStrictMode = true;</span>
+        }
+<span class="fc" id="L186">    }</span>
+
+
+    // $AUTO: Constructors.
+
+    /**
+     * Class constructor loads the config file
+     */
+    public Startup(final String startupConfigFile, EmissaryNode node) throws IOException {
+        // Read in startup config file specifying place/host setup
+<span class="nc" id="L196">        this(new ServiceConfigGuide(startupConfigFile), node);</span>
+<span class="nc" id="L197">    }</span>
+
+    public Startup(final InputStream startupConfigStream, EmissaryNode node) throws IOException {
+<span class="nc" id="L200">        this(new ServiceConfigGuide(startupConfigStream), node);</span>
+<span class="nc" id="L201">    }</span>
+
+<span class="fc" id="L203">    public Startup(final Configurator config, EmissaryNode node) {</span>
+<span class="fc" id="L204">        this.hostsConfig = config;</span>
+<span class="fc" id="L205">        this.node = node;</span>
+<span class="fc" id="L206">    }</span>
+
+    public boolean bootstrap() {
+
+        //
+        // Setup the Local Directories in a hashtable
+        //
+<span class="fc" id="L213">        final boolean status = localDirectorySetup(this.localDirectories);</span>
+
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">        if (!status) {</span>
+<span class="nc" id="L216">            logger.warn(&quot;Startup: local directory setup failed.&quot;);</span>
+<span class="nc" id="L217">            return false;</span>
+        }
+
+        //
+        // Set up the rest of the Places except no pickups
+        //
+<span class="fc" id="L223">        sortPlaces(this.hostsConfig.findEntries(&quot;PLACE&quot;));</span>
+
+<span class="fc" id="L225">        logger.info(&quot;Ready to start {} place(s) and {} PickUp place(s).&quot;, hashListSize(this.placeLists), hashListSize(this.pickupLists));</span>
+
+<span class="fc" id="L227">        logger.info(&quot;Processing non-pickup places...&quot;);</span>
+<span class="fc" id="L228">        startMapOfPlaces(this.placeLists);</span>
+
+        //
+        // Wait for all places to get started and registered
+        //
+<span class="fc" id="L233">        this.stopAndWaitForPlaceCreation();</span>
+
+<span class="fc" id="L235">        logger.debug(&quot;Done with bootstrap phase&quot;);</span>
+<span class="fc" id="L236">        return true;</span>
+    }
+
+    /**
+     * Start all the pickup places and wait for them to finish
+     */
+    void startPickUpPlaces() {
+
+<span class="fc" id="L244">        startMapOfPlaces(this.pickupLists);</span>
+
+<span class="fc" id="L246">        logger.info(&quot;Processing pickup places...&quot;);</span>
+
+        //
+        // Wait for all places to get started and registered
+        //
+<span class="fc" id="L251">        stopAndWaitForPlaceCreation();</span>
+
+<span class="fc" id="L253">    }</span>
+
+    void startMapOfPlaces(final Map&lt;String, Set&lt;String&gt;&gt; m) {
+
+<span class="pc bpc" id="L257" title="1 of 2 branches missed.">        if (hashListSize(m) &gt; 0) {</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">            for (final Set&lt;String&gt; placeList : m.values()) {</span>
+<span class="nc" id="L259">                final boolean status = placeSetup(directoryAction, this.localDirectories, places, placeList);</span>
+
+<span class="nc bnc" id="L261" title="All 2 branches missed.">                if (!status) {</span>
+<span class="nc" id="L262">                    logger.warn(&quot;Startup: places setup failed!&quot;);</span>
+<span class="nc" id="L263">                    return;</span>
+                }
+<span class="nc" id="L265">            }</span>
+
+        }
+
+<span class="fc" id="L269">        logger.debug(&quot;done with map of {} places&quot;, hashListSize(m));</span>
+<span class="fc" id="L270">    }</span>
+
+    /**
+     * Count all entries in lists of a map
+     */
+    private static int hashListSize(@Nullable final Map&lt;String, Set&lt;String&gt;&gt; m) {
+<span class="fc" id="L276">        int total = 0;</span>
+<span class="pc bpc" id="L277" title="1 of 2 branches missed.">        if (m != null) {</span>
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">            for (final Set&lt;String&gt; l : m.values()) {</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">                if (l != null) {</span>
+<span class="nc" id="L280">                    total += l.size();</span>
+                }
+<span class="nc" id="L282">            }</span>
+        }
+<span class="fc" id="L284">        return total;</span>
+    }
+
+    protected boolean localDirectorySetup(final Map&lt;String, String&gt; localDirectoriesArg) {
+
+<span class="fc" id="L289">        final List&lt;String&gt; hostParameters = this.hostsConfig.findEntries(&quot;LOCAL_DIRECTORY&quot;);</span>
+
+<span class="fc" id="L291">        final long start = System.currentTimeMillis();</span>
+<span class="fc" id="L292">        final Map&lt;String, String&gt; dirStarts = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L293">        EmissaryNode emissaryNode = new EmissaryNode();</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">        for (final String thePlaceLocation : hostParameters) {</span>
+
+<span class="fc" id="L296">            final String host = placeHost(thePlaceLocation);</span>
+
+<span class="pc bpc" id="L298" title="1 of 2 branches missed.">            if (KeyManipulator.isLocalTo(thePlaceLocation, &quot;http://&quot; + this.node.getNodeName() + &quot;:&quot; + this.node.getNodePort() + &quot;/StartupEngine&quot;)) {</span>
+<span class="fc" id="L299">                final String thePlaceClassStr = PlaceStarter.getClassString(thePlaceLocation);</span>
+<span class="pc bpc" id="L300" title="1 of 2 branches missed.">                if (logger.isInfoEnabled()) {</span>
+<span class="fc" id="L301">                    logger.info(&quot;Doing local startup for directory {}({}) &quot;, getLocationName(thePlaceLocation), thePlaceClassStr);</span>
+                }
+<span class="fc" id="L303">                final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, null, thePlaceClassStr, null, emissaryNode);</span>
+<span class="pc bpc" id="L304" title="1 of 2 branches missed.">                if (p != null) {</span>
+<span class="fc" id="L305">                    dirStarts.put(host, thePlaceLocation);</span>
+<span class="fc" id="L306">                    localDirectoriesArg.put(host, p.toString());</span>
+                } else {
+<span class="nc" id="L308">                    localDirectoriesArg.remove(thePlaceLocation);</span>
+<span class="nc" id="L309">                    logger.warn(&quot;Giving up on directory {}&quot;, thePlaceLocation);</span>
+                }
+<span class="fc" id="L311">            } else {</span>
+<span class="nc" id="L312">                logger.warn(&quot;Directory location is not local: {}&quot;, thePlaceLocation);</span>
+            }
+<span class="fc" id="L314">        }</span>
+
+        // All local directories must be up before proceeding
+<span class="fc" id="L317">        logger.debug(&quot;Waiting for all local directories to start, expecting {}&quot;, dirStarts.size());</span>
+<span class="fc" id="L318">        int prevCount = 0;</span>
+<span class="pc bpc" id="L319" title="1 of 2 branches missed.">        while (localDirectoriesArg.size() + this.failedLocalDirectories.size() &lt; dirStarts.size()) {</span>
+<span class="nc" id="L320">            final int newCount = localDirectoriesArg.size() + this.failedLocalDirectories.size();</span>
+<span class="nc bnc" id="L321" title="All 4 branches missed.">            if (newCount &gt; prevCount &amp;&amp; newCount &lt; dirStarts.size()) {</span>
+<span class="nc" id="L322">                logger.info(&quot;Completed {} of {} local directories&quot;, localDirectoriesArg.size(), dirStarts.size());</span>
+<span class="nc" id="L323">                prevCount = newCount;</span>
+            }
+
+            try {
+<span class="nc" id="L327">                Thread.sleep(10);</span>
+<span class="nc" id="L328">            } catch (InterruptedException e) {</span>
+<span class="nc" id="L329">                Thread.currentThread().interrupt();</span>
+<span class="nc" id="L330">            }</span>
+<span class="nc" id="L331">        }</span>
+
+<span class="pc bpc" id="L333" title="1 of 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L334">            logger.debug(&quot;Directories all up in {}s&quot;, (System.currentTimeMillis() - start) / 1000.0);</span>
+        }
+
+<span class="fc" id="L337">        return true;</span>
+    }
+
+    /**
+     * Start all places on the list on a thread, return control immediately. All places in hostParameters list must be for
+     * the same host:port!
+     */
+    protected boolean placeSetup(final int directoryActionArg, final Map&lt;String, String&gt; localDirectoriesArg, final Map&lt;String, String&gt; placesArg,
+            final Set&lt;String&gt; hostParameters) {
+
+        // Track how many places we are trying to start
+<span class="nc" id="L348">        this.placesToStart.addAll(hostParameters);</span>
+
+<span class="nc" id="L350">        final Thread t = new Thread(() -&gt; {</span>
+
+<span class="nc" id="L352">            final String thePlaceHost = placeHost(hostParameters.stream().findFirst().get());</span>
+
+<span class="nc" id="L354">            final String localDirectory = localDirectoriesArg.get(thePlaceHost);</span>
+
+<span class="nc bnc" id="L356" title="All 2 branches missed.">            if (localDirectory == null) {</span>
+<span class="nc" id="L357">                hostParameters.forEach(placesToStart::remove);</span>
+<span class="nc bnc" id="L358" title="All 2 branches missed.">                if (failedLocalDirectories.get(thePlaceHost) != null) {</span>
+<span class="nc" id="L359">                    logger.warn(&quot;Skipping {} due to previously failed directory&quot;, thePlaceHost);</span>
+                } else {
+<span class="nc" id="L361">                    logger.warn(&quot;Skipping {} due to local Directory not found&quot;, thePlaceHost);</span>
+                }
+<span class="nc" id="L363">                return;</span>
+            }
+
+<span class="nc bnc" id="L366" title="All 4 branches missed.">            if (directoryActionArg != DIRECTORYSTART &amp;&amp; directoryActionArg != DIRECTORYADD) {</span>
+<span class="nc" id="L367">                hostParameters.forEach(placesToStart::remove);</span>
+<span class="nc" id="L368">                return;</span>
+            }
+
+<span class="nc" id="L371">            logger.debug(&quot;Using localDir={} to create {} places on {}&quot;, localDirectory, hostParameters.size(), thePlaceHost);</span>
+
+            // Create a stream of places that can be configured to start in parallel
+<span class="nc" id="L374">            boolean parallelPlaceStartup = hostsConfig.findBooleanEntry(PARALLEL_PLACE_STARTUP_CONFIG, false);</span>
+<span class="nc" id="L375">            Stream&lt;String&gt; hostParametersStream = StreamSupport.stream(hostParameters.spliterator(), parallelPlaceStartup);</span>
+<span class="nc" id="L376">            logger.info(&quot;Using parallel place startup: {}&quot;, hostParametersStream.isParallel());</span>
+
+            // Start everything in hostParameters
+            // (PLACE lines from cfg file for a given host
+<span class="nc" id="L380">            hostParametersStream.forEach(thePlaceLocation -&gt; {</span>
+<span class="nc" id="L381">                placeName(thePlaceLocation);</span>
+
+                // Get the class name and Class object for what we want to make
+<span class="nc" id="L384">                final String thePlaceLocName = getLocationName(thePlaceLocation);</span>
+<span class="nc" id="L385">                final String thePlaceClassString = PlaceStarter.getClassString(thePlaceLocation);</span>
+<span class="nc" id="L386">                StringBuilder startupBuilder =</span>
+                        new StringBuilder(&quot;Doing local startup on &quot;)
+<span class="nc" id="L388">                                .append(thePlaceLocName)</span>
+<span class="nc" id="L389">                                .append(&quot;(&quot;)</span>
+<span class="nc" id="L390">                                .append(thePlaceClassString).append(&quot;)...&quot;);</span>
+<span class="nc bnc" id="L391" title="All 2 branches missed.">                if (thePlaceClassString == null) {</span>
+<span class="nc" id="L392">                    startupBuilder.append(&quot;skipping, no class string!!&quot;);</span>
+<span class="nc" id="L393">                    placesToStart.remove(thePlaceLocation);</span>
+<span class="nc" id="L394">                    logger.warn(startupBuilder.toString());</span>
+<span class="nc" id="L395">                    return;</span>
+                }
+<span class="nc" id="L397">                logger.debug(&quot;Starting place {}&quot;, thePlaceLocation);</span>
+<span class="nc bnc" id="L398" title="All 2 branches missed.">                if (KeyManipulator.isLocalTo(thePlaceLocation, String.format(&quot;http://%s:%s/StartupEngine&quot;, node.getNodeName(), node.getNodePort()))) {</span>
+<span class="nc bnc" id="L399" title="All 4 branches missed.">                    if (directoryActionArg == DIRECTORYADD &amp;&amp; Namespace.exists(thePlaceLocation)) {</span>
+                        // logger.info(&quot;Local place already exists: {}&quot;, thePlaceLocation);
+<span class="nc" id="L401">                        startupBuilder.append(&quot;local place already exists&quot;);</span>
+<span class="nc" id="L402">                        placesToStart.remove(thePlaceLocation);</span>
+                        // add place to placeAlreadyStarted list, so can be verified in verifyNoInvisibleStartPlaces
+<span class="nc" id="L404">                        placeAlreadyStarted.add(thePlaceLocation.substring(thePlaceLocation.lastIndexOf(&quot;/&quot;) + 1));</span>
+<span class="nc" id="L405">                        logger.info(startupBuilder.toString());</span>
+<span class="nc" id="L406">                        return;</span>
+                    }
+
+<span class="nc" id="L409">                    final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, null, thePlaceClassString, localDirectory);</span>
+<span class="nc bnc" id="L410" title="All 2 branches missed.">                    if (p != null) {</span>
+<span class="nc" id="L411">                        placesArg.put(thePlaceLocation, thePlaceLocation);</span>
+<span class="nc" id="L412">                        startupBuilder.append(&quot;done!&quot;);</span>
+<span class="nc" id="L413">                        logger.info(startupBuilder.toString());</span>
+                    } else {
+                        // logger.error(&quot;{} failed to start!&quot;, thePlaceLocation);
+<span class="nc" id="L416">                        failedPlaces.add(thePlaceLocation);</span>
+<span class="nc" id="L417">                        placesToStart.remove(thePlaceLocation);</span>
+<span class="nc" id="L418">                        startupBuilder.append(&quot;FAILED!!&quot;);</span>
+<span class="nc" id="L419">                        logger.error(startupBuilder.toString());</span>
+                    }
+                }
+<span class="nc" id="L422">            });</span>
+<span class="nc" id="L423">        });</span>
+<span class="nc" id="L424">        t.start();</span>
+<span class="nc" id="L425">        return true;</span>
+    }
+
+    /**
+     * Check to see if all the places have started and been registered in the directory. This doesn't account for
+     * directories, just things started with a &quot;PLACE&quot; tag
+     */
+    protected void stopAndWaitForPlaceCreation() {
+<span class="fc" id="L433">        int numPlacesExpected = this.placesToStart.size();</span>
+        int numPlacesFound;
+<span class="fc" id="L435">        int numPlacesFoundPreviously = 0;</span>
+
+<span class="fc" id="L437">        logger.info(&quot;Waiting for {} places to start {}&quot;, placesToStart.size(),</span>
+<span class="pc" id="L438">                placesToStart.stream().map(s -&gt; StringUtils.substringAfterLast(s, &quot;/&quot;)).sorted().collect(Collectors.toList()));</span>
+        do {
+<span class="pc bpc" id="L440" title="1 of 2 branches missed.">            if (this.placesToStart.size() != numPlacesExpected) {</span>
+<span class="nc" id="L441">                logger.info(&quot;Now waiting for {} places to start. (originally {} places)&quot;, this.placesToStart.size(), numPlacesExpected);</span>
+<span class="nc" id="L442">                numPlacesExpected = this.placesToStart.size();</span>
+            }
+
+<span class="fc" id="L445">            numPlacesFound = places.size();</span>
+
+<span class="pc bpc" id="L447" title="1 of 2 branches missed.">            if (numPlacesFound &gt;= numPlacesExpected) {</span>
+<span class="fc" id="L448">                boolean failedPlaceStartups = false;</span>
+
+<span class="pc bpc" id="L450" title="1 of 2 branches missed.">                if (!this.failedPlaces.isEmpty()) {</span>
+<span class="nc" id="L451">                    failedPlaceStartups = true;</span>
+<span class="nc" id="L452">                    String failedPlaceList = String.join(&quot;; &quot;, this.failedPlaces);</span>
+<span class="nc" id="L453">                    logger.warn(&quot;The following places have failed to start: {}&quot;, failedPlaceList);</span>
+                }
+<span class="pc bpc" id="L455" title="1 of 2 branches missed.">                if (!CoordinationPlace.getFailedCoordinationPlaces().isEmpty()) {</span>
+<span class="nc" id="L456">                    failedPlaceStartups = true;</span>
+<span class="nc" id="L457">                    String failedCoordPlaceList = String.join(&quot;; &quot;, CoordinationPlace.getFailedCoordinationPlaces());</span>
+<span class="nc" id="L458">                    logger.warn(&quot;The following coordination places have failed to start: {}&quot;, failedCoordPlaceList);</span>
+                }
+
+                // check if strict startup &amp; places/coordination places failed, if yes, shut down server
+<span class="pc bpc" id="L462" title="3 of 4 branches missed.">                if (this.node.isStrictStartupMode() &amp;&amp; failedPlaceStartups) {</span>
+<span class="nc" id="L463">                    logger.error(&quot;Server failed to start due to Strict mode being enabled.  To disable strict mode, &quot; +</span>
+                            &quot;run server start command without the --strict flag&quot;);
+<span class="nc" id="L465">                    logger.error(&quot;Server shutting down&quot;);</span>
+<span class="nc" id="L466">                    System.exit(1);</span>
+                }
+
+                // normal termination of the loop
+<span class="fc" id="L470">                logger.debug(&quot;Woohoo! {} of {} places are up and running.&quot;, numPlacesFound, numPlacesExpected);</span>
+<span class="fc" id="L471">                break;</span>
+            }
+
+            try {
+<span class="nc" id="L475">                Thread.sleep(500);</span>
+<span class="nc" id="L476">            } catch (InterruptedException e) {</span>
+<span class="nc" id="L477">                Thread.currentThread().interrupt();</span>
+<span class="nc" id="L478">            }</span>
+
+<span class="nc bnc" id="L480" title="All 2 branches missed.">            if (numPlacesFound != numPlacesFoundPreviously) {</span>
+<span class="nc" id="L481">                numPlacesFoundPreviously = numPlacesFound;</span>
+
+<span class="nc" id="L483">                final float percentageUp = (float) numPlacesFound / (float) numPlacesExpected;</span>
+                final String leadString;
+<span class="nc bnc" id="L485" title="All 2 branches missed.">                if (percentageUp &lt; 0.20) {</span>
+<span class="nc" id="L486">                    leadString = &quot;Hmmm... only &quot;;</span>
+<span class="nc bnc" id="L487" title="All 2 branches missed.">                } else if (percentageUp &lt; 0.40) {</span>
+<span class="nc" id="L488">                    leadString = &quot;Ok, now &quot;;</span>
+<span class="nc bnc" id="L489" title="All 2 branches missed.">                } else if (percentageUp &lt; 0.60) {</span>
+<span class="nc" id="L490">                    leadString = &quot;Making progress, &quot;;</span>
+<span class="nc bnc" id="L491" title="All 2 branches missed.">                } else if (percentageUp &lt; 0.80) {</span>
+<span class="nc" id="L492">                    leadString = &quot;Over half way there! &quot;;</span>
+<span class="nc bnc" id="L493" title="All 2 branches missed.">                } else if (percentageUp &lt; 0.95) {</span>
+<span class="nc" id="L494">                    leadString = &quot;Almost ready! &quot;;</span>
+<span class="nc bnc" id="L495" title="All 2 branches missed.">                } else if (numPlacesFound + 1 == numPlacesExpected) {</span>
+<span class="nc" id="L496">                    leadString = &quot;One more to go... &quot;;</span>
+                } else {
+<span class="nc" id="L498">                    leadString = &quot;Yeah! &quot;;</span>
+                }
+
+<span class="nc" id="L501">                logger.debug(&quot;{}{} of {} places are up and running.&quot;, leadString, numPlacesFound, numPlacesExpected);</span>
+<span class="nc" id="L502">            }</span>
+
+        } while (true); // break terminated loop
+<span class="fc" id="L505">    }</span>
+
+    /**
+     * sort all the PLACE entries into either a processing place or a pickup place
+     */
+    protected void sortPlaces(final List&lt;String&gt; placeList) {
+
+<span class="pc bpc" id="L512" title="1 of 2 branches missed.">        for (final String location : placeList) {</span>
+<span class="nc" id="L513">            final String className = PlaceStarter.getClassString(location);</span>
+<span class="nc bnc" id="L514" title="All 2 branches missed.">            if (className == null) {</span>
+<span class="nc" id="L515">                continue;</span>
+            }
+
+            try {
+<span class="nc bnc" id="L519" title="All 2 branches missed.">                sortPickupOrPlace(location, PickUpPlace.implementsPickUpPlace(Class.forName(className)) ? this.pickupLists : this.placeLists);</span>
+<span class="nc" id="L520">            } catch (ClassNotFoundException e) {</span>
+<span class="nc" id="L521">                logger.error(&quot;Could not create place {}&quot;, className, e);</span>
+<span class="nc" id="L522">            }</span>
+<span class="nc" id="L523">        }</span>
+<span class="fc" id="L524">    }</span>
+
+    private static void sortPickupOrPlace(String theLocation, Map&lt;String, Set&lt;String&gt;&gt; placeList) {
+<span class="nc" id="L527">        final String host = placeHost(theLocation);</span>
+<span class="nc" id="L528">        Set&lt;String&gt; l = placeList.computeIfAbsent(host, k -&gt; new LinkedHashSet&lt;&gt;());</span>
+<span class="nc bnc" id="L529" title="All 2 branches missed.">        if (l.contains(theLocation)) {</span>
+<span class="nc" id="L530">            logger.warn(&quot;Sorting places found duplicate {}({}), skipping!&quot;, getLocationName(theLocation), PlaceStarter.getClassString(theLocation));</span>
+        } else {
+<span class="nc" id="L532">            l.add(theLocation);</span>
+        }
+<span class="nc" id="L534">    }</span>
+
+    protected static String getLocationName(String location) {
+<span class="fc" id="L537">        return StringUtils.substringAfterLast(location, &quot;/&quot;);</span>
+    }
+
+    /**
+     * Verifies the active directory places vs places started up. Log if any places are started without being announced in
+     * start-up.
+     *
+     * @return true if no invisible places started, false if yes
+     */
+    public static boolean verifyNoInvisiblePlacesStarted() {
+        try {
+<span class="fc" id="L548">            IDirectoryPlace dirPlace = DirectoryPlace.lookup();</span>
+<span class="fc" id="L549">            List&lt;DirectoryEntry&gt; dirEntries = dirPlace.getEntries();</span>
+<span class="fc bfc" id="L550" title="All 2 branches covered.">            for (DirectoryEntry entry : dirEntries) {</span>
+                // add place names of active places. getLocalPlace() returns null for any place that failed to start
+<span class="pc bpc" id="L552" title="1 of 2 branches missed.">                if (entry.getLocalPlace() != null) {</span>
+<span class="fc" id="L553">                    activeDirPlaces.add(entry.getLocalPlace().getPlaceName());</span>
+                }
+<span class="fc" id="L555">            }</span>
+
+            // remove DirectoryPlace from activeDirPlaces. DirectoryPlace is started up automatically in order to
+            // start all other places, so it isn't per se &quot;announced&quot;, but it is known and logged
+<span class="fc" id="L559">            activeDirPlaces.removeIf(dir -&gt; dir.equalsIgnoreCase(&quot;DirectoryPlace&quot;));</span>
+<span class="nc" id="L560">        } catch (EmissaryException e) {</span>
+<span class="nc" id="L561">            throw new EmissaryRuntimeException(e);</span>
+<span class="fc" id="L562">        }</span>
+
+        // compares place names in active dirs and active places, removes them from set if found
+<span class="pc bpc" id="L565" title="1 of 2 branches missed.">        for (String thePlaceLocation : places.values()) {</span>
+<span class="nc" id="L566">            activeDirPlaces.removeIf(dir -&gt; dir.equalsIgnoreCase(placeName(thePlaceLocation)));</span>
+<span class="nc" id="L567">        }</span>
+
+        // places that are attempted to startup but are already up are added to separate list
+        // this will only check if places are added to that list
+<span class="pc bpc" id="L571" title="1 of 2 branches missed.">        if (!placeAlreadyStarted.isEmpty()) {</span>
+<span class="nc bnc" id="L572" title="All 2 branches missed.">            for (String thePlaceLocation : placeAlreadyStarted) {</span>
+<span class="nc" id="L573">                activeDirPlaces.removeIf(dir -&gt; dir.equalsIgnoreCase(thePlaceLocation));</span>
+<span class="nc" id="L574">            }</span>
+        }
+
+        // if any places are left in active dir keys, they are places not announced on startup
+<span class="pc bpc" id="L578" title="1 of 2 branches missed.">        if (!activeDirPlaces.isEmpty()) {</span>
+<span class="nc" id="L579">            logger.warn(&quot;{} place(s) started up without being announced! {}&quot;, activeDirPlaces.size(), activeDirPlaces);</span>
+<span class="nc" id="L580">            return false;</span>
+        }
+
+<span class="fc" id="L583">        return true;</span>
+    }
+
+    // get invisibly started places
+    public static Set&lt;String&gt; getInvisPlaces() {
+<span class="nc" id="L588">        return activeDirPlaces;</span>
+    }
+
+    // get if invisible places are started while in strict mode
+    public static boolean isInvisPlacesStartedInStrictMode() {
+<span class="fc" id="L593">        return invisPlacesStartedInStrictMode;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

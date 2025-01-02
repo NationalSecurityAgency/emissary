@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KffDataObjectHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.kff</a> &gt; <span class="el_source">KffDataObjectHandler.java</span></div><h1>KffDataObjectHandler.java</h1><pre class="source lang-java linenums">package emissary.kff;
+
+import emissary.core.IBaseDataObject;
+import emissary.core.IBaseDataObject.MergePolicy;
+import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.core.channels.SeekableByteChannelHelper;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.channels.SeekableByteChannel;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
+
+/**
+ * A helpful class to set and evaluate the KFF details of a BaseDataObject
+ */
+public class KffDataObjectHandler {
+    // Parameter names for data object param map
+    public static final String KFF_PARAM_BASE = &quot;CHECKSUM_&quot;;
+    public static final String KFF_PARAM_CRC32 = KFF_PARAM_BASE + &quot;CRC32&quot;;
+    public static final String KFF_PARAM_MD5 = KFF_PARAM_BASE + &quot;MD5&quot;;
+    public static final String KFF_PARAM_SHA1 = KFF_PARAM_BASE + &quot;SHA-1&quot;;
+    public static final String KFF_PARAM_SHA256 = KFF_PARAM_BASE + &quot;SHA-256&quot;;
+    public static final String KFF_PARAM_SHA384 = KFF_PARAM_BASE + &quot;SHA-384&quot;;
+    public static final String KFF_PARAM_SHA512 = KFF_PARAM_BASE + &quot;SHA-512&quot;;
+    public static final String KFF_PARAM_SSDEEP = KFF_PARAM_BASE + &quot;SSDEEP&quot;;
+    public static final String KFF_PARAM_DUPE_HIT = KFF_PARAM_BASE + &quot;KNOWN_FILE&quot;;
+    public static final String KFF_PARAM_PARENT_HIT = KFF_PARAM_BASE + &quot;PARENT_IS_KNOWN_FILE&quot;;
+    public static final String KFF_PARAM_KNOWN_FILTER_NAME = KFF_PARAM_BASE + &quot;FILTERED_BY&quot;;
+    public static final String KFF_PARAM_DUPE_FILTER_NAME = KFF_PARAM_BASE + &quot;KNOWN_BY&quot;;
+    public static final String KFF_DUPE_CURRENT_FORM = &quot;KNOWN_FILE&quot;;
+    public static final String MD5_ORIGINAL = &quot;MD5_ORIGINAL&quot;;
+
+    // Our kff impl
+<span class="fc" id="L40">    protected KffChain kff = KffChainLoader.getChainInstance();</span>
+
+    // Logger
+<span class="fc" id="L43">    protected static final Logger logger = LoggerFactory.getLogger(KffDataObjectHandler.class);</span>
+
+    // Policy on dupes
+<span class="fc" id="L46">    protected boolean truncateKnownData = true;</span>
+<span class="fc" id="L47">    protected boolean setFormOnKnownData = true;</span>
+<span class="fc" id="L48">    protected boolean setFileTypeOnKnown = true;</span>
+
+    // Policy values for constructor
+    public static final boolean TRUNCATE_KNOWN_DATA = true;
+    public static final boolean KEEP_KNOWN_DATA = false;
+
+    public static final boolean SET_FORM_WHEN_KNOWN = true;
+    public static final boolean NO_FORM_CHANGE_WHEN_KNOWN = false;
+
+    public static final boolean SET_FILE_TYPE = true;
+    public static final boolean NO_SET_FILE_TYPE = false;
+
+    /**
+     * Create with default policy
+     */
+<span class="fc" id="L63">    public KffDataObjectHandler() {}</span>
+
+    /**
+     * Create with policy
+     */
+<span class="fc" id="L68">    public KffDataObjectHandler(boolean truncateKnownData, boolean setFormOnKnownData, boolean setFileTypeOnKnown) {</span>
+<span class="fc" id="L69">        this.truncateKnownData = truncateKnownData;</span>
+<span class="fc" id="L70">        this.setFormOnKnownData = setFormOnKnownData;</span>
+<span class="fc" id="L71">        this.setFileTypeOnKnown = setFileTypeOnKnown;</span>
+<span class="fc" id="L72">    }</span>
+
+    /**
+     * Compute the configured hashes and return as a map. Also include entries indicating the known file or duplicate file
+     * status if so configured
+     * 
+     * @param data the bytes to hash
+     * @param name th name of the data (for reporting)
+     * @return parameter entries suitable for a BaseDataObject
+     */
+    public Map&lt;String, String&gt; hashData(byte[] data, String name) {
+<span class="fc" id="L83">        return hashData(data, name, &quot;&quot;);</span>
+    }
+
+    /**
+     * Compute the configured hashes and return as a map. Also include entries indicating the known file or duplicate file
+     * status if so configured
+     * 
+     * @param data the bytes to hash
+     * @param name the name of the data (for reporting)
+     * @param prefix prepended to hash name entries
+     * @return parameter entries suitable for a BaseDataObject
+     */
+    public Map&lt;String, String&gt; hashData(@Nullable byte[] data, String name, @Nullable String prefix) {
+
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (prefix == null) {</span>
+<span class="fc" id="L98">            prefix = &quot;&quot;;</span>
+        }
+
+<span class="fc" id="L101">        KffResult kffCheck = null;</span>
+<span class="pc bpc" id="L102" title="2 of 4 branches missed.">        if (data != null &amp;&amp; data.length &gt; 0) {</span>
+            try {
+<span class="fc" id="L104">                kffCheck = kff.check(name, data);</span>
+<span class="nc" id="L105">            } catch (NoSuchAlgorithmException kffex) {</span>
+<span class="nc" id="L106">                logger.warn(&quot;Unable to compute kff on &quot; + name, kffex);</span>
+<span class="fc" id="L107">            }</span>
+        }
+
+<span class="fc" id="L110">        return processKffResult(kffCheck, prefix);</span>
+    }
+
+    /**
+     * Compute the configured hashes and return as a map. Also include entries indicating the known file or duplicate file
+     * status if so configured
+     *
+     * @param sbcf the data to hash
+     * @param name the name of the data (for reporting)
+     * @return parameter entries suitable for a BaseDataObject
+     */
+    public Map&lt;String, String&gt; hashData(final SeekableByteChannelFactory sbcf, final String name) {
+<span class="fc" id="L122">        return hashData(sbcf, name, &quot;&quot;);</span>
+    }
+
+    /**
+     * Compute the configured hashes and return as a map. Also include entries indicating the known file or duplicate file
+     * status if so configured.
+     * 
+     * @param sbcf the data to hash
+     * @param name the name of the data (for reporting)
+     * @param prefix prepended to hash name entries
+     * @return parameter entries suitable for a BaseDataObject
+     */
+    public Map&lt;String, String&gt; hashData(final SeekableByteChannelFactory sbcf, final String name, String prefix) {
+
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        if (prefix == null) {</span>
+<span class="fc" id="L137">            prefix = &quot;&quot;;</span>
+        }
+
+<span class="fc" id="L140">        KffResult kffCheck = null;</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        if (sbcf != null) {</span>
+<span class="fc" id="L142">            try (final SeekableByteChannel sbc = sbcf.create()) {</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">                if (sbc.size() &gt; 0) {</span>
+<span class="fc" id="L144">                    kffCheck = kff.check(name, sbcf);</span>
+                }
+<span class="nc" id="L146">            } catch (NoSuchAlgorithmException | IOException kffex) {</span>
+<span class="nc" id="L147">                logger.warn(&quot;Unable to compute kff on &quot; + name, kffex);</span>
+<span class="fc" id="L148">            }</span>
+        }
+
+<span class="fc" id="L151">        return processKffResult(kffCheck, prefix);</span>
+    }
+
+    private static Map&lt;String, String&gt; processKffResult(KffResult result, String prefix) {
+<span class="fc" id="L155">        Map&lt;String, String&gt; results = new HashMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        if (result != null) {</span>
+            // Store all computed results in data object params
+<span class="fc bfc" id="L159" title="All 2 branches covered.">            for (String alg : result.getResultNames()) {</span>
+<span class="fc" id="L160">                results.put(prefix + KFF_PARAM_BASE + alg, result.getResultString(alg));</span>
+<span class="fc" id="L161">            }</span>
+
+            // Set params if we have a hit
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">            if (result.isKnown()) {</span>
+<span class="nc" id="L165">                results.put(prefix + KFF_PARAM_KNOWN_FILTER_NAME, result.getFilterName());</span>
+            }
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">            if (result.isDupe()) {</span>
+<span class="nc" id="L168">                results.put(prefix + KFF_PARAM_DUPE_FILTER_NAME, result.getFilterName());</span>
+            }
+        }
+
+<span class="fc" id="L172">        return results;</span>
+    }
+
+    /**
+     * Compute the hash of a data object's data
+     * 
+     * @param d the data object
+     */
+    public void hash(@Nullable final IBaseDataObject d) {
+<span class="fc" id="L181">        hash(d, false);</span>
+<span class="fc" id="L182">    }</span>
+
+    /**
+     * Compute the hash of a data object's data
+     * 
+     * @param d the data object
+     * @param useSbc use the {@link SeekableByteChannel} interface
+     */
+    public void hash(@Nullable final IBaseDataObject d, final boolean useSbc) {
+
+<span class="fc bfc" id="L192" title="All 2 branches covered.">        if (d == null) {</span>
+<span class="fc" id="L193">            return;</span>
+        }
+
+<span class="fc" id="L196">        String originalMD5 = captureOriginalMD5BeforeRehashing(d);</span>
+        try {
+<span class="fc" id="L198">            removeHash(d);</span>
+
+            // Compute and add the hashes
+<span class="pc bpc" id="L201" title="1 of 4 branches missed.">            if (useSbc &amp;&amp; d.getChannelSize() &gt; 0) {</span>
+<span class="fc" id="L202">                d.putParameters(hashData(d.getChannelFactory(), d.shortName(), &quot;&quot;), MergePolicy.DROP_EXISTING);</span>
+<span class="pc bpc" id="L203" title="1 of 4 branches missed.">            } else if (!useSbc &amp;&amp; d.dataLength() &gt; 0) {</span>
+<span class="fc" id="L204">                d.putParameters(hashData(d.data(), d.shortName()), MergePolicy.DROP_EXISTING);</span>
+            } else {
+<span class="fc" id="L206">                return; // NOSONAR</span>
+            }
+<span class="nc" id="L208">        } catch (IOException e) {</span>
+<span class="nc" id="L209">            logger.error(&quot;Couldn't hash data {}&quot;, d.shortName());</span>
+        } finally {
+            // preserve the original MD5 only if 1) we hadn't already done so and 2) rehashing produced a new MD5 value
+<span class="pc bpc" id="L212" title="1 of 4 branches missed.">            if (!d.hasParameter(MD5_ORIGINAL) &amp;&amp; previouslyComputedMd5HasChanged(d, originalMD5)) {</span>
+<span class="fc" id="L213">                d.setParameter(MD5_ORIGINAL, originalMD5);</span>
+            }
+        }
+
+        // Set params if we have a hit
+<span class="fc bfc" id="L218" title="All 2 branches covered.">        if (d.hasParameter(KFF_PARAM_KNOWN_FILTER_NAME)) {</span>
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">            if (setFileTypeOnKnown) {</span>
+<span class="fc" id="L220">                d.setFileType(KFF_DUPE_CURRENT_FORM);</span>
+            }
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">            if (setFormOnKnownData) {</span>
+<span class="fc" id="L223">                d.replaceCurrentForm(KFF_DUPE_CURRENT_FORM);</span>
+            }
+<span class="fc bfc" id="L225" title="All 2 branches covered.">            if (truncateKnownData) {</span>
+<span class="pc bpc" id="L226" title="1 of 2 branches missed.">                if (useSbc) {</span>
+<span class="nc" id="L227">                    d.setChannelFactory(SeekableByteChannelHelper.EMPTY_CHANNEL_FACTORY);</span>
+                }
+<span class="fc" id="L229">                d.setData(null);</span>
+            }
+        }
+<span class="fc" id="L232">    }</span>
+
+    /**
+     * Capture the current CHECKSUM_MD5 parameter value, unless we've already preserved one in the MD5_ORIGINAL parameter
+     *
+     * @param d IBaseDataObject being processed
+     */
+    @Nullable
+    static String captureOriginalMD5BeforeRehashing(IBaseDataObject d) {
+        // If the IBDO already has an MD5_ORIGINAL parameter, return null.
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">        if (d.hasParameter(MD5_ORIGINAL)) {</span>
+<span class="nc" id="L243">            return null;</span>
+        }
+
+<span class="fc bfc" id="L246" title="All 2 branches covered.">        if (d.hasParameter(KFF_PARAM_MD5)) {</span>
+<span class="fc" id="L247">            var paramValue = d.getParameter(KFF_PARAM_MD5);</span>
+<span class="pc bpc" id="L248" title="2 of 4 branches missed.">            if (!paramValue.isEmpty() &amp;&amp; paramValue.get(0) != null) {</span>
+<span class="fc" id="L249">                String originalMD5 = paramValue.get(0).toString();</span>
+                // only preserve the KFF_PARAM_MD5 value if it's not blank
+<span class="fc" id="L251">                return StringUtils.trimToNull(originalMD5);</span>
+            }
+        }
+<span class="fc" id="L254">        return null;</span>
+    }
+
+    /**
+     * Returns true if the original MD5 is non-blank and is different from the current MD5 value
+     * 
+     * @param d IBaseDataObject being processed
+     * @param originalMD5 previously computed MD5 checksum
+     * @return true if the original MD5 is non-blank and is different from the current MD5 value
+     */
+    static boolean previouslyComputedMd5HasChanged(IBaseDataObject d, String originalMD5) {
+<span class="pc bpc" id="L265" title="1 of 4 branches missed.">        if (StringUtils.isNotBlank(originalMD5) &amp;&amp; d.hasParameter(KFF_PARAM_MD5)) {</span>
+<span class="fc" id="L266">            var paramValue = d.getParameter(KFF_PARAM_MD5);</span>
+<span class="pc bpc" id="L267" title="2 of 4 branches missed.">            if (!paramValue.isEmpty() &amp;&amp; paramValue.get(0) != null) {</span>
+<span class="fc" id="L268">                String currentMD5 = paramValue.get(0).toString();</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">                return !originalMD5.equals(currentMD5);</span>
+            }
+        }
+<span class="fc" id="L272">        return false;</span>
+    }
+
+    /**
+     * Parent info has been copied in and must be reset for the child context
+     * 
+     * @param d the data object
+     */
+    public static void parentToChild(IBaseDataObject d) {
+<span class="fc" id="L281">        Object parentDupe = d.getParameter(KFF_PARAM_DUPE_HIT);</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">        if (parentDupe != null) {</span>
+<span class="fc" id="L283">            d.deleteParameter(KFF_PARAM_DUPE_HIT);</span>
+<span class="fc" id="L284">            d.putParameter(KFF_PARAM_PARENT_HIT, parentDupe);</span>
+        }
+<span class="fc" id="L286">    }</span>
+
+    /**
+     * Determine if a hash value is present
+     * 
+     * @param d the payload
+     */
+    public static boolean hashPresent(IBaseDataObject d) {
+<span class="pc bpc" id="L294" title="2 of 6 branches missed.">        return d.getParameter(KFF_PARAM_MD5) != null || d.getParameter(KFF_PARAM_SHA1) != null || d.getParameter(KFF_PARAM_SHA256) != null</span>
+<span class="pc bpc" id="L295" title="2 of 4 branches missed.">                || d.getParameter(KFF_PARAM_SHA384) != null || d.getParameter(KFF_PARAM_SHA512) != null;</span>
+    }
+
+    /**
+     * Remove all hash params from the payload
+     * 
+     * @param d the payload
+     */
+    public static void removeHash(IBaseDataObject d) {
+<span class="fc" id="L304">        d.deleteParameter(KFF_PARAM_CRC32);</span>
+<span class="fc" id="L305">        d.deleteParameter(KFF_PARAM_MD5);</span>
+<span class="fc" id="L306">        d.deleteParameter(KFF_PARAM_SHA1);</span>
+<span class="fc" id="L307">        d.deleteParameter(KFF_PARAM_SHA256);</span>
+<span class="fc" id="L308">        d.deleteParameter(KFF_PARAM_SHA384);</span>
+<span class="fc" id="L309">        d.deleteParameter(KFF_PARAM_SHA512);</span>
+<span class="fc" id="L310">        d.deleteParameter(KFF_PARAM_SSDEEP);</span>
+<span class="fc" id="L311">    }</span>
+
+    /**
+     * Get the SHA-1 hash value. It's the default. The standard. Don't leave home without it.
+     * 
+     * @param d the payload
+     */
+    public static String getHashValue(IBaseDataObject d) {
+<span class="fc" id="L319">        return getSha1Value(d);</span>
+    }
+
+    /**
+     * Set the supplied hash into the right hash slot We can determine the right slot based on the value of the hash
+     * 
+     * @param d the payload
+     * @param hash the value
+     */
+    public static void setHashValue(IBaseDataObject d, @Nullable String hash) {
+<span class="pc bpc" id="L329" title="1 of 2 branches missed.">        int hl = hash != null ? hash.length() : -1;</span>
+
+<span class="pc bpc" id="L331" title="1 of 4 branches missed.">        if (hash != null &amp;&amp; hash.indexOf(&quot;:&quot;) &gt; -1) {</span>
+<span class="fc" id="L332">            setSsdeepValue(d, hash);</span>
+<span class="fc" id="L333">            return;</span>
+        }
+
+<span class="pc bpc" id="L336" title="1 of 6 branches missed.">        switch (hl) {</span>
+            case 32:
+<span class="fc" id="L338">                setMd5Value(d, hash);</span>
+<span class="fc" id="L339">                break;</span>
+            case 40:
+<span class="fc" id="L341">                setSha1Value(d, hash);</span>
+<span class="fc" id="L342">                break;</span>
+            case 64:
+<span class="fc" id="L344">                setSha256Value(d, hash);</span>
+<span class="fc" id="L345">                break;</span>
+            case 96:
+<span class="fc" id="L347">                setSha384Value(d, hash);</span>
+<span class="fc" id="L348">                break;</span>
+            case 128:
+<span class="fc" id="L350">                setSha512Value(d, hash);</span>
+<span class="fc" id="L351">                break;</span>
+            default:
+<span class="nc" id="L353">                logger.warn(&quot;Hash value {} doesn't work here&quot;, hl);</span>
+        }
+<span class="fc" id="L355">    }</span>
+
+    /**
+     * Get the MD5 hash value
+     * 
+     * @param d the payload
+     */
+    public static String getMd5Value(IBaseDataObject d) {
+<span class="fc" id="L363">        return d.getStringParameter(KFF_PARAM_MD5);</span>
+    }
+
+    /**
+     * Set the MD5 hash value
+     * 
+     * @param d the payload
+     * @param hash the value
+     */
+    public static void setMd5Value(IBaseDataObject d, String hash) {
+<span class="fc" id="L373">        d.setParameter(KFF_PARAM_MD5, hash);</span>
+<span class="fc" id="L374">    }</span>
+
+    /**
+     * Get the SHA-1 hash value
+     * 
+     * @param d the payload
+     */
+    public static String getSha1Value(IBaseDataObject d) {
+<span class="fc" id="L382">        return d.getStringParameter(KFF_PARAM_SHA1);</span>
+    }
+
+    /**
+     * Set the SHA-1 hash value
+     * 
+     * @param d the payload
+     * @param hash the value
+     */
+    public static void setSha1Value(IBaseDataObject d, String hash) {
+<span class="fc" id="L392">        d.setParameter(KFF_PARAM_SHA1, hash);</span>
+<span class="fc" id="L393">    }</span>
+
+    /**
+     * Get the SHA-256 hash value
+     * 
+     * @param d the payload
+     */
+    public static String getSha256Value(IBaseDataObject d) {
+<span class="fc" id="L401">        return d.getStringParameter(KFF_PARAM_SHA256);</span>
+    }
+
+    /**
+     * Set the SHA-256 hash value
+     * 
+     * @param d the payload
+     * @param hash the value
+     */
+    public static void setSha256Value(IBaseDataObject d, String hash) {
+<span class="fc" id="L411">        d.setParameter(KFF_PARAM_SHA256, hash);</span>
+<span class="fc" id="L412">    }</span>
+
+    /**
+     * Get the SHA-384 hash value
+     * 
+     * @param d the payload
+     */
+    public static String getSha384Value(IBaseDataObject d) {
+<span class="fc" id="L420">        return d.getStringParameter(KFF_PARAM_SHA384);</span>
+    }
+
+    /**
+     * Set the SHA-384 hash value
+     * 
+     * @param d the payload
+     * @param hash the value
+     */
+    public static void setSha384Value(IBaseDataObject d, String hash) {
+<span class="fc" id="L430">        d.setParameter(KFF_PARAM_SHA384, hash);</span>
+<span class="fc" id="L431">    }</span>
+
+    /**
+     * Get the SHA-512 hash value
+     * 
+     * @param d the payload
+     */
+    public static String getSha512Value(IBaseDataObject d) {
+<span class="fc" id="L439">        return d.getStringParameter(KFF_PARAM_SHA512);</span>
+    }
+
+    /**
+     * Set the SHA-512 hash value
+     * 
+     * @param d the payload
+     * @param hash the value
+     */
+    public static void setSha512Value(IBaseDataObject d, String hash) {
+<span class="fc" id="L449">        d.setParameter(KFF_PARAM_SHA512, hash);</span>
+<span class="fc" id="L450">    }</span>
+
+    /**
+     * Get the SSDEEP hash value
+     * 
+     * @param d the payload
+     */
+    public static String getSsdeepValue(IBaseDataObject d) {
+<span class="fc" id="L458">        return d.getStringParameter(KFF_PARAM_SSDEEP);</span>
+    }
+
+    /**
+     * Set the SSDEEP hash value
+     * 
+     * @param d the payload
+     * @param hash the value
+     */
+    public static void setSsdeepValue(IBaseDataObject d, String hash) {
+<span class="fc" id="L468">        d.setParameter(KFF_PARAM_SSDEEP, hash);</span>
+<span class="fc" id="L469">    }</span>
+
+    /**
+     * Get the best of the available hashes, might be null of none are enabled
+     * 
+     * @param d the payload
+     * @return the best hash value we have
+     */
+    public static String getBestAvailableHash(IBaseDataObject d) {
+<span class="fc bfc" id="L478" title="All 2 branches covered.">        if (d.getParameter(KFF_PARAM_SHA512) != null) {</span>
+<span class="fc" id="L479">            return d.getStringParameter(KFF_PARAM_SHA512);</span>
+        }
+<span class="pc bpc" id="L481" title="1 of 2 branches missed.">        if (d.getParameter(KFF_PARAM_SHA384) != null) {</span>
+<span class="fc" id="L482">            return d.getStringParameter(KFF_PARAM_SHA384);</span>
+        }
+<span class="nc bnc" id="L484" title="All 2 branches missed.">        if (d.getParameter(KFF_PARAM_SHA256) != null) {</span>
+<span class="nc" id="L485">            return d.getStringParameter(KFF_PARAM_SHA256);</span>
+        }
+<span class="nc bnc" id="L487" title="All 2 branches missed.">        if (d.getParameter(KFF_PARAM_SHA1) != null) {</span>
+<span class="nc" id="L488">            return d.getStringParameter(KFF_PARAM_SHA1);</span>
+        }
+<span class="nc" id="L490">        return d.getStringParameter(KFF_PARAM_MD5);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MagicNumber.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.magic</a> &gt; <span class="el_source">MagicNumber.java</span></div><h1>MagicNumber.java</h1><pre class="source lang-java linenums">package emissary.util.magic;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+import java.util.Objects;
+import javax.annotation.Nullable;
+
+<span class="fc" id="L15">public class MagicNumber {</span>
+
+<span class="fc" id="L17">    private static final Logger log = LoggerFactory.getLogger(MagicNumber.class);</span>
+
+    /** The default charset used when loading the config file and when sampling data */
+<span class="fc" id="L20">    public static final Charset DEFAULT_CHARSET = StandardCharsets.ISO_8859_1;</span>
+    /** Byte data type */
+    public static final String TYPE_KEY_BYTE = &quot;BYTE&quot;; //
+    /** Short data type */
+    public static final String TYPE_KEY_SHORT = &quot;SHORT&quot;; //
+    /** Long data type */
+    public static final String TYPE_KEY_LONG = &quot;LONG&quot;; //
+    /** String data type */
+    public static final String TYPE_KEY_STRING = &quot;STRING&quot;; //
+    /** Date data type */
+    public static final String TYPE_KEY_DATE = &quot;DATE&quot;; // long integer - seconds since epoch
+    /** Big endian short data type */
+    public static final String TYPE_KEY_BESHORT = &quot;BESHORT&quot;; // big-endian 16-bit
+    /** Big endian long data type */
+    public static final String TYPE_KEY_BELONG = &quot;BELONG&quot;; // big-endian 32-bit
+    /** Big endian date data type */
+    public static final String TYPE_KEY_BEDATE = &quot;BEDATE&quot;; // big-endian 32-bit date
+    /** Little endian short data type */
+    public static final String TYPE_KEY_LESHORT = &quot;LESHORT&quot;; // little-end 16-bit
+    /** Little endian long data type */
+    public static final String TYPE_KEY_LELONG = &quot;LELONG&quot;; // little-end 32-bit
+    /** Little endian long data type */
+    public static final String TYPE_KEY_LEDATE = &quot;LEDATE&quot;; // little-end 32-bit date
+
+    /** Unknown data type id */
+    public static final int TYPE_UNKNOWN = -1;
+    /** Byte data type id */
+    public static final int TYPE_BYTE = 0;
+    /** Short data type id */
+    public static final int TYPE_SHORT = 1;
+    /** Long data type id */
+    public static final int TYPE_LONG = 2;
+    /** String data type id */
+    public static final int TYPE_STRING = 3;
+    /** Date data type id */
+    public static final int TYPE_DATE = 4;
+    /** Big endian short data type id */
+    public static final int TYPE_BESHORT = 5;
+    /** Big endian long data type id */
+    public static final int TYPE_BELONG = 6;
+    /** Big endian date data type id */
+    public static final int TYPE_BEDATE = 7;
+    /** Little endian short data type id */
+    public static final int TYPE_LESHORT = 8;
+    /** Little endian long data type id */
+    public static final int TYPE_LELONG = 9;
+    /** Little endian date data type id */
+    public static final int TYPE_LEDATE = 10;
+    /** Empty string constant */
+    public static final String EMPTYSTRING = &quot;&quot;;
+
+    /** Unary Operator: Equals */
+    public static final char MAGICOPERATOR_AND = '=';
+    /** Unary Operator: Greater than */
+    public static final char MAGICOPERATOR_GTHAN = '&gt;';
+    /** Unary Operator: Less than */
+    public static final char MAGICOPERATOR_LTHAN = '&lt;';
+    /** Unary Operator: At least one bit matches */
+    public static final char MAGICOPERATOR_OR = 'x';
+    /** Unary Operator: All bits match */
+    public static final char MAGICOPERATOR_BWAND = '&amp;';
+    /** Unary Operator: None or some bits match */
+    public static final char MAGICOPERATOR_BWNOT = '^';
+    /** Unary Operator: Default Operator (AND) */
+    public static final char MAGICOPERATOR_NOT = '!';
+    /** Unary Operator: Greater than or equal to */
+    public static final char MAGICOPERATOR_EQUAL_GTHAN = ']';
+    /** Unary operator: Less than or equal to */
+    public static final char MAGICOPERATOR_EQUAL_LTHAN = '[';
+    /** Default Unary Operator - and */
+    public static final char MAGICOPERATOR_DEFAULT = MAGICOPERATOR_AND;
+
+
+    // Column A Properties
+    protected int depth;
+<span class="fc" id="L95">    protected int offset = -1;</span>
+<span class="fc" id="L96">    protected char offsetUnary = 0;</span>
+
+    // Column B Properties
+<span class="fc" id="L99">    protected int dataType = -1;</span>
+<span class="fc" id="L100">    protected int dataTypeLength = 0;</span>
+    protected byte[] mask;
+    protected boolean signedValue;
+
+    // Column C Properties
+    protected char unaryOperator;
+<span class="fc" id="L106">    @Nullable</span>
+    protected byte[] value = null;
+<span class="fc" id="L108">    protected boolean substitute = false;</span>
+
+    // Column D Properties
+<span class="fc" id="L111">    @Nullable</span>
+    protected String description = null;
+
+    // Magic Number Properties
+    protected List&lt;MagicNumber[]&gt; dependencies;
+
+    /**
+     * Recreates the string entry for this magic number plus its child continuations under new lines preceded by a '&amp;gt;'
+     * character at the appropriate depth.
+     *
+     * @return String
+     */
+    public String toStringAll() {
+<span class="nc" id="L124">        return toString(null, 0);</span>
+    }
+
+    /**
+     * Tests the sample and if successful provides the description
+     */
+    @Nullable
+    public String describe(byte[] data) {
+<span class="fc" id="L132">        String desc = describeSelf(data);</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        if (desc == null) {</span>
+<span class="fc" id="L134">            return null;</span>
+        }
+<span class="fc" id="L136">        StringBuilder sb = new StringBuilder(desc);</span>
+<span class="fc" id="L137">        return escapeBackspace(describeDependents(data, sb, 0));</span>
+    }
+
+    /**
+     * Private formatting method for escaping backspaces
+     */
+    private static String escapeBackspace(String desc) {
+<span class="fc" id="L144">        StringBuilder s = new StringBuilder();</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        for (int i = 0; i &lt; desc.length(); i++) {</span>
+<span class="pc bpc" id="L146" title="2 of 6 branches missed.">            if (desc.charAt(i) == '\\' &amp;&amp; (i + 1) &lt; desc.length() &amp;&amp; desc.charAt(i + 1) == 'b') {</span>
+<span class="fc" id="L147">                s = new StringBuilder(s.substring(0, s.length() - 1));</span>
+<span class="fc" id="L148">                i++;</span>
+<span class="fc" id="L149">                continue;</span>
+            }
+<span class="fc" id="L151">            s.append(desc.charAt(i));</span>
+        }
+<span class="fc" id="L153">        return s.toString();</span>
+    }
+
+    /**
+     * Describe this instance only
+     */
+    @Nullable
+    private String describeSelf(byte[] data) {
+<span class="fc bfc" id="L161" title="All 2 branches covered.">        if (!test(data)) {</span>
+<span class="fc" id="L162">            return null;</span>
+        }
+<span class="fc" id="L164">        return format(description, data);</span>
+    }
+
+    /**
+     * Private method to format output - mainly for description substitutions
+     */
+    private String format(String desc, byte[] data) {
+
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        if (!substitute) {</span>
+<span class="fc" id="L173">            return desc;</span>
+        }
+<span class="fc" id="L175">        Deque&lt;Character&gt; chars = new ArrayDeque&lt;&gt;();</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        for (int i = (desc.length() - 1); i &gt;= 0; --i) {</span>
+<span class="fc" id="L177">            chars.push(desc.charAt(i));</span>
+        }
+<span class="fc" id="L179">        StringBuilder sb = new StringBuilder();</span>
+
+<span class="fc bfc" id="L181" title="All 2 branches covered.">        while (!chars.isEmpty()) {</span>
+<span class="fc" id="L182">            Character next = chars.pop();</span>
+<span class="fc bfc" id="L183" title="All 4 branches covered.">            if (!chars.isEmpty() &amp;&amp; next == '%') {</span>
+<span class="fc" id="L184">                char subType = chars.pop();</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">                if (dataType == TYPE_STRING) {</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">                    if (offset &lt; (data.length - 2)) {</span>
+<span class="fc" id="L187">                        String sub = new String(Objects.requireNonNull(getElement(data, offset, 1)), DEFAULT_CHARSET);</span>
+<span class="fc" id="L188">                        sb.append(sub);</span>
+<span class="fc" id="L189">                    }</span>
+<span class="pc bpc" id="L190" title="1 of 4 branches missed.">                } else if (subType == 'c' || subType == 's') {</span>
+
+<span class="fc" id="L192">                    byte[] subData = getElement(data, offset, dataTypeLength);</span>
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">                    if (subData != null) {</span>
+<span class="fc" id="L194">                        String sub = new String(subData, DEFAULT_CHARSET);</span>
+<span class="fc" id="L195">                        sb.append(sub);</span>
+                    }
+
+<span class="fc" id="L198">                } else {</span>
+
+<span class="fc" id="L200">                    byte[] subData = getElement(data, offset, dataTypeLength);</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">                    if (subData != null) {</span>
+<span class="fc" id="L202">                        String sub = MagicMath.byteArrayToString(subData, 10);</span>
+<span class="fc" id="L203">                        sb.append(sub);</span>
+                    }
+                }
+
+<span class="pc bpc" id="L207" title="2 of 6 branches missed.">                if (subType == 'l' &amp;&amp; !chars.isEmpty() &amp;&amp; chars.peek() == 'd') {</span>
+<span class="fc" id="L208">                    chars.pop();</span>
+                }
+                continue;
+            }
+<span class="fc" id="L212">            sb.append(next.charValue());</span>
+<span class="fc" id="L213">        }</span>
+<span class="fc" id="L214">        return sb.toString();</span>
+    }
+
+    /**
+     * Tests dependent children
+     */
+    private String describeDependents(byte[] data, StringBuilder sb, int layer) {
+<span class="fc" id="L221">        log.debug(&quot;DESCRIBING DEPENDENTS at layer {}&quot;, layer);</span>
+<span class="fc bfc" id="L222" title="All 4 branches covered.">        if (dependencies == null || layer &gt;= dependencies.size()) {</span>
+<span class="fc" id="L223">            log.debug(&quot;Not enough dependents for layer {}&quot;, layer);</span>
+<span class="fc" id="L224">            return sb.toString();</span>
+        }
+
+<span class="fc" id="L227">        boolean shouldContinue = false;</span>
+<span class="fc" id="L228">        MagicNumber[] dependentItems = dependencies.get(layer);</span>
+<span class="fc" id="L229">        log.debug(&quot;Found {} items at layer {}&quot;, dependentItems.length, layer);</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">        for (MagicNumber dependentItem : dependentItems) {</span>
+<span class="fc" id="L231">            String s = dependentItem.describeSelf(data);</span>
+
+<span class="fc bfc" id="L233" title="All 2 branches covered.">            if (s != null) {</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">                if (sb.length() &gt; 0) {</span>
+<span class="fc" id="L235">                    sb.append(' ');</span>
+                }
+<span class="fc" id="L237">                sb.append(s);</span>
+<span class="fc" id="L238">                shouldContinue = true;</span>
+            }
+        }
+
+<span class="fc bfc" id="L242" title="All 2 branches covered.">        if (!shouldContinue) {</span>
+<span class="fc" id="L243">            return sb.toString();</span>
+        }
+<span class="fc" id="L245">        return describeDependents(data, sb, layer + 1);</span>
+    }
+
+    /**
+     * Tests this magic number against the given data
+     */
+    public boolean test(byte[] data) {
+<span class="fc" id="L252">        byte[] subject = getElement(data, offset, dataTypeLength);</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">        if (subject == null) {</span>
+<span class="fc" id="L254">            return false;</span>
+        }
+<span class="fc" id="L256">        return testNumeric(subject);</span>
+    }
+
+    /**
+     * Tests numeric byte data only
+     */
+    private boolean testNumeric(byte[] data) {
+<span class="fc bfc" id="L263" title="All 2 branches covered.">        if (substitute) {</span>
+<span class="fc" id="L264">            return true;</span>
+        }
+<span class="fc" id="L266">        byte[] mValues = value;</span>
+
+<span class="fc" id="L268">        log.debug(&quot;Unary Operator: {}&quot;, unaryOperator);</span>
+
+<span class="fc" id="L270">        int end = mValues.length;</span>
+<span class="pc bpc" id="L271" title="3 of 8 branches missed.">        switch (unaryOperator) {</span>
+            case MAGICOPERATOR_AND:
+            case MAGICOPERATOR_BWAND:
+<span class="fc bfc" id="L274" title="All 2 branches covered.">                for (int i = 0; i &lt; end; i++) {</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">                    if (data[i] != mValues[i]) {</span>
+<span class="fc" id="L276">                        return false;</span>
+                    }
+                }
+<span class="fc" id="L279">                return true;</span>
+            case MAGICOPERATOR_GTHAN:
+<span class="fc bfc" id="L281" title="All 2 branches covered.">                for (int i = 0; i &lt; end; i++) {</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">                    if ((data[i] &amp; 0xFF) &lt; (mValues[i] &amp; 0xFF)) {</span>
+<span class="fc" id="L283">                        return false;</span>
+                    }
+<span class="fc bfc" id="L285" title="All 4 branches covered.">                    if (i == end - 1 &amp;&amp; data[i] == mValues[i]) {</span>
+<span class="fc" id="L286">                        return false;</span>
+                    }
+                }
+<span class="fc" id="L289">                return true;</span>
+            case MAGICOPERATOR_LTHAN:
+<span class="fc bfc" id="L291" title="All 2 branches covered.">                for (int i = 0; i &lt; end; i++) {</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">                    if ((data[i] &amp; 0xFF) &gt; (mValues[i] &amp; 0xFF)) {</span>
+<span class="fc" id="L293">                        return false;</span>
+                    }
+<span class="fc bfc" id="L295" title="All 4 branches covered.">                    if (i == end - 1 &amp;&amp; data[i] == mValues[i]) {</span>
+<span class="fc" id="L296">                        return false;</span>
+                    }
+                }
+<span class="fc" id="L299">                return true;</span>
+            case MAGICOPERATOR_OR:
+<span class="nc bnc" id="L301" title="All 2 branches missed.">                for (int i = 0; i &lt; end; i++) {</span>
+<span class="nc bnc" id="L302" title="All 2 branches missed.">                    if (data[i] == mValues[i]) {</span>
+<span class="nc" id="L303">                        return true;</span>
+                    }
+                }
+<span class="nc" id="L306">                return false;</span>
+            case MAGICOPERATOR_BWNOT:
+            case MAGICOPERATOR_NOT:
+<span class="nc bnc" id="L309" title="All 2 branches missed.">                for (int i = 0; i &lt; end; i++) {</span>
+<span class="nc bnc" id="L310" title="All 2 branches missed.">                    if (data[i] != mValues[i]) {</span>
+<span class="nc" id="L311">                        return true;</span>
+                    }
+                }
+<span class="nc" id="L314">                return false;</span>
+            case MAGICOPERATOR_EQUAL_GTHAN:
+<span class="fc bfc" id="L316" title="All 2 branches covered.">                for (int i = 0; i &lt; end; i++) {</span>
+<span class="fc bfc" id="L317" title="All 2 branches covered.">                    if ((data[i] &amp; 0xFF) &lt; (mValues[i] &amp; 0xFF)) {</span>
+<span class="fc" id="L318">                        return false;</span>
+                    }
+                }
+<span class="fc" id="L321">                return true;</span>
+            case MAGICOPERATOR_EQUAL_LTHAN:
+<span class="fc bfc" id="L323" title="All 2 branches covered.">                for (int i = 0; i &lt; end; i++) {</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">                    if ((data[i] &amp; 0xFF) &gt; (mValues[i] &amp; 0xFF)) {</span>
+<span class="fc" id="L325">                        return false;</span>
+                    }
+                }
+<span class="fc" id="L328">                return true;</span>
+            default:
+<span class="nc" id="L330">                throw new IllegalStateException(</span>
+                        &quot;This MagicNumber instance is configured incorrectly. The unary operator is set to an unknown or unconfigured value.&quot;);
+
+        }
+    }
+
+    /**
+     * Retrieves the data sample
+     */
+    @Nullable
+    private static byte[] getElement(@Nullable byte[] data, int offset, int length) {
+<span class="pc bpc" id="L341" title="1 of 2 branches missed.">        if (data == null) {</span>
+<span class="nc" id="L342">            return null;</span>
+        }
+<span class="fc bfc" id="L344" title="All 2 branches covered.">        if (data.length &lt; (offset + length)) {</span>
+<span class="fc" id="L345">            return null;</span>
+        }
+<span class="fc" id="L347">        byte[] subject = new byte[length];</span>
+<span class="fc" id="L348">        System.arraycopy(data, offset, subject, 0, subject.length);</span>
+<span class="fc" id="L349">        return subject;</span>
+    }
+
+    /**
+     * Add child continuations
+     */
+    @SuppressWarnings(&quot;AvoidObjectArrays&quot;)
+    public void addDependencyLayer(MagicNumber[] dependencyLayer) {
+<span class="fc bfc" id="L357" title="All 2 branches covered.">        if (dependencies == null) {</span>
+<span class="fc" id="L358">            dependencies = new ArrayList&lt;&gt;();</span>
+        }
+<span class="fc" id="L360">        dependencies.add(dependencyLayer);</span>
+<span class="fc" id="L361">    }</span>
+
+    /**
+     * Re-creates the string magic number entry for this number only
+     *
+     * @return a String represention of the entry
+     */
+    @Override
+    public String toString() {
+
+<span class="fc" id="L371">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L372">        sb.append(&quot;&gt;&quot;.repeat(Math.max(0, depth)));</span>
+<span class="pc bpc" id="L373" title="1 of 2 branches missed.">        if (offsetUnary &gt; 0) {</span>
+<span class="nc" id="L374">            sb.append(offsetUnary);</span>
+        }
+
+<span class="pc bpc" id="L377" title="1 of 2 branches missed.">        if (offset == 0) {</span>
+<span class="fc" id="L378">            sb.append(&quot;0&quot;);</span>
+        } else {
+<span class="nc" id="L380">            sb.append(MagicMath.HEX_PREFIX);</span>
+<span class="nc" id="L381">            sb.append(Integer.toHexString(offset));</span>
+        }
+
+<span class="fc" id="L384">        sb.append('\t');</span>
+<span class="fc" id="L385">        sb.append(MagicNumberFactory.resolveReverseDataType(dataType));</span>
+<span class="pc bpc" id="L386" title="3 of 4 branches missed.">        if (mask != null &amp;&amp; mask.length &gt; 0) {</span>
+<span class="nc" id="L387">            sb.append('&amp;');</span>
+<span class="nc" id="L388">            sb.append(MagicMath.byteArrayToHexString(mask));</span>
+        }
+
+<span class="fc" id="L391">        sb.append('\t');</span>
+<span class="pc bpc" id="L392" title="1 of 2 branches missed.">        if (unaryOperator == MAGICOPERATOR_EQUAL_LTHAN) {</span>
+<span class="nc" id="L393">            sb.append(&quot;&lt;=&quot;);</span>
+<span class="pc bpc" id="L394" title="1 of 2 branches missed.">        } else if (unaryOperator == MAGICOPERATOR_EQUAL_GTHAN) {</span>
+<span class="nc" id="L395">            sb.append(&quot;&gt;=&quot;);</span>
+        } else {
+<span class="fc" id="L397">            sb.append(unaryOperator);</span>
+        }
+<span class="fc" id="L399">        sb.append(MagicMath.byteArrayToHexString(value));</span>
+
+<span class="fc" id="L401">        sb.append('\t');</span>
+<span class="fc" id="L402">        sb.append(description);</span>
+<span class="fc" id="L403">        return sb.toString();</span>
+    }
+
+    /**
+     * Private method to create the string plus continuations
+     */
+    private String toString(@Nullable StringBuilder sbuf, int depth) {
+<span class="nc" id="L410">        StringBuilder sb = sbuf;</span>
+<span class="nc" id="L411">        int d = depth;</span>
+<span class="nc bnc" id="L412" title="All 2 branches missed.">        if (sb == null) {</span>
+<span class="nc" id="L413">            sb = new StringBuilder(description);</span>
+        }
+<span class="nc bnc" id="L415" title="All 4 branches missed.">        if (dependencies == null || d &gt;= dependencies.size()) {</span>
+<span class="nc" id="L416">            return sb.toString();</span>
+        }
+<span class="nc" id="L418">        MagicNumber[] dependentItems = dependencies.get(d);</span>
+<span class="nc bnc" id="L419" title="All 2 branches missed.">        for (MagicNumber dependentItem : dependentItems) {</span>
+<span class="nc" id="L420">            sb.append('\n');</span>
+<span class="nc" id="L421">            sb.append(dependentItem.toString());</span>
+        }
+<span class="nc" id="L423">        return toString(sb, d + 1);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

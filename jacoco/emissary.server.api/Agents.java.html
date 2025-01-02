@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Agents.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.server.api</a> &gt; <span class="el_source">Agents.java</span></div><h1>Agents.java</h1><pre class="source lang-java linenums">package emissary.server.api;
+
+import emissary.client.EmissaryClient;
+import emissary.client.response.Agent;
+import emissary.client.response.AgentList;
+import emissary.client.response.AgentsFormatter;
+import emissary.client.response.AgentsResponseEntity;
+import emissary.core.EmissaryException;
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+import emissary.directory.EmissaryNode;
+import emissary.pool.MobileAgentFactory;
+import emissary.server.EmissaryServer;
+
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.StringJoiner;
+
+import static emissary.server.api.ApiUtils.lookupPeers;
+import static emissary.server.api.ApiUtils.stripPeerString;
+
+/**
+ * The agents Emissary API endpoint. Currently, contains the local (/api/agents) call and cluster (/api/clusterAgents)
+ * calls.
+ */
+@Path(&quot;&quot;)
+// context is /api and is set in EmissaryServer.java
+<span class="fc" id="L35">public class Agents {</span>
+<span class="fc" id="L36">    private final Logger logger = LoggerFactory.getLogger(this.getClass());</span>
+
+    public static final String AGENTS_ENDPOINT = &quot;api/agents&quot;;
+
+    public static final String AGENTS_CLUSTER_ENDPOINT = &quot;api/cluster/agents&quot;;
+
+    @GET
+    @Path(&quot;/agents&quot;)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response agents() {
+<span class="fc" id="L46">        return agentsV1();</span>
+    }
+
+    @GET
+    @Path(&quot;/v1/agents&quot;)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response agentsV1() {
+<span class="fc" id="L53">        return Response.ok().entity(lookupAgents()).build();</span>
+    }
+
+    @GET
+    @Path(&quot;/v2/agents&quot;)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response agentsV2() {
+<span class="nc" id="L60">        return Response.ok().entity(getAgents(&quot;,&quot;, &quot;{\&quot;agents\&quot;:[&quot;, &quot;]}&quot;)).build();</span>
+    }
+
+    @GET
+    @Path(&quot;/agents/log&quot;)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response agentsLogV2() {
+<span class="nc" id="L67">        return Response.ok().entity(getAgents(&quot;\n&quot;, &quot;&quot;, &quot;\n&quot;)).build();</span>
+    }
+
+    @GET
+    @Path(&quot;/cluster/agents&quot;)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response clusterAgents() {
+        try {
+            // Get our local information first
+<span class="nc" id="L76">            AgentsResponseEntity entity = new AgentsResponseEntity();</span>
+<span class="nc" id="L77">            entity.setLocal(lookupAgents().getLocal());</span>
+
+            // Get all of our peers
+<span class="nc" id="L80">            EmissaryClient client = new EmissaryClient();</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            for (String peer : lookupPeers()) {</span>
+<span class="nc" id="L82">                String remoteEndPoint = stripPeerString(peer) + AGENTS_ENDPOINT;</span>
+<span class="nc" id="L83">                AgentsResponseEntity remoteEntity = client.send(new HttpGet(remoteEndPoint)).getContent(AgentsResponseEntity.class);</span>
+<span class="nc" id="L84">                entity.append(remoteEntity);</span>
+<span class="nc" id="L85">            }</span>
+<span class="nc" id="L86">            return Response.ok().entity(entity).build();</span>
+<span class="nc" id="L87">        } catch (EmissaryException e) {</span>
+            // This should never happen since we already saw if it exists
+<span class="nc" id="L89">            return Response.serverError().entity(e.getMessage()).build();</span>
+        }
+    }
+
+    protected String getAgents(String delimiter, String prefix, String suffix) {
+<span class="nc" id="L94">        AgentsResponseEntity entity = lookupAgents();</span>
+<span class="nc" id="L95">        AgentsFormatter formatter = AgentsFormatter.builder().withHost(entity.getLocal().getHost()).build();</span>
+<span class="nc" id="L96">        StringJoiner joiner = new StringJoiner(delimiter, prefix, suffix);</span>
+<span class="nc" id="L97">        entity.getLocal().getAgents().forEach(agent -&gt; joiner.add(&quot;{\&quot;agent\&quot;:&quot; + formatter.json(agent) + &quot;}&quot;));</span>
+<span class="nc" id="L98">        entity.getErrors().forEach(err -&gt; joiner.add(&quot;{\&quot;agent\&quot;:&quot; + formatter.json(&quot;error&quot;, err) + &quot;}&quot;));</span>
+<span class="nc" id="L99">        return joiner.toString();</span>
+    }
+
+    private AgentsResponseEntity lookupAgents() {
+<span class="fc" id="L103">        AgentsResponseEntity entity = new AgentsResponseEntity();</span>
+        try {
+<span class="fc" id="L105">            EmissaryServer emissaryServer = (EmissaryServer) Namespace.lookup(&quot;EmissaryServer&quot;);</span>
+<span class="fc" id="L106">            EmissaryNode localNode = emissaryServer.getNode();</span>
+<span class="fc" id="L107">            String localName = localNode.getNodeName() + &quot;:&quot; + localNode.getNodePort();</span>
+<span class="fc" id="L108">            AgentList agents = new AgentList();</span>
+<span class="fc" id="L109">            agents.setHost(localName);</span>
+<span class="fc" id="L110">            Namespace.keySet().stream().filter(k -&gt; k.startsWith(MobileAgentFactory.AGENT_NAME)).sorted().forEach(agentKey -&gt; {</span>
+                try {
+<span class="fc" id="L112">                    agents.addAgent(new Agent(agentKey, Namespace.lookup(agentKey).toString()));</span>
+<span class="nc" id="L113">                } catch (NamespaceException e) {</span>
+<span class="nc" id="L114">                    logger.error(&quot;Missing an agent in the Namespace: {}&quot;, agentKey);</span>
+<span class="nc" id="L115">                    entity.addError(&quot;ERROR - Agent &quot; + agentKey + &quot; not found in Namespace&quot;);</span>
+<span class="fc" id="L116">                }</span>
+<span class="fc" id="L117">            });</span>
+<span class="fc" id="L118">            entity.setLocal(agents);</span>
+<span class="nc" id="L119">        } catch (EmissaryException e) {</span>
+            // should never happen
+<span class="nc" id="L121">            logger.error(&quot;Problem finding the emissary server or agents in the namespace, something is majorly wrong&quot;, e);</span>
+<span class="nc" id="L122">            entity.addError(&quot;Problem finding the emissary server or agents in the namespace: &quot; + e.getMessage());</span>
+<span class="fc" id="L123">        }</span>
+<span class="fc" id="L124">        return entity;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DevNullPlace.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.place.sample</a> &gt; <span class="el_source">DevNullPlace.java</span></div><h1>DevNullPlace.java</h1><pre class="source lang-java linenums">package emissary.place.sample;
+
+import emissary.core.IBaseDataObject;
+import emissary.place.EmptyFormPlace;
+import emissary.place.ServiceProviderPlace;
+
+import java.io.IOException;
+
+/**
+ * This place is a sink hole for everything it registers for
+ */
+public class DevNullPlace extends ServiceProviderPlace implements EmptyFormPlace {
+    /**
+     * Create and register
+     */
+    public DevNullPlace(String configInfo, String dir, String placeLoc) throws IOException {
+<span class="nc" id="L17">        super(configInfo, dir, placeLoc);</span>
+<span class="nc" id="L18">    }</span>
+
+    /**
+     * Create for test
+     */
+    public DevNullPlace(String configInfo) throws IOException {
+<span class="nc" id="L24">        super(configInfo, &quot;DevNullPlace.www.example.com:8001&quot;);</span>
+<span class="nc" id="L25">    }</span>
+
+<span class="fc" id="L27">    public DevNullPlace() throws IOException {}</span>
+
+    /**
+     * Consume the data object
+     */
+    @Override
+    public void process(IBaseDataObject tData) {
+
+        // The form that got us here
+<span class="nc" id="L36">        tData.currentForm();</span>
+<span class="nc" id="L37">        int before = tData.currentFormSize();</span>
+<span class="nc" id="L38">        int after = nukeMyProxies(tData);</span>
+<span class="nc" id="L39">        logger.debug(&quot;Nuked {} of {} current form values leaving {}&quot;, (after - before), before, tData.getAllCurrentForms());</span>
+<span class="nc" id="L40">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

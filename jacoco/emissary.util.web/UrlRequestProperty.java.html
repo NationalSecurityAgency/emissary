@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UrlRequestProperty.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.web</a> &gt; <span class="el_source">UrlRequestProperty.java</span></div><h1>UrlRequestProperty.java</h1><pre class="source lang-java linenums">package emissary.util.web;
+
+/*
+ $Id$
+ */
+
+/**
+ * Provides a way to group Request properties either going into the emissary.util.Url class to override headers on the
+ * connection (e.g. Referer, User-Agent) or to get the headers on a page we retrieved
+ *
+ * @author mjf, 2000-08-01
+ */
+public class UrlRequestProperty {
+
+    protected String key;
+
+    protected String value;
+
+<span class="nc" id="L19">    public UrlRequestProperty() {}</span>
+
+<span class="fc" id="L21">    public UrlRequestProperty(final String key, final String value) {</span>
+<span class="fc" id="L22">        this.key = key;</span>
+<span class="fc" id="L23">        this.value = value;</span>
+<span class="fc" id="L24">    }</span>
+
+<span class="nc" id="L26">    public UrlRequestProperty(final String key, final int value) {</span>
+<span class="nc" id="L27">        this.key = key;</span>
+<span class="nc" id="L28">        this.value = &quot;&quot; + value;</span>
+<span class="nc" id="L29">    }</span>
+
+    /**
+     * Get the value of key.
+     * 
+     * @return Value of key.
+     */
+    public String getKey() {
+<span class="nc" id="L37">        return this.key;</span>
+    }
+
+    /**
+     * Set the value of key.
+     * 
+     * @param v Value to assign to key.
+     */
+    public void setKey(final String v) {
+<span class="nc" id="L46">        this.key = v;</span>
+<span class="nc" id="L47">    }</span>
+
+    /**
+     * Get the value of value.
+     * 
+     * @return Value of value.
+     */
+    public String getValue() {
+<span class="fc" id="L55">        return this.value;</span>
+    }
+
+    /**
+     * Set the value of value.
+     * 
+     * @param v Value to assign to value.
+     */
+    public void setValue(final String v) {
+<span class="nc" id="L64">        this.value = v;</span>
+<span class="nc" id="L65">    }</span>
+
+    /**
+     * Set the value of value
+     * 
+     * @param v value to assign to value
+     */
+    public void setValue(final int v) {
+<span class="nc" id="L73">        this.value = &quot;&quot; + v;</span>
+<span class="nc" id="L74">    }</span>
+
+    /**
+     * Set up the base64 encoded string for the Auth header
+     */
+    public void setAuthHeader(final String user, final String password) {
+<span class="nc" id="L80">        this.key = &quot;Authorization&quot;;</span>
+<span class="nc" id="L81">    }</span>
+
+    /**
+     * get as a String
+     */
+    @Override
+    public String toString() {
+<span class="nc" id="L88">        return this.key + &quot;: &quot; + this.value;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

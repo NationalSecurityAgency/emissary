@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Emissary.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary</a> &gt; <span class="el_source">Emissary.java</span></div><h1>Emissary.java</h1><pre class="source lang-java linenums">package emissary;
+
+import emissary.command.AgentsCommand;
+import emissary.command.Banner;
+import emissary.command.ConfigCommand;
+import emissary.command.DirectoryCommand;
+import emissary.command.EmissaryCommand;
+import emissary.command.EnvCommand;
+import emissary.command.FeedCommand;
+import emissary.command.HelpCommand;
+import emissary.command.PeersCommand;
+import emissary.command.PoolCommand;
+import emissary.command.ServerCommand;
+import emissary.command.TopologyCommand;
+import emissary.command.VersionCommand;
+import emissary.util.GitRepositoryState;
+import emissary.util.io.LoggingPrintStream;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.ConsoleAppender;
+import com.google.common.annotations.VisibleForTesting;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+import picocli.CommandLine.MissingParameterException;
+import picocli.CommandLine.UnmatchedArgumentException;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
+
+/**
+ * Main entry point of the jar file
+ * 
+ * Parses command line arguments and delegates commands
+ */
+@SuppressWarnings(&quot;ImmutableMemberCollection&quot;)
+public class Emissary {
+<span class="fc" id="L47">    private static final Logger LOG = LoggerFactory.getLogger(Emissary.class);</span>
+
+<span class="fc" id="L49">    private final CommandLine cli = new CommandLine(EmissaryCommand.class);</span>
+    private final Map&lt;String, EmissaryCommand&gt; commands;
+
+    public static final Map&lt;String, EmissaryCommand&gt; EMISSARY_COMMANDS;
+
+<span class="fc" id="L54">    private boolean bannerDumped = false;</span>
+
+    static {
+<span class="fc" id="L57">        List&lt;Class&lt;? extends EmissaryCommand&gt;&gt; commandClasses =</span>
+<span class="fc" id="L58">                Arrays.asList(ServerCommand.class, HelpCommand.class, TopologyCommand.class, FeedCommand.class,</span>
+                        AgentsCommand.class, PoolCommand.class, VersionCommand.class, EnvCommand.class,
+                        PeersCommand.class, ConfigCommand.class, DirectoryCommand.class);
+<span class="fc" id="L61">        Map&lt;String, EmissaryCommand&gt; staticCopy = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        for (Class&lt;? extends EmissaryCommand&gt; commandClass : commandClasses) {</span>
+            try {
+<span class="fc" id="L64">                EmissaryCommand command = commandClass.getDeclaredConstructor().newInstance();</span>
+<span class="fc" id="L65">                staticCopy.put(command.getCommandName(), command);</span>
+<span class="nc" id="L66">            } catch (ReflectiveOperationException e) {</span>
+<span class="nc" id="L67">                LOG.error(&quot;Couldn't make EMISSARY_COMMANDS&quot;, e);</span>
+<span class="nc" id="L68">                System.exit(1);</span>
+<span class="fc" id="L69">            }</span>
+<span class="fc" id="L70">        }</span>
+<span class="fc" id="L71">        EMISSARY_COMMANDS = Collections.unmodifiableMap(staticCopy);</span>
+<span class="fc" id="L72">    }</span>
+
+    @VisibleForTesting
+    protected CommandLine getCommand() {
+<span class="fc" id="L76">        return cli;</span>
+    }
+
+    protected Emissary() {
+<span class="nc" id="L80">        this(EMISSARY_COMMANDS);</span>
+<span class="nc" id="L81">    }</span>
+
+<span class="fc" id="L83">    protected Emissary(Map&lt;String, EmissaryCommand&gt; cmds) {</span>
+<span class="fc" id="L84">        commands = Collections.unmodifiableMap(cmds);</span>
+        // sort by command name and then add to Picocli
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        for (String key : new TreeSet&lt;&gt;(commands.keySet())) {</span>
+<span class="fc" id="L87">            cli.addSubcommand(key, commands.get(key));</span>
+<span class="fc" id="L88">        }</span>
+<span class="fc" id="L89">    }</span>
+
+    protected void execute(String[] args) {
+<span class="fc" id="L92">        reconfigureLogHook(); // so we can capture everything for test, like the verbose output</span>
+<span class="fc" id="L93">        String shouldSetVerbose = System.getProperty(&quot;set.picocli.debug&quot;);</span>
+<span class="pc bpc" id="L94" title="1 of 4 branches missed.">        if (shouldSetVerbose != null &amp;&amp; shouldSetVerbose.equals(&quot;true&quot;)) {</span>
+<span class="fc" id="L95">            CommandLine.tracer().setLevel(CommandLine.TraceLevel.INFO);</span>
+        }
+        try {
+<span class="fc" id="L98">            cli.parseArgs(args);</span>
+<span class="fc" id="L99">            List&lt;String&gt; commandNames = cli.getParseResult().originalArgs();</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">            if (commandNames.isEmpty()) {</span>
+<span class="fc" id="L101">                dumpBanner();</span>
+<span class="fc" id="L102">                LOG.error(&quot;One command is required&quot;);</span>
+<span class="fc" id="L103">                HelpCommand.dumpCommands(cli);</span>
+<span class="fc" id="L104">                exit(1);</span>
+            }
+<span class="fc" id="L106">            String commandName = commandNames.get(0);</span>
+<span class="fc" id="L107">            EmissaryCommand cmd = commands.get(commandName);</span>
+<span class="fc" id="L108">            dumpBanner(cmd);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            if (Arrays.asList(args).contains(ServerCommand.COMMAND_NAME)) {</span>
+<span class="fc" id="L110">                dumpVersionInfo();</span>
+            }
+<span class="fc" id="L112">            cmd.run(cli);</span>
+            // don't exit(0) here or things like server will not continue to run
+<span class="nc" id="L114">        } catch (MissingParameterException e) {</span>
+<span class="nc" id="L115">            dumpBanner();</span>
+<span class="nc" id="L116">            LOG.error(e.getMessage());</span>
+<span class="nc" id="L117">            HelpCommand.dumpHelp(cli, args[0]);</span>
+<span class="nc" id="L118">            exit(1);</span>
+<span class="fc" id="L119">        } catch (UnmatchedArgumentException e) {</span>
+<span class="fc" id="L120">            dumpBanner();</span>
+<span class="fc" id="L121">            LOG.error(&quot;Undefined command: {}&quot;, Arrays.toString(args));</span>
+<span class="fc" id="L122">            LOG.error(&quot;\t {}&quot;, e.getLocalizedMessage());</span>
+<span class="fc" id="L123">            HelpCommand.dumpCommands(cli);</span>
+<span class="fc" id="L124">            exit(1);</span>
+<span class="fc" id="L125">        } catch (RuntimeException e) {</span>
+<span class="fc" id="L126">            dumpBanner();</span>
+<span class="fc" id="L127">            LOG.error(&quot;Command threw an exception: {}&quot;, Arrays.toString(args), e);</span>
+<span class="fc" id="L128">            exit(1);</span>
+<span class="pc" id="L129">        }</span>
+<span class="fc" id="L130">    }</span>
+
+    private void dumpBanner(@Nullable EmissaryCommand cmd) {
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        if (!bannerDumped) {</span>
+<span class="fc" id="L134">            bannerDumped = true;</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">            if (cmd == null) {</span>
+<span class="fc" id="L136">                new Banner().dump();</span>
+            } else {
+<span class="fc" id="L138">                cmd.outputBanner();</span>
+            }
+<span class="fc" id="L140">            setupLogging();</span>
+        }
+<span class="fc" id="L142">    }</span>
+
+    private void dumpBanner() {
+<span class="fc" id="L145">        dumpBanner(null);</span>
+<span class="fc" id="L146">    }</span>
+
+    protected void dumpVersionInfo() {
+<span class="fc" id="L149">        LOG.info(GitRepositoryState.dumpVersionInfo(GitRepositoryState.getRepositoryState(), &quot;Emissary&quot;));</span>
+<span class="fc" id="L150">    }</span>
+
+    @VisibleForTesting
+    protected void reconfigureLogHook() {
+        // overridden in EmissaryTest
+<span class="nc" id="L155">    }</span>
+
+    @VisibleForTesting
+    // so we can stop exiting long enough to look at the return code
+    protected void exit(int retCode) {
+<span class="nc" id="L160">        System.exit(retCode);</span>
+<span class="nc" id="L161">    }</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L164">        new Emissary().execute(args);</span>
+<span class="nc" id="L165">    }</span>
+
+    protected void setupLogging() {
+<span class="fc" id="L168">        redirectStdOutStdErr();</span>
+<span class="fc" id="L169">        setupLogbackForConsole();</span>
+        // hook so we can capture stuff in tests
+<span class="fc" id="L171">        reconfigureLogHook();</span>
+<span class="fc" id="L172">    }</span>
+
+    /*
+     * Modify the logback stuff, about to run a command
+     * 
+     * Reinit with a config file if running something like a server where you want the expanded format,
+     */
+    public static LoggerContext setupLogbackForConsole() {
+        // So it looks better when commands are run
+<span class="fc" id="L181">        ch.qos.logback.classic.Logger root =</span>
+<span class="fc" id="L182">                (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);</span>
+<span class="fc" id="L183">        root.detachAndStopAllAppenders();</span>
+<span class="fc" id="L184">        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();</span>
+<span class="fc" id="L185">        lc.reset();</span>
+
+<span class="fc" id="L187">        PatternLayoutEncoder ple = new PatternLayoutEncoder();</span>
+<span class="fc" id="L188">        ple.setPattern(&quot;%msg%n&quot;);</span>
+<span class="fc" id="L189">        ple.setContext(lc);</span>
+<span class="fc" id="L190">        ple.start();</span>
+
+<span class="fc" id="L192">        ConsoleAppender&lt;ILoggingEvent&gt; consoleAppender = new ConsoleAppender&lt;&gt;();</span>
+<span class="fc" id="L193">        consoleAppender.setEncoder(ple);</span>
+<span class="fc" id="L194">        consoleAppender.setContext(lc);</span>
+<span class="fc" id="L195">        consoleAppender.start();</span>
+
+<span class="fc" id="L197">        root.addAppender(consoleAppender);</span>
+<span class="fc" id="L198">        root.setLevel(Level.INFO);</span>
+<span class="fc" id="L199">        root.setAdditive(false);</span>
+<span class="fc" id="L200">        return lc;</span>
+    }
+
+    @SuppressWarnings(&quot;SystemOut&quot;)
+    static void redirectStdOutStdErr() {
+        // no need for sysout-over-slf4j anymore, which as need for any calls, like jni, which only
+        // output to stdout/stderr Last none logback message
+<span class="fc" id="L207">        LOG.trace(&quot;Redefining stdout so logback and capture the output&quot;);</span>
+<span class="fc" id="L208">        System.setOut(new LoggingPrintStream(System.out, &quot;STDOUT&quot;, LOG, org.slf4j.event.Level.INFO, 30, TimeUnit.SECONDS));</span>
+
+<span class="fc" id="L210">        LOG.trace(&quot;Redefining stderr so logback and capture the output&quot;);</span>
+<span class="fc" id="L211">        System.setErr(new LoggingPrintStream(System.err, &quot;STDERR&quot;, LOG, org.slf4j.event.Level.ERROR, 30, TimeUnit.SECONDS));</span>
+<span class="fc" id="L212">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

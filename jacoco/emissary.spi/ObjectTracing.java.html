@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ObjectTracing.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.spi</a> &gt; <span class="el_source">ObjectTracing.java</span></div><h1>ObjectTracing.java</h1><pre class="source lang-java linenums">package emissary.spi;
+
+import emissary.core.IBaseDataObject;
+
+import java.util.Map;
+
+public interface ObjectTracing {
+
+<span class="nc" id="L9">    enum Stage {</span>
+<span class="nc" id="L10">        PICK_UP, DROP_OFF</span>
+    }
+
+    /**
+     * With this provider, add the appropriate fields/values to the fieldMap
+     * 
+     * @param d The IBDO
+     * @param filename The filename of the object
+     * @param stage The stage
+     * @param fieldMap The map of fields we are adding to
+     */
+    void getObjectTraceFields(IBaseDataObject d, String filename, ObjectTracing.Stage stage, Map&lt;String, String&gt; fieldMap);
+
+    /**
+     * Remaps field names if needed
+     * 
+     * @param fieldMap The map of fields and values
+     */
+    void mapFieldNames(Map&lt;String, String&gt; fieldMap);
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

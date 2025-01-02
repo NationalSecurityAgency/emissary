@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Version.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.server.api</a> &gt; <span class="el_source">Version.java</span></div><h1>Version.java</h1><pre class="source lang-java linenums">package emissary.server.api;
+
+import emissary.client.EmissaryClient;
+import emissary.client.response.MapResponseEntity;
+import emissary.core.EmissaryException;
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+import emissary.directory.EmissaryNode;
+import emissary.server.EmissaryServer;
+
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Set;
+
+import static emissary.server.api.ApiUtils.lookupPeers;
+import static emissary.server.api.ApiUtils.stripPeerString;
+
+/**
+ * The version Emissary API endpoint. Currently, contains the local (/api/version) call and cluster
+ * (/api/clusterVersion) calls.
+ */
+@Path(&quot;&quot;)
+// context is /api
+<span class="fc" id="L31">public class Version {</span>
+<span class="fc" id="L32">    private final Logger logger = LoggerFactory.getLogger(this.getClass());</span>
+
+<span class="fc" id="L34">    private static final emissary.util.Version version = new emissary.util.Version();</span>
+
+    @GET
+    @Path(&quot;/version&quot;)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response localVersion() {
+<span class="fc" id="L40">        return Response.ok().entity(lookupVersion()).build();</span>
+    }
+
+    @GET
+    @Path(&quot;/cluster/version&quot;)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response clusterVersion() {
+        try {
+            // Get our local information first
+<span class="nc" id="L49">            MapResponseEntity entity = new MapResponseEntity();</span>
+<span class="nc" id="L50">            entity.append(lookupVersion());</span>
+
+            // Get all of our peers
+<span class="nc" id="L53">            Set&lt;String&gt; peers = lookupPeers();</span>
+<span class="nc" id="L54">            EmissaryClient client = new EmissaryClient();</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">            for (String peer : peers) {</span>
+<span class="nc" id="L56">                String remoteEndPoint = stripPeerString(peer) + &quot;api/version&quot;;</span>
+<span class="nc" id="L57">                MapResponseEntity remoteEntity = client.send(new HttpGet(remoteEndPoint)).getContent(MapResponseEntity.class);</span>
+<span class="nc" id="L58">                entity.append(remoteEntity);</span>
+<span class="nc" id="L59">            }</span>
+<span class="nc" id="L60">            return Response.ok().entity(entity).build();</span>
+<span class="nc" id="L61">        } catch (EmissaryException e) {</span>
+            // This should never happen since we already saw if it exists
+<span class="nc" id="L63">            return Response.serverError().entity(e.getMessage()).build();</span>
+        }
+    }
+
+    private MapResponseEntity lookupVersion() {
+<span class="fc" id="L68">        MapResponseEntity entity = new MapResponseEntity();</span>
+        // Get the server, so we can be ready to talk to ourselves then the peers
+        try {
+<span class="fc" id="L71">            EmissaryServer emissaryServer = (EmissaryServer) Namespace.lookup(&quot;EmissaryServer&quot;);</span>
+<span class="fc" id="L72">            EmissaryNode localNode = emissaryServer.getNode();</span>
+<span class="fc" id="L73">            int localPort = localNode.getNodePort();</span>
+<span class="fc" id="L74">            String localName = localNode.getNodeName();</span>
+<span class="fc" id="L75">            entity.addKeyValue(localName + &quot;:&quot; + localPort, version.getVersion());</span>
+<span class="nc" id="L76">        } catch (NamespaceException e) {</span>
+            // should never happen
+<span class="nc" id="L78">            logger.error(&quot;Problem finding the emissary server in the namespace, something is majorly wrong&quot;, e);</span>
+<span class="nc" id="L79">            entity.addError(e.getMessage());</span>
+<span class="fc" id="L80">        }</span>
+<span class="fc" id="L81">        return entity;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

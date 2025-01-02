@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FillingNIOParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.parser</a> &gt; <span class="el_source">FillingNIOParser.java</span></div><h1>FillingNIOParser.java</h1><pre class="source lang-java linenums">package emissary.parser;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
+
+/**
+ * Encapsulate the behavior necessary to slide a window through a channel and parse sessions from it. nextChunkOrDie
+ * will load the next region.
+ */
+public abstract class FillingNIOParser extends NIOSessionParser {
+
+<span class="nc" id="L15">    private final static Logger logger = LoggerFactory.getLogger(FillingNIOParser.class);</span>
+
+    /** position of the session start relative to the start of the current chunk */
+<span class="nc" id="L18">    protected int sessionStart = 0;</span>
+
+    public FillingNIOParser(SeekableByteChannel channel) {
+<span class="nc" id="L21">        super(channel);</span>
+<span class="nc" id="L22">    }</span>
+
+    /**
+     * Get and set all stats for loading the next chunk This is specified to the RAF parser families
+     * 
+     * @param data the allocated data block to fill or null
+     * @return ref to the incoming block now filled or a new one if incoming was null or size was changed
+     * @throws ParserEOFException when there is no more data
+     */
+    protected byte[] nextChunkOrDie(byte[] data) throws ParserException {
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        if (sessionStart &gt; 0) {</span>
+            // the sessionStart is somewhere other than the beginning of the buffer and
+            // we've discovered that we need to load more data. Compact the buffer so that
+            // the sessionStart is at the beginning of the buffer. chunkStart is incremented
+            // by sessionStart, the write offset is updated.
+<span class="nc" id="L37">            final ByteBuffer b = ByteBuffer.wrap(data);</span>
+<span class="nc" id="L38">            b.position(sessionStart);</span>
+<span class="nc" id="L39">            b.limit(writeOffset);</span>
+<span class="nc" id="L40">            b.compact(); // does not re-allocate the byte array, only manipulates the current buffer.</span>
+
+<span class="nc" id="L42">            chunkStart += sessionStart;</span>
+<span class="nc" id="L43">            sessionStart = 0;</span>
+<span class="nc" id="L44">            writeOffset = b.position();</span>
+<span class="nc" id="L45">            logger.debug(&quot;Compacted buffer: sessionStart/chunkStart/writeOffset = {}/{}/{}&quot;, sessionStart, chunkStart, writeOffset);</span>
+        }
+
+        try {
+<span class="nc" id="L49">            byte[] b = loadNextRegion(data);</span>
+<span class="nc" id="L50">            return b;</span>
+
+<span class="nc" id="L52">        } catch (ParserEOFException eof) {</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            if (writeOffset - sessionStart &gt; 1) {</span>
+                // there's data left in the buffer that's more than a newline, meaning
+                // there's data we were unable to parse, but there was no additional
+                // data to read - so the session is truncated
+<span class="nc" id="L57">                throw new ParserException(&quot;Unexpectedly malformed data at &quot; + chunkStart);</span>
+            } else {
+                // end of file and the last session was complete.
+<span class="nc" id="L60">                setFullyParsed(true);</span>
+<span class="nc" id="L61">                throw eof;</span>
+            }
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

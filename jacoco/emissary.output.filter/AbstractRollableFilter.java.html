@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractRollableFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.output.filter</a> &gt; <span class="el_source">AbstractRollableFilter.java</span></div><h1>AbstractRollableFilter.java</h1><pre class="source lang-java linenums">package emissary.output.filter;
+
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.IBaseDataObject;
+import emissary.output.io.DateStampFilenameGenerator;
+import emissary.output.roller.IJournaler;
+import emissary.output.roller.JournaledCoalescer;
+import emissary.output.roller.journal.KeyedOutput;
+import emissary.pool.AgentPool;
+import emissary.roll.RollManager;
+import emissary.roll.Roller;
+import emissary.util.io.FileNameGenerator;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import static emissary.roll.Roller.CFG_ROLL_INTERVAL;
+
+<span class="fc" id="L30">public abstract class AbstractRollableFilter extends AbstractFilter {</span>
+
+<span class="fc" id="L32">    protected static final String configDir = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY);</span>
+
+    public static final String OUTPUT_PATH = &quot;OUTPUT_PATH&quot;;
+    public static final String MAX_ROLL_FILE_SIZE = &quot;MAX_FILE_SIZE&quot;;
+    public static final String MAX_OUTPUT_APPENDERS = &quot;MAX_OUTPUT_APPENDERS&quot;;
+    public static final String ROLL_INTERVAL_UNIT = &quot;ROLL_INTERVAL_UNIT&quot;;
+
+<span class="fc" id="L39">    protected String defaultOutputPath = &quot;./out&quot;;</span>
+    protected Path outputPath;
+<span class="fc" id="L41">    protected int maxRollFileSize = 250 * 1024 * 1024;</span>
+    protected int maxOutputAppenders;
+<span class="fc" id="L43">    protected long rollInterval = 10L;</span>
+<span class="fc" id="L44">    protected TimeUnit rollIntervalUnits = TimeUnit.MINUTES;</span>
+    protected Roller roller;
+    protected IJournaler rollable;
+    protected FileNameGenerator fileNameGenerator;
+<span class="fc" id="L48">    protected boolean appendNewLine = true;</span>
+
+    /**
+     * Method to convert payload(s) to an output type
+     *
+     * @param list the payload list
+     * @param params the list of parameters
+     * @return the byte representation of the payload(s)
+     * @throws IOException if there is an issue outputting the data
+     */
+    public abstract byte[] convert(final List&lt;IBaseDataObject&gt; list, final Map&lt;String, Object&gt; params) throws IOException;
+
+    /**
+     * Initialization phase hook for the filter with provided filter configuration
+     *
+     * @param theConfigG passed in configuration object, usually DropOff's config
+     * @param filterName the configured name of this filter or null for the default
+     * @param theFilterConfig the configuration for the specific filter
+     */
+    @Override
+    public void initialize(final Configurator theConfigG, final String filterName, final Configurator theFilterConfig) {
+<span class="fc" id="L69">        super.initialize(theConfigG, filterName, theFilterConfig);</span>
+<span class="fc" id="L70">        initOutputConfig();</span>
+<span class="fc" id="L71">        initRollConfig();</span>
+<span class="fc" id="L72">        initFilenameGenerator();</span>
+<span class="fc" id="L73">        setupLocalOutputDir();</span>
+<span class="fc" id="L74">        setupRoller();</span>
+<span class="fc" id="L75">    }</span>
+
+    /**
+     * Initialize the output config vars
+     */
+    protected void initOutputConfig() {
+<span class="fc" id="L81">        this.defaultOutputPath = this.filterConfig.findStringEntry(OUTPUT_PATH, defaultOutputPath);</span>
+<span class="fc" id="L82">        this.outputPath = Paths.get(this.defaultOutputPath);</span>
+<span class="fc" id="L83">    }</span>
+
+    /**
+     * Initialize a file name generator
+     */
+    protected void initFilenameGenerator() {
+<span class="fc" id="L89">        this.fileNameGenerator =</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">                new DateStampFilenameGenerator(StringUtils.isNotBlank(filterName) ? &quot;.&quot; + filterName.toLowerCase(Locale.getDefault()) : &quot;&quot;);</span>
+<span class="fc" id="L91">    }</span>
+
+    /**
+     * Initialize the roll specific vars
+     */
+    protected void initRollConfig() {
+<span class="fc" id="L97">        this.maxRollFileSize = (int) this.filterConfig.findSizeEntry(MAX_ROLL_FILE_SIZE, maxRollFileSize);</span>
+<span class="fc" id="L98">        this.maxOutputAppenders = this.filterConfig.findIntEntry(MAX_OUTPUT_APPENDERS, AgentPool.computePoolSize());</span>
+<span class="fc" id="L99">        this.rollInterval = this.filterConfig.findLongEntry(CFG_ROLL_INTERVAL, rollInterval);</span>
+<span class="fc" id="L100">        this.rollIntervalUnits = TimeUnit.valueOf(this.filterConfig.findStringEntry(ROLL_INTERVAL_UNIT, rollIntervalUnits.toString()));</span>
+<span class="fc" id="L101">    }</span>
+
+    /**
+     * Create the local output directories
+     */
+    @SuppressWarnings(&quot;SystemExitOutsideMain&quot;)
+    protected void setupLocalOutputDir() {
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (!Files.exists(this.outputPath)) {</span>
+<span class="fc" id="L109">            logger.info(&quot;Attempting to create {} output directory, {}&quot;, getFilterName(), this.outputPath);</span>
+            try {
+<span class="fc" id="L111">                Files.createDirectories(this.outputPath);</span>
+<span class="nc" id="L112">            } catch (IOException e) {</span>
+<span class="nc" id="L113">                logger.error(&quot;Unable to create directory for {} output, exiting immediately.&quot;, getFilterName(), e);</span>
+<span class="nc" id="L114">                System.exit(1);</span>
+<span class="fc" id="L115">            }</span>
+        }
+<span class="fc" id="L117">    }</span>
+
+    /**
+     * Create the {@link JournaledCoalescer} and {@link Roller}
+     */
+    @SuppressWarnings(&quot;SystemExitOutsideMain&quot;)
+    protected void setupRoller() {
+        try {
+<span class="fc" id="L125">            this.rollable = createRollable();</span>
+<span class="fc" id="L126">            this.roller = createRoller();</span>
+<span class="fc" id="L127">            manageRoller();</span>
+<span class="fc" id="L128">            logger.info(&quot;Added Roller for {} running every {} {}(s) or on size {} (bytes).&quot;, getFilterName(), this.rollInterval,</span>
+<span class="fc" id="L129">                    this.rollIntervalUnits, this.maxRollFileSize);</span>
+<span class="nc" id="L130">        } catch (Exception ex) {</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">            if (ex instanceof InterruptedException) {</span>
+<span class="nc" id="L132">                Thread.currentThread().interrupt();</span>
+            }
+<span class="nc" id="L134">            logger.error(&quot;Unable to instantiate Roller for handling {} file output&quot;, getFilterName(), ex);</span>
+<span class="nc" id="L135">            System.exit(1);</span>
+<span class="fc" id="L136">        }</span>
+<span class="fc" id="L137">    }</span>
+
+    /**
+     * Create the rollable resource
+     *
+     * @return the specific journaled coalescer for the filter
+     * @throws IOException if there is an issue with the output path
+     * @throws InterruptedException if the journal is interrupted
+     */
+    protected IJournaler createRollable() throws IOException, InterruptedException {
+<span class="fc" id="L147">        return new JournaledCoalescer(this.outputPath, this.fileNameGenerator, this.maxOutputAppenders);</span>
+    }
+
+    /**
+     * Create the object to manage the state of the roll
+     *
+     * @return the roller object
+     */
+    protected Roller createRoller() {
+<span class="fc" id="L156">        return new Roller(this.maxRollFileSize, this.rollIntervalUnits, this.rollInterval, this.rollable);</span>
+    }
+
+    /**
+     * Add the roller to the roll manager
+     */
+    protected void manageRoller() {
+<span class="fc" id="L163">        RollManager.getManager().addRoller(this.roller);</span>
+<span class="fc" id="L164">    }</span>
+
+    @Override
+    public int filter(final IBaseDataObject payload, final Map&lt;String, Object&gt; params) {
+<span class="nc" id="L168">        return filter(Collections.singletonList(payload), params);</span>
+    }
+
+    @Override
+    public int filter(final IBaseDataObject payload, final Map&lt;String, Object&gt; params, final OutputStream output) {
+<span class="nc" id="L173">        return filter(Collections.singletonList(payload), params, output);</span>
+    }
+
+    @Override
+    public int filter(final List&lt;IBaseDataObject&gt; payloadList, final Map&lt;String, Object&gt; params) {
+        int code;
+<span class="nc" id="L179">        try (KeyedOutput ko = this.rollable.getOutput()) {</span>
+<span class="nc" id="L180">            params.put(&quot;CONTENT_URI_&quot; + getFilterName(), &quot;file://&quot; + ko.getFinalDestination().toString());</span>
+<span class="nc" id="L181">            params.put(&quot;CONTENT_FORMAT_&quot; + getFilterName(), getFilterName());</span>
+<span class="nc" id="L182">            code = filter(payloadList, params, ko);</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">            if (code == STATUS_SUCCESS) {</span>
+<span class="nc" id="L184">                ko.commit();</span>
+            }
+<span class="nc" id="L186">        } catch (IOException e) {</span>
+<span class="nc" id="L187">            logger.error(&quot;IOException during dropoff.&quot;, e);</span>
+<span class="nc" id="L188">            code = STATUS_FAILURE;</span>
+<span class="nc" id="L189">        }</span>
+<span class="nc" id="L190">        return code;</span>
+    }
+
+    @Override
+    public int filter(final List&lt;IBaseDataObject&gt; list, final Map&lt;String, Object&gt; params, final OutputStream output) {
+
+        // We subtract 1 from the list because the first element is currently assumed to be the TLD
+<span class="fc" id="L197">        list.get(0).putParameter(&quot;DESCENDANT_COUNT&quot;, list.size() - 1);</span>
+
+        try {
+<span class="fc" id="L200">            output.write(convert(list, params));</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">            if (appendNewLine) {</span>
+<span class="fc" id="L202">                output.write(&quot;\n&quot;.getBytes());</span>
+            }
+<span class="nc" id="L204">        } catch (IOException iox) {</span>
+<span class="nc" id="L205">            logger.warn(&quot;Could not write to log filter&quot;, iox);</span>
+<span class="nc" id="L206">            return STATUS_FAILURE;</span>
+<span class="fc" id="L207">        }</span>
+<span class="fc" id="L208">        return STATUS_SUCCESS;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

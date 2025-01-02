@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DirectoryAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.server.mvc.adapters</a> &gt; <span class="el_source">DirectoryAdapter.java</span></div><h1>DirectoryAdapter.java</h1><pre class="source lang-java linenums">package emissary.server.mvc.adapters;
+
+import emissary.client.EmissaryClient;
+import emissary.client.EmissaryResponse;
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.EmissaryException;
+import emissary.directory.DirectoryEntry;
+import emissary.directory.DirectoryEntryMap;
+import emissary.directory.DirectoryXmlContainer;
+import emissary.directory.IRemoteDirectory;
+import emissary.directory.KeyManipulator;
+import emissary.log.MDCConstants;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.MediaType;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.EntityBuilder;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
+
+/**
+ * Stuff for adapting the Directory calls to HTTP All the outbound methods supply the TARGET_DIRECTORY parameter that
+ * matches the machine/port they are going to. This really only required in testing scenarios but is so helpful that it
+ * seems worth the work.
+ * &lt;p&gt;
+ * A few of the outbound methods have no corresponding inbound methods because their answer is supplied by a jsp/worker
+ * combination without any need to call into the directory on the remote side.
+ */
+<span class="fc" id="L42">public class DirectoryAdapter extends EmissaryClient {</span>
+
+<span class="fc" id="L44">    private static final Logger logger = LoggerFactory.getLogger(DirectoryAdapter.class);</span>
+    public static final String TARGET_DIRECTORY = &quot;targetDir&quot;;
+    public static final String PROXY_KEY_PARAMETER = &quot;proxy&quot;;
+
+    public static final String ADD_KEY = &quot;dirAddKey&quot;;
+    public static final String ADD_DESCRIPTION = &quot;dirAddDesc&quot;;
+    public static final String ADD_COST = &quot;dirAddCost&quot;;
+    public static final String ADD_QUALITY = &quot;dirAddQual&quot;;
+    public static final String ADD_PROPAGATION_FLAG = &quot;dirAddPropFlag&quot;;
+    public static final String FAILED_DIRECTORY_NAME = &quot;dirFailName&quot;;
+    public static final String DIRECTORY_NAME = &quot;directoryName&quot;;
+    public static final String ADD_ENTRIES = &quot;dirAddEntries&quot;;
+    public static final String DIRECTORY_KEY = &quot;EMISSARY_DIRECTORY_SERVICES::STUDY&quot;;
+    public static final String FILE_PICKUP_KEY = &quot;INITIAL::INPUT&quot;;
+    // These two parameters will cause each node to only have copies of its own places.
+    // Greatly speeds up performance when not using the moveTo() functionality.
+    @SuppressWarnings(&quot;NonFinalStaticField&quot;)
+<span class="fc" id="L61">    private static boolean disableAddPlaces = true;</span>
+    @SuppressWarnings(&quot;NonFinalStaticField&quot;)
+<span class="fc" id="L63">    private static boolean filterDirectoryEntryMap = true;</span>
+
+
+    protected static void configure() {
+        try {
+<span class="nc" id="L68">            final Configurator c = ConfigUtil.getConfigInfo(DirectoryAdapter.class);</span>
+<span class="nc" id="L69">            disableAddPlaces = c.findBooleanEntry(&quot;DISABLE_ADD_PLACES&quot;, true);</span>
+<span class="nc" id="L70">            filterDirectoryEntryMap = c.findBooleanEntry(&quot;FILTER_DIRECTORY_ENTRY_MAP&quot;, true);</span>
+<span class="nc" id="L71">        } catch (IOException e) {</span>
+<span class="nc" id="L72">            logger.info(&quot;Failed to find or read DirectoryAdapter config. Using default values.&quot;);</span>
+<span class="nc" id="L73">            logger.debug(e.toString());</span>
+<span class="nc" id="L74">        }</span>
+<span class="nc" id="L75">    }</span>
+
+    /**
+     * Handle the packaging and sending of an addPlaces call to a remote directory. Sends multiple keys on the same place
+     * with the same cost/quality and description if the description, cost and quality lists are only size 1. Uses a
+     * distinct description/cost/quality for each key when there are enough values
+     *
+     * @param parentDirectory the url portion of the parent directory location
+     * @param entryList the list of directory entries to add
+     * @param propagating true if going downstream
+     * @return status of operation
+     */
+    public EmissaryResponse outboundAddPlaces(final String parentDirectory, final List&lt;DirectoryEntry&gt; entryList, final boolean propagating) {
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        if (disableAddPlaces) {</span>
+<span class="nc" id="L89">            BasicClassicHttpResponse response = new BasicClassicHttpResponse(HttpStatus.SC_OK, &quot;Not accepting remote add places&quot;);</span>
+<span class="nc" id="L90">            response.setEntity(EntityBuilder.create().setText(&quot;&quot;).setContentEncoding(MediaType.TEXT_PLAIN).build());</span>
+<span class="nc" id="L91">            return new EmissaryResponse(response);</span>
+        } else {
+<span class="nc" id="L93">            final String parentDirectoryUrl = KeyManipulator.getServiceHostUrl(parentDirectory);</span>
+<span class="nc" id="L94">            final HttpPost method = createHttpPost(parentDirectoryUrl, context, &quot;/RegisterPlace.action&quot;);</span>
+
+<span class="nc" id="L96">            final String parentLoc = KeyManipulator.getServiceLocation(parentDirectory);</span>
+            // Separate it out into lists
+<span class="nc" id="L98">            final List&lt;String&gt; keyList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L99">            final List&lt;String&gt; descList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L100">            final List&lt;Integer&gt; costList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L101">            final List&lt;Integer&gt; qualityList = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">            for (final DirectoryEntry d : entryList) {</span>
+<span class="nc" id="L103">                keyList.add(d.getKey());</span>
+<span class="nc" id="L104">                descList.add(d.getDescription());</span>
+<span class="nc" id="L105">                costList.add(d.getCost());</span>
+<span class="nc" id="L106">                qualityList.add(d.getQuality());</span>
+<span class="nc" id="L107">            }</span>
+
+<span class="nc" id="L109">            final List&lt;NameValuePair&gt; nvps = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L110">            nvps.add(new BasicNameValuePair(TARGET_DIRECTORY, parentLoc));</span>
+
+<span class="nc bnc" id="L112" title="All 2 branches missed.">            for (int count = 0; count &lt; keyList.size(); count++) {</span>
+<span class="nc" id="L113">                nvps.add(new BasicNameValuePair(ADD_KEY + count, keyList.get(count)));</span>
+                // possibly use the single desc/cost/qual for each key
+<span class="nc bnc" id="L115" title="All 2 branches missed.">                if (descList.size() &gt; count) {</span>
+<span class="nc" id="L116">                    String desc = descList.get(count);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                    if (desc == null) {</span>
+<span class="nc" id="L118">                        desc = &quot;No description provided&quot;;</span>
+                    }
+<span class="nc" id="L120">                    nvps.add(new BasicNameValuePair(ADD_DESCRIPTION + count, desc));</span>
+                }
+<span class="nc bnc" id="L122" title="All 2 branches missed.">                if (costList.size() &gt; count) {</span>
+<span class="nc" id="L123">                    nvps.add(new BasicNameValuePair(ADD_COST + count, costList.get(count).toString()));</span>
+                }
+<span class="nc bnc" id="L125" title="All 2 branches missed.">                if (qualityList.size() &gt; count) {</span>
+<span class="nc" id="L126">                    nvps.add(new BasicNameValuePair(ADD_QUALITY + count, qualityList.get(count).toString()));</span>
+                }
+            }
+<span class="nc" id="L129">            nvps.add(new BasicNameValuePair(ADD_PROPAGATION_FLAG, Boolean.toString(propagating)));</span>
+<span class="nc" id="L130">            method.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));</span>
+<span class="nc" id="L131">            return send(method);</span>
+        }
+    }
+
+    /**
+     * Handle the packaging and sending of an removePlaces call to a remote directory
+     *
+     * @param directory the url portion of the remote directory location
+     * @param key list of keys to remove (four-tuples)
+     * @param propagating true if doing down stream
+     * @return status of operation
+     */
+    public EmissaryResponse outboundRemovePlaces(final String directory, final List&lt;String&gt; key, final boolean propagating) {
+<span class="fc" id="L144">        final String directoryUrl = KeyManipulator.getServiceHostUrl(directory);</span>
+<span class="fc" id="L145">        final HttpPost method = createHttpPost(directoryUrl, context, &quot;/DeregisterPlace.action&quot;);</span>
+
+<span class="fc" id="L147">        final String parentLoc = KeyManipulator.getServiceLocation(directory);</span>
+
+<span class="fc" id="L149">        final List&lt;NameValuePair&gt; nvps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L150">        nvps.add(new BasicNameValuePair(TARGET_DIRECTORY, parentLoc));</span>
+
+<span class="fc" id="L152">        int count = 0;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        for (String k : key) {</span>
+<span class="fc" id="L154">            nvps.add(new BasicNameValuePair(ADD_KEY + count++, k));</span>
+<span class="fc" id="L155">        }</span>
+<span class="fc" id="L156">        nvps.add(new BasicNameValuePair(ADD_PROPAGATION_FLAG, Boolean.toString(propagating)));</span>
+<span class="fc" id="L157">        method.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));</span>
+<span class="fc" id="L158">        return send(method);</span>
+    }
+
+    /**
+     * Handle the packaging and sending of an addPlaces call to a remote directory
+     *
+     * @param directory the url portion of the destination directory
+     * @param failKey key of the directory that failed
+     * @param permanent true from normal deregistration
+     * @return status of operation
+     */
+    public EmissaryResponse outboundFailDirectory(final String directory, final String failKey, final boolean permanent) {
+<span class="fc" id="L170">        final String directoryUrl = KeyManipulator.getServiceHostUrl(directory);</span>
+<span class="fc" id="L171">        final HttpPost method = createHttpPost(directoryUrl, context, &quot;/FailDirectory.action&quot;);</span>
+
+<span class="fc" id="L173">        final String parentLoc = KeyManipulator.getServiceLocation(directory);</span>
+<span class="fc" id="L174">        final List&lt;NameValuePair&gt; nvps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L175">        nvps.add(new BasicNameValuePair(TARGET_DIRECTORY, parentLoc));</span>
+<span class="fc" id="L176">        nvps.add(new BasicNameValuePair(FAILED_DIRECTORY_NAME, failKey));</span>
+<span class="fc" id="L177">        nvps.add(new BasicNameValuePair(ADD_PROPAGATION_FLAG, Boolean.toString(permanent)));</span>
+<span class="fc" id="L178">        method.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));</span>
+<span class="fc" id="L179">        return send(method);</span>
+    }
+
+    /**
+     * Process the failDirectory call coming remotely over HTTP request params onto the specified (local) directory place.
+     *
+     * @param req the inbound request object
+     */
+    public boolean inboundFailDirectory(final HttpServletRequest req) {
+
+<span class="nc" id="L189">        final String dir = RequestUtil.getParameter(req, TARGET_DIRECTORY);</span>
+<span class="nc" id="L190">        final IRemoteDirectory localDirectory = getLocalDirectory(dir);</span>
+
+<span class="nc bnc" id="L192" title="All 2 branches missed.">        if (localDirectory == null) {</span>
+<span class="nc" id="L193">            throw new IllegalArgumentException(&quot;No local directory found using name &quot; + dir);</span>
+        }
+
+<span class="nc" id="L196">        final String remoteDir = RequestUtil.getParameter(req, FAILED_DIRECTORY_NAME);</span>
+        int count;
+
+<span class="nc" id="L199">        MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(localDirectory.getKey()));</span>
+        try {
+<span class="nc" id="L201">            count = localDirectory.irdFailDirectory(remoteDir, RequestUtil.getBooleanParam(req, ADD_PROPAGATION_FLAG));</span>
+        } finally {
+<span class="nc" id="L203">            MDC.remove(MDCConstants.SERVICE_LOCATION);</span>
+        }
+
+<span class="nc" id="L206">        logger.debug(&quot;Modified {} entries from {} due to failure of remote {}&quot;, count, dir, remoteDir);</span>
+
+<span class="nc" id="L208">        return true;</span>
+    }
+
+    /**
+     * Request the XML directory entry markup from a remote directory peer and turn the response XML into a Map of
+     * String,DirectoryEntryList for return
+     *
+     * @param key the key of the remote directory to request the zone transfer from
+     * @param myKey the key of the local requesting the zone or null if none
+     * @return DirectoryEntryList map from the remote side
+     * @throws EmissaryException if remote returns an error
+     */
+    public DirectoryEntryMap outboundZoneTransfer(final String key, final String myKey) throws EmissaryException {
+<span class="nc" id="L221">        return zoneTransfer(key, myKey, &quot;/TransferDirectory.action&quot;);</span>
+    }
+
+    /**
+     * Request the XML directory entry markup from a remote directory peer and turn the response XML into a
+     * DirectoryEntryMap for return. Register the caller as a peer of the destination as part of the transfer.
+     *
+     * @param key the key of the remote directory to request the zone transfer from
+     * @param peerKey the key of the peer requesting the zone or null if none
+     * @return DirectoryEntryList map from the remote side
+     * @throws EmissaryException if remote returns an error
+     */
+    public DirectoryEntryMap outboundRegisterPeer(final String key, final String peerKey) throws EmissaryException {
+<span class="nc" id="L234">        return zoneTransfer(key, peerKey, &quot;/RegisterPeer.action&quot;);</span>
+    }
+
+    /**
+     * Request the XML directory entry markup from a remote directory peer and turn the response XML into a Map of
+     * String,DirectoryEntryList for return.
+     *
+     * @param key the key of the remote directory to request the zone transfer from
+     * @param myKey the key of the local dir requesting the zone or null if none
+     * @param action the action to use in the request
+     * @return DirectoryEntryList map from the remote side
+     * @throws EmissaryException if remote returns an error
+     */
+    private DirectoryEntryMap zoneTransfer(final String key, @Nullable final String myKey, final String action) throws EmissaryException {
+<span class="fc" id="L248">        final HttpPost method = createHttpPost(KeyManipulator.getServiceHostUrl(key), context, action);</span>
+
+<span class="fc" id="L250">        final String parentLoc = KeyManipulator.getServiceLocation(key);</span>
+<span class="fc" id="L251">        final List&lt;NameValuePair&gt; nvps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L252">        nvps.add(new BasicNameValuePair(TARGET_DIRECTORY, parentLoc));</span>
+
+<span class="pc bpc" id="L254" title="1 of 2 branches missed.">        if (myKey != null) {</span>
+<span class="fc" id="L255">            nvps.add(new BasicNameValuePair(DIRECTORY_NAME, myKey));</span>
+        }
+
+<span class="fc" id="L258">        method.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));</span>
+
+<span class="fc" id="L260">        DirectoryEntryMap map = null;</span>
+<span class="fc" id="L261">        EmissaryResponse ws = null;</span>
+
+        try {
+<span class="fc" id="L264">            ws = send(method);</span>
+            // TODO Consider putting this method in the response
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">            if (ws.getStatus() != HttpStatus.SC_OK) {</span>
+<span class="fc" id="L267">                logger.debug(&quot;Unable to contact remote directory for zone transfer: {}&quot;, ws.getContentString());</span>
+            } else {
+<span class="nc" id="L269">                map = DirectoryXmlContainer.buildEntryListMap(ws.getContentString());</span>
+            }
+<span class="nc" id="L271">        } catch (Exception ex) {</span>
+<span class="nc" id="L272">            logger.debug(&quot;Unable to contact remote directory for &quot; + &quot;zone transfer &quot; + key, ex);</span>
+<span class="fc" id="L273">        }</span>
+
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">        if (map == null) {</span>
+<span class="fc" id="L276">            String errMsg = &quot;Unable to perform zone transfer to &quot; + key + &quot;: received map is null&quot;;</span>
+<span class="pc bpc" id="L277" title="1 of 2 branches missed.">            if (ws != null) {</span>
+<span class="fc" id="L278">                errMsg += &quot;, isError=&quot; + ws.getStatus() + &quot;, msgBody=&quot; + ws.getContentString();</span>
+            }
+<span class="fc" id="L280">            throw new EmissaryException(errMsg);</span>
+        }
+
+        // This ensures each node only has knowledge of all DirectoryPlace and FilePickupPlace entries
+<span class="nc bnc" id="L284" title="All 2 branches missed.">        if (filterDirectoryEntryMap) {</span>
+<span class="nc" id="L285">            return filterDirectoryEntryMap(map);</span>
+        } else {
+<span class="nc" id="L287">            return map;</span>
+        }
+    }
+
+    private static DirectoryEntryMap filterDirectoryEntryMap(DirectoryEntryMap map) {
+<span class="nc" id="L292">        DirectoryEntryMap filtered = new DirectoryEntryMap();</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">        if (map.containsKey(DIRECTORY_KEY)) {</span>
+<span class="nc" id="L294">            filtered.put(DIRECTORY_KEY, map.get(DIRECTORY_KEY));</span>
+        }
+<span class="nc bnc" id="L296" title="All 2 branches missed.">        if (map.containsKey(FILE_PICKUP_KEY)) {</span>
+<span class="nc" id="L297">            filtered.put(FILE_PICKUP_KEY, map.get(FILE_PICKUP_KEY));</span>
+        }
+<span class="nc" id="L299">        return filtered;</span>
+    }
+
+    /**
+     * Look up the local directory using one of two methods. The easier method almost always works, the case where it
+     * doesn't in when there are multiple configured Emissary nodes on the same local JVM through a single jetty with
+     * multiple Listeners. This is a testing scenario, but it is helpful to keep supporting it, so we have good test
+     * coverage.
+     *
+     * @param name name of the local directory or null for default
+     */
+    private static IRemoteDirectory getLocalDirectory(final String name) {
+<span class="nc" id="L311">        return new IRemoteDirectory.Lookup().getLocalDirectory(name);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

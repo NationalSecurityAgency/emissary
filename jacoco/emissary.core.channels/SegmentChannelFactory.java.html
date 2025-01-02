@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SegmentChannelFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core.channels</a> &gt; <span class="el_source">SegmentChannelFactory.java</span></div><h1>SegmentChannelFactory.java</h1><pre class="source lang-java linenums">package emissary.core.channels;
+
+import org.apache.commons.lang3.Validate;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
+
+/**
+ * This class creates a SeekableByteChannelFactory which represents a segment of another SeekableByteChannelFactory.
+ */
+public final class SegmentChannelFactory {
+    private SegmentChannelFactory() {}
+
+    /**
+     * Creates a SeekableByteChannelFactory which represents a segment of another SeekableByteChannelFactory. NOTE: start +
+     * length &amp;lt;= sbcf.size()
+     * 
+     * @param seekableByteChannelFactory that the segment is created from
+     * @param start of the segment in the SeekableByteChannelFactory (start &amp;gt;= 0).
+     * @param length of the segment in the SeekableByteChannelFactory (length &amp;gt;= 0).
+     * @return the segment SeekableByteChannelFactory.
+     */
+    public static SeekableByteChannelFactory create(final SeekableByteChannelFactory seekableByteChannelFactory,
+            final long start, final long length) {
+<span class="fc" id="L26">        return new SegmentChannelFactoryImpl(seekableByteChannelFactory, start, length);</span>
+    }
+
+    /**
+     * The SeekableByteChannelFactory implementation that returns a &quot;segment&quot; SeekableByteChannel.
+     */
+    private static class SegmentChannelFactoryImpl implements SeekableByteChannelFactory {
+        /**
+         * The original SeekableByteChannelFactory that the segment is going to be referencing.
+         */
+        private final SeekableByteChannelFactory seekableByteChannelFactory;
+        /**
+         * The start of the segment in the original SeekableByteChannelFactory.
+         */
+        private final long start;
+        /**
+         * The length of the segment in the original SeekableByteChannelFactory.
+         */
+        private final long length;
+
+        private SegmentChannelFactoryImpl(final SeekableByteChannelFactory seekableByteChannelFactory, final long start,
+<span class="fc" id="L47">                final long length) {</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">            Validate.isTrue(seekableByteChannelFactory != null, &quot;Required: seekableByteChannelFactory != null!&quot;);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">            Validate.isTrue(start &gt;= 0, &quot;Required: start &gt;= 0!&quot;);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            Validate.isTrue(length &gt;= 0, &quot;Required: length &gt;= 0!&quot;);</span>
+<span class="fc" id="L51">            try (SeekableByteChannel sbc = seekableByteChannelFactory.create()) {</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">                Validate.isTrue(start + length &lt;= sbc.size(), &quot;Required: start + length &lt;= Size!&quot;);</span>
+<span class="fc" id="L53">            } catch (IOException e) {</span>
+<span class="fc" id="L54">                throw new IllegalArgumentException(&quot;Could not get seekableByteChannel size!&quot;, e);</span>
+<span class="fc" id="L55">            }</span>
+
+<span class="fc" id="L57">            this.seekableByteChannelFactory = seekableByteChannelFactory;</span>
+<span class="fc" id="L58">            this.start = start;</span>
+<span class="fc" id="L59">            this.length = length;</span>
+<span class="fc" id="L60">        }</span>
+
+        @Override
+        public SeekableByteChannel create() {
+<span class="fc" id="L64">            return new SegmentSeekableByteChannel(seekableByteChannelFactory.create(), start, length);</span>
+        }
+    }
+
+    /**
+     * The &quot;segment&quot; SeekableByteChannel implementation.
+     */
+    private static class SegmentSeekableByteChannel extends AbstractSeekableByteChannel {
+        /**
+         * The original SeekableByteChannelFactory that the segment is going to be referencing.
+         */
+        private final SeekableByteChannel seekableByteChannel;
+        /**
+         * The start of the segment in the original SeekableByteChannelFactory.
+         */
+        private final long start;
+        /**
+         * The length of the segment in the original SeekableByteChannelFactory.
+         */
+        private final long length;
+
+        private SegmentSeekableByteChannel(final SeekableByteChannel seekableByteChannel, final long start,
+<span class="fc" id="L86">                final long length) {</span>
+<span class="fc" id="L87">            this.seekableByteChannel = seekableByteChannel;</span>
+<span class="fc" id="L88">            this.start = start;</span>
+<span class="fc" id="L89">            this.length = length;</span>
+<span class="fc" id="L90">        }</span>
+
+        @Override
+        protected void closeImpl() throws IOException {
+<span class="fc" id="L94">            seekableByteChannel.close();</span>
+<span class="fc" id="L95">        }</span>
+
+        @Override
+        protected int readImpl(final ByteBuffer byteBuffer) throws IOException {
+<span class="fc" id="L99">            seekableByteChannel.position(start + position());</span>
+
+<span class="fc" id="L101">            return seekableByteChannel.read(byteBuffer);</span>
+        }
+
+        @Override
+        protected long sizeImpl() {
+<span class="fc" id="L106">            return length;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -139,7 +139,7 @@
 <a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     * @return SessionParser implementation</em>
 <a class="jxr_linenumber" name="L132" href="#L132">132</a> <em class="jxr_javadoccomment">     * @deprecated use {@link #makeSessionParser(SeekableByteChannel, String)}</em>
 <a class="jxr_linenumber" name="L133" href="#L133">133</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>     @Deprecated(forRemoval = <strong class="jxr_keyword">true</strong>)
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>     @Deprecated
 <a class="jxr_linenumber" name="L135" href="#L135">135</a>     @SuppressWarnings(<span class="jxr_string">"InconsistentOverloads"</span>)
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>     <strong class="jxr_keyword">public</strong> <a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a> makeSessionParser(String type, SeekableByteChannel channel) {
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>         <strong class="jxr_keyword">return</strong> makeSessionParser(channel, type);
@@ -184,7 +184,7 @@
 <a class="jxr_linenumber" name="L176" href="#L176">176</a> 
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L178" href="#L178">178</a>             sp = (<a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a>) Factory.create(clazz, args);
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>         } <strong class="jxr_keyword">catch</strong> (RuntimeException e) {
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>             logger.error(<span class="jxr_string">"Unable to instantiate {}"</span>, clazz, e);
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>         }
 <a class="jxr_linenumber" name="L182" href="#L182">182</a> 
@@ -198,7 +198,7 @@
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L191" href="#L191">191</a>             <a name="DataIdentifier" href="../../emissary/parser/DataIdentifier.html#DataIdentifier">DataIdentifier</a> d = (<a name="DataIdentifier" href="../../emissary/parser/DataIdentifier.html#DataIdentifier">DataIdentifier</a>) Factory.create(clazz);
 <a class="jxr_linenumber" name="L192" href="#L192">192</a>             idEngine = d;
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>         } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>         } <strong class="jxr_keyword">catch</strong> (RuntimeException ex) {
 <a class="jxr_linenumber" name="L194" href="#L194">194</a>             logger.warn(<span class="jxr_string">"Cannot make data identifier from "</span> + clazz, ex);
 <a class="jxr_linenumber" name="L195" href="#L195">195</a>         }
 <a class="jxr_linenumber" name="L196" href="#L196">196</a>     }
@@ -227,6 +227,6 @@
 <a class="jxr_linenumber" name="L219" href="#L219">219</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

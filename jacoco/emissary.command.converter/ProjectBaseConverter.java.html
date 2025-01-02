@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProjectBaseConverter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.command.converter</a> &gt; <span class="el_source">ProjectBaseConverter.java</span></div><h1>ProjectBaseConverter.java</h1><pre class="source lang-java linenums">package emissary.command.converter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import picocli.CommandLine.ITypeConverter;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import javax.annotation.Nullable;
+
+public class ProjectBaseConverter extends PathExistsConverter implements ITypeConverter&lt;Path&gt; {
+    public ProjectBaseConverter() {
+<span class="fc" id="L13">        this(null);</span>
+<span class="fc" id="L14">    }</span>
+
+    public ProjectBaseConverter(@Nullable String optionName) {
+<span class="fc" id="L17">        super(optionName);</span>
+<span class="fc" id="L18">    }</span>
+
+<span class="fc" id="L20">    private static final Logger LOG = LoggerFactory.getLogger(ProjectBaseConverter.class);</span>
+
+    @Override
+    public Path convert(String value) {
+<span class="fc" id="L24">        String origValue = value;</span>
+<span class="fc" id="L25">        String projectBaseEnv = System.getenv(&quot;PROJECT_BASE&quot;);</span>
+        Path projectBaseEnvPath;
+<span class="fc" id="L27">        String projectBaseEnvString = null;</span>
+
+        // if PROJECT_BASE not null, set some variables
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">        if (projectBaseEnv != null) {</span>
+<span class="fc" id="L31">            projectBaseEnvPath = Paths.get(projectBaseEnv);</span>
+<span class="fc" id="L32">            projectBaseEnvString = projectBaseEnvPath.toAbsolutePath().toString();</span>
+        }
+
+
+        // try to use the value from PROJECT_BASE
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if (origValue == null) {</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">            if (projectBaseEnvString == null) {</span>
+<span class="nc" id="L39">                throw new IllegalArgumentException(&quot;You set neither PROJECT_BASE nor passed in a directory with -b, --projectBase.  One is required&quot;);</span>
+            } else {
+<span class="fc" id="L41">                value = projectBaseEnvString;</span>
+            }
+        }
+
+<span class="fc" id="L45">        Path p = super.convert(&quot;-b&quot;, value);</span>
+<span class="fc" id="L46">        String pString = p.toAbsolutePath().toString();</span>
+
+        // both -b and PROJECT_BASE were set, make sure they are pointing to the same place
+<span class="pc bpc" id="L49" title="1 of 6 branches missed.">        if (origValue != null &amp;&amp; projectBaseEnv != null &amp;&amp; !projectBaseEnvString.equals(pString)) {</span>
+<span class="fc" id="L50">            String msg = &quot;You passed in &quot; + pString + &quot; but PROJECT_BASE was set to &quot; + projectBaseEnvString;</span>
+<span class="fc" id="L51">            LOG.error(msg);</span>
+<span class="fc" id="L52">            throw new IllegalArgumentException(msg);</span>
+        }
+<span class="fc" id="L54">        return p;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

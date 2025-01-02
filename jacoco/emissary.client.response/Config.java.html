@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Config.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.client.response</a> &gt; <span class="el_source">Config.java</span></div><h1>Config.java</h1><pre class="source lang-java linenums">package emissary.client.response;
+
+import emissary.config.ConfigEntry;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+
+import java.io.Serializable;
+import java.util.List;
+
+@XmlAccessorType(XmlAccessType.NONE)
+public class Config implements Serializable {
+
+    private static final long serialVersionUID = 957308283685018516L;
+
+    @XmlElement(name = &quot;flavors&quot;)
+    List&lt;String&gt; flavors;
+
+    @XmlElement(name = &quot;configs&quot;)
+    List&lt;String&gt; configs;
+
+    @XmlElement(name = &quot;entries&quot;)
+    List&lt;ConfigEntry&gt; entries;
+
+<span class="nc" id="L26">    public Config() {}</span>
+
+<span class="nc" id="L28">    public Config(List&lt;String&gt; flavors, List&lt;String&gt; configs, List&lt;ConfigEntry&gt; entries) {</span>
+<span class="nc" id="L29">        this.flavors = flavors;</span>
+<span class="nc" id="L30">        this.configs = configs;</span>
+<span class="nc" id="L31">        this.entries = entries;</span>
+<span class="nc" id="L32">    }</span>
+
+    public List&lt;String&gt; getFlavors() {
+<span class="nc" id="L35">        return flavors;</span>
+    }
+
+    public void setFlavors(List&lt;String&gt; flavors) {
+<span class="nc" id="L39">        this.flavors = flavors;</span>
+<span class="nc" id="L40">    }</span>
+
+    public List&lt;String&gt; getConfigs() {
+<span class="nc" id="L43">        return configs;</span>
+    }
+
+    public void setConfigs(List&lt;String&gt; configs) {
+<span class="nc" id="L47">        this.configs = configs;</span>
+<span class="nc" id="L48">    }</span>
+
+    public List&lt;ConfigEntry&gt; getEntries() {
+<span class="nc" id="L51">        return entries;</span>
+    }
+
+    public void setEntries(List&lt;ConfigEntry&gt; entries) {
+<span class="nc" id="L55">        this.entries = entries;</span>
+<span class="nc" id="L56">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L60">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L61">        sb.append(&quot;\n&quot;).append(&quot;configs: &quot;).append(String.join(&quot;,&quot;, getConfigs()));</span>
+<span class="nc" id="L62">        sb.append(&quot;\n&quot;).append(&quot;flavors: &quot;).append(String.join(&quot;,&quot;, getFlavors()));</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        for (ConfigEntry entry : getEntries()) {</span>
+<span class="nc" id="L64">            sb.append(&quot;\n    &quot;).append(entry.getKey()).append(&quot;: &quot;).append(entry.getValue());</span>
+<span class="nc" id="L65">        }</span>
+<span class="nc" id="L66">        return sb.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
