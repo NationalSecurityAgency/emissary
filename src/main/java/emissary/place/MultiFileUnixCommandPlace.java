@@ -8,6 +8,7 @@ import emissary.core.ResourceException;
 import emissary.directory.KeyManipulator;
 import emissary.kff.KffDataObjectHandler;
 import emissary.util.shell.Executrix;
+import emissary.util.shell.TempFileNames;
 
 import java.io.File;
 import java.io.IOException;
@@ -630,13 +631,12 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
             return sprouts;
         }
 
-        // make the directory and write the input file.
-        String[] names;
         File f = null;
         int result = -1;
         try {
-            names = executrix.writeDataToNewTempDir(tData.data(), start, len);
-            f = new File(names[Executrix.INPATH]);
+            // make the directory and write the input file.
+            TempFileNames names = executrix.writeInputDataToNewTempDir(tData.data(), start, len);
+            f = new File(names.getInputFilename());
             logger.debug("Wrote file out to {}", f.getPath());
 
             // Create the command string and run it
@@ -677,7 +677,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
             }
         }
 
-        // If there was not result, then report it in 2 places.
+        // If there was no result, then report it in 2 places.
         if (sprouts.isEmpty()) {
             logger.debug("Command failed. nothing to sprout for file: result={}", result);
             tData.addProcessingError("ERROR in " + placeName + ". Exec returned errno " + result);

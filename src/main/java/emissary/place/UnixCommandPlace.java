@@ -5,6 +5,7 @@ import emissary.core.IBaseDataObject;
 import emissary.core.ResourceException;
 import emissary.directory.KeyManipulator;
 import emissary.util.shell.Executrix;
+import emissary.util.shell.TempFileNames;
 
 import java.io.File;
 import java.io.IOException;
@@ -278,10 +279,10 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      */
     @SuppressWarnings("CatchingUnchecked")
     protected byte[] runCommandOn(byte[] data) throws ResourceException {
-        String[] names = executrix.makeTempFilenames();
-        String tempDirName = names[Executrix.DIR];
-        String inputFileName = names[Executrix.INPATH];
-        String outputFileName = names[Executrix.OUTPATH];
+        TempFileNames names = executrix.createTempFilenames();
+        String tempDirName = names.getTempDir();
+        String inputFileName = names.getInputFilename();
+        String outputFileName = names.getOutputFilename();
         File tempDir = new File(tempDirName);
         byte[] outputData = null;
 
