@@ -2,6 +2,7 @@ package emissary.util.os;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -44,11 +45,11 @@ public class OSReleaseUtil {
      *
      * @return the major OS version
      */
-    public static String getMajorVersion() {
-        return getMajorVersion(OS_RELEASE_PATH);
+    public static String getMajorReleaseVersion() {
+        return getMajorReleaseVersion(OS_RELEASE_PATH);
     }
 
-    static String getMajorVersion(Path osReleasePath) {
+    static String getMajorReleaseVersion(Path osReleasePath) {
         return String.format("%.0f", Float.parseFloat(getVersionId(osReleasePath)));
     }
 
@@ -62,10 +63,40 @@ public class OSReleaseUtil {
     }
 
     static boolean isUbuntu(Path osReleasePath) {
+        return isOsName(osReleasePath, "ubuntu");
+    }
+
+    /**
+     * Use the /etc/os-release file to determine if the OS is CentOS
+     *
+     * @return true if CentOS is found, false otherwise
+     */
+    public static boolean isCentOs() {
+        return isCentOs(OS_RELEASE_PATH);
+    }
+
+    static boolean isCentOs(Path osReleasePath) {
+        return isOsName(osReleasePath, "centos");
+    }
+
+    /**
+     * Use the /etc/os-release file to determine if the OS is RHEL
+     *
+     * @return true if RHEL is found, false otherwise
+     */
+    public static boolean isRhel() {
+        return isRhel(OS_RELEASE_PATH);
+    }
+
+    static boolean isRhel(Path osReleasePath) {
+        return isOsName(osReleasePath, "rhel");
+    }
+
+    private static boolean isOsName(Path osReleasePath, String osName) {
         if (Files.exists(osReleasePath)) {
             try (Stream<String> lines = Files.lines(osReleasePath)) {
-                return lines.anyMatch(s -> StringUtils.containsIgnoreCase(s, "ubuntu"));
-            } catch (Exception e) {
+                return lines.filter(line -> line.startsWith("ID=")).anyMatch(entry -> StringUtils.containsIgnoreCase(entry, osName));
+            } catch (IOException e) {
                 // ignore
             }
         }
