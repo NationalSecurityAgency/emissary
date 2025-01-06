@@ -51,6 +51,7 @@
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
     <argLine />
     <checkstyleFormatter>${project.basedir}/contrib/checkstyle.xml</checkstyleFormatter>
+    <dep.arrow.version>16.1.0</dep.arrow.version>
     <dep.commons-codec.version>1.16.0</dep.commons-codec.version>
     <dep.commons-collections.version>4.4</dep.commons-collections.version>
     <dep.commons-compress.version>1.27.1</dep.commons-compress.version>
@@ -196,6 +197,16 @@
         <groupId>net.spy</groupId>
         <artifactId>spymemcached</artifactId>
         <version>${dep.spymemcached.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.arrow</groupId>
+        <artifactId>arrow-memory-core</artifactId>
+        <version>${dep.arrow.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.arrow</groupId>
+        <artifactId>arrow-memory-netty</artifactId>
+        <version>${dep.arrow.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -402,6 +413,17 @@
       <artifactId>spymemcached</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.arrow</groupId>
+      <artifactId>arrow-memory-core</artifactId>
+      <exclusions>
+        <!-- conflicts with guava's dependency, which is an older version of the checker framework -->
+        <exclusion>
+          <groupId>org.checkerframework</groupId>
+          <artifactId>checker-qual</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
     </dependency>
@@ -522,6 +544,13 @@
       <groupId>com.google.errorprone</groupId>
       <artifactId>error_prone_annotations</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.arrow</groupId>
+      <artifactId>arrow-memory-netty</artifactId>
+      <scope>test</scope>
+      <!-- consumers of emissary can use either arrow-memory-netty or arrow-memory-unsafe to provide an allocator -->
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
@@ -1018,6 +1047,10 @@
                 </resources>
               </exception>
             </exceptions>
+            <ignoredResourcePatterns>
+              <!-- arrow puts this in every jar -->
+              <ignoredResourcePattern>arrow-git.properties</ignoredResourcePattern>
+            </ignoredResourcePatterns>
             <printEqualFiles>false</printEqualFiles>
             <failBuildInCaseOfDifferentContentConflict>true</failBuildInCaseOfDifferentContentConflict>
             <failBuildInCaseOfEqualContentConflict>true</failBuildInCaseOfEqualContentConflict>
