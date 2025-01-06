@@ -26,7 +26,7 @@ class OSReleaseUtilTest {
 
         centos7Path = Path.of(rr.getResource(rr.getResourceName(OSReleaseUtil.class.getPackage(), "centos7")).toURI());
         rhel8Path = Path.of(rr.getResource(rr.getResourceName(OSReleaseUtil.class.getPackage(), "rhel8")).toURI());
-        ubuntu20Path = Path.of(rr.getResource(rr.getResourceName(OSReleaseUtil.class.getPackage(), "ubuntu")).toURI());
+        ubuntu20Path = Path.of(rr.getResource(rr.getResourceName(OSReleaseUtil.class.getPackage(), "ubuntu20")).toURI());
     }
 
     @Test
