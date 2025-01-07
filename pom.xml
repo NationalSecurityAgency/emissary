@@ -64,6 +64,7 @@
     <dep.guava.version>32.1.2-jre</dep.guava.version>
     <dep.httpclient.version>5.2.1</dep.httpclient.version>
     <dep.httpcore.version>5.2.1</dep.httpcore.version>
+    <dep.icu4j.version>73.2</dep.icu4j.version>
     <dep.jackson.version>2.15.2</dep.jackson.version>
     <dep.jakarta.xml.bind-api.version>3.0.1</dep.jakarta.xml.bind-api.version>
     <dep.janino.version>3.1.12</dep.janino.version>
@@ -171,6 +172,11 @@
             <artifactId>error_prone_annotations</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.ibm.icu</groupId>
+        <artifactId>icu4j</artifactId>
+        <version>${dep.icu4j.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
@@ -521,6 +527,11 @@
     <dependency>
       <groupId>com.google.errorprone</groupId>
       <artifactId>error_prone_annotations</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.icu</groupId>
+      <artifactId>icu4j</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
