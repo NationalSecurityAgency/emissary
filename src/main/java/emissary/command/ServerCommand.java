@@ -124,12 +124,8 @@ public class ServerCommand extends ServiceCommand {
 
     @Override
     protected void startService() {
-        try {
-            LOG.info("Running Emissary Server");
-            new EmissaryServer(this).startServer();
-        } catch (EmissaryException e) {
-            LOG.error("Unable to start server", e);
-        }
+        LOG.info("Running Emissary Server");
+        EmissaryServer.init(this).startServer();
     }
 
     @Override
