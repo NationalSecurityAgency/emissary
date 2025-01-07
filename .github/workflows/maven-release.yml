@@ -132,12 +132,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish site to GitHub Pages
-        run: mvn site site:stage scm-publish:publish-scm -Pcoverage,pmd -DskipTests
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Delete branch
         continue-on-error: true
         if: ${{ github.event.inputs.release_type == 'patch' && startsWith(github.ref_name, 'patch/') }}

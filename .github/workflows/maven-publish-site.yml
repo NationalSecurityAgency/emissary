@@ -1,0 +1,35 @@
+---
+name: "Maven: Publish Site to GitHub Pages"
+
+on: # yamllint disable-line rule:truthy
+  workflow_dispatch:
+# Release trigger does not work because the release job uses GITHUB_TOKEN
+#   release:
+#     types: [created]
+
+env:
+  JAVA_VERSION: "11"
+  JAVA_DISTRIBUTION: "corretto"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: "maven"
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+
+      - name: Publish site to GitHub Pages
+        run: mvn site site:stage scm-publish:publish-scm -Pcoverage,pmd -DskipTests
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
