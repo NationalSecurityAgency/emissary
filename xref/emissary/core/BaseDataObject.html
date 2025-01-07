@@ -478,7 +478,7 @@
 <a class="jxr_linenumber" name="L470" href="#L470">470</a>             <strong class="jxr_keyword">case</strong> BYTE_ARRAY_ONLY:
 <a class="jxr_linenumber" name="L471" href="#L471">471</a>                 <strong class="jxr_keyword">return</strong> ArrayUtils.getLength(theData);
 <a class="jxr_linenumber" name="L472" href="#L472">472</a>             <strong class="jxr_keyword">case</strong> CHANNEL_ONLY:
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>                 <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> SeekableByteChannel sbc = <strong class="jxr_keyword">this</strong>.seekableByteChannelFactory.create()) {
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>                 <strong class="jxr_keyword">try</strong> (SeekableByteChannel sbc = <strong class="jxr_keyword">this</strong>.seekableByteChannelFactory.create()) {
 <a class="jxr_linenumber" name="L474" href="#L474">474</a>                     <strong class="jxr_keyword">return</strong> sbc.size();
 <a class="jxr_linenumber" name="L475" href="#L475">475</a>                 }
 <a class="jxr_linenumber" name="L476" href="#L476">476</a>             <strong class="jxr_keyword">case</strong> NO_DATA:

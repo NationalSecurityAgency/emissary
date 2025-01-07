@@ -93,7 +93,7 @@
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_javadoccomment">     * @return a byte array of the data from the BDO sized up to maxSize (so could truncate data)</em>
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> byte[] getByteArrayFromBdo(<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> ibdo, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> maxSize) {
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>          <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> SeekableByteChannel sbc = ibdo.getChannelFactory().create()) {
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>          <strong class="jxr_keyword">try</strong> (SeekableByteChannel sbc = ibdo.getChannelFactory().create()) {
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>              <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> truncatedBy = sbc.size() - maxSize;
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>              <strong class="jxr_keyword">if</strong> (truncatedBy &gt; 0 &amp;&amp; logger.isWarnEnabled()) {
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>                  logger.warn(<span class="jxr_string">"Returned data for [{}] will be truncated by {} bytes due to size constraints of byte arrays"</span>, ibdo.shortName(),
@@ -116,7 +116,7 @@
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     * @throws IOException if we couldn't read all the data</em>
 <a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> byte[] getByteArrayFromChannel(<strong class="jxr_keyword">final</strong> <a name="SeekableByteChannelFactory" href="../../../emissary/core/channels/SeekableByteChannelFactory.html#SeekableByteChannelFactory">SeekableByteChannelFactory</a> sbcf, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> maxSize) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> SeekableByteChannel sbc = sbcf.create()) {
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>         <strong class="jxr_keyword">try</strong> (SeekableByteChannel sbc = sbcf.create()) {
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> byteArraySize = (<strong class="jxr_keyword">int</strong>) Math.min(sbc.size(), maxSize);
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>             <strong class="jxr_keyword">final</strong> ByteBuffer buff = ByteBuffer.allocate(byteArraySize);
 <a class="jxr_linenumber" name="L114" href="#L114">114</a> 

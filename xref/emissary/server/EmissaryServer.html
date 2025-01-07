@@ -778,7 +778,7 @@
 <a class="jxr_linenumber" name="L770" href="#L770">770</a>         sslContextFactory.setKeyStorePassword(keystorePass);
 <a class="jxr_linenumber" name="L771" href="#L771">771</a> 
 <a class="jxr_linenumber" name="L772" href="#L772">772</a>         KeyStore trustStoreInstance;
-<a class="jxr_linenumber" name="L773" href="#L773">773</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> InputStream is = Files.newInputStream(Paths.get(trustStore))) {
+<a class="jxr_linenumber" name="L773" href="#L773">773</a>         <strong class="jxr_keyword">try</strong> (InputStream is = Files.newInputStream(Paths.get(trustStore))) {
 <a class="jxr_linenumber" name="L774" href="#L774">774</a>             trustStoreInstance = KeyStore.getInstance(<span class="jxr_string">"JKS"</span>);
 <a class="jxr_linenumber" name="L775" href="#L775">775</a>             trustStoreInstance.load(is, trustStorePass.toCharArray());
 <a class="jxr_linenumber" name="L776" href="#L776">776</a>         } <strong class="jxr_keyword">catch</strong> (KeyStoreException | CertificateException | NoSuchAlgorithmException e) {

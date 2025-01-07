@@ -38,6 +38,7 @@ emissary.transform.decode
 emissary.util
 emissary.util.io
 emissary.util.magic
+emissary.util.os
 emissary.util.roll
 emissary.util.search
 emissary.util.shell

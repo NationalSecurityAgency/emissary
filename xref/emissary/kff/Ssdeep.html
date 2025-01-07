@@ -136,7 +136,7 @@
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>         <strong class="jxr_keyword">public</strong> SsContext(<strong class="jxr_keyword">final</strong> <a name="SeekableByteChannelFactory" href="../../emissary/core/channels/SeekableByteChannelFactory.html#SeekableByteChannelFactory">SeekableByteChannelFactory</a> sbcf) {
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>             <strong class="jxr_keyword">long</strong> expectedInputLength = 0;
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> 
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>             <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> SeekableByteChannel sbc = sbcf.create()) {
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>             <strong class="jxr_keyword">try</strong> (SeekableByteChannel sbc = sbcf.create()) {
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>                 expectedInputLength = sbc.size();
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>             } <strong class="jxr_keyword">catch</strong> (<strong class="jxr_keyword">final</strong> IOException ioe) {
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>                 <em class="jxr_comment">// Ignore</em>
@@ -291,7 +291,7 @@
 <a class="jxr_linenumber" name="L283" href="#L283">283</a>             beginHashing();
 <a class="jxr_linenumber" name="L284" href="#L284">284</a>             <strong class="jxr_keyword">final</strong> RollingState rollState = <strong class="jxr_keyword">new</strong> RollingState();
 <a class="jxr_linenumber" name="L285" href="#L285">285</a> 
-<a class="jxr_linenumber" name="L286" href="#L286">286</a>             <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> InputStream is = Channels.newInputStream(sbcf.create())) {
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>             <strong class="jxr_keyword">try</strong> (InputStream is = Channels.newInputStream(sbcf.create())) {
 <a class="jxr_linenumber" name="L287" href="#L287">287</a>                 <strong class="jxr_keyword">final</strong> byte[] b = <strong class="jxr_keyword">new</strong> byte[1024];
 <a class="jxr_linenumber" name="L288" href="#L288">288</a> 
 <a class="jxr_linenumber" name="L289" href="#L289">289</a>                 <strong class="jxr_keyword">int</strong> bytesRead;
@@ -446,7 +446,7 @@
 <a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     * @throws IOException If there is some I/O problem accessing the file.</em>
 <a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L440" href="#L440">440</a>     <strong class="jxr_keyword">public</strong> String fuzzyHashFile(<strong class="jxr_keyword">final</strong> File file) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L441" href="#L441">441</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> RandomAccessFile stream = <strong class="jxr_keyword">new</strong> RandomAccessFile(file, <span class="jxr_string">"r"</span>)) {
+<a class="jxr_linenumber" name="L441" href="#L441">441</a>         <strong class="jxr_keyword">try</strong> (RandomAccessFile stream = <strong class="jxr_keyword">new</strong> RandomAccessFile(file, <span class="jxr_string">"r"</span>)) {
 <a class="jxr_linenumber" name="L442" href="#L442">442</a>             <strong class="jxr_keyword">final</strong> SsContext ctx = <strong class="jxr_keyword">new</strong> SsContext(file);
 <a class="jxr_linenumber" name="L443" href="#L443">443</a>             <strong class="jxr_keyword">while</strong> (<strong class="jxr_keyword">true</strong>) {
 <a class="jxr_linenumber" name="L444" href="#L444">444</a>                 stream.seek(0);
@@ -714,7 +714,7 @@
 <a class="jxr_linenumber" name="L706" href="#L706">706</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(<strong class="jxr_keyword">final</strong> String[] args) <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L707" href="#L707">707</a>         <strong class="jxr_keyword">final</strong> <a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssdeep">Ssdeep</a> ss = <strong class="jxr_keyword">new</strong> <a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssdeep">Ssdeep</a>();
 <a class="jxr_linenumber" name="L708" href="#L708">708</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> String f : args) {
-<a class="jxr_linenumber" name="L709" href="#L709">709</a>             <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> InputStream is = Files.newInputStream(Paths.get(f))) {
+<a class="jxr_linenumber" name="L709" href="#L709">709</a>             <strong class="jxr_keyword">try</strong> (InputStream is = Files.newInputStream(Paths.get(f))) {
 <a class="jxr_linenumber" name="L710" href="#L710">710</a>                 <strong class="jxr_keyword">final</strong> byte[] buffer = IOUtils.toByteArray(is);
 <a class="jxr_linenumber" name="L711" href="#L711">711</a>                 <em class="jxr_comment">// output format matches the original ssdeep program</em>
 <a class="jxr_linenumber" name="L712" href="#L712">712</a>                 System.out.println(ss.fuzzyHash(buffer) + <span class="jxr_string">",\&quot;"</span> + f + <span class="jxr_string">"\&quot;"</span>);

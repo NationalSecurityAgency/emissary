@@ -187,7 +187,7 @@
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>         <strong class="jxr_keyword">final</strong> byte[] b = <strong class="jxr_keyword">new</strong> byte[1024];
 <a class="jxr_linenumber" name="L180" href="#L180">180</a> 
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> MessageDigest d : digest) {
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>             <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> InputStream is = Channels.newInputStream(sbcf.create())) {
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>             <strong class="jxr_keyword">try</strong> (InputStream is = Channels.newInputStream(sbcf.create())) {
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>                 d.reset();
 <a class="jxr_linenumber" name="L184" href="#L184">184</a> 
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>                 <strong class="jxr_keyword">int</strong> bytesRead;
@@ -202,7 +202,7 @@
 <a class="jxr_linenumber" name="L194" href="#L194">194</a>         }
 <a class="jxr_linenumber" name="L195" href="#L195">195</a> 
 <a class="jxr_linenumber" name="L196" href="#L196">196</a>         <strong class="jxr_keyword">if</strong> (crc != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>             <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> InputStream is = Channels.newInputStream(sbcf.create())) {
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>             <strong class="jxr_keyword">try</strong> (InputStream is = Channels.newInputStream(sbcf.create())) {
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>                 crc.reset();
 <a class="jxr_linenumber" name="L199" href="#L199">199</a> 
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>                 <strong class="jxr_keyword">int</strong> bytesRead;

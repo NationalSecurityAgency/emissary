@@ -147,7 +147,7 @@
 <a class="jxr_linenumber" name="L139" href="#L139">139</a> 
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>         <a name="KffResult" href="../../emissary/kff/KffResult.html#KffResult">KffResult</a> kffCheck = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>         <strong class="jxr_keyword">if</strong> (sbcf != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>             <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> SeekableByteChannel sbc = sbcf.create()) {
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>             <strong class="jxr_keyword">try</strong> (SeekableByteChannel sbc = sbcf.create()) {
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>                 <strong class="jxr_keyword">if</strong> (sbc.size() &gt; 0) {
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>                     kffCheck = kff.check(name, sbcf);
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>                 }

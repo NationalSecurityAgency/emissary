@@ -334,8 +334,8 @@
 <a class="jxr_linenumber" name="L326" href="#L326">326</a>         }
 <a class="jxr_linenumber" name="L327" href="#L327">327</a> 
 <a class="jxr_linenumber" name="L328" href="#L328">328</a>         <em class="jxr_comment">// Save the contents into the disk file</em>
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> FileOutputStream fos = <strong class="jxr_keyword">new</strong> FileOutputStream(fullPathName);
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>                 <strong class="jxr_keyword">final</strong> BufferedOutputStream bos = <strong class="jxr_keyword">new</strong> BufferedOutputStream(fos)) {
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>         <strong class="jxr_keyword">try</strong> (FileOutputStream fos = <strong class="jxr_keyword">new</strong> FileOutputStream(fullPathName);
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>                 BufferedOutputStream bos = <strong class="jxr_keyword">new</strong> BufferedOutputStream(fos)) {
 <a class="jxr_linenumber" name="L331" href="#L331">331</a>             bos.write(libContents, 0, libContents.length);
 <a class="jxr_linenumber" name="L332" href="#L332">332</a>         } <strong class="jxr_keyword">catch</strong> (IOException ioe) {
 <a class="jxr_linenumber" name="L333" href="#L333">333</a>             errmsg[0] = <span class="jxr_string">"Cannot write retrieved JNI library to "</span> + fullPathName + <span class="jxr_string">": "</span> + ioe;

@@ -177,7 +177,7 @@
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>         <em class="jxr_comment">// Hook into the SBCF</em>
 <a class="jxr_linenumber" name="L170" href="#L170">170</a>         <strong class="jxr_keyword">this</strong>.b.setChannelFactory(sbcf);
 <a class="jxr_linenumber" name="L171" href="#L171">171</a>         <em class="jxr_comment">// Hook into an SBC</em>
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> SeekableByteChannel sbc = Mockito.spy(<strong class="jxr_keyword">this</strong>.b.getChannelFactory().create())) {
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>         <strong class="jxr_keyword">try</strong> (SeekableByteChannel sbc = Mockito.spy(<strong class="jxr_keyword">this</strong>.b.getChannelFactory().create())) {
 <a class="jxr_linenumber" name="L173" href="#L173">173</a>             <em class="jxr_comment">// Always return this spied SBC</em>
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>             Mockito.when(sbcf.create()).thenReturn(sbc);
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>             <em class="jxr_comment">// Kick an exception when calling size()</em>
@@ -193,7 +193,7 @@
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>         <strong class="jxr_keyword">final</strong> SeekableByteChannelFactory sbcf = Mockito.spy(SeekableByteChannelHelper.memory(<span class="jxr_string">"Test data"</span>.getBytes()));
 <a class="jxr_linenumber" name="L186" href="#L186">186</a>         <strong class="jxr_keyword">this</strong>.b.setChannelFactory(sbcf);
 <a class="jxr_linenumber" name="L187" href="#L187">187</a>         <em class="jxr_comment">// Hook into an SBC</em>
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> SeekableByteChannel sbc = Mockito.spy(<strong class="jxr_keyword">this</strong>.b.getChannelFactory().create())) {
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>         <strong class="jxr_keyword">try</strong> (SeekableByteChannel sbc = Mockito.spy(<strong class="jxr_keyword">this</strong>.b.getChannelFactory().create())) {
 <a class="jxr_linenumber" name="L189" href="#L189">189</a>             <em class="jxr_comment">// Always return this spied SBC</em>
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>             Mockito.when(sbcf.create()).thenReturn(sbc);
 <a class="jxr_linenumber" name="L191" href="#L191">191</a>             <em class="jxr_comment">// Kick an exception when asking for the size</em>
@@ -1382,8 +1382,8 @@
 <a class="jxr_linenumber" name="L1374" href="#L1374">1374</a> 
 <a class="jxr_linenumber" name="L1375" href="#L1375">1375</a>         ibdo.setData(bytes1);
 <a class="jxr_linenumber" name="L1376" href="#L1376">1376</a> 
-<a class="jxr_linenumber" name="L1377" href="#L1377">1377</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> InputStream bytesInputStream = ibdo.newInputStream();
-<a class="jxr_linenumber" name="L1378" href="#L1378">1378</a>                 <strong class="jxr_keyword">final</strong> ByteArrayOutputStream byteArrayOutputStream = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();) {
+<a class="jxr_linenumber" name="L1377" href="#L1377">1377</a>         <strong class="jxr_keyword">try</strong> (InputStream bytesInputStream = ibdo.newInputStream();
+<a class="jxr_linenumber" name="L1378" href="#L1378">1378</a>                 ByteArrayOutputStream byteArrayOutputStream = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();) {
 <a class="jxr_linenumber" name="L1379" href="#L1379">1379</a>             IOUtils.copy(bytesInputStream, byteArrayOutputStream);
 <a class="jxr_linenumber" name="L1380" href="#L1380">1380</a> 
 <a class="jxr_linenumber" name="L1381" href="#L1381">1381</a>             assertArrayEquals(bytes1, byteArrayOutputStream.toByteArray());
@@ -1394,8 +1394,8 @@
 <a class="jxr_linenumber" name="L1386" href="#L1386">1386</a> 
 <a class="jxr_linenumber" name="L1387" href="#L1387">1387</a>         ibdo.setChannelFactory(sbcf);
 <a class="jxr_linenumber" name="L1388" href="#L1388">1388</a> 
-<a class="jxr_linenumber" name="L1389" href="#L1389">1389</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> InputStream sbcfInputStream = ibdo.newInputStream();
-<a class="jxr_linenumber" name="L1390" href="#L1390">1390</a>                 <strong class="jxr_keyword">final</strong> ByteArrayOutputStream byteArrayOutputStream = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream()) {
+<a class="jxr_linenumber" name="L1389" href="#L1389">1389</a>         <strong class="jxr_keyword">try</strong> (InputStream sbcfInputStream = ibdo.newInputStream();
+<a class="jxr_linenumber" name="L1390" href="#L1390">1390</a>                 ByteArrayOutputStream byteArrayOutputStream = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream()) {
 <a class="jxr_linenumber" name="L1391" href="#L1391">1391</a>             IOUtils.copy(sbcfInputStream, byteArrayOutputStream);
 <a class="jxr_linenumber" name="L1392" href="#L1392">1392</a> 
 <a class="jxr_linenumber" name="L1393" href="#L1393">1393</a>             assertArrayEquals(bytes2, byteArrayOutputStream.toByteArray());
