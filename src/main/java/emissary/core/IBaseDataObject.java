@@ -1013,7 +1013,7 @@ public interface IBaseDataObject {
     void setTransactionId(String transactionId);
 
     /**
-     * Return the Top level document or null if there is none for this IBaseDataObject
+     * Return the top level document or null if there is none for this IBaseDataObject
      *
      * @return The TLD IBaseDataObject
      */

@@ -291,15 +291,10 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     public BaseDataObject(final byte[] newData, final String name, @Nullable final String form, @Nullable final String fileType,
             IBaseDataObject tld) {
-        setData(newData);
-        setFilename(name);
-        if (form != null) {
-            pushCurrentForm(form);
-        }
+        this(newData, name, form, tld);
         if (fileType != null) {
             this.setFileType(fileType);
         }
-        this.tld = tld;
     }
 
     /**
