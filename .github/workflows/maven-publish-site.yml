@@ -14,11 +14,10 @@ env:
   JAVA_DISTRIBUTION: "corretto"
 
 jobs:
-  publish:
+  publish-site:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      packages: write
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -30,8 +29,14 @@ jobs:
           cache: "maven"
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
 
+      # Just testing an idea
+      - id: git-author
+        name: Configure git user from GitHub token
+        uses: MarcoIeni/git-config@v0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Publish site to GitHub Pages
         run: mvn site site:stage scm-publish:publish-scm -Pcoverage,pmd -DskipTests
-        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
