@@ -96,7 +96,7 @@ public class OSReleaseUtil {
         if (Files.exists(osReleasePath)) {
             try (Stream<String> lines = Files.lines(osReleasePath)) {
                 return lines.filter(line -> line.startsWith("ID=")).anyMatch(entry -> StringUtils.containsIgnoreCase(entry, osName));
-            } catch (IOException e) {
+            } catch (IOException ignored) {
                 // ignore
             }
         }
