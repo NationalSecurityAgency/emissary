@@ -12,10 +12,10 @@ public class ComplexUnicodeSamples {
      * <p>
      * This map is useful for testing that any XML library we are using is handling unicode correctly.
      * 
-     * @return A map of strings where the key is the XML node containing an XML-escaped surrogate pair unicode value and
-     *         the value is is the properly extracted java string value.
-     * @See <a href=
-     *      "https://github.com/FasterXML/woodstox/pull/174/files">{@link https://github.com/FasterXML/woodstox/pull/174/files}</a>
+     * @return A map of strings where the key is the XML node containing an XML-escaped surrogate pair unicode value and the
+     *         value is is the properly extracted java string value.
+     * @see <a href=
+     *      "https://github.com/FasterXML/woodstox/pull/174/files">https://github.com/FasterXML/woodstox/pull/174/files</a>
      */
     public static Map<String, String> getXmlSamples() {
         // See https://github.com/FasterXML/woodstox/pull/174/files
