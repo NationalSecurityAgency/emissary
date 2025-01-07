@@ -92,24 +92,40 @@ public class EmissaryServer {
 
     private final EmissaryNode emissaryNode;
 
-    public EmissaryServer(ServerCommand cmd) throws EmissaryException {
-        this(cmd, new EmissaryNode());
+    @SuppressWarnings("NonFinalStaticField")
+    private static EmissaryServer emissaryServer;
+
+    private EmissaryServer(ServerCommand cmd) {
+        this.cmd = cmd;
+        this.emissaryNode = new EmissaryNode(cmd.getMode());
     }
 
-    @VisibleForTesting
-    public EmissaryServer(ServerCommand cmd, EmissaryNode node) throws EmissaryException {
+    // there should be a better way to set a custom peer.cfg than this
+    private EmissaryServer(ServerCommand cmd, EmissaryNode node) {
         this.cmd = cmd;
-        // See if we are an emissary node, but first setup node type
-        if (cmd.getMode() != null) {
-            System.setProperty("node.mode", cmd.getMode()); // TODO: clean this crap up
-        }
-        emissaryNode = node;
+        this.emissaryNode = node;
+    }
 
-        if (!emissaryNode.isValid()) {
-            LOG.error("Not an emissary node, no emissary services required.");
-            LOG.error("Try setting -D{}=value to configure an emissary node", EmissaryNode.NODE_NAME_PROPERTY);
-            throw new EmissaryException("Not an emissary node, no emissary services required");
+    public static EmissaryServer init(ServerCommand cmd) {
+        emissaryServer = new EmissaryServer(cmd);
+        return emissaryServer;
+    }
+
+    // there should be a better way to set a custom peer.cfg than this
+    public static EmissaryServer init(ServerCommand cmd, EmissaryNode node) {
+        emissaryServer = new EmissaryServer(cmd, node);
+        return emissaryServer;
+    }
+
+    public static boolean isInitialized() {
+        return emissaryServer != null;
+    }
+
+    public static EmissaryServer getInstance() {
+        if (emissaryServer == null) {
+            throw new AssertionError("EmissaryServer has not yet been instantiated!");
         }
+        return emissaryServer;
     }
 
     public EmissaryNode getNode() {
@@ -263,7 +279,7 @@ public class EmissaryServer {
     }
 
     /**
-     * Stop the server running under the default name
+     * Stop the server
      */
     public static void stopServer() {
         stopServer(false);
@@ -272,22 +288,13 @@ public class EmissaryServer {
     /**
      * Stop the server running under the default name
      *
-     * @param quiet be quiet about failures if true
-     */
-    public static void stopServer(final boolean quiet) {
-        stopServer(false, quiet);
-    }
-
-    /**
-     * Stop the server running under the default name
-     *
      * @param force force shutdown
      * @param quiet be quiet about failures if true
      */
+    @Deprecated
     public static void stopServer(final boolean force, final boolean quiet) {
         stopServer(getDefaultNamespaceName(), force, quiet);
     }
-
 
     /**
      * Stop the server if it is running and remove it from the namespace
@@ -295,6 +302,7 @@ public class EmissaryServer {
      * @param name the namespace name of the server
      * @param quiet be quiet about failures if true
      */
+    @Deprecated
     public static void stopServer(final String name, final boolean quiet) {
         stopServer(name, false, quiet);
     }
@@ -306,10 +314,20 @@ public class EmissaryServer {
      * @param force force shutdown
      * @param quiet be quiet about failures if true
      */
+    @Deprecated
     public static void stopServer(final String name, final boolean force, final boolean quiet) {
+        stopServer(force);
+    }
+
+    /**
+     * Stop the server with an optional force flag
+     *
+     * @param force force shutdown
+     */
+    public static void stopServer(final boolean force) {
         // TODO pull these out to methods and test them
 
-        LOG.info("Beginning shutdown of EmissaryServer {}", name);
+        LOG.info("Beginning shutdown of EmissaryServer");
         logThreadDump("Thread dump before anything");
 
         try {
@@ -392,28 +410,25 @@ public class EmissaryServer {
         logThreadDump("Thread dump before stopping jetty server");
 
         try {
-            EmissaryServer s = EmissaryServer.lookup(name);
-            s.getServer().stop();
-        } catch (NamespaceException e) {
-            LOG.error("Unable to lookup {} ", name, e);
+            EmissaryServer.getInstance().getServer().stop();
         } catch (InterruptedException e) {
             LOG.warn("Interrupted! Expected?");
             Thread.currentThread().interrupt();
         } catch (Exception e) {
-            LOG.warn("Unable to stop server {} ", name, e);
+            LOG.warn("Unable to stop EmissaryServer", e);
         }
 
-        LOG.debug("Unbinding name: {}", name);
-        Namespace.unbind(name);
+        LOG.debug("Unbinding name: {}", getDefaultNamespaceName());
+        Namespace.unbind(getDefaultNamespaceName());
         Namespace.clear();
-        LOG.info("Emissary named {} completely stopped.", name);
+        LOG.info("EmissaryServer completely stopped");
     }
 
     /**
      * Forcibly stop the server running under the default name
      */
     public static void stopServerForce() {
-        stopServer(true, false);
+        stopServer(true);
     }
 
     @SuppressWarnings("unchecked")
@@ -459,7 +474,7 @@ public class EmissaryServer {
      * Non-static way to stop a server
      */
     public void stop() {
-        stopServer(getNamespaceName(), false);
+        stopServer(false);
     }
 
     /**
@@ -469,7 +484,7 @@ public class EmissaryServer {
         return this.server;
     }
 
-
+    @Deprecated
     public synchronized String getNamespaceName() {
         if (this.nameSpaceName == null) {
             this.nameSpaceName = getDefaultNamespaceName();
@@ -477,6 +492,7 @@ public class EmissaryServer {
         return this.nameSpaceName;
     }
 
+    @Deprecated
     public static String getDefaultNamespaceName() {
         return DEFAULT_NAMESPACE_NAME;
     }
@@ -485,7 +501,9 @@ public class EmissaryServer {
      * Check if server is running
      *
      * @return true if it is in the namespace and is started
+     * @deprecated use {@link #isServerRunning()}
      */
+    @Deprecated
     public static boolean isStarted() {
         return isStarted(getDefaultNamespaceName());
     }
@@ -496,6 +514,7 @@ public class EmissaryServer {
      * @param name the namespace name to use as a key
      * @return true if it is in the namespace and is started
      */
+    @Deprecated
     public static boolean isStarted(final String name) {
         boolean started = false;
         try {
@@ -511,6 +530,7 @@ public class EmissaryServer {
         return started;
     }
 
+    @Deprecated
     public static boolean exists() {
         try {
             EmissaryServer.lookup();
@@ -521,13 +541,15 @@ public class EmissaryServer {
         return false;
     }
 
+    @Deprecated
     public static EmissaryServer lookup() throws NamespaceException {
         return lookup(getDefaultNamespaceName());
     }
 
     /**
-     * Retreive instance from namespace using default name
+     * Retrieve instance from namespace using default name
      */
+    @Deprecated
     public static EmissaryServer lookup(final String name) throws NamespaceException {
         return (EmissaryServer) Namespace.lookup(name);
     }
@@ -571,7 +593,6 @@ public class EmissaryServer {
 
         LOG.debug("Binding {} ", DEFAULT_NAMESPACE_NAME);
         Namespace.bind(getDefaultNamespaceName(), this);
-
     }
 
     private ContextHandler buildStaticHandler() {
