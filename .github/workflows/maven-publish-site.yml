@@ -6,6 +6,8 @@ on: # yamllint disable-line rule:truthy
 # Release trigger does not work because the release job uses GITHUB_TOKEN
 #   release:
 #     types: [created]
+  pull_request:
+    branches: [main, release/**, patch/**] #TODO: Remove after testing
 
 env:
   JAVA_VERSION: "11"
