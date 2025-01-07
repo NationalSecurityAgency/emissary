@@ -1,15 +1,15 @@
 package emissary.test.util;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * A utility class for testing regular expressions.
@@ -18,12 +18,11 @@ public class RegularExpressionTestUtil {
     protected static Logger logger = LoggerFactory.getLogger(RegularExpressionTestUtil.class);
 
     /**
-     * A method to test a list of values that should and should not match a particular regular expression. One of the
-     * two lists may be empty, but not both.
+     * A method to test a list of values that should and should not match a particular regular expression. One of the two
+     * lists may be empty, but not both.
      * 
      * @param regexPatternString - Required. The string to compile into regular expression and then test against the
-     *        provided values. Must not be null or empty. Will throw a runtime exception if the regex syntax is
-     *        improper.
+     *        provided values. Must not be null or empty. Will throw a runtime exception if the regex syntax is improper.
      * @param shouldMatch - Optional. The list of strings that should match the regular expression.
      * @param shouldNotMatch - Optional. The list of strings that should not match the regular expression.
      */
@@ -40,11 +39,11 @@ public class RegularExpressionTestUtil {
     }
 
     /**
-     * A method to test a list of values that should and should not match a particular regular expression. One of the
-     * two lists may be empty, but not both.
+     * A method to test a list of values that should and should not match a particular regular expression. One of the two
+     * lists may be empty, but not both.
      * 
-     * @param patternUnderTest - Required. The pre-compiled pattern used to test against the provided values. Must not
-     *        be null.
+     * @param patternUnderTest - Required. The pre-compiled pattern used to test against the provided values. Must not be
+     *        null.
      * @param shouldMatch - Optional. The list of strings that should match the regular expression.
      * @param shouldNotMatch - Optional. The list of strings that should not match the regular expression.
      */
