@@ -114,6 +114,15 @@ public class DataObjectFactory {
         return getInstance(payload, filename, fileTypeAndForm, fileTypeAndForm);
     }
 
+    /**
+     * Get an instance of the configured DataObject impl with filename, form, and file type set, and top level document
+     *
+     * @param payload the payload data
+     * @param filename the filename
+     * @param fileTypeAndForm the form and filetype to set on the IBDO
+     * @param tld The top level document
+     * @return an IBDO with the payload, filename, top level document set with the file type and form set to the same value
+     */
     public static IBaseDataObject getInstance(final byte[] payload, final String filename, final String fileTypeAndForm, IBaseDataObject tld) {
         final Object o = Factory.create(clazz, payload, filename, fileTypeAndForm, tld);
         return (IBaseDataObject) o;
@@ -133,6 +142,16 @@ public class DataObjectFactory {
         return (IBaseDataObject) o;
     }
 
+    /**
+     * Get an instance of the configured DataObject impl with filename, form, file type, and top level document set
+     *
+     * @param payload the payload data
+     * @param filename the filename
+     * @param form the form to set on the IBDO
+     * @param fileType the file type to set on the IBDO
+     * @param tld The top level document
+     * @return an IBDO with the payload, filename, file type, form, and top level document set
+     */
     public static IBaseDataObject getInstance(final byte[] payload, final String filename, final String form, final String fileType,
             IBaseDataObject tld) {
         final Object o = Factory.create(clazz, payload, filename, form, fileType, tld);
