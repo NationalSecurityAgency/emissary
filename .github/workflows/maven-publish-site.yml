@@ -29,42 +29,8 @@ jobs:
           cache: "maven"
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
 
-      # Just testing an idea
-      - id: git-author
-        name: Determine Git user info from GitHub token
-        shell: bash
-        run: |
-          if [ -z "${GITHUB_TOKEN+x}" ]; then
-          echo "Error: environment variable GITHUB_TOKEN is undefined"
-          exit 1
-          fi
-  
-          if [ -z "$GITHUB_TOKEN" ]; then
-          echo "Error: environment variable GITHUB_TOKEN is empty"
-          exit 1
-          fi
-  
-          # The environment variable GITHUB_TOKEN is read by the `gh` cli
-          VIEWER_JSON=$(gh api graphql -f query='query { viewer { name login databaseId }}' --jq '.data.viewer')
-          VIEWER_NAME=$(jq --raw-output '.name | values' <<< "${VIEWER_JSON}")
-          VIEWER_LOGIN=$(jq --raw-output '.login' <<< "${VIEWER_JSON}")
-          VIEWER_DATABASE_ID=$(jq --raw-output '.databaseId' <<< "${VIEWER_JSON}")
-  
-          # Set the variable USER_NAME to the value of VIEWER_NAME if VIEWER_NAME is set and not null.
-          # Otherwise, set USER_NAME to the value of VIEWER_LOGIN.
-          USER_NAME="${VIEWER_NAME:-${VIEWER_LOGIN}}"
-          USER_EMAIL="${VIEWER_DATABASE_ID}+${VIEWER_LOGIN}@users.noreply.github.com"
-  
-          git config --global user.name "${USER_NAME}"
-          git config --global user.email "${USER_EMAIL}"
-  
-          echo "name=${USER_NAME}" >> "${GITHUB_OUTPUT}"
-          echo "email=${USER_EMAIL}" >> "${GITHUB_OUTPUT}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Publish site to GitHub Pages
         run: |
-          echo "${{ steps.git-author.outputs.email }}"
-          echo "${{ steps.git-author.outputs.name }}"
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
           mvn site site:stage scm-publish:publish-scm -Pcoverage,pmd -DskipTests
