@@ -60,6 +60,8 @@ jobs:
   
           echo "name=${USER_NAME}" >> "${GITHUB_OUTPUT}"
           echo "email=${USER_EMAIL}" >> "${GITHUB_OUTPUT}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish site to GitHub Pages
         run: mvn site site:stage scm-publish:publish-scm -Pcoverage,pmd -DskipTests
