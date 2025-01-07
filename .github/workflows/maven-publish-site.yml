@@ -64,6 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish site to GitHub Pages
-        run: mvn site site:stage scm-publish:publish-scm -Pcoverage,pmd -DskipTests
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "${{ steps.git-author.outputs.email }}"
+          echo "${{ steps.git-author.outputs.name }}"
+          mvn site site:stage scm-publish:publish-scm -Pcoverage,pmd -DskipTests
