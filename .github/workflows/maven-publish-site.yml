@@ -30,7 +30,4 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
 
       - name: Publish site to GitHub Pages
-        run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
-          mvn site site:stage scm-publish:publish-scm -Pcoverage,pmd -DskipTests
+        run: mvn site site:stage scm-publish:publish-scm -Pcoverage,pmd -DskipTests
