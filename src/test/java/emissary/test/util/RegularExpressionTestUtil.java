@@ -44,10 +44,10 @@ public class RegularExpressionTestUtil {
      * A method to test a list of values that should and should not match a particular regular expression. One of the two
      * lists may be empty or null, but not both.
      * 
-     * @param patternUnderTest - Required. The pre-compiled pattern used to test against the provided values. Must not be
+     * @param patternUnderTest Required. The pre-compiled pattern used to test against the provided values. Must not be
      *        null.
-     * @param shouldMatch - Optional. The list of strings that should match the regular expression.
-     * @param shouldNotMatch - Optional. The list of strings that should not match the regular expression.
+     * @param shouldMatch Optional. The list of strings that should match the regular expression.
+     * @param shouldNotMatch Optional. The list of strings that should not match the regular expression.
      */
     public static void testRegexPattern(Pattern patternUnderTest, @Nullable List<String> shouldMatch, @Nullable List<String> shouldNotMatch) {
         int fineGrainTestCount = 0;
