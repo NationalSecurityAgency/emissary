@@ -6,6 +6,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -104,6 +106,27 @@ class DataObjectFactoryTest extends UnitTest {
         assertEquals("formAndFileType", extract.currentForm());
         assertEquals("formAndFileType", extract.getFileType());
         assertSame(testPayload, extract.data());
+    }
+
+    @Test
+    void testTLD() {
+        BaseDataObject tld = new BaseDataObject();
+        final byte[] data = "content".getBytes(StandardCharsets.UTF_8);
+        final String fileName = "aChild";
+        final String form = "UNKNOWN";
+        IBaseDataObject ibdo = DataObjectFactory.getInstance(data, fileName, form, tld);
+        assertEquals(fileName, ibdo.getFilename());
+        assertEquals(form, ibdo.currentForm());
+        assertNotNull(ibdo.getCreationTimestamp());
+        assertEquals(tld, ibdo.getTld());
+
+        final String fileType = "TEXT";
+        ibdo = DataObjectFactory.getInstance(data, fileName, form, fileType, tld);
+        assertEquals(fileName, ibdo.getFilename());
+        assertEquals(form, ibdo.currentForm());
+        assertEquals(fileType, ibdo.getFileType());
+        assertNotNull(ibdo.getCreationTimestamp());
+        assertEquals(tld, ibdo.getTld());
     }
 
     @SuppressWarnings("unused")
