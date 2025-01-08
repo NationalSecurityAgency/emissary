@@ -71,11 +71,8 @@ public class RegularExpressionTestUtil {
                 fineGrainTestCount++;
             }
         }
-        if (fineGrainTestCount == 0) {
-            fail("Didn't test anything.");
-        } else {
-            logger.debug("Successfully asserted {} regex test cases.", fineGrainTestCount);
-        }
+        assertTrue(fineGrainTestCount > 0, "No regex assertions performed.");
+        logger.debug("Successfully asserted {} regex test cases.", fineGrainTestCount);
     }
 
 
