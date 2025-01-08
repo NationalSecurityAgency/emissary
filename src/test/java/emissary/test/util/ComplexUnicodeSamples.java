@@ -1,23 +1,20 @@
 package emissary.test.util;
 
-import com.ibm.icu.text.BreakIterator;
 import org.apache.commons.codec.Charsets;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.text.BreakIterator;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * A class that provides some samples where the byte representation of the user-percieved glyph (grapheme) is outside of
- * normal Basic Multilingual Plane usage.
+ * A class that provides some tricky samples They can be used in testing to make sure our code and the 3rd party
+ * libraries we choose can handle unusual cases.
  * <p>
- * The explanations of each example should help the developer evaluate 3rd party libraries and their quality of their
- * unicode handling.
- * <p>
- * Each example provides links to useful reference materials.
+ * Each example contains detailed explanation. and links to useful reference materials.
  */
 public class ComplexUnicodeSamples {
 
