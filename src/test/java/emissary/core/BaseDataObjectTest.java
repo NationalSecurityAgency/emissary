@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,6 +90,25 @@ class BaseDataObjectTest extends UnitTest {
         final BaseDataObject b3 = new BaseDataObject("test".getBytes(), "filename.txt", null);
         assertEquals("", b3.currentForm(), "Current form with null in ctor");
         assertNotNull(b3.getCreationTimestamp());
+
+        final BaseDataObject tld = new BaseDataObject();
+        final byte[] data = "content".getBytes(StandardCharsets.UTF_8);
+        final String fileName = "aChild";
+        final String form = "UNKNOWN";
+        final BaseDataObject b4 = new BaseDataObject(data, fileName, form, tld);
+        assertEquals(fileName, b4.getFilename());
+        assertEquals(form, b4.currentForm());
+        assertNotNull(b4.getCreationTimestamp());
+        assertEquals(tld, b4.getTld());
+
+        final String fileType = "TEXT";
+        BaseDataObject b5 = new BaseDataObject(data, fileName, form, fileType, tld);
+        assertEquals(fileName, b5.getFilename());
+        assertEquals(form, b5.currentForm());
+        assertEquals(fileType, b5.getFileType());
+        assertNotNull(b5.getCreationTimestamp());
+        assertEquals(tld, b5.getTld());
+
     }
 
     @Test
