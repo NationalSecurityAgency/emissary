@@ -1,5 +1,6 @@
 package emissary.test.util;
 
+import com.ibm.icu.text.Normalizer2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -10,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ComplexUnicodeSamplesTest {
 
@@ -40,7 +42,6 @@ class ComplexUnicodeSamplesTest {
     void demonstrateMetadataAboutFacePalmDude() {
 
         String facepalm = ComplexUnicodeSamples.getFacePalmingMaleControlSkintone();
-
 
         // SCALAR 1 is 4 UTF8 bytes
         // SCALAR 2 is 4 UTF8 bytes
@@ -93,16 +94,17 @@ class ComplexUnicodeSamplesTest {
         // get it right until Java 20.
 
 
-        // Normalizer2 nfcDecomp = Normalizer2.getInstance(null, "nfc", Normalizer2.Mode.DECOMPOSE);
-        // Normalizer2 nfdDecomp = Normalizer2.getInstance(null, "nfd", Normalizer2.Mode.DECOMPOSE);
-        //
-        // StringBuilder a = new StringBuilder();
-        // nfcDecomp.normalize(facepalm, a);
-        // System.out.println(a);
-        //
-        // StringBuilder b = new StringBuilder();
-        // nfdDecomp.normalize(facepalm, b);
-        // System.out.println(b);
+        // It's already normalized in it's natural form.
+        Normalizer2 nfcDecomp = Normalizer2.getInstance(null, "nfc", Normalizer2.Mode.DECOMPOSE);
+        Normalizer2 nfkcDecomp = Normalizer2.getInstance(null, "nfkc", Normalizer2.Mode.DECOMPOSE);
+        assertTrue(nfcDecomp.isNormalized(facepalm));
+        assertTrue(nfkcDecomp.isNormalized(facepalm));
+
+        Normalizer2 nfcComp = Normalizer2.getInstance(null, "nfc", Normalizer2.Mode.COMPOSE);
+        Normalizer2 nfkcComp = Normalizer2.getInstance(null, "nfkc", Normalizer2.Mode.COMPOSE);
+        assertTrue(nfcComp.isNormalized(facepalm));
+        assertTrue(nfkcComp.isNormalized(facepalm));
+
     }
 
     @Test
@@ -136,5 +138,6 @@ class ComplexUnicodeSamplesTest {
         assertEquals(j * 3, facepalm.repeat(j).split("\\b{g}").length);
         // it should be 27, but it's wrong until Java 17
     }
+
 
 }
