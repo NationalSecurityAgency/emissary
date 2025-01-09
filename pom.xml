@@ -202,6 +202,13 @@
         <groupId>org.apache.arrow</groupId>
         <artifactId>arrow-memory-core</artifactId>
         <version>${dep.arrow.version}</version>
+        <exclusions>
+          <!-- conflicts with guava's dependency, which is an older version of the checker framework -->
+          <exclusion>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker-qual</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.arrow</groupId>
@@ -415,13 +422,12 @@
     <dependency>
       <groupId>org.apache.arrow</groupId>
       <artifactId>arrow-memory-core</artifactId>
-      <exclusions>
-        <!-- conflicts with guava's dependency, which is an older version of the checker framework -->
-        <exclusion>
-          <groupId>org.checkerframework</groupId>
-          <artifactId>checker-qual</artifactId>
-        </exclusion>
-      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.arrow</groupId>
+      <artifactId>arrow-memory-netty</artifactId>
+      <!-- consumers of emissary can use either arrow-memory-netty or arrow-memory-unsafe to provide an allocator -->
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -544,13 +550,6 @@
       <groupId>com.google.errorprone</groupId>
       <artifactId>error_prone_annotations</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.arrow</groupId>
-      <artifactId>arrow-memory-netty</artifactId>
-      <scope>test</scope>
-      <!-- consumers of emissary can use either arrow-memory-netty or arrow-memory-unsafe to provide an allocator -->
-      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
