@@ -14,23 +14,22 @@ public final class ComplexUnicodeSamples {
     private ComplexUnicodeSamples() {}
 
     /**
-     * Returns a string that contains one graphical unit (in this case an emoji) that consists of 5 Unicode scalar
-     * values. The user-perceived string would be one facepalming emoji. A user would expect hit the arrow key once to
-     * traverse the cursor across this one emoji on the screen. The length of the UTF-8 encoded byte array is 17 bytes.
-     * One emoji, 17 UTF8 bytes.
+     * Returns a string that contains one graphical unit (in this case an emoji) that consists of 5 Unicode scalar values.
+     * The user-perceived string would be one facepalming emoji. A user would expect hit the arrow key once to traverse the
+     * cursor across this one emoji on the screen. The length of the UTF-8 encoded byte array is 17 bytes. One emoji, 17
+     * UTF8 bytes.
      * <p>
      * SCALAR 1: First, there’s a base character that means a person face palming.
      * <p>
      * SCALAR 2: By default, the person would have a cartoonish yellow color. The next character is an emoji skintone
      * modifier the changes the color of the person’s skin (and, in practice, also the color of the person’s hair).
      * <p>
-     * SCALAR 3 and 4: By default, the gender of the person is undefined, and e.g. Apple defaults to what they consider
-     * a male appearance and e.g. Google defaults to what they consider a female appearance. The next two scalar values
-     * pick a male-typical appearance specifically regardless of font and vendor. Instead of being an emoji-specific
-     * modifier like the skin tone, the gender specification uses an emoji-predating gender symbol (MALE SIGN)
-     * explicitly ligated using the ZERO WIDTH JOINER with the (skin-toned) face-palming person. (Whether it is a good
-     * or a bad idea that the skin tone and gender specifications use different mechanisms is out of the scope of this
-     * post.)
+     * SCALAR 3 and 4: By default, the gender of the person is undefined, and e.g. Apple defaults to what they consider a
+     * male appearance and e.g. Google defaults to what they consider a female appearance. The next two scalar values pick a
+     * male-typical appearance specifically regardless of font and vendor. Instead of being an emoji-specific modifier like
+     * the skin tone, the gender specification uses an emoji-predating gender symbol (MALE SIGN) explicitly ligated using
+     * the ZERO WIDTH JOINER with the (skin-toned) face-palming person. (Whether it is a good or a bad idea that the skin
+     * tone and gender specifications use different mechanisms is out of the scope of this post.)
      * <p>
      * SCALAR 5: Finally, VARIATION SELECTOR-16 makes it explicit that we want a multicolor emoji rendering instead of a
      * monochrome dingbat rendering.
@@ -97,11 +96,11 @@ public final class ComplexUnicodeSamples {
 
 
     /**
-     * This map is useful for testing that our code and any 3rd party XML library we are using is handling unicode
-     * within XML correctly.
+     * This map is useful for testing that our code and any 3rd party XML library we are using is handling unicode within
+     * XML correctly.
      * 
-     * @return A map of strings where the key is the XML node containing an XML-escaped surrogate pair unicode value and
-     *         the value is is the properly extracted java string value with un-escaped unicode strings.
+     * @return A map of strings where the key is the XML node containing an XML-escaped surrogate pair unicode value and the
+     *         value is is the properly extracted java string value with un-escaped unicode strings.
      * @see <a href=
      *      "https://github.com/FasterXML/woodstox/pull/174/files">https://github.com/FasterXML/woodstox/pull/174/files</a>
      */
@@ -135,20 +134,19 @@ public final class ComplexUnicodeSamples {
      * <p>
      * Once we get to Java 20, this method should work properly.
      * <p>
-     * Character boundary analysis allows users to interact with characters as they expect to, for example, when moving
-     * the cursor through a text string. Character boundary analysis provides correct navigation through character
-     * strings, regardless of how the character is stored. The boundaries returned may be those of supplementary
-     * characters, combining character sequences, or ligature clusters. For example, an accented character might be
-     * stored as a base character and a diacritical mark. What users consider to be a character can differ between
-     * languages.
+     * Character boundary analysis allows users to interact with characters as they expect to, for example, when moving the
+     * cursor through a text string. Character boundary analysis provides correct navigation through character strings,
+     * regardless of how the character is stored. The boundaries returned may be those of supplementary characters,
+     * combining character sequences, or ligature clusters. For example, an accented character might be stored as a base
+     * character and a diacritical mark. What users consider to be a character can differ between languages.
      * 
      * @see <a href=
-     *      "https://horstmann.com/unblog/2023-10-03/index.html">https://horstmann.com/unblog/2023-10-03/index.html</a>
-     *      - Scroll to the section titled "Just Use Strings"
+     *      "https://horstmann.com/unblog/2023-10-03/index.html">https://horstmann.com/unblog/2023-10-03/index.html</a> -
+     *      Scroll to the section titled "Just Use Strings"
      *
      * @param text - the string to analyze.
-     * @return the count of user-perceived graphemes as based on the character break iterator. In versions of java
-     *         earlier than Java 20, this will not function as expected.
+     * @return the count of user-perceived graphemes as based on the character break iterator. In versions of java earlier
+     *         than Java 20, this will not function as expected.
      */
     public static int countGraphemesUsingJavaBuiltInBreakIterator(String text) {
 
@@ -166,15 +164,14 @@ public final class ComplexUnicodeSamples {
     /**
      * Using the industry-standard ICU4J library provided by IBM.
      * <p>
-     * NOTE: Updating the version of this library might change which unicode database is referenced for these
-     * calculations. We should strive to keep this library as up-to-date as possible in both test and production source
-     * code.
+     * NOTE: Updating the version of this library might change which unicode database is referenced for these calculations.
+     * We should strive to keep this library as up-to-date as possible in both test and production source code.
      * 
      * @param text the string to analyze
-     * @return a count of how many user-perceived glyphs/graphemes are present in the string. If you placed a cursor
-     *         diretly to the left (or right for right-to-left string), and pressed the arrow key to traverse the
-     *         string, how many times would you need to press the arrow key to traverse to the right-most end of the
-     *         string (or leftmost for R-to-L strings).
+     * @return a count of how many user-perceived glyphs/graphemes are present in the string. If you placed a cursor diretly
+     *         to the left (or right for right-to-left string), and pressed the arrow key to traverse the string, how many
+     *         times would you need to press the arrow key to traverse to the right-most end of the string (or leftmost for
+     *         R-to-L strings).
      */
     public static int countGraphemesUsingIcu4J(String text) {
         com.ibm.icu.text.BreakIterator breakIterator = com.ibm.icu.text.BreakIterator.getCharacterInstance();
