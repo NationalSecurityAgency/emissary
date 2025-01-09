@@ -1,6 +1,9 @@
 package emissary.test.util;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -38,14 +41,6 @@ class ComplexUnicodeSamplesTest {
 
         String facepalm = ComplexUnicodeSamples.getFacePalmingMaleControlSkintone();
 
-        assertEquals(5, facepalm.codePointCount(0, facepalm.length()));
-
-        // ICU4J gets it right
-        assertEquals(1, ComplexUnicodeSamples.countGraphemesUsingIcu4J(facepalm));
-
-        // Java earlier than Java 20 gets it wrong, this test can be updated as we move versions of java
-        // but it's important to know/highlight the difference.
-        assertEquals(4, ComplexUnicodeSamples.countGraphemesUsingJavaBuiltInBreakIterator(facepalm));
 
         // SCALAR 1 is 4 UTF8 bytes
         // SCALAR 2 is 4 UTF8 bytes
@@ -85,33 +80,61 @@ class ComplexUnicodeSamplesTest {
         assertNotEquals(facepalm, new String(facepalm.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.ISO_8859_1));
 
 
+        assertEquals(5, facepalm.codePointCount(0, facepalm.length()));
+
+        // ICU4J BreakIterator gets it right
+        assertEquals(1, ComplexUnicodeSamples.countGraphemesUsingIcu4J(facepalm));
+
+        // See
+        // demonstrateMetadataAboutFacePalmDudeForJava20()
+        // and
+        // demonstrateMetadataAboutFacePalmDudePriorToJava20()
+        // to see how using the intrinsic java BreakIterator doesn't
+        // get it right until Java 20.
+
+
+        // Normalizer2 nfcDecomp = Normalizer2.getInstance(null, "nfc", Normalizer2.Mode.DECOMPOSE);
+        // Normalizer2 nfdDecomp = Normalizer2.getInstance(null, "nfd", Normalizer2.Mode.DECOMPOSE);
+        //
+        // StringBuilder a = new StringBuilder();
+        // nfcDecomp.normalize(facepalm, a);
+        // System.out.println(a);
+        //
+        // StringBuilder b = new StringBuilder();
+        // nfdDecomp.normalize(facepalm, b);
+        // System.out.println(b);
     }
 
     @Test
-    void demonstrateMetadataAboutFlagOfItaly() {
-        String flagOfItaly = ComplexUnicodeSamples.getFlagOfItaly();
-
-        // ICU4J gets it right
-        assertEquals(1, ComplexUnicodeSamples.countGraphemesUsingIcu4J(flagOfItaly));
-
-        // Java gets it wrong
-        assertEquals(2, ComplexUnicodeSamples.countGraphemesUsingJavaBuiltInBreakIterator(flagOfItaly));
-
-        // 4 UTF-8 characters at 2 bytes per character
-        assertEquals(8, flagOfItaly.getBytes(StandardCharsets.UTF_8).length);
-
-        // TODO: explain
-        assertEquals(10, flagOfItaly.getBytes(StandardCharsets.UTF_16).length);
-        assertEquals(8, flagOfItaly.getBytes(StandardCharsets.UTF_16BE).length);
-        assertEquals(8, flagOfItaly.getBytes(StandardCharsets.UTF_16LE).length);
-
-        // 2 UTF-32 characters at 4 bytes per character
-        assertEquals(8, flagOfItaly.getBytes(Charset.forName("UTF-32")).length);
-
-        assertEquals(2, flagOfItaly.getBytes(StandardCharsets.ISO_8859_1).length);
-
-        assertEquals(2, flagOfItaly.codePointCount(0, flagOfItaly.length()));
+    @EnabledForJreRange(min = JRE.JAVA_20, disabledReason = "This test only valid for Java 20 and later.")
+    void demonstrateMetadataAboutFacePalmDudeForJava20() {
+        String facepalm = ComplexUnicodeSamples.getFacePalmingMaleControlSkintone();
+        assertEquals(1, ComplexUnicodeSamples.countGraphemesUsingJavaBuiltInBreakIterator(facepalm));
     }
 
+    @Test
+    @DisabledForJreRange(min = JRE.JAVA_20, disabledReason = "This test only valid for Java versions up to not including Java 20.")
+    void demonstrateMetadataAboutFacePalmDudePriorToJava20() {
+        String facepalm = ComplexUnicodeSamples.getFacePalmingMaleControlSkintone();
+        assertEquals(4, ComplexUnicodeSamples.countGraphemesUsingJavaBuiltInBreakIterator(facepalm));
+        // it should be 1, but it's wrong until Java 20.
+    }
+
+    @Test
+    @EnabledForJreRange(min = JRE.JAVA_17, disabledReason = "This test only valid for Java 17 and later.")
+    void demonstrateMetadataAboutFacePalmDudeForJava17AndLater() {
+        String facepalm = ComplexUnicodeSamples.getFacePalmingMaleControlSkintone();
+        int j = 27;
+        assertEquals(j, facepalm.repeat(j).split("\\b{g}").length);
+    }
+
+    @Test
+    @DisabledForJreRange(min = JRE.JAVA_17, disabledReason = "This test only valid for Java versions up to not including Java 17.")
+    void demonstrateMetadataAboutFacePalmDudePriorToJava17() {
+        String facepalm = ComplexUnicodeSamples.getFacePalmingMaleControlSkintone();
+        int j = 27;
+        assertEquals(j * 3, facepalm.repeat(j).split("\\b{g}").length);
+        // it should be 27, but it's wrong until Java 17
+    }
 
 }

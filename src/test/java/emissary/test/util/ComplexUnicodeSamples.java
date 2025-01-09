@@ -9,10 +9,12 @@ import java.util.Map;
  * <p>
  * Each example contains detailed explanation and links to useful reference materials.
  */
-public class ComplexUnicodeSamples {
+public final class ComplexUnicodeSamples {
+
+    private ComplexUnicodeSamples() {}
 
     /**
-     * Returns a string that contains one graphical unit consists of 5 Unicode scalar values. The user-perceived string
+     * Returns a string that contains one graphical unit that consists of 5 Unicode scalar values. The user-perceived string
      * would be one facepalming emoji. A user would expect hit the arrow key once to jump this one emoji on the screen. The
      * length of the UTF-8 encoded byte array is 17 bytes. One emoji, 17 bytes.
      * <p>
@@ -86,44 +88,11 @@ public class ComplexUnicodeSamples {
         // UTF-32 bytes: 4
         // UTF-16 bytes: 2
         // UTF-8 bytes: 3
-
         sb.append("\uFE0F");
 
         return sb.toString();
     }
 
-    /**
-     * You perceive a single symbol: the flag of Italy. However, this symbol is composed of two Unicode code points: U+1F1EE
-     * (regional indicator symbol letter I) and U+1F1F9 (regional indicator symbol letter T). About 250 flags can be formed
-     * with these regional indicators. The pirate flag 🏴‍☠️, on the other hand, is composed of U+1F3F4 (waving black flag),
-     * U+200D (zero width joiner), U+2620 (skull and crossbones), and U+FE0F (variation selector-16). In Java, you need four
-     * char values to represent the first flag, five for the second.
-     * 
-     * @return an Italy flag emoji.
-     */
-    public static String getFlagOfItaly() {
-
-        StringBuilder sb = new StringBuilder();
-        // SCALAR 1: U+1F1EE REGIONAL INDICATOR SYMBOL LETTER I
-        // Use the lookup for how to represent in java
-        // https://www.fileformat.info/info/unicode/char/1f1ee/index.htm
-        sb.append("\uD83C\uDDEE");
-
-
-        // SCALAR 2: U+1F1F9 REGIONAL INDICATOR SYMBOL LETTER T
-        // https://www.fileformat.info/info/unicode/char/1f1f9/index.htm
-        sb.append("\uD83C\uDDF9");
-
-        return sb.toString();
-    }
-
-    public static String getPirateFlag() {
-        return "";
-    }
-
-    public static String getGClef() {
-        return "";
-    }
 
     /**
      * A utility method that will provide
@@ -220,6 +189,5 @@ public class ComplexUnicodeSamples {
 
         return count;
     }
-
 
 }
