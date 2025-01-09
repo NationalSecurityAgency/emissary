@@ -64,6 +64,7 @@
     <dep.guava.version>32.1.2-jre</dep.guava.version>
     <dep.httpclient.version>5.2.1</dep.httpclient.version>
     <dep.httpcore.version>5.2.1</dep.httpcore.version>
+    <dep.icu4j.version>73.2</dep.icu4j.version>
     <dep.jackson.version>2.15.2</dep.jackson.version>
     <dep.jakarta.xml.bind-api.version>3.0.1</dep.jakarta.xml.bind-api.version>
     <dep.janino.version>3.1.12</dep.janino.version>
@@ -128,15 +129,15 @@
     <sonar.issue.ignore.multicriteria>e1</sonar.issue.ignore.multicriteria>
     <sonar.issue.ignore.multicriteria.e1.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e1.resourceKey>
     <sonar.issue.ignore.multicriteria.e1.ruleKey>java:S6212</sonar.issue.ignore.multicriteria.e1.ruleKey>
-    <!-- With Java 8 and the latest version of surefire, user.timezone is not read correctly.  Reevaluate one day.
-         See https://issues.apache.org/jira/browse/SUREFIRE-1176 or
-         http://stackoverflow.com/questions/19121928/java-system-getproperty-user-timezone-does-not-work
-
-         The COMPAT locale provider is used because the date formatter parsing has changed significantly
-         when using the CLDR locale provider, which is the default in JDK11.
-         https://www.oracle.com/technetwork/java/javase/documentation/java11locales-5069639.html
-      -->
-    <surefire.argline>@{argLine} -Xmx1024m -Xms256m -Djava.locale.providers=COMPAT -Djava.net.preferIPv4Stack=true -Duser.timezone=GMT -Djava.awt.headless=true</surefire.argline>
+    <!-- With Java 8 and the latest version of surefire, user.timezone is 
+      not read correctly. Reevaluate one day. See https://issues.apache.org/jira/browse/SUREFIRE-1176 
+      or http://stackoverflow.com/questions/19121928/java-system-getproperty-user-timezone-does-not-work 
+      The COMPAT locale provider is used because the date formatter parsing has 
+      changed significantly when using the CLDR locale provider, which is the default 
+      in JDK11. https://www.oracle.com/technetwork/java/javase/documentation/java11locales-5069639.html -->
+    <surefire.argline>@{argLine} -Xmx1024m -Xms256m
+      -Djava.locale.providers=COMPAT -Djava.net.preferIPv4Stack=true
+      -Duser.timezone=GMT -Djava.awt.headless=true</surefire.argline>
     <surefire.forkCount>.5C</surefire.forkCount>
   </properties>
   <dependencyManagement>
@@ -304,6 +305,12 @@
         <version>${dep.jersey.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.ibm.icu</groupId>
+        <artifactId>icu4j</artifactId>
+        <version>${dep.icu4j.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
@@ -524,6 +531,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>com.ibm.icu</groupId>
+      <artifactId>icu4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
       <artifactId>jersey-test-framework-provider-jetty</artifactId>
       <scope>test</scope>
@@ -727,12 +739,14 @@
           <version>${plugin.maven-checkstyle.version}</version>
           <configuration>
             <configLocation>${checkstyleFormatter}</configLocation>
-            <!-- this combination of these two configurations
-              (failOnViolation=true and violationSeverity=error) means
-              any checks with severity=error will fail the build -->
-            <!-- TODO enforce more checkstyle categories as the	build gets cleaned up -->
-            <!-- As you fix checkstyle warning categories, change the severity of that category
-              to "error" so it will fail the build if new violations of that category get introduced. -->
+            <!-- this combination of these two configurations (failOnViolation=true 
+              and violationSeverity=error) means any checks with severity=error will fail 
+              the build -->
+            <!-- TODO enforce more checkstyle categories as the build gets 
+              cleaned up -->
+            <!-- As you fix checkstyle warning categories, change the severity 
+              of that category to "error" so it will fail the build if new violations of 
+              that category get introduced. -->
             <failOnViolation>true</failOnViolation>
             <violationSeverity>error</violationSeverity>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
@@ -896,7 +910,7 @@
             <execution>
               <goals>
                 <goal>check</goal>
-                <!--<goal>cpd-check</goal>-->
+                <!--<goal>cpd-check</goal> -->
               </goals>
               <phase>verify</phase>
             </execution>
@@ -1099,9 +1113,7 @@
                       <limit>
                         <counter>COMPLEXITY</counter>
                         <value>COVEREDRATIO</value>
-                        <!--
-                        <minimum>0.37</minimum>
-                        -->
+                        <!-- <minimum>0.37</minimum> -->
                       </limit>
                     </limits>
                   </rule>
@@ -1499,8 +1511,8 @@
                 <arg>-1</arg>
                 <arg>-Xmaxwarns</arg>
                 <arg>-1</arg>
-                <!--arg>-Werror</arg-->
-                <!--arg>-Xlint:all</arg-->
+                <!--arg>-Werror</arg -->
+                <!--arg>-Xlint:all</arg -->
                 <arg>-XDcompilePolicy=simple</arg>
                 <arg>-Xplugin:ErrorProne \
                   -XepAllDisabledChecksAsWarnings \
@@ -1546,11 +1558,13 @@
         <maven.compiler.release>11</maven.compiler.release>
       </properties>
       <build>
-        <!--  different build directory for eclipse, so running maven and clicking in IDE don't conflict -->
+        <!-- different build directory for eclipse, so running maven and 
+          clicking in IDE don't conflict -->
         <directory>${project.basedir}/target-eclipse</directory>
         <pluginManagement>
           <plugins>
-            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+            <!--This plugin's configuration is used to store Eclipse m2e 
+              settings only. It has no influence on the Maven build itself. -->
             <plugin>
               <groupId>org.eclipse.m2e</groupId>
               <artifactId>lifecycle-mapping</artifactId>
@@ -1622,26 +1636,30 @@
       <id>netbeans</id>
       <activation>
         <property>
-          <!-- You must add -Dnetbeans.ide as global option to the maven command for this to work
-               Could not find any property existing when Netbeans was running the build -->
+          <!-- You must add -Dnetbeans.ide as global option to the maven 
+            command for this to work Could not find any property existing when Netbeans 
+            was running the build -->
           <name>netbeans.ide</name>
         </property>
       </activation>
       <build>
-        <!--  different build directory for netbeans, so running maven and clicking in IDE don't conflict -->
+        <!-- different build directory for netbeans, so running maven and 
+          clicking in IDE don't conflict -->
         <directory>${project.basedir}/target-netbeans</directory>
       </build>
     </profile>
     <profile>
       <id>intellij</id>
       <activation>
-        <!-- when intellij runs a build, this system property is already present -->
+        <!-- when intellij runs a build, this system property is already 
+          present -->
         <property>
           <name>idea.version</name>
         </property>
       </activation>
       <build>
-        <!--  different build directory for intellij, so running maven and clicking in IDE don't conflict -->
+        <!-- different build directory for intellij, so running maven and 
+          clicking in IDE don't conflict -->
         <directory>${project.basedir}/target-idea</directory>
       </build>
     </profile>

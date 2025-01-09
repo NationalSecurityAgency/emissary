@@ -1,50 +1,46 @@
 package emissary.test.util;
 
-import org.apache.commons.codec.Charsets;
-import org.junit.jupiter.api.Test;
-
-import java.nio.charset.StandardCharsets;
-import java.text.BreakIterator;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * A class that provides some tricky samples They can be used in testing to make sure our code and the 3rd party
  * libraries we choose can handle unusual cases.
  * <p>
- * Each example contains detailed explanation. and links to useful reference materials.
+ * Each example contains detailed explanation and links to useful reference materials.
  */
 public class ComplexUnicodeSamples {
 
     /**
-     * Returns a string that contains one graphical unit consists of 5 Unicode scalar values.
+     * Returns a string that contains one graphical unit consists of 5 Unicode scalar values. The user-perceived string
+     * would be one facepalming emoji. A user would expect hit the arrow key once to jump this one emoji on the screen. The
+     * length of the UTF-8 encoded byte array is 17 bytes. One emoji, 17 bytes.
      * <p>
-     * First, there’s a base character that means a person face palming.
+     * SCALAR 1: First, there’s a base character that means a person face palming.
      * <p>
-     * By default, the person would have a cartoonish yellow color. The next character is an emoji skintone modifier the
-     * changes the color of the person’s skin (and, in practice, also the color of the person’s hair).
+     * SCALAR 2: By default, the person would have a cartoonish yellow color. The next character is an emoji skintone
+     * modifier the changes the color of the person’s skin (and, in practice, also the color of the person’s hair).
      * <p>
-     * By default, the gender of the person is undefined, and e.g. Apple defaults to what they consider a male appearance
-     * and e.g. Google defaults to what they consider a female appearance. The next two scalar values pick a male-typical
-     * appearance specifically regardless of font and vendor. Instead of being an emoji-specific modifier like the skin
-     * tone, the gender specification uses an emoji-predating gender symbol (MALE SIGN) explicitly ligated using the
+     * SCALAR 3 and 4: By default, the gender of the person is undefined, and e.g. Apple defaults to what they consider a
+     * male appearance and e.g. Google defaults to what they consider a female appearance. The next two scalar values pick a
+     * male-typical appearance specifically regardless of font and vendor. Instead of being an emoji-specific modifier like
+     * the skin tone, the gender specification uses an emoji-predating gender symbol (MALE SIGN) explicitly ligated using
+     * the ZERO WIDTH JOINER with the (skin-toned) face-palming person. (Whether it is a good or a bad idea that the skin
+     * tone and gender specifications use different mechanisms is out of the scope of this post.)
+     * <p>
+     * SCALAR 5: Finally, VARIATION SELECTOR-16 makes it explicit that we want a multicolor emoji rendering instead of a
+     * monochrome dingbat rendering.
      * 
-     * ZERO WIDTH JOINER with the (skin-toned) face-palming person. (Whether it is a good or a bad idea that the skin tone
-     * and gender specifications use different mechanisms is out of the scope of this post.)
-     * <p>
-     * Finally, VARIATION SELECTOR-16 makes it explicit that we want a multicolor emoji rendering instead of a monochrome
-     * dingbat rendering.
+     * @return the Java string containing this one facepalming dude emoji with a not-yellow skin tone.
      * 
-     * @see #demonstrateMetaDataAboutTheseSamples() interesting observations about this sample
+     * @see ComplexUnicodeSamplesTest#demonstrateMetadataAboutFacePalmDude()
      * @see <a href="https://hsivonen.fi/string-length/">https://hsivonen.fi/string-length/</a>
      */
     public static String getFacePalmingMaleControlSkintone() {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
-        // U+1F926 FACE PALM
+        // SCALAR 1: U+1F926 FACE PALM
         // Use the lookup for how to represent in java
         // https://www.fileformat.info/info/unicode/char/1f926/index.htm
         // UTF-32 code units: 1
@@ -55,7 +51,7 @@ public class ComplexUnicodeSamples {
         // UTF-8 bytes: 4
         sb.append("\uD83E\uDD26");
 
-        // U+1F3FC EMOJI MODIFIER FITZPATRICK TYPE-3
+        // SCALAR 2: U+1F3FC EMOJI MODIFIER FITZPATRICK TYPE-3
         // https://www.fileformat.info/info/unicode/char/1f3fc/index.htm
         // UTF-32 code units: 1
         // UTF-16 code units: 2
@@ -65,7 +61,7 @@ public class ComplexUnicodeSamples {
         // UTF-8 bytes: 4
         sb.append("\uD83C\uDFFC");
 
-        // U+200D ZERO WIDTH JOINER
+        // SCALAR 3: U+200D ZERO WIDTH JOINER
         // UTF-32 code units: 1
         // UTF-16 code units: 1
         // UTF-8 code units: 3
@@ -74,7 +70,7 @@ public class ComplexUnicodeSamples {
         // UTF-8 bytes: 3
         sb.append("\u200D");
 
-        // U+2642 MALE SIGN
+        // SCALAR 4: U+2642 MALE SIGN
         // UTF-32 code units: 1
         // UTF-16 code units: 1
         // UTF-8 code units: 3
@@ -83,7 +79,7 @@ public class ComplexUnicodeSamples {
         // UTF-8 bytes: 3
         sb.append("\u2642");
 
-        // U+FE0F VARIATION SELECTOR-16
+        // SCALAR 5: U+FE0F VARIATION SELECTOR-16
         // UTF-32 code units: 1
         // UTF-16 code units: 1
         // UTF-8 code units: 3
@@ -96,6 +92,38 @@ public class ComplexUnicodeSamples {
         return sb.toString();
     }
 
+    /**
+     * You perceive a single symbol: the flag of Italy. However, this symbol is composed of two Unicode code points: U+1F1EE
+     * (regional indicator symbol letter I) and U+1F1F9 (regional indicator symbol letter T). About 250 flags can be formed
+     * with these regional indicators. The pirate flag 🏴‍☠️, on the other hand, is composed of U+1F3F4 (waving black flag),
+     * U+200D (zero width joiner), U+2620 (skull and crossbones), and U+FE0F (variation selector-16). In Java, you need four
+     * char values to represent the first flag, five for the second.
+     * 
+     * @return an Italy flag emoji.
+     */
+    public static String getFlagOfItaly() {
+
+        StringBuilder sb = new StringBuilder();
+        // SCALAR 1: U+1F1EE REGIONAL INDICATOR SYMBOL LETTER I
+        // Use the lookup for how to represent in java
+        // https://www.fileformat.info/info/unicode/char/1f1ee/index.htm
+        sb.append("\uD83C\uDDEE");
+
+
+        // SCALAR 2: U+1F1F9 REGIONAL INDICATOR SYMBOL LETTER T
+        // https://www.fileformat.info/info/unicode/char/1f1f9/index.htm
+        sb.append("\uD83C\uDDF9");
+
+        return sb.toString();
+    }
+
+    public static String getPirateFlag() {
+        return "";
+    }
+
+    public static String getGClef() {
+        return "";
+    }
 
     /**
      * A utility method that will provide
@@ -134,51 +162,59 @@ public class ComplexUnicodeSamples {
         return xmlWithExp;
     }
 
-
     /**
-     * Interesting observations
+     * This will not work properly in versions of java earlier than Java 20.
      * <p>
-     * We’ve seen four different lengths so far:
+     * Once we get to Java 20, this method should work properly.
      * 
-     * <ul>
-     * <li>Number of UTF-8 code units (17 in this case)</li>
-     * <li>Number of UTF-16 code units (7 in this case)</li>
-     * <li>Number of UTF-32 code units or Unicode scalar values (5 in this case)</li>
-     * <li>Number of extended grapheme clusters (1 in this case)</li>
-     * </ul>
-     * Given a valid Unicode string and a version of Unicode, all of the above are well-defined and it holds that each item
-     * higher on the list is greater or equal than the items lower on the list.
      * <p>
-     * One of these is not like the others, though: The first three numbers have an unchanging definition for any valid
-     * Unicode string whether it contains currently assigned scalar values or whether it is from the future and contains
-     * unassigned scalar values as far as software written today is aware. Also, computing the first three lengths does not
-     * involve lookups from the Unicode database. However, the last item depends on the Unicode version and involves lookups
-     * from the Unicode database. If a string contains scalar values that are unassigned as far as the copy of the Unicode
-     * database that the program is using is aware, the program will potentially overcount extended grapheme clusters in the
-     * string compared to a program whose copy of the Unicode database is newer and has assignments for those scalar values
-     * (and some of those assignments turn out to be combining characters).
+     * Character boundary analysis allows users to interact with characters as they expect to, for example, when moving the
+     * cursor through a text string. Character boundary analysis provides correct navigation through character strings,
+     * regardless of how the character is stored. The boundaries returned may be those of supplementary characters,
+     * combining character sequences, or ligature clusters. For example, an accented character might be stored as a base
+     * character and a diacritical mark. What users consider to be a character can differ between languages.
+     * 
+     * @see <a href=
+     *      "https://horstmann.com/unblog/2023-10-03/index.html">https://horstmann.com/unblog/2023-10-03/index.html</a> -
+     *      Scroll to the section titled "Just Use Strings"
+     * 
+     * 
+     * 
+     * @param text - the string to analyze.
+     * @return the count of user-perceived graphemes as based on the character break iterator. In versions of java earlier
+     *         than Java 20, this will not function as expected.
      */
-    @Test
-    void demonstrateMetaDataAboutTheseSamples() {
-        String facepalm = getFacePalmingMaleControlSkintone();
+    public static int countGraphemesUsingJavaBuiltInBreakIterator(String text) {
 
-        assertEquals(17, facepalm.getBytes(StandardCharsets.UTF_8).length);
-        assertEquals(14, facepalm.getBytes(StandardCharsets.UTF_16BE).length);
-        assertEquals(5, facepalm.getBytes(Charsets.toCharset("UTF-32")).length);
-
-        assertEquals(5, facepalm.codePointCount(0, facepalm.length()));
-
-        assertEquals(1, countGraphemes(facepalm));
-    }
-
-
-    public static int countGraphemes(String text) {
-        BreakIterator breakIterator = BreakIterator.getCharacterInstance();
+        java.text.BreakIterator breakIterator = java.text.BreakIterator.getCharacterInstance();
         breakIterator.setText(text);
 
         int count = 0;
-        int start = breakIterator.first();
-        for (int end = breakIterator.next(); end != BreakIterator.DONE; start = end, end = breakIterator.next()) {
+        for (int end = breakIterator.next(); end != java.text.BreakIterator.DONE; end = breakIterator.next()) {
+            count++;
+        }
+
+        return count;
+    }
+
+    /**
+     * Using the industry-standard ICU4J library provided by IBM.
+     * <p>
+     * NOTE: Updating the version of this library might change which unicode database is referenced for these calculations.
+     * We should strive to keep this library as up-to-date as possible.
+     * 
+     * @param text the string to analyze
+     * @return a count of how many user-perceived glyphs/graphemes are present in the string. If you placed a cursor diretly
+     *         to the left (or right for right-to-left string), and pressed the arrow key to traverse the string, how many
+     *         times would you need to press the arrow key to traverse to the right-most end of the string (or leftmost for
+     *         R-to-L strings).
+     */
+    public static int countGraphemesUsingIcu4J(String text) {
+        com.ibm.icu.text.BreakIterator breakIterator = com.ibm.icu.text.BreakIterator.getCharacterInstance();
+        breakIterator.setText(text);
+
+        int count = 0;
+        for (int end = breakIterator.next(); end != com.ibm.icu.text.BreakIterator.DONE; end = breakIterator.next()) {
             count++;
         }
 
