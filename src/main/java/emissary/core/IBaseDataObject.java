@@ -354,7 +354,8 @@ public interface IBaseDataObject {
      * 
      * @param key name of the metadata element
      * @return the string value or null if no such element
-     * @deprecated use {@link #getParameterAsConcatString(String)}
+     * @deprecated use {@link #getParameterAsString(String)} if a single metadata value is expected, or
+     *             {@link #getParameterAsConcatString(String)} if it might be multivalued
      */
     @Deprecated
     default String getStringParameter(final String key) {
