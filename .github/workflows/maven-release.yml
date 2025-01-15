@@ -116,13 +116,15 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: ncipollo/release-action@v1
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.RELEASE_VERSION }}
-          release_name: ${{ env.RELEASE_VERSION }}
+          tag: ${{ env.RELEASE_VERSION }}
+          name: ${{ env.RELEASE_VERSION }}
+          generateReleaseNotes: true
+          makeLatest: true
           draft: false
           prerelease: false
 
