@@ -44,7 +44,7 @@ class PeersIT extends EndpointTestBase {
         String projectBase = System.getenv(ConfigUtil.PROJECT_BASE_ENV);
         ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-b ", projectBase, "-m", "cluster", "-p", "123456");
         cmd.setupServer();
-        EmissaryServer server = EmissaryServer.init(cmd, new TestEmissaryNode());
+        EmissaryServer server = EmissaryServer.init(cmd, new TestEmissaryNode(EmissaryNode.Mode.CLUSTER));
         Namespace.bind("EmissaryServer", server);
 
         DirectoryPlace directoryPlace = new DirectoryPlace(DIRNAME, server.getNode());
@@ -108,23 +108,9 @@ class PeersIT extends EndpointTestBase {
 
     static class TestEmissaryNode extends EmissaryNode {
 
-        public TestEmissaryNode() {
+        public TestEmissaryNode(EmissaryNode.Mode mode) {
+            super(mode);
             nodeNameIsDefault = true;
-        }
-
-        @Override
-        public int getNodePort() {
-            return TEST_PORT;
-        }
-
-        @Override
-        public String getNodeName() {
-            return TEST_NODE;
-        }
-
-        @Override
-        public boolean isStandalone() {
-            return false;
         }
 
         @Override
