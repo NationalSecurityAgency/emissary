@@ -1511,7 +1511,7 @@
                 <arg>-1</arg>
                 <arg>-Xmaxwarns</arg>
                 <arg>-1</arg>
-                <!--arg>-Werror</arg-->
+                <arg>-Werror</arg>
                 <!--arg>-Xlint:all</arg-->
                 <arg>-XDcompilePolicy=simple</arg>
                 <arg>-Xplugin:ErrorProne \
