@@ -64,7 +64,7 @@ public class EmissaryNode {
     /** Property that determines if server will shut down in the event a place fails to start */
     public static final String STRICT_STARTUP_MODE = "strict.mode";
 
-    public enum EmissaryMode {
+    public enum Mode {
         STANDALONE, CLUSTER;
     }
 
@@ -76,7 +76,7 @@ public class EmissaryNode {
     // this is the OS for all practical purposes
     @Nullable
     protected String nodeType = null;
-    protected EmissaryMode nodeMode;
+    protected Mode nodeMode;
     protected boolean nodeNameIsDefault = false;
     @Nullable
     protected String nodeServiceType = null;
@@ -84,14 +84,14 @@ public class EmissaryNode {
     protected boolean strictStartupMode = false;
 
     public EmissaryNode() {
-        this(EmissaryMode.STANDALONE);
+        this(Mode.STANDALONE);
     }
 
     /**
      * Construct the node. The node name and port are from system properties. The node type is based on the os.name in this
      * implementation
      */
-    public EmissaryNode(EmissaryMode nodeMode) {
+    public EmissaryNode(Mode nodeMode) {
         this.nodeMode = nodeMode;
         this.nodeName = System.getProperty(NODE_NAME_PROPERTY);
         if (this.nodeName == null) {
@@ -112,7 +112,7 @@ public class EmissaryNode {
         this.strictStartupMode = Boolean.parseBoolean(System.getProperty(STRICT_STARTUP_MODE, String.valueOf(false)));
     }
 
-    public EmissaryMode getNodeMode() {
+    public Mode getNodeMode() {
         return nodeMode;
     }
 
@@ -176,7 +176,7 @@ public class EmissaryNode {
      * True if this node appears to be a stand-alone (non P2P) node
      */
     public boolean isStandalone() {
-        return isValidStandalone() && getNodeMode().equals(EmissaryMode.STANDALONE);
+        return isValidStandalone() && getNodeMode().equals(Mode.STANDALONE);
     }
 
     public boolean isStrictStartupMode() {

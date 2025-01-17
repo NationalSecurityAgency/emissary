@@ -1,8 +1,8 @@
 package emissary.command;
 
 import emissary.client.EmissaryResponse;
+import emissary.command.converter.ModeConverter;
 import emissary.command.converter.ProjectBaseConverter;
-import emissary.command.converter.ServerModeConverter;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
 import emissary.server.api.Pause;
@@ -27,9 +27,9 @@ public class ServerCommand extends ServiceCommand {
 
     public static final int DEFAULT_PORT = 8001;
 
-    @Option(names = {"-m", "--mode"}, description = "mode: standalone or cluster\nDefault: ${DEFAULT-VALUE}", converter = ServerModeConverter.class,
+    @Option(names = {"-m", "--mode"}, description = "mode: standalone or cluster\nDefault: ${DEFAULT-VALUE}", converter = ModeConverter.class,
             defaultValue = "standalone")
-    private EmissaryNode.EmissaryMode mode;
+    private EmissaryNode.Mode mode;
 
     @Option(names = "--staticDir", description = "path to static assets, loaded from classpath otherwise", converter = ProjectBaseConverter.class)
     private Path staticDir;
@@ -53,7 +53,7 @@ public class ServerCommand extends ServiceCommand {
         return DEFAULT_PORT;
     }
 
-    public EmissaryNode.EmissaryMode getMode() {
+    public EmissaryNode.Mode getMode() {
         return mode;
     }
 
