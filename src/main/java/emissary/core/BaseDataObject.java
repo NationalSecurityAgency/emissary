@@ -192,7 +192,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Nullable
     protected SeekableByteChannelFactory seekableByteChannelFactory;
 
-
+    @Nullable
     protected final IBaseDataObject tld;
 
     protected enum DataState {
