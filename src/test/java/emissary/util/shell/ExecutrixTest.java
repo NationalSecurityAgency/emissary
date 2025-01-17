@@ -56,6 +56,7 @@ class ExecutrixTest extends UnitTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation") // confirming functionality of legacy API
     void testExecutrixParams() {
         e.setInFileEnding(".in");
         e.setOutFileEnding(".out");
@@ -75,7 +76,30 @@ class ExecutrixTest extends UnitTest {
         assertTrue(names[Executrix.IN].endsWith(".in"), "names must use in file ending");
     }
 
+    /**
+     * Identical to {@link #testExecutrixParams}, but with the new TempFileNames API for constructing temp filenames
+     */
     @Test
+    void testExecutrixParamsWithNewTempFileNamesApi() {
+        assertNotNull(e, "Executrix instance should not be null");
+        e.setInFileEnding(".in");
+        e.setOutFileEnding(".out");
+        e.setOrder("NORMAL");
+
+        final TempFileNames names = e.createTempFilenames();
+        assertNotNull(names.getTempDir(), "getDir() returned null");
+        assertNotNull(names.getBase(), "getBase() returned null");
+        assertNotNull(names.getBasePath(), "getBasePath() returned null");
+        assertNotNull(names.getIn(), "getIn() returned null");
+        assertNotNull(names.getOut(), "getOut() returned null");
+        assertNotNull(names.getInputFilename(), "getInPath() returned null");
+        assertNotNull(names.getOutputFilename(), "getOutPath() returned null");
+        assertTrue(names.getOut().endsWith(".out"), "output names must use out file ending");
+        assertTrue(names.getIn().endsWith(".in"), "input names must use in file ending");
+    }
+
+    @Test
+    @SuppressWarnings("deprecation") // confirming functionality of legacy API
     void testExecutrixUniqueBase() {
         e.setInFileEnding(".in");
         e.setOutFileEnding(".out");
@@ -91,6 +115,30 @@ class ExecutrixTest extends UnitTest {
             assertNotNull(name[Executrix.BASE], "name null BASE");
             assertNotNull(name[Executrix.BASE_PATH], "name null BASE_PATH");
             basePathSet.add(name[Executrix.BASE_PATH]);
+        });
+        assertEquals(COUNT, basePathSet.size(), "Some BASE_PATH entries mismatch");
+    }
+
+
+    /**
+     * Identical to {@link #testExecutrixUniqueBase}, but with the new TempFileNames API for constructing temp filenames
+     */
+    @Test
+    void testExecutrixUniqueBaseWithTempFileNamesApi() {
+        e.setInFileEnding(".in");
+        e.setOutFileEnding(".out");
+        e.setOrder("NORMAL");
+
+        final int COUNT = 1000;
+        final Set<String> basePathSet = Collections.synchronizedSet(new HashSet<>(COUNT));
+
+        // Generate COUNT sets of names
+        IntStream.range(0, COUNT).parallel().forEach(number -> {
+            final TempFileNames names = e.createTempFilenames();
+            assertNotNull(names.getTempDir(), "getDir() returned null");
+            assertNotNull(names.getBase(), "getBase() returned null");
+            assertNotNull(names.getBasePath(), "getBasePath() returned null");
+            basePathSet.add(names.getBasePath());
         });
         assertEquals(COUNT, basePathSet.size(), "Some BASE_PATH entries mismatch");
     }
@@ -260,6 +308,7 @@ class ExecutrixTest extends UnitTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation") // confirming functionality of legacy API
     void testExecute() throws IOException {
 
         final String[] names = e.makeTempFilenames();
@@ -337,6 +386,93 @@ class ExecutrixTest extends UnitTest {
         pstat = e.execute(c, sout, serr, "UTF-8", env);
         assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
+
+        assertTrue(Executrix.cleanupDirectory(tdir), "Temp area clean up removes all");
+        assertFalse(tdir.exists(), "Temp area should be gone");
+    }
+
+    /**
+     * Identical to {@link #testExecute}, but with the new TempFileNames API for constructing temp filenames
+     */
+    @Test
+    void testExecuteWithTempFileNamesApi() throws IOException {
+        assertNotNull(e, "Executrix instance should not be null");
+
+        final TempFileNames names = e.createTempFilenames();
+        logger.debug("Names for testExecute is {}", names);
+
+        final File tdir = new File(names.getTempDir());
+        Files.createDirectories(tdir.toPath());
+        assertTrue(tdir.exists() && tdir.isDirectory(), "Temp dir exists");
+
+        assertTrue(Executrix.writeDataToFile("aaa".getBytes(), names.getInputFilename()), "File written");
+        final byte[] data = Executrix.readDataFromFile(names.getInputFilename());
+        assertNotNull(data, "Data must be read from " + names.getInputFilename());
+
+        final String cmd = "cp <INPUT_NAME> <OUTPUT_NAME>";
+        String[] c = e.getCommand(names, cmd);
+        assertNotNull(c, "Command returned");
+        assertEquals("/bin/sh", c[0], "Command runner");
+
+        e.setCommand(cmd);
+        c = e.getCommand(names);
+        assertNotNull(c, "Command returned");
+        assertEquals("/bin/sh", c[0], "Command runner");
+
+        logger.debug("Command to exec is {}", Arrays.asList(c));
+
+        int pstat;
+        final StringBuilder out = new StringBuilder();
+        final StringBuilder err = new StringBuilder();
+
+        pstat = e.execute(c, out, err);
+        logger.debug("Stdout: {}", out);
+        logger.debug("Stderr: {}", err);
+        assertTrue(pstat >= 0, "Process return value");
+        readAndNuke(names.getOutputFilename());
+
+        pstat = e.execute(c, out);
+        assertTrue(pstat >= 0, "Process return value");
+        readAndNuke(names.getOutputFilename());
+
+        pstat = e.execute(c, out, new StringBuilder("UTF-8"));
+        assertTrue(pstat >= 0, "Process return value");
+        readAndNuke(names.getOutputFilename());
+
+        pstat = e.execute(c, out, err, "UTF-8");
+        assertTrue(pstat >= 0, "Process return value");
+        readAndNuke(names.getOutputFilename());
+
+        final StringBuilder sout = new StringBuilder();
+        final StringBuilder serr = new StringBuilder();
+
+        pstat = e.execute(c, sout);
+        assertTrue(pstat >= 0, "Process return value");
+        readAndNuke(names.getOutputFilename());
+
+        pstat = e.execute(c, sout, serr);
+        assertTrue(pstat >= 0, "Process return value");
+        readAndNuke(names.getOutputFilename());
+
+        pstat = e.execute(c, sout, serr, "UTF-8");
+        assertTrue(pstat >= 0, "Process return value");
+        readAndNuke(names.getOutputFilename());
+
+        final Map<String, String> env = new HashMap<>();
+        env.put("FOO", "BAR");
+
+        pstat = e.execute(c, sout, serr, "UTF-8", env);
+        assertTrue(pstat >= 0, "Process return value");
+        readAndNuke(names.getOutputFilename());
+
+        pstat = e.execute(c);
+        assertTrue(pstat >= 0, "Process return value");
+        readAndNuke(names.getOutputFilename());
+
+        e.setProcessMaxMillis(0); // wait forever
+        pstat = e.execute(c, sout, serr, "UTF-8", env);
+        assertTrue(pstat >= 0, "Process return value");
+        readAndNuke(names.getOutputFilename());
 
         assertTrue(Executrix.cleanupDirectory(tdir), "Temp area clean up removes all");
         assertFalse(tdir.exists(), "Temp area should be gone");
