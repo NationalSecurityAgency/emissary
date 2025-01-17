@@ -992,7 +992,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public String getParameterAsString(final String key) {
         final var obj = getParameterAsStrings(key);
         if (obj.size() > 1) {
-            logger.warn("Multiple values for parameter, returning the first - parameter:{}, number of values:{}", key, obj.size());
+            logger.warn("Multiple values for parameter, parameter:{}, number of values:{}", key, obj.size());
+            return getParameterAsConcatString(key);
         }
         return obj.stream().findFirst().orElse(null);
     }
