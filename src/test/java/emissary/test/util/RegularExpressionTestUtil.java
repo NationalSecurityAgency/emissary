@@ -16,8 +16,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * A utility class for testing regular expressions.
  */
-public class RegularExpressionTestUtil {
-    protected static Logger logger = LoggerFactory.getLogger(RegularExpressionTestUtil.class);
+public final class RegularExpressionTestUtil {
+    private static final Logger logger = LoggerFactory.getLogger(RegularExpressionTestUtil.class);
+
+    private RegularExpressionTestUtil() {}
 
     /**
      * A method to test a list of values that should and should not match a particular regular expression. One of the two
