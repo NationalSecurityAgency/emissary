@@ -108,7 +108,7 @@ class PeersIT extends EndpointTestBase {
 
     static class TestEmissaryNode extends EmissaryNode {
 
-        public TestEmissaryNode(Mode mode) {
+        public TestEmissaryNode(EmissaryNode.Mode mode) {
             super(mode);
             nodeNameIsDefault = true;
         }
