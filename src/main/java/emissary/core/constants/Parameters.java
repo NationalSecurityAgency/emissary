@@ -17,6 +17,7 @@ public class Parameters {
     // Common parameter prefixes
 
     // Common parameter suffixes
+    @Deprecated
     public static final String SUFFIXES_HTML_ESCAPE = "_HTML_ESCAPE";
 
     private Parameters() {}
