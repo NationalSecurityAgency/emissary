@@ -37,7 +37,7 @@ public interface IBaseDataObject {
      * @deprecated As of emissary 8.18.0, this method performs no operations
      */
     @Deprecated(forRemoval = true)
-    default void checkForUnsafeDataChanges() {};
+    default void checkForUnsafeDataChanges() {}
 
     /**
      * Return the data as a byte array. If using a channel to the data, calling this method will only return up to

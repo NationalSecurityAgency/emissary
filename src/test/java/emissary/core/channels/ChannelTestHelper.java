@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ChannelTestHelper {
-    private ChannelTestHelper() {};
+    private ChannelTestHelper() {}
 
     public static void checkByteArrayAgainstSbc(final byte[] bytesToVerify, final SeekableByteChannelFactory sbcf)
             throws IOException {
