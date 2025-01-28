@@ -195,13 +195,13 @@ public class WorkSpace implements Runnable {
             this.outbound = new PriorityQueue<>(11, this.feedCommand.getSort());
         }
 
-        configure();
         startJetty();
+        register();
         initializeService();
     }
 
     protected void startJetty() {
-        if (!EmissaryServer.isStarted()) {
+        if (!EmissaryServer.isInitialized() || !EmissaryServer.getInstance().isServerRunning()) {
             // TODO investigate passing the feedCommand object directly to the serverCommand
             List<String> args = new ArrayList<>();
             args.add("-b");
@@ -226,7 +226,7 @@ public class WorkSpace implements Runnable {
             try {
                 // To ensure the feed command starts correctly, depends on a node-{feedCommand.getPort}.cfg file
                 ServerCommand cmd = BaseCommand.parse(ServerCommand.class, args);
-                Server server = new EmissaryServer(cmd).startServer();
+                Server server = EmissaryServer.init(cmd).startServer();
                 final boolean jettyStatus = server.isStarted();
                 if (!jettyStatus) {
                     logger.error("Cannot start the Workspace due to EmissaryServer not starting!");
@@ -292,16 +292,14 @@ public class WorkSpace implements Runnable {
     /**
      * Shut down services that were started here
      */
+    @SuppressWarnings("CatchingUnchecked")
     public void shutDown() {
         stop();
         if (this.jettyStartedHere) {
-            final EmissaryNode node = new EmissaryNode();
+            final EmissaryNode node = EmissaryServer.getInstance().getNode();
             if (node.isValid()) {
                 try {
-                    final EmissaryServer s = EmissaryServer.lookup();
-                    s.getServer().stop();
-                } catch (NamespaceException ex) {
-                    logger.error("Cannot find jetty server", ex);
+                    EmissaryServer.getInstance().stop();
                 } catch (Exception ex) {
                     logger.error("Jetty cannot be shutdown", ex);
                 }
@@ -525,8 +523,8 @@ public class WorkSpace implements Runnable {
     /**
      * Configure the Processor. The *.cfg file is optional
      */
-    protected void configure() {
-        final EmissaryNode node = new EmissaryNode();
+    protected void register() {
+        final EmissaryNode node = EmissaryServer.getInstance().getNode();
         if (node.isValid()) {
             this.workSpaceUrl = node.getNodeScheme() + "://" + node.getNodeName() + ":" + node.getNodePort() + "/" + this.workSpaceName;
         } else {

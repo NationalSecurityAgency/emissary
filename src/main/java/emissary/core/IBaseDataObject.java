@@ -4,7 +4,6 @@ import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.directory.DirectoryEntry;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,9 +13,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 public interface IBaseDataObject {
 
@@ -353,11 +354,12 @@ public interface IBaseDataObject {
      * 
      * @param key name of the metadata element
      * @return the string value or null if no such element
-     * @deprecated use {@link #getParameterAsConcatString(String)}
+     * @deprecated use {@link #getParameterAsString(String)} if a single metadata value is expected, or
+     *             {@link #getParameterAsConcatString(String)} if it might be multivalued
      */
     @Deprecated
     default String getStringParameter(final String key) {
-        return getParameterAsConcatString(key);
+        return getStringParameter(key, DEFAULT_PARAM_SEPARATOR);
     }
 
     /**
@@ -369,8 +371,27 @@ public interface IBaseDataObject {
      * @deprecated use {@link #getParameterAsConcatString(String, String)}
      */
     @Deprecated
+    @Nullable
     default String getStringParameter(final String key, final String sep) {
-        return getParameterAsConcatString(key, sep);
+        final List<Object> obj = getParameter(key);
+        if (obj == null) {
+            return null;
+        } else if (obj.isEmpty()) {
+            return null;
+        } else if ((obj.size() == 1) && (obj.get(0) instanceof String)) {
+            return (String) obj.get(0);
+        } else if ((obj.size() == 1) && (obj.get(0) == null)) {
+            return null;
+        } else {
+            final StringBuilder sb = new StringBuilder();
+            for (final Object item : obj) {
+                if (sb.length() > 0) {
+                    sb.append(sep);
+                }
+                sb.append(item);
+            }
+            return sb.toString();
+        }
     }
 
     /**
@@ -415,9 +436,13 @@ public interface IBaseDataObject {
      * @param sep the separator for multivalued fields
      * @return the string value or null if no such element
      */
+    @Nullable
     default String getParameterAsConcatString(final String key, final String sep) {
-        final var strParameter = String.join(sep, getParameterAsStrings(key));
-        return StringUtils.isBlank(strParameter) ? null : strParameter;
+        Collection<String> strings = getParameterAsStrings(key);
+        if (strings.stream().anyMatch(Objects::nonNull)) {
+            return String.join(sep, strings);
+        }
+        return null;
     }
 
     /**
@@ -987,4 +1012,12 @@ public interface IBaseDataObject {
      * @param transactionId the unique identifier of the transaction
      */
     void setTransactionId(String transactionId);
+
+    /**
+     * Return the top level document or null if there is none for this IBaseDataObject
+     *
+     * @return The TLD IBaseDataObject
+     */
+    IBaseDataObject getTld();
+
 }

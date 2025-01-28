@@ -192,6 +192,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Nullable
     protected SeekableByteChannelFactory seekableByteChannelFactory;
 
+    @Nullable
+    protected final IBaseDataObject tld;
 
     protected enum DataState {
         NO_DATA, CHANNEL_ONLY, BYTE_ARRAY_ONLY, BYTE_ARRAY_AND_CHANNEL
@@ -238,6 +240,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public BaseDataObject() {
         this.theData = null;
         setCreationTimestamp(Instant.now());
+        tld = null;
     }
 
     /**
@@ -251,6 +254,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         setData(newData);
         setFilename(name);
         setCreationTimestamp(Instant.now());
+        tld = null;
     }
 
     /**
@@ -270,6 +274,24 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     public BaseDataObject(final byte[] newData, final String name, final String form, @Nullable final String fileType) {
         this(newData, name, form);
+        if (fileType != null) {
+            this.setFileType(fileType);
+        }
+    }
+
+    public BaseDataObject(final byte[] newData, final String name, @Nullable final String form, IBaseDataObject tld) {
+        setData(newData);
+        setFilename(name);
+        setCreationTimestamp(Instant.now());
+        if (form != null) {
+            pushCurrentForm(form);
+        }
+        this.tld = tld;
+    }
+
+    public BaseDataObject(final byte[] newData, final String name, @Nullable final String form, @Nullable final String fileType,
+            IBaseDataObject tld) {
+        this(newData, name, form, tld);
         if (fileType != null) {
             this.setFileType(fileType);
         }
@@ -470,7 +492,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             case BYTE_ARRAY_ONLY:
                 return ArrayUtils.getLength(theData);
             case CHANNEL_ONLY:
-                try (final SeekableByteChannel sbc = this.seekableByteChannelFactory.create()) {
+                try (SeekableByteChannel sbc = this.seekableByteChannelFactory.create()) {
                     return sbc.size();
                 }
             case NO_DATA:
@@ -970,9 +992,10 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public String getParameterAsString(final String key) {
         final var obj = getParameterAsStrings(key);
         if (obj.size() > 1) {
-            logger.warn("Multiple values for parameter, returning the first - parameter:{}, number of values:{}", key, obj.size());
+            logger.warn("Multiple values for parameter, parameter:{}, number of values:{}", key, obj.size());
+            return getParameterAsConcatString(key);
         }
-        return StringUtils.trimToNull(obj.stream().findFirst().orElse(null));
+        return obj.stream().findFirst().orElse(null);
     }
 
     /**
@@ -1462,4 +1485,10 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
     }
+
+    @Override
+    public IBaseDataObject getTld() {
+        return tld;
+    }
+
 }

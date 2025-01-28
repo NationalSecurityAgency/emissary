@@ -28,7 +28,7 @@ class ImmutableChannelFactoryTest extends UnitTest {
         };
         final SeekableByteChannelFactory sbcf = ImmutableChannelFactory.create(simbcf);
         final ByteBuffer buff = ByteBuffer.wrap(TEST_STRING.concat(TEST_STRING).getBytes());
-        try (final SeekableByteChannel sbc = sbcf.create()) {
+        try (SeekableByteChannel sbc = sbcf.create()) {
             assertThrows(NonWritableChannelException.class, () -> sbc.write(buff), "Writes aren't allowed to immutable channels");
         }
     }

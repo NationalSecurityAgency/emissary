@@ -96,7 +96,11 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
         assertEquals(1, att.get(0).currentFormSize(), "Single form for child");
 
         assertEquals("copy value", att.get(0).getStringParameter("COPY_THIS"), "Child should have propagating metadata value");
+        assertEquals("copy value", att.get(0).getParameterAsConcatString("COPY_THIS"), "Child should have propagating metadata value");
+        assertEquals("copy value", att.get(0).getParameterAsString("COPY_THIS"), "Child should have propagating metadata value");
         assertNull(att.get(0).getStringParameter("IGNORE_THIS"), "Child should not have non-propagating metadata value");
+        assertNull(att.get(0).getParameterAsConcatString("IGNORE_THIS"), "Child should not have non-propagating metadata value");
+        assertNull(att.get(0).getParameterAsString("IGNORE_THIS"), "Child should not have non-propagating metadata value");
     }
 
     @Test
@@ -114,7 +118,11 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
         assertEquals(1, att.get(0).currentFormSize(), "Single form for child");
 
         assertEquals("copy value", att.get(0).getStringParameter("COPY_THIS"), "Child should have propagating metadata value");
+        assertEquals("copy value", att.get(0).getParameterAsConcatString("COPY_THIS"), "Child should have propagating metadata value");
+        assertEquals("copy value", att.get(0).getParameterAsString("COPY_THIS"), "Child should have propagating metadata value");
         assertNull(att.get(0).getStringParameter("IGNORE_THIS"), "Child should not have non-propagating metadata value");
+        assertNull(att.get(0).getParameterAsConcatString("IGNORE_THIS"), "Child should not have non-propagating metadata value");
+        assertNull(att.get(0).getParameterAsString("IGNORE_THIS"), "Child should not have non-propagating metadata value");
     }
 
     @Test
@@ -130,7 +138,11 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
         assertEquals(1, payload.currentFormSize(), "Single form remaining for parent");
 
         assertEquals("copy value", payload.getStringParameter("COPY_THIS"), "Parent should have propagating metadata value");
+        assertEquals("copy value", payload.getParameterAsConcatString("COPY_THIS"), "Parent should have propagating metadata value");
+        assertEquals("copy value", payload.getParameterAsString("COPY_THIS"), "Parent should have propagating metadata value");
         assertEquals("ignore value", payload.getStringParameter("IGNORE_THIS"), "Parent should still have non-propagating metadata value");
+        assertEquals("ignore value", payload.getParameterAsConcatString("IGNORE_THIS"), "Parent should still have non-propagating metadata value");
+        assertEquals("ignore value", payload.getParameterAsString("IGNORE_THIS"), "Parent should still have non-propagating metadata value");
     }
 
     @Test

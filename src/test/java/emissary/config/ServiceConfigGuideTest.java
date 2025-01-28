@@ -427,7 +427,7 @@ class ServiceConfigGuideTest extends UnitTest {
         // Write the config bytes out to a temp file
         final File scfile = File.createTempFile("temp", ".cfg");
         scfile.deleteOnExit();
-        try (final OutputStream os = Files.newOutputStream(scfile.toPath())) {
+        try (OutputStream os = Files.newOutputStream(scfile.toPath())) {
             os.write(cdata.getBytes());
         }
 

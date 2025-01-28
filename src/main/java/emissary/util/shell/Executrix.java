@@ -136,20 +136,34 @@ public class Executrix {
     }
 
     /**
-     * Make a set of temp file names (does not do any disk activity)
+     * Creates a set of temp file names (does not do any disk activity)
+     *
+     * @return new {@link TempFileNames} instance
      */
+    public TempFileNames createTempFilenames() {
+        return new TempFileNames(this.tmpDir, this.placeName, this.inFileEnding, this.outFileEnding);
+    }
+
+    /**
+     * Make a set of temp file names (does not do any disk activity)
+     *
+     * @deprecated see {@link #createTempFilenames}
+     */
+    @Deprecated
     public String[] makeTempFilenames() {
+        final TempFileNames tfn = createTempFilenames();
+
         final String[] names = new String[7];
-        final String dir = FileManipulator.mkTempFile(this.tmpDir, this.placeName);
-        final String base = Long.toString(System.nanoTime());
-        names[DIR] = dir;
-        names[BASE] = base;
-        names[BASE_PATH] = dir + File.separator + base;
-        names[IN] = base + this.inFileEnding;
-        names[OUT] = base + this.outFileEnding;
-        names[INPATH] = dir + File.separator + base + this.inFileEnding;
-        names[OUTPATH] = dir + File.separator + base + this.outFileEnding;
+        names[DIR] = tfn.getTempDir();
+        names[BASE] = tfn.getBase();
+        names[BASE_PATH] = tfn.getBasePath();
+        names[IN] = tfn.getIn();
+        names[OUT] = tfn.getOut();
+        names[INPATH] = tfn.getInputFilename();
+        names[OUTPATH] = tfn.getOutputFilename();
+
         return names;
+
     }
 
     /**
@@ -262,8 +276,8 @@ public class Executrix {
      */
     public static void writeFile(final byte[] theContent, final int pos, final int len, final String filename, final boolean append)
             throws IOException {
-        try (final FileOutputStream theOutput = new FileOutputStream(filename, append);
-                final BufferedOutputStream theStream = new BufferedOutputStream(theOutput)) {
+        try (FileOutputStream theOutput = new FileOutputStream(filename, append);
+                BufferedOutputStream theStream = new BufferedOutputStream(theOutput)) {
             theStream.write(theContent, pos, len);
         }
     }
@@ -890,7 +904,9 @@ public class Executrix {
      * 
      * @param data the bytes to write
      * @return the tempNames structure that was created
+     * @deprecated see {@link #writeInputDataToNewTempDir(byte[])}
      */
+    @Deprecated
     public String[] writeDataToNewTempDir(final byte[] data) {
         return writeDataToNewTempDir(data, 0, data.length);
     }
@@ -902,7 +918,9 @@ public class Executrix {
      * @param start offset in array to start writing
      * @param len length of data to write
      * @return the tempNames structure that was created
+     * @deprecated see {@link #writeInputDataToNewTempDir(byte[], int, int)}
      */
+    @Deprecated
     public String[] writeDataToNewTempDir(final byte[] data, final int start, final int len) {
         final String[] tnames = makeTempFilenames();
         writeDataToFile(data, start, len, tnames[INPATH], false);
@@ -946,6 +964,31 @@ public class Executrix {
     @SuppressWarnings("InconsistentOverloads")
     public File writeDataToNewTempDir(final String dirn, final byte[] data) {
         return writeDataToNewTempDir(data, dirn);
+    }
+
+
+    /**
+     * Write data out for processing into a new subdir under our configured temp area
+     *
+     * @param data the bytes to write
+     * @return the tempNames structure that was created
+     */
+    public TempFileNames writeInputDataToNewTempDir(final byte[] data) {
+        return writeInputDataToNewTempDir(data, 0, data.length);
+    }
+
+    /**
+     * Write data out for processing into a new subdir under our configured temp area
+     *
+     * @param data the bytes to write
+     * @param start offset in array to start writing
+     * @param len length of data to write
+     * @return the tempNames structure that was created
+     */
+    public TempFileNames writeInputDataToNewTempDir(final byte[] data, final int start, final int len) {
+        final TempFileNames tnames = createTempFilenames();
+        writeDataToFile(data, start, len, tnames.getInputFilename(), false);
+        return tnames;
     }
 
     /**
@@ -1007,6 +1050,57 @@ public class Executrix {
         }
         return new String[] {"/bin/sh", "-c", "ulimit -c 0; " + ulimitv + "cd " + tmpNames[DIR] + "; " + c};
     }
+
+    /**
+     * Gets the value of command that this instance will execute adding configured limits and supplied paths to the
+     * configuration value
+     *
+     * @param tmpNames set of input/output directory names
+     * @return the value of command
+     */
+    public String[] getCommand(TempFileNames tmpNames) {
+        return getCommand(tmpNames, getCommand(), this.cpuTimeLimit, this.vmSizeLimit);
+    }
+
+    /**
+     * Gets the value of a command that can be executed adding configured limits and supplied paths to the configuration
+     * value
+     *
+     * @param tmpNames set of input/output directory names
+     * @param commandArg a command string to work with
+     * @return the value of command
+     */
+    public String[] getCommand(final TempFileNames tmpNames, final String commandArg) {
+        return getCommand(tmpNames, commandArg, this.cpuTimeLimit, this.vmSizeLimit);
+    }
+
+    /**
+     * Gets the value of a command that can be executed adding supplied limits and supplied paths to the configuration value
+     * The values in the command string that can be replaced are &lt;INPUT_PATH&gt;, &lt;OUTPUT_PATH&gt;,
+     * &lt;INPUT_NAME&gt;, and &lt;OUTPUT_NAME&gt;. On unix systems it is wrapped like
+     * <code>/bin/sh -c ulimit -c 0; ulimit -v val; your command</code>
+     *
+     * @param tmpNames set of input/output directory names
+     * @param commandArg a command string to work with
+     * @param cpuLimit the cpu limit for the ulimit command
+     * @param vmSzLimit for the ulimit command
+     * @return the value of command
+     */
+    public String[] getCommand(final TempFileNames tmpNames, final String commandArg, final int cpuLimit, final int vmSzLimit) {
+        String c = commandArg;
+        c = c.replaceAll("<INPUT_PATH>", tmpNames.getInputFilename());
+        c = c.replaceAll("<OUTPUT_PATH>", tmpNames.getOutputFilename());
+        c = c.replaceAll("<INPUT_NAME>", tmpNames.getIn());
+        c = c.replaceAll("<OUTPUT_NAME>", tmpNames.getOut());
+
+        // Run the command in shell limiting the core file size to 0 and the specified vm size
+        String ulimitv = "";
+        if (!SystemUtils.IS_OS_MAC) {
+            ulimitv = "ulimit -v " + vmSzLimit + "; ";
+        }
+        return new String[] {"/bin/sh", "-c", "ulimit -c 0; " + ulimitv + "cd " + tmpNames.getTempDir() + "; " + c};
+    }
+
 
     /**
      * Gets the value of a command that can be executed adding configured limits and supplied paths to the configuration
@@ -1405,5 +1499,6 @@ public class Executrix {
         }
 
     }
+
 
 }
