@@ -275,7 +275,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
      * @return if an error occurred
      */
     protected boolean handlePlaceException(IServiceProviderPlace p, boolean hd, Exception ex) {
-        logger.warn("agentProcess{} called from Coordinate problem", (hd ? "HeavyDuty" : "Call"), ex);
+        logger.warn("agentProcess{} called from Coordinate problem", hd ? "HeavyDuty" : "Call", ex);
         return true;
     }
 

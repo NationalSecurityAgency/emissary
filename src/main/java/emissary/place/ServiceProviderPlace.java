@@ -261,7 +261,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
         List<String> configLocs = new ArrayList<>();
         // Dont use KeyManipulator for this, only works when hostname/fqdn has dots
         int pos = placeLocation.lastIndexOf("/");
-        String serviceClass = (pos > -1 ? placeLocation.substring(pos + 1) : placeLocation);
+        String serviceClass = pos > -1 ? placeLocation.substring(pos + 1) : placeLocation;
         configLocs.add(myPackage + DOT + serviceClass + ConfigUtil.CONFIG_FILE_ENDING);
         configLocs.add(serviceClass + ConfigUtil.CONFIG_FILE_ENDING);
         return ConfigUtil.getConfigInfo(configLocs);

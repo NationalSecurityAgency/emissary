@@ -58,7 +58,7 @@ public class MagicMath {
     public static byte[] parseEscapedString(String s) {
         List<Number> array = new ArrayList<>();
         Deque<Character> chars = new ArrayDeque<>();
-        for (int i = (s.length() - 1); i >= 0; i--) {
+        for (int i = s.length() - 1; i >= 0; i--) {
             chars.push(s.charAt(i));
         }
         while (!chars.isEmpty()) {
@@ -156,7 +156,7 @@ public class MagicMath {
 
         byte[] newValues = new byte[length];
         int ix = data.length - 1;
-        for (int i = (length - 1); i >= 0; i--) {
+        for (int i = length - 1; i >= 0; i--) {
             if (ix < 0) {
                 newValues[i] = (byte) 0;
             } else {

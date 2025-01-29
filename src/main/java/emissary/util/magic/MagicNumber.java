@@ -173,7 +173,7 @@ public class MagicNumber {
             return desc;
         }
         Deque<Character> chars = new ArrayDeque<>();
-        for (int i = (desc.length() - 1); i >= 0; --i) {
+        for (int i = desc.length() - 1; i >= 0; --i) {
             chars.push(desc.charAt(i));
         }
         StringBuilder sb = new StringBuilder();

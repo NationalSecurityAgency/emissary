@@ -410,13 +410,13 @@ public class InputSession {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Session is ").append((this.isValid() ? "" : "not")).append("valid").append("\n");
+        sb.append("Session is ").append(this.isValid() ? "" : "not").append("valid").append("\n");
         sb.append("Session overall ").append(this.getOverall()).append("\n");
         sb.append("Header record ").append(this.getHeader()).append("\n");
         sb.append("Data record ").append(this.getData()).append("\n");
         sb.append("Footer record ").append(this.getFooter()).append("\n");
         Map<String, Object> m = this.getMetaData();
-        sb.append("Metadata count ").append((m == null ? 0 : m.size())).append("\n");
+        sb.append("Metadata count ").append(m == null ? 0 : m.size()).append("\n");
         return sb.toString();
     }
 

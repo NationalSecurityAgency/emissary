@@ -152,8 +152,8 @@ public class DumpDirectoryAction {
             this.expense = entry.getExpense();
             long ago = now - entry.getAge();
             long hh = ago / 3600000;
-            long mm = (ago % 3600000) / 60000;
-            long ss = (ago % 60000) / 1000;
+            long mm = ago % 3600000 / 60000;
+            long ss = ago % 60000 / 1000;
             String hhs = (hh < 10 ? "0" : "") + hh;
             String mms = (mm < 10 ? "0" : "") + mm;
             String sss = (ss < 10 ? "0" : "") + ss;

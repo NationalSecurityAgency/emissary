@@ -434,7 +434,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
                     logger.debug("Filter {} not Outputtable for {}", filter.getFilterName(), listTarget != null ? "list" : "single payload");
                     filterStatus = IDropOffFilter.STATUS_SUCCESS;
                 }
-                logger.debug("Filter {} took {}s - {}", filter.getFilterName(), ((System.currentTimeMillis() - start) / 1000.0), filterStatus);
+                logger.debug("Filter {} took {}s - {}", filter.getFilterName(), (System.currentTimeMillis() - start) / 1000.0, filterStatus);
             } catch (RuntimeException e) {
                 logger.error("Filter {} failed", filter.getFilterName(), e);
             }

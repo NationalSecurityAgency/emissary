@@ -655,7 +655,7 @@ public class WorkSpace implements Runnable {
         }
 
         if (logger.isInfoEnabled()) {
-            logger.info("Notified {} in {} attempts: {}", pup, tryCount, (notified ? "SUCCESS" : "FAILED"));
+            logger.info("Notified {} in {} attempts: {}", pup, tryCount, notified ? "SUCCESS" : "FAILED");
         }
 
         return notified;
@@ -767,7 +767,7 @@ public class WorkSpace implements Runnable {
         }
 
         if (logger.isInfoEnabled()) {
-            logger.info("Adding workbundle {} size {} filesSeen {}", wb, (sz + 1), this.filesSeen.size());
+            logger.info("Adding workbundle {} size {} filesSeen {}", wb, sz + 1, this.filesSeen.size());
         }
     }
 
@@ -848,7 +848,7 @@ public class WorkSpace implements Runnable {
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Bundle {} completed by {}{}", bundleId, remoteName,
-                    (itWorked ? "" : (" but failed for the " + (item != null ? item.getErrorCount() : -1) + " time")));
+                    itWorked ? "" : (" but failed for the " + (item != null ? item.getErrorCount() : -1) + " time"));
         }
         return item != null;
     }
@@ -1171,7 +1171,7 @@ public class WorkSpace implements Runnable {
                 WorkSpace.this.numberOfBundlesToSkip = 0;
 
                 logger.info("Collected {} file bundles in {}s in loop iteration {}, {} items in outbound queue", collectCount,
-                        ((stop - start) / 1000.0), loopCount, WorkSpace.this.outbound.size());
+                        (stop - start) / 1000.0, loopCount, WorkSpace.this.outbound.size());
 
                 if ((collectCount == 0) && WorkSpace.this.loop) {
                     // Wait pause time seconds and try again if looping
@@ -1366,7 +1366,7 @@ public class WorkSpace implements Runnable {
             if (count > 0 && logger.isDebugEnabled()) {
                 logger.debug(
                         "Paused collector {} times for {}s waiting for memory usage to go below threshold {} resuming at {}, queueSize was/is={}/{}",
-                        count, (intv / 1000), MEM_THRESHOLD, heap, initialQueueSize, getOutboundQueueSize());
+                        count, intv / 1000, MEM_THRESHOLD, heap, initialQueueSize, getOutboundQueueSize());
             }
         }
     }

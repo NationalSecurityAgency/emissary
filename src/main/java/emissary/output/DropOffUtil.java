@@ -165,10 +165,10 @@ public class DropOffUtil {
      */
     public String generateBuildFileName() {
         if (this.uuidInOutputFilenames) {
-            return (prefix + getDateOrdinalWithTime(Instant.now()) + UUID.randomUUID());
+            return prefix + getDateOrdinalWithTime(Instant.now()) + UUID.randomUUID();
         } else {
             // Using some constants plus yyyyJJJhhmmss plus random digit, letter, digit
-            return (prefix + getDateOrdinalWithTime(Instant.now()) + prng.nextInt(10) + ALPHABET[prng.nextInt(ALPHABET.length)] + prng.nextInt(10));
+            return prefix + getDateOrdinalWithTime(Instant.now()) + prng.nextInt(10) + ALPHABET[prng.nextInt(ALPHABET.length)] + prng.nextInt(10);
         }
     }
 
@@ -548,7 +548,7 @@ public class DropOffUtil {
             return fixFileNameSeparators(tld.getStringParameter(TARGETBIN));
         } else {
             logger.debug("TARGETBIN is null");
-            return ("NO-CASE" + SEPARATOR + TimeUtil.getCurrentDate());
+            return "NO-CASE" + SEPARATOR + TimeUtil.getCurrentDate();
         }
     }
 

@@ -100,7 +100,7 @@ public class ChecksumCalculator {
      * Determine if we are using CRC summing
      */
     public boolean getUseCrc() {
-        return (crc != null);
+        return crc != null;
     }
 
     /**
@@ -120,7 +120,7 @@ public class ChecksumCalculator {
      * Determine if we are using ssdeep summing
      */
     public boolean getUseSsdeep() {
-        return (ssdeep != null);
+        return ssdeep != null;
     }
 
     /**

@@ -192,7 +192,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
         } else {
             final String[] forms = newForms.toArray(new String[0]);
             // Set all the but top dog as final
-            for (int i = (forms.length - 1); i > 0; i--) {
+            for (int i = forms.length - 1; i > 0; i--) {
                 setFinalCurrentForm(d, forms[i]);
             }
 

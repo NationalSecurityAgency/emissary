@@ -327,7 +327,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
             handleFileError(theFile);
         }
 
-        logger.debug("Ending processDataFile {} {} {}", theFile, (success ? "success" : "failure"), (simpleMode ? "simple" : ""));
+        logger.debug("Ending processDataFile {} {} {}", theFile, success ? "success" : "failure", simpleMode ? "simple" : "");
         return success;
     }
 
@@ -347,7 +347,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         dataObject.setParameter("SIMPLE_MODE", Boolean.toString(simpleMode));
         dataObjectCreated(dataObject, theFile);
         logger.info("**Deploying an agent for oversized {} and object {} simple={}", fixedName, dataObject.getInternalId(),
-                (simpleMode ? "simple" : ""));
+                simpleMode ? "simple" : "");
         assignToPooledAgent(dataObject, -1L);
         return true;
     }
@@ -559,7 +559,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         d.setParameter("SIMPLE_MODE", Boolean.toString(simpleMode));
         dataObjectCreated(d, theFile);
         logger.info("**Deploying an agent for {} and object {} forms={} simple={}", fixedName, d.getInternalId(), d.getAllCurrentForms(),
-                (simpleMode ? "simple" : ""));
+                simpleMode ? "simple" : "");
 
         assignToPooledAgent(d, -1L);
         return true;

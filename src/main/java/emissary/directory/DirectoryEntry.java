@@ -496,7 +496,7 @@ public class DirectoryEntry implements Serializable {
      * @param quality the quality
      */
     public static int calculateExpense(final int cost, final int quality) {
-        return (cost * 100) + (100 - quality);
+        return cost * 100 + 100 - quality;
     }
 
     /**

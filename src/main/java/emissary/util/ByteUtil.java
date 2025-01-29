@@ -89,7 +89,7 @@ public class ByteUtil {
      * @return true if b is alphabetical
      */
     public static boolean isAlpha(byte b) {
-        return ((b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z'));
+        return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z');
     }
 
     /**
@@ -110,7 +110,7 @@ public class ByteUtil {
      */
     public static boolean isDigit(byte b) {
         // check ascii value of b for digit-ness
-        return (b >= '0' && b <= '9');
+        return b >= '0' && b <= '9';
     }
 
     /**

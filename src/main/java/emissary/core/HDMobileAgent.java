@@ -239,8 +239,8 @@ public class HDMobileAgent extends MobileAgent {
 
                             if (logger.isDebugEnabled()) {
                                 logger.debug("Adding slug {} with key {} to ride with {} having key {} current form {}", slug.shortName(),
-                                        (slugLastPlaceVisited == null ? "null" : slugLastPlaceVisited.getKey()), mypayload.shortName(),
-                                        (primaryLastEntry == null ? "null" : primaryLastEntry.getKey()), primaryCurrentForm);
+                                        slugLastPlaceVisited == null ? "null" : slugLastPlaceVisited.getKey(), mypayload.shortName(),
+                                        primaryLastEntry == null ? "null" : primaryLastEntry.getKey(), primaryCurrentForm);
                             }
                         }
                     }

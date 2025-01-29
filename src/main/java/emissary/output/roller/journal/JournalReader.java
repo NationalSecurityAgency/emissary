@@ -75,7 +75,7 @@ public class JournalReader implements Closeable {
             int read = read(ENTRY_LENGTH);
             if (read != ENTRY_LENGTH) {
                 logger.warn("Incomplete journal read for {}. Expected {} but read {}. Sequence start {}, last successful sequence {} ({}th)",
-                        journal.getKey(), ENTRY_LENGTH, read, startsequence, sequence, (sequence - startsequence));
+                        journal.getKey(), ENTRY_LENGTH, read, startsequence, sequence, sequence - startsequence);
                 break;
             }
             long nextSeq = getSequence();

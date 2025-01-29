@@ -99,7 +99,7 @@ public class WorkSpaceAdapter extends EmissaryClient {
         method.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));
         final EmissaryResponse status = send(method);
         // TODO Look at putting this method in the EmissaryResponse
-        return (status.getStatus() == HttpStatus.SC_OK);
+        return status.getStatus() == HttpStatus.SC_OK;
     }
 
 }

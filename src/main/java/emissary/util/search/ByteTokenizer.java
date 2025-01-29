@@ -259,7 +259,7 @@ public class ByteTokenizer implements Iterator<String> {
          * in that next() invocation.
          */
         newPosition = skipDelimiters(currentPosition);
-        return (newPosition < maxPosition);
+        return newPosition < maxPosition;
     }
 
     /**

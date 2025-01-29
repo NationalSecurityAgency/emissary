@@ -641,7 +641,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param theId usually comes from the shortName of the payload
      */
     protected void setAgentId(@Nullable final String theId) {
-        final long t = (System.currentTimeMillis() % 10000);
+        final long t = System.currentTimeMillis() % 10000;
         final String id = "Agent-" + t;
         this.agentId = id + "-" + ((theId != null) ? theId : "blah");
     }
