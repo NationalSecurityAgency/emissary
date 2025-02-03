@@ -150,7 +150,7 @@ public final class IBaseDataObjectHelper {
         try {
             childIBaseDataObject.putParameter(SessionParser.ORIG_DOC_SIZE_KEY,
                     Long.toString(childIBaseDataObject.getChannelSize()));
-        } catch (IOException e) {
+        } catch (IOException ignored) {
             // Do not add the ORIG_DOC_SIZE_KEY parameter.
         }
 

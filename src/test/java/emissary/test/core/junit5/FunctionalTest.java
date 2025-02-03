@@ -147,7 +147,7 @@ public abstract class FunctionalTest extends UnitTest {
                     logger.debug("Stopping {}", obj);
                     ((IServiceProviderPlace) obj).shutDown();
                 }
-            } catch (NamespaceException ignore) {
+            } catch (NamespaceException ignored) {
                 // empty catch block
             }
         }

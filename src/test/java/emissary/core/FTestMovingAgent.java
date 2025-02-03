@@ -50,7 +50,7 @@ class FTestMovingAgent extends FunctionalTest {
         this.dir2 = startDirectory(9005);
         try {
             Thread.sleep(500);
-        } catch (InterruptedException ex) {
+        } catch (InterruptedException ignored) {
             // empty catch block
         }
 

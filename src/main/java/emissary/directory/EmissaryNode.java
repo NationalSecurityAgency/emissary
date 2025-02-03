@@ -101,7 +101,7 @@ public class EmissaryNode {
                 final InetAddress local = InetAddress.getLocalHost();
                 this.nodeName = local.getHostAddress();
                 this.nodeNameIsDefault = true;
-            } catch (UnknownHostException ex) {
+            } catch (UnknownHostException ignored) {
                 // empty catch block
             }
         }

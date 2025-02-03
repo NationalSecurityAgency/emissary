@@ -39,13 +39,13 @@ public class ReadOutputLogger extends ProcessReader {
                     // logger.info("{}:{}", this.name, aLine.replace('\n', '~'));
                 }
             } while (aLine != null && !this.finished);
-        } catch (IOException iox) {
+        } catch (IOException ignored) {
             // ignore
         }
         try {
             this.inputReader.close();
             this.bufferedReader.close();
-        } catch (IOException iox) {
+        } catch (IOException ignored) {
             // ignore
         }
     }

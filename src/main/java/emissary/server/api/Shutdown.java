@@ -46,7 +46,7 @@ public class Shutdown {
                     } else {
                         EmissaryServer.stopServer();
                     }
-                } catch (RuntimeException e) {
+                } catch (RuntimeException ignored) {
                     // swallow
                 }
                 System.exit(0);

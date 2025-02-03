@@ -141,7 +141,7 @@ public class DateTimeFormatParser {
 
             try {
                 return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(cleanedDateString)).atZone(zone).toLocalDateTime();
-            } catch (DateTimeParseException e) {
+            } catch (DateTimeParseException ignored) {
                 // ignore
             }
 
@@ -168,7 +168,7 @@ public class DateTimeFormatParser {
                 ZonedDateTime zdt = ZonedDateTime.parse(dateString, dtf);
                 zdt = ZonedDateTime.ofInstant(zdt.toInstant(), zone);
                 return zdt.toLocalDateTime();
-            } catch (DateTimeParseException e) {
+            } catch (DateTimeParseException ignored) {
                 // ignore
             }
         }
@@ -187,7 +187,7 @@ public class DateTimeFormatParser {
         for (final DateTimeFormatter dtf : dateTimeFormats) {
             try {
                 return LocalDateTime.parse(dateString, dtf);
-            } catch (DateTimeParseException e) {
+            } catch (DateTimeParseException ignored) {
                 // ignore
             }
         }
@@ -207,7 +207,7 @@ public class DateTimeFormatParser {
             try {
                 OffsetDateTime odt = OffsetDateTime.parse(dateString, dtf);
                 return OffsetDateTime.ofInstant(odt.toInstant(), zone).toLocalDateTime();
-            } catch (DateTimeParseException e) {
+            } catch (DateTimeParseException ignored) {
                 // ignore
             }
         }
@@ -227,7 +227,7 @@ public class DateTimeFormatParser {
             try {
                 LocalDate d = LocalDate.parse(dateString, dtf);
                 return d.atStartOfDay();
-            } catch (DateTimeParseException e) {
+            } catch (DateTimeParseException ignored) {
                 // ignore
             }
         }

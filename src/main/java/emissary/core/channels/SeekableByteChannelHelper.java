@@ -135,7 +135,7 @@ public final class SeekableByteChannelHelper {
             for (; inputStream.read() != -1; totalBytesRead++) {
                 // Do nothing.
             }
-        } catch (final IOException ioe) {
+        } catch (final IOException ignored) {
             // Do nothing.
         }
 

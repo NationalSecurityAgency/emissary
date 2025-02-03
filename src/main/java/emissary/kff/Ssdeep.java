@@ -130,7 +130,7 @@ public final class Ssdeep {
 
             try (SeekableByteChannel sbc = sbcf.create()) {
                 expectedInputLength = sbc.size();
-            } catch (final IOException ioe) {
+            } catch (final IOException ignored) {
                 // Ignore
             }
 
@@ -290,7 +290,7 @@ public final class Ssdeep {
                 while ((bytesRead = is.read(b)) != -1) {
                     applyBytes(rollState, b, 0, bytesRead);
                 }
-            } catch (final IOException e) {
+            } catch (final IOException ignored) {
                 // Ignore
             }
 

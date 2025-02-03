@@ -28,7 +28,7 @@ public class Banner {
                     result.append(System.getProperty("line.separator")).append(line);
                 }
                 bText = System.getProperty("line.separator") + result.toString();
-            } catch (IOException e) {
+            } catch (IOException ignored) {
                 // will be DEFAULT_TEXT;
             }
             bannerText = bText;

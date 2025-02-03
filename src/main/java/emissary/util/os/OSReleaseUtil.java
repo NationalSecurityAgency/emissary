@@ -33,7 +33,7 @@ public class OSReleaseUtil {
                     String versionIdLine = versionIdOptional.get().replace("\"", "");
                     versionId = versionIdLine.substring(versionIdLine.indexOf("=") + 1);
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
                 // ignore
             }
         }

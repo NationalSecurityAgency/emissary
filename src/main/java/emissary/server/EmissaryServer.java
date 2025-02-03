@@ -464,7 +464,7 @@ public class EmissaryServer {
         try {
             AgentPool pool = AgentPool.lookup();
             return pool.getNumActive() == 0;
-        } catch (NamespaceException ex) {
+        } catch (NamespaceException ignored) {
             // empty catch block
         }
         return true;
@@ -535,7 +535,7 @@ public class EmissaryServer {
         try {
             EmissaryServer.lookup();
             return true;
-        } catch (NamespaceException ex) {
+        } catch (NamespaceException ignored) {
             // expected
         }
         return false;

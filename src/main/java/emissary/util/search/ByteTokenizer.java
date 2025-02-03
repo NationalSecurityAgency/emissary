@@ -294,7 +294,7 @@ public class ByteTokenizer implements Iterator<String> {
             } else {
                 token = new String(data, start, currentPosition - start);
             }
-        } catch (UnsupportedEncodingException uee) {
+        } catch (UnsupportedEncodingException ignored) {
             // cannot happen...we already verified in constructor
         }
         return token;

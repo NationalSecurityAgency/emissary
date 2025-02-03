@@ -43,7 +43,7 @@ public class ReadOutput implements Runnable {
                 }
             }
             br.close();
-        } catch (IOException iox) {
+        } catch (IOException ignored) {
             // empty catch block
         }
 

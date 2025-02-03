@@ -563,7 +563,7 @@ class ServiceConfigGuideTest extends UnitTest {
             assertTrue(Executrix.writeDataToFile(optional, optname));
             new ServiceConfigGuide(priname);
             fail("File parsing on OPT_IMPORT_FILE must fail when it has bad syntax");
-        } catch (IOException iox) {
+        } catch (IOException ignored) {
             // expected
         } finally {
             FileUtils.deleteDirectory(dir.toFile());

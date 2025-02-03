@@ -302,7 +302,7 @@ public class KeyManipulator implements Serializable {
         int expense = dflt;
         try {
             expense = Integer.parseInt(key.substring(pos + 1));
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ignored) {
             // It's optional...
         }
         return expense;

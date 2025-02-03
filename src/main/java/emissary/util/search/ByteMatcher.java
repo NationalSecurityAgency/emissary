@@ -547,7 +547,7 @@ public class ByteMatcher {
         int length = -1;
         try {
             length = Integer.parseInt(strLength.trim());
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ignored) {
             // empty catch block
         }
         if (length <= 0) {
