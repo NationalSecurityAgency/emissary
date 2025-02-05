@@ -12,7 +12,6 @@ import emissary.kff.KffDataObjectHandler;
 import emissary.test.core.junit5.LogbackTester.SimplifiedLogEvent;
 import emissary.util.PlaceComparisonHelper;
 import emissary.util.io.ResourceReader;
-import emissary.util.xml.AbstractJDOMUtil;
 
 import ch.qos.logback.classic.Level;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -21,9 +20,13 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
+import org.jdom2.output.Format;
+import org.jdom2.output.LineSeparator;
+import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.channels.FileChannel;
@@ -250,9 +253,22 @@ public final class RegressionTestUtil {
         }
 
         // Generate the full XML (setup & answers from before & after)
-        final String xmlContent = AbstractJDOMUtil.toString(new Document(rootElement));
+        final byte[] xmlContent = bytesFromDocument(new Document(rootElement));
         // Write out the XML to disk
         writeXml(resource, xmlContent, answerFileClassRef);
+    }
+
+    @Nullable
+    private static byte[] bytesFromDocument(final Document jdom) {
+        final Format format = Format.getPrettyFormat().setLineSeparator(LineSeparator.UNIX);
+        final XMLOutputter outputter = new XMLOutputter(format);
+
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+            outputter.output(jdom, os);
+            return os.toByteArray();
+        } catch (IOException iox) {
+            return null;
+        }
     }
 
     /**
@@ -262,14 +278,14 @@ public final class RegressionTestUtil {
      * @param xmlContent to write to the XML answer file
      * @param answerFileClassRef answer file class (if different from data class)
      */
-    public static void writeXml(final String resource, final String xmlContent, @Nullable final AtomicReference<Class<?>> answerFileClassRef) {
+    public static void writeXml(final String resource, final byte[] xmlContent, @Nullable final AtomicReference<Class<?>> answerFileClassRef) {
         final Path path = getXmlPath(resource, answerFileClassRef);
         if (path == null) {
             fail(String.format("Could not get path for resource = %s", resource));
         }
         LOGGER.info("Writing answers file to path: {}", path);
         try (FileChannel fc = FileChannel.open(path, CREATE_WRITE_TRUNCATE);
-                SeekableInMemoryByteChannel simbc = new SeekableInMemoryByteChannel(xmlContent.getBytes())) {
+                SeekableInMemoryByteChannel simbc = new SeekableInMemoryByteChannel(xmlContent)) {
             fc.transferFrom(simbc, 0, simbc.size());
         } catch (final IOException ioe) {
             fail(String.format("Couldn't write XML answer file for resource: %s", resource), ioe);
