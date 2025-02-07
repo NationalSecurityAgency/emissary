@@ -518,7 +518,7 @@ public class DirectoryEntry implements Serializable {
         if (!this.lookupAttempted) {
             try {
                 setLocalPlace((IServiceProviderPlace) Namespace.lookup(this.serviceLocation));
-            } catch (NamespaceException e) {
+            } catch (NamespaceException ignored) {
                 // empty catch block
             }
             logger.debug("NS Lookup for locality on {}{}", this.serviceLocation, this.localPlace == null ? " failed" : " passed");

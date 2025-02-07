@@ -41,7 +41,7 @@ public final class Version {
                     }
                 }
             }
-        } catch (IOException ignore) {
+        } catch (IOException ignored) {
             // ignore
         }
     }

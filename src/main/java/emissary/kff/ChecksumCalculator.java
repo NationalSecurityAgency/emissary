@@ -188,7 +188,7 @@ public class ChecksumCalculator {
                 }
 
                 res.setHash(d.getAlgorithm(), d.digest());
-            } catch (final IOException ioe) {
+            } catch (final IOException ignored) {
                 // Ignore
             }
         }
@@ -203,7 +203,7 @@ public class ChecksumCalculator {
                 }
 
                 res.setCrc(crc.getValue());
-            } catch (final IOException ioe) {
+            } catch (final IOException ignored) {
                 // Ignore
             }
         }

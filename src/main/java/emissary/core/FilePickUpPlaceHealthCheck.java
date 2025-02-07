@@ -71,20 +71,20 @@ public class FilePickUpPlaceHealthCheck extends HealthCheck {
                 return Result.unhealthy("Large aggregate file size backed up for FilePickUpPlace = " + aggregateFileSize);
             }
 
-        } catch (NamespaceException ne) {
+        } catch (NamespaceException ignored) {
             // This gets throw if can't find FilePickUpPlace, assume it is not configured
             // and things are healthy
-        } catch (NoSuchFieldException nsfe) {
+        } catch (NoSuchFieldException ignored) {
             // Possibly thrown by getDeclaredField, assume FilePickUpPlace implementation has changed
-        } catch (SecurityException se) {
+        } catch (SecurityException ignored) {
             // Possibly thrown by getDeclaredField - would prevent our access to the field
-        } catch (NullPointerException npe) {
+        } catch (NullPointerException ignored) {
             // A variety of methods throw NPEs
-        } catch (IllegalArgumentException iae) {
+        } catch (IllegalArgumentException ignored) {
             // Thrown by get()
-        } catch (IllegalAccessException iae) {
+        } catch (IllegalAccessException ignored) {
             // Also thrown by get()
-        } catch (ExceptionInInitializerError eiie) {
+        } catch (ExceptionInInitializerError ignored) {
             // Also thrown by get()
         }
 

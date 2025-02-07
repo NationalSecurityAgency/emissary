@@ -42,7 +42,8 @@ class ResourceReaderTest extends UnitTest {
             assertNotNull(is, "Failed to open " + rez);
             try {
                 is.close();
-            } catch (IOException ignore) {
+            } catch (IOException ignored) {
+                // ignored.
             }
         }
 

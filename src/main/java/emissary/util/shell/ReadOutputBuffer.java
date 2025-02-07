@@ -85,13 +85,13 @@ public class ReadOutputBuffer extends ProcessReader {
                     append("\r\n");
                 }
             }
-        } catch (Exception ex) {
-            //
+        } catch (Exception ignored) {
+            // ignored.
         } finally {
             if (this.br != null) {
                 try {
                     this.br.close();
-                } catch (IOException ioxjunk) {
+                } catch (IOException ignored) {
                     // empty catch block
                 }
             }

@@ -35,7 +35,7 @@ public class HtmlEscaper {
             }
             escaped = output.toByteArray();
 
-        } catch (IOException iox) {
+        } catch (IOException ignored) {
             /* dont care */
         }
 

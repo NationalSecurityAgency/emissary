@@ -56,7 +56,7 @@ public final class BufferedChannelFactory {
                 if (sbc.size() < maxBufferSize) {
                     b = (int) sbc.size();
                 }
-            } catch (IOException e) {
+            } catch (IOException ignored) {
                 // Leave b as maxBufferSize.
             }
 

@@ -564,7 +564,7 @@ public class HDMobileAgent extends MobileAgent {
             try {
                 sn = this.payloadList.get(0).shortName();
                 sz = this.payloadList.size();
-            } catch (Throwable t) {
+            } catch (Throwable ignored) {
                 // empty catch block
             }
         }

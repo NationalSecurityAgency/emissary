@@ -33,7 +33,7 @@ public class PayloadLauncher {
             MoveSpool spool = null;
             try {
                 spool = MoveSpool.lookup();
-            } catch (NamespaceException spoolex) {
+            } catch (NamespaceException ignored) {
                 // empty catch block
             }
 

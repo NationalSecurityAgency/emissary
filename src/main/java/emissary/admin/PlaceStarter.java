@@ -215,9 +215,9 @@ public class PlaceStarter {
             final IServiceProviderPlace thePlace = (IServiceProviderPlace) Namespace.lookup(luStr);
             logger.debug("{} already running on {}", theLocation, thePlaceHost);
             return thePlace;
-        } catch (NamespaceException nse) {
+        } catch (NamespaceException ignored) {
             // expected when the place doesn't exist
-        } catch (Throwable t) {
+        } catch (Throwable ignored) {
             // empty catch block
         }
         return null;

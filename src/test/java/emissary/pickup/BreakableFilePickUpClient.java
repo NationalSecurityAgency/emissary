@@ -52,7 +52,7 @@ public class BreakableFilePickUpClient extends FilePickUpClient {
             this.shutDown();
             try {
                 Thread.sleep(100);
-            } catch (InterruptedException ignore) {
+            } catch (InterruptedException ignored) {
                 // empty catch block
             }
             return true;
