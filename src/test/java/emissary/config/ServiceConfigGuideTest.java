@@ -439,16 +439,22 @@ class ServiceConfigGuideTest extends UnitTest {
 
     @Test
     void testMerge() throws IOException {
-        final byte[] configData = ("FOO = \"BAR\"\n" + "FOO = \"BAZ\"\n" + "KEY1 = \"VAL1\"\n").getBytes();
+        final byte[] configData = ("FOO = \"BAR\"\n" + "FOO = \"CAT\"\n" + "FOO = \"BAZ\"\n" + "KEY1 = \"VAL1\"\n").getBytes();
         final ByteArrayInputStream str = new ByteArrayInputStream(configData);
         final Configurator c1 = ConfigUtil.getConfigInfo(str);
-        final byte[] configData2 = ("FOO = \"BAR2\"\n" + "KEY2 = \"VAL2\"\n").getBytes();
+        final byte[] configData2 = ("FOO = \"BAR2\"\n" + "FOO = \"CAT2\"\n" + "FOO = \"BAZ2\"\n" + "KEY2 = \"VAL2\"\n").getBytes();
         final ByteArrayInputStream str2 = new ByteArrayInputStream(configData2);
         final Configurator c2 = ConfigUtil.getConfigInfo(str2);
 
         c1.merge(c2);
-        assertEquals("BAR2", c1.findStringEntry("FOO"), "Newly merged entry is first");
-        assertEquals(3, c1.findEntries("FOO").size(), "Merge contains union of values");
+        assertEquals("BAZ2", c1.findStringEntry("FOO"), "Newly merged entry is first");
+        // #997 -- Would expect the ordering to be [BAR2,CAT2,BAZ2,BAR,CAT,BAZ]
+        assertEquals("BAZ2", c1.findEntries("FOO").get(0), "Merge contains union of values");
+        assertEquals("CAT2", c1.findEntries("FOO").get(1), "Merge contains union of values");
+        assertEquals("BAR2", c1.findEntries("FOO").get(2), "Merge contains union of values");
+        assertEquals("BAR", c1.findEntries("FOO").get(3), "Merge contains union of values");
+        assertEquals("CAT", c1.findEntries("FOO").get(4), "Merge contains union of values");
+        assertEquals("BAZ", c1.findEntries("FOO").get(5), "Merge contains union of values");
         assertEquals("VAL1", c1.findStringEntry("KEY1"), "Old value present after merge");
         assertEquals("VAL2", c1.findStringEntry("KEY2"), "New value present after merge");
     }
