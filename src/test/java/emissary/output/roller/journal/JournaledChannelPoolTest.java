@@ -53,7 +53,7 @@ class JournaledChannelPoolTest extends UnitTest {
         final int free = this.instance.getFreeSize();
         // out is a wrapper, closing it will delegate to freeChannel
         out.close();
-        assertEquals((free + 1), this.instance.getFreeSize(), "Free should be one more than " + free);
+        assertEquals(free + 1, this.instance.getFreeSize(), "Free should be one more than " + free);
     }
 
     /**

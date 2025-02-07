@@ -31,7 +31,7 @@ public final class Ssdeep {
     private static final int SPAMSUM_LENGTH = 64;
     private static final int MIN_BLOCKSIZE = 3;
 
-    public static final int FUZZY_MAX_RESULT = (SPAMSUM_LENGTH + (SPAMSUM_LENGTH / 2 + 20));
+    public static final int FUZZY_MAX_RESULT = SPAMSUM_LENGTH + (SPAMSUM_LENGTH / 2 + 20);
 
     /** The window size for the rolling hash. */
     private static final int ROLLING_WINDOW_SIZE = 7;
@@ -620,13 +620,13 @@ public final class Ssdeep {
         // proportion of the message that has changed rather than an
         // absolute quantity. It also copes with the variability of
         // the string lengths.
-        score = (score * SPAMSUM_LENGTH) / (len1 + len2);
+        score = score * SPAMSUM_LENGTH / (len1 + len2);
 
         // At this stage the score occurs roughly on a 0-64 scale,
         // with 0 being a good match and 64 being a complete mismatch.
 
         // Rescale to a 0-100 scale (friendlier to humans).
-        score = (100 * score) / 64;
+        score = 100 * score / 64;
 
         // It is possible to get a score above 100 here, but it is a
         // really terrible match.

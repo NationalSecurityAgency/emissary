@@ -281,7 +281,7 @@ public class KeyManipulator implements Serializable {
         final int thirdSeparator = key.indexOf(SEPARATOR, secondSeparator + 1);
         final int fourthSeparator = key.indexOf(DOLLAR, thirdSeparator + 1);
 
-        if ((thirdSeparator >= 0)) {
+        if (thirdSeparator >= 0) {
             if (fourthSeparator > 0) {
                 return key.substring(thirdSeparator + 1, fourthSeparator);
             }

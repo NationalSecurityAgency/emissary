@@ -171,7 +171,7 @@ public class FastStringBuffer extends OutputStream {
                     }
                 } else {
                     // if not writing to stream, then increase the buffer appropriately
-                    final int newSize = Math.max(this.buffer.length + this.buffer.length / 2, (this.curPos + lengthVal) + 1024);
+                    final int newSize = Math.max(this.buffer.length + this.buffer.length / 2, this.curPos + lengthVal + 1024);
                     final byte[] newArray = new byte[newSize];
                     System.arraycopy(this.buffer, 0, newArray, 0, this.curPos);// ??
                     this.buffer = newArray;
@@ -189,7 +189,7 @@ public class FastStringBuffer extends OutputStream {
             logger.warn("length={}", lengthVal);// 1
             logger.warn("curPos={}", this.curPos);// 1
             logger.warn("buffer.length={}", this.buffer.length);// 1
-            logger.warn("newSize={}", Math.max(this.buffer.length + this.buffer.length / 2, (this.curPos + lengthVal) + 1024));
+            logger.warn("newSize={}", Math.max(this.buffer.length + this.buffer.length / 2, this.curPos + lengthVal + 1024));
         }
     }
 

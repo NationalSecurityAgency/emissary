@@ -187,7 +187,7 @@ public class FileFind {
         }
 
         public boolean hasNext() {
-            return (position < contents.length);
+            return position < contents.length;
         }
 
         public File next() {

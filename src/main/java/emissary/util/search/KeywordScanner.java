@@ -205,7 +205,7 @@ public class KeywordScanner {
         if (this.pattern == null) {
             return -1;
         }
-        final int position = match((this.lastPosition + 1), stop);
+        final int position = match(this.lastPosition + 1, stop);
         this.lastPosition = position;
         return position;
     }

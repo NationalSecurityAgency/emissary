@@ -76,14 +76,14 @@ public class EditDistance {
         int mx = x;
         int my = y;
         int mz = z;
-        return (mx < my ? (mx < mz ? mx : mz) : (mz < my) ? mz : my);
+        return mx < my ? (mx < mz ? mx : mz) : (mz < my) ? mz : my;
     }
 
     // #define min2(x,y) (_mx = (x), _my = (y), (_mx < _my ? _mx : _my))
     private static int min2(int x, int y) {
         int mx = x;
         int my = y;
-        return (mx < my ? mx : my);
+        return mx < my ? mx : my;
     }
 
     static int insertCost = 1;
@@ -115,7 +115,7 @@ public class EditDistance {
     static int toLen;
 
     private static int ar(int x, int y, int index) {
-        return ((x == 0) ? y * del : ((y == 0) ? x * ins : buffer[mod(index)]));
+        return (x == 0) ? y * del : (y == 0) ? x * ins : buffer[mod(index)];
     }
 
     private static int nw(int x, int y) {
@@ -135,7 +135,7 @@ public class EditDistance {
     }
 
     private static int mod(int x) {
-        return (x % radix);
+        return x % radix;
     }
 
     /*
@@ -211,7 +211,7 @@ public class EditDistance {
         // /#define mod(x) ((x) % radix)
 
 
-        buffer[index++] = min2(ins + del, (from[0] == to[0] ? 0 : ch));
+        buffer[index++] = min2(ins + del, from[0] == to[0] ? 0 : ch);
 
         low = buffer[mod(index + radix - 1)];
         for (col = 1; col < EditDistance.fromLen; col++) {

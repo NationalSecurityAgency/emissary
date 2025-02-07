@@ -237,7 +237,7 @@ public class RequestUtil {
      */
     @Nullable
     public static String sanitizeParameter(String parameter) {
-        return (null == parameter ? null : parameter.replaceAll("[\n\r]", "_"));
+        return null == parameter ? null : parameter.replaceAll("[\n\r]", "_");
     }
 
     /**

@@ -121,7 +121,7 @@ public class HeartbeatManager {
         }
 
         // "smooth" execution every 30 seconds starting in 2 minutes
-        this.timer.schedule(new HeartbeatTask(), (this.initialDelaySeconds * 1000L), (this.intervalSeconds * 1000L));
+        this.timer.schedule(new HeartbeatTask(), this.initialDelaySeconds * 1000L, this.intervalSeconds * 1000L);
     }
 
     /**
@@ -280,7 +280,7 @@ public class HeartbeatManager {
         try {
             final IRemoteDirectory d = (IRemoteDirectory) Namespace.lookup(myKey);
             final int count = d.irdFailDirectory(key, permanent);
-            logger.info("Notified {} of failed directory {}{}, {} keys removed", myKey, key, (permanent ? " permanently!" : ""), count);
+            logger.info("Notified {} of failed directory {}{}, {} keys removed", myKey, key, permanent ? " permanently!" : "", count);
         } catch (NamespaceException ne) {
             logger.error("Tried to fail a remote directory {} but cannot look up my own directory using {}", key, myKey, ne);
         }

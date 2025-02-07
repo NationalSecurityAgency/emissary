@@ -220,7 +220,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             addPeerDirectories(peers, true);
 
             logger.debug("Configured {} rendezvous peers from {} config entries.", this.peerDirectories.size(), peers.size());
-            logger.debug("This directory is {}a rendezvous peer.", (this.rdvPeer ? "" : "NOT (yet) "));
+            logger.debug("This directory is {}a rendezvous peer.", this.rdvPeer ? "" : "NOT (yet) ");
         } catch (IOException iox) {
             logger.debug("There is no peer.cfg data available");
         }
@@ -418,7 +418,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Retrieved {} entries in zone transfer from {} in {} millis", map.entryCount(), key,
-                        (System.currentTimeMillis() - startZone));
+                        System.currentTimeMillis() - startZone);
             }
 
             // No entries mean we got the remote message,
@@ -749,7 +749,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         final String hmKey = KeyManipulator.getHostMatchKey(key);
         int count = 0;
 
-        logger.debug("irdFailDirectory {} {} permanent", key, (permanent ? "is" : "is not"));
+        logger.debug("irdFailDirectory {} {} permanent", key, permanent ? "is" : "is not");
 
         // Modify local entries for the failed remote directory
         // Permanent failure removes entries on failed directory.
@@ -880,7 +880,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
         if (logger.isDebugEnabled()) {
             logger.debug("Starting irdAddPlaces with {} entries for {} place  - place={}, myKey={}", entryList.size(),
-                    (isLocal ? "local" : "non-local"), place, myKey);
+                    isLocal ? "local" : "non-local", place, myKey);
         }
 
         // make a defensive deep copy of the incoming list, so we
@@ -947,7 +947,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     @Override
     public List<DirectoryEntry> nextKeys(final String dataId, final IBaseDataObject payload, final DirectoryEntry lastPlace) {
         // Normal lookup in public entry map
-        logger.debug("nextKey called with dataId='{}', and lastPlace={}", dataId, (lastPlace == null ? "null" : lastPlace.getFullKey()));
+        logger.debug("nextKey called with dataId='{}', and lastPlace={}", dataId, lastPlace == null ? "null" : lastPlace.getFullKey());
 
         List<DirectoryEntry> entries = nextKeys(dataId, payload, lastPlace, this.entryMap);
         if (logger.isDebugEnabled() && (entries != null) && !entries.isEmpty()) {

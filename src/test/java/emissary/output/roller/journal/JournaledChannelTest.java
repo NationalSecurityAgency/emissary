@@ -67,7 +67,7 @@ class JournaledChannelTest extends UnitTest {
         final byte[] fiveK = fiveKStr.toString().getBytes();
         this.channel.write(fiveK, 0, fiveK.length);
         this.channel.commit();
-        assertEquals(this.channel.position(), (onekbuff.length + fiveK.length), "Position is 6k " + this.channel.position());
+        assertEquals(this.channel.position(), onekbuff.length + fiveK.length, "Position is 6k " + this.channel.position());
         final Path channelPath = this.channel.path;
         this.channel.close();
         try (SeekableByteChannel sbc = Files.newByteChannel(channelPath)) {

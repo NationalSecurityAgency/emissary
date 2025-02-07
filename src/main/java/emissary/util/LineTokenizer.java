@@ -122,7 +122,7 @@ public class LineTokenizer {
      * @return true if there are more lines
      */
     public boolean hasMoreTokens() {
-        return (tokenCount > 0);
+        return tokenCount > 0;
     }
 
     /**

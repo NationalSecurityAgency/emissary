@@ -894,7 +894,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
             final Object value = entry.getValue();
 
-            if ((policy == MergePolicy.DROP_EXISTING)) {
+            if (policy == MergePolicy.DROP_EXISTING) {
                 // store the provided value for this key, discarding any previously-stored value
                 setParameter(name, value);
                 continue;
@@ -1274,7 +1274,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public boolean isBroken() {
-        return (this.brokenDocument != null);
+        return this.brokenDocument != null;
     }
 
     @Override

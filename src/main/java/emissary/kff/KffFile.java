@@ -84,7 +84,7 @@ public class KffFile implements KffFilter {
         // Initial high value for binary search is largest index
         bSearchInitHigh = (knownFile.length() / (long) recordLength) - 1;
 
-        logger.debug("KFF File {} has {} records", filename, (bSearchInitHigh + 1));
+        logger.debug("KFF File {} has {} records", filename, bSearchInitHigh + 1);
     }
 
     /**

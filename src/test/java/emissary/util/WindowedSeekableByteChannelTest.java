@@ -33,7 +33,7 @@ class WindowedSeekableByteChannelTest extends UnitTest {
     private static byte[] buildArry(final int size) {
         final byte[] b = new byte[size];
         for (int i = 0; i < b.length;) {
-            final int remaining = (b.length - i);
+            final int remaining = b.length - i;
             final int letterCount = remaining > 25 ? I_ALPHABET : remaining;
             for (int j = 0; j < letterCount; j++) {
                 b[i++] = (byte) (LCA + j);
