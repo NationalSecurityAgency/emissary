@@ -188,7 +188,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
             // Emit dropoff object tracing events
             for (IBaseDataObject d : payloadList) {
                 ObjectTracingService.emitLifecycleEvent(d, d.getFilename(), ObjectTracing.Stage.DROP_OFF, true, this.filterName,
-                        String.valueOf(ko.getFinalDestination()));
+                        String.valueOf(ko.getFinalDestination().getFileName()));
             }
         } catch (IOException e) {
             logger.error("IOException during dropoff.", e);
