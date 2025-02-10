@@ -19,7 +19,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -645,4 +648,52 @@ class ServiceConfigGuideTest extends UnitTest {
         assertNotNull(ex.getMessage(), "Exception message should not be null");
         assertTrue(ex.getMessage().contains(missingProp), "Exception message should name the missing config entry");
     }
+
+    @Test
+    void testFindStringMatchMultiMapOrdered() {
+        // this test fails if ORDERED is set to false due to results ordering
+        final boolean ORDERED = true;
+
+        final ServiceConfigGuide config = new ServiceConfigGuide();
+
+        final String prefix = "MM_";
+        final String key1 = "key1";
+        final String key2 = "key2";
+        final String key3 = "key3";
+        final String value1 = "_value1";
+        final String value2 = "_value2";
+        final String value3 = "_value3";
+        List<String> suffixes = List.of(value1, value2, value3);
+        List<String> keys = List.of(key1, key2, key3);
+
+
+        Map<String, Set<String>> expected = new LinkedHashMap<>();
+        for (String k : keys) {
+            for (String s : suffixes) {
+                String key = prefix + k;
+                String value = k + s;
+                // add prefixed entry to config
+                config.addEntry(key, value);
+                // add non-prefixed entry to expected map (prefix gets stripped during findStringMatchMultiMap call)
+                // UPPERCASE the key to match findStringMatchMultiMap retrieval behavior
+                expected.computeIfAbsent(k.toUpperCase(Locale.getDefault()), v -> new LinkedHashSet<>()).add(value);
+            }
+        }
+        Map<String, Set<String>> actual = config.findStringMatchMultiMap(prefix, ORDERED);
+        assertEquals(expected.size(), actual.size(), "should have the same number of keys");
+        var actualsIterator = actual.entrySet().iterator();
+        var expectedIterator = expected.entrySet().iterator();
+        int i = 0;
+        while (expectedIterator.hasNext()) {
+            assertTrue(actualsIterator.hasNext());
+
+            i++;
+            var expectedEntry = expectedIterator.next();
+            var actualEntry = actualsIterator.next();
+            assertEquals(expectedEntry.getKey(), actualEntry.getKey(), "failed on key #" + i);
+            assertEquals(expectedEntry.getValue(), actualEntry.getValue(), "value mismatch for key '" + actualEntry.getKey() + "'");
+        }
+
+    }
+
 }
