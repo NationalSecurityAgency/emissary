@@ -202,11 +202,9 @@ public final class Ssdeep {
                     // Therefore this secondary signature condition can
                     // only potentially be true if the main signature
                     // condition (which we've already checked) is true.
-                    if ((rollingHash % (this.blockSize * 2)) == ((this.blockSize * 2) - 1)) {
-                        if (this.fuzzLen2 < (SPAMSUM_LENGTH / 2 - 1)) {
-                            this.fuzzHash2[this.fuzzLen2++] = b64EncodeLowBits(this.sumHash2);
-                            this.sumHash2 = HASH_INIT;
-                        }
+                    if ((rollingHash % (this.blockSize * 2)) == ((this.blockSize * 2) - 1) && this.fuzzLen2 < (SPAMSUM_LENGTH / 2 - 1)) {
+                        this.fuzzHash2[this.fuzzLen2++] = b64EncodeLowBits(this.sumHash2);
+                        this.sumHash2 = HASH_INIT;
                     }
                 }
             }
