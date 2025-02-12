@@ -83,7 +83,7 @@ public class EmissaryServer {
 <span class="fc" id="L83">    private static final Logger LOG = LoggerFactory.getLogger(EmissaryServer.class);</span>
 
     // Our namespace
-<span class="fc" id="L86">    @Nullable</span>
+<span class="pc" id="L86">    @Nullable</span>
     private String nameSpaceName = null;
 
     private Server server;
@@ -92,32 +92,48 @@ public class EmissaryServer {
 
     private final EmissaryNode emissaryNode;
 
-    public EmissaryServer(ServerCommand cmd) throws EmissaryException {
-<span class="fc" id="L96">        this(cmd, new EmissaryNode());</span>
-<span class="fc" id="L97">    }</span>
+    @SuppressWarnings(&quot;NonFinalStaticField&quot;)
+    private static EmissaryServer emissaryServer;
 
-    @VisibleForTesting
-<span class="fc" id="L100">    public EmissaryServer(ServerCommand cmd, EmissaryNode node) throws EmissaryException {</span>
-<span class="fc" id="L101">        this.cmd = cmd;</span>
-        // See if we are an emissary node, but first setup node type
-<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if (cmd.getMode() != null) {</span>
-<span class="fc" id="L104">            System.setProperty(&quot;node.mode&quot;, cmd.getMode()); // TODO: clean this crap up</span>
-        }
-<span class="fc" id="L106">        emissaryNode = node;</span>
+<span class="fc" id="L98">    private EmissaryServer(ServerCommand cmd) {</span>
+<span class="fc" id="L99">        this.cmd = cmd;</span>
+<span class="fc" id="L100">        this.emissaryNode = new EmissaryNode(cmd.getMode());</span>
+<span class="fc" id="L101">    }</span>
 
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if (!emissaryNode.isValid()) {</span>
-<span class="nc" id="L109">            LOG.error(&quot;Not an emissary node, no emissary services required.&quot;);</span>
-<span class="nc" id="L110">            LOG.error(&quot;Try setting -D{}=value to configure an emissary node&quot;, EmissaryNode.NODE_NAME_PROPERTY);</span>
-<span class="nc" id="L111">            throw new EmissaryException(&quot;Not an emissary node, no emissary services required&quot;);</span>
+    // there should be a better way to set a custom peer.cfg than this
+<span class="nc" id="L104">    private EmissaryServer(ServerCommand cmd, EmissaryNode node) {</span>
+<span class="nc" id="L105">        this.cmd = cmd;</span>
+<span class="nc" id="L106">        this.emissaryNode = node;</span>
+<span class="nc" id="L107">    }</span>
+
+    public static EmissaryServer init(ServerCommand cmd) {
+<span class="fc" id="L110">        emissaryServer = new EmissaryServer(cmd);</span>
+<span class="fc" id="L111">        return emissaryServer;</span>
+    }
+
+    // there should be a better way to set a custom peer.cfg than this
+    public static EmissaryServer init(ServerCommand cmd, EmissaryNode node) {
+<span class="nc" id="L116">        emissaryServer = new EmissaryServer(cmd, node);</span>
+<span class="nc" id="L117">        return emissaryServer;</span>
+    }
+
+    public static boolean isInitialized() {
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">        return emissaryServer != null;</span>
+    }
+
+    public static EmissaryServer getInstance() {
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">        if (emissaryServer == null) {</span>
+<span class="nc" id="L126">            throw new AssertionError(&quot;EmissaryServer has not yet been instantiated!&quot;);</span>
         }
-<span class="fc" id="L113">    }</span>
+<span class="fc" id="L128">        return emissaryServer;</span>
+    }
 
     public EmissaryNode getNode() {
-<span class="nc" id="L116">        return this.emissaryNode;</span>
+<span class="fc" id="L132">        return this.emissaryNode;</span>
     }
 
     public ServerCommand getServerCommand() {
-<span class="fc" id="L120">        return cmd;</span>
+<span class="fc" id="L136">        return cmd;</span>
     }
 
     /**
@@ -131,84 +147,84 @@ public class EmissaryServer {
             // Resource.setDefaultUseCaches(false);
 
             // needs to be loaded first into the server as it setups up Emissary stuff
-<span class="fc" id="L134">            ContextHandler emissaryHandler = buildEmissaryHandler();</span>
+<span class="fc" id="L150">            ContextHandler emissaryHandler = buildEmissaryHandler();</span>
             // TODO: rework this, no need for it be set with a context path but if this
             // is left out, it matches / and nothing works correctly
-<span class="fc" id="L137">            emissaryHandler.setContextPath(&quot;/idontreallyservecontentnowdoi&quot;);</span>
-<span class="fc" id="L138">            ContextHandler lbConfigHandler = buildLogbackConfigHandler();</span>
-<span class="fc" id="L139">            lbConfigHandler.setContextPath(&quot;/lbConfig&quot;);</span>
-<span class="fc" id="L140">            ContextHandler apiHandler = buildApiHandler();</span>
-<span class="fc" id="L141">            apiHandler.setContextPath(&quot;/api&quot;);</span>
-<span class="fc" id="L142">            ContextHandler mvcHandler = buildMvcHandler();</span>
-<span class="fc" id="L143">            mvcHandler.setContextPath(&quot;/emissary&quot;);</span>
+<span class="fc" id="L153">            emissaryHandler.setContextPath(&quot;/idontreallyservecontentnowdoi&quot;);</span>
+<span class="fc" id="L154">            ContextHandler lbConfigHandler = buildLogbackConfigHandler();</span>
+<span class="fc" id="L155">            lbConfigHandler.setContextPath(&quot;/lbConfig&quot;);</span>
+<span class="fc" id="L156">            ContextHandler apiHandler = buildApiHandler();</span>
+<span class="fc" id="L157">            apiHandler.setContextPath(&quot;/api&quot;);</span>
+<span class="fc" id="L158">            ContextHandler mvcHandler = buildMvcHandler();</span>
+<span class="fc" id="L159">            mvcHandler.setContextPath(&quot;/emissary&quot;);</span>
             // needs to be loaded last into the server so other contexts can match or fall through
-<span class="fc" id="L145">            ContextHandler staticHandler = buildStaticHandler();</span>
-<span class="fc" id="L146">            staticHandler.setContextPath(&quot;/&quot;);</span>
+<span class="fc" id="L161">            ContextHandler staticHandler = buildStaticHandler();</span>
+<span class="fc" id="L162">            staticHandler.setContextPath(&quot;/&quot;);</span>
 
-<span class="fc" id="L148">            LoginService loginService = buildLoginService();</span>
-<span class="fc" id="L149">            ConstraintSecurityHandler security = buildSecurityHandler();</span>
-<span class="fc" id="L150">            security.setLoginService(loginService);</span>
+<span class="fc" id="L164">            LoginService loginService = buildLoginService();</span>
+<span class="fc" id="L165">            ConstraintSecurityHandler security = buildSecurityHandler();</span>
+<span class="fc" id="L166">            security.setLoginService(loginService);</span>
 
             // secure some of the contexts
-<span class="fc" id="L153">            final HandlerList securedHandlers = new HandlerList();</span>
-<span class="fc" id="L154">            securedHandlers.addHandler(lbConfigHandler);</span>
-<span class="fc" id="L155">            securedHandlers.addHandler(apiHandler);</span>
-<span class="fc" id="L156">            securedHandlers.addHandler(mvcHandler);</span>
-<span class="fc" id="L157">            securedHandlers.addHandler(staticHandler);</span>
-<span class="fc" id="L158">            security.setHandler(securedHandlers);</span>
+<span class="fc" id="L169">            final HandlerList securedHandlers = new HandlerList();</span>
+<span class="fc" id="L170">            securedHandlers.addHandler(lbConfigHandler);</span>
+<span class="fc" id="L171">            securedHandlers.addHandler(apiHandler);</span>
+<span class="fc" id="L172">            securedHandlers.addHandler(mvcHandler);</span>
+<span class="fc" id="L173">            securedHandlers.addHandler(staticHandler);</span>
+<span class="fc" id="L174">            security.setHandler(securedHandlers);</span>
 
-<span class="fc" id="L160">            final HandlerList handlers = new HandlerList();</span>
-<span class="fc" id="L161">            handlers.addHandler(emissaryHandler); // not secured, no endpoints and must be loaded first</span>
-<span class="fc" id="L162">            handlers.addHandler(security);</span>
+<span class="fc" id="L176">            final HandlerList handlers = new HandlerList();</span>
+<span class="fc" id="L177">            handlers.addHandler(emissaryHandler); // not secured, no endpoints and must be loaded first</span>
+<span class="fc" id="L178">            handlers.addHandler(security);</span>
 
-<span class="fc" id="L164">            Server configuredServer = configureServer();</span>
-<span class="fc" id="L165">            configuredServer.setHandler(handlers);</span>
-<span class="fc" id="L166">            configuredServer.addBean(loginService);</span>
-<span class="fc" id="L167">            configuredServer.setStopAtShutdown(true);</span>
-<span class="fc" id="L168">            configuredServer.setStopTimeout(10000L);</span>
-<span class="pc bpc" id="L169" title="3 of 4 branches missed.">            if (this.cmd.shouldDumpJettyBeans() &amp;&amp; LOG.isInfoEnabled()) {</span>
-<span class="nc" id="L170">                LOG.info(configuredServer.dump());</span>
+<span class="fc" id="L180">            Server configuredServer = configureServer();</span>
+<span class="fc" id="L181">            configuredServer.setHandler(handlers);</span>
+<span class="fc" id="L182">            configuredServer.addBean(loginService);</span>
+<span class="fc" id="L183">            configuredServer.setStopAtShutdown(true);</span>
+<span class="fc" id="L184">            configuredServer.setStopTimeout(10000L);</span>
+<span class="pc bpc" id="L185" title="3 of 4 branches missed.">            if (this.cmd.shouldDumpJettyBeans() &amp;&amp; LOG.isInfoEnabled()) {</span>
+<span class="nc" id="L186">                LOG.info(configuredServer.dump());</span>
             }
-<span class="fc" id="L172">            this.server = configuredServer;</span>
-<span class="fc" id="L173">            bindServer(); // emissary specific</span>
+<span class="fc" id="L188">            this.server = configuredServer;</span>
+<span class="fc" id="L189">            bindServer(); // emissary specific</span>
 
-<span class="fc" id="L175">            configuredServer.start();</span>
+<span class="fc" id="L191">            configuredServer.start();</span>
             // server.join(); // don't join so we can shutdown
 
-<span class="fc" id="L178">            String serverLocation = cmd.getScheme() + &quot;://&quot; + cmd.getHost() + &quot;:&quot; + cmd.getPort();</span>
+<span class="fc" id="L194">            String serverLocation = cmd.getScheme() + &quot;://&quot; + cmd.getHost() + &quot;:&quot; + cmd.getPort();</span>
 
             // write out env.sh file here
-<span class="fc" id="L181">            Path envsh = Paths.get(ConfigUtil.getProjectBase() + File.separator + &quot;env.sh&quot;);</span>
-<span class="pc bpc" id="L182" title="1 of 2 branches missed.">            if (Files.exists(envsh)) {</span>
-<span class="fc" id="L183">                LOG.debug(&quot;Removing old {}&quot;, envsh.toAbsolutePath());</span>
-<span class="fc" id="L184">                Files.delete(envsh);</span>
+<span class="fc" id="L197">            Path envsh = Paths.get(ConfigUtil.getProjectBase() + File.separator + &quot;env.sh&quot;);</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">            if (Files.exists(envsh)) {</span>
+<span class="fc" id="L199">                LOG.debug(&quot;Removing old {}&quot;, envsh.toAbsolutePath());</span>
+<span class="fc" id="L200">                Files.delete(envsh);</span>
             }
-<span class="fc" id="L186">            String envUri = serverLocation + &quot;/api/env.sh&quot;;</span>
-<span class="fc" id="L187">            EmissaryResponse er = new EmissaryClient().send(new HttpGet(envUri));</span>
-<span class="fc" id="L188">            String envString = er.getContentString();</span>
-<span class="fc" id="L189">            Files.createFile(envsh);</span>
-<span class="fc" id="L190">            Files.write(envsh, envString.getBytes());</span>
-<span class="fc" id="L191">            LOG.info(&quot;Wrote {}&quot;, envsh.toAbsolutePath());</span>
-<span class="fc" id="L192">            LOG.debug(&quot; with \n{}&quot;, envString);</span>
+<span class="fc" id="L202">            String envUri = serverLocation + &quot;/api/env.sh&quot;;</span>
+<span class="fc" id="L203">            EmissaryResponse er = new EmissaryClient().send(new HttpGet(envUri));</span>
+<span class="fc" id="L204">            String envString = er.getContentString();</span>
+<span class="fc" id="L205">            Files.createFile(envsh);</span>
+<span class="fc" id="L206">            Files.write(envsh, envString.getBytes());</span>
+<span class="fc" id="L207">            LOG.info(&quot;Wrote {}&quot;, envsh.toAbsolutePath());</span>
+<span class="fc" id="L208">            LOG.debug(&quot; with \n{}&quot;, envString);</span>
 
-<span class="pc bpc" id="L194" title="1 of 2 branches missed.">            if (cmd.isPause()) {</span>
-<span class="nc" id="L195">                pause(true);</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">            if (cmd.isPause()) {</span>
+<span class="nc" id="L211">                pause(true);</span>
             } else {
-<span class="fc" id="L197">                unpause(true);</span>
+<span class="fc" id="L213">                unpause(true);</span>
             }
 
-<span class="fc" id="L200">            LOG.info(&quot;Started EmissaryServer at {}&quot;, serverLocation);</span>
+<span class="fc" id="L216">            LOG.info(&quot;Started EmissaryServer at {}&quot;, serverLocation);</span>
 
             // check if invisible place start-ups occurred on strict server start-up, and shut down server if so.
-<span class="pc bpc" id="L203" title="3 of 4 branches missed.">            if (Startup.isInvisPlacesStartedInStrictMode() &amp;&amp; this.server.isStarted()) {</span>
-<span class="nc" id="L204">                EmissaryServer.stopServer(true);</span>
-<span class="nc" id="L205">                LOG.info(&quot;Server shut down due to invisible place startups on strict-mode: {}&quot;, Startup.getInvisPlaces());</span>
+<span class="pc bpc" id="L219" title="3 of 4 branches missed.">            if (Startup.isInvisPlacesStartedInStrictMode() &amp;&amp; this.server.isStarted()) {</span>
+<span class="nc" id="L220">                EmissaryServer.stopServer(true);</span>
+<span class="nc" id="L221">                LOG.info(&quot;Server shut down due to invisible place startups on strict-mode: {}&quot;, Startup.getInvisPlaces());</span>
             }
 
-<span class="fc" id="L208">            return configuredServer;</span>
-<span class="nc" id="L209">        } catch (Throwable t) {</span>
-<span class="nc" id="L210">            String errorMsg = &quot;Emissary server didn't start&quot;;</span>
-<span class="nc" id="L211">            throw new EmissaryRuntimeException(errorMsg, t);</span>
+<span class="fc" id="L224">            return configuredServer;</span>
+<span class="nc" id="L225">        } catch (Throwable t) {</span>
+<span class="nc" id="L226">            String errorMsg = &quot;Emissary server didn't start&quot;;</span>
+<span class="nc" id="L227">            throw new EmissaryRuntimeException(errorMsg, t);</span>
         }
     }
 
@@ -218,7 +234,7 @@ public class EmissaryServer {
      * @return true if running
      */
     public boolean isServerRunning() {
-<span class="nc bnc" id="L221" title="All 4 branches missed.">        return (this.server != null) &amp;&amp; this.server.isStarted();</span>
+<span class="pc bpc" id="L237" title="3 of 4 branches missed.">        return (this.server != null) &amp;&amp; this.server.isStarted();</span>
     }
 
 
@@ -228,8 +244,8 @@ public class EmissaryServer {
      * @throws NamespaceException if there is an issue
      */
     public static void pause() throws NamespaceException {
-<span class="nc" id="L231">        pause(false);</span>
-<span class="nc" id="L232">    }</span>
+<span class="nc" id="L247">        pause(false);</span>
+<span class="nc" id="L248">    }</span>
 
     /**
      * Pause the server
@@ -238,9 +254,9 @@ public class EmissaryServer {
      * @throws NamespaceException if there is an issue
      */
     public static void pause(boolean silent) throws NamespaceException {
-<span class="nc" id="L241">        LOG.debug(&quot;Pausing Emissary Server&quot;);</span>
-<span class="nc" id="L242">        Namespace.lookup(IPausable.class, silent).forEach(IPausable::pause);</span>
-<span class="nc" id="L243">    }</span>
+<span class="nc" id="L257">        LOG.debug(&quot;Pausing Emissary Server&quot;);</span>
+<span class="nc" id="L258">        Namespace.lookup(IPausable.class, silent).forEach(IPausable::pause);</span>
+<span class="nc" id="L259">    }</span>
 
     /**
      * Unpause the server
@@ -248,8 +264,8 @@ public class EmissaryServer {
      * @throws NamespaceException if there is an issue
      */
     public static void unpause() throws NamespaceException {
-<span class="nc" id="L251">        unpause(false);</span>
-<span class="nc" id="L252">    }</span>
+<span class="nc" id="L267">        unpause(false);</span>
+<span class="nc" id="L268">    }</span>
 
     /**
      * Unpause the server
@@ -258,25 +274,16 @@ public class EmissaryServer {
      * @throws NamespaceException if there is an issue
      */
     public static void unpause(boolean silent) throws NamespaceException {
-<span class="fc" id="L261">        LOG.debug(&quot;Unpausing Emissary Server&quot;);</span>
-<span class="fc" id="L262">        Namespace.lookup(IPausable.class, silent).forEach(IPausable::unpause);</span>
-<span class="fc" id="L263">    }</span>
+<span class="fc" id="L277">        LOG.debug(&quot;Unpausing Emissary Server&quot;);</span>
+<span class="fc" id="L278">        Namespace.lookup(IPausable.class, silent).forEach(IPausable::unpause);</span>
+<span class="fc" id="L279">    }</span>
 
     /**
-     * Stop the server running under the default name
+     * Stop the server
      */
     public static void stopServer() {
-<span class="nc" id="L269">        stopServer(false);</span>
-<span class="nc" id="L270">    }</span>
-
-    /**
-     * Stop the server running under the default name
-     *
-     * @param quiet be quiet about failures if true
-     */
-    public static void stopServer(final boolean quiet) {
-<span class="nc" id="L278">        stopServer(false, quiet);</span>
-<span class="nc" id="L279">    }</span>
+<span class="nc" id="L285">        stopServer(false);</span>
+<span class="nc" id="L286">    }</span>
 
     /**
      * Stop the server running under the default name
@@ -284,10 +291,10 @@ public class EmissaryServer {
      * @param force force shutdown
      * @param quiet be quiet about failures if true
      */
+    @Deprecated
     public static void stopServer(final boolean force, final boolean quiet) {
-<span class="nc" id="L288">        stopServer(getDefaultNamespaceName(), force, quiet);</span>
-<span class="nc" id="L289">    }</span>
-
+<span class="nc" id="L296">        stopServer(getDefaultNamespaceName(), force, quiet);</span>
+<span class="nc" id="L297">    }</span>
 
     /**
      * Stop the server if it is running and remove it from the namespace
@@ -295,9 +302,10 @@ public class EmissaryServer {
      * @param name the namespace name of the server
      * @param quiet be quiet about failures if true
      */
+    @Deprecated
     public static void stopServer(final String name, final boolean quiet) {
-<span class="nc" id="L299">        stopServer(name, false, quiet);</span>
-<span class="nc" id="L300">    }</span>
+<span class="nc" id="L307">        stopServer(name, false, quiet);</span>
+<span class="nc" id="L308">    }</span>
 
     /**
      * Stop the server if it is running and remove it from the namespace
@@ -306,188 +314,198 @@ public class EmissaryServer {
      * @param force force shutdown
      * @param quiet be quiet about failures if true
      */
+    @Deprecated
     public static void stopServer(final String name, final boolean force, final boolean quiet) {
+<span class="nc" id="L319">        stopServer(force);</span>
+<span class="nc" id="L320">    }</span>
+
+    /**
+     * Stop the server with an optional force flag
+     *
+     * @param force force shutdown
+     */
+    public static void stopServer(final boolean force) {
         // TODO pull these out to methods and test them
 
-<span class="nc" id="L312">        LOG.info(&quot;Beginning shutdown of EmissaryServer {}&quot;, name);</span>
-<span class="nc" id="L313">        logThreadDump(&quot;Thread dump before anything&quot;);</span>
+<span class="nc" id="L330">        LOG.info(&quot;Beginning shutdown of EmissaryServer&quot;);</span>
+<span class="nc" id="L331">        logThreadDump(&quot;Thread dump before anything&quot;);</span>
 
         try {
-<span class="nc" id="L316">            pause();</span>
-<span class="nc" id="L317">            LOG.info(&quot;Done pausing server&quot;);</span>
-<span class="nc" id="L318">        } catch (Exception ex) {</span>
-<span class="nc" id="L319">            LOG.error(&quot;Error pausing server&quot;, ex);</span>
-<span class="nc" id="L320">        }</span>
+<span class="nc" id="L334">            pause();</span>
+<span class="nc" id="L335">            LOG.info(&quot;Done pausing server&quot;);</span>
+<span class="nc" id="L336">        } catch (Exception ex) {</span>
+<span class="nc" id="L337">            LOG.error(&quot;Error pausing server&quot;, ex);</span>
+<span class="nc" id="L338">        }</span>
 
         try {
-<span class="nc" id="L323">            Sentinel sentinel = Sentinel.lookup();</span>
-<span class="nc" id="L324">            sentinel.quit();</span>
-<span class="nc" id="L325">        } catch (Exception ex) {</span>
-<span class="nc" id="L326">            LOG.warn(&quot;No sentinel available&quot;);</span>
-<span class="nc" id="L327">        }</span>
-
-        try {
-<span class="nc bnc" id="L330" title="All 2 branches missed.">            if (force) {</span>
-<span class="nc" id="L331">                AgentPool.lookup().kill();</span>
-            } else {
-<span class="nc" id="L333">                AgentPool.lookup().close();</span>
-            }
-<span class="nc" id="L335">        } catch (Exception e) {</span>
-<span class="nc" id="L336">            LOG.warn(&quot;Problem stopping AgentPool&quot;, e);</span>
-<span class="nc" id="L337">        }</span>
-
-<span class="nc" id="L339">        logThreadDump(&quot;Thread dump after closing agent pool&quot;);</span>
-
-        try {
-<span class="nc" id="L342">            DirectoryPlace.lookup().shutDown();</span>
-<span class="nc" id="L343">        } catch (Exception e) {</span>
-<span class="nc" id="L344">            LOG.warn(&quot;Problem shutting down DirectoryPlace&quot;, e);</span>
+<span class="nc" id="L341">            Sentinel sentinel = Sentinel.lookup();</span>
+<span class="nc" id="L342">            sentinel.quit();</span>
+<span class="nc" id="L343">        } catch (Exception ex) {</span>
+<span class="nc" id="L344">            LOG.warn(&quot;No sentinel available&quot;);</span>
 <span class="nc" id="L345">        }</span>
 
         try {
-<span class="nc" id="L348">            MoveSpool.lookup().quit();</span>
-<span class="nc" id="L349">        } catch (Exception e) {</span>
-<span class="nc" id="L350">            LOG.warn(&quot;Problem stopping MoveSpool&quot;, e);</span>
-<span class="nc" id="L351">        }</span>
+<span class="nc bnc" id="L348" title="All 2 branches missed.">            if (force) {</span>
+<span class="nc" id="L349">                AgentPool.lookup().kill();</span>
+            } else {
+<span class="nc" id="L351">                AgentPool.lookup().close();</span>
+            }
+<span class="nc" id="L353">        } catch (Exception e) {</span>
+<span class="nc" id="L354">            LOG.warn(&quot;Problem stopping AgentPool&quot;, e);</span>
+<span class="nc" id="L355">        }</span>
+
+<span class="nc" id="L357">        logThreadDump(&quot;Thread dump after closing agent pool&quot;);</span>
+
+        try {
+<span class="nc" id="L360">            DirectoryPlace.lookup().shutDown();</span>
+<span class="nc" id="L361">        } catch (Exception e) {</span>
+<span class="nc" id="L362">            LOG.warn(&quot;Problem shutting down DirectoryPlace&quot;, e);</span>
+<span class="nc" id="L363">        }</span>
+
+        try {
+<span class="nc" id="L366">            MoveSpool.lookup().quit();</span>
+<span class="nc" id="L367">        } catch (Exception e) {</span>
+<span class="nc" id="L368">            LOG.warn(&quot;Problem stopping MoveSpool&quot;, e);</span>
+<span class="nc" id="L369">        }</span>
 
         // Stop the places
-<span class="nc bnc" id="L354" title="All 2 branches missed.">        for (String key : Namespace.keySet()) {</span>
+<span class="nc bnc" id="L372" title="All 2 branches missed.">        for (String key : Namespace.keySet()) {</span>
             try {
-<span class="nc" id="L356">                Object obj = Namespace.lookup(key);</span>
-<span class="nc bnc" id="L357" title="All 2 branches missed.">                if (obj instanceof IServiceProviderPlace) {</span>
-<span class="nc" id="L358">                    LOG.info(&quot;Stopping {} &quot;, obj);</span>
-<span class="nc" id="L359">                    ((IServiceProviderPlace) obj).shutDown();</span>
+<span class="nc" id="L374">                Object obj = Namespace.lookup(key);</span>
+<span class="nc bnc" id="L375" title="All 2 branches missed.">                if (obj instanceof IServiceProviderPlace) {</span>
+<span class="nc" id="L376">                    LOG.info(&quot;Stopping {} &quot;, obj);</span>
+<span class="nc" id="L377">                    ((IServiceProviderPlace) obj).shutDown();</span>
                     // make sure key is removed from namespace
-<span class="nc" id="L361">                    Namespace.unbind(key);</span>
-<span class="nc" id="L362">                    LOG.info(&quot;Done stopping place: {}&quot;, key);</span>
+<span class="nc" id="L379">                    Namespace.unbind(key);</span>
+<span class="nc" id="L380">                    LOG.info(&quot;Done stopping place: {}&quot;, key);</span>
                 }
-<span class="nc" id="L364">            } catch (Exception ex) {</span>
-<span class="nc" id="L365">                LOG.error(&quot;Error shutting down &quot; + key, ex);</span>
-<span class="nc" id="L366">            }</span>
-<span class="nc" id="L367">        }</span>
-<span class="nc" id="L368">        LOG.info(&quot;Done stopping all places&quot;);</span>
+<span class="nc" id="L382">            } catch (Exception ex) {</span>
+<span class="nc" id="L383">                LOG.error(&quot;Error shutting down &quot; + key, ex);</span>
+<span class="nc" id="L384">            }</span>
+<span class="nc" id="L385">        }</span>
+<span class="nc" id="L386">        LOG.info(&quot;Done stopping all places&quot;);</span>
 
-<span class="nc" id="L370">        RollManager.shutdown();</span>
+<span class="nc" id="L388">        RollManager.shutdown();</span>
 
         // Print the stats
         try {
-<span class="nc" id="L374">            ResourceWatcher rw = ResourceWatcher.lookup();</span>
-<span class="nc" id="L375">            rw.logStats(LOG);</span>
-<span class="nc" id="L376">            rw.quit();</span>
-<span class="nc" id="L377">        } catch (Exception ex) {</span>
-<span class="nc" id="L378">            LOG.warn(&quot;No resource statistics available&quot;);</span>
-<span class="nc" id="L379">        }</span>
+<span class="nc" id="L392">            ResourceWatcher rw = ResourceWatcher.lookup();</span>
+<span class="nc" id="L393">            rw.logStats(LOG);</span>
+<span class="nc" id="L394">            rw.quit();</span>
+<span class="nc" id="L395">        } catch (Exception ex) {</span>
+<span class="nc" id="L396">            LOG.warn(&quot;No resource statistics available&quot;);</span>
+<span class="nc" id="L397">        }</span>
 
         try {
-<span class="nc" id="L382">            MetricsManager.lookup().shutdown();</span>
-<span class="nc" id="L383">        } catch (Exception ex) {</span>
-<span class="nc" id="L384">            LOG.warn(&quot;No metrics manager available&quot;);</span>
-<span class="nc" id="L385">        }</span>
+<span class="nc" id="L400">            MetricsManager.lookup().shutdown();</span>
+<span class="nc" id="L401">        } catch (Exception ex) {</span>
+<span class="nc" id="L402">            LOG.warn(&quot;No metrics manager available&quot;);</span>
+<span class="nc" id="L403">        }</span>
 
-<span class="nc" id="L387">        SPILoader.unload();</span>
+<span class="nc" id="L405">        SPILoader.unload();</span>
 
-<span class="nc" id="L389">        LOG.info(&quot;Done stopping all services&quot;);</span>
+<span class="nc" id="L407">        LOG.info(&quot;Done stopping all services&quot;);</span>
 
         // thread dump now
-<span class="nc" id="L392">        logThreadDump(&quot;Thread dump before stopping jetty server&quot;);</span>
+<span class="nc" id="L410">        logThreadDump(&quot;Thread dump before stopping jetty server&quot;);</span>
 
         try {
-<span class="nc" id="L395">            EmissaryServer s = EmissaryServer.lookup(name);</span>
-<span class="nc" id="L396">            s.getServer().stop();</span>
-<span class="nc" id="L397">        } catch (NamespaceException e) {</span>
-<span class="nc" id="L398">            LOG.error(&quot;Unable to lookup {} &quot;, name, e);</span>
-<span class="nc" id="L399">        } catch (InterruptedException e) {</span>
-<span class="nc" id="L400">            LOG.warn(&quot;Interrupted! Expected?&quot;);</span>
-<span class="nc" id="L401">            Thread.currentThread().interrupt();</span>
-<span class="nc" id="L402">        } catch (Exception e) {</span>
-<span class="nc" id="L403">            LOG.warn(&quot;Unable to stop server {} &quot;, name, e);</span>
-<span class="nc" id="L404">        }</span>
+<span class="nc" id="L413">            EmissaryServer.getInstance().getServer().stop();</span>
+<span class="nc" id="L414">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L415">            LOG.warn(&quot;Interrupted! Expected?&quot;);</span>
+<span class="nc" id="L416">            Thread.currentThread().interrupt();</span>
+<span class="nc" id="L417">        } catch (Exception e) {</span>
+<span class="nc" id="L418">            LOG.warn(&quot;Unable to stop EmissaryServer&quot;, e);</span>
+<span class="nc" id="L419">        }</span>
 
-<span class="nc" id="L406">        LOG.debug(&quot;Unbinding name: {}&quot;, name);</span>
-<span class="nc" id="L407">        Namespace.unbind(name);</span>
-<span class="nc" id="L408">        Namespace.clear();</span>
-<span class="nc" id="L409">        LOG.info(&quot;Emissary named {} completely stopped.&quot;, name);</span>
-<span class="nc" id="L410">    }</span>
+<span class="nc" id="L421">        LOG.debug(&quot;Unbinding name: {}&quot;, getDefaultNamespaceName());</span>
+<span class="nc" id="L422">        Namespace.unbind(getDefaultNamespaceName());</span>
+<span class="nc" id="L423">        Namespace.clear();</span>
+<span class="nc" id="L424">        LOG.info(&quot;EmissaryServer completely stopped&quot;);</span>
+<span class="nc" id="L425">    }</span>
 
     /**
      * Forcibly stop the server running under the default name
      */
     public static void stopServerForce() {
-<span class="nc" id="L416">        stopServer(true, false);</span>
-<span class="nc" id="L417">    }</span>
+<span class="nc" id="L431">        stopServer(true);</span>
+<span class="nc" id="L432">    }</span>
 
     @SuppressWarnings(&quot;unchecked&quot;)
     private static void logThreadDump(String initialLog) {
-<span class="nc bnc" id="L421" title="All 2 branches missed.">        if (LOG.isTraceEnabled()) {</span>
-<span class="nc" id="L422">            ThreadDumpAction tda = new ThreadDumpAction();</span>
-<span class="nc" id="L423">            Map&lt;String, Object&gt; dumps = tda.getThreaddumps();</span>
-<span class="nc" id="L424">            StringBuilder sb = new StringBuilder();</span>
-<span class="nc" id="L425">            sb.append(&quot;\n&quot; + initialLog);</span>
-<span class="nc" id="L426">            sb.append(&quot;\nThread DUMP&quot;);</span>
-<span class="nc" id="L427">            sb.append(&quot;\nEmissary Version: &quot; + dumps.get(&quot;emissary.version&quot;));</span>
-<span class="nc" id="L428">            sb.append(&quot;\nJVM Version: &quot; + dumps.get(&quot;java.version&quot;));</span>
-<span class="nc" id="L429">            sb.append(&quot;\nJVM Name: &quot; + dumps.get(&quot;java.name&quot;));</span>
-<span class="nc" id="L430">            Map&lt;String, Object&gt; threadcount = (Map&lt;String, Object&gt;) dumps.get(&quot;threadcount&quot;);</span>
-<span class="nc" id="L431">            sb.append(&quot;\nThread count: current=&quot; + threadcount.get(&quot;current&quot;) + &quot; max=&quot; + threadcount.get(&quot;max&quot;) + &quot; daemon=&quot;</span>
-<span class="nc" id="L432">                    + threadcount.get(&quot;daemon&quot;));</span>
-<span class="nc" id="L433">            sb.append(&quot;\nDeadlocked Threads:&quot;);</span>
-<span class="nc bnc" id="L434" title="All 2 branches missed.">            for (ThreadDumpInfo tdi : (Set&lt;ThreadDumpInfo&gt;) dumps.get(&quot;deadlocks&quot;)) {</span>
-<span class="nc" id="L435">                sb.append(&quot;\n&quot; + tdi.stack);</span>
-<span class="nc" id="L436">            }</span>
-<span class="nc" id="L437">            sb.append(&quot;\nThread dump:&quot;);</span>
-<span class="nc bnc" id="L438" title="All 2 branches missed.">            for (ThreadDumpInfo tdi : (Set&lt;ThreadDumpInfo&gt;) dumps.get(&quot;threads&quot;)) {</span>
-<span class="nc" id="L439">                sb.append(&quot;\n&quot; + tdi.stack);</span>
-<span class="nc" id="L440">            }</span>
-<span class="nc" id="L441">            LOG.trace(sb.toString());</span>
+<span class="nc bnc" id="L436" title="All 2 branches missed.">        if (LOG.isTraceEnabled()) {</span>
+<span class="nc" id="L437">            ThreadDumpAction tda = new ThreadDumpAction();</span>
+<span class="nc" id="L438">            Map&lt;String, Object&gt; dumps = tda.getThreaddumps();</span>
+<span class="nc" id="L439">            StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L440">            sb.append(&quot;\n&quot; + initialLog);</span>
+<span class="nc" id="L441">            sb.append(&quot;\nThread DUMP&quot;);</span>
+<span class="nc" id="L442">            sb.append(&quot;\nEmissary Version: &quot; + dumps.get(&quot;emissary.version&quot;));</span>
+<span class="nc" id="L443">            sb.append(&quot;\nJVM Version: &quot; + dumps.get(&quot;java.version&quot;));</span>
+<span class="nc" id="L444">            sb.append(&quot;\nJVM Name: &quot; + dumps.get(&quot;java.name&quot;));</span>
+<span class="nc" id="L445">            Map&lt;String, Object&gt; threadcount = (Map&lt;String, Object&gt;) dumps.get(&quot;threadcount&quot;);</span>
+<span class="nc" id="L446">            sb.append(&quot;\nThread count: current=&quot; + threadcount.get(&quot;current&quot;) + &quot; max=&quot; + threadcount.get(&quot;max&quot;) + &quot; daemon=&quot;</span>
+<span class="nc" id="L447">                    + threadcount.get(&quot;daemon&quot;));</span>
+<span class="nc" id="L448">            sb.append(&quot;\nDeadlocked Threads:&quot;);</span>
+<span class="nc bnc" id="L449" title="All 2 branches missed.">            for (ThreadDumpInfo tdi : (Set&lt;ThreadDumpInfo&gt;) dumps.get(&quot;deadlocks&quot;)) {</span>
+<span class="nc" id="L450">                sb.append(&quot;\n&quot; + tdi.stack);</span>
+<span class="nc" id="L451">            }</span>
+<span class="nc" id="L452">            sb.append(&quot;\nThread dump:&quot;);</span>
+<span class="nc bnc" id="L453" title="All 2 branches missed.">            for (ThreadDumpInfo tdi : (Set&lt;ThreadDumpInfo&gt;) dumps.get(&quot;threads&quot;)) {</span>
+<span class="nc" id="L454">                sb.append(&quot;\n&quot; + tdi.stack);</span>
+<span class="nc" id="L455">            }</span>
+<span class="nc" id="L456">            LOG.trace(sb.toString());</span>
         }
-<span class="nc" id="L443">    }</span>
+<span class="nc" id="L458">    }</span>
 
     /**
      * Determine if the emissary node is idle
      */
     public boolean isIdle() {
         try {
-<span class="nc" id="L450">            AgentPool pool = AgentPool.lookup();</span>
-<span class="nc bnc" id="L451" title="All 2 branches missed.">            return pool.getNumActive() == 0;</span>
-<span class="nc" id="L452">        } catch (NamespaceException ex) {</span>
+<span class="nc" id="L465">            AgentPool pool = AgentPool.lookup();</span>
+<span class="nc bnc" id="L466" title="All 2 branches missed.">            return pool.getNumActive() == 0;</span>
+<span class="nc" id="L467">        } catch (NamespaceException ex) {</span>
             // empty catch block
         }
-<span class="nc" id="L455">        return true;</span>
+<span class="nc" id="L470">        return true;</span>
     }
 
     /**
      * Non-static way to stop a server
      */
     public void stop() {
-<span class="nc" id="L462">        stopServer(getNamespaceName(), false);</span>
-<span class="nc" id="L463">    }</span>
+<span class="nc" id="L477">        stopServer(false);</span>
+<span class="nc" id="L478">    }</span>
 
     /**
      * Get the reference to the server
      */
     public Server getServer() {
-<span class="nc" id="L469">        return this.server;</span>
+<span class="nc" id="L484">        return this.server;</span>
     }
 
-
+    @Deprecated
     public synchronized String getNamespaceName() {
-<span class="nc bnc" id="L474" title="All 2 branches missed.">        if (this.nameSpaceName == null) {</span>
-<span class="nc" id="L475">            this.nameSpaceName = getDefaultNamespaceName();</span>
+<span class="nc bnc" id="L489" title="All 2 branches missed.">        if (this.nameSpaceName == null) {</span>
+<span class="nc" id="L490">            this.nameSpaceName = getDefaultNamespaceName();</span>
         }
-<span class="nc" id="L477">        return this.nameSpaceName;</span>
+<span class="nc" id="L492">        return this.nameSpaceName;</span>
     }
 
+    @Deprecated
     public static String getDefaultNamespaceName() {
-<span class="fc" id="L481">        return DEFAULT_NAMESPACE_NAME;</span>
+<span class="fc" id="L497">        return DEFAULT_NAMESPACE_NAME;</span>
     }
 
     /**
      * Check if server is running
      *
      * @return true if it is in the namespace and is started
+     * @deprecated use {@link #isServerRunning()}
      */
+    @Deprecated
     public static boolean isStarted() {
-<span class="fc" id="L490">        return isStarted(getDefaultNamespaceName());</span>
+<span class="nc" id="L508">        return isStarted(getDefaultNamespaceName());</span>
     }
 
     /**
@@ -496,193 +514,196 @@ public class EmissaryServer {
      * @param name the namespace name to use as a key
      * @return true if it is in the namespace and is started
      */
+    @Deprecated
     public static boolean isStarted(final String name) {
-<span class="fc" id="L500">        boolean started = false;</span>
+<span class="nc" id="L519">        boolean started = false;</span>
         try {
-<span class="nc" id="L502">            final Server s = lookup(name).getServer();</span>
-<span class="nc bnc" id="L503" title="All 4 branches missed.">            if (s != null &amp;&amp; s.isStarted()) {</span>
-<span class="nc" id="L504">                started = true;</span>
+<span class="nc" id="L521">            final Server s = lookup(name).getServer();</span>
+<span class="nc bnc" id="L522" title="All 4 branches missed.">            if (s != null &amp;&amp; s.isStarted()) {</span>
+<span class="nc" id="L523">                started = true;</span>
             } else {
-<span class="nc" id="L506">                LOG.debug(&quot;Server found but not started, name={}&quot;, name);</span>
+<span class="nc" id="L525">                LOG.debug(&quot;Server found but not started, name={}&quot;, name);</span>
             }
-<span class="fc" id="L508">        } catch (NamespaceException ex) {</span>
-<span class="fc" id="L509">            LOG.debug(&quot;No server found using name={}&quot;, name);</span>
-<span class="nc" id="L510">        }</span>
-<span class="fc" id="L511">        return started;</span>
+<span class="nc" id="L527">        } catch (NamespaceException ex) {</span>
+<span class="nc" id="L528">            LOG.debug(&quot;No server found using name={}&quot;, name);</span>
+<span class="nc" id="L529">        }</span>
+<span class="nc" id="L530">        return started;</span>
     }
 
+    @Deprecated
     public static boolean exists() {
         try {
-<span class="nc" id="L516">            EmissaryServer.lookup();</span>
-<span class="nc" id="L517">            return true;</span>
-<span class="fc" id="L518">        } catch (NamespaceException ex) {</span>
+<span class="nc" id="L536">            EmissaryServer.lookup();</span>
+<span class="nc" id="L537">            return true;</span>
+<span class="nc" id="L538">        } catch (NamespaceException ex) {</span>
             // expected
         }
-<span class="fc" id="L521">        return false;</span>
+<span class="nc" id="L541">        return false;</span>
     }
 
+    @Deprecated
     public static EmissaryServer lookup() throws NamespaceException {
-<span class="nc" id="L525">        return lookup(getDefaultNamespaceName());</span>
+<span class="nc" id="L546">        return lookup(getDefaultNamespaceName());</span>
     }
 
     /**
-     * Retreive instance from namespace using default name
+     * Retrieve instance from namespace using default name
      */
+    @Deprecated
     public static EmissaryServer lookup(final String name) throws NamespaceException {
-<span class="nc" id="L532">        return (EmissaryServer) Namespace.lookup(name);</span>
+<span class="nc" id="L554">        return (EmissaryServer) Namespace.lookup(name);</span>
     }
 
     private static ConstraintSecurityHandler buildSecurityHandler() {
-<span class="fc" id="L536">        ConstraintSecurityHandler handler = new ConstraintSecurityHandler();</span>
+<span class="fc" id="L558">        ConstraintSecurityHandler handler = new ConstraintSecurityHandler();</span>
 
-<span class="fc" id="L538">        Constraint authConstraint = new Constraint();</span>
-<span class="fc" id="L539">        authConstraint.setName(&quot;auth&quot;);</span>
-<span class="fc" id="L540">        authConstraint.setAuthenticate(true);</span>
-<span class="fc" id="L541">        authConstraint.setRoles(new String[] {&quot;everyone&quot;, &quot;emissary&quot;, &quot;admin&quot;, &quot;support&quot;, &quot;manager&quot;});</span>
+<span class="fc" id="L560">        Constraint authConstraint = new Constraint();</span>
+<span class="fc" id="L561">        authConstraint.setName(&quot;auth&quot;);</span>
+<span class="fc" id="L562">        authConstraint.setAuthenticate(true);</span>
+<span class="fc" id="L563">        authConstraint.setRoles(new String[] {&quot;everyone&quot;, &quot;emissary&quot;, &quot;admin&quot;, &quot;support&quot;, &quot;manager&quot;});</span>
 
-<span class="fc" id="L543">        Constraint noAuthConstraint = new Constraint();</span>
-<span class="fc" id="L544">        noAuthConstraint.setName(&quot;no_auth&quot;);</span>
-<span class="fc" id="L545">        noAuthConstraint.setAuthenticate(false);</span>
+<span class="fc" id="L565">        Constraint noAuthConstraint = new Constraint();</span>
+<span class="fc" id="L566">        noAuthConstraint.setName(&quot;no_auth&quot;);</span>
+<span class="fc" id="L567">        noAuthConstraint.setAuthenticate(false);</span>
 
-<span class="fc" id="L547">        ConstraintMapping mapping = new ConstraintMapping();</span>
-<span class="fc" id="L548">        mapping.setPathSpec(&quot;/*&quot;);</span>
-<span class="fc" id="L549">        mapping.setConstraint(authConstraint);</span>
+<span class="fc" id="L569">        ConstraintMapping mapping = new ConstraintMapping();</span>
+<span class="fc" id="L570">        mapping.setPathSpec(&quot;/*&quot;);</span>
+<span class="fc" id="L571">        mapping.setConstraint(authConstraint);</span>
 
-<span class="fc" id="L551">        ConstraintMapping health = new ConstraintMapping();</span>
-<span class="fc" id="L552">        health.setPathSpec(&quot;/api/health&quot;);</span>
-<span class="fc" id="L553">        health.setConstraint(noAuthConstraint);</span>
+<span class="fc" id="L573">        ConstraintMapping health = new ConstraintMapping();</span>
+<span class="fc" id="L574">        health.setPathSpec(&quot;/api/health&quot;);</span>
+<span class="fc" id="L575">        health.setConstraint(noAuthConstraint);</span>
 
-<span class="fc" id="L555">        handler.setConstraintMappings(new ConstraintMapping[] {mapping, health});</span>
-<span class="fc" id="L556">        handler.setAuthenticator(new DigestAuthenticator());</span>
-<span class="fc" id="L557">        return handler;</span>
+<span class="fc" id="L577">        handler.setConstraintMappings(new ConstraintMapping[] {mapping, health});</span>
+<span class="fc" id="L578">        handler.setAuthenticator(new DigestAuthenticator());</span>
+<span class="fc" id="L579">        return handler;</span>
     }
 
     private static LoginService buildLoginService() {
-<span class="fc" id="L561">        String jettyUsersFile = ConfigUtil.getConfigFile(&quot;jetty-users.properties&quot;);</span>
-<span class="fc" id="L562">        System.setProperty(&quot;emissary.jetty.users.file&quot;, jettyUsersFile); // for EmissaryClient</span>
-<span class="fc" id="L563">        return new HashLoginService(&quot;EmissaryRealm&quot;, jettyUsersFile);</span>
+<span class="fc" id="L583">        String jettyUsersFile = ConfigUtil.getConfigFile(&quot;jetty-users.properties&quot;);</span>
+<span class="fc" id="L584">        System.setProperty(&quot;emissary.jetty.users.file&quot;, jettyUsersFile); // for EmissaryClient</span>
+<span class="fc" id="L585">        return new HashLoginService(&quot;EmissaryRealm&quot;, jettyUsersFile);</span>
     }
 
     private void bindServer() throws AttributeInUseException {
-<span class="pc bpc" id="L567" title="1 of 2 branches missed.">        if (Namespace.exists(getDefaultNamespaceName())) {</span>
-<span class="nc" id="L568">            LOG.error(&quot;EmissaryServer already bound to namespace. This should NEVER happen.&quot;);</span>
-<span class="nc" id="L569">            throw new AttributeInUseException(&quot;EmissaryServer was already bound to the namespace using serverName: &quot; + DEFAULT_NAMESPACE_NAME);</span>
+<span class="pc bpc" id="L589" title="1 of 2 branches missed.">        if (Namespace.exists(getDefaultNamespaceName())) {</span>
+<span class="nc" id="L590">            LOG.error(&quot;EmissaryServer already bound to namespace. This should NEVER happen.&quot;);</span>
+<span class="nc" id="L591">            throw new AttributeInUseException(&quot;EmissaryServer was already bound to the namespace using serverName: &quot; + DEFAULT_NAMESPACE_NAME);</span>
         }
 
-<span class="fc" id="L572">        LOG.debug(&quot;Binding {} &quot;, DEFAULT_NAMESPACE_NAME);</span>
-<span class="fc" id="L573">        Namespace.bind(getDefaultNamespaceName(), this);</span>
-
-<span class="fc" id="L575">    }</span>
+<span class="fc" id="L594">        LOG.debug(&quot;Binding {} &quot;, DEFAULT_NAMESPACE_NAME);</span>
+<span class="fc" id="L595">        Namespace.bind(getDefaultNamespaceName(), this);</span>
+<span class="fc" id="L596">    }</span>
 
     private ContextHandler buildStaticHandler() {
         // Add pathspec for static assets
-<span class="fc" id="L579">        ServletHolder homeHolder = new ServletHolder(&quot;static-holder&quot;, DefaultServlet.class);</span>
+<span class="fc" id="L600">        ServletHolder homeHolder = new ServletHolder(&quot;static-holder&quot;, DefaultServlet.class);</span>
         // If no filesytem path was passed in, load assets from the classpath
-<span class="pc bpc" id="L581" title="1 of 2 branches missed.">        if (null == cmd.getStaticDir()) {</span>
-<span class="fc" id="L582">            LOG.debug(&quot;Loading static resources from the classpath&quot;);</span>
-<span class="fc" id="L583">            homeHolder.setInitParameter(&quot;resourceBase&quot;, this.getClass().getClassLoader().getResource(&quot;public&quot;).toExternalForm());</span>
+<span class="pc bpc" id="L602" title="1 of 2 branches missed.">        if (null == cmd.getStaticDir()) {</span>
+<span class="fc" id="L603">            LOG.debug(&quot;Loading static resources from the classpath&quot;);</span>
+<span class="fc" id="L604">            homeHolder.setInitParameter(&quot;resourceBase&quot;, this.getClass().getClassLoader().getResource(&quot;public&quot;).toExternalForm());</span>
         } else {
             // use --staticDir ${project_loc}/src/main/resources/public as command args
-<span class="nc" id="L586">            LOG.debug(&quot;Loading static resources from staticPath: {}&quot;, cmd.getStaticDir());</span>
-<span class="nc" id="L587">            homeHolder.setInitParameter(&quot;resourceBase&quot;, cmd.getStaticDir().toAbsolutePath().toString());</span>
+<span class="nc" id="L607">            LOG.debug(&quot;Loading static resources from staticPath: {}&quot;, cmd.getStaticDir());</span>
+<span class="nc" id="L608">            homeHolder.setInitParameter(&quot;resourceBase&quot;, cmd.getStaticDir().toAbsolutePath().toString());</span>
         }
-<span class="fc" id="L589">        homeHolder.setInitParameter(&quot;dirAllowed&quot;, &quot;true&quot;);</span>
-<span class="fc" id="L590">        homeHolder.setInitParameter(&quot;pathInfoOnly&quot;, &quot;true&quot;);</span>
+<span class="fc" id="L610">        homeHolder.setInitParameter(&quot;dirAllowed&quot;, &quot;true&quot;);</span>
+<span class="fc" id="L611">        homeHolder.setInitParameter(&quot;pathInfoOnly&quot;, &quot;true&quot;);</span>
         // homeHolder.setInitOrder(0);
 
-<span class="fc" id="L593">        ServletContextHandler homeContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);</span>
-<span class="fc" id="L594">        homeContextHandler.addServlet(homeHolder, &quot;/*&quot;);</span>
+<span class="fc" id="L614">        ServletContextHandler homeContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);</span>
+<span class="fc" id="L615">        homeContextHandler.addServlet(homeHolder, &quot;/*&quot;);</span>
 
-<span class="fc" id="L596">        return homeContextHandler;</span>
+<span class="fc" id="L617">        return homeContextHandler;</span>
     }
 
     private ContextHandler buildApiHandler() {
 
-<span class="fc" id="L601">        final ResourceConfig application = new ResourceConfig();</span>
-<span class="fc" id="L602">        application.setApplicationName(&quot;api&quot;);</span>
-<span class="fc" id="L603">        application.register(MultiPartFeature.class);</span>
+<span class="fc" id="L622">        final ResourceConfig application = new ResourceConfig();</span>
+<span class="fc" id="L623">        application.setApplicationName(&quot;api&quot;);</span>
+<span class="fc" id="L624">        application.register(MultiPartFeature.class);</span>
         // setup rest endpoint
-<span class="fc" id="L605">        application.packages(&quot;emissary.server.api&quot;).register(JacksonFeature.class);</span>
-<span class="fc" id="L606">        csrfFilter(application);</span>
+<span class="fc" id="L626">        application.packages(&quot;emissary.server.api&quot;).register(JacksonFeature.class);</span>
+<span class="fc" id="L627">        csrfFilter(application);</span>
 
-<span class="fc" id="L608">        ServletHolder apiHolder = new ServletHolder(new ServletContainer(application));</span>
+<span class="fc" id="L629">        ServletHolder apiHolder = new ServletHolder(new ServletContainer(application));</span>
 
-<span class="fc" id="L610">        ServletContextHandler apiHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);</span>
-<span class="fc" id="L611">        apiHolderContext.addServlet(apiHolder, &quot;/*&quot;);</span>
+<span class="fc" id="L631">        ServletContextHandler apiHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);</span>
+<span class="fc" id="L632">        apiHolderContext.addServlet(apiHolder, &quot;/*&quot;);</span>
 
-<span class="fc" id="L613">        return apiHolderContext;</span>
+<span class="fc" id="L634">        return apiHolderContext;</span>
     }
 
     private ContextHandler buildMvcHandler() {
 
-<span class="fc" id="L618">        final ResourceConfig application = new ResourceConfig();</span>
-<span class="fc" id="L619">        application.setApplicationName(&quot;mvc&quot;);</span>
-<span class="fc" id="L620">        application.register(MultiPartFeature.class);</span>
+<span class="fc" id="L639">        final ResourceConfig application = new ResourceConfig();</span>
+<span class="fc" id="L640">        application.setApplicationName(&quot;mvc&quot;);</span>
+<span class="fc" id="L641">        application.register(MultiPartFeature.class);</span>
         // setup mustache templates
-<span class="fc" id="L622">        application.property(MustacheMvcFeature.TEMPLATE_BASE_PATH, &quot;/templates&quot;);</span>
-<span class="fc" id="L623">        application.register(MustacheMvcFeature.class).packages(&quot;emissary.server.mvc&quot;);</span>
-<span class="fc" id="L624">        csrfFilter(application);</span>
+<span class="fc" id="L643">        application.property(MustacheMvcFeature.TEMPLATE_BASE_PATH, &quot;/templates&quot;);</span>
+<span class="fc" id="L644">        application.register(MustacheMvcFeature.class).packages(&quot;emissary.server.mvc&quot;);</span>
+<span class="fc" id="L645">        csrfFilter(application);</span>
 
-<span class="fc" id="L626">        ServletHolder mvcHolder = new ServletHolder(new ServletContainer(application));</span>
+<span class="fc" id="L647">        ServletHolder mvcHolder = new ServletHolder(new ServletContainer(application));</span>
         // mvcHolder.setInitOrder(1);
 
-<span class="fc" id="L629">        ServletContextHandler mvcHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);</span>
-<span class="fc" id="L630">        mvcHolderContext.addServlet(mvcHolder, &quot;/*&quot;);</span>
+<span class="fc" id="L650">        ServletContextHandler mvcHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);</span>
+<span class="fc" id="L651">        mvcHolderContext.addServlet(mvcHolder, &quot;/*&quot;);</span>
 
-<span class="fc" id="L632">        return mvcHolderContext;</span>
+<span class="fc" id="L653">        return mvcHolderContext;</span>
     }
 
     protected void csrfFilter(ResourceConfig application) {
-<span class="pc bpc" id="L636" title="1 of 2 branches missed.">        if (this.cmd.isCsrf()) {</span>
-<span class="fc" id="L637">            LOG.debug(&quot;Enabling csrf protection filter for {}&quot;, application.getApplicationName());</span>
-<span class="fc" id="L638">            application.register(CsrfProtectionFilter.class);</span>
+<span class="pc bpc" id="L657" title="1 of 2 branches missed.">        if (this.cmd.isCsrf()) {</span>
+<span class="fc" id="L658">            LOG.debug(&quot;Enabling csrf protection filter for {}&quot;, application.getApplicationName());</span>
+<span class="fc" id="L659">            application.register(CsrfProtectionFilter.class);</span>
         } else {
-<span class="nc" id="L640">            LOG.debug(&quot;Disabling csrf protection filter for {}&quot;, application.getApplicationName());</span>
+<span class="nc" id="L661">            LOG.debug(&quot;Disabling csrf protection filter for {}&quot;, application.getApplicationName());</span>
         }
-<span class="fc" id="L642">    }</span>
+<span class="fc" id="L663">    }</span>
 
     private ContextHandler buildEmissaryHandler() throws EmissaryException {
         // must set these set or you are not an EmissaryNode
-<span class="fc" id="L646">        String configDir = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY, null);</span>
-<span class="pc bpc" id="L647" title="2 of 4 branches missed.">        if (configDir == null || !Files.exists(Paths.get(configDir))) {</span>
-<span class="nc" id="L648">            throw new EmissaryException(&quot;Config dir error. &quot; + ConfigUtil.CONFIG_DIR_PROPERTY + &quot; is &quot; + configDir);</span>
+<span class="fc" id="L667">        String configDir = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY, null);</span>
+<span class="pc bpc" id="L668" title="2 of 4 branches missed.">        if (configDir == null || !Files.exists(Paths.get(configDir))) {</span>
+<span class="nc" id="L669">            throw new EmissaryException(&quot;Config dir error. &quot; + ConfigUtil.CONFIG_DIR_PROPERTY + &quot; is &quot; + configDir);</span>
         }
         // set number of agents if it has been set
-<span class="pc bpc" id="L651" title="1 of 2 branches missed.">        if (cmd.getAgents() != 0) {</span>
-<span class="fc" id="L652">            System.setProperty(&quot;agent.poolsize&quot;, Integer.toString(cmd.getAgents()));</span>
+<span class="pc bpc" id="L672" title="1 of 2 branches missed.">        if (cmd.getAgents() != 0) {</span>
+<span class="fc" id="L673">            System.setProperty(&quot;agent.poolsize&quot;, Integer.toString(cmd.getAgents()));</span>
         }
 
-<span class="fc" id="L655">        ServletContextHandler emissaryHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);</span>
-<span class="fc" id="L656">        emissaryHolderContext.addEventListener(new InitializeContext(emissaryNode));</span>
+<span class="fc" id="L676">        ServletContextHandler emissaryHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);</span>
+<span class="fc" id="L677">        emissaryHolderContext.addEventListener(new InitializeContext(emissaryNode));</span>
 
-<span class="fc" id="L658">        return emissaryHolderContext;</span>
+<span class="fc" id="L679">        return emissaryHolderContext;</span>
     }
 
     private static ContextHandler buildLogbackConfigHandler() {
-<span class="fc" id="L662">        ServletHolder lbHolder = new ServletHolder(&quot;logback-config-holder&quot;, ViewStatusMessagesServlet.class);</span>
-<span class="fc" id="L663">        ServletContextHandler lbHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);</span>
-<span class="fc" id="L664">        lbHolderContext.addServlet(lbHolder, &quot;/*&quot;);</span>
+<span class="fc" id="L683">        ServletHolder lbHolder = new ServletHolder(&quot;logback-config-holder&quot;, ViewStatusMessagesServlet.class);</span>
+<span class="fc" id="L684">        ServletContextHandler lbHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);</span>
+<span class="fc" id="L685">        lbHolderContext.addServlet(lbHolder, &quot;/*&quot;);</span>
 
-<span class="fc" id="L666">        return lbHolderContext;</span>
+<span class="fc" id="L687">        return lbHolderContext;</span>
     }
 
     @VisibleForTesting
     protected Server configureServer() throws IOException {
-<span class="fc" id="L671">        int maxThreads = 250;</span>
-<span class="fc" id="L672">        int minThreads = 10;</span>
-<span class="fc" id="L673">        int lowThreads = 50;</span>
-<span class="fc" id="L674">        int threadsPriority = 9;</span>
-<span class="fc" id="L675">        int idleTimeout = (int) TimeUnit.MINUTES.toMillis(15);</span>
+<span class="fc" id="L692">        int maxThreads = 250;</span>
+<span class="fc" id="L693">        int minThreads = 10;</span>
+<span class="fc" id="L694">        int lowThreads = 50;</span>
+<span class="fc" id="L695">        int threadsPriority = 9;</span>
+<span class="fc" id="L696">        int idleTimeout = (int) TimeUnit.MINUTES.toMillis(15);</span>
 
-<span class="fc" id="L677">        QueuedThreadPool threadPool = new QueuedThreadPool(maxThreads, minThreads, idleTimeout);</span>
-<span class="fc" id="L678">        threadPool.setLowThreadsThreshold(lowThreads);</span>
-<span class="fc" id="L679">        threadPool.setThreadsPriority(threadsPriority);</span>
+<span class="fc" id="L698">        QueuedThreadPool threadPool = new QueuedThreadPool(maxThreads, minThreads, idleTimeout);</span>
+<span class="fc" id="L699">        threadPool.setLowThreadsThreshold(lowThreads);</span>
+<span class="fc" id="L700">        threadPool.setThreadsPriority(threadsPriority);</span>
 
-<span class="fc" id="L681">        Server configuredServer = new Server(threadPool);</span>
-<span class="fc" id="L682">        configuredServer.setConnectors(new Connector[] {</span>
-<span class="fc" id="L683">                createServerConnector(configuredServer)</span>
+<span class="fc" id="L702">        Server configuredServer = new Server(threadPool);</span>
+<span class="fc" id="L703">        configuredServer.setConnectors(new Connector[] {</span>
+<span class="fc" id="L704">                createServerConnector(configuredServer)</span>
         });
-<span class="fc" id="L685">        return configuredServer;</span>
+<span class="fc" id="L706">        return configuredServer;</span>
     }
 
     /**
@@ -693,10 +714,10 @@ public class EmissaryServer {
      * @throws IOException if there is an error
      */
     private ServerConnector createServerConnector(Server server) throws IOException {
-<span class="pc bpc" id="L696" title="1 of 2 branches missed.">        ServerConnector connector = cmd.isSslEnabled() ? createHttpsConnector(server) : createHttpConnector(server);</span>
-<span class="fc" id="L697">        connector.setHost(cmd.getHost());</span>
-<span class="fc" id="L698">        connector.setPort(cmd.getPort());</span>
-<span class="fc" id="L699">        return connector;</span>
+<span class="pc bpc" id="L717" title="1 of 2 branches missed.">        ServerConnector connector = cmd.isSslEnabled() ? createHttpsConnector(server) : createHttpConnector(server);</span>
+<span class="fc" id="L718">        connector.setHost(cmd.getHost());</span>
+<span class="fc" id="L719">        connector.setPort(cmd.getPort());</span>
+<span class="fc" id="L720">        return connector;</span>
     }
 
     /**
@@ -706,7 +727,7 @@ public class EmissaryServer {
      * @return server connector that is the primary connector for the Jetty server over TCP/IP
      */
     private static ServerConnector createHttpConnector(Server server) {
-<span class="fc" id="L709">        return new ServerConnector(server);</span>
+<span class="fc" id="L730">        return new ServerConnector(server);</span>
     }
 
     /**
@@ -717,15 +738,15 @@ public class EmissaryServer {
      * @throws IOException if there is an error
      */
     private ServerConnector createHttpsConnector(Server server) throws IOException {
-<span class="nc" id="L720">        HttpConfiguration httpConfig = new HttpConfiguration();</span>
-<span class="nc" id="L721">        httpConfig.setSecureScheme(&quot;https&quot;);</span>
-<span class="nc" id="L722">        httpConfig.setSecurePort(cmd.getPort());</span>
+<span class="nc" id="L741">        HttpConfiguration httpConfig = new HttpConfiguration();</span>
+<span class="nc" id="L742">        httpConfig.setSecureScheme(&quot;https&quot;);</span>
+<span class="nc" id="L743">        httpConfig.setSecurePort(cmd.getPort());</span>
 
-<span class="nc" id="L724">        HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);</span>
-<span class="nc" id="L725">        httpsConfig.addCustomizer(createSecureRequestCustomizer());</span>
+<span class="nc" id="L745">        HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);</span>
+<span class="nc" id="L746">        httpsConfig.addCustomizer(createSecureRequestCustomizer());</span>
 
-<span class="nc" id="L727">        return new ServerConnector(server,</span>
-<span class="nc" id="L728">                new SslConnectionFactory(getSslContextFactory(), HttpVersion.HTTP_1_1.asString()),</span>
+<span class="nc" id="L748">        return new ServerConnector(server,</span>
+<span class="nc" id="L749">                new SslConnectionFactory(getSslContextFactory(), HttpVersion.HTTP_1_1.asString()),</span>
                 new HttpConnectionFactory(httpsConfig));
     }
 
@@ -742,9 +763,9 @@ public class EmissaryServer {
      * @return a secure request customizer
      */
     private SecureRequestCustomizer createSecureRequestCustomizer() {
-<span class="nc" id="L745">        SecureRequestCustomizer secureRequestCustomizer = new SecureRequestCustomizer();</span>
-<span class="nc" id="L746">        secureRequestCustomizer.setSniHostCheck(cmd.isSniHostCheckEnabled());</span>
-<span class="nc" id="L747">        return secureRequestCustomizer;</span>
+<span class="nc" id="L766">        SecureRequestCustomizer secureRequestCustomizer = new SecureRequestCustomizer();</span>
+<span class="nc" id="L767">        secureRequestCustomizer.setSniHostCheck(cmd.isSniHostCheckEnabled());</span>
+<span class="nc" id="L768">        return secureRequestCustomizer;</span>
     }
 
     /**
@@ -755,30 +776,30 @@ public class EmissaryServer {
      * @throws IOException if there is an error getting the context factory
      */
     private static SslContextFactory.Server getSslContextFactory() throws IOException {
-<span class="nc" id="L758">        Configurator httpConnFactCfg = ConfigUtil.getConfigInfo(HTTPConnectionFactory.class);</span>
-<span class="nc" id="L759">        String keystore = httpConnFactCfg.findStringEntry(&quot;javax.net.ssl.keyStore&quot;, &quot;no-keystore&quot;);</span>
-<span class="nc" id="L760">        System.setProperty(&quot;javax.net.ssl.keyStore&quot;, keystore);</span>
-<span class="nc" id="L761">        String keystorePass = httpConnFactCfg.findStringEntry(&quot;javax.net.ssl.keyStorePassword&quot;, &quot;no-keypass&quot;);</span>
-<span class="nc" id="L762">        System.setProperty(&quot;javax.net.ssl.keyStorePassword&quot;, keystorePass);</span>
-<span class="nc" id="L763">        String trustStore = httpConnFactCfg.findStringEntry(&quot;javax.net.ssl.trustStore&quot;, keystore);</span>
-<span class="nc" id="L764">        System.setProperty(&quot;javax.net.ssl.trustStore&quot;, trustStore);</span>
-<span class="nc" id="L765">        String trustStorePass = httpConnFactCfg.findStringEntry(&quot;javax.net.ssl.trustStorePassword&quot;, keystorePass);</span>
-<span class="nc" id="L766">        System.setProperty(&quot;javax.net.ssl.trustStorePassword&quot;, trustStorePass);</span>
+<span class="nc" id="L779">        Configurator httpConnFactCfg = ConfigUtil.getConfigInfo(HTTPConnectionFactory.class);</span>
+<span class="nc" id="L780">        String keystore = httpConnFactCfg.findStringEntry(&quot;javax.net.ssl.keyStore&quot;, &quot;no-keystore&quot;);</span>
+<span class="nc" id="L781">        System.setProperty(&quot;javax.net.ssl.keyStore&quot;, keystore);</span>
+<span class="nc" id="L782">        String keystorePass = httpConnFactCfg.findStringEntry(&quot;javax.net.ssl.keyStorePassword&quot;, &quot;no-keypass&quot;);</span>
+<span class="nc" id="L783">        System.setProperty(&quot;javax.net.ssl.keyStorePassword&quot;, keystorePass);</span>
+<span class="nc" id="L784">        String trustStore = httpConnFactCfg.findStringEntry(&quot;javax.net.ssl.trustStore&quot;, keystore);</span>
+<span class="nc" id="L785">        System.setProperty(&quot;javax.net.ssl.trustStore&quot;, trustStore);</span>
+<span class="nc" id="L786">        String trustStorePass = httpConnFactCfg.findStringEntry(&quot;javax.net.ssl.trustStorePassword&quot;, keystorePass);</span>
+<span class="nc" id="L787">        System.setProperty(&quot;javax.net.ssl.trustStorePassword&quot;, trustStorePass);</span>
 
-<span class="nc" id="L768">        SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();</span>
-<span class="nc" id="L769">        sslContextFactory.setKeyStorePath(keystore);</span>
-<span class="nc" id="L770">        sslContextFactory.setKeyStorePassword(keystorePass);</span>
+<span class="nc" id="L789">        SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();</span>
+<span class="nc" id="L790">        sslContextFactory.setKeyStorePath(keystore);</span>
+<span class="nc" id="L791">        sslContextFactory.setKeyStorePassword(keystorePass);</span>
 
         KeyStore trustStoreInstance;
-<span class="nc" id="L773">        try (final InputStream is = Files.newInputStream(Paths.get(trustStore))) {</span>
-<span class="nc" id="L774">            trustStoreInstance = KeyStore.getInstance(&quot;JKS&quot;);</span>
-<span class="nc" id="L775">            trustStoreInstance.load(is, trustStorePass.toCharArray());</span>
-<span class="nc" id="L776">        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException e) {</span>
-<span class="nc" id="L777">            throw new IOException(&quot;There was an issue loading the truststore&quot;, e);</span>
-<span class="nc" id="L778">        }</span>
+<span class="nc" id="L794">        try (InputStream is = Files.newInputStream(Paths.get(trustStore))) {</span>
+<span class="nc" id="L795">            trustStoreInstance = KeyStore.getInstance(&quot;JKS&quot;);</span>
+<span class="nc" id="L796">            trustStoreInstance.load(is, trustStorePass.toCharArray());</span>
+<span class="nc" id="L797">        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException e) {</span>
+<span class="nc" id="L798">            throw new IOException(&quot;There was an issue loading the truststore&quot;, e);</span>
+<span class="nc" id="L799">        }</span>
 
-<span class="nc" id="L780">        sslContextFactory.setTrustStore(trustStoreInstance);</span>
-<span class="nc" id="L781">        return sslContextFactory;</span>
+<span class="nc" id="L801">        sslContextFactory.setTrustStore(trustStoreInstance);</span>
+<span class="nc" id="L802">        return sslContextFactory;</span>
     }
 
 }

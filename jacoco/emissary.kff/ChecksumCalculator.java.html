@@ -179,7 +179,7 @@ public class ChecksumCalculator {
 <span class="fc" id="L179">        final byte[] b = new byte[1024];</span>
 
 <span class="fc bfc" id="L181" title="All 2 branches covered.">        for (final MessageDigest d : digest) {</span>
-<span class="fc" id="L182">            try (final InputStream is = Channels.newInputStream(sbcf.create())) {</span>
+<span class="fc" id="L182">            try (InputStream is = Channels.newInputStream(sbcf.create())) {</span>
 <span class="fc" id="L183">                d.reset();</span>
 
                 int bytesRead;
@@ -194,7 +194,7 @@ public class ChecksumCalculator {
 <span class="fc" id="L194">        }</span>
 
 <span class="pc bpc" id="L196" title="1 of 2 branches missed.">        if (crc != null) {</span>
-<span class="fc" id="L197">            try (final InputStream is = Channels.newInputStream(sbcf.create())) {</span>
+<span class="fc" id="L197">            try (InputStream is = Channels.newInputStream(sbcf.create())) {</span>
 <span class="fc" id="L198">                crc.reset();</span>
 
                 int bytesRead;

@@ -121,7 +121,7 @@ import javax.annotation.Nullable;
     @Nullable
     public static String toString(final Document jdom) {
 <span class="fc" id="L123">        final XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());</span>
-<span class="fc" id="L124">        try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {</span>
+<span class="fc" id="L124">        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {</span>
 <span class="fc" id="L125">            outputter.output(jdom, os);</span>
 <span class="fc" id="L126">            return os.toString();</span>
 <span class="nc" id="L127">        } catch (IOException iox) {</span>

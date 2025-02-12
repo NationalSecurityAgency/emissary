@@ -240,35 +240,35 @@ public class HeartbeatManager {
     protected void healthReport(final String key, final boolean status, final String reason) {
 <span class="fc" id="L241">        final String dirKey = KeyManipulator.getDefaultDirectoryKey(key);</span>
 <span class="fc" id="L242">        final Health v = this.directories.get(dirKey);</span>
-<span class="pc bpc" id="L243" title="1 of 2 branches missed.">        if (v == null) {</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">        if (v == null) {</span>
 <span class="fc" id="L244">            logger.error(&quot;Not monitoring directory {}&quot;, dirKey);</span>
 <span class="fc" id="L245">            return;</span>
         }
 
-<span class="nc" id="L248">        final boolean wasAlive = v.isAlive();</span>
-<span class="nc" id="L249">        final boolean wasHealthy = v.isHealthy();</span>
+<span class="fc" id="L248">        final boolean wasAlive = v.isAlive();</span>
+<span class="fc" id="L249">        final boolean wasHealthy = v.isHealthy();</span>
 
-<span class="nc" id="L251">        v.addReport(status, reason);</span>
+<span class="fc" id="L251">        v.addReport(status, reason);</span>
 
-<span class="nc" id="L253">        final boolean isAlive = v.isAlive();</span>
-<span class="nc" id="L254">        final boolean isHealthy = v.isHealthy();</span>
+<span class="fc" id="L253">        final boolean isAlive = v.isAlive();</span>
+<span class="fc" id="L254">        final boolean isHealthy = v.isHealthy();</span>
 
-<span class="nc bnc" id="L256" title="All 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
 <span class="nc" id="L257">            logger.debug(&quot;Reporting on {} status={}, wasAlive/Healthy={}/{}, isAlive/Healthy={}/{}&quot;, key, status, wasAlive, wasHealthy, isAlive,</span>
 <span class="nc" id="L258">                    isHealthy);</span>
         }
 
-<span class="nc bnc" id="L261" title="All 4 branches missed.">        if (wasAlive &amp;&amp; !isAlive) {</span>
+<span class="pc bpc" id="L261" title="3 of 4 branches missed.">        if (wasAlive &amp;&amp; !isAlive) {</span>
             // We had a permanent failure.
 <span class="nc" id="L263">            takeFailureAction(key, true);</span>
-<span class="nc bnc" id="L264" title="All 4 branches missed.">        } else if (wasHealthy &amp;&amp; !isHealthy) {</span>
+<span class="pc bpc" id="L264" title="3 of 4 branches missed.">        } else if (wasHealthy &amp;&amp; !isHealthy) {</span>
             // We had a negative transition.
 <span class="nc" id="L266">            takeFailureAction(key, false);</span>
-<span class="nc bnc" id="L267" title="All 4 branches missed.">        } else if (!wasHealthy &amp;&amp; isHealthy) {</span>
+<span class="pc bpc" id="L267" title="2 of 4 branches missed.">        } else if (!wasHealthy &amp;&amp; isHealthy) {</span>
             // We had a positive transition.
 <span class="nc" id="L269">            takeSuccessAction(key);</span>
         }
-<span class="nc" id="L271">    }</span>
+<span class="fc" id="L271">    }</span>
 
     /**
      * Notify our directory that there was a falure
@@ -314,15 +314,15 @@ public class HeartbeatManager {
         @Override
         public void run() {
             try {
-<span class="nc" id="L317">                logger.debug(&quot;Running timer task on {} directories&quot;, HeartbeatManager.this.directories.size());</span>
-<span class="nc bnc" id="L318" title="All 2 branches missed.">                for (final String dir : HeartbeatManager.this.directories.keySet()) {</span>
-<span class="nc" id="L319">                    heartbeat(dir);</span>
-<span class="nc" id="L320">                }</span>
-<span class="nc" id="L321">                logger.debug(&quot;Ending the HeartbeatTask run method&quot;);</span>
+<span class="fc" id="L317">                logger.debug(&quot;Running timer task on {} directories&quot;, HeartbeatManager.this.directories.size());</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">                for (final String dir : HeartbeatManager.this.directories.keySet()) {</span>
+<span class="fc" id="L319">                    heartbeat(dir);</span>
+<span class="fc" id="L320">                }</span>
+<span class="fc" id="L321">                logger.debug(&quot;Ending the HeartbeatTask run method&quot;);</span>
 <span class="nc" id="L322">            } catch (RuntimeException e) {</span>
 <span class="nc" id="L323">                logger.error(&quot;Unexpected problem in heartbeat timer&quot;, e);</span>
-<span class="nc" id="L324">            }</span>
-<span class="nc" id="L325">        }</span>
+<span class="fc" id="L324">            }</span>
+<span class="fc" id="L325">        }</span>
     }
 
     /**
@@ -397,13 +397,13 @@ public class HeartbeatManager {
          * @param msg the most recent message
          */
         public void addReport(final boolean v, final String msg) {
-<span class="nc" id="L400">            this.lastMessage = msg;</span>
-<span class="nc bnc" id="L401" title="All 2 branches missed.">            if (v) {</span>
+<span class="fc" id="L400">            this.lastMessage = msg;</span>
+<span class="pc bpc" id="L401" title="1 of 2 branches missed.">            if (v) {</span>
 <span class="nc" id="L402">                this.failCounter = 0;</span>
             } else {
-<span class="nc" id="L404">                this.failCounter++;</span>
+<span class="fc" id="L404">                this.failCounter++;</span>
             }
-<span class="nc" id="L406">        }</span>
+<span class="fc" id="L406">        }</span>
 
         /**
          * Set the status now
@@ -427,7 +427,7 @@ public class HeartbeatManager {
          * @return true if failed less than threshold times
          */
         public boolean isHealthy() {
-<span class="nc bnc" id="L430" title="All 2 branches missed.">            return this.failCounter &lt; HeartbeatManager.this.failThreshold;</span>
+<span class="pc bpc" id="L430" title="1 of 2 branches missed.">            return this.failCounter &lt; HeartbeatManager.this.failThreshold;</span>
         }
 
         /**

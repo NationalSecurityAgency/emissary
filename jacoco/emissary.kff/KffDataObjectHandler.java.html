@@ -139,7 +139,7 @@ public class KffDataObjectHandler {
 
 <span class="fc" id="L140">        KffResult kffCheck = null;</span>
 <span class="fc bfc" id="L141" title="All 2 branches covered.">        if (sbcf != null) {</span>
-<span class="fc" id="L142">            try (final SeekableByteChannel sbc = sbcf.create()) {</span>
+<span class="fc" id="L142">            try (SeekableByteChannel sbc = sbcf.create()) {</span>
 <span class="fc bfc" id="L143" title="All 2 branches covered.">                if (sbc.size() &gt; 0) {</span>
 <span class="fc" id="L144">                    kffCheck = kff.check(name, sbcf);</span>
                 }

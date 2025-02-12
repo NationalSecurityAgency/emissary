@@ -51,7 +51,7 @@ public class PkiUtil {
 <span class="fc bfc" id="L51" title="All 2 branches covered.">        if (isPemCertificate(pemData)) {</span>
 <span class="fc" id="L52">            loadKeyStore(keyStore, pemData);</span>
         } else {
-<span class="fc" id="L54">            try (final InputStream is = Files.newInputStream(Paths.get(path))) {</span>
+<span class="fc" id="L54">            try (InputStream is = Files.newInputStream(Paths.get(path))) {</span>
 <span class="fc" id="L55">                keyStore.load(is, pazz);</span>
             }
         }

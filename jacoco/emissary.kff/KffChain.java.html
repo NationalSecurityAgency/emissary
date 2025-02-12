@@ -154,7 +154,7 @@ public class KffChain {
 <span class="fc" id="L154">        final ChecksumResults sums = computeSums(sbcf);</span>
 <span class="fc" id="L155">        KffResult answer = null;</span>
 <span class="fc" id="L156">        long sbcSize = 0;</span>
-<span class="fc" id="L157">        try (final SeekableByteChannel sbc = sbcf.create()) {</span>
+<span class="fc" id="L157">        try (SeekableByteChannel sbc = sbcf.create()) {</span>
 <span class="fc" id="L158">            sbcSize = sbc.size();</span>
         }
 <span class="pc bpc" id="L160" title="2 of 4 branches missed.">        if (sbcSize &lt; kffMinDataSize || list.isEmpty()) {</span>

@@ -5,6 +5,7 @@ import emissary.core.IBaseDataObject;
 import emissary.core.ResourceException;
 import emissary.directory.KeyManipulator;
 import emissary.util.shell.Executrix;
+import emissary.util.shell.TempFileNames;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,15 +24,15 @@ public class UnixCommandPlace extends ServiceProviderPlace {
     @Nullable
     protected String newForm;
     protected String newFormOnError;
-<span class="pc" id="L26">    @Nullable</span>
+<span class="pc" id="L27">    @Nullable</span>
     protected String metaDataTag = null;
-<span class="pc" id="L28">    @Nullable</span>
+<span class="pc" id="L29">    @Nullable</span>
     protected String alternateView = null;
-<span class="pc" id="L30">    protected boolean addAsMetaData = false;</span>
-<span class="pc" id="L31">    protected boolean perlChop = false;</span>
-<span class="pc" id="L32">    protected boolean nukeAllProxies = false;</span>
-<span class="pc" id="L33">    protected boolean keepFilesDebug = false;</span>
-<span class="pc" id="L34">    protected String charset = &quot;8859_1&quot;;</span>
+<span class="pc" id="L31">    protected boolean addAsMetaData = false;</span>
+<span class="pc" id="L32">    protected boolean perlChop = false;</span>
+<span class="pc" id="L33">    protected boolean nukeAllProxies = false;</span>
+<span class="pc" id="L34">    protected boolean keepFilesDebug = false;</span>
+<span class="pc" id="L35">    protected String charset = &quot;8859_1&quot;;</span>
     protected String logfilename;
 
     protected Executrix executrix;
@@ -42,9 +43,9 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param configInfo the config file or resource to use
      */
     public UnixCommandPlace(String configInfo) throws IOException {
-<span class="nc" id="L45">        super(configInfo, &quot;UnixCommandPlace.foo.bar.com:8001&quot;);</span>
-<span class="nc" id="L46">        configurePlace();</span>
-<span class="nc" id="L47">    }</span>
+<span class="nc" id="L46">        super(configInfo, &quot;UnixCommandPlace.foo.bar.com:8001&quot;);</span>
+<span class="nc" id="L47">        configurePlace();</span>
+<span class="nc" id="L48">    }</span>
 
     /**
      * Create the place from the specified config file or resource
@@ -54,9 +55,9 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param placeLoc string name of this place
      */
     public UnixCommandPlace(String configInfo, String dir, String placeLoc) throws IOException {
-<span class="nc" id="L57">        super(configInfo, dir, placeLoc);</span>
-<span class="nc" id="L58">        configurePlace();</span>
-<span class="nc" id="L59">    }</span>
+<span class="nc" id="L58">        super(configInfo, dir, placeLoc);</span>
+<span class="nc" id="L59">        configurePlace();</span>
+<span class="nc" id="L60">    }</span>
 
     /**
      * Create the place from the specified config stream data
@@ -66,9 +67,9 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param placeLoc string name of this place
      */
     public UnixCommandPlace(InputStream configInfo, String dir, String placeLoc) throws IOException {
-<span class="nc" id="L69">        super(configInfo, dir, placeLoc);</span>
-<span class="nc" id="L70">        configurePlace();</span>
-<span class="nc" id="L71">    }</span>
+<span class="nc" id="L70">        super(configInfo, dir, placeLoc);</span>
+<span class="nc" id="L71">        configurePlace();</span>
+<span class="nc" id="L72">    }</span>
 
     /**
      * Create the place from the specified config stream data
@@ -76,9 +77,9 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param configInfo the config file or resource to use
      */
     public UnixCommandPlace(InputStream configInfo) throws IOException {
-<span class="fc" id="L79">        super(configInfo);</span>
-<span class="fc" id="L80">        configurePlace();</span>
-<span class="fc" id="L81">    }</span>
+<span class="fc" id="L80">        super(configInfo);</span>
+<span class="fc" id="L81">        configurePlace();</span>
+<span class="fc" id="L82">    }</span>
 
     /**
      * Configure the instance
@@ -97,28 +98,28 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * Also all of the config values read by emissary.util.shell.Executrix are needed here
      */
     protected void configurePlace() {
-<span class="fc" id="L100">        doSynchronized = configG.findBooleanEntry(&quot;SYNCHRONIZED_PROCESS&quot;, false);</span>
-<span class="fc" id="L101">        newForm = configG.findStringEntry(NEW_FORM, Form.UNKNOWN);</span>
-<span class="pc bpc" id="L102" title="3 of 4 branches missed.">        if (newForm == null &amp;&amp; keys.get(0).indexOf(&quot;.ID.&quot;) &gt; -1) {</span>
-<span class="nc" id="L103">            newForm = Form.UNKNOWN;</span>
+<span class="fc" id="L101">        doSynchronized = configG.findBooleanEntry(&quot;SYNCHRONIZED_PROCESS&quot;, false);</span>
+<span class="fc" id="L102">        newForm = configG.findStringEntry(NEW_FORM, Form.UNKNOWN);</span>
+<span class="pc bpc" id="L103" title="3 of 4 branches missed.">        if (newForm == null &amp;&amp; keys.get(0).indexOf(&quot;.ID.&quot;) &gt; -1) {</span>
+<span class="nc" id="L104">            newForm = Form.UNKNOWN;</span>
         }
-<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        if (&quot;&lt;null&gt;&quot;.equals(newForm)) {</span>
-<span class="nc" id="L106">            newForm = null;</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (&quot;&lt;null&gt;&quot;.equals(newForm)) {</span>
+<span class="nc" id="L107">            newForm = null;</span>
         }
-<span class="fc" id="L108">        newFormOnError = configG.findStringEntry(&quot;NEW_FORM_ON_ERROR&quot;, Form.ERROR);</span>
-<span class="fc" id="L109">        alternateView = configG.findStringEntry(&quot;ADD_AS_ALTERNATE_VIEW&quot;, null);</span>
-<span class="fc" id="L110">        metaDataTag = configG.findStringEntry(&quot;ADD_AS_META_DATA&quot;, null);</span>
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        if (metaDataTag != null) {</span>
-<span class="nc" id="L112">            addAsMetaData = true;</span>
+<span class="fc" id="L109">        newFormOnError = configG.findStringEntry(&quot;NEW_FORM_ON_ERROR&quot;, Form.ERROR);</span>
+<span class="fc" id="L110">        alternateView = configG.findStringEntry(&quot;ADD_AS_ALTERNATE_VIEW&quot;, null);</span>
+<span class="fc" id="L111">        metaDataTag = configG.findStringEntry(&quot;ADD_AS_META_DATA&quot;, null);</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if (metaDataTag != null) {</span>
+<span class="nc" id="L113">            addAsMetaData = true;</span>
         }
-<span class="fc" id="L114">        perlChop = configG.findBooleanEntry(&quot;PERL_CHOP&quot;, false);</span>
-<span class="fc" id="L115">        nukeAllProxies = configG.findBooleanEntry(&quot;NUKE_ALL_PROXIES&quot;, false);</span>
-<span class="fc" id="L116">        keepFilesDebug = configG.findBooleanEntry(&quot;KEEP_FILES_DEBUG&quot;, false);</span>
-<span class="fc" id="L117">        charset = configG.findStringEntry(&quot;OUTPUT_CHARSET&quot;, charset);</span>
-<span class="fc" id="L118">        executrix = new Executrix(configG);</span>
-<span class="fc" id="L119">        logfilename = configG.findStringEntry(&quot;LOG_FILE_NAME&quot;, KeyManipulator.getServiceName(keys.get(0)) + &quot;.log&quot;);</span>
-<span class="fc" id="L120">        logger.debug(&quot;Configured {} type process with charset {}&quot;, executrix.getOutput(), charset);</span>
-<span class="fc" id="L121">    }</span>
+<span class="fc" id="L115">        perlChop = configG.findBooleanEntry(&quot;PERL_CHOP&quot;, false);</span>
+<span class="fc" id="L116">        nukeAllProxies = configG.findBooleanEntry(&quot;NUKE_ALL_PROXIES&quot;, false);</span>
+<span class="fc" id="L117">        keepFilesDebug = configG.findBooleanEntry(&quot;KEEP_FILES_DEBUG&quot;, false);</span>
+<span class="fc" id="L118">        charset = configG.findStringEntry(&quot;OUTPUT_CHARSET&quot;, charset);</span>
+<span class="fc" id="L119">        executrix = new Executrix(configG);</span>
+<span class="fc" id="L120">        logfilename = configG.findStringEntry(&quot;LOG_FILE_NAME&quot;, KeyManipulator.getServiceName(keys.get(0)) + &quot;.log&quot;);</span>
+<span class="fc" id="L121">        logger.debug(&quot;Configured {} type process with charset {}&quot;, executrix.getOutput(), charset);</span>
+<span class="fc" id="L122">    }</span>
 
     /**
      * Set a custom executrix, allows easier mocking among other things
@@ -126,30 +127,30 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param e the new executrix instance to use
      */
     public void setExecutrix(Executrix e) {
-<span class="fc" id="L129">        executrix = e;</span>
-<span class="fc" id="L130">    }</span>
+<span class="fc" id="L130">        executrix = e;</span>
+<span class="fc" id="L131">    }</span>
 
     /**
      * Set the output type programatically
      */
     public void setStdOutputCommand() {
-<span class="nc" id="L136">        executrix.setOutputStd();</span>
-<span class="nc" id="L137">        logger.debug(&quot;Output type set to STD&quot;);</span>
-<span class="nc" id="L138">    }</span>
+<span class="nc" id="L137">        executrix.setOutputStd();</span>
+<span class="nc" id="L138">        logger.debug(&quot;Output type set to STD&quot;);</span>
+<span class="nc" id="L139">    }</span>
 
     /**
      * Set the output type programatically
      */
     public void setFileOutputCommand() {
-<span class="fc" id="L144">        executrix.setOutputFile();</span>
-<span class="fc" id="L145">        logger.debug(&quot;Output type set to FILE&quot;);</span>
-<span class="fc" id="L146">    }</span>
+<span class="fc" id="L145">        executrix.setOutputFile();</span>
+<span class="fc" id="L146">        logger.debug(&quot;Output type set to FILE&quot;);</span>
+<span class="fc" id="L147">    }</span>
 
     /**
      * get the log file name
      */
     public String getLogFileName() {
-<span class="nc" id="L152">        return logfilename;</span>
+<span class="nc" id="L153">        return logfilename;</span>
     }
 
     /**
@@ -160,17 +161,17 @@ public class UnixCommandPlace extends ServiceProviderPlace {
     protected void logMessages(String tempDir) {
         // if there is a log file, read it and log the messages
         try {
-<span class="fc" id="L163">            String lfn = tempDir + &quot;/&quot; + logfilename;</span>
-<span class="fc" id="L164">            byte[] logdata = Executrix.readDataFromFile(lfn, true);</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">            if (logdata != null) {</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">                for (String message : new String(logdata, charset).split(&quot;\n&quot;)) {</span>
-<span class="fc" id="L167">                    logger.info(message);</span>
+<span class="fc" id="L164">            String lfn = tempDir + &quot;/&quot; + logfilename;</span>
+<span class="fc" id="L165">            byte[] logdata = Executrix.readDataFromFile(lfn, true);</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">            if (logdata != null) {</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">                for (String message : new String(logdata, charset).split(&quot;\n&quot;)) {</span>
+<span class="fc" id="L168">                    logger.info(message);</span>
                 }
             }
-<span class="nc" id="L170">        } catch (Exception ignore) {</span>
-<span class="nc" id="L171">            logger.debug(&quot;Error logging messages&quot;, ignore);</span>
-<span class="fc" id="L172">        }</span>
-<span class="fc" id="L173">    }</span>
+<span class="nc" id="L171">        } catch (Exception ignore) {</span>
+<span class="nc" id="L172">            logger.debug(&quot;Error logging messages&quot;, ignore);</span>
+<span class="fc" id="L173">        }</span>
+<span class="fc" id="L174">    }</span>
 
     /**
      * Run the file process
@@ -178,14 +179,14 @@ public class UnixCommandPlace extends ServiceProviderPlace {
     @Nullable
     @SuppressWarnings(&quot;AvoidObjectArrays&quot;)
     public byte[] fileProcess(String[] cmd, String outputFile) {
-<span class="fc" id="L181">        logger.debug(&quot;fileProcess({})&quot;, Arrays.asList(cmd));</span>
-<span class="fc" id="L182">        StringBuilder errbuf = new StringBuilder();</span>
-<span class="fc" id="L183">        int result = executrix.execute(cmd, (StringBuilder) null, errbuf);</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">        if (result != 0) {</span>
-<span class="fc" id="L185">            logger.warn(&quot;exec error in fileProcess: {} produced STDERR {}&quot;, Arrays.asList(cmd), errbuf.toString());</span>
-<span class="fc" id="L186">            return null;</span>
+<span class="fc" id="L182">        logger.debug(&quot;fileProcess({})&quot;, Arrays.asList(cmd));</span>
+<span class="fc" id="L183">        StringBuilder errbuf = new StringBuilder();</span>
+<span class="fc" id="L184">        int result = executrix.execute(cmd, (StringBuilder) null, errbuf);</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">        if (result != 0) {</span>
+<span class="fc" id="L186">            logger.warn(&quot;exec error in fileProcess: {} produced STDERR {}&quot;, Arrays.asList(cmd), errbuf.toString());</span>
+<span class="fc" id="L187">            return null;</span>
         }
-<span class="fc" id="L188">        return Executrix.readDataFromFile(outputFile);</span>
+<span class="fc" id="L189">        return Executrix.readDataFromFile(outputFile);</span>
     }
 
     /**
@@ -198,30 +199,30 @@ public class UnixCommandPlace extends ServiceProviderPlace {
     @Nullable
     @SuppressWarnings(&quot;AvoidObjectArrays&quot;)
     public byte[] stdOutProcess(String[] cmd, boolean chop) {
-<span class="fc" id="L201">        logger.debug(&quot;stdOutProcess({},{}) with charset {}&quot;, Arrays.asList(cmd), chop, charset);</span>
-<span class="fc" id="L202">        StringBuilder outbuf = new StringBuilder();</span>
-<span class="fc" id="L203">        StringBuilder errbuf = new StringBuilder();</span>
-<span class="fc" id="L204">        int result = executrix.execute(cmd, outbuf, errbuf, charset);</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">        if (result != 0) {</span>
-<span class="fc" id="L206">            logger.warn(&quot;exec error in stdOutProcess: {} produced STDERR {}&quot;, Arrays.asList(cmd), errbuf.toString());</span>
-<span class="fc" id="L207">            return null;</span>
+<span class="fc" id="L202">        logger.debug(&quot;stdOutProcess({},{}) with charset {}&quot;, Arrays.asList(cmd), chop, charset);</span>
+<span class="fc" id="L203">        StringBuilder outbuf = new StringBuilder();</span>
+<span class="fc" id="L204">        StringBuilder errbuf = new StringBuilder();</span>
+<span class="fc" id="L205">        int result = executrix.execute(cmd, outbuf, errbuf, charset);</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        if (result != 0) {</span>
+<span class="fc" id="L207">            logger.warn(&quot;exec error in stdOutProcess: {} produced STDERR {}&quot;, Arrays.asList(cmd), errbuf.toString());</span>
+<span class="fc" id="L208">            return null;</span>
         }
-<span class="pc bpc" id="L209" title="1 of 2 branches missed.">        if (chop) {</span>
-<span class="nc bnc" id="L210" title="All 2 branches missed.">            while (outbuf.length() &gt; 0) {</span>
-<span class="nc" id="L211">                char c = outbuf.charAt(outbuf.length() - 1);</span>
-<span class="nc bnc" id="L212" title="All 4 branches missed.">                if (c == '\n' || c == '\r') {</span>
-<span class="nc" id="L213">                    outbuf.setLength(outbuf.length() - 1);</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">        if (chop) {</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">            while (outbuf.length() &gt; 0) {</span>
+<span class="nc" id="L212">                char c = outbuf.charAt(outbuf.length() - 1);</span>
+<span class="nc bnc" id="L213" title="All 4 branches missed.">                if (c == '\n' || c == '\r') {</span>
+<span class="nc" id="L214">                    outbuf.setLength(outbuf.length() - 1);</span>
                 } else {
                     break;
                 }
-<span class="nc" id="L217">            }</span>
+<span class="nc" id="L218">            }</span>
         }
 
         try {
-<span class="fc" id="L221">            return outbuf.toString().getBytes(charset);</span>
-<span class="nc" id="L222">        } catch (UnsupportedEncodingException e) {</span>
-<span class="nc" id="L223">            logger.error(&quot;UnixCommandPlace.stdOutProcess charset problem&quot;, e);</span>
-<span class="nc" id="L224">            return outbuf.toString().getBytes();</span>
+<span class="fc" id="L222">            return outbuf.toString().getBytes(charset);</span>
+<span class="nc" id="L223">        } catch (UnsupportedEncodingException e) {</span>
+<span class="nc" id="L224">            logger.error(&quot;UnixCommandPlace.stdOutProcess charset problem&quot;, e);</span>
+<span class="nc" id="L225">            return outbuf.toString().getBytes();</span>
         }
     }
 
@@ -229,7 +230,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * Validate that we should process this data
      */
     protected boolean validDataHook(@Nullable IBaseDataObject d) {
-<span class="pc bpc" id="L232" title="1 of 2 branches missed.">        return d != null;</span>
+<span class="pc bpc" id="L233" title="1 of 2 branches missed.">        return d != null;</span>
     }
 
 
@@ -240,14 +241,14 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      */
     @Override
     public void process(IBaseDataObject theDataObject) throws ResourceException {
-<span class="pc bpc" id="L243" title="1 of 2 branches missed.">        if (validDataHook(theDataObject)) {</span>
-<span class="pc bpc" id="L244" title="1 of 2 branches missed.">            if (doSynchronized) {</span>
-<span class="nc" id="L245">                synchronizedProcess(theDataObject);</span>
+<span class="pc bpc" id="L244" title="1 of 2 branches missed.">        if (validDataHook(theDataObject)) {</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">            if (doSynchronized) {</span>
+<span class="nc" id="L246">                synchronizedProcess(theDataObject);</span>
             } else {
-<span class="fc" id="L247">                unSynchronizedProcess(theDataObject);</span>
+<span class="fc" id="L248">                unSynchronizedProcess(theDataObject);</span>
             }
         }
-<span class="fc" id="L250">    }</span>
+<span class="fc" id="L251">    }</span>
 
 
     /**
@@ -256,8 +257,8 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param theDataObject payload to process
      */
     protected synchronized void synchronizedProcess(IBaseDataObject theDataObject) throws ResourceException {
-<span class="nc" id="L259">        processData(theDataObject);</span>
-<span class="nc" id="L260">    }</span>
+<span class="nc" id="L260">        processData(theDataObject);</span>
+<span class="nc" id="L261">    }</span>
 
 
     /**
@@ -266,8 +267,8 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param theDataObject payload to process
      */
     protected void unSynchronizedProcess(IBaseDataObject theDataObject) throws ResourceException {
-<span class="fc" id="L269">        processData(theDataObject);</span>
-<span class="fc" id="L270">    }</span>
+<span class="fc" id="L270">        processData(theDataObject);</span>
+<span class="fc" id="L271">    }</span>
 
 
     /**
@@ -278,48 +279,48 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      */
     @SuppressWarnings(&quot;CatchingUnchecked&quot;)
     protected byte[] runCommandOn(byte[] data) throws ResourceException {
-<span class="fc" id="L281">        String[] names = executrix.makeTempFilenames();</span>
-<span class="fc" id="L282">        String tempDirName = names[Executrix.DIR];</span>
-<span class="fc" id="L283">        String inputFileName = names[Executrix.INPATH];</span>
-<span class="fc" id="L284">        String outputFileName = names[Executrix.OUTPATH];</span>
-<span class="fc" id="L285">        File tempDir = new File(tempDirName);</span>
-<span class="fc" id="L286">        byte[] outputData = null;</span>
+<span class="fc" id="L282">        TempFileNames names = executrix.createTempFilenames();</span>
+<span class="fc" id="L283">        String tempDirName = names.getTempDir();</span>
+<span class="fc" id="L284">        String inputFileName = names.getInputFilename();</span>
+<span class="fc" id="L285">        String outputFileName = names.getOutputFilename();</span>
+<span class="fc" id="L286">        File tempDir = new File(tempDirName);</span>
+<span class="fc" id="L287">        byte[] outputData = null;</span>
 
         try {
-<span class="pc bpc" id="L289" title="1 of 2 branches missed.">            if (!tempDir.mkdirs()) {</span>
-<span class="nc" id="L290">                logger.warn(&quot;Could not create temp directory for process {}&quot;, tempDirName);</span>
-<span class="nc" id="L291">                return outputData;</span>
+<span class="pc bpc" id="L290" title="1 of 2 branches missed.">            if (!tempDir.mkdirs()) {</span>
+<span class="nc" id="L291">                logger.warn(&quot;Could not create temp directory for process {}&quot;, tempDirName);</span>
+<span class="nc" id="L292">                return outputData;</span>
             }
 
-<span class="fc" id="L294">            boolean written = Executrix.writeDataToFile(data, inputFileName, true);</span>
+<span class="fc" id="L295">            boolean written = Executrix.writeDataToFile(data, inputFileName, true);</span>
 
-<span class="pc bpc" id="L296" title="1 of 2 branches missed.">            if (written) {</span>
-<span class="fc" id="L297">                String[] cmd = executrix.getCommand(names);</span>
+<span class="pc bpc" id="L297" title="1 of 2 branches missed.">            if (written) {</span>
+<span class="fc" id="L298">                String[] cmd = executrix.getCommand(names);</span>
 
-<span class="fc bfc" id="L299" title="All 2 branches covered.">                if (executrix.getOutput().equals(&quot;FILE&quot;)) {</span>
-<span class="fc" id="L300">                    outputData = fileProcess(cmd, outputFileName);</span>
-<span class="pc bpc" id="L301" title="1 of 2 branches missed.">                } else if (executrix.getOutput().equals(&quot;STD&quot;)) {</span>
-<span class="fc" id="L302">                    outputData = stdOutProcess(cmd, perlChop);</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">                if (executrix.getOutput().equals(&quot;FILE&quot;)) {</span>
+<span class="fc" id="L301">                    outputData = fileProcess(cmd, outputFileName);</span>
+<span class="pc bpc" id="L302" title="1 of 2 branches missed.">                } else if (executrix.getOutput().equals(&quot;STD&quot;)) {</span>
+<span class="fc" id="L303">                    outputData = stdOutProcess(cmd, perlChop);</span>
                 } else {
-<span class="nc" id="L304">                    logger.error(&quot;No output type specified&quot;);</span>
+<span class="nc" id="L305">                    logger.error(&quot;No output type specified&quot;);</span>
                 }
 
-<span class="fc" id="L307">                logMessages(tempDirName);</span>
+<span class="fc" id="L308">                logMessages(tempDirName);</span>
             }
 
-<span class="nc" id="L310">        } catch (Exception ex) {</span>
-<span class="nc" id="L311">            logger.warn(&quot;Bad execution of commands&quot;, ex);</span>
-<span class="nc bnc" id="L312" title="All 2 branches missed.">            if (ex instanceof InterruptedException) {</span>
-<span class="nc" id="L313">                throw new ResourceException(ex); // framework notification to stop</span>
+<span class="nc" id="L311">        } catch (Exception ex) {</span>
+<span class="nc" id="L312">            logger.warn(&quot;Bad execution of commands&quot;, ex);</span>
+<span class="nc bnc" id="L313" title="All 2 branches missed.">            if (ex instanceof InterruptedException) {</span>
+<span class="nc" id="L314">                throw new ResourceException(ex); // framework notification to stop</span>
             }
         } finally {
-<span class="pc bpc" id="L316" title="1 of 2 branches missed.">            if (!keepFilesDebug) {</span>
+<span class="pc bpc" id="L317" title="1 of 2 branches missed.">            if (!keepFilesDebug) {</span>
                 // delete all files here!!!
-<span class="fc" id="L318">                Executrix.cleanupDirectory(tempDir);</span>
+<span class="fc" id="L319">                Executrix.cleanupDirectory(tempDir);</span>
             }
         }
 
-<span class="fc" id="L322">        return outputData;</span>
+<span class="fc" id="L323">        return outputData;</span>
 
     }
 
@@ -331,8 +332,8 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param outputData the result of running the command
      */
     protected void asAlternateViewHook(IBaseDataObject tData, String newForm, byte[] outputData) {
-<span class="pc bpc" id="L334" title="1 of 2 branches missed.">        tData.addAlternateView(newForm != null ? newForm : tData.currentForm(), outputData);</span>
-<span class="fc" id="L335">    }</span>
+<span class="pc bpc" id="L335" title="1 of 2 branches missed.">        tData.addAlternateView(newForm != null ? newForm : tData.currentForm(), outputData);</span>
+<span class="fc" id="L336">    }</span>
 
     /**
      * Hook to add command output as metadata
@@ -342,11 +343,11 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param outputData the result of running the command
      */
     protected void asMetaDataHook(IBaseDataObject tData, String tag, byte[] outputData) {
-<span class="nc" id="L345">        tData.putParameter(metaDataTag, new String(outputData));</span>
-<span class="nc bnc" id="L346" title="All 4 branches missed.">        if (keys.get(0).indexOf(&quot;.TRANSFORM.&quot;) == -1 &amp;&amp; newForm != null) {</span>
-<span class="nc" id="L347">            tData.setCurrentForm(newForm);</span>
+<span class="nc" id="L346">        tData.putParameter(metaDataTag, new String(outputData));</span>
+<span class="nc bnc" id="L347" title="All 4 branches missed.">        if (keys.get(0).indexOf(&quot;.TRANSFORM.&quot;) == -1 &amp;&amp; newForm != null) {</span>
+<span class="nc" id="L348">            tData.setCurrentForm(newForm);</span>
         }
-<span class="nc" id="L349">    }</span>
+<span class="nc" id="L350">    }</span>
 
     /**
      * Hook to set command output as the current form
@@ -355,8 +356,8 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param outputData the results of running the command
      */
     protected void asCurrentFormHook(IBaseDataObject tData, byte[] outputData) {
-<span class="nc" id="L358">        tData.setCurrentForm(new String(outputData));</span>
-<span class="nc" id="L359">    }</span>
+<span class="nc" id="L359">        tData.setCurrentForm(new String(outputData));</span>
+<span class="nc" id="L360">    }</span>
 
     /**
      * Hook to add command output as the data element
@@ -365,8 +366,8 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param outputData the results of running the command
      */
     protected void asDataHook(IBaseDataObject tData, byte[] outputData) {
-<span class="nc" id="L368">        tData.setData(outputData);</span>
-<span class="nc" id="L369">    }</span>
+<span class="nc" id="L369">        tData.setData(outputData);</span>
+<span class="nc" id="L370">    }</span>
 
     /**
      * Hook to handle error or null output from command
@@ -374,11 +375,11 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param tData the data object the command was run on
      */
     protected void errorHook(IBaseDataObject tData) {
-<span class="pc bpc" id="L377" title="1 of 2 branches missed.">        if (newFormOnError != null) {</span>
-<span class="fc" id="L378">            tData.setCurrentForm(newFormOnError);</span>
+<span class="pc bpc" id="L378" title="1 of 2 branches missed.">        if (newFormOnError != null) {</span>
+<span class="fc" id="L379">            tData.setCurrentForm(newFormOnError);</span>
         }
-<span class="fc" id="L380">        tData.addProcessingError(&quot;&quot; + keys.get(0) + &quot;: command produced null or no output&quot;);</span>
-<span class="fc" id="L381">    }</span>
+<span class="fc" id="L381">        tData.addProcessingError(&quot;&quot; + keys.get(0) + &quot;: command produced null or no output&quot;);</span>
+<span class="fc" id="L382">    }</span>
 
     /**
      * Hook for services not coded in this implementation
@@ -388,8 +389,8 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param outputData results of the command that was run
      */
     protected void serviceHook(String serviceType, IBaseDataObject tData, byte[] outputData) {
-<span class="nc" id="L391">        logger.warn(&quot;Unknown service type: {}&quot;, serviceType);</span>
-<span class="nc" id="L392">    }</span>
+<span class="nc" id="L392">        logger.warn(&quot;Unknown service type: {}&quot;, serviceType);</span>
+<span class="nc" id="L393">    }</span>
 
 
     /**
@@ -399,42 +400,42 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      */
     protected void processData(IBaseDataObject tData) throws ResourceException {
 
-<span class="fc" id="L402">        byte[] outputData = runCommandOn(findPreferredData(tData));</span>
-<span class="fc" id="L403">        String serviceType = KeyManipulator.getServiceType(keys.get(0));</span>
+<span class="fc" id="L403">        byte[] outputData = runCommandOn(findPreferredData(tData));</span>
+<span class="fc" id="L404">        String serviceType = KeyManipulator.getServiceType(keys.get(0));</span>
 
-<span class="pc bpc" id="L405" title="2 of 4 branches missed.">        if (serviceType.equals(&quot;ID&quot;) || serviceType.equals(&quot;ANALYZE&quot;)) {</span>
-<span class="pc bpc" id="L406" title="1 of 4 branches missed.">            if (outputData == null || outputData.length == 0) {</span>
-<span class="fc" id="L407">                errorHook(tData);</span>
-<span class="pc bpc" id="L408" title="1 of 2 branches missed.">            } else if (addAsMetaData) {</span>
-<span class="nc" id="L409">                asMetaDataHook(tData, metaDataTag, outputData);</span>
-<span class="pc bpc" id="L410" title="1 of 2 branches missed.">            } else if (alternateView != null) {</span>
-<span class="fc" id="L411">                asAlternateViewHook(tData, alternateView, outputData);</span>
+<span class="pc bpc" id="L406" title="2 of 4 branches missed.">        if (serviceType.equals(&quot;ID&quot;) || serviceType.equals(&quot;ANALYZE&quot;)) {</span>
+<span class="pc bpc" id="L407" title="1 of 4 branches missed.">            if (outputData == null || outputData.length == 0) {</span>
+<span class="fc" id="L408">                errorHook(tData);</span>
+<span class="pc bpc" id="L409" title="1 of 2 branches missed.">            } else if (addAsMetaData) {</span>
+<span class="nc" id="L410">                asMetaDataHook(tData, metaDataTag, outputData);</span>
+<span class="pc bpc" id="L411" title="1 of 2 branches missed.">            } else if (alternateView != null) {</span>
+<span class="fc" id="L412">                asAlternateViewHook(tData, alternateView, outputData);</span>
             } else {
-<span class="nc" id="L413">                asCurrentFormHook(tData, outputData);</span>
+<span class="nc" id="L414">                asCurrentFormHook(tData, outputData);</span>
             }
-<span class="nc bnc" id="L415" title="All 2 branches missed.">        } else if (serviceType.equals(&quot;TRANSFORM&quot;)) {</span>
-<span class="nc bnc" id="L416" title="All 4 branches missed.">            if (outputData == null || outputData.length == 0) {</span>
-<span class="nc" id="L417">                errorHook(tData);</span>
-<span class="nc bnc" id="L418" title="All 2 branches missed.">            } else if (alternateView != null) {</span>
-<span class="nc" id="L419">                asAlternateViewHook(tData, alternateView, outputData);</span>
-<span class="nc bnc" id="L420" title="All 2 branches missed.">            } else if (addAsMetaData) {</span>
-<span class="nc" id="L421">                asMetaDataHook(tData, metaDataTag, outputData);</span>
+<span class="nc bnc" id="L416" title="All 2 branches missed.">        } else if (serviceType.equals(&quot;TRANSFORM&quot;)) {</span>
+<span class="nc bnc" id="L417" title="All 4 branches missed.">            if (outputData == null || outputData.length == 0) {</span>
+<span class="nc" id="L418">                errorHook(tData);</span>
+<span class="nc bnc" id="L419" title="All 2 branches missed.">            } else if (alternateView != null) {</span>
+<span class="nc" id="L420">                asAlternateViewHook(tData, alternateView, outputData);</span>
+<span class="nc bnc" id="L421" title="All 2 branches missed.">            } else if (addAsMetaData) {</span>
+<span class="nc" id="L422">                asMetaDataHook(tData, metaDataTag, outputData);</span>
             } else {
-<span class="nc" id="L423">                asDataHook(tData, outputData);</span>
-<span class="nc bnc" id="L424" title="All 2 branches missed.">                if (nukeAllProxies) {</span>
-<span class="nc" id="L425">                    nukeMyProxies(tData);</span>
-<span class="nc bnc" id="L426" title="All 2 branches missed.">                    if (newForm != null) {</span>
-<span class="nc" id="L427">                        tData.pushCurrentForm(newForm);</span>
+<span class="nc" id="L424">                asDataHook(tData, outputData);</span>
+<span class="nc bnc" id="L425" title="All 2 branches missed.">                if (nukeAllProxies) {</span>
+<span class="nc" id="L426">                    nukeMyProxies(tData);</span>
+<span class="nc bnc" id="L427" title="All 2 branches missed.">                    if (newForm != null) {</span>
+<span class="nc" id="L428">                        tData.pushCurrentForm(newForm);</span>
                     }
-<span class="nc bnc" id="L429" title="All 2 branches missed.">                } else if (newForm != null) {</span>
-<span class="nc" id="L430">                    tData.setCurrentForm(newForm);</span>
+<span class="nc bnc" id="L430" title="All 2 branches missed.">                } else if (newForm != null) {</span>
+<span class="nc" id="L431">                    tData.setCurrentForm(newForm);</span>
                 }
             }
         } else {
-<span class="nc" id="L434">            serviceHook(serviceType, tData, outputData);</span>
+<span class="nc" id="L435">            serviceHook(serviceType, tData, outputData);</span>
         }
 
-<span class="fc" id="L437">    }</span>
+<span class="fc" id="L438">    }</span>
 
     /**
      * Get data to process
@@ -443,7 +444,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @return the data to process
      */
     protected byte[] findPreferredData(IBaseDataObject tData) {
-<span class="fc" id="L446">        return tData.data();</span>
+<span class="fc" id="L447">        return tData.data();</span>
     }
 
 }

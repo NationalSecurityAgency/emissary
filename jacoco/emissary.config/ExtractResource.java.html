@@ -43,8 +43,8 @@ import java.nio.file.Paths;
         }
 <span class="nc" id="L44">        logger.debug(&quot;Reading &quot; + resource);</span>
         final String result;
-<span class="nc" id="L46">        try (final InputStream is = ConfigUtil.getConfigStream(resource);</span>
-<span class="nc" id="L47">                final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {</span>
+<span class="nc" id="L46">        try (InputStream is = ConfigUtil.getConfigStream(resource);</span>
+<span class="nc" id="L47">                ByteArrayOutputStream baos = new ByteArrayOutputStream()) {</span>
 <span class="nc" id="L48">            final byte[] buf = new byte[4096];</span>
 <span class="nc" id="L49">            int thisReadOp = 0;</span>
 <span class="nc bnc" id="L50" title="All 2 branches missed.">            while ((thisReadOp = is.read(buf)) &gt; -1) {</span>
@@ -63,7 +63,7 @@ import java.nio.file.Paths;
 <span class="nc" id="L63">        final String rezdata = getResource(resource);</span>
 <span class="nc" id="L64">        final String outputPath = this.outputDirectory + &quot;/&quot; + resource.replaceAll(&quot;/&quot;, &quot;.&quot;);</span>
 <span class="nc" id="L65">        logger.debug(&quot;Writing &quot; + outputPath);</span>
-<span class="nc" id="L66">        try (final BufferedOutputStream os = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {</span>
+<span class="nc" id="L66">        try (BufferedOutputStream os = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {</span>
 <span class="nc" id="L67">            os.write(rezdata.getBytes());</span>
         }
 <span class="nc" id="L69">    }</span>

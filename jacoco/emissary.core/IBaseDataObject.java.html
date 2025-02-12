@@ -354,11 +354,12 @@ public interface IBaseDataObject {
      * 
      * @param key name of the metadata element
      * @return the string value or null if no such element
-     * @deprecated use {@link #getParameterAsConcatString(String)}
+     * @deprecated use {@link #getParameterAsString(String)} if a single metadata value is expected, or
+     *             {@link #getParameterAsConcatString(String)} if it might be multivalued
      */
     @Deprecated
     default String getStringParameter(final String key) {
-<span class="fc" id="L361">        return getStringParameter(key, DEFAULT_PARAM_SEPARATOR);</span>
+<span class="fc" id="L362">        return getStringParameter(key, DEFAULT_PARAM_SEPARATOR);</span>
     }
 
     /**
@@ -372,24 +373,24 @@ public interface IBaseDataObject {
     @Deprecated
     @Nullable
     default String getStringParameter(final String key, final String sep) {
-<span class="fc" id="L375">        final List&lt;Object&gt; obj = getParameter(key);</span>
-<span class="fc bfc" id="L376" title="All 2 branches covered.">        if (obj == null) {</span>
-<span class="fc" id="L377">            return null;</span>
-<span class="pc bpc" id="L378" title="1 of 2 branches missed.">        } else if (obj.isEmpty()) {</span>
-<span class="nc" id="L379">            return null;</span>
-<span class="fc bfc" id="L380" title="All 4 branches covered.">        } else if ((obj.size() == 1) &amp;&amp; (obj.get(0) instanceof String)) {</span>
-<span class="fc" id="L381">            return (String) obj.get(0);</span>
-<span class="fc bfc" id="L382" title="All 4 branches covered.">        } else if ((obj.size() == 1) &amp;&amp; (obj.get(0) == null)) {</span>
-<span class="fc" id="L383">            return null;</span>
+<span class="fc" id="L376">        final List&lt;Object&gt; obj = getParameter(key);</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">        if (obj == null) {</span>
+<span class="fc" id="L378">            return null;</span>
+<span class="pc bpc" id="L379" title="1 of 2 branches missed.">        } else if (obj.isEmpty()) {</span>
+<span class="nc" id="L380">            return null;</span>
+<span class="fc bfc" id="L381" title="All 4 branches covered.">        } else if ((obj.size() == 1) &amp;&amp; (obj.get(0) instanceof String)) {</span>
+<span class="fc" id="L382">            return (String) obj.get(0);</span>
+<span class="fc bfc" id="L383" title="All 4 branches covered.">        } else if ((obj.size() == 1) &amp;&amp; (obj.get(0) == null)) {</span>
+<span class="fc" id="L384">            return null;</span>
         } else {
-<span class="fc" id="L385">            final StringBuilder sb = new StringBuilder();</span>
-<span class="fc bfc" id="L386" title="All 2 branches covered.">            for (final Object item : obj) {</span>
-<span class="fc bfc" id="L387" title="All 2 branches covered.">                if (sb.length() &gt; 0) {</span>
-<span class="fc" id="L388">                    sb.append(sep);</span>
+<span class="fc" id="L386">            final StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">            for (final Object item : obj) {</span>
+<span class="fc bfc" id="L388" title="All 2 branches covered.">                if (sb.length() &gt; 0) {</span>
+<span class="fc" id="L389">                    sb.append(sep);</span>
                 }
-<span class="fc" id="L390">                sb.append(item);</span>
-<span class="fc" id="L391">            }</span>
-<span class="fc" id="L392">            return sb.toString();</span>
+<span class="fc" id="L391">                sb.append(item);</span>
+<span class="fc" id="L392">            }</span>
+<span class="fc" id="L393">            return sb.toString();</span>
         }
     }
 
@@ -400,13 +401,13 @@ public interface IBaseDataObject {
      * @return Collection of elements converted to strings
      */
     default Collection&lt;String&gt; getParameterAsStrings(final String key) {
-<span class="fc" id="L403">        final var obj = getParameter(key);</span>
-<span class="fc bfc" id="L404" title="All 6 branches covered.">        if (CollectionUtils.isEmpty(obj) || ((obj.size() == 1) &amp;&amp; (obj.get(0) == null))) {</span>
-<span class="fc" id="L405">            return Collections.emptyList();</span>
-<span class="fc bfc" id="L406" title="All 4 branches covered.">        } else if ((obj.size() == 1) &amp;&amp; (obj.get(0) instanceof String)) {</span>
-<span class="fc" id="L407">            return Collections.singletonList((String) obj.get(0));</span>
+<span class="fc" id="L404">        final var obj = getParameter(key);</span>
+<span class="fc bfc" id="L405" title="All 6 branches covered.">        if (CollectionUtils.isEmpty(obj) || ((obj.size() == 1) &amp;&amp; (obj.get(0) == null))) {</span>
+<span class="fc" id="L406">            return Collections.emptyList();</span>
+<span class="fc bfc" id="L407" title="All 4 branches covered.">        } else if ((obj.size() == 1) &amp;&amp; (obj.get(0) instanceof String)) {</span>
+<span class="fc" id="L408">            return Collections.singletonList((String) obj.get(0));</span>
         } else {
-<span class="fc" id="L409">            return obj.stream().map(String::valueOf).collect(Collectors.toList());</span>
+<span class="fc" id="L410">            return obj.stream().map(String::valueOf).collect(Collectors.toList());</span>
         }
     }
 
@@ -425,7 +426,7 @@ public interface IBaseDataObject {
      * @return the string value or null if no such element
      */
     default String getParameterAsConcatString(final String key) {
-<span class="fc" id="L428">        return getParameterAsConcatString(key, DEFAULT_PARAM_SEPARATOR);</span>
+<span class="fc" id="L429">        return getParameterAsConcatString(key, DEFAULT_PARAM_SEPARATOR);</span>
     }
 
     /**
@@ -437,11 +438,11 @@ public interface IBaseDataObject {
      */
     @Nullable
     default String getParameterAsConcatString(final String key, final String sep) {
-<span class="fc" id="L440">        Collection&lt;String&gt; strings = getParameterAsStrings(key);</span>
-<span class="fc bfc" id="L441" title="All 2 branches covered.">        if (strings.stream().anyMatch(Objects::nonNull)) {</span>
-<span class="fc" id="L442">            return String.join(sep, strings);</span>
+<span class="fc" id="L441">        Collection&lt;String&gt; strings = getParameterAsStrings(key);</span>
+<span class="fc bfc" id="L442" title="All 2 branches covered.">        if (strings.stream().anyMatch(Objects::nonNull)) {</span>
+<span class="fc" id="L443">            return String.join(sep, strings);</span>
         }
-<span class="fc" id="L444">        return null;</span>
+<span class="fc" id="L445">        return null;</span>
     }
 
     /**
@@ -1011,5 +1012,13 @@ public interface IBaseDataObject {
      * @param transactionId the unique identifier of the transaction
      */
     void setTransactionId(String transactionId);
+
+    /**
+     * Return the top level document or null if there is none for this IBaseDataObject
+     *
+     * @return The TLD IBaseDataObject
+     */
+    IBaseDataObject getTld();
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -332,14 +332,14 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      * @return true if it worked
      */
     private boolean localizeDirectory(@Nullable String theDir) {
-        // Get a local (non proxy) copy of the directory if possible!
+        // Get a local (non-proxy) copy of the directory if possible!
         // Looking up both if nothing is provided
 <span class="fc bfc" id="L337" title="All 2 branches covered.">        if (theDir == null) {</span>
             try {
 <span class="fc" id="L339">                localDirPlace = DirectoryPlace.lookup();</span>
 <span class="fc" id="L340">                dirPlace = localDirPlace.toString();</span>
 <span class="fc" id="L341">            } catch (EmissaryException ex) {</span>
-<span class="pc bpc" id="L342" title="3 of 4 branches missed.">                if (EmissaryServer.exists() &amp;&amp; !(this instanceof DirectoryPlace)) {</span>
+<span class="pc bpc" id="L342" title="3 of 4 branches missed.">                if (EmissaryServer.getInstance().isServerRunning() &amp;&amp; !(this instanceof DirectoryPlace)) {</span>
 <span class="nc" id="L343">                    logger.warn(&quot;Unable to find DirectoryPlace in local namespace&quot;, ex);</span>
 <span class="nc" id="L344">                    return false;</span>
                 }
@@ -422,7 +422,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
 <span class="fc" id="L422">            keys.add(placeLocation); // save as first in list</span>
 <span class="fc" id="L423">            locationPart = KeyManipulator.getServiceLocation(placeLocation);</span>
 <span class="fc bfc" id="L424" title="All 2 branches covered.">        } else if (!placeLocation.contains(&quot;://&quot;)) {</span>
-<span class="fc" id="L425">            EmissaryNode node = new EmissaryNode();</span>
+<span class="fc" id="L425">            EmissaryNode node = EmissaryServer.getInstance().getNode();</span>
 <span class="fc" id="L426">            locationPart = &quot;http://&quot; + node.getNodeName() + &quot;:&quot; + node.getNodePort() + &quot;/&quot; + placeLocation;</span>
         }
 
@@ -848,18 +848,18 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
         // Cannot register if we have no directory
         // If we are the directory, its no problem though
 <span class="pc bpc" id="L850" title="1 of 2 branches missed.">        if (dirPlace == null) {</span>
-<span class="nc bnc" id="L851" title="All 2 branches missed.">            if (!(this instanceof IDirectoryPlace)) {</span>
-<span class="nc" id="L852">                logger.debug(&quot;Directory is null: cannot register anything. Illegal configuration.&quot;);</span>
+<span class="pc bpc" id="L851" title="1 of 2 branches missed.">            if (!(this instanceof IDirectoryPlace)) {</span>
+<span class="fc" id="L852">                logger.debug(&quot;Directory is null: cannot register anything. Illegal configuration.&quot;);</span>
             }
-<span class="nc" id="L854">            return;</span>
+<span class="fc" id="L854">            return;</span>
         }
 
         // Register place and all proxies by building up a list
         // of our interests to send to the directory
-<span class="fc" id="L859">        List&lt;String&gt; keylist = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L860">        keylist.add(key);</span>
-<span class="fc" id="L861">        registerWithDirectory(keylist);</span>
-<span class="fc" id="L862">    }</span>
+<span class="nc" id="L859">        List&lt;String&gt; keylist = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L860">        keylist.add(key);</span>
+<span class="nc" id="L861">        registerWithDirectory(keylist);</span>
+<span class="nc" id="L862">    }</span>
 
     /**
      * Register our interest in all of our serviceProxies Sends only one message to the directory to cover all service
@@ -1053,16 +1053,16 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
         Timer placeStats;
 <span class="fc" id="L1054">        String placeStatStr = &quot;UNAVAILABLE&quot;;</span>
         try {
-<span class="fc" id="L1056">            resource = ResourceWatcher.lookup();</span>
-<span class="fc" id="L1057">            String statsKey = getPlaceName();</span>
-<span class="fc" id="L1058">            placeStats = resource.getStat(statsKey);</span>
+<span class="nc" id="L1056">            resource = ResourceWatcher.lookup();</span>
+<span class="nc" id="L1057">            String statsKey = getPlaceName();</span>
+<span class="nc" id="L1058">            placeStats = resource.getStat(statsKey);</span>
 
-<span class="pc bpc" id="L1060" title="1 of 2 branches missed.">            if (placeStats != null) {</span>
-<span class="fc" id="L1061">                placeStatStr = placeStats.getSnapshot().toString();</span>
+<span class="nc bnc" id="L1060" title="All 2 branches missed.">            if (placeStats != null) {</span>
+<span class="nc" id="L1061">                placeStatStr = placeStats.getSnapshot().toString();</span>
             }
-<span class="nc" id="L1063">        } catch (NamespaceException ne) {</span>
-<span class="nc" id="L1064">            logger.error(&quot;Exception occurred while trying to lookup resource&quot;, ne);</span>
-<span class="fc" id="L1065">        }</span>
+<span class="fc" id="L1063">        } catch (NamespaceException ne) {</span>
+<span class="fc" id="L1064">            logger.error(&quot;Exception occurred while trying to lookup resource&quot;, ne);</span>
+<span class="nc" id="L1065">        }</span>
 <span class="fc" id="L1066">        return placeStatStr;</span>
     }
 

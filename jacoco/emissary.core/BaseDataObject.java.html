@@ -192,9 +192,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Nullable
     protected SeekableByteChannelFactory seekableByteChannelFactory;
 
+    @Nullable
+    protected final IBaseDataObject tld;
 
-<span class="fc" id="L196">    protected enum DataState {</span>
-<span class="fc" id="L197">        NO_DATA, CHANNEL_ONLY, BYTE_ARRAY_ONLY, BYTE_ARRAY_AND_CHANNEL</span>
+<span class="fc" id="L198">    protected enum DataState {</span>
+<span class="fc" id="L199">        NO_DATA, CHANNEL_ONLY, BYTE_ARRAY_ONLY, BYTE_ARRAY_AND_CHANNEL</span>
     }
 
     protected static final String INVALID_STATE_MSG = &quot;Can't have both theData and seekableByteChannelFactory set. Object is %s&quot;;
@@ -217,17 +219,17 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return the {@link DataState} of this BDO
      */
     protected DataState getDataState() {
-<span class="fc bfc" id="L220" title="All 2 branches covered.">        if (theData == null) {</span>
-<span class="fc bfc" id="L221" title="All 2 branches covered.">            if (seekableByteChannelFactory == null) {</span>
-<span class="fc" id="L222">                return DataState.NO_DATA;</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">        if (theData == null) {</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">            if (seekableByteChannelFactory == null) {</span>
+<span class="fc" id="L224">                return DataState.NO_DATA;</span>
             } else {
-<span class="fc" id="L224">                return DataState.CHANNEL_ONLY;</span>
+<span class="fc" id="L226">                return DataState.CHANNEL_ONLY;</span>
             }
         } else {
-<span class="fc bfc" id="L227" title="All 2 branches covered.">            if (seekableByteChannelFactory == null) {</span>
-<span class="fc" id="L228">                return DataState.BYTE_ARRAY_ONLY;</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">            if (seekableByteChannelFactory == null) {</span>
+<span class="fc" id="L230">                return DataState.BYTE_ARRAY_ONLY;</span>
             } else {
-<span class="fc" id="L230">                return DataState.BYTE_ARRAY_AND_CHANNEL;</span>
+<span class="fc" id="L232">                return DataState.BYTE_ARRAY_AND_CHANNEL;</span>
             }
         }
     }
@@ -235,10 +237,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * Create an empty BaseDataObject.
      */
-<span class="fc" id="L238">    public BaseDataObject() {</span>
-<span class="fc" id="L239">        this.theData = null;</span>
-<span class="fc" id="L240">        setCreationTimestamp(Instant.now());</span>
-<span class="fc" id="L241">    }</span>
+<span class="fc" id="L240">    public BaseDataObject() {</span>
+<span class="fc" id="L241">        this.theData = null;</span>
+<span class="fc" id="L242">        setCreationTimestamp(Instant.now());</span>
+<span class="fc" id="L243">        tld = null;</span>
+<span class="fc" id="L244">    }</span>
 
     /**
      * Create a new BaseDataObject with byte array and name passed in. WARNING: this implementation uses the passed in array
@@ -247,11 +250,12 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param newData the bytes to hold
      * @param name the name of the data item
      */
-<span class="fc" id="L250">    public BaseDataObject(final byte[] newData, final String name) {</span>
-<span class="fc" id="L251">        setData(newData);</span>
-<span class="fc" id="L252">        setFilename(name);</span>
-<span class="fc" id="L253">        setCreationTimestamp(Instant.now());</span>
-<span class="fc" id="L254">    }</span>
+<span class="fc" id="L253">    public BaseDataObject(final byte[] newData, final String name) {</span>
+<span class="fc" id="L254">        setData(newData);</span>
+<span class="fc" id="L255">        setFilename(name);</span>
+<span class="fc" id="L256">        setCreationTimestamp(Instant.now());</span>
+<span class="fc" id="L257">        tld = null;</span>
+<span class="fc" id="L258">    }</span>
 
     /**
      * Create a new BaseDataObject with byte array, name, and initial form WARNING: this implementation uses the passed in
@@ -262,18 +266,36 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param form the initial form of the data
      */
     public BaseDataObject(final byte[] newData, final String name, @Nullable final String form) {
-<span class="fc" id="L265">        this(newData, name);</span>
-<span class="fc bfc" id="L266" title="All 2 branches covered.">        if (form != null) {</span>
-<span class="fc" id="L267">            pushCurrentForm(form);</span>
+<span class="fc" id="L269">        this(newData, name);</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">        if (form != null) {</span>
+<span class="fc" id="L271">            pushCurrentForm(form);</span>
         }
-<span class="fc" id="L269">    }</span>
+<span class="fc" id="L273">    }</span>
 
     public BaseDataObject(final byte[] newData, final String name, final String form, @Nullable final String fileType) {
-<span class="fc" id="L272">        this(newData, name, form);</span>
-<span class="pc bpc" id="L273" title="1 of 2 branches missed.">        if (fileType != null) {</span>
-<span class="fc" id="L274">            this.setFileType(fileType);</span>
+<span class="fc" id="L276">        this(newData, name, form);</span>
+<span class="pc bpc" id="L277" title="1 of 2 branches missed.">        if (fileType != null) {</span>
+<span class="fc" id="L278">            this.setFileType(fileType);</span>
         }
-<span class="fc" id="L276">    }</span>
+<span class="fc" id="L280">    }</span>
+
+<span class="fc" id="L282">    public BaseDataObject(final byte[] newData, final String name, @Nullable final String form, IBaseDataObject tld) {</span>
+<span class="fc" id="L283">        setData(newData);</span>
+<span class="fc" id="L284">        setFilename(name);</span>
+<span class="fc" id="L285">        setCreationTimestamp(Instant.now());</span>
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">        if (form != null) {</span>
+<span class="fc" id="L287">            pushCurrentForm(form);</span>
+        }
+<span class="fc" id="L289">        this.tld = tld;</span>
+<span class="fc" id="L290">    }</span>
+
+    public BaseDataObject(final byte[] newData, final String name, @Nullable final String form, @Nullable final String fileType,
+            IBaseDataObject tld) {
+<span class="fc" id="L294">        this(newData, name, form, tld);</span>
+<span class="pc bpc" id="L295" title="1 of 2 branches missed.">        if (fileType != null) {</span>
+<span class="fc" id="L296">            this.setFileType(fileType);</span>
+        }
+<span class="fc" id="L298">    }</span>
 
     /**
      * Set the header byte array WARNING: this implementation uses the passed in array directly, no copy is made so the
@@ -283,8 +305,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void setHeader(final byte[] header) {
-<span class="fc" id="L286">        this.header = header;</span>
-<span class="fc" id="L287">    }</span>
+<span class="fc" id="L308">        this.header = header;</span>
+<span class="fc" id="L309">    }</span>
 
     /**
      * Get the value of headerEncoding. Tells how to interpret the header information.
@@ -293,7 +315,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public String getHeaderEncoding() {
-<span class="fc" id="L296">        return this.headerEncoding;</span>
+<span class="fc" id="L318">        return this.headerEncoding;</span>
     }
 
     /**
@@ -303,8 +325,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void setHeaderEncoding(final String v) {
-<span class="fc" id="L306">        this.headerEncoding = v;</span>
-<span class="fc" id="L307">    }</span>
+<span class="fc" id="L328">        this.headerEncoding = v;</span>
+<span class="fc" id="L329">    }</span>
 
     /**
      * Set the footer byte array WARNING: this implementation uses the passed in array directly, no copy is made so the
@@ -314,8 +336,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void setFooter(final byte[] footer) {
-<span class="fc" id="L317">        this.footer = footer;</span>
-<span class="fc" id="L318">    }</span>
+<span class="fc" id="L339">        this.footer = footer;</span>
+<span class="fc" id="L340">    }</span>
 
     /**
      * Set the filename
@@ -324,9 +346,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void setFilename(final String f) {
-<span class="fc" id="L327">        this.theFileName = f;</span>
-<span class="fc" id="L328">        this.shortName = makeShortName();</span>
-<span class="fc" id="L329">    }</span>
+<span class="fc" id="L349">        this.theFileName = f;</span>
+<span class="fc" id="L350">        this.shortName = makeShortName();</span>
+<span class="fc" id="L351">    }</span>
 
     /**
      * Set the byte channel factory using whichever implementation is providing access to the data.
@@ -335,10 +357,10 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void setChannelFactory(final SeekableByteChannelFactory sbcf) {
-<span class="fc" id="L338">        Validate.notNull(sbcf, &quot;Required: SeekableByteChannelFactory not null&quot;);</span>
-<span class="fc" id="L339">        this.theData = null;</span>
-<span class="fc" id="L340">        this.seekableByteChannelFactory = sbcf;</span>
-<span class="fc" id="L341">    }</span>
+<span class="fc" id="L360">        Validate.notNull(sbcf, &quot;Required: SeekableByteChannelFactory not null&quot;);</span>
+<span class="fc" id="L361">        this.theData = null;</span>
+<span class="fc" id="L362">        this.seekableByteChannelFactory = sbcf;</span>
+<span class="fc" id="L363">    }</span>
 
     /**
      * Returns the seekable byte channel factory containing a reference to the data, or wraps the in-memory data on the BDO
@@ -350,16 +372,16 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     @SuppressWarnings(&quot;UnnecessaryDefaultInEnumSwitch&quot;)
     public SeekableByteChannelFactory getChannelFactory() {
-<span class="fc bfc" id="L353" title="All 4 branches covered.">        switch (getDataState()) {</span>
+<span class="fc bfc" id="L375" title="All 4 branches covered.">        switch (getDataState()) {</span>
             case BYTE_ARRAY_AND_CHANNEL:
-<span class="fc" id="L355">                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));</span>
+<span class="fc" id="L377">                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));</span>
             case CHANNEL_ONLY:
-<span class="fc" id="L357">                return seekableByteChannelFactory;</span>
+<span class="fc" id="L379">                return seekableByteChannelFactory;</span>
             case BYTE_ARRAY_ONLY:
-<span class="fc" id="L359">                return SeekableByteChannelHelper.memory(this.theData);</span>
+<span class="fc" id="L381">                return SeekableByteChannelHelper.memory(this.theData);</span>
             case NO_DATA:
             default:
-<span class="fc" id="L362">                return null;</span>
+<span class="fc" id="L384">                return null;</span>
         }
     }
 
@@ -369,9 +391,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Nullable
     @Override
     public InputStream newInputStream() {
-<span class="fc" id="L372">        final SeekableByteChannelFactory sbcf = getChannelFactory();</span>
+<span class="fc" id="L394">        final SeekableByteChannelFactory sbcf = getChannelFactory();</span>
 
-<span class="fc bfc" id="L374" title="All 2 branches covered.">        return sbcf == null ? null : Channels.newInputStream(sbcf.create());</span>
+<span class="fc bfc" id="L396" title="All 2 branches covered.">        return sbcf == null ? null : Channels.newInputStream(sbcf.create());</span>
     }
 
     /**
@@ -397,17 +419,17 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     @SuppressWarnings(&quot;UnnecessaryDefaultInEnumSwitch&quot;)
     public byte[] data() {
-<span class="fc bfc" id="L400" title="All 4 branches covered.">        switch (getDataState()) {</span>
+<span class="fc bfc" id="L422" title="All 4 branches covered.">        switch (getDataState()) {</span>
             case BYTE_ARRAY_AND_CHANNEL:
-<span class="fc" id="L402">                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));</span>
+<span class="fc" id="L424">                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));</span>
             case BYTE_ARRAY_ONLY:
-<span class="fc" id="L404">                return theData;</span>
+<span class="fc" id="L426">                return theData;</span>
             case CHANNEL_ONLY:
                 // Max size here is slightly less than the true max size to avoid memory issues
-<span class="fc" id="L407">                return SeekableByteChannelHelper.getByteArrayFromBdo(this, MAX_BYTE_ARRAY_SIZE);</span>
+<span class="fc" id="L429">                return SeekableByteChannelHelper.getByteArrayFromBdo(this, MAX_BYTE_ARRAY_SIZE);</span>
             case NO_DATA:
             default:
-<span class="fc" id="L410">                return null; // NOSONAR maintains backwards compatibility</span>
+<span class="fc" id="L432">                return null; // NOSONAR maintains backwards compatibility</span>
         }
     }
 
@@ -416,9 +438,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void setData(@Nullable final byte[] newData) {
-<span class="fc" id="L419">        this.seekableByteChannelFactory = null;</span>
-<span class="fc bfc" id="L420" title="All 2 branches covered.">        this.theData = newData == null ? new byte[0] : newData;</span>
-<span class="fc" id="L421">    }</span>
+<span class="fc" id="L441">        this.seekableByteChannelFactory = null;</span>
+<span class="fc bfc" id="L442" title="All 2 branches covered.">        this.theData = newData == null ? new byte[0] : newData;</span>
+<span class="fc" id="L443">    }</span>
 
     /**
      * &lt;p&gt;
@@ -437,14 +459,14 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void setData(@Nullable final byte[] newData, final int offset, final int length) {
-<span class="fc" id="L440">        this.seekableByteChannelFactory = null;</span>
-<span class="fc bfc" id="L441" title="All 4 branches covered.">        if (length &lt;= 0 || newData == null) {</span>
-<span class="fc" id="L442">            this.theData = new byte[0];</span>
+<span class="fc" id="L462">        this.seekableByteChannelFactory = null;</span>
+<span class="fc bfc" id="L463" title="All 4 branches covered.">        if (length &lt;= 0 || newData == null) {</span>
+<span class="fc" id="L464">            this.theData = new byte[0];</span>
         } else {
-<span class="fc" id="L444">            this.theData = new byte[length];</span>
-<span class="fc" id="L445">            System.arraycopy(newData, offset, this.theData, 0, length);</span>
+<span class="fc" id="L466">            this.theData = new byte[length];</span>
+<span class="fc" id="L467">            System.arraycopy(newData, offset, this.theData, 0, length);</span>
         }
-<span class="fc" id="L447">    }</span>
+<span class="fc" id="L469">    }</span>
 
     /**
      * Checks if the data is defined with a non-zero length.
@@ -453,7 +475,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public boolean hasContent() throws IOException {
-<span class="fc bfc" id="L456" title="All 2 branches covered.">        return getChannelSize() &gt; 0;</span>
+<span class="fc bfc" id="L478" title="All 2 branches covered.">        return getChannelSize() &gt; 0;</span>
     }
 
     /**
@@ -464,18 +486,18 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     @SuppressWarnings(&quot;UnnecessaryDefaultInEnumSwitch&quot;)
     public long getChannelSize() throws IOException {
-<span class="fc bfc" id="L467" title="All 4 branches covered.">        switch (getDataState()) {</span>
+<span class="fc bfc" id="L489" title="All 4 branches covered.">        switch (getDataState()) {</span>
             case BYTE_ARRAY_AND_CHANNEL:
-<span class="fc" id="L469">                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));</span>
+<span class="fc" id="L491">                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));</span>
             case BYTE_ARRAY_ONLY:
-<span class="fc" id="L471">                return ArrayUtils.getLength(theData);</span>
+<span class="fc" id="L493">                return ArrayUtils.getLength(theData);</span>
             case CHANNEL_ONLY:
-<span class="fc" id="L473">                try (final SeekableByteChannel sbc = this.seekableByteChannelFactory.create()) {</span>
-<span class="fc" id="L474">                    return sbc.size();</span>
+<span class="fc" id="L495">                try (SeekableByteChannel sbc = this.seekableByteChannelFactory.create()) {</span>
+<span class="fc" id="L496">                    return sbc.size();</span>
                 }
             case NO_DATA:
             default:
-<span class="fc" id="L478">                return 0;</span>
+<span class="fc" id="L500">                return 0;</span>
         }
     }
 
@@ -488,27 +510,27 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     @SuppressWarnings(&quot;UnnecessaryDefaultInEnumSwitch&quot;)
     public int dataLength() {
-<span class="fc bfc" id="L491" title="All 4 branches covered.">        switch (getDataState()) {</span>
+<span class="fc bfc" id="L513" title="All 4 branches covered.">        switch (getDataState()) {</span>
             case BYTE_ARRAY_AND_CHANNEL:
-<span class="fc" id="L493">                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));</span>
+<span class="fc" id="L515">                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));</span>
             case BYTE_ARRAY_ONLY:
-<span class="fc" id="L495">                return ArrayUtils.getLength(theData);</span>
+<span class="fc" id="L517">                return ArrayUtils.getLength(theData);</span>
             case CHANNEL_ONLY:
                 try {
-<span class="fc" id="L498">                    return (int) Math.min(getChannelSize(), MAX_BYTE_ARRAY_SIZE);</span>
-<span class="fc" id="L499">                } catch (final IOException ioe) {</span>
-<span class="fc" id="L500">                    logger.error(&quot;Couldn't get size of channel on object {}&quot;, shortName(), ioe);</span>
-<span class="fc" id="L501">                    return 0;</span>
+<span class="fc" id="L520">                    return (int) Math.min(getChannelSize(), MAX_BYTE_ARRAY_SIZE);</span>
+<span class="fc" id="L521">                } catch (final IOException ioe) {</span>
+<span class="fc" id="L522">                    logger.error(&quot;Couldn't get size of channel on object {}&quot;, shortName(), ioe);</span>
+<span class="fc" id="L523">                    return 0;</span>
                 }
             case NO_DATA:
             default:
-<span class="fc" id="L505">                return 0;</span>
+<span class="fc" id="L527">                return 0;</span>
         }
     }
 
     @Override
     public String shortName() {
-<span class="fc" id="L511">        return this.shortName;</span>
+<span class="fc" id="L533">        return this.shortName;</span>
     }
 
     /**
@@ -521,65 +543,65 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         // File file = new File( theFileName );
         // return file.getName();
         // so..... we'll have to perform the check ourselves ARRRRRRRRRGH!!!!
-<span class="fc" id="L524">        final int unixPathIndex = this.theFileName.lastIndexOf(&quot;/&quot;);</span>
-<span class="fc bfc" id="L525" title="All 2 branches covered.">        if (unixPathIndex &gt;= 0) {</span>
-<span class="fc" id="L526">            return this.theFileName.substring(unixPathIndex + 1);</span>
+<span class="fc" id="L546">        final int unixPathIndex = this.theFileName.lastIndexOf(&quot;/&quot;);</span>
+<span class="fc bfc" id="L547" title="All 2 branches covered.">        if (unixPathIndex &gt;= 0) {</span>
+<span class="fc" id="L548">            return this.theFileName.substring(unixPathIndex + 1);</span>
         }
         // check for windows path
-<span class="fc" id="L529">        final int windowsPathIndex = this.theFileName.lastIndexOf(&quot;\\&quot;);</span>
-<span class="fc bfc" id="L530" title="All 2 branches covered.">        if (windowsPathIndex &gt;= 0) {</span>
-<span class="fc" id="L531">            return this.theFileName.substring(windowsPathIndex + 1);</span>
+<span class="fc" id="L551">        final int windowsPathIndex = this.theFileName.lastIndexOf(&quot;\\&quot;);</span>
+<span class="fc bfc" id="L552" title="All 2 branches covered.">        if (windowsPathIndex &gt;= 0) {</span>
+<span class="fc" id="L553">            return this.theFileName.substring(windowsPathIndex + 1);</span>
         }
 
-<span class="fc" id="L534">        return this.theFileName;</span>
+<span class="fc" id="L556">        return this.theFileName;</span>
     }
 
     @Override
     public String getFilename() {
-<span class="fc" id="L539">        return this.theFileName;</span>
+<span class="fc" id="L561">        return this.theFileName;</span>
     }
 
     @Override
     public String currentForm() {
-<span class="fc" id="L544">        return currentFormAt(0);</span>
+<span class="fc" id="L566">        return currentFormAt(0);</span>
     }
 
     @Override
     public String currentFormAt(final int i) {
-<span class="fc bfc" id="L549" title="All 2 branches covered.">        if (i &lt; this.currentForm.size()) {</span>
-<span class="fc" id="L550">            return this.currentForm.get(i);</span>
+<span class="fc bfc" id="L571" title="All 2 branches covered.">        if (i &lt; this.currentForm.size()) {</span>
+<span class="fc" id="L572">            return this.currentForm.get(i);</span>
         }
-<span class="fc" id="L552">        return &quot;&quot;;</span>
+<span class="fc" id="L574">        return &quot;&quot;;</span>
     }
 
     @Override
     public int searchCurrentForm(final String value) {
-<span class="fc" id="L557">        return this.currentForm.indexOf(value);</span>
+<span class="fc" id="L579">        return this.currentForm.indexOf(value);</span>
     }
 
     @Nullable
     @Override
     public String searchCurrentForm(final Collection&lt;String&gt; values) {
-<span class="fc bfc" id="L563" title="All 2 branches covered.">        for (final String value : values) {</span>
-<span class="fc bfc" id="L564" title="All 2 branches covered.">            if (this.currentForm.contains(value)) {</span>
-<span class="fc" id="L565">                return value;</span>
+<span class="fc bfc" id="L585" title="All 2 branches covered.">        for (final String value : values) {</span>
+<span class="fc bfc" id="L586" title="All 2 branches covered.">            if (this.currentForm.contains(value)) {</span>
+<span class="fc" id="L587">                return value;</span>
             }
-<span class="fc" id="L567">        }</span>
-<span class="fc" id="L568">        return null;</span>
+<span class="fc" id="L589">        }</span>
+<span class="fc" id="L590">        return null;</span>
     }
 
     @Override
     public int currentFormSize() {
-<span class="fc" id="L573">        return this.currentForm.size();</span>
+<span class="fc" id="L595">        return this.currentForm.size();</span>
     }
 
     @Override
     public void replaceCurrentForm(@Nullable final String form) {
-<span class="fc" id="L578">        this.currentForm.clear();</span>
-<span class="fc bfc" id="L579" title="All 2 branches covered.">        if (form != null) {</span>
-<span class="fc" id="L580">            pushCurrentForm(form);</span>
+<span class="fc" id="L600">        this.currentForm.clear();</span>
+<span class="fc bfc" id="L601" title="All 2 branches covered.">        if (form != null) {</span>
+<span class="fc" id="L602">            pushCurrentForm(form);</span>
         }
-<span class="fc" id="L582">    }</span>
+<span class="fc" id="L604">    }</span>
 
     /**
      * Remove a form from the head of the list
@@ -589,260 +611,260 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Nullable
     @Override
     public String popCurrentForm() {
-<span class="fc bfc" id="L592" title="All 2 branches covered.">        if (this.currentForm.isEmpty()) {</span>
-<span class="fc" id="L593">            return null;</span>
+<span class="fc bfc" id="L614" title="All 2 branches covered.">        if (this.currentForm.isEmpty()) {</span>
+<span class="fc" id="L615">            return null;</span>
         } else {
-<span class="fc" id="L595">            return this.currentForm.remove(0);</span>
+<span class="fc" id="L617">            return this.currentForm.remove(0);</span>
         }
     }
 
     @Override
     public int deleteCurrentForm(final String form) {
-<span class="fc" id="L601">        int count = 0;</span>
+<span class="fc" id="L623">        int count = 0;</span>
 
-<span class="pc bpc" id="L603" title="1 of 4 branches missed.">        if (this.currentForm == null || this.currentForm.isEmpty()) {</span>
-<span class="fc" id="L604">            return count;</span>
+<span class="pc bpc" id="L625" title="1 of 4 branches missed.">        if (this.currentForm == null || this.currentForm.isEmpty()) {</span>
+<span class="fc" id="L626">            return count;</span>
         }
 
         // Remove all matching
-<span class="fc bfc" id="L608" title="All 2 branches covered.">        for (final Iterator&lt;String&gt; i = this.currentForm.iterator(); i.hasNext();) {</span>
-<span class="fc" id="L609">            final String val = i.next();</span>
-<span class="fc bfc" id="L610" title="All 2 branches covered.">            if (val.equals(form)) {</span>
-<span class="fc" id="L611">                i.remove();</span>
-<span class="fc" id="L612">                count++;</span>
+<span class="fc bfc" id="L630" title="All 2 branches covered.">        for (final Iterator&lt;String&gt; i = this.currentForm.iterator(); i.hasNext();) {</span>
+<span class="fc" id="L631">            final String val = i.next();</span>
+<span class="fc bfc" id="L632" title="All 2 branches covered.">            if (val.equals(form)) {</span>
+<span class="fc" id="L633">                i.remove();</span>
+<span class="fc" id="L634">                count++;</span>
             }
-<span class="fc" id="L614">        }</span>
-<span class="fc" id="L615">        return count;</span>
+<span class="fc" id="L636">        }</span>
+<span class="fc" id="L637">        return count;</span>
     }
 
     @Override
     public int deleteCurrentFormAt(final int i) {
         // Make sure its a legal position.
-<span class="fc bfc" id="L621" title="All 4 branches covered.">        if ((i &gt;= 0) &amp;&amp; (i &lt; this.currentForm.size())) {</span>
-<span class="fc" id="L622">            this.currentForm.remove(i);</span>
+<span class="fc bfc" id="L643" title="All 4 branches covered.">        if ((i &gt;= 0) &amp;&amp; (i &lt; this.currentForm.size())) {</span>
+<span class="fc" id="L644">            this.currentForm.remove(i);</span>
         }
-<span class="fc" id="L624">        return this.currentForm.size();</span>
+<span class="fc" id="L646">        return this.currentForm.size();</span>
     }
 
     @Override
     public int addCurrentFormAt(final int i, final String newForm) {
-<span class="fc bfc" id="L629" title="All 2 branches covered.">        if (newForm == null) {</span>
-<span class="fc" id="L630">            throw new IllegalArgumentException(&quot;caller attempted to add a null form value at position &quot; + i);</span>
+<span class="fc bfc" id="L651" title="All 2 branches covered.">        if (newForm == null) {</span>
+<span class="fc" id="L652">            throw new IllegalArgumentException(&quot;caller attempted to add a null form value at position &quot; + i);</span>
         }
 
-<span class="fc" id="L633">        checkForAndLogDuplicates(newForm, &quot;addCurrentFormAt&quot;);</span>
-<span class="fc bfc" id="L634" title="All 2 branches covered.">        if (i &lt; this.currentForm.size()) {</span>
-<span class="fc" id="L635">            this.currentForm.add(i, newForm);</span>
+<span class="fc" id="L655">        checkForAndLogDuplicates(newForm, &quot;addCurrentFormAt&quot;);</span>
+<span class="fc bfc" id="L656" title="All 2 branches covered.">        if (i &lt; this.currentForm.size()) {</span>
+<span class="fc" id="L657">            this.currentForm.add(i, newForm);</span>
         } else {
-<span class="fc" id="L637">            this.currentForm.add(newForm);</span>
+<span class="fc" id="L659">            this.currentForm.add(newForm);</span>
         }
-<span class="fc" id="L639">        return this.currentForm.size();</span>
+<span class="fc" id="L661">        return this.currentForm.size();</span>
     }
 
     @Override
     public int enqueueCurrentForm(final String newForm) {
-<span class="fc bfc" id="L644" title="All 2 branches covered.">        if (newForm == null) {</span>
-<span class="fc" id="L645">            throw new IllegalArgumentException(&quot;caller attempted to enqueue a null form value&quot;);</span>
+<span class="fc bfc" id="L666" title="All 2 branches covered.">        if (newForm == null) {</span>
+<span class="fc" id="L667">            throw new IllegalArgumentException(&quot;caller attempted to enqueue a null form value&quot;);</span>
         }
 
-<span class="fc" id="L648">        checkForAndLogDuplicates(newForm, &quot;enqueueCurrentForm&quot;);</span>
-<span class="fc" id="L649">        this.currentForm.add(newForm);</span>
-<span class="fc" id="L650">        return this.currentForm.size();</span>
+<span class="fc" id="L670">        checkForAndLogDuplicates(newForm, &quot;enqueueCurrentForm&quot;);</span>
+<span class="fc" id="L671">        this.currentForm.add(newForm);</span>
+<span class="fc" id="L672">        return this.currentForm.size();</span>
     }
 
     @Override
     public int pushCurrentForm(final String newForm) {
-<span class="fc bfc" id="L655" title="All 2 branches covered.">        if (newForm == null) {</span>
-<span class="fc" id="L656">            throw new IllegalArgumentException(&quot;caller attempted to push a null form value&quot;);</span>
-<span class="fc bfc" id="L657" title="All 2 branches covered.">        } else if (!PayloadUtil.isValidForm(newForm)) {</span>
+<span class="fc bfc" id="L677" title="All 2 branches covered.">        if (newForm == null) {</span>
+<span class="fc" id="L678">            throw new IllegalArgumentException(&quot;caller attempted to push a null form value&quot;);</span>
+<span class="fc bfc" id="L679" title="All 2 branches covered.">        } else if (!PayloadUtil.isValidForm(newForm)) {</span>
             // If there is a key separator in the form, then throw an error log as this will cause issues in routing
-<span class="fc" id="L659">            logger.error(&quot;INVALID FORM: The form can only contain a-z, A-Z, 0-9, '-', '_', '()', '/', '+'. Given form: {}&quot;, newForm);</span>
+<span class="fc" id="L681">            logger.error(&quot;INVALID FORM: The form can only contain a-z, A-Z, 0-9, '-', '_', '()', '/', '+'. Given form: {}&quot;, newForm);</span>
         }
 
-<span class="fc" id="L662">        checkForAndLogDuplicates(newForm, &quot;pushCurrentForm&quot;);</span>
-<span class="fc" id="L663">        return addCurrentFormAt(0, newForm);</span>
+<span class="fc" id="L684">        checkForAndLogDuplicates(newForm, &quot;pushCurrentForm&quot;);</span>
+<span class="fc" id="L685">        return addCurrentFormAt(0, newForm);</span>
     }
 
     @Override
     public void setCurrentForm(final String newForm) {
-<span class="fc" id="L668">        setCurrentForm(newForm, false);</span>
-<span class="fc" id="L669">    }</span>
+<span class="fc" id="L690">        setCurrentForm(newForm, false);</span>
+<span class="fc" id="L691">    }</span>
 
     @Override
     public void setCurrentForm(final String newForm, final boolean clearAllForms) {
-<span class="fc bfc" id="L673" title="All 2 branches covered.">        if (StringUtils.isBlank(newForm)) {</span>
-<span class="fc" id="L674">            throw new IllegalArgumentException(&quot;caller attempted to set the current form to a null value&quot;);</span>
+<span class="fc bfc" id="L695" title="All 2 branches covered.">        if (StringUtils.isBlank(newForm)) {</span>
+<span class="fc" id="L696">            throw new IllegalArgumentException(&quot;caller attempted to set the current form to a null value&quot;);</span>
         }
 
-<span class="fc bfc" id="L677" title="All 2 branches covered.">        if (clearAllForms) {</span>
-<span class="fc" id="L678">            replaceCurrentForm(newForm);</span>
+<span class="fc bfc" id="L699" title="All 2 branches covered.">        if (clearAllForms) {</span>
+<span class="fc" id="L700">            replaceCurrentForm(newForm);</span>
         } else {
-<span class="fc" id="L680">            popCurrentForm();</span>
-<span class="fc" id="L681">            pushCurrentForm(newForm);</span>
+<span class="fc" id="L702">            popCurrentForm();</span>
+<span class="fc" id="L703">            pushCurrentForm(newForm);</span>
         }
-<span class="fc" id="L683">    }</span>
+<span class="fc" id="L705">    }</span>
 
 
     @Override
     public List&lt;String&gt; getAllCurrentForms() {
-<span class="fc" id="L688">        return new ArrayList&lt;&gt;(this.currentForm);</span>
+<span class="fc" id="L710">        return new ArrayList&lt;&gt;(this.currentForm);</span>
     }
 
     @Override
     public void pullFormToTop(final String curForm) {
-<span class="fc bfc" id="L693" title="All 2 branches covered.">        if (this.currentForm.size() &gt; 1) {</span>
+<span class="fc bfc" id="L715" title="All 2 branches covered.">        if (this.currentForm.size() &gt; 1) {</span>
             // Delete it
-<span class="fc" id="L695">            final int count = deleteCurrentForm(curForm);</span>
+<span class="fc" id="L717">            final int count = deleteCurrentForm(curForm);</span>
 
             // If deleted, add it back on top
-<span class="fc bfc" id="L698" title="All 2 branches covered.">            if (count &gt; 0) {</span>
-<span class="fc" id="L699">                this.currentForm.add(0, curForm);</span>
+<span class="fc bfc" id="L720" title="All 2 branches covered.">            if (count &gt; 0) {</span>
+<span class="fc" id="L721">                this.currentForm.add(0, curForm);</span>
             }
         }
-<span class="fc" id="L702">    }</span>
+<span class="fc" id="L724">    }</span>
 
     private void checkForAndLogDuplicates(String newForm, String method) {
-<span class="fc bfc" id="L705" title="All 2 branches covered.">        if (currentForm.contains(newForm)) {</span>
-<span class="fc" id="L706">            logger.info(&quot;Duplicate form {} being added through BaseDataObject.{}&quot;, newForm, method);</span>
+<span class="fc bfc" id="L727" title="All 2 branches covered.">        if (currentForm.contains(newForm)) {</span>
+<span class="fc" id="L728">            logger.info(&quot;Duplicate form {} being added through BaseDataObject.{}&quot;, newForm, method);</span>
         }
-<span class="fc" id="L708">    }</span>
+<span class="fc" id="L730">    }</span>
 
     @Override
     public String toString() {
-<span class="fc" id="L712">        final StringBuilder myOutput = new StringBuilder();</span>
-<span class="fc" id="L713">        final String ls = System.getProperty(&quot;line.separator&quot;);</span>
+<span class="fc" id="L734">        final StringBuilder myOutput = new StringBuilder();</span>
+<span class="fc" id="L735">        final String ls = System.getProperty(&quot;line.separator&quot;);</span>
 
-<span class="fc" id="L715">        myOutput.append(ls);</span>
-<span class="fc" id="L716">        myOutput.append(&quot;   currentForms: &quot;).append(getAllCurrentForms()).append(ls);</span>
-<span class="fc" id="L717">        myOutput.append(&quot;   &quot;).append(history);</span>
+<span class="fc" id="L737">        myOutput.append(ls);</span>
+<span class="fc" id="L738">        myOutput.append(&quot;   currentForms: &quot;).append(getAllCurrentForms()).append(ls);</span>
+<span class="fc" id="L739">        myOutput.append(&quot;   &quot;).append(history);</span>
 
-<span class="fc" id="L719">        return myOutput.toString();</span>
+<span class="fc" id="L741">        return myOutput.toString();</span>
     }
 
     @Override
     public String printMeta() {
-<span class="fc" id="L724">        return PayloadUtil.printFormattedMetadata(this);</span>
+<span class="fc" id="L746">        return PayloadUtil.printFormattedMetadata(this);</span>
     }
 
     @Override
     public void addProcessingError(final String err) {
-<span class="fc bfc" id="L729" title="All 2 branches covered.">        if (this.procError == null) {</span>
-<span class="fc" id="L730">            this.procError = new StringBuilder();</span>
+<span class="fc bfc" id="L751" title="All 2 branches covered.">        if (this.procError == null) {</span>
+<span class="fc" id="L752">            this.procError = new StringBuilder();</span>
         }
-<span class="fc" id="L732">        this.procError.append(err).append(&quot;\n&quot;);</span>
-<span class="fc" id="L733">    }</span>
+<span class="fc" id="L754">        this.procError.append(err).append(&quot;\n&quot;);</span>
+<span class="fc" id="L755">    }</span>
 
     @Override
     public String getProcessingError() {
-<span class="fc" id="L737">        String s = null;</span>
-<span class="fc bfc" id="L738" title="All 2 branches covered.">        if (this.procError != null) {</span>
-<span class="fc" id="L739">            s = this.procError.toString();</span>
+<span class="fc" id="L759">        String s = null;</span>
+<span class="fc bfc" id="L760" title="All 2 branches covered.">        if (this.procError != null) {</span>
+<span class="fc" id="L761">            s = this.procError.toString();</span>
         }
-<span class="fc" id="L741">        return s;</span>
+<span class="fc" id="L763">        return s;</span>
     }
 
     @Override
     public TransformHistory getTransformHistory() {
-<span class="fc" id="L746">        return new TransformHistory(history);</span>
+<span class="fc" id="L768">        return new TransformHistory(history);</span>
     }
 
     @Override
     public List&lt;String&gt; transformHistory() {
-<span class="fc" id="L751">        return transformHistory(false);</span>
+<span class="fc" id="L773">        return transformHistory(false);</span>
     }
 
     @Override
     public List&lt;String&gt; transformHistory(boolean includeCoordinated) {
-<span class="fc" id="L756">        return history.get(includeCoordinated);</span>
+<span class="fc" id="L778">        return history.get(includeCoordinated);</span>
     }
 
     @Override
     public void clearTransformHistory() {
-<span class="fc" id="L761">        this.history.clear();</span>
-<span class="fc" id="L762">    }</span>
+<span class="fc" id="L783">        this.history.clear();</span>
+<span class="fc" id="L784">    }</span>
 
     @Override
     public void appendTransformHistory(final String key) {
-<span class="fc" id="L766">        appendTransformHistory(key, false);</span>
-<span class="fc" id="L767">    }</span>
+<span class="fc" id="L788">        appendTransformHistory(key, false);</span>
+<span class="fc" id="L789">    }</span>
 
     @Override
     public void appendTransformHistory(final String key, boolean coordinated) {
-<span class="fc" id="L771">        this.history.append(key, coordinated);</span>
-<span class="fc" id="L772">    }</span>
+<span class="fc" id="L793">        this.history.append(key, coordinated);</span>
+<span class="fc" id="L794">    }</span>
 
     @Override
     public void setHistory(TransformHistory newHistory) {
-<span class="fc" id="L776">        this.history.set(newHistory);</span>
-<span class="fc" id="L777">    }</span>
+<span class="fc" id="L798">        this.history.set(newHistory);</span>
+<span class="fc" id="L799">    }</span>
 
     @Override
     public String whereAmI() {
-<span class="fc" id="L781">        String host = null;</span>
+<span class="fc" id="L803">        String host = null;</span>
         try {
-<span class="fc" id="L783">            host = InetAddress.getLocalHost().getCanonicalHostName();</span>
-<span class="nc" id="L784">        } catch (UnknownHostException e) {</span>
-<span class="nc" id="L785">            host = &quot;FAILED&quot;;</span>
-<span class="fc" id="L786">        }</span>
-<span class="fc" id="L787">        return host;</span>
+<span class="fc" id="L805">            host = InetAddress.getLocalHost().getCanonicalHostName();</span>
+<span class="nc" id="L806">        } catch (UnknownHostException e) {</span>
+<span class="nc" id="L807">            host = &quot;FAILED&quot;;</span>
+<span class="fc" id="L808">        }</span>
+<span class="fc" id="L809">        return host;</span>
     }
 
     @Nullable
     @Override
     public DirectoryEntry getLastPlaceVisited() {
-<span class="fc" id="L793">        TransformHistory.History entry = history.lastVisit();</span>
-<span class="fc bfc" id="L794" title="All 2 branches covered.">        return entry == null ? null : new DirectoryEntry(entry.getKey());</span>
+<span class="fc" id="L815">        TransformHistory.History entry = history.lastVisit();</span>
+<span class="fc bfc" id="L816" title="All 2 branches covered.">        return entry == null ? null : new DirectoryEntry(entry.getKey());</span>
     }
 
     @Nullable
     @Override
     public DirectoryEntry getPenultimatePlaceVisited() {
-<span class="fc" id="L800">        TransformHistory.History entry = history.penultimateVisit();</span>
-<span class="fc bfc" id="L801" title="All 2 branches covered.">        return entry == null ? null : new DirectoryEntry(entry.getKey());</span>
+<span class="fc" id="L822">        TransformHistory.History entry = history.penultimateVisit();</span>
+<span class="fc bfc" id="L823" title="All 2 branches covered.">        return entry == null ? null : new DirectoryEntry(entry.getKey());</span>
     }
 
     @Override
     public boolean hasVisited(final String pattern) {
-<span class="fc" id="L806">        return history.hasVisited(pattern);</span>
+<span class="fc" id="L828">        return history.hasVisited(pattern);</span>
     }
 
     @Override
     public boolean beforeStart() {
-<span class="fc" id="L811">        return history.beforeStart();</span>
+<span class="fc" id="L833">        return history.beforeStart();</span>
     }
 
     @Override
     public void clearParameters() {
-<span class="fc" id="L816">        this.parameters.clear();</span>
-<span class="fc" id="L817">    }</span>
+<span class="fc" id="L838">        this.parameters.clear();</span>
+<span class="fc" id="L839">    }</span>
 
     @Override
     public boolean hasParameter(final String key) {
-<span class="fc" id="L821">        return this.parameters.containsKey(key);</span>
+<span class="fc" id="L843">        return this.parameters.containsKey(key);</span>
     }
 
     @Override
     public void setParameters(final Map&lt;? extends String, ? extends Object&gt; map) {
-<span class="fc" id="L826">        this.parameters.clear();</span>
-<span class="fc" id="L827">        putParameters(map);</span>
-<span class="fc" id="L828">    }</span>
+<span class="fc" id="L848">        this.parameters.clear();</span>
+<span class="fc" id="L849">        putParameters(map);</span>
+<span class="fc" id="L850">    }</span>
 
     @Override
     public void setParameter(final String key, final Object val) {
-<span class="fc" id="L832">        deleteParameter(key);</span>
-<span class="fc" id="L833">        putParameter(key, val);</span>
-<span class="fc" id="L834">    }</span>
+<span class="fc" id="L854">        deleteParameter(key);</span>
+<span class="fc" id="L855">        putParameter(key, val);</span>
+<span class="fc" id="L856">    }</span>
 
     @Override
     public void putParameter(final String key, final Object val) {
-<span class="fc" id="L838">        this.parameters.removeAll(key);</span>
+<span class="fc" id="L860">        this.parameters.removeAll(key);</span>
 
-<span class="fc bfc" id="L840" title="All 2 branches covered.">        if (val instanceof Iterable) {</span>
-<span class="fc" id="L841">            this.parameters.putAll(key, (Iterable&lt;?&gt;) val);</span>
+<span class="fc bfc" id="L862" title="All 2 branches covered.">        if (val instanceof Iterable) {</span>
+<span class="fc" id="L863">            this.parameters.putAll(key, (Iterable&lt;?&gt;) val);</span>
         } else {
-<span class="fc" id="L843">            this.parameters.put(key, val);</span>
+<span class="fc" id="L865">            this.parameters.put(key, val);</span>
         }
-<span class="fc" id="L845">    }</span>
+<span class="fc" id="L867">    }</span>
 
     /**
      * Put a collection of parameters into the metadata map, keeping both old and new values
@@ -851,8 +873,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void putParameters(final Map&lt;? extends String, ? extends Object&gt; m) {
-<span class="fc" id="L854">        putParameters(m, MergePolicy.KEEP_ALL);</span>
-<span class="fc" id="L855">    }</span>
+<span class="fc" id="L876">        putParameters(m, MergePolicy.KEEP_ALL);</span>
+<span class="fc" id="L877">    }</span>
 
     /**
      * Merge in new parameters using the specified policy to determine whether to keep all values, unique values, or prefer
@@ -863,46 +885,46 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void putParameters(final Map&lt;? extends String, ? extends Object&gt; m, final MergePolicy policy) {
-<span class="fc bfc" id="L866" title="All 2 branches covered.">        for (final Map.Entry&lt;? extends String, ? extends Object&gt; entry : m.entrySet()) {</span>
-<span class="fc" id="L867">            final String name = entry.getKey();</span>
+<span class="fc bfc" id="L888" title="All 2 branches covered.">        for (final Map.Entry&lt;? extends String, ? extends Object&gt; entry : m.entrySet()) {</span>
+<span class="fc" id="L889">            final String name = entry.getKey();</span>
 
-<span class="fc bfc" id="L869" title="All 4 branches covered.">            if ((policy == MergePolicy.KEEP_EXISTING) &amp;&amp; this.parameters.containsKey(name)) {</span>
-<span class="fc" id="L870">                continue;</span>
+<span class="fc bfc" id="L891" title="All 4 branches covered.">            if ((policy == MergePolicy.KEEP_EXISTING) &amp;&amp; this.parameters.containsKey(name)) {</span>
+<span class="fc" id="L892">                continue;</span>
             }
 
-<span class="fc" id="L873">            final Object value = entry.getValue();</span>
+<span class="fc" id="L895">            final Object value = entry.getValue();</span>
 
-<span class="fc bfc" id="L875" title="All 2 branches covered.">            if ((policy == MergePolicy.DROP_EXISTING)) {</span>
+<span class="fc bfc" id="L897" title="All 2 branches covered.">            if ((policy == MergePolicy.DROP_EXISTING)) {</span>
                 // store the provided value for this key, discarding any previously-stored value
-<span class="fc" id="L877">                setParameter(name, value);</span>
-<span class="fc" id="L878">                continue;</span>
+<span class="fc" id="L899">                setParameter(name, value);</span>
+<span class="fc" id="L900">                continue;</span>
             }
 
-<span class="fc bfc" id="L881" title="All 2 branches covered.">            if (value instanceof Iterable) {</span>
-<span class="fc bfc" id="L882" title="All 2 branches covered.">                for (final Object v : (Iterable&lt;?&gt;) value) {</span>
-<span class="fc bfc" id="L883" title="All 4 branches covered.">                    if (policy == MergePolicy.KEEP_ALL || policy == MergePolicy.KEEP_EXISTING) {</span>
-<span class="fc" id="L884">                        this.parameters.put(name, v);</span>
-<span class="pc bpc" id="L885" title="1 of 2 branches missed.">                    } else if (policy == MergePolicy.DISTINCT) {</span>
-<span class="fc bfc" id="L886" title="All 2 branches covered.">                        if (!this.parameters.containsEntry(name, v)) {</span>
-<span class="fc" id="L887">                            this.parameters.put(name, v);</span>
+<span class="fc bfc" id="L903" title="All 2 branches covered.">            if (value instanceof Iterable) {</span>
+<span class="fc bfc" id="L904" title="All 2 branches covered.">                for (final Object v : (Iterable&lt;?&gt;) value) {</span>
+<span class="fc bfc" id="L905" title="All 4 branches covered.">                    if (policy == MergePolicy.KEEP_ALL || policy == MergePolicy.KEEP_EXISTING) {</span>
+<span class="fc" id="L906">                        this.parameters.put(name, v);</span>
+<span class="pc bpc" id="L907" title="1 of 2 branches missed.">                    } else if (policy == MergePolicy.DISTINCT) {</span>
+<span class="fc bfc" id="L908" title="All 2 branches covered.">                        if (!this.parameters.containsEntry(name, v)) {</span>
+<span class="fc" id="L909">                            this.parameters.put(name, v);</span>
                         }
                     } else {
-<span class="nc" id="L890">                        throw new IllegalStateException(&quot;Unhandled parameter merge policy &quot; + policy + &quot; for &quot; + name);</span>
+<span class="nc" id="L912">                        throw new IllegalStateException(&quot;Unhandled parameter merge policy &quot; + policy + &quot; for &quot; + name);</span>
                     }
-<span class="fc" id="L892">                }</span>
+<span class="fc" id="L914">                }</span>
             } else {
-<span class="fc bfc" id="L894" title="All 4 branches covered.">                if (policy == MergePolicy.KEEP_ALL || policy == MergePolicy.KEEP_EXISTING) {</span>
-<span class="fc" id="L895">                    this.parameters.put(name, value);</span>
-<span class="pc bpc" id="L896" title="1 of 2 branches missed.">                } else if (policy == MergePolicy.DISTINCT) {</span>
-<span class="fc bfc" id="L897" title="All 2 branches covered.">                    if (!this.parameters.containsEntry(name, value)) {</span>
-<span class="fc" id="L898">                        this.parameters.put(name, value);</span>
+<span class="fc bfc" id="L916" title="All 4 branches covered.">                if (policy == MergePolicy.KEEP_ALL || policy == MergePolicy.KEEP_EXISTING) {</span>
+<span class="fc" id="L917">                    this.parameters.put(name, value);</span>
+<span class="pc bpc" id="L918" title="1 of 2 branches missed.">                } else if (policy == MergePolicy.DISTINCT) {</span>
+<span class="fc bfc" id="L919" title="All 2 branches covered.">                    if (!this.parameters.containsEntry(name, value)) {</span>
+<span class="fc" id="L920">                        this.parameters.put(name, value);</span>
                     }
                 } else {
-<span class="nc" id="L901">                    throw new IllegalStateException(&quot;Unhandled parameter merge policy &quot; + policy + &quot; for &quot; + name);</span>
+<span class="nc" id="L923">                    throw new IllegalStateException(&quot;Unhandled parameter merge policy &quot; + policy + &quot; for &quot; + name);</span>
                 }
             }
-<span class="fc" id="L904">        }</span>
-<span class="fc" id="L905">    }</span>
+<span class="fc" id="L926">        }</span>
+<span class="fc" id="L927">    }</span>
 
 
     /**
@@ -912,8 +934,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void putUniqueParameters(final Map&lt;? extends String, ? extends Object&gt; m) {
-<span class="fc" id="L915">        putParameters(m, MergePolicy.DISTINCT);</span>
-<span class="fc" id="L916">    }</span>
+<span class="fc" id="L937">        putParameters(m, MergePolicy.DISTINCT);</span>
+<span class="fc" id="L938">    }</span>
 
     /**
      * Merge in parameters keeping existing keys unchanged
@@ -922,29 +944,29 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void mergeParameters(final Map&lt;? extends String, ? extends Object&gt; m) {
-<span class="fc" id="L925">        putParameters(m, MergePolicy.KEEP_EXISTING);</span>
-<span class="fc" id="L926">    }</span>
+<span class="fc" id="L947">        putParameters(m, MergePolicy.KEEP_EXISTING);</span>
+<span class="fc" id="L948">    }</span>
 
     @Nullable
     @Override
     public List&lt;Object&gt; getParameter(final String key) {
         // Try remapping
-<span class="fc" id="L932">        List&lt;Object&gt; v = this.parameters.get(key);</span>
-<span class="fc bfc" id="L933" title="All 2 branches covered.">        if (CollectionUtils.isEmpty(v)) {</span>
-<span class="fc" id="L934">            return null;</span>
+<span class="fc" id="L954">        List&lt;Object&gt; v = this.parameters.get(key);</span>
+<span class="fc bfc" id="L955" title="All 2 branches covered.">        if (CollectionUtils.isEmpty(v)) {</span>
+<span class="fc" id="L956">            return null;</span>
         }
-<span class="fc" id="L936">        return v;</span>
+<span class="fc" id="L958">        return v;</span>
     }
 
     @Override
     public void appendParameter(final String key, final CharSequence value) {
-<span class="fc" id="L941">        this.parameters.put(key, value);</span>
-<span class="fc" id="L942">    }</span>
+<span class="fc" id="L963">        this.parameters.put(key, value);</span>
+<span class="fc" id="L964">    }</span>
 
     @Override
     public void appendParameter(final String key, final Iterable&lt;? extends CharSequence&gt; values) {
-<span class="fc" id="L946">        this.parameters.putAll(key, values);</span>
-<span class="fc" id="L947">    }</span>
+<span class="fc" id="L968">        this.parameters.putAll(key, values);</span>
+<span class="fc" id="L969">    }</span>
 
     /**
      * Append data to the specified metadata element if it doesn't already exist If you expect to append a lot if things
@@ -957,22 +979,23 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public boolean appendUniqueParameter(final String key, final CharSequence value) {
-<span class="fc bfc" id="L960" title="All 2 branches covered.">        if (this.parameters.containsEntry(key, value)) {</span>
-<span class="fc" id="L961">            return false;</span>
+<span class="fc bfc" id="L982" title="All 2 branches covered.">        if (this.parameters.containsEntry(key, value)) {</span>
+<span class="fc" id="L983">            return false;</span>
         }
 
-<span class="fc" id="L964">        this.parameters.put(key, value);</span>
-<span class="fc" id="L965">        return true;</span>
+<span class="fc" id="L986">        this.parameters.put(key, value);</span>
+<span class="fc" id="L987">        return true;</span>
     }
 
     @Nullable
     @Override
     public String getParameterAsString(final String key) {
-<span class="fc" id="L971">        final var obj = getParameterAsStrings(key);</span>
-<span class="fc bfc" id="L972" title="All 2 branches covered.">        if (obj.size() &gt; 1) {</span>
-<span class="fc" id="L973">            logger.warn(&quot;Multiple values for parameter, returning the first - parameter:{}, number of values:{}&quot;, key, obj.size());</span>
+<span class="fc" id="L993">        final var obj = getParameterAsStrings(key);</span>
+<span class="fc bfc" id="L994" title="All 2 branches covered.">        if (obj.size() &gt; 1) {</span>
+<span class="fc" id="L995">            logger.warn(&quot;Multiple values for parameter, parameter:{}, number of values:{}&quot;, key, obj.size());</span>
+<span class="fc" id="L996">            return getParameterAsConcatString(key);</span>
         }
-<span class="fc" id="L975">        return obj.stream().findFirst().orElse(null);</span>
+<span class="fc" id="L998">        return obj.stream().findFirst().orElse(null);</span>
     }
 
     /**
@@ -982,7 +1005,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public Map&lt;String, Collection&lt;Object&gt;&gt; getParameters() {
-<span class="fc" id="L985">        return this.parameters.asMap();</span>
+<span class="fc" id="L1008">        return this.parameters.asMap();</span>
     }
 
     /**
@@ -990,51 +1013,51 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public Map&lt;String, String&gt; getCookedParameters() {
-<span class="fc" id="L993">        final Map&lt;String, String&gt; ext = new TreeMap&lt;&gt;();</span>
-<span class="fc bfc" id="L994" title="All 2 branches covered.">        for (final String key : this.parameters.keySet()) {</span>
-<span class="fc" id="L995">            ext.put(key.toString(), getStringParameter(key));</span>
-<span class="fc" id="L996">        }</span>
-<span class="fc" id="L997">        return ext;</span>
+<span class="fc" id="L1016">        final Map&lt;String, String&gt; ext = new TreeMap&lt;&gt;();</span>
+<span class="fc bfc" id="L1017" title="All 2 branches covered.">        for (final String key : this.parameters.keySet()) {</span>
+<span class="fc" id="L1018">            ext.put(key.toString(), getStringParameter(key));</span>
+<span class="fc" id="L1019">        }</span>
+<span class="fc" id="L1020">        return ext;</span>
     }
 
     @Override
     public Set&lt;String&gt; getParameterKeys() {
-<span class="fc" id="L1002">        return this.parameters.keySet();</span>
+<span class="fc" id="L1025">        return this.parameters.keySet();</span>
     }
 
     @Override
     public List&lt;Object&gt; deleteParameter(final String key) {
-<span class="fc" id="L1007">        return this.parameters.removeAll(key);</span>
+<span class="fc" id="L1030">        return this.parameters.removeAll(key);</span>
     }
 
     @Override
     public void setNumChildren(final int num) {
-<span class="fc" id="L1012">        this.numChildren = num;</span>
-<span class="fc" id="L1013">    }</span>
+<span class="fc" id="L1035">        this.numChildren = num;</span>
+<span class="fc" id="L1036">    }</span>
 
     @Override
     public void setNumSiblings(final int num) {
-<span class="fc" id="L1017">        this.numSiblings = num;</span>
-<span class="fc" id="L1018">    }</span>
+<span class="fc" id="L1040">        this.numSiblings = num;</span>
+<span class="fc" id="L1041">    }</span>
 
     @Override
     public void setBirthOrder(final int num) {
-<span class="fc" id="L1022">        this.birthOrder = num;</span>
-<span class="fc" id="L1023">    }</span>
+<span class="fc" id="L1045">        this.birthOrder = num;</span>
+<span class="fc" id="L1046">    }</span>
 
     @Override
     public int getNumChildren() {
-<span class="fc" id="L1027">        return this.numChildren;</span>
+<span class="fc" id="L1050">        return this.numChildren;</span>
     }
 
     @Override
     public int getNumSiblings() {
-<span class="fc" id="L1032">        return this.numSiblings;</span>
+<span class="fc" id="L1055">        return this.numSiblings;</span>
     }
 
     @Override
     public int getBirthOrder() {
-<span class="fc" id="L1037">        return this.birthOrder;</span>
+<span class="fc" id="L1060">        return this.birthOrder;</span>
     }
 
     /**
@@ -1045,13 +1068,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public byte[] header() {
-<span class="fc" id="L1048">        return this.header;</span>
+<span class="fc" id="L1071">        return this.header;</span>
     }
 
     @Override
     @Deprecated
     public ByteBuffer headerBuffer() {
-<span class="fc" id="L1054">        return ByteBuffer.wrap(header());</span>
+<span class="fc" id="L1077">        return ByteBuffer.wrap(header());</span>
     }
 
     /**
@@ -1062,31 +1085,31 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public byte[] footer() {
-<span class="fc" id="L1065">        return this.footer;</span>
+<span class="fc" id="L1088">        return this.footer;</span>
     }
 
 
     @Override
     @Deprecated
     public ByteBuffer footerBuffer() {
-<span class="fc" id="L1072">        return ByteBuffer.wrap(footer());</span>
+<span class="fc" id="L1095">        return ByteBuffer.wrap(footer());</span>
     }
 
     @Override
     @Deprecated
     public ByteBuffer dataBuffer() {
-<span class="fc" id="L1078">        return ByteBuffer.wrap(data());</span>
+<span class="fc" id="L1101">        return ByteBuffer.wrap(data());</span>
     }
 
     @Override
     public String getFontEncoding() {
-<span class="fc" id="L1083">        return this.fontEncoding;</span>
+<span class="fc" id="L1106">        return this.fontEncoding;</span>
     }
 
     @Override
     public void setFontEncoding(final String fe) {
-<span class="fc" id="L1088">        this.fontEncoding = fe;</span>
-<span class="fc" id="L1089">    }</span>
+<span class="fc" id="L1111">        this.fontEncoding = fe;</span>
+<span class="fc" id="L1112">    }</span>
 
     private static final String FILETYPE = &quot;FILETYPE&quot;;
 
@@ -1097,30 +1120,30 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void setFileType(@Nullable final String v) {
-<span class="fc" id="L1100">        deleteParameter(FILETYPE);</span>
-<span class="fc bfc" id="L1101" title="All 2 branches covered.">        if (v != null) {</span>
-<span class="fc" id="L1102">            setParameter(FILETYPE, v);</span>
+<span class="fc" id="L1123">        deleteParameter(FILETYPE);</span>
+<span class="fc bfc" id="L1124" title="All 2 branches covered.">        if (v != null) {</span>
+<span class="fc" id="L1125">            setParameter(FILETYPE, v);</span>
         }
-<span class="fc" id="L1104">    }</span>
+<span class="fc" id="L1127">    }</span>
 
     @Override
     @Deprecated
     public boolean setFileTypeIfEmpty(final String v, final String[] empties) {
-<span class="fc bfc" id="L1109" title="All 2 branches covered.">        if (isFileTypeEmpty(empties)) {</span>
-<span class="fc" id="L1110">            setFileType(v);</span>
-<span class="fc" id="L1111">            return true;</span>
+<span class="fc bfc" id="L1132" title="All 2 branches covered.">        if (isFileTypeEmpty(empties)) {</span>
+<span class="fc" id="L1133">            setFileType(v);</span>
+<span class="fc" id="L1134">            return true;</span>
         }
-<span class="fc" id="L1113">        return false;</span>
+<span class="fc" id="L1136">        return false;</span>
     }
 
     @Override
     public boolean setFileTypeIfEmpty(final String v) {
-<span class="fc" id="L1118">        return setFileTypeIfEmpty(v, this.emptyFileTypes);</span>
+<span class="fc" id="L1141">        return setFileTypeIfEmpty(v, this.emptyFileTypes);</span>
     }
 
     @Override
     public boolean isFileTypeEmpty() {
-<span class="fc" id="L1123">        return isFileTypeEmpty(this.emptyFileTypes);</span>
+<span class="fc" id="L1146">        return isFileTypeEmpty(this.emptyFileTypes);</span>
     }
 
     /**
@@ -1129,32 +1152,32 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param empties a list of types that count as empty
      */
     protected boolean isFileTypeEmpty(@Nullable final String[] empties) {
-<span class="fc" id="L1132">        final String s = getFileType();</span>
+<span class="fc" id="L1155">        final String s = getFileType();</span>
 
-<span class="fc bfc" id="L1134" title="All 2 branches covered.">        if (StringUtils.isEmpty(s)) {</span>
-<span class="fc" id="L1135">            return true;</span>
+<span class="fc bfc" id="L1157" title="All 2 branches covered.">        if (StringUtils.isEmpty(s)) {</span>
+<span class="fc" id="L1158">            return true;</span>
         }
 
-<span class="fc bfc" id="L1138" title="All 2 branches covered.">        if (s.endsWith(Form.SUFFIXES_UNWRAPPED)) {</span>
-<span class="fc" id="L1139">            return true;</span>
+<span class="fc bfc" id="L1161" title="All 2 branches covered.">        if (s.endsWith(Form.SUFFIXES_UNWRAPPED)) {</span>
+<span class="fc" id="L1162">            return true;</span>
         }
 
-<span class="pc bpc" id="L1142" title="1 of 4 branches missed.">        for (int i = 0; empties != null &amp;&amp; i &lt; empties.length; i++) {</span>
-<span class="fc bfc" id="L1143" title="All 2 branches covered.">            if (s.equals(empties[i])) {</span>
-<span class="fc" id="L1144">                return true;</span>
+<span class="pc bpc" id="L1165" title="1 of 4 branches missed.">        for (int i = 0; empties != null &amp;&amp; i &lt; empties.length; i++) {</span>
+<span class="fc bfc" id="L1166" title="All 2 branches covered.">            if (s.equals(empties[i])) {</span>
+<span class="fc" id="L1167">                return true;</span>
             }
         }
-<span class="fc" id="L1147">        return false;</span>
+<span class="fc" id="L1170">        return false;</span>
     }
 
     @Override
     public String getFileType() {
-<span class="fc" id="L1152">        return getStringParameter(FILETYPE);</span>
+<span class="fc" id="L1175">        return getStringParameter(FILETYPE);</span>
     }
 
     @Override
     public int getNumAlternateViews() {
-<span class="fc" id="L1157">        return this.multipartAlternative.size();</span>
+<span class="fc" id="L1180">        return this.multipartAlternative.size();</span>
     }
 
     /**
@@ -1166,23 +1189,23 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public byte[] getAlternateView(final String s) {
-<span class="fc" id="L1169">        return this.multipartAlternative.get(s);</span>
+<span class="fc" id="L1192">        return this.multipartAlternative.get(s);</span>
     }
 
     @Override
     public void appendAlternateView(final String name, final byte[] data) {
-<span class="fc" id="L1174">        appendAlternateView(name, data, 0, data.length);</span>
-<span class="fc" id="L1175">    }</span>
+<span class="fc" id="L1197">        appendAlternateView(name, data, 0, data.length);</span>
+<span class="fc" id="L1198">    }</span>
 
     @Override
     public void appendAlternateView(final String name, final byte[] data, final int offset, final int length) {
-<span class="fc" id="L1179">        final byte[] av = getAlternateView(name);</span>
-<span class="fc bfc" id="L1180" title="All 2 branches covered.">        if (av != null) {</span>
-<span class="fc" id="L1181">            addAlternateView(name, ByteUtil.glue(av, 0, av.length - 1, data, offset, offset + length - 1));</span>
+<span class="fc" id="L1202">        final byte[] av = getAlternateView(name);</span>
+<span class="fc bfc" id="L1203" title="All 2 branches covered.">        if (av != null) {</span>
+<span class="fc" id="L1204">            addAlternateView(name, ByteUtil.glue(av, 0, av.length - 1, data, offset, offset + length - 1));</span>
         } else {
-<span class="fc" id="L1183">            addAlternateView(name, data, offset, length);</span>
+<span class="fc" id="L1206">            addAlternateView(name, data, offset, length);</span>
         }
-<span class="fc" id="L1185">    }</span>
+<span class="fc" id="L1208">    }</span>
 
     /**
      * Return a specified multipart alternative view of the data in a buffer
@@ -1194,11 +1217,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     @Deprecated
     public ByteBuffer getAlternateViewBuffer(final String s) {
-<span class="fc" id="L1197">        final byte[] viewdata = getAlternateView(s);</span>
-<span class="fc bfc" id="L1198" title="All 2 branches covered.">        if (viewdata == null) {</span>
-<span class="fc" id="L1199">            return null;</span>
+<span class="fc" id="L1220">        final byte[] viewdata = getAlternateView(s);</span>
+<span class="fc bfc" id="L1221" title="All 2 branches covered.">        if (viewdata == null) {</span>
+<span class="fc" id="L1222">            return null;</span>
         }
-<span class="fc" id="L1201">        return ByteBuffer.wrap(viewdata);</span>
+<span class="fc" id="L1224">        return ByteBuffer.wrap(viewdata);</span>
     }
 
     /**
@@ -1210,23 +1233,23 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void addAlternateView(final String name, @Nullable final byte[] data) {
-<span class="fc bfc" id="L1213" title="All 2 branches covered.">        if (data == null) {</span>
-<span class="fc" id="L1214">            this.multipartAlternative.remove(name);</span>
+<span class="fc bfc" id="L1236" title="All 2 branches covered.">        if (data == null) {</span>
+<span class="fc" id="L1237">            this.multipartAlternative.remove(name);</span>
         } else {
-<span class="fc" id="L1216">            this.multipartAlternative.put(name, data);</span>
+<span class="fc" id="L1239">            this.multipartAlternative.put(name, data);</span>
         }
-<span class="fc" id="L1218">    }</span>
+<span class="fc" id="L1241">    }</span>
 
     @Override
     public void addAlternateView(final String name, @Nullable final byte[] data, final int offset, final int length) {
-<span class="pc bpc" id="L1222" title="2 of 4 branches missed.">        if (data == null || length &lt;= 0) {</span>
-<span class="nc" id="L1223">            this.multipartAlternative.remove(name);</span>
+<span class="pc bpc" id="L1245" title="2 of 4 branches missed.">        if (data == null || length &lt;= 0) {</span>
+<span class="nc" id="L1246">            this.multipartAlternative.remove(name);</span>
         } else {
-<span class="fc" id="L1225">            final byte[] mpa = new byte[length];</span>
-<span class="fc" id="L1226">            System.arraycopy(data, offset, mpa, 0, length);</span>
-<span class="fc" id="L1227">            this.multipartAlternative.put(name, mpa);</span>
+<span class="fc" id="L1248">            final byte[] mpa = new byte[length];</span>
+<span class="fc" id="L1249">            System.arraycopy(data, offset, mpa, 0, length);</span>
+<span class="fc" id="L1250">            this.multipartAlternative.put(name, mpa);</span>
         }
-<span class="fc" id="L1229">    }</span>
+<span class="fc" id="L1252">    }</span>
 
     /**
      * {@inheritDoc}
@@ -1235,7 +1258,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public Set&lt;String&gt; getAlternateViewNames() {
-<span class="fc" id="L1238">        return new TreeSet&lt;&gt;(this.multipartAlternative.keySet());</span>
+<span class="fc" id="L1261">        return new TreeSet&lt;&gt;(this.multipartAlternative.keySet());</span>
     }
 
     /**
@@ -1246,57 +1269,57 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public Map&lt;String, byte[]&gt; getAlternateViews() {
-<span class="fc" id="L1249">        return this.multipartAlternative;</span>
+<span class="fc" id="L1272">        return this.multipartAlternative;</span>
     }
 
     @Override
     public boolean isBroken() {
-<span class="fc bfc" id="L1254" title="All 2 branches covered.">        return (this.brokenDocument != null);</span>
+<span class="fc bfc" id="L1277" title="All 2 branches covered.">        return (this.brokenDocument != null);</span>
     }
 
     @Override
     public void setBroken(@Nullable final String v) {
-<span class="fc bfc" id="L1259" title="All 2 branches covered.">        if (v == null) {</span>
-<span class="fc" id="L1260">            this.brokenDocument = null;</span>
-<span class="fc" id="L1261">            return;</span>
+<span class="fc bfc" id="L1282" title="All 2 branches covered.">        if (v == null) {</span>
+<span class="fc" id="L1283">            this.brokenDocument = null;</span>
+<span class="fc" id="L1284">            return;</span>
         }
 
-<span class="fc bfc" id="L1264" title="All 2 branches covered.">        if (this.brokenDocument == null) {</span>
-<span class="fc" id="L1265">            this.brokenDocument = new StringBuilder();</span>
-<span class="fc" id="L1266">            this.brokenDocument.append(v);</span>
+<span class="fc bfc" id="L1287" title="All 2 branches covered.">        if (this.brokenDocument == null) {</span>
+<span class="fc" id="L1288">            this.brokenDocument = new StringBuilder();</span>
+<span class="fc" id="L1289">            this.brokenDocument.append(v);</span>
         } else {
-<span class="fc" id="L1268">            this.brokenDocument.append(&quot;, &quot;).append(v);</span>
+<span class="fc" id="L1291">            this.brokenDocument.append(&quot;, &quot;).append(v);</span>
         }
-<span class="fc" id="L1270">    }</span>
+<span class="fc" id="L1293">    }</span>
 
     @Nullable
     @Override
     public String getBroken() {
-<span class="fc bfc" id="L1275" title="All 2 branches covered.">        if (this.brokenDocument == null) {</span>
-<span class="fc" id="L1276">            return null;</span>
+<span class="fc bfc" id="L1298" title="All 2 branches covered.">        if (this.brokenDocument == null) {</span>
+<span class="fc" id="L1299">            return null;</span>
         }
-<span class="fc" id="L1278">        return this.brokenDocument.toString();</span>
+<span class="fc" id="L1301">        return this.brokenDocument.toString();</span>
     }
 
     @Override
     public void setClassification(final String classification) {
-<span class="fc" id="L1283">        this.classification = classification;</span>
-<span class="fc" id="L1284">    }</span>
+<span class="fc" id="L1306">        this.classification = classification;</span>
+<span class="fc" id="L1307">    }</span>
 
     @Override
     public String getClassification() {
-<span class="fc" id="L1288">        return this.classification;</span>
+<span class="fc" id="L1311">        return this.classification;</span>
     }
 
     @Override
     public int getPriority() {
-<span class="fc" id="L1293">        return this.priority;</span>
+<span class="fc" id="L1316">        return this.priority;</span>
     }
 
     @Override
     public void setPriority(final int priority) {
-<span class="fc" id="L1298">        this.priority = priority;</span>
-<span class="fc" id="L1299">    }</span>
+<span class="fc" id="L1321">        this.priority = priority;</span>
+<span class="fc" id="L1322">    }</span>
 
     /**
      * Clone this payload
@@ -1304,36 +1327,36 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Deprecated
     @Override
     public IBaseDataObject clone() throws CloneNotSupportedException {
-<span class="fc" id="L1307">        final BaseDataObject c = (BaseDataObject) super.clone();</span>
-<span class="pc bpc" id="L1308" title="1 of 4 branches missed.">        if ((this.theData != null) &amp;&amp; (this.theData.length &gt; 0)) {</span>
-<span class="fc" id="L1309">            c.setData(this.theData, 0, this.theData.length);</span>
+<span class="fc" id="L1330">        final BaseDataObject c = (BaseDataObject) super.clone();</span>
+<span class="pc bpc" id="L1331" title="1 of 4 branches missed.">        if ((this.theData != null) &amp;&amp; (this.theData.length &gt; 0)) {</span>
+<span class="fc" id="L1332">            c.setData(this.theData, 0, this.theData.length);</span>
         }
 
-<span class="fc bfc" id="L1312" title="All 2 branches covered.">        if (this.seekableByteChannelFactory != null) {</span>
-<span class="fc" id="L1313">            c.setChannelFactory(this.seekableByteChannelFactory);</span>
+<span class="fc bfc" id="L1335" title="All 2 branches covered.">        if (this.seekableByteChannelFactory != null) {</span>
+<span class="fc" id="L1336">            c.setChannelFactory(this.seekableByteChannelFactory);</span>
         }
 
-<span class="fc" id="L1316">        c.currentForm = new ArrayList&lt;&gt;(this.currentForm);</span>
-<span class="fc" id="L1317">        c.history = new TransformHistory(this.history);</span>
-<span class="fc" id="L1318">        c.multipartAlternative = new HashMap&lt;&gt;(this.multipartAlternative);</span>
-<span class="fc" id="L1319">        c.priority = this.priority;</span>
-<span class="fc" id="L1320">        c.creationTimestamp = this.creationTimestamp;</span>
+<span class="fc" id="L1339">        c.currentForm = new ArrayList&lt;&gt;(this.currentForm);</span>
+<span class="fc" id="L1340">        c.history = new TransformHistory(this.history);</span>
+<span class="fc" id="L1341">        c.multipartAlternative = new HashMap&lt;&gt;(this.multipartAlternative);</span>
+<span class="fc" id="L1342">        c.priority = this.priority;</span>
+<span class="fc" id="L1343">        c.creationTimestamp = this.creationTimestamp;</span>
 
-<span class="pc bpc" id="L1322" title="1 of 4 branches missed.">        if ((this.extractedRecords != null) &amp;&amp; !this.extractedRecords.isEmpty()) {</span>
-<span class="fc" id="L1323">            c.clearExtractedRecords(); // remove super.clone copy</span>
-<span class="fc bfc" id="L1324" title="All 2 branches covered.">            for (final IBaseDataObject r : this.extractedRecords) {</span>
-<span class="fc" id="L1325">                c.addExtractedRecord(r.clone());</span>
-<span class="fc" id="L1326">            }</span>
+<span class="pc bpc" id="L1345" title="1 of 4 branches missed.">        if ((this.extractedRecords != null) &amp;&amp; !this.extractedRecords.isEmpty()) {</span>
+<span class="fc" id="L1346">            c.clearExtractedRecords(); // remove super.clone copy</span>
+<span class="fc bfc" id="L1347" title="All 2 branches covered.">            for (final IBaseDataObject r : this.extractedRecords) {</span>
+<span class="fc" id="L1348">                c.addExtractedRecord(r.clone());</span>
+<span class="fc" id="L1349">            }</span>
         }
         // This creates a deep copy Guava style
-<span class="fc" id="L1329">        c.parameters = LinkedListMultimap.create(this.parameters);</span>
+<span class="fc" id="L1352">        c.parameters = LinkedListMultimap.create(this.parameters);</span>
 
-<span class="fc" id="L1331">        return c;</span>
+<span class="fc" id="L1354">        return c;</span>
     }
 
     @Override
     public Instant getCreationTimestamp() {
-<span class="fc" id="L1336">        return this.creationTimestamp;</span>
+<span class="fc" id="L1359">        return this.creationTimestamp;</span>
     }
 
     /**
@@ -1344,123 +1367,129 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void setCreationTimestamp(final Instant creationTimestamp) {
-<span class="fc bfc" id="L1347" title="All 2 branches covered.">        if (creationTimestamp == null) {</span>
-<span class="fc" id="L1348">            throw new IllegalArgumentException(&quot;Timestamp must not be null&quot;);</span>
+<span class="fc bfc" id="L1370" title="All 2 branches covered.">        if (creationTimestamp == null) {</span>
+<span class="fc" id="L1371">            throw new IllegalArgumentException(&quot;Timestamp must not be null&quot;);</span>
         }
 
-<span class="fc" id="L1351">        this.creationTimestamp = creationTimestamp;</span>
-<span class="fc" id="L1352">    }</span>
+<span class="fc" id="L1374">        this.creationTimestamp = creationTimestamp;</span>
+<span class="fc" id="L1375">    }</span>
 
     @Override
     public List&lt;IBaseDataObject&gt; getExtractedRecords() {
-<span class="fc" id="L1356">        return this.extractedRecords;</span>
+<span class="fc" id="L1379">        return this.extractedRecords;</span>
     }
 
     @Override
     public void setExtractedRecords(final List&lt;? extends IBaseDataObject&gt; records) {
-<span class="fc bfc" id="L1361" title="All 2 branches covered.">        if (records == null) {</span>
-<span class="fc" id="L1362">            throw new IllegalArgumentException(&quot;Record list must not be null&quot;);</span>
+<span class="fc bfc" id="L1384" title="All 2 branches covered.">        if (records == null) {</span>
+<span class="fc" id="L1385">            throw new IllegalArgumentException(&quot;Record list must not be null&quot;);</span>
         }
 
-<span class="fc bfc" id="L1365" title="All 2 branches covered.">        for (final IBaseDataObject r : records) {</span>
-<span class="fc bfc" id="L1366" title="All 2 branches covered.">            if (r == null) {</span>
-<span class="fc" id="L1367">                throw new IllegalArgumentException(&quot;No added record may be null&quot;);</span>
+<span class="fc bfc" id="L1388" title="All 2 branches covered.">        for (final IBaseDataObject r : records) {</span>
+<span class="fc bfc" id="L1389" title="All 2 branches covered.">            if (r == null) {</span>
+<span class="fc" id="L1390">                throw new IllegalArgumentException(&quot;No added record may be null&quot;);</span>
             }
-<span class="fc" id="L1369">        }</span>
+<span class="fc" id="L1392">        }</span>
 
-<span class="fc" id="L1371">        this.extractedRecords = new ArrayList&lt;&gt;(records);</span>
-<span class="fc" id="L1372">    }</span>
+<span class="fc" id="L1394">        this.extractedRecords = new ArrayList&lt;&gt;(records);</span>
+<span class="fc" id="L1395">    }</span>
 
     @Override
     public void addExtractedRecord(final IBaseDataObject record) {
-<span class="fc bfc" id="L1376" title="All 2 branches covered.">        if (record == null) {</span>
-<span class="fc" id="L1377">            throw new IllegalArgumentException(&quot;Added record must not be null&quot;);</span>
+<span class="fc bfc" id="L1399" title="All 2 branches covered.">        if (record == null) {</span>
+<span class="fc" id="L1400">            throw new IllegalArgumentException(&quot;Added record must not be null&quot;);</span>
         }
 
-<span class="fc bfc" id="L1380" title="All 2 branches covered.">        if (this.extractedRecords == null) {</span>
-<span class="fc" id="L1381">            this.extractedRecords = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L1403" title="All 2 branches covered.">        if (this.extractedRecords == null) {</span>
+<span class="fc" id="L1404">            this.extractedRecords = new ArrayList&lt;&gt;();</span>
         }
 
-<span class="fc" id="L1384">        this.extractedRecords.add(record);</span>
-<span class="fc" id="L1385">    }</span>
+<span class="fc" id="L1407">        this.extractedRecords.add(record);</span>
+<span class="fc" id="L1408">    }</span>
 
     @Override
     public void addExtractedRecords(final List&lt;? extends IBaseDataObject&gt; records) {
-<span class="fc bfc" id="L1389" title="All 2 branches covered.">        if (records == null) {</span>
-<span class="fc" id="L1390">            throw new IllegalArgumentException(&quot;ExtractedRecord list must not be null&quot;);</span>
+<span class="fc bfc" id="L1412" title="All 2 branches covered.">        if (records == null) {</span>
+<span class="fc" id="L1413">            throw new IllegalArgumentException(&quot;ExtractedRecord list must not be null&quot;);</span>
         }
 
-<span class="fc bfc" id="L1393" title="All 2 branches covered.">        for (final IBaseDataObject r : records) {</span>
-<span class="fc bfc" id="L1394" title="All 2 branches covered.">            if (r == null) {</span>
-<span class="fc" id="L1395">                throw new IllegalArgumentException(&quot;No ExctractedRecord item may be null&quot;);</span>
+<span class="fc bfc" id="L1416" title="All 2 branches covered.">        for (final IBaseDataObject r : records) {</span>
+<span class="fc bfc" id="L1417" title="All 2 branches covered.">            if (r == null) {</span>
+<span class="fc" id="L1418">                throw new IllegalArgumentException(&quot;No ExctractedRecord item may be null&quot;);</span>
             }
-<span class="fc" id="L1397">        }</span>
+<span class="fc" id="L1420">        }</span>
 
-<span class="fc bfc" id="L1399" title="All 2 branches covered.">        if (this.extractedRecords == null) {</span>
-<span class="fc" id="L1400">            this.extractedRecords = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L1422" title="All 2 branches covered.">        if (this.extractedRecords == null) {</span>
+<span class="fc" id="L1423">            this.extractedRecords = new ArrayList&lt;&gt;();</span>
         }
 
-<span class="fc" id="L1403">        this.extractedRecords.addAll(records);</span>
-<span class="fc" id="L1404">    }</span>
+<span class="fc" id="L1426">        this.extractedRecords.addAll(records);</span>
+<span class="fc" id="L1427">    }</span>
 
     @Override
     public boolean hasExtractedRecords() {
-<span class="fc bfc" id="L1408" title="All 4 branches covered.">        return (this.extractedRecords != null) &amp;&amp; !this.extractedRecords.isEmpty();</span>
+<span class="fc bfc" id="L1431" title="All 4 branches covered.">        return (this.extractedRecords != null) &amp;&amp; !this.extractedRecords.isEmpty();</span>
     }
 
     @Override
     public void clearExtractedRecords() {
-<span class="fc" id="L1413">        this.extractedRecords = null;</span>
-<span class="fc" id="L1414">    }</span>
+<span class="fc" id="L1436">        this.extractedRecords = null;</span>
+<span class="fc" id="L1437">    }</span>
 
     @Override
     public int getExtractedRecordCount() {
-<span class="pc bpc" id="L1418" title="1 of 2 branches missed.">        return (this.extractedRecords == null) ? 0 : this.extractedRecords.size();</span>
+<span class="pc bpc" id="L1441" title="1 of 2 branches missed.">        return (this.extractedRecords == null) ? 0 : this.extractedRecords.size();</span>
     }
 
     @Override
     public UUID getInternalId() {
-<span class="fc" id="L1423">        return this.internalId;</span>
+<span class="fc" id="L1446">        return this.internalId;</span>
     }
 
     @Override
     public boolean isOutputable() {
-<span class="fc" id="L1428">        return outputable;</span>
+<span class="fc" id="L1451">        return outputable;</span>
     }
 
     @Override
     public void setOutputable(boolean outputable) {
-<span class="fc" id="L1433">        this.outputable = outputable;</span>
-<span class="fc" id="L1434">    }</span>
+<span class="fc" id="L1456">        this.outputable = outputable;</span>
+<span class="fc" id="L1457">    }</span>
 
     @Override
     public String getId() {
-<span class="fc" id="L1438">        return id;</span>
+<span class="fc" id="L1461">        return id;</span>
     }
 
     @Override
     public void setId(String id) {
-<span class="fc" id="L1443">        this.id = id;</span>
-<span class="fc" id="L1444">    }</span>
+<span class="fc" id="L1466">        this.id = id;</span>
+<span class="fc" id="L1467">    }</span>
 
     @Override
     public String getWorkBundleId() {
-<span class="fc" id="L1448">        return workBundleId;</span>
+<span class="fc" id="L1471">        return workBundleId;</span>
     }
 
     @Override
     public void setWorkBundleId(String workBundleId) {
-<span class="fc" id="L1453">        this.workBundleId = workBundleId;</span>
-<span class="fc" id="L1454">    }</span>
+<span class="fc" id="L1476">        this.workBundleId = workBundleId;</span>
+<span class="fc" id="L1477">    }</span>
 
     @Override
     public String getTransactionId() {
-<span class="fc" id="L1458">        return transactionId;</span>
+<span class="fc" id="L1481">        return transactionId;</span>
     }
 
     @Override
     public void setTransactionId(String transactionId) {
-<span class="fc" id="L1463">        this.transactionId = transactionId;</span>
-<span class="fc" id="L1464">    }</span>
+<span class="fc" id="L1486">        this.transactionId = transactionId;</span>
+<span class="fc" id="L1487">    }</span>
+
+    @Override
+    public IBaseDataObject getTld() {
+<span class="fc" id="L1491">        return tld;</span>
+    }
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

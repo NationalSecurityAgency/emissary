@@ -178,10 +178,10 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
         // Grab the default pool
         try {
-<span class="fc" id="L181">            agentPool = AgentPool.lookup();</span>
+<span class="nc" id="L181">            agentPool = AgentPool.lookup();</span>
 <span class="fc" id="L182">        } catch (NamespaceException e) {</span>
 <span class="fc" id="L183">            logger.warn(&quot;Cannot find agent pool!&quot;);</span>
-<span class="fc" id="L184">        }</span>
+<span class="nc" id="L184">        }</span>
 
 <span class="fc" id="L186">        alwaysCopyMetadataVals = configG.findEntriesAsSet(&quot;ALWAYS_COPY_METADATA&quot;);</span>
 

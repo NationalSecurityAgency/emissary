@@ -31,7 +31,7 @@ import java.util.Set;
 
 <span class="fc" id="L32">        int rowCount = 0;</span>
 <span class="fc bfc" id="L33" title="All 2 branches covered.">        for (String key : Namespace.keySet()) {</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">            String clz = rowCount++ % 2 == 0 ? &quot;even&quot; : &quot;odd&quot;;</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">            String clz = rowCount++ % 2 == 0 ? &quot;even&quot; : &quot;odd&quot;;</span>
 <span class="fc" id="L35">            String context = request.getContextPath();</span>
 <span class="fc" id="L36">            namespaces.add(new NamespaceInfo(key, clz, context));</span>
 <span class="fc" id="L37">        }</span>

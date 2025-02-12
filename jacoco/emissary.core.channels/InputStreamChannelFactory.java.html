@@ -87,7 +87,7 @@ public class InputStreamChannelFactory {
         @Override
         protected long sizeImpl() throws IOException {
 <span class="fc bfc" id="L89" title="All 2 branches covered.">            if (size &lt; 0) {</span>
-<span class="fc" id="L90">                try (final InputStream is = inputStreamFactory.create()) {</span>
+<span class="fc" id="L90">                try (InputStream is = inputStreamFactory.create()) {</span>
 <span class="fc" id="L91">                    size = SeekableByteChannelHelper.available(is);</span>
                 }
             }

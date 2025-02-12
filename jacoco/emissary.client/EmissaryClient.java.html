@@ -118,7 +118,7 @@ public class EmissaryClient {
         // Value for password remains unchanged if there is a problem
         try {
 <span class="fc" id="L120">            String userPropertiesFile = System.getProperty(JETTY_USER_FILE_PROPERTY_NAME);</span>
-<span class="pc bpc" id="L121" title="1 of 2 branches missed.">            if (null == userPropertiesFile) {</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">            if (null == userPropertiesFile) {</span>
 <span class="fc" id="L122">                LOGGER.debug(&quot;System property '{}' not set, using default jetty-users.properties&quot;, JETTY_USER_FILE_PROPERTY_NAME);</span>
 <span class="fc" id="L123">                userPropertiesFile = &quot;jetty-users.properties&quot;;</span>
             }

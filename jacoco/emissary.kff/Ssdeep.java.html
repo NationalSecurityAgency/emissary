@@ -128,7 +128,7 @@ public final class Ssdeep {
 <span class="fc" id="L128">        public SsContext(final SeekableByteChannelFactory sbcf) {</span>
 <span class="fc" id="L129">            long expectedInputLength = 0;</span>
 
-<span class="fc" id="L131">            try (final SeekableByteChannel sbc = sbcf.create()) {</span>
+<span class="fc" id="L131">            try (SeekableByteChannel sbc = sbcf.create()) {</span>
 <span class="fc" id="L132">                expectedInputLength = sbc.size();</span>
 <span class="nc" id="L133">            } catch (final IOException ioe) {</span>
                 // Ignore
@@ -283,7 +283,7 @@ public final class Ssdeep {
 <span class="fc" id="L283">            beginHashing();</span>
 <span class="fc" id="L284">            final RollingState rollState = new RollingState();</span>
 
-<span class="fc" id="L286">            try (final InputStream is = Channels.newInputStream(sbcf.create())) {</span>
+<span class="fc" id="L286">            try (InputStream is = Channels.newInputStream(sbcf.create())) {</span>
 <span class="fc" id="L287">                final byte[] b = new byte[1024];</span>
 
                 int bytesRead;
@@ -438,7 +438,7 @@ public final class Ssdeep {
      * @throws IOException If there is some I/O problem accessing the file.
      */
     public String fuzzyHashFile(final File file) throws IOException {
-<span class="nc" id="L441">        try (final RandomAccessFile stream = new RandomAccessFile(file, &quot;r&quot;)) {</span>
+<span class="nc" id="L441">        try (RandomAccessFile stream = new RandomAccessFile(file, &quot;r&quot;)) {</span>
 <span class="nc" id="L442">            final SsContext ctx = new SsContext(file);</span>
             while (true) {
 <span class="nc" id="L444">                stream.seek(0);</span>
@@ -706,7 +706,7 @@ public final class Ssdeep {
     public static void main(final String[] args) throws Exception {
 <span class="nc" id="L707">        final Ssdeep ss = new Ssdeep();</span>
 <span class="nc bnc" id="L708" title="All 2 branches missed.">        for (final String f : args) {</span>
-<span class="nc" id="L709">            try (final InputStream is = Files.newInputStream(Paths.get(f))) {</span>
+<span class="nc" id="L709">            try (InputStream is = Files.newInputStream(Paths.get(f))) {</span>
 <span class="nc" id="L710">                final byte[] buffer = IOUtils.toByteArray(is);</span>
                 // output format matches the original ssdeep program
 <span class="nc" id="L712">                System.out.println(ss.fuzzyHash(buffer) + &quot;,\&quot;&quot; + f + &quot;\&quot;&quot;);</span>

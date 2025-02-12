@@ -184,9 +184,9 @@ public class PlaceStarter {
 
     public static void deregisterPlace(final String loc) {
         try {
-<span class="nc" id="L187">            final IDirectoryPlace localDir = DirectoryPlace.lookup();</span>
-<span class="nc" id="L188">            final List&lt;DirectoryEntry&gt; entries = localDir.getMatchingEntries(&quot;*.&quot; + loc);</span>
-<span class="nc bnc" id="L189" title="All 4 branches missed.">            if (entries != null &amp;&amp; !entries.isEmpty()) {</span>
+<span class="fc" id="L187">            final IDirectoryPlace localDir = DirectoryPlace.lookup();</span>
+<span class="fc" id="L188">            final List&lt;DirectoryEntry&gt; entries = localDir.getMatchingEntries(&quot;*.&quot; + loc);</span>
+<span class="pc bpc" id="L189" title="2 of 4 branches missed.">            if (entries != null &amp;&amp; !entries.isEmpty()) {</span>
 <span class="nc" id="L190">                final List&lt;String&gt; keys = new ArrayList&lt;&gt;();</span>
 <span class="nc bnc" id="L191" title="All 2 branches missed.">                for (final DirectoryEntry entry : entries) {</span>
 <span class="nc" id="L192">                    keys.add(entry.getKey());</span>
@@ -194,11 +194,11 @@ public class PlaceStarter {
 <span class="nc" id="L194">                logger.info(&quot;Forcing removal of {} keys due to failed {}&quot;, keys.size(), loc);</span>
 <span class="nc" id="L195">                localDir.removePlaces(keys);</span>
 <span class="nc" id="L196">            } else {</span>
-<span class="nc" id="L197">                logger.debug(&quot;Failed {} did not have any directory keys registered&quot;, loc);</span>
+<span class="fc" id="L197">                logger.debug(&quot;Failed {} did not have any directory keys registered&quot;, loc);</span>
             }
-<span class="fc" id="L199">        } catch (EmissaryException ee) {</span>
-<span class="fc" id="L200">            logger.debug(&quot;NO local directory, cannot force key dereg for {}&quot;, loc);</span>
-<span class="nc" id="L201">        }</span>
+<span class="nc" id="L199">        } catch (EmissaryException ee) {</span>
+<span class="nc" id="L200">            logger.debug(&quot;NO local directory, cannot force key dereg for {}&quot;, loc);</span>
+<span class="fc" id="L201">        }</span>
 <span class="fc" id="L202">    }</span>
 
     // ////////////////////////////////////////////////////////////

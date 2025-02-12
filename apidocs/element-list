@@ -5,7 +5,6 @@ emissary.client
 emissary.client.response
 emissary.command
 emissary.command.converter
-emissary.command.validator
 emissary.config
 emissary.core
 emissary.core.channels
@@ -43,6 +42,7 @@ emissary.transform.decode
 emissary.util
 emissary.util.io
 emissary.util.magic
+emissary.util.os
 emissary.util.roll
 emissary.util.search
 emissary.util.shell

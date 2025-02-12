@@ -96,7 +96,7 @@
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>      @Test
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>      <strong class="jxr_keyword">void</strong> testSize() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>          <em class="jxr_comment">// Normal path</em>
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>          <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> SeekableByteChannel sbc = InputStreamChannelFactory.create(testBytes.length, <strong class="jxr_keyword">new</strong> TestInputStreamFactory(testBytes)).create()) {
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>          <strong class="jxr_keyword">try</strong> (SeekableByteChannel sbc = InputStreamChannelFactory.create(testBytes.length, <strong class="jxr_keyword">new</strong> TestInputStreamFactory(testBytes)).create()) {
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>              ByteBuffer buff = ByteBuffer.allocate(32);
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>              assertEquals(testBytes.length, sbc.size());
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>              assertEquals(testBytes.length, sbc.read(buff));
@@ -107,7 +107,7 @@
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>      @Test
 <a class="jxr_linenumber" name="L100" href="#L100">100</a>     <strong class="jxr_keyword">void</strong> testCanWorkOutSize() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L101" href="#L101">101</a>         <em class="jxr_comment">// Make the factory work it out</em>
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> SeekableByteChannel sbc = InputStreamChannelFactory.create(-1, <strong class="jxr_keyword">new</strong> TestInputStreamFactory(testBytes)).create()) {
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>         <strong class="jxr_keyword">try</strong> (SeekableByteChannel sbc = InputStreamChannelFactory.create(-1, <strong class="jxr_keyword">new</strong> TestInputStreamFactory(testBytes)).create()) {
 <a class="jxr_linenumber" name="L103" href="#L103">103</a>             ByteBuffer buff = ByteBuffer.allocate(32);
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>             assertEquals(testBytes.length, sbc.size());
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>             assertEquals(testBytes.length, sbc.read(buff));
@@ -119,7 +119,7 @@
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>     <strong class="jxr_keyword">void</strong> testReadWithIncorrectSize() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>         <em class="jxr_comment">// You can set the size incorrectly, but this is still 'valid'</em>
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> sbcLength = testBytes.length + 8;
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, <strong class="jxr_keyword">new</strong> TestInputStreamFactory(testBytes)).create()) {
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>         <strong class="jxr_keyword">try</strong> (SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, <strong class="jxr_keyword">new</strong> TestInputStreamFactory(testBytes)).create()) {
 <a class="jxr_linenumber" name="L115" href="#L115">115</a>             ByteBuffer buff = ByteBuffer.allocate(32);
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>             assertEquals(sbcLength, sbc.size());
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>             assertEquals(testBytes.length, sbc.read(buff));
@@ -130,7 +130,7 @@
 <a class="jxr_linenumber" name="L122" href="#L122">122</a>     @Test
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>     <strong class="jxr_keyword">void</strong> testReadWithZeroSize() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L124" href="#L124">124</a>         <em class="jxr_comment">// Zero length channel - will always be EOS, not reading anything into the buffer</em>
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> SeekableByteChannel sbc = InputStreamChannelFactory.create(0, <strong class="jxr_keyword">new</strong> TestInputStreamFactory(testBytes)).create()) {
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>         <strong class="jxr_keyword">try</strong> (SeekableByteChannel sbc = InputStreamChannelFactory.create(0, <strong class="jxr_keyword">new</strong> TestInputStreamFactory(testBytes)).create()) {
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>             ByteBuffer buff = ByteBuffer.allocate(1);
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>             assertEquals(0, sbc.size());
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>             assertEquals(-1, sbc.read(buff));
@@ -142,7 +142,7 @@
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>     <strong class="jxr_keyword">void</strong> testStartReadBeyondActualData() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L135" href="#L135">135</a>         <em class="jxr_comment">// Set an SBC that is larger than the data we have, ensure an IOException occurs when reading</em>
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> sbcLength = testBytes.length + 8;
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, <strong class="jxr_keyword">new</strong> TestInputStreamFactory(testBytes)).create()) {
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>         <strong class="jxr_keyword">try</strong> (SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, <strong class="jxr_keyword">new</strong> TestInputStreamFactory(testBytes)).create()) {
 <a class="jxr_linenumber" name="L138" href="#L138">138</a>             ByteBuffer buff = ByteBuffer.allocate(32);
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>             assertEquals(sbcLength, sbc.size());
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>             <em class="jxr_comment">// Set position beyond length</em>
@@ -156,7 +156,7 @@
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>     <strong class="jxr_keyword">void</strong> testReadWithLargerThanDefinedSize() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L149" href="#L149">149</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> sbcLength = testBytes.length / 2;
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>         <em class="jxr_comment">// Set an SBC that is smaller than the amount of data we have, ensure that we can't read more than the defined size</em>
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, <strong class="jxr_keyword">new</strong> TestInputStreamFactory(testBytes)).create()) {
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>         <strong class="jxr_keyword">try</strong> (SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, <strong class="jxr_keyword">new</strong> TestInputStreamFactory(testBytes)).create()) {
 <a class="jxr_linenumber" name="L152" href="#L152">152</a>             ByteBuffer buff = ByteBuffer.allocate(32);
 <a class="jxr_linenumber" name="L153" href="#L153">153</a>             assertEquals(sbcLength, sbc.size());
 <a class="jxr_linenumber" name="L154" href="#L154">154</a>             sbc.read(buff);

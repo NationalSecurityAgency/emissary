@@ -297,9 +297,9 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 <span class="fc" id="L297">                continue;</span>
             }
 
-<span class="fc bfc" id="L300" title="All 2 branches covered.">            if (!isStaticPeer(key)) {</span>
-<span class="fc" id="L301">                logger.warn(&quot;Unknown peer requesting to be added: {}&quot;, key);</span>
-<span class="fc" id="L302">                continue;</span>
+<span class="pc bpc" id="L300" title="1 of 2 branches missed.">            if (!isStaticPeer(key)) {</span>
+<span class="nc" id="L301">                logger.warn(&quot;Unknown peer requesting to be added: {}&quot;, key);</span>
+<span class="nc" id="L302">                continue;</span>
             }
 
 <span class="fc bfc" id="L305" title="All 2 branches covered.">            if (!isKnownPeer(key)) {</span>

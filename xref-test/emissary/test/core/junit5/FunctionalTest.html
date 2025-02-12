@@ -91,7 +91,7 @@
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>          <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>              ServerCommand cmd = ServerCommand.parse(ServerCommand.<strong class="jxr_keyword">class</strong>, args);
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>              jserver = <strong class="jxr_keyword">new</strong> EmissaryServer(cmd);
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>              jserver = EmissaryServer.init(cmd);
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>              jetty = jserver.startServer();
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>          } <strong class="jxr_keyword">catch</strong> (Exception ignored) {
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>              <em class="jxr_comment">// Ignore</em>
@@ -168,7 +168,7 @@
 <a class="jxr_linenumber" name="L160" href="#L160">160</a>         <strong class="jxr_keyword">if</strong> (jserver != <strong class="jxr_keyword">null</strong> &amp;&amp; jserver.isServerRunning()) {
 <a class="jxr_linenumber" name="L161" href="#L161">161</a>             jserver.stop();
 <a class="jxr_linenumber" name="L162" href="#L162">162</a>             jetty = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>             assertFalse(EmissaryServer.isStarted(), <span class="jxr_string">"Server did not stop and unbind"</span>);
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>             assertFalse(EmissaryServer.getInstance().isServerRunning(), <span class="jxr_string">"Server did not stop and unbind"</span>);
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>             jserver = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L165" href="#L165">165</a>         }
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> 

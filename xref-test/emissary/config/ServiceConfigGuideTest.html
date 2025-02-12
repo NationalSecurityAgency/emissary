@@ -435,7 +435,7 @@
 <a class="jxr_linenumber" name="L427" href="#L427">427</a>         <em class="jxr_comment">// Write the config bytes out to a temp file</em>
 <a class="jxr_linenumber" name="L428" href="#L428">428</a>         <strong class="jxr_keyword">final</strong> File scfile = File.createTempFile(<span class="jxr_string">"temp"</span>, <span class="jxr_string">".cfg"</span>);
 <a class="jxr_linenumber" name="L429" href="#L429">429</a>         scfile.deleteOnExit();
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>         <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> OutputStream os = Files.newOutputStream(scfile.toPath())) {
+<a class="jxr_linenumber" name="L430" href="#L430">430</a>         <strong class="jxr_keyword">try</strong> (OutputStream os = Files.newOutputStream(scfile.toPath())) {
 <a class="jxr_linenumber" name="L431" href="#L431">431</a>             os.write(cdata.getBytes());
 <a class="jxr_linenumber" name="L432" href="#L432">432</a>         }
 <a class="jxr_linenumber" name="L433" href="#L433">433</a> 
