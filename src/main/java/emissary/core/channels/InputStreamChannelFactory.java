@@ -35,7 +35,7 @@ public class InputStreamChannelFactory {
             Validate.notNull(inputStreamFactory, "Required: inputStream not null");
 
             if (size < 0) {
-                long tempSize = -1;
+                long tempSize = SIZE_IS_UNKNOWN;
                 IOException tempIoException = null;
 
                 try (InputStream is = inputStreamFactory.create()) {
