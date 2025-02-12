@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 
+import static emissary.core.channels.InputStreamChannelFactory.SIZE_IS_UNKNOWN;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -153,6 +154,23 @@ class InputStreamChannelFactoryTest extends UnitTest {
             assertEquals(sbcLength, sbc.size());
             sbc.read(buff);
             assertEquals(sbcLength, buff.position());
+        }
+    }
+
+    @Test
+    void testExceptionInputStreamFactory() throws Exception {
+        final InputStreamFactory isf = new InputStreamFactory() {
+            @Override
+            public InputStream create() throws IOException {
+                throw new IOException("This InputStreamFactory only throws IOExceptions!");
+            }
+        };
+        final SeekableByteChannelFactory sbcf = InputStreamChannelFactory.create(SIZE_IS_UNKNOWN, isf);
+        final ByteBuffer byteBuffer = ByteBuffer.allocate(100);
+
+        try (SeekableByteChannel sbc = sbcf.create()) {
+            assertThrows(IOException.class, sbc::size);
+            assertThrows(IOException.class, () -> sbc.read(byteBuffer));
         }
     }
 }
