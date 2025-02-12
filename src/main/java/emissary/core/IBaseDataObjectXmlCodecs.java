@@ -510,9 +510,21 @@ public final class IBaseDataObjectXmlCodecs {
      * An implementation of an XML element encoder for SeekableByteChannel's that produces a SHA256 hash value.
      */
     public static final ElementEncoder<SeekableByteChannelFactory> SHA256_SEEKABLE_BYTE_CHANNEL_FACTORY_ENCODER =
-            new Sha256SeekableByteChannelFactoryEncoder();
+            new Sha256SeekableByteChannelFactoryEncoder(false);
+
+    /**
+     * An implementation of an XML element encoder for SeekableByteChannel's that always produces a SHA256 hash value.
+     */
+    public static final ElementEncoder<SeekableByteChannelFactory> ALWAYS_SHA256_SEEKABLE_BYTE_CHANNEL_FACTORY_ENCODER =
+            new Sha256SeekableByteChannelFactoryEncoder(true);
 
     private static class Sha256SeekableByteChannelFactoryEncoder implements ElementEncoder<SeekableByteChannelFactory> {
+        private final boolean alwaysHash;
+
+        public Sha256SeekableByteChannelFactoryEncoder(final boolean alwaysHash) {
+            this.alwaysHash = alwaysHash;
+        }
+
         @Override
         public void encode(final List<SeekableByteChannelFactory> values, final Element parentElement, final String childElementName) {
             for (final SeekableByteChannelFactory value : values) {
@@ -520,7 +532,7 @@ public final class IBaseDataObjectXmlCodecs {
                     try {
                         final byte[] bytes = SeekableByteChannelHelper.getByteArrayFromChannel(value,
                                 BaseDataObject.MAX_BYTE_ARRAY_SIZE);
-                        final Element childElement = preserve(protectedElementHash(childElementName, bytes));
+                        final Element childElement = preserve(protectedElementSha256(childElementName, bytes, alwaysHash));
 
                         childElement.setAttribute(LENGTH_ATTRIBUTE_NAME, Integer.toString(bytes.length));
 
@@ -530,19 +542,6 @@ public final class IBaseDataObjectXmlCodecs {
                     }
                 }
             }
-        }
-
-        private static Element protectedElementHash(final String name, final byte[] bytes) {
-            final Element element = new Element(name);
-
-            if (ByteUtil.containsNonIndexableBytes(bytes)) {
-                element.setAttribute(ENCODING_ATTRIBUTE_NAME, SHA256);
-                element.addContent(ByteUtil.sha256Bytes(bytes));
-            } else {
-                element.addContent(new String(bytes, StandardCharsets.UTF_8));
-            }
-
-            return element;
         }
     }
 
@@ -666,16 +665,24 @@ public final class IBaseDataObjectXmlCodecs {
         }
     }
 
-    public static final ElementEncoder<Map<String, byte[]>> SHA256_STRING_BYTE_ARRAY_ENCODER = new Sha256StringByteArrayEncoder();
+    public static final ElementEncoder<Map<String, byte[]>> SHA256_STRING_BYTE_ARRAY_ENCODER = new Sha256StringByteArrayEncoder(false);
+
+    public static final ElementEncoder<Map<String, byte[]>> ALWAYS_SHA256_STRING_BYTE_ARRAY_ENCODER = new Sha256StringByteArrayEncoder(true);
 
     private static class Sha256StringByteArrayEncoder implements ElementEncoder<Map<String, byte[]>> {
+        private final boolean alwaysHash;
+
+        public Sha256StringByteArrayEncoder(final boolean alwaysHash) {
+            this.alwaysHash = alwaysHash;
+        }
+
         @Override
         public void encode(final List<Map<String, byte[]>> values, final Element parentElement, final String childElementName) {
             for (final Map<String, byte[]> value : values) {
                 for (final Entry<String, byte[]> view : value.entrySet()) {
                     final Element metaElement = new Element(IbdoXmlElementNames.VIEW);
                     final Element nameElement = preserve(protectedElement(IbdoXmlElementNames.NAME, view.getKey()));
-                    final Element valueElement = preserve(protectedElementSha256(IbdoXmlElementNames.VALUE, view.getValue()));
+                    final Element valueElement = preserve(protectedElementSha256(IbdoXmlElementNames.VALUE, view.getValue(), alwaysHash));
 
                     valueElement.setAttribute(LENGTH_ATTRIBUTE_NAME, Integer.toString(view.getValue().length));
 
@@ -720,6 +727,18 @@ public final class IBaseDataObjectXmlCodecs {
             DEFAULT_INTEGER_ENCODER,
             SHA256_SEEKABLE_BYTE_CHANNEL_FACTORY_ENCODER,
             SHA256_STRING_BYTE_ARRAY_ENCODER,
+            DEFAULT_STRING_ENCODER,
+            DEFAULT_STRING_OBJECT_ENCODER);
+
+    /**
+     * The set of XML element encoders that will always sha256 hash the specified element types.
+     */
+    public static final ElementEncoders ALWAYS_SHA256_ELEMENT_ENCODERS = new ElementEncoders(
+            DEFAULT_BOOLEAN_ENCODER,
+            DEFAULT_BYTE_ARRAY_ENCODER,
+            DEFAULT_INTEGER_ENCODER,
+            ALWAYS_SHA256_SEEKABLE_BYTE_CHANNEL_FACTORY_ENCODER,
+            ALWAYS_SHA256_STRING_BYTE_ARRAY_ENCODER,
             DEFAULT_STRING_ENCODER,
             DEFAULT_STRING_OBJECT_ENCODER);
 
@@ -798,12 +817,13 @@ public final class IBaseDataObjectXmlCodecs {
      * 
      * @param name of the element
      * @param bytes to wrap, if they contain non-printable characters.
+     * @param alwaysHash overrides the non-printable check and always hashes the bytes.
      * @return the created element
      */
-    public static Element protectedElementSha256(final String name, final byte[] bytes) {
+    public static Element protectedElementSha256(final String name, final byte[] bytes, final boolean alwaysHash) {
         final Element element = new Element(name);
 
-        if (ByteUtil.containsNonIndexableBytes(bytes)) {
+        if (alwaysHash || ByteUtil.containsNonIndexableBytes(bytes)) {
             element.setAttribute(IBaseDataObjectXmlCodecs.ENCODING_ATTRIBUTE_NAME, IBaseDataObjectXmlCodecs.SHA256);
             element.addContent(ByteUtil.sha256Bytes(bytes));
         } else {
