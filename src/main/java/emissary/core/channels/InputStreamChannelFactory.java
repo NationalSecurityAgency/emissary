@@ -98,7 +98,6 @@ public class InputStreamChannelFactory {
             if (inputStream == null) {
                 inputStream = BoundedInputStream.builder()
                         .setInputStream(inputStreamFactory.create())
-                        .setPropagateClose(false)
                         .get();
             }
 
