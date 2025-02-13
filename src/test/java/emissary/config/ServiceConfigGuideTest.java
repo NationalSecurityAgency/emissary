@@ -680,6 +680,7 @@ class ServiceConfigGuideTest extends UnitTest {
             }
         }
         Map<String, Set<String>> actual = config.findStringMatchMultiMap(prefix, ORDERED);
+        assertFalse(actual.isEmpty(), "did not find any multi-map entries");
         assertEquals(expected.size(), actual.size(), "should have the same number of keys");
         var actualsIterator = actual.entrySet().iterator();
         var expectedIterator = expected.entrySet().iterator();
