@@ -34,6 +34,7 @@ public class InputStreamChannelFactory {
         public InputStreamChannelFactoryImpl(final long size, final InputStreamFactory inputStreamFactory) {
             Validate.notNull(inputStreamFactory, "Required: inputStream not null");
 
+            // If the size is unknown then calculate it and save any IOException that occurs.
             if (size < 0) {
                 long tempSize = SIZE_IS_UNKNOWN;
                 IOException tempIoException = null;
