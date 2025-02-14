@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -829,12 +830,44 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public Map<String, Set<String>> findStringMatchMultiMap(@Nullable final String param) {
+        if (param == null) {
+            return Map.of();
+        }
+
+        return findStringMatchMultiMap(param, false);
+    }
+
+    /**
+     * Find entries beginning with the specified string and return a hash keyed on the remainder of the string with the
+     * value of the config line as the value of the hash Multiple values for the same hash are allowed and returned as a
+     * Set.
+     *
+     * <pre>
+     * {@code
+     * Example config entries
+     *    FOO_ONE: AAA
+     *    FOO_TWO: BBB
+     *    FOO_TWO: CCC
+     * Calling findStringMatchMap("FOO_",true)
+     * will yield a map with Sets
+     *     ONE -> {AAA}
+     *     TWO -> {BBB,CCC}
+     * }
+     * </pre>
+     *
+     * @param param the key to look for in the config file
+     * @param preserveOrder ordering of keys is preserved
+     * @return map where key is remainder after match and value is a Set of all found config values, or an empty map if none
+     *         found
+     */
+    @Override
+    public Map<String, Set<String>> findStringMatchMultiMap(@Nullable final String param, final boolean preserveOrder) {
 
         if (param == null) {
             return Map.of();
         }
 
-        final Map<String, Set<String>> theHash = new HashMap<>();
+        final Map<String, Set<String>> theHash = preserveOrder ? new LinkedHashMap<>() : new HashMap<>();
         final List<ConfigEntry> parameters = this.findStringMatchEntries(param);
 
         for (final ConfigEntry el : parameters) {
@@ -843,12 +876,13 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             if (theHash.containsKey(key)) {
                 theHash.get(key).add(el.getValue());
             } else {
-                final Set<String> values = new HashSet<>();
+                final Set<String> values = preserveOrder ? new LinkedHashSet<>() : new HashSet<>();
                 values.add(el.getValue());
                 theHash.put(key, values);
             }
         }
         return theHash;
+
     }
 
     /**

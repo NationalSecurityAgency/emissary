@@ -81,12 +81,21 @@ public interface Configurator {
     Map<String, String> findStringMatchMap(String param, boolean preserveCase, boolean preserveOrder);
 
     /**
-     * Find all entry keys that begin with the specified string Remaining key portion is upper cased
+     * Find all entry keys that begin with the specified string Remaining key portion is upper-cased
      *
      * @param theParameter the parameter the leading key startsWith
      * @return map with remaining key portion as key, value as a set of multiple values
      */
     Map<String, Set<String>> findStringMatchMultiMap(final String theParameter);
+
+    /**
+     * Find all entry keys that begin with the specified string Remaining key portion is upper-cased
+     *
+     * @param theParameter the parameter the leading key startsWith
+     * @param preserveOrder ordering of keys is preserved
+     * @return map with remaining key portion as key, value as a set of multiple values
+     */
+    Map<String, Set<String>> findStringMatchMultiMap(final String theParameter, boolean preserveOrder);
 
 
     String findRequiredStringEntry(String theParameter);
