@@ -242,7 +242,7 @@ public abstract class RegressionTest extends ExtractionTest {
      * @return a value optionally containing the generated hash
      */
     protected Optional<String> hashBytesIfNonPrintable(byte[] bytes, final boolean alwaysHash) {
-        if (alwaysHash || (ArrayUtils.isNotEmpty(bytes) && ByteUtil.containsNonIndexableBytes(bytes))) {
+        if (ArrayUtils.isNotEmpty(bytes) && (alwaysHash || ByteUtil.containsNonIndexableBytes(bytes))) {
             return Optional.ofNullable(ByteUtil.sha256Bytes(bytes));
         }
 
