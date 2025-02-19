@@ -19,6 +19,7 @@ import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.spy;
 
@@ -26,6 +27,7 @@ class TestExtractionTest extends UnitTest {
 
     private static final String RESOURCE_NAME = "/emissary/test/core/junit5/TestExtractionTest.xml";
     private static final String MISSING_TAGS_RESOURCE = "/emissary/test/core/junit5/MissingTags.xml";
+    private static final String PROC_ERROR_RESOURCE = "/emissary/test/core/junit5/ProcessingErrorTest.xml";
 
     @Test
     void testCheckStringValueForCollection() throws JDOMException, IOException {
@@ -122,5 +124,36 @@ class TestExtractionTest extends UnitTest {
         Assertions.assertThrows(AssertionError.class, () -> {
             test.checkAnswers(answers, d, null, MISSING_TAGS_RESOURCE);
         }, "The test should fail if we did not create the nometa tag correctly");
+    }
+
+    @Test
+    void testProcessingErrorTag() throws IOException, JDOMException {
+        IBaseDataObject d = DataObjectFactory.getInstance();
+        SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
+        InputStream inputStream = TestExtractionTest.class.getResourceAsStream(PROC_ERROR_RESOURCE);
+        assertNotNull(inputStream, "Could not locate: " + PROC_ERROR_RESOURCE);
+        Document answerDoc = builder.build(inputStream);
+        inputStream.close();
+
+        ExtractionTest test = spy(ExtractionTest.class);
+        // answer file is expecting 2 processing errors
+        Element answers = answerDoc.getRootElement().getChild("answers");
+        AssertionError error;
+
+        // test with no processing error present in payload
+        error = assertThrows(AssertionError.class, () -> test.checkAnswers(answers, d, null, PROC_ERROR_RESOURCE),
+                "Test should fail, no processing errors added to payload.");
+        assertTrue(error.getMessage().endsWith("expected: not <null>"), "Verify correct error message (assertNotNull)");
+
+        // add first processing error to payload, verify fails at assertEquals
+        d.addProcessingError("test processing error 1");
+        error = assertThrows(AssertionError.class, () -> test.checkAnswers(answers, d, null, PROC_ERROR_RESOURCE),
+                "Test should fail, only one processing error added to payload.");
+        assertTrue(error.getMessage().endsWith("expected: <test processing error 1;test processing error 2;> but was: <test processing error 1;>"),
+                "Verify correct error message (assertEquals)");
+
+        // add second procError, should pass through checkAnswers now
+        d.addProcessingError("test processing error 2");
+        test.checkAnswers(answers, d, null, PROC_ERROR_RESOURCE);
     }
 }
