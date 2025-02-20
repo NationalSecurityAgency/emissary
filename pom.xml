@@ -1130,6 +1130,16 @@
         <version>${plugin.maven-dependency.version}</version>
         <executions>
           <execution>
+            <id>analyze</id>
+            <goals>
+              <goal>analyze-only</goal>
+            </goals>
+            <configuration>
+              <ignoreNonCompile>true</ignoreNonCompile>
+              <failOnWarning>false</failOnWarning>
+            </configuration>
+          </execution>
+          <execution>
             <goals>
               <goal>unpack</goal>
             </goals>
