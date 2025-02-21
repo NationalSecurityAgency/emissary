@@ -1,6 +1,6 @@
 package emissary.core.channels;
 
-import org.apache.commons.io.input.CountingInputStream;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang3.Validate;
 
 import java.io.IOException;
@@ -27,18 +27,37 @@ public class InputStreamChannelFactory {
 
     private static class InputStreamChannelFactoryImpl implements SeekableByteChannelFactory {
         private final long size;
+        @Nullable
+        private final IOException ioException;
         private final InputStreamFactory inputStreamFactory;
 
         public InputStreamChannelFactoryImpl(final long size, final InputStreamFactory inputStreamFactory) {
             Validate.notNull(inputStreamFactory, "Required: inputStream not null");
 
-            this.size = size;
+            // If the size is unknown then calculate it and save any IOException that occurs.
+            if (size < 0) {
+                long tempSize = SIZE_IS_UNKNOWN;
+                IOException tempIoException = null;
+
+                try (InputStream is = inputStreamFactory.create()) {
+                    tempSize = SeekableByteChannelHelper.available(is);
+                } catch (IOException e) {
+                    tempIoException = e;
+                }
+
+                this.size = tempSize;
+                ioException = tempIoException;
+            } else {
+                this.size = size;
+                this.ioException = null;
+            }
+
             this.inputStreamFactory = inputStreamFactory;
         }
 
         @Override
         public SeekableByteChannel create() {
-            return new InputStreamChannel(size, inputStreamFactory);
+            return new InputStreamChannel(size, inputStreamFactory, ioException);
         }
     }
 
@@ -47,14 +66,14 @@ public class InputStreamChannelFactory {
          * The InputStreamFactory used to get InputStream instances.
          */
         private final InputStreamFactory inputStreamFactory;
+        private final long size;
+        private final IOException ioException;
 
         /**
          * The current InputStream instance.
          */
         @Nullable
-        private CountingInputStream inputStream;
-
-        private long size;
+        private BoundedInputStream inputStream;
 
         /**
          * Create a new InputStreamChannel instance with a fixed size and data source
@@ -62,35 +81,38 @@ public class InputStreamChannelFactory {
          * @param size of the InputStreamChannel
          * @param inputStreamFactory data source
          */
-        public InputStreamChannel(final long size, final InputStreamFactory inputStreamFactory) {
+        public InputStreamChannel(final long size, final InputStreamFactory inputStreamFactory, final IOException ioException) {
             Validate.notNull(inputStreamFactory, "Required: inputStreamFactory not null!");
+
             this.size = size;
             this.inputStreamFactory = inputStreamFactory;
+            this.ioException = ioException;
         }
 
         @Override
         protected final int readImpl(final ByteBuffer byteBuffer) throws IOException {
-            if (inputStream != null && position() < inputStream.getByteCount()) {
+            if (inputStream != null && position() < inputStream.getCount()) {
                 inputStream.close();
                 inputStream = null;
             }
 
             if (inputStream == null) {
-                inputStream = new CountingInputStream(inputStreamFactory.create());
+                inputStream = BoundedInputStream.builder()
+                        .setInputStream(inputStreamFactory.create())
+                        .get();
             }
 
             // Actually perform the read
-            return SeekableByteChannelHelper.getFromInputStream(inputStream, byteBuffer, position() - inputStream.getByteCount());
+            return SeekableByteChannelHelper.getFromInputStream(inputStream, byteBuffer, position() - inputStream.getCount());
         }
 
 
         @Override
         protected long sizeImpl() throws IOException {
-            if (size < 0) {
-                try (InputStream is = inputStreamFactory.create()) {
-                    size = SeekableByteChannelHelper.available(is);
-                }
+            if (ioException != null) {
+                throw ioException;
             }
+
             return size;
         }
 
