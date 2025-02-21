@@ -14,10 +14,8 @@ public class StringUtil {
         // this is stolen from the implementation of Verifier.checkCharacterData(in);
         for (int i = 0, len = in.length(); i < len; i++) {
             char c = in.charAt(i);
-            if (!(c > 0x1F && c < 0xD800)) { // for performance
-                if (!Verifier.isXMLCharacter(c)) {
-                    return in.substring(0, i) + "/0x" + Integer.toHexString(c) + escapeInvalidXml(in.substring(i + 1));
-                }
+            if (!(c > 0x1F && c < 0xD800) && !Verifier.isXMLCharacter(c)) {
+                return in.substring(0, i) + "/0x" + Integer.toHexString(c) + escapeInvalidXml(in.substring(i + 1));
             }
         }
         return in;

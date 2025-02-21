@@ -159,12 +159,10 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
             if (newEntry.isBetterThan(currEntry)) {
                 super.add(i, newEntry);
                 return true;
-            } else if (newEntry.getExpense() == currEntry.getExpense()) {
+            } else if (newEntry.getExpense() == currEntry.getExpense() && newEntry.getServiceName().compareTo(currEntry.getServiceName()) < 0) {
                 // we could have an equal expense and if so, add lexicographically based on service name
-                if (newEntry.getServiceName().compareTo(currEntry.getServiceName()) < 0) {
-                    super.add(i, newEntry);
-                    return true;
-                }
+                super.add(i, newEntry);
+                return true;
             }
         }
 
