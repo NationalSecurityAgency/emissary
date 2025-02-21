@@ -1,13 +1,19 @@
 package emissary.place;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.core.MobileAgent;
 import emissary.core.NamespaceException;
 import emissary.core.ResourceException;
 import emissary.directory.DirectoryEntry;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * IServiceProviderPlace. IServiceProviderPlaces can be created by the emissary.admin.PlaceStarter and registered with
@@ -15,6 +21,8 @@ import java.util.Set;
  * throughout the system.
  */
 public interface IServiceProviderPlace {
+
+    String DOT = ".";
 
     /**
      * Used as a marker on the transofrm history of a payload when we sprout it, between the parent's history and the new
@@ -159,4 +167,55 @@ public interface IServiceProviderPlace {
      * Returns whether form is denied
      */
     boolean isDenied(String s);
+
+
+    /**
+     * Load the configurator
+     *
+     * @param configStream the stream to use or null to auto configure
+     */
+    default Configurator loadConfigurator(@Nullable InputStream configStream, String placeLocation) throws IOException {
+        // Read the configuration stream
+        if (configStream != null) {
+            // Use supplied stream
+            return ConfigUtil.getConfigInfo(configStream);
+        }
+        return loadConfigurator(placeLocation);
+    }
+
+    /**
+     * Load the configurator
+     *
+     * @param configFileName the file name to use or null to auto configure
+     */
+    default Configurator loadConfigurator(@Nullable String configFileName, String placeLocation) throws IOException {
+        // Read the configuration stream
+        if (configFileName != null) {
+            // Use supplied stream
+            return ConfigUtil.getConfigInfo(configFileName);
+        }
+        return loadConfigurator(placeLocation);
+    }
+
+    /**
+     * Load the configurator, figuring out whence automatically
+     */
+    default Configurator loadConfigurator(@Nullable String placeLocation) throws IOException {
+        if (placeLocation == null) {
+            placeLocation = this.getClass().getSimpleName();
+        }
+
+        // Extract config data stream name from place location
+        // and try finding config info with and without the
+        // package name of this class (in that order)
+        String myPackage = this.getClass().getPackage().getName();
+        List<String> configLocs = new ArrayList<>();
+        // Dont use KeyManipulator for this, only works when hostname/fqdn has dots
+        int pos = placeLocation.lastIndexOf("/");
+        String serviceClass = (pos > -1 ? placeLocation.substring(pos + 1) : placeLocation);
+        configLocs.add(myPackage + DOT + serviceClass + ConfigUtil.CONFIG_FILE_ENDING);
+        configLocs.add(serviceClass + ConfigUtil.CONFIG_FILE_ENDING);
+        return ConfigUtil.getConfigInfo(configLocs);
+    }
+
 }
