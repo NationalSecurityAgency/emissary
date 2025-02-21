@@ -245,6 +245,16 @@ public abstract class ExtractionTest extends UnitTest {
             assertEquals(broke, payload.isBroken() ? "true" : "false", "Broken status in " + tname);
         }
 
+        String procError = el.getChildTextTrim("procError");
+        if (procError != null && !procError.isEmpty()) {
+            assertNotNull(payload.getProcessingError(),
+                    String.format("Expected processing error '%s' in %s", procError, tname));
+            // simple work around for answer files, so we can see multiple errors w/o dealing with line breaks added on by
+            // StringBuilder in BDO
+            String shortProcErrMessage = payload.getProcessingError().replaceAll("\n", ";");
+            assertEquals(procError, shortProcErrMessage, "Processing Error does not match expected in " + tname);
+        }
+
         // Check specified metadata
         for (Element meta : el.getChildren("meta")) {
             String key = meta.getChildTextTrim("name");
