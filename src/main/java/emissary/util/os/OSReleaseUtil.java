@@ -63,7 +63,7 @@ public class OSReleaseUtil {
     }
 
     static boolean isUbuntu(Path osReleasePath) {
-        return isOsName(osReleasePath, "ubuntu");
+        return isOsName(osReleasePath, "ubuntu") || isOsLike(osReleasePath, "ubuntu");
     }
 
     /**
@@ -92,15 +92,23 @@ public class OSReleaseUtil {
         return isOsName(osReleasePath, "rhel");
     }
 
+    // // checks against ID in /etc/os-release
     private static boolean isOsName(Path osReleasePath, String osName) {
         if (Files.exists(osReleasePath)) {
             try (Stream<String> lines = Files.lines(osReleasePath)) {
-                if (osName.equals("ubuntu")) {
-                    return lines.filter(line -> line.startsWith("ID=") || line.startsWith("ID_LIKE="))
-                            .anyMatch(entry -> StringUtils.containsIgnoreCase(entry, osName));
-                } else {
-                    return lines.filter(line -> line.startsWith("ID=")).anyMatch(entry -> StringUtils.containsIgnoreCase(entry, osName));
-                }
+                return lines.filter(line -> line.startsWith("ID=")).anyMatch(entry -> StringUtils.containsIgnoreCase(entry, osName));
+            } catch (IOException ignored) {
+                // ignore
+            }
+        }
+        return false;
+    }
+
+    // checks against ID_LIKE in /etc/os-release
+    private static boolean isOsLike(Path osReleasePath, String osName) {
+        if (Files.exists(osReleasePath)) {
+            try (Stream<String> lines = Files.lines(osReleasePath)) {
+                return lines.filter(line -> line.startsWith("ID_LIKE=")).anyMatch(entry -> StringUtils.containsIgnoreCase(entry, osName));
             } catch (IOException ignored) {
                 // ignore
             }
