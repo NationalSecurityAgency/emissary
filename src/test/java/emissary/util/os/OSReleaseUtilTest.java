@@ -69,6 +69,6 @@ class OSReleaseUtilTest {
         assertFalse(OSReleaseUtil.isRhel(centos7Path));
         assertTrue(OSReleaseUtil.isRhel(rhel8Path));
         assertFalse(OSReleaseUtil.isRhel(ubuntu20Path));
-        assertFalse(OSReleaseUtil.isCentOs(pop22Path));
+        assertFalse(OSReleaseUtil.isRhel(pop22Path));
     }
 }
