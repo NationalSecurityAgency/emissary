@@ -19,6 +19,8 @@ class OSReleaseUtilTest {
     static Path rhel8Path;
     @SuppressWarnings("NonFinalStaticField")
     static Path ubuntu20Path;
+    @SuppressWarnings("NonFinalStaticField")
+    static Path pop22Path;
 
     @BeforeAll
     static void getResources() throws Exception {
@@ -27,6 +29,7 @@ class OSReleaseUtilTest {
         centos7Path = Path.of(rr.getResource(rr.getResourceName(OSReleaseUtil.class.getPackage(), "centos7")).toURI());
         rhel8Path = Path.of(rr.getResource(rr.getResourceName(OSReleaseUtil.class.getPackage(), "rhel8")).toURI());
         ubuntu20Path = Path.of(rr.getResource(rr.getResourceName(OSReleaseUtil.class.getPackage(), "ubuntu20")).toURI());
+        pop22Path = Path.of(rr.getResource(rr.getResourceName(OSReleaseUtil.class.getPackage(), "pop22")).toURI());
     }
 
     @Test
@@ -34,6 +37,7 @@ class OSReleaseUtilTest {
         assertEquals("7", OSReleaseUtil.getVersionId(centos7Path));
         assertEquals("8.10", OSReleaseUtil.getVersionId(rhel8Path));
         assertEquals("20.04", OSReleaseUtil.getVersionId(ubuntu20Path));
+        assertEquals("22.04", OSReleaseUtil.getVersionId(pop22Path));
     }
 
     @Test
@@ -41,6 +45,7 @@ class OSReleaseUtilTest {
         assertEquals("7", OSReleaseUtil.getMajorReleaseVersion(centos7Path));
         assertEquals("8", OSReleaseUtil.getMajorReleaseVersion(rhel8Path));
         assertEquals("20", OSReleaseUtil.getMajorReleaseVersion(ubuntu20Path));
+        assertEquals("22", OSReleaseUtil.getMajorReleaseVersion(pop22Path));
     }
 
     @Test
@@ -48,6 +53,7 @@ class OSReleaseUtilTest {
         assertFalse(OSReleaseUtil.isUbuntu(centos7Path));
         assertFalse(OSReleaseUtil.isUbuntu(rhel8Path));
         assertTrue(OSReleaseUtil.isUbuntu(ubuntu20Path));
+        assertTrue(OSReleaseUtil.isUbuntu(pop22Path));
     }
 
     @Test
@@ -55,6 +61,7 @@ class OSReleaseUtilTest {
         assertTrue(OSReleaseUtil.isCentOs(centos7Path));
         assertFalse(OSReleaseUtil.isCentOs(rhel8Path));
         assertFalse(OSReleaseUtil.isCentOs(ubuntu20Path));
+        assertFalse(OSReleaseUtil.isCentOs(pop22Path));
     }
 
     @Test
@@ -62,5 +69,6 @@ class OSReleaseUtilTest {
         assertFalse(OSReleaseUtil.isRhel(centos7Path));
         assertTrue(OSReleaseUtil.isRhel(rhel8Path));
         assertFalse(OSReleaseUtil.isRhel(ubuntu20Path));
+        assertFalse(OSReleaseUtil.isCentOs(pop22Path));
     }
 }

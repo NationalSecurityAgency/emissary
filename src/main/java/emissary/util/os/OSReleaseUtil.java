@@ -95,7 +95,12 @@ public class OSReleaseUtil {
     private static boolean isOsName(Path osReleasePath, String osName) {
         if (Files.exists(osReleasePath)) {
             try (Stream<String> lines = Files.lines(osReleasePath)) {
-                return lines.filter(line -> line.startsWith("ID=")).anyMatch(entry -> StringUtils.containsIgnoreCase(entry, osName));
+                if (osName.equals("ubuntu")) {
+                    return lines.filter(line -> line.startsWith("ID=") || line.startsWith("ID_LIKE="))
+                            .anyMatch(entry -> StringUtils.containsIgnoreCase(entry, osName));
+                } else {
+                    return lines.filter(line -> line.startsWith("ID=")).anyMatch(entry -> StringUtils.containsIgnoreCase(entry, osName));
+                }
             } catch (IOException ignored) {
                 // ignore
             }
