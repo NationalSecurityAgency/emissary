@@ -92,7 +92,7 @@ public class OSReleaseUtil {
         return isOsName(osReleasePath, "rhel");
     }
 
-    // // checks against ID in /etc/os-release
+    // checks against ID in /etc/os-release
     private static boolean isOsName(Path osReleasePath, String osName) {
         if (Files.exists(osReleasePath)) {
             try (Stream<String> lines = Files.lines(osReleasePath)) {
