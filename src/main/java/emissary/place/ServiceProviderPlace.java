@@ -27,6 +27,7 @@ import emissary.server.mvc.adapters.DirectoryAdapter;
 import emissary.util.JMXUtil;
 
 import com.codahale.metrics.Timer;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -222,6 +223,10 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
         this(configStream, null, placeLocation);
     }
 
+    protected ServiceProviderPlace(ServiceProviderPlace place) {
+        super();
+    }
+
     /**
      * Load the configurator
      *
@@ -276,6 +281,15 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      * @param theDir name of our directory
      */
     protected void setupPlace(@Nullable String theDir, String placeLocation) throws IOException {
+        setupPlace(theDir, placeLocation, true);
+    }
+
+    /**
+     * Help the constructor get the place running
+     *
+     * @param theDir name of our directory
+     */
+    protected void setupPlace(@Nullable String theDir, String placeLocation, boolean register) throws IOException {
 
         // Customize the logger to the runtime class
         logger = LoggerFactory.getLogger(this.getClass());
@@ -283,8 +297,10 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
         // The order of the following initialization calls
         // is touchy. NPE all over if you mess up here.
 
-        // Set ServicePlace config items
-        configureServicePlace(placeLocation);
+        if (CollectionUtils.isEmpty(this.keys)) {
+            // Set ServicePlace config items
+            configureServicePlace(placeLocation);
+        }
 
         // Backwards compatibility setup items
         DirectoryEntry firstentry = new DirectoryEntry(keys.get(0));
@@ -316,10 +332,12 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
             Namespace.bind(bindKey, this);
         }
 
-        // Register with the directory
-        // This pushes all our keys out to the directory which
-        // sends them on in turn to peers, &c. in the p2p network
-        register();
+        if (register) {
+            // Register with the directory
+            // This pushes all our keys out to the directory which
+            // sends them on in turn to peers, &c. in the p2p network
+            register();
+        }
 
         // register MBean with JMX
         JMXUtil.registerMBean(this);

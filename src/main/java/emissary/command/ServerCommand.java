@@ -16,7 +16,6 @@ import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import static emissary.directory.EmissaryNode.STRICT_STARTUP_MODE;
 
@@ -37,9 +36,6 @@ public class ServerCommand extends ServiceCommand {
 
     @Option(names = {"-a", "--agents"}, description = "number of mobile agents (default is based on memory)\nDefault: ${DEFAULT-VALUE}")
     private int agents;
-
-    @Option(names = {"-t", "--timeout"}, description = "max amount of time to attempt a server refresh (in minutes) \nDefault: ${DEFAULT-VALUE}")
-    private int timeout;
 
     @Option(names = {"--dumpJettyBeans"}, description = "dump all the jetty beans that loaded\nDefault: ${DEFAULT-VALUE}")
     private boolean dumpJettyBeans = false;
@@ -69,10 +65,6 @@ public class ServerCommand extends ServiceCommand {
         return agents;
     }
 
-    public long getTimeout() {
-        return timeout;
-    }
-
     public boolean shouldDumpJettyBeans() {
         return dumpJettyBeans;
     }
@@ -89,10 +81,6 @@ public class ServerCommand extends ServiceCommand {
     @Override
     public void setupCommand() {
         setupHttp();
-        if (getTimeout() > 0) {
-            System.setProperty(EmissaryNode.NODE_REFRESH_TIMEOUT_PROPERTY, String.valueOf(TimeUnit.MINUTES.toMillis(getTimeout())));
-        }
-
         reinitLogback();
         setupServer();
     }

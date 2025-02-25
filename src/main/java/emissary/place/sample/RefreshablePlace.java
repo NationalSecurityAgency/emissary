@@ -35,17 +35,17 @@ public class RefreshablePlace extends ServiceProviderRefreshablePlace {
         configurePlace();
     }
 
+    public RefreshablePlace(final ServiceProviderRefreshablePlace place) throws IOException {
+        super(place);
+        configurePlace();
+    }
+
     protected void configurePlace() {
         if (configG == null) {
             logger.warn("Configurator is null, unexpected behavior may occur!");
             return;
         }
         this.sampleConfig = configG.findLongEntry("SAMPLE_CONFIG", DEFAULT_CONFIG);
-    }
-
-    @Override
-    protected void reconfigurePlace() {
-        configurePlace();
     }
 
     /**

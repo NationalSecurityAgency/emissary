@@ -6,6 +6,7 @@ import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
 import emissary.log.MDCConstants;
 import emissary.place.ServiceProviderPlace;
+import emissary.place.ServiceProviderRefreshablePlace;
 import emissary.server.mvc.adapters.DirectoryAdapter;
 
 import org.slf4j.MDC;
@@ -976,6 +977,9 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             return List.of();
         }
 
+        // test for invalidated places
+        checkForInvalidatedPlaces(currentList);
+
         // remove denied entries
         currentList.removeIf(de -> de.getLocalPlace() != null && de.getLocalPlace().isDenied(payload.currentForm()));
 
@@ -1034,6 +1038,25 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         }
 
         return keyList;
+    }
+
+    protected void checkForInvalidatedPlaces(final DirectoryEntryList entries) {
+        entries.stream().filter(e -> e.getLocalPlace() instanceof ServiceProviderRefreshablePlace
+                && ((ServiceProviderRefreshablePlace) e.getLocalPlace()).isInvalidated())
+                .forEach(this::handleEntryRefresh);
+    }
+
+    protected synchronized void handleEntryRefresh(final DirectoryEntry entry) {
+        // attempt to see if the place has been refreshed already
+        entry.clearLocalPlace();
+
+        final ServiceProviderRefreshablePlace place = (ServiceProviderRefreshablePlace) entry.getLocalPlace();
+        if (place.isInvalidated()) {
+            logger.info("{} has been invalidated, attempting refresh ....", entry);
+            place.refresh();
+            entry.clearLocalPlace();
+            logger.info("{} has been refreshed", entry);
+        }
     }
 
     /**

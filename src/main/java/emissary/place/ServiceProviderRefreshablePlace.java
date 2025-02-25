@@ -2,6 +2,7 @@ package emissary.place;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.core.Factory;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
 
     private final Object allocatorLock = new Object();
     private final AtomicBoolean invalidated = new AtomicBoolean(false);
+    private final AtomicBoolean defunct = new AtomicBoolean(false);
 
     public ServiceProviderRefreshablePlace() throws IOException {}
 
@@ -52,6 +54,27 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
     }
 
     /**
+     * Refresh specific constructor, basically clones a place and swaps out the Namespace ref
+     *
+     * @param place the ServiceProviderRefreshablePlace to clone
+     * @throws IOException if there is an issue trying to create the place
+     */
+    public ServiceProviderRefreshablePlace(final ServiceProviderRefreshablePlace place) throws IOException {
+        super(place);
+
+        // for now, we are going to reuse keys/denyList
+        this.placeLocation = place.placeLocation;
+        this.serviceDescription = place.serviceDescription;
+        this.keys.addAll(place.keys);
+        this.denyList.addAll(place.denyList);
+
+        // reload the config files and get the place updates
+        this.configLocs.addAll(place.configLocs);
+        this.configG = loadConfigurator(configLocs, this.placeLocation);
+        setupPlace(null, place.placeLocation, false);
+    }
+
+    /**
      * Get the invalid flag of the place. An invalidated place may indicate that the place has changes, such as new
      * configuration, and may trigger a follow-on process to reconfigure, reinitialize, or re-create the place.
      *
@@ -66,16 +89,7 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
      */
     public final void invalidate() {
         logger.info("Place[{}] being marked as invalidated", getClass().getName());
-        setInvalidated(true);
-    }
-
-    /**
-     * Set the invalid flag of the place
-     *
-     * @param invalid true if place is invalid, false otherwise
-     */
-    private void setInvalidated(final boolean invalid) {
-        this.invalidated.set(invalid);
+        this.invalidated.set(true);
     }
 
     /**
@@ -84,50 +98,21 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
      */
     public final void refresh() {
         logger.trace("Waiting for lock in refresh()");
-        synchronized (allocatorLock) {
-            logger.debug("Attempting to refresh place using config locations");
-            try {
+        synchronized (this.allocatorLock) {
+            if (!this.defunct.get()) {
+                logger.debug("Attempting to refresh place...");
                 if (isInvalidated()) {
-                    this.configG = reloadConfigurator(this.configLocs);
-                    reconfigurePlace();
-                    setInvalidated(false);
-                    logger.info("Place refresh performed successfully");
+                    Factory.create(this.getClass().getName(), this);
+                    this.defunct.set(true);
+                    logger.debug("Place[{}] refresh performed successfully", this.getPlaceName());
                 } else {
-                    logger.warn("Cannot refresh place configuration without first calling invalidate; no reconfiguration performed");
+                    logger.warn("Cannot refresh place without first calling invalidate; no refresh performed");
                 }
-            } catch (IOException e) {
-                logger.error("Failed to refresh configurator");
+            } else {
+                logger.warn("{}<DEFUNCT>", this.getPlaceName());
             }
         }
     }
-
-    /**
-     * Reinitialize the place by reloading the configurator and reconfiguring the place. Must call {@link #invalidate()}
-     * before attempting to refresh the place.
-     *
-     * @param configStream the config data as an {@link InputStream}
-     */
-    public final void refresh(final InputStream configStream) {
-        logger.trace("Waiting for lock in refresh(configStream)");
-        synchronized (allocatorLock) {
-            logger.debug("Attempting to refresh place using configStream");
-            try {
-                if (isInvalidated()) {
-                    this.configG = reloadConfigurator(configStream);
-                    reconfigurePlace();
-                    setInvalidated(false);
-                    logger.info("Place refresh performed successfully using configStream");
-                } else {
-                    logger.warn(
-                            "Cannot refresh place configuration with configStream without first calling invalidate; no reconfiguration performed");
-                }
-            } catch (IOException e) {
-                logger.error("Failed to refresh configurator using configStream");
-            }
-        }
-    }
-
-    protected abstract void reconfigurePlace() throws IOException;
 
     /**
      * Reload the {@link Configurator}
@@ -135,26 +120,12 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
      * @param configLocations the list of configuration files to load
      * @throws IOException if there is an issue loading the config
      */
-    private static Configurator reloadConfigurator(@Nullable final List<String> configLocations) throws IOException {
+    private Configurator loadConfigurator(@Nullable final List<String> configLocations, final String placeLocation) throws IOException {
         logger.debug("Reloading configurator using locations {}", configLocations);
         if (CollectionUtils.isNotEmpty(configLocations)) {
             return ConfigUtil.getConfigInfo(configLocations);
         }
-        throw new IOException("No config locations specified");
-    }
-
-    /**
-     * Reload the {@link Configurator}
-     *
-     * @param configStream the stream of configuration data
-     * @throws IOException if there is an issue loading the config
-     */
-    private static Configurator reloadConfigurator(@Nullable final InputStream configStream) throws IOException {
-        logger.debug("Reloading configurator using configStream");
-        if (configStream != null) {
-            return ConfigUtil.getConfigInfo(configStream);
-        }
-        throw new IOException("Null config stream supplied");
+        return loadConfigurator(placeLocation);
     }
 
 }
