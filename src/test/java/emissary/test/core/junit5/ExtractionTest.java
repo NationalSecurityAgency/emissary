@@ -6,6 +6,7 @@ import emissary.core.IBaseDataObject;
 import emissary.kff.KffDataObjectHandler;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.io.ResourceReader;
+import emissary.util.os.OSReleaseUtil;
 import emissary.util.xml.JDOMUtil;
 
 import com.google.errorprone.annotations.ForOverride;
@@ -225,9 +226,18 @@ public abstract class ExtractionTest extends UnitTest {
                     String.format("Classification in '%s' is '%s', not expected '%s'", tname, payload.getClassification(), classification));
         }
 
-        int dataLength = JDOMUtil.getChildIntValue(el, "dataLength");
-        if (dataLength > -1) {
-            assertEquals(dataLength, payload.dataLength(), "Data length in " + tname);
+        for (Element dataLength : el.getChildren("dataLength")) {
+            if (verifyOs(dataLength)) {
+                int length;
+                try {
+                    length = Integer.parseInt(dataLength.getValue());
+                } catch (NumberFormatException e) {
+                    length = -1;
+                }
+                if (length > -1) {
+                    assertEquals(length, payload.dataLength(), "Data length in " + tname);
+                }
+            }
         }
 
         String shortName = el.getChildTextTrim("shortName");
@@ -257,46 +267,56 @@ public abstract class ExtractionTest extends UnitTest {
 
         // Check specified metadata
         for (Element meta : el.getChildren("meta")) {
-            String key = meta.getChildTextTrim("name");
-            checkForMissingNameElement("meta", key, tname);
-            checkStringValue(meta, payload.getStringParameter(key), tname);
+            if (verifyOs(meta)) {
+                String key = meta.getChildTextTrim("name");
+                checkForMissingNameElement("meta", key, tname);
+                checkStringValue(meta, payload.getStringParameter(key), tname);
+            }
         }
 
         // Check specified nometa
         for (Element meta : el.getChildren("nometa")) {
-            String key = meta.getChildTextTrim("name");
-            checkForMissingNameElement("nometa", key, tname);
-            assertFalse(payload.hasParameter(key),
-                    String.format("Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
-                            payload.getStringParameter(key)));
+            if (verifyOs(meta)) {
+                String key = meta.getChildTextTrim("name");
+                checkForMissingNameElement("nometa", key, tname);
+                assertFalse(payload.hasParameter(key),
+                        String.format("Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
+                                payload.getStringParameter(key)));
+            }
         }
 
         // Check the primary view. Even though there is only one
         // primary view there can be multiple elements to test it
         // with differing matchMode operators
         for (Element dataEl : el.getChildren("data")) {
-            byte[] payloadData = payload.data();
-            checkStringValue(dataEl, new String(payloadData), tname);
+            if (verifyOs(dataEl)) {
+                byte[] payloadData = payload.data();
+                checkStringValue(dataEl, new String(payloadData), tname);
+            }
         }
 
         // Check each alternate view
         for (Element view : el.getChildren("view")) {
-            String viewName = view.getChildTextTrim("name");
-            String lengthStr = view.getChildTextTrim("length");
-            byte[] viewData = payload.getAlternateView(viewName);
-            assertNotNull(viewData, String.format("Alternate View '%s' is missing in %s", viewName, tname));
-            if (lengthStr != null) {
-                assertEquals(Integer.parseInt(lengthStr), viewData.length,
-                        String.format("Length of Alternate View '%s' is wrong in %s", viewName, tname));
+            if (verifyOs(view)) {
+                String viewName = view.getChildTextTrim("name");
+                String lengthStr = view.getChildTextTrim("length");
+                byte[] viewData = payload.getAlternateView(viewName);
+                assertNotNull(viewData, String.format("Alternate View '%s' is missing in %s", viewName, tname));
+                if (lengthStr != null) {
+                    assertEquals(Integer.parseInt(lengthStr), viewData.length,
+                            String.format("Length of Alternate View '%s' is wrong in %s", viewName, tname));
+                }
+                checkStringValue(view, new String(viewData), tname);
             }
-            checkStringValue(view, new String(viewData), tname);
         }
 
         // Check for noview items
         for (Element view : el.getChildren("noview")) {
-            String viewName = view.getChildTextTrim("name");
-            byte[] viewData = payload.getAlternateView(viewName);
-            assertNull(viewData, String.format("Alternate View '%s' is present, but should not be, in %s", viewName, tname));
+            if (verifyOs(view)) {
+                String viewName = view.getChildTextTrim("name");
+                byte[] viewData = payload.getAlternateView(viewName);
+                assertNull(viewData, String.format("Alternate View '%s' is present, but should not be, in %s", viewName, tname));
+            }
         }
 
         // Check each extract
@@ -389,6 +409,25 @@ public abstract class ExtractionTest extends UnitTest {
         } else {
             fail(String.format("Problematic matchMode specified for test '%s' on %s in element %s", matchMode, key, meta.getName()));
         }
+    }
+
+    protected boolean verifyOs(Element element) {
+        Attribute specifiedOs = element.getAttribute("os-release");
+        if (specifiedOs != null) {
+            String os = specifiedOs.getValue();
+            switch (os) {
+                case "ubuntu":
+                    return OSReleaseUtil.isUbuntu();
+                case "centos":
+                    return OSReleaseUtil.isCentOs();
+                case "rhel":
+                    return OSReleaseUtil.isRhel();
+                default:
+                    fail("specified OS needs to match ubuntu, centos, or rhel. Provided OS=" + os);
+            }
+        }
+        // os-release is not set as an attribute, element applicable for all os
+        return true;
     }
 
     protected void setupPayload(IBaseDataObject payload, Document doc) {

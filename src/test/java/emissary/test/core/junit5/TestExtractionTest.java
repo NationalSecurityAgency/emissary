@@ -2,6 +2,7 @@ package emissary.test.core.junit5;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
+import emissary.util.os.OSReleaseUtil;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -28,6 +29,7 @@ class TestExtractionTest extends UnitTest {
     private static final String RESOURCE_NAME = "/emissary/test/core/junit5/TestExtractionTest.xml";
     private static final String MISSING_TAGS_RESOURCE = "/emissary/test/core/junit5/MissingTags.xml";
     private static final String PROC_ERROR_RESOURCE = "/emissary/test/core/junit5/ProcessingErrorTest.xml";
+    private static final String OS_SPECIFIC_RESOURCE = "/emissary/test/core/junit5/OsSpecificTest.xml";
 
     @Test
     void testCheckStringValueForCollection() throws JDOMException, IOException {
@@ -155,5 +157,39 @@ class TestExtractionTest extends UnitTest {
         // add second procError, should pass through checkAnswers now
         d.addProcessingError("test processing error 2");
         test.checkAnswers(answers, d, null, PROC_ERROR_RESOURCE);
+    }
+
+    @Test
+    void testOsSpecificTest() throws IOException, JDOMException {
+        IBaseDataObject d = DataObjectFactory.getInstance();
+        SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
+        InputStream inputStream = TestExtractionTest.class.getResourceAsStream(OS_SPECIFIC_RESOURCE);
+        assertNotNull(inputStream, "Could not locate: " + OS_SPECIFIC_RESOURCE);
+        Document answerDoc = builder.build(inputStream);
+        inputStream.close();
+
+        ExtractionTest test = spy(ExtractionTest.class);
+        Element answers = answerDoc.getRootElement().getChild("answers");
+
+        // done to test when no os specified
+        d.appendParameter("Test", "Test");
+
+        // append bdo data for os specific dataLength & data
+        if (OSReleaseUtil.isUbuntu()) {
+            d.setData("ubuntu-dataLength-test".getBytes());
+            d.appendParameter("ubuntu-test", "ubuntu-test");
+        } else if (OSReleaseUtil.isCentOs()) {
+            d.setData("centos-dataLength-test (make different than ubuntu)".getBytes());
+            d.appendParameter("centos-test", "centos-test");
+        } else if (OSReleaseUtil.isRhel()) {
+            d.setData("rhel-dataLength-test".getBytes());
+            d.appendParameter("rhel-test", "rhel-test");
+        }
+
+        // verify if invalid os is specified, AssertionError is thrown
+        // with all things appended above, this should only fail at checking last element
+        AssertionError error = assertThrows(AssertionError.class, () -> test.checkAnswers(answers, d, null, OS_SPECIFIC_RESOURCE),
+                "Test should fail, last meta has a fake os.");
+        assertTrue(error.getMessage().endsWith("Provided OS=FAKE-OS"));
     }
 }
