@@ -66,18 +66,22 @@
     <dep.httpcore.version>5.2.1</dep.httpcore.version>
     <dep.icu4j.version>73.2</dep.icu4j.version>
     <dep.jackson.version>2.15.2</dep.jackson.version>
+    <dep.jakarta.ws.rs-api.version>3.1.0</dep.jakarta.ws.rs-api.version>
     <dep.jakarta.xml.bind-api.version>3.0.1</dep.jakarta.xml.bind-api.version>
     <dep.janino.version>3.1.12</dep.janino.version>
     <dep.jaxb.runtime.version>3.0.1</dep.jaxb.runtime.version>
     <dep.jdom.version>2.0.6.1</dep.jdom.version>
     <dep.jersey.version>3.1.3</dep.jersey.version>
+    <dep.jetty-jakarta-servlet-api.version>5.0.2</dep.jetty-jakarta-servlet-api.version>
     <dep.jetty.version>11.0.24</dep.jetty.version>
     <dep.junit-jupiter.version>5.11.4</dep.junit-jupiter.version>
+    <dep.junit-platform.version>1.11.4</dep.junit-platform.version>
     <dep.logback.version>1.5.13</dep.logback.version>
+    <dep.logstash-logback-encoder.version>7.2</dep.logstash-logback-encoder.version>
     <dep.mockito.version>5.5.0</dep.mockito.version>
+    <dep.opentest4j.version>1.3.0</dep.opentest4j.version>
     <dep.picocli.version>4.7.4</dep.picocli.version>
     <dep.slf4j.version>2.0.7</dep.slf4j.version>
-    <dep.spullara.mustache.compiler.version>0.9.10</dep.spullara.mustache.compiler.version>
     <dep.spymemcached.version>2.12.3</dep.spymemcached.version>
     <dep.webjars.bootstrap.version>5.1.3</dep.webjars.bootstrap.version>
     <dep.webjars.jquery.version>3.6.0</dep.webjars.jquery.version>
@@ -149,9 +153,9 @@
         <version>${dep.logback.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.github.spullara.mustache.java</groupId>
-        <artifactId>compiler</artifactId>
-        <version>${dep.spullara.mustache.compiler.version}</version>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>${dep.logback.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>
@@ -175,6 +179,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>com.ibm.icu</groupId>
+        <artifactId>icu4j</artifactId>
+        <version>${dep.icu4j.version}</version>
+      </dependency>
+      <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
         <version>${dep.commons-codec.version}</version>
@@ -190,9 +199,19 @@
         <version>${dep.picocli.version}</version>
       </dependency>
       <dependency>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>${dep.jakarta.ws.rs-api.version}</version>
+      </dependency>
+      <dependency>
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
         <version>${dep.jakarta.xml.bind-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.logstash.logback</groupId>
+        <artifactId>logstash-logback-encoder</artifactId>
+        <version>${dep.logstash-logback-encoder.version}</version>
       </dependency>
       <dependency>
         <groupId>net.spy</groupId>
@@ -235,14 +254,49 @@
         <version>${dep.httpcore.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.codehaus.janino</groupId>
+        <artifactId>janino</artifactId>
+        <version>${dep.janino.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.toolchain</groupId>
+        <artifactId>jetty-jakarta-servlet-api</artifactId>
+        <version>${dep.jetty-jakarta-servlet-api.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
         <version>${dep.jaxb.runtime.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.glassfish.jersey.test-framework</groupId>
+        <artifactId>jersey-test-framework-core</artifactId>
+        <version>${dep.jersey.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jdom</groupId>
         <artifactId>jdom2</artifactId>
         <version>${dep.jdom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-platform-commons</artifactId>
+        <version>${dep.junit-platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${dep.mockito.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-junit-jupiter</artifactId>
+        <version>${dep.mockito.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opentest4j</groupId>
+        <artifactId>opentest4j</artifactId>
+        <version>${dep.opentest4j.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -320,24 +374,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <dependency>
-        <groupId>com.ibm.icu</groupId>
-        <artifactId>icu4j</artifactId>
-        <version>${dep.icu4j.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>${dep.mockito.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-junit-jupiter</artifactId>
-        <version>${dep.mockito.version}</version>
-        <scope>test</scope>
-      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
@@ -346,16 +382,24 @@
       <artifactId>logback-classic</artifactId>
     </dependency>
     <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.github.spullara.mustache.java</groupId>
-      <artifactId>compiler</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
@@ -379,6 +423,10 @@
     </dependency>
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-graphite</artifactId>
     </dependency>
     <dependency>
@@ -394,8 +442,8 @@
       <artifactId>metrics-jvm</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.dropwizard.metrics</groupId>
-      <artifactId>metrics-servlets</artifactId>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.xml.bind</groupId>
@@ -404,7 +452,6 @@
     <dependency>
       <groupId>net.logstash.logback</groupId>
       <artifactId>logstash-logback-encoder</artifactId>
-      <version>7.2</version>
     </dependency>
     <dependency>
       <groupId>net.spy</groupId>
@@ -435,13 +482,12 @@
       <artifactId>httpclient5</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.janino</groupId>
-      <artifactId>janino</artifactId>
-      <version>${dep.janino.version}</version>
+      <groupId>org.apache.httpcomponents.core5</groupId>
+      <artifactId>httpcore5</artifactId>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-plus</artifactId>
+      <artifactId>jetty-http</artifactId>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
@@ -453,31 +499,19 @@
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-util</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-webapp</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-xml</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jaxb</groupId>
-      <artifactId>jaxb-runtime</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.containers</groupId>
-      <artifactId>jersey-container-jetty-http</artifactId>
+      <groupId>org.eclipse.jetty.toolchain</groupId>
+      <artifactId>jetty-jakarta-servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.containers</groupId>
       <artifactId>jersey-container-servlet-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.core</groupId>
-      <artifactId>jersey-common</artifactId>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
@@ -504,10 +538,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.glassfish.jersey.inject</groupId>
-      <artifactId>jersey-hk2</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-json-jackson</artifactId>
     </dependency>
@@ -528,6 +558,21 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.janino</groupId>
+      <artifactId>janino</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-hk2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>com.google.errorprone</groupId>
       <artifactId>error_prone_annotations</artifactId>
       <scope>test</scope>
@@ -536,6 +581,21 @@
       <groupId>com.ibm.icu</groupId>
       <artifactId>icu4j</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.test-framework</groupId>
+      <artifactId>jersey-test-framework-core</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>jakarta.servlet</groupId>
+          <artifactId>jakarta.servlet-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
@@ -553,6 +613,21 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-commons</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
@@ -560,6 +635,11 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opentest4j</groupId>
+      <artifactId>opentest4j</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
