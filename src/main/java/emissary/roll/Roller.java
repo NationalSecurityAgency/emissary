@@ -154,11 +154,14 @@ public class Roller implements Runnable {
     private boolean shouldRoll(long start) {
         // verify both time and progress are set
         // if we're below max we'll check the interval
-        if (period > 0 && max > 0 && progress.get() < max && ((start - lastRun + 100) < getIntervalInMillis())) {
+        if (period > 0 && max > 0 && progress.get() < max) {
             // we fired a progress run or delayed start due to starvation. add 100 for clock skew
-            return false;
+            return checkClockSkew(start);
         }
         return true;
     }
 
+    private boolean checkClockSkew(long start) {
+        return (start - lastRun + 100) >= getIntervalInMillis();
+    }
 }
