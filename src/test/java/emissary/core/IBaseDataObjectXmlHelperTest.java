@@ -28,6 +28,7 @@ import java.util.Random;
 import java.util.TreeMap;
 import javax.annotation.Nullable;
 
+import static emissary.core.IBaseDataObjectXmlCodecs.ALWAYS_SHA256_ELEMENT_ENCODERS;
 import static emissary.core.IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_DECODERS;
 import static emissary.core.IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_ENCODERS;
 import static emissary.core.IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS;
@@ -56,6 +57,13 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
                 actualChildren, "testParentIbdoNoFieldsChangedSha256", DiffCheckConfiguration.onlyCheckData());
 
         assertNull(sha256Diff);
+
+        final IBaseDataObject alwaysSha256ActualIbdo = ibdoFromXmlFromIbdo(expectedIbdo, expectedChildren, initialIbdo,
+                actualChildren, ALWAYS_SHA256_ELEMENT_ENCODERS);
+        final String alwaysSha256Diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, alwaysSha256ActualIbdo, expectedChildren,
+                actualChildren, "testParentIbdoNoFieldsChangedAlwaysSha256", DiffCheckConfiguration.onlyCheckData());
+
+        assertNull(alwaysSha256Diff);
     }
 
     private static void setAllFieldsPrintable(final IBaseDataObject ibdo, final byte[] bytes) {
@@ -119,6 +127,22 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
                 "\200AlternateView11Value".getBytes(StandardCharsets.UTF_8));
     }
 
+    private static void hashData(final IBaseDataObject ibdo) {
+        final String sha256String = ByteUtil.sha256Bytes(ibdo.data());
+        final byte[] sha256Bytes = sha256String == null ? new byte[0] : sha256String.getBytes(StandardCharsets.UTF_8);
+
+        ibdo.setData(sha256Bytes);
+    }
+
+    private static void hashAlternateViews(final IBaseDataObject ibdo) {
+        for (Entry<String, byte[]> entry : new TreeMap<>(ibdo.getAlternateViews()).entrySet()) {
+            final String sha256String = ByteUtil.sha256Bytes(entry.getValue());
+            final byte[] sha256Bytes = sha256String == null ? new byte[0] : sha256String.getBytes(StandardCharsets.UTF_8);
+
+            ibdo.addAlternateView(entry.getKey(), sha256Bytes);
+        }
+    }
+
     @Test
     void testParentIbdoAllFieldsChanged() throws Exception {
         final IBaseDataObject initialIbdo = new BaseDataObject();
@@ -142,6 +166,17 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
                 actualChildren, "testParentIbdoAllFieldsChangedSha256", DiffCheckConfiguration.onlyCheckData());
 
         assertNull(sha256Diff);
+
+        final IBaseDataObject alwaysSha256ActualIbdo = ibdoFromXmlFromIbdo(expectedIbdo, expectedChildren, initialIbdo,
+                actualChildren, ALWAYS_SHA256_ELEMENT_ENCODERS);
+
+        hashData(expectedIbdo);
+        hashAlternateViews(expectedIbdo);
+
+        final String alwaysSha256Diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, alwaysSha256ActualIbdo, expectedChildren,
+                actualChildren, "testParentIbdoAllFieldsChangedAlwaysSha256", DiffCheckConfiguration.onlyCheckData());
+
+        assertNull(alwaysSha256Diff);
     }
 
     @Test
@@ -164,16 +199,28 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         final IBaseDataObject sha256ActualIbdo = ibdoFromXmlFromIbdo(expectedIbdo, expectedChildren, initialIbdo,
                 actualChildren, SHA256_ELEMENT_ENCODERS);
 
-        expectedIbdo.setData(ByteUtil.sha256Bytes(bytes).getBytes(StandardCharsets.UTF_8));
-
-        for (Entry<String, byte[]> entry : new TreeMap<>(expectedIbdo.getAlternateViews()).entrySet()) {
-            expectedIbdo.addAlternateView(entry.getKey(), ByteUtil.sha256Bytes(entry.getValue()).getBytes(StandardCharsets.UTF_8));
-        }
+        hashData(expectedIbdo);
+        hashAlternateViews(expectedIbdo);
 
         final String sha256Diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, sha256ActualIbdo, expectedChildren,
                 actualChildren, "testSha256Conversion", DiffCheckConfiguration.onlyCheckData());
 
         assertNull(sha256Diff);
+
+        final IBaseDataObject expectedIbdo2 = new BaseDataObject();
+
+        setAllFieldsNonPrintable(expectedIbdo2, bytes);
+
+        final IBaseDataObject alwaysSha256ActualIbdo = ibdoFromXmlFromIbdo(expectedIbdo, expectedChildren, initialIbdo,
+                actualChildren, ALWAYS_SHA256_ELEMENT_ENCODERS);
+
+        hashData(expectedIbdo);
+        hashAlternateViews(expectedIbdo);
+
+        final String alwaysSha256Diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, alwaysSha256ActualIbdo, expectedChildren,
+                actualChildren, "testParentIbdoAllFieldsChangedAlwaysSha256", DiffCheckConfiguration.onlyCheckData());
+
+        assertNull(alwaysSha256Diff);
     }
 
     @Test
@@ -354,6 +401,13 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
                 actualChildren, "testBadChannelFactory", DiffCheckConfiguration.onlyCheckData());
 
         assertNull(sha256Diff);
+
+        final IBaseDataObject alwaysSha256ActualIbdo = ibdoFromXmlFromIbdo(dataExceptionIbdo, expectedChildren, initialIbdo,
+                actualChildren, ALWAYS_SHA256_ELEMENT_ENCODERS);
+        final String alwaysSha256Diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, alwaysSha256ActualIbdo, expectedChildren,
+                actualChildren, "testBadChannelFactory", DiffCheckConfiguration.onlyCheckData());
+
+        assertNull(alwaysSha256Diff);
     }
 
     @Test
