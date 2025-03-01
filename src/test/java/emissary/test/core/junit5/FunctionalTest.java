@@ -12,6 +12,7 @@ import emissary.pool.AgentPool;
 import emissary.pool.MoveSpool;
 import emissary.server.EmissaryServer;
 
+import jakarta.annotation.Nullable;
 import org.eclipse.jetty.server.Server;
 
 import java.io.File;
@@ -19,7 +20,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 

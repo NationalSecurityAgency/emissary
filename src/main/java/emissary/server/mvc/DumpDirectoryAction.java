@@ -10,6 +10,7 @@ import emissary.directory.KeyManipulator;
 import emissary.server.mvc.adapters.DirectoryAdapter;
 import emissary.server.mvc.adapters.RequestUtil;
 
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 @Path("")
 // context is emissary

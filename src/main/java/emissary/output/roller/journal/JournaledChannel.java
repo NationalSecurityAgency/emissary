@@ -1,5 +1,6 @@
 package emissary.output.roller.journal;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +11,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import javax.annotation.Nullable;
 
 /**
  * Wrapper class to allow for use of underlying channel in either OutputStream code or WritableChannel.

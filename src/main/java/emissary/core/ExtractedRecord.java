@@ -1,8 +1,9 @@
 package emissary.core;
 
+import jakarta.annotation.Nullable;
+
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 
 public class ExtractedRecord extends BaseDataObject implements IExtractedRecord {
 

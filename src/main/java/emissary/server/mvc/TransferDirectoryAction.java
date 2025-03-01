@@ -8,6 +8,7 @@ import emissary.directory.IDirectoryPlace;
 import emissary.server.mvc.adapters.RequestUtil;
 import emissary.util.web.HtmlEscaper;
 
+import jakarta.annotation.Nullable;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -16,8 +17,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nullable;
 
 @Path("")
 // context is emissary

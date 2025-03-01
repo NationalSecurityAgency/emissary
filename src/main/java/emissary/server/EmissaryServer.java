@@ -27,6 +27,7 @@ import emissary.spi.SPILoader;
 
 import ch.qos.logback.classic.ViewStatusMessagesServlet;
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.annotation.Nullable;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.security.ConstraintMapping;
@@ -71,7 +72,6 @@ import java.security.cert.CertificateException;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 import javax.naming.directory.AttributeInUseException;
 
 public class EmissaryServer {

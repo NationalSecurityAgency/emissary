@@ -1,6 +1,6 @@
 package emissary.core;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Information class about processing stages in the workflow

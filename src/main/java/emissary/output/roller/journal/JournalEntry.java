@@ -1,8 +1,9 @@
 package emissary.output.roller.journal;
 
+import jakarta.annotation.Nullable;
+
 import java.nio.ByteBuffer;
 import java.util.Objects;
-import javax.annotation.Nullable;
 
 /**
  * Journal Entry containing a value, generally a file name, and an offset.

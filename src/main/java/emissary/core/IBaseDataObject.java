@@ -3,6 +3,7 @@ package emissary.core;
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.directory.DirectoryEntry;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.IOException;
@@ -17,7 +18,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 public interface IBaseDataObject {
 

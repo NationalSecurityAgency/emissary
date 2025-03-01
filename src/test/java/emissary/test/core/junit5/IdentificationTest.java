@@ -7,6 +7,7 @@ import emissary.place.IServiceProviderPlace;
 import emissary.util.io.ResourceReader;
 
 import com.google.common.base.Splitter;
+import jakarta.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;

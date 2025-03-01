@@ -1,11 +1,11 @@
 package emissary.core;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * This class exists to make sure the BaseDataObject can be extended properly and used from JNIPlace and JNIMultiPlace

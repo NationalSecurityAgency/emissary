@@ -3,6 +3,7 @@ package emissary.roll;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nullable;
 
 /**
  * RollManager handles all incremental rolls for configured objects within the framework

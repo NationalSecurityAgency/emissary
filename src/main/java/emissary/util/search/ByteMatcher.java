@@ -1,10 +1,11 @@
 package emissary.util.search;
 
+import jakarta.annotation.Nullable;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * This class provides some simple string matching functions on byte arrays

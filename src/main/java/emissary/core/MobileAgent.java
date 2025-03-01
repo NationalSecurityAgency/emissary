@@ -12,6 +12,7 @@ import emissary.pool.AgentThreadGroup;
 import emissary.util.JMXUtil;
 import emissary.util.PayloadUtil;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -22,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nullable;
 
 /**
  * An autonomous hunk of software

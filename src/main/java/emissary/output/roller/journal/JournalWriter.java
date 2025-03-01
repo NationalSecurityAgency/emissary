@@ -1,5 +1,7 @@
 package emissary.output.roller.journal;
 
+import jakarta.annotation.Nullable;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -8,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.annotation.Nullable;
 
 import static emissary.output.roller.journal.Journal.SEP;
 

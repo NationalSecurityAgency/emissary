@@ -3,12 +3,13 @@ package emissary.kff;
 import emissary.kff.KffFilter.FilterType;
 import emissary.util.Hexl;
 
+import jakarta.annotation.Nullable;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import javax.annotation.Nullable;
 
 /**
  * Provide results of a KFF check including the details of the hash or cryptographic sum or sums that were used.

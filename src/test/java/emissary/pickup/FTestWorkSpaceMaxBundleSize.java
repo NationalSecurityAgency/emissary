@@ -6,6 +6,7 @@ import emissary.directory.EmissaryNode;
 import emissary.directory.IDirectoryPlace;
 import emissary.test.core.junit5.FunctionalTest;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +16,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -7,6 +7,7 @@ import emissary.server.mvc.EndpointTestBase;
 import emissary.util.io.ResourceReader;
 
 import com.google.common.collect.Sets;
+import jakarta.annotation.Nullable;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.Response;
@@ -18,7 +19,6 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Collections;
-import javax.annotation.Nullable;
 
 import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
 import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_PROPAGATION_FLAG;

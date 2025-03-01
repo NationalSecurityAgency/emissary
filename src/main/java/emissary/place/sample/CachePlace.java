@@ -3,10 +3,11 @@ package emissary.place.sample;
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 
+import jakarta.annotation.Nullable;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * This place just keeps a reference to the last 10 payload objects it has seen. The number is configurable. It allows

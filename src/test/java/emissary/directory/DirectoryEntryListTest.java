@@ -3,6 +3,7 @@ package emissary.directory;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.xml.JDOMUtil;
 
+import jakarta.annotation.Nullable;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

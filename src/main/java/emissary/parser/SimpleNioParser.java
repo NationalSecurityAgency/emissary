@@ -1,5 +1,6 @@
 package emissary.parser;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +11,6 @@ import java.nio.channels.SeekableByteChannel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * A very simple minded parser implementation that assumes each input channel is one session. This parser has no idea

@@ -7,13 +7,13 @@ import emissary.core.IBaseDataObjectDiffHelper;
 import emissary.core.IBaseDataObjectHelper;
 import emissary.place.ServiceProviderPlace;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Helper class to use during development of a major refactoring or replacement of a Place.

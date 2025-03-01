@@ -1,5 +1,6 @@
 package emissary.core.channels;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang3.Validate;
 
@@ -7,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
-import javax.annotation.Nullable;
 
 public class InputStreamChannelFactory {
     private InputStreamChannelFactory() {}

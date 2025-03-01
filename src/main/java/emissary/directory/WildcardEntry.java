@@ -1,5 +1,6 @@
 package emissary.directory;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +9,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * Handle the details of a wildcard directory entry including iterating through the possible directory match strings A

@@ -2,12 +2,13 @@ package emissary.kff;
 
 import emissary.util.Hexl;
 
+import jakarta.annotation.Nullable;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import javax.annotation.Nullable;
 
 /**
  * This class is a value object to store the results of both a CRC32 and a message digest computation.

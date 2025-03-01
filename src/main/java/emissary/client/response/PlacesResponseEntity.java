@@ -1,5 +1,6 @@
 package emissary.client.response;
 
+import jakarta.annotation.Nullable;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -9,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 @XmlRootElement(name = "places")
 @XmlAccessorType(XmlAccessType.NONE)

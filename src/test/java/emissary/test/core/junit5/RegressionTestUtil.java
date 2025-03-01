@@ -14,6 +14,7 @@ import emissary.util.PlaceComparisonHelper;
 import emissary.util.io.ResourceReader;
 
 import ch.qos.logback.classic.Level;
+import jakarta.annotation.Nullable;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -39,7 +40,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nullable;
 
 import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
 import static emissary.core.constants.IbdoXmlElementNames.SETUP;

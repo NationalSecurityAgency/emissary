@@ -1,5 +1,6 @@
 package emissary.parser;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,7 +8,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
-import javax.annotation.Nullable;
 
 /**
  * Provide a basic NIO-based session parser that reads data in chunks from the underlying channel. A chunk might have

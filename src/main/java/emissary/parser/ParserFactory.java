@@ -5,6 +5,7 @@ import emissary.config.Configurator;
 import emissary.core.Factory;
 import emissary.util.shell.Executrix;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +13,6 @@ import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Provide a factory for getting the proper type of input parser Provide the implementing classes for that match the
