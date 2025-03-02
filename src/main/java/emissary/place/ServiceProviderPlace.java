@@ -44,8 +44,10 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+import static emissary.core.constants.Configurations.PLACE_MAX_TIMEOUT_ACTION;
 import static emissary.core.constants.Configurations.PLACE_NAME;
 import static emissary.core.constants.Configurations.PLACE_RESOURCE_LIMIT_MILLIS;
+import static emissary.core.constants.Configurations.PLACE_RESOURCE_LIMIT_MILLIS_MAX;
 import static emissary.core.constants.Configurations.SERVICE_COST;
 import static emissary.core.constants.Configurations.SERVICE_DESCRIPTION;
 import static emissary.core.constants.Configurations.SERVICE_KEY;
@@ -1023,6 +1025,26 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
     @Override
     public long getResourceLimitMillis() {
         return configG.findLongEntry(PLACE_RESOURCE_LIMIT_MILLIS, -2L);
+    }
+
+    /**
+     * Get custom resource limitation in millis if specified
+     *
+     * @return -2 if not specified, or long millis if specified
+     */
+    @Override
+    public long getResourceLimitMillisMax() {
+        return configG.findLongEntry(PLACE_RESOURCE_LIMIT_MILLIS_MAX, -2L);
+    }
+
+    /**
+     * Get custom resource limitation in millis if specified
+     *
+     * @return -2 if not specified, or long millis if specified
+     */
+    @Override
+    public String getMaxTimeoutAction() {
+        return configG.findStringEntry(PLACE_MAX_TIMEOUT_ACTION, "NOTIFY");
     }
 
     /**

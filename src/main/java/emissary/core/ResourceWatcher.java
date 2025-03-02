@@ -30,11 +30,17 @@ public class ResourceWatcher implements Runnable {
     // This is a default that can be modified for every place
     protected long timeLimitMillis = TimeUnit.SECONDS.toMillis(30);
 
+    // This is the max time in a place before a more drastic action is taken
+    protected long timeLimitMillisMax = -1;
+
+    // The drastic action
+    protected TimedResource.Action action = TimedResource.Action.NOTIFY;
+
     // Time limit can be overidden per place by config
     // This structure is a cache of place timeouts that have
     // been gathered, stored by class place name (not class name,
     // as some classes function in different ways (e.g. UnixCommandPlace)
-    protected Map<String, Long> placeTimeLimits = new ConcurrentHashMap<>();
+    protected Map<String, PlaceTimeLimits> placeTimeLimits = new ConcurrentHashMap<>();
 
     // The thread we plan to run on
     @Nullable
@@ -69,16 +75,8 @@ public class ResourceWatcher implements Runnable {
     }
 
 
-    private long getPlaceDuration(final IServiceProviderPlace place) {
-        String placeName = place.getPlaceName();
-        Long allowedDuration = placeTimeLimits.get(placeName);
-        // Read and cache the duration for this place
-        if (allowedDuration == null) {
-            final long d = place.getResourceLimitMillis();
-            allowedDuration = d >= -1 ? d : timeLimitMillis;
-            placeTimeLimits.put(placeName, allowedDuration);
-        }
-        return allowedDuration;
+    private PlaceTimeLimits getPlaceDuration(final IServiceProviderPlace place) {
+        return placeTimeLimits.getOrDefault(place.getPlaceName(), new PlaceTimeLimits(place));
     }
 
     /**
@@ -89,7 +87,9 @@ public class ResourceWatcher implements Runnable {
      * @return TimedResource for the place and agent
      */
     public TimedResource starting(final IMobileAgent agent, final IServiceProviderPlace place) {
-        TimedResource tr = new TimedResource(agent, place, getPlaceDuration(place), metrics.timer(place.getPlaceName()));
+        PlaceTimeLimits placeTimeLimits = getPlaceDuration(place);
+        TimedResource tr = new TimedResource(agent, place, placeTimeLimits.limit, metrics.timer(place.getPlaceName()), placeTimeLimits.max,
+                placeTimeLimits.action);
         tracking.offer(tr);
         return tr;
     }
@@ -190,4 +190,22 @@ public class ResourceWatcher implements Runnable {
     public String toString() {
         return "Watching " + this.tracking.size() + " agents with default time limit " + this.timeLimitMillis + "ms";
     }
+
+    private final class PlaceTimeLimits {
+        final long limit;
+        final long max;
+        final TimedResource.Action action;
+
+        PlaceTimeLimits(final IServiceProviderPlace place) {
+            final long d = place.getResourceLimitMillis();
+            this.limit = d >= -1 ? d : timeLimitMillis;
+
+            final long m = place.getResourceLimitMillisMax();
+            this.max = m >= -1 ? m : timeLimitMillisMax;
+
+            final String a = place.getMaxTimeoutAction();
+            this.action = TimedResource.Action.from(a);
+        }
+    }
+
 }

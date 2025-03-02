@@ -64,7 +64,7 @@ class TimedResourceTest extends UnitTest {
         // should indicate complete
         assertTrue(first.checkState(System.currentTimeMillis()));
         // try to interrupt directly
-        first.interruptAgent();
+        first.interruptAgent(System.currentTimeMillis());
         // should not have been interrupted
         assertTrue(tma.latch.getCount() > 0L);
         tma.latch.countDown();

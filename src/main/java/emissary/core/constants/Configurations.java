@@ -12,6 +12,8 @@ public class Configurations {
     public static final String NEW_FORM = "NEW_FORM";
     public static final String OUTPUT_FORM = "OUTPUT_FORM";
     public static final String PLACE_RESOURCE_LIMIT_MILLIS = "PLACE_RESOURCE_LIMIT_MILLIS";
+    public static final String PLACE_RESOURCE_LIMIT_MILLIS_MAX = "PLACE_RESOURCE_LIMIT_MILLIS_MAX";
+    public static final String PLACE_MAX_TIMEOUT_ACTION = "PLACE_MAX_TIMEOUT_ACTION";
 
     // reserved config keys for service/place creation
     public static final String PLACE_NAME = "PLACE_NAME";

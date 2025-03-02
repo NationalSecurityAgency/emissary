@@ -149,6 +149,19 @@ public interface IServiceProviderPlace {
      */
     long getResourceLimitMillis();
 
+    /**
+     * Get max resource limit in millis if specified
+     *
+     * @return -2 if not specified, or long millis if specified
+     */
+    long getResourceLimitMillisMax();
+
+    /**
+     * Get the action to take if resource hits the max timeout
+     *
+     * @return "Notify" not specified, or the action if specified
+     */
+    String getMaxTimeoutAction();
 
     /**
      * Get the agent that is currently responsible for this thread
