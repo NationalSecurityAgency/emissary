@@ -2,13 +2,11 @@ package emissary.core.sentinel;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
-import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.core.sentinel.protocols.Protocol;
-import emissary.pool.MobileAgentFactory;
+import emissary.core.sentinel.protocols.ProtocolFactory;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ThreadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,14 +14,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.StringJoiner;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * Track mobile agents and take action on suspicious behavior
@@ -34,16 +26,13 @@ public class Sentinel implements Runnable {
 
     public static final String DEFAULT_NAMESPACE_NAME = "Sentinel";
 
-    // key: agent name, value: how long Sentinel has observed the mobile agent
-    protected final Map<String, Tracker> trackers = new ConcurrentHashMap<>();
-
     // protocols contain an action to perform when the set of rule conditions are met
     protected final Set<Protocol> protocols = new LinkedHashSet<>();
 
     // the default configuration Sentinel.cfg
     protected Configurator config;
 
-    // how many minutes to sleep before checking the mobile agents
+    // how many minutes to sleep before checking protocols
     protected long pollingInterval = 5;
 
     // Loop control
@@ -86,6 +75,15 @@ public class Sentinel implements Runnable {
     }
 
     /**
+     * Get the currently configured polling interval
+     *
+     * @return the currently configured polling interval
+     */
+    public long getPollingInterval() {
+        return pollingInterval;
+    }
+
+    /**
      * Safely stop the monitoring Thread
      */
     public void quit() {
@@ -105,15 +103,21 @@ public class Sentinel implements Runnable {
             try {
                 Thread.sleep(TimeUnit.MINUTES.toMillis(pollingInterval));
                 logger.debug("Sentinel is still watching");
-                watch();
+                protocols.forEach(this::run);
             } catch (InterruptedException ignore) {
                 Thread.currentThread().interrupt();
-            } catch (NamespaceException e) {
-                logger.error("There was an error in lookup", e);
             }
         }
         Namespace.unbind(DEFAULT_NAMESPACE_NAME);
         logger.info("Sentinel stopped");
+    }
+
+    protected void run(final Protocol protocol) {
+        try {
+            protocol.run();
+        } catch (IOException e) {
+            logger.error("There was an error running protocol", e);
+        }
     }
 
     @Override
@@ -144,7 +148,7 @@ public class Sentinel implements Runnable {
             logger.trace("Sentinel protocols initializing...");
             for (String protocolConfig : this.config.findEntries("PROTOCOL")) {
                 try {
-                    Protocol protocol = new Protocol(protocolConfig);
+                    Protocol protocol = ProtocolFactory.get(protocolConfig);
                     if (protocol.isEnabled()) {
                         logger.debug("Sentinel protocol initialized {}", protocol);
                         this.protocols.add(protocol);
@@ -164,137 +168,4 @@ public class Sentinel implements Runnable {
         }
     }
 
-    /**
-     * Checks to see if the mobile agents are processing the same data since the last polling event
-     *
-     * @throws NamespaceException if there is a problem looking up resources in the {@link Namespace}
-     */
-    protected void watch() throws NamespaceException {
-        List<String> agentKeys = Namespace.keySet().stream()
-                .filter(k -> k.startsWith(MobileAgentFactory.AGENT_NAME))
-                .sorted()
-                .collect(Collectors.toList());
-        for (String agentKey : agentKeys) {
-            watch(agentKey);
-        }
-        protocols.forEach(protocol -> protocol.run(trackers));
-    }
-
-    /**
-     * Checks to see if the mobile agent is processing the same data since the last polling event
-     *
-     * @param agentKey the agent key, i.e. MobileAgent-01
-     * @throws NamespaceException if there is a problem looking up resources in the {@link Namespace}
-     */
-    protected void watch(String agentKey) throws NamespaceException {
-        logger.trace("Searching for agent [{}]", agentKey);
-        IMobileAgent mobileAgent = (IMobileAgent) Namespace.lookup(agentKey);
-        Tracker trackedAgent = trackers.computeIfAbsent(mobileAgent.getName(), Tracker::new);
-        if (mobileAgent.isInUse()) {
-            if (!Objects.equals(mobileAgent.agentId(), trackedAgent.getAgentId())
-                    || !Objects.equals(mobileAgent.getLastPlaceProcessed(), trackedAgent.getDirectoryEntryKey())) {
-                trackedAgent.clear();
-                trackedAgent.setAgentId(mobileAgent.agentId());
-                trackedAgent.setDirectoryEntryKey(mobileAgent.getLastPlaceProcessed());
-            }
-            trackedAgent.incrementTimer(pollingInterval);
-            logger.trace("Agent acquired {}", trackedAgent);
-        } else {
-            trackedAgent.clear();
-            logger.trace("Agent not in use [{}]", agentKey);
-        }
-    }
-
-    public static class Tracker implements Comparable<Tracker> {
-        private final String agentName;
-        private String agentId;
-        private String shortName;
-        private String directoryEntryKey;
-        private long timer = -1;
-
-        public Tracker(String agentName) {
-            this.agentName = agentName;
-        }
-
-        public String getAgentName() {
-            return agentName;
-        }
-
-        public String getAgentId() {
-            return agentId;
-        }
-
-        public void setAgentId(String agentId) {
-            if (StringUtils.contains(agentId, "No_AgentID_Set")) {
-                clear();
-            } else {
-                this.agentId = agentId;
-                if (StringUtils.contains(agentId, "Agent-")) {
-                    this.shortName = getShortName(agentId);
-                }
-            }
-        }
-
-        public String getShortName() {
-            return shortName;
-        }
-
-        public static String getShortName(String agentId) {
-            return StringUtils.substringAfter(StringUtils.substringAfter(agentId, "Agent-"), "-");
-        }
-
-        public String getDirectoryEntryKey() {
-            return directoryEntryKey;
-        }
-
-        public void setDirectoryEntryKey(String directoryEntryKey) {
-            this.directoryEntryKey = directoryEntryKey;
-        }
-
-        public String getPlaceName() {
-            return getPlaceName(this.directoryEntryKey);
-        }
-
-        public static String getPlaceName(String directoryEntryKey) {
-            return StringUtils.defaultString(StringUtils.substringAfterLast(directoryEntryKey, "/"));
-        }
-
-        public long getTimer() {
-            return timer;
-        }
-
-        public void resetTimer() {
-            this.timer = -1;
-        }
-
-        public void incrementTimer(long time) {
-            if (this.timer == -1) {
-                this.timer = 0;
-            } else {
-                this.timer += time;
-            }
-        }
-
-        public void clear() {
-            this.agentId = "";
-            this.shortName = "";
-            this.directoryEntryKey = "";
-            resetTimer();
-        }
-
-        @Override
-        public int compareTo(Tracker o) {
-            return this.agentName.compareTo(o.agentName);
-        }
-
-        @Override
-        public String toString() {
-            return new StringJoiner(", ", "{", "}")
-                    .add("\"agentName\":\"" + agentName + "\"")
-                    .add("\"directoryEntry\":\"" + directoryEntryKey + "\"")
-                    .add("\"shortName\":\"" + shortName + "\"")
-                    .add("\"timeInMinutes\":" + timer)
-                    .toString();
-        }
-    }
 }

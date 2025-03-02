@@ -2,6 +2,7 @@ package emissary.core.sentinel.protocols;
 
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
+import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.core.sentinel.Sentinel;
@@ -10,6 +11,7 @@ import emissary.core.sentinel.protocols.actions.Notify;
 import emissary.core.sentinel.protocols.rules.AllMaxTime;
 import emissary.core.sentinel.protocols.rules.AnyMaxTime;
 import emissary.core.sentinel.protocols.rules.Rule;
+import emissary.core.sentinel.protocols.trackers.AgentTracker;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
 import emissary.pool.AgentPool;
@@ -28,8 +30,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -41,10 +45,10 @@ import static org.mockito.Mockito.when;
 
 class ProtocolTest extends UnitTest {
 
-    Protocol protocol;
+    AgentProtocol protocol;
     Rule rule1;
     Action action;
-    Map<String, Sentinel.Tracker> trackers;
+    Map<String, AgentTracker> trackers;
 
     @Override
     @BeforeEach
@@ -54,7 +58,7 @@ class ProtocolTest extends UnitTest {
         rule1 = mock(Rule.class);
         action = mock(Action.class);
 
-        protocol = new Protocol();
+        protocol = new AgentProtocol();
         protocol.action = action;
         protocol.rules.put("RULE1", rule1);
         protocol.enabled = true;
@@ -62,7 +66,7 @@ class ProtocolTest extends UnitTest {
         trackers = new HashMap<>();
         for (int i = 1; i <= 5; ++i) {
             String agent = "Agent-0" + i;
-            Sentinel.Tracker tracker = new Sentinel.Tracker(agent);
+            AgentTracker tracker = new AgentTracker(agent);
             tracker.setAgentId(agent);
             tracker.setDirectoryEntryKey("http://host.domain.com:8001/thePlace");
             tracker.incrementTimer(0);
@@ -79,14 +83,14 @@ class ProtocolTest extends UnitTest {
     @Test
     void run() {
         when(rule1.condition(any())).thenReturn(true);
-        protocol.run(trackers);
+        protocol.runRules(trackers);
         verify(action, times(1)).trigger(any());
     }
 
     @Test
     void generatePlaceAgentStats() {
-        Map<String, Protocol.PlaceAgentStats> paStats = protocol.generatePlaceAgentStats(trackers);
-        Protocol.PlaceAgentStats stats = paStats.get("thePlace");
+        Map<String, AgentProtocol.PlaceAgentStats> paStats = protocol.generatePlaceAgentStats(trackers);
+        AgentProtocol.PlaceAgentStats stats = paStats.get("thePlace");
         assertEquals("thePlace", stats.getPlace());
         assertEquals(5, stats.getCount());
         assertEquals(6, stats.getMinTimeInPlace());
@@ -107,7 +111,7 @@ class ProtocolTest extends UnitTest {
                 List.of(new DirectoryEntry("UNKNOWN.FOOPLACE.ID.http://host.domain.com:8001/thePlace", "This is a place", 10, 90)));
         try (MockedStatic<Namespace> namespace = Mockito.mockStatic(Namespace.class)) {
             namespace.when(() -> Namespace.lookup(DirectoryPlace.class)).thenReturn(Set.of(dir));
-            protocol.init(config);
+            protocol.configure(config);
             assertEquals(Notify.class, protocol.action.getClass());
             assertEquals(AllMaxTime.class, protocol.rules.get("LONG_RUNNING").getClass());
         }
@@ -132,7 +136,7 @@ class ProtocolTest extends UnitTest {
 
     @Test
     void protocolValidJson() {
-        Protocol protocol = new Protocol();
+        AgentProtocol protocol = new AgentProtocol();
         protocol.action = new Notify();
         protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", "thisPlace", 20, 0.75));
         protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", "thatPlace", 10, 0.5));
@@ -155,7 +159,7 @@ class ProtocolTest extends UnitTest {
 
         Action action;
         AgentPool pool;
-        Map<String, Sentinel.Tracker> trackers;
+        Map<String, AgentTracker> trackers;
 
         @Override
         @BeforeEach
@@ -168,7 +172,7 @@ class ProtocolTest extends UnitTest {
 
         @Test
         void protocol1() {
-            Protocol protocol = new Protocol();
+            AgentProtocol protocol = new AgentProtocol();
             protocol.action = action;
             protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", toUpperLowerPattern, 5, 1.0));
             protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", toUpperLowerPattern, 30, 0.2));
@@ -178,7 +182,7 @@ class ProtocolTest extends UnitTest {
 
         @Test
         void protocol2() {
-            Protocol protocol = new Protocol();
+            AgentProtocol protocol = new AgentProtocol();
             protocol.action = action;
             protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", toUpperLowerPattern, 5, 1.0));
             protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", toUpperLowerPattern, 40, 0.2));
@@ -188,7 +192,7 @@ class ProtocolTest extends UnitTest {
 
         @Test
         void protocol3() {
-            Protocol protocol = new Protocol();
+            AgentProtocol protocol = new AgentProtocol();
             protocol.action = action;
             protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", toUpperLowerPattern, 30, 0.01));
 
@@ -197,7 +201,7 @@ class ProtocolTest extends UnitTest {
 
         @Test
         void protocol4() {
-            Protocol protocol = new Protocol();
+            AgentProtocol protocol = new AgentProtocol();
             protocol.action = action;
             protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", toLowerPlace, 30, 0.01));
 
@@ -206,7 +210,7 @@ class ProtocolTest extends UnitTest {
 
         @Test
         void protocol5() {
-            Protocol protocol = new Protocol();
+            AgentProtocol protocol = new AgentProtocol();
             protocol.action = action;
             protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", toUpperPlace, 30, 0.01));
 
@@ -215,7 +219,7 @@ class ProtocolTest extends UnitTest {
 
         @Test
         void protocol6() {
-            Protocol protocol = new Protocol();
+            AgentProtocol protocol = new AgentProtocol();
             protocol.action = action;
             protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", toUpperLowerPattern, 5, 1.0));
             protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", toUpperLowerPattern, 30, 0.2));
@@ -223,41 +227,41 @@ class ProtocolTest extends UnitTest {
             testProtocol(protocol, defaultPoolSize + 1, 0);
         }
 
-        void testProtocol(Protocol protocol, int poolSize, int expected) {
+        void testProtocol(AgentProtocol protocol, int poolSize, int expected) {
             try (MockedStatic<AgentPool> agentPool = Mockito.mockStatic(AgentPool.class)) {
                 agentPool.when(AgentPool::lookup).thenReturn(pool);
                 when(pool.getCurrentPoolSize()).thenReturn(poolSize);
-                protocol.run(trackers);
-                verify(action, times(expected)).trigger(trackers);
+                protocol.runRules(trackers);
+                verify(action, times(expected)).trigger((Map) trackers);
             }
         }
 
-        Map<String, Sentinel.Tracker> trackers() {
-            Sentinel.Tracker agent1 = new Sentinel.Tracker("MobileAgent-01");
+        Map<String, AgentTracker> trackers() {
+            AgentTracker agent1 = new AgentTracker("MobileAgent-01");
             agent1.setAgentId("Agent-1234-testing1.txt");
             agent1.setDirectoryEntryKey("http://host.domain.com:8001/ToLowerPlace");
             agent1.incrementTimer(1); // init
             agent1.incrementTimer(5);
 
-            Sentinel.Tracker agent2 = new Sentinel.Tracker("MobileAgent-02");
+            AgentTracker agent2 = new AgentTracker("MobileAgent-02");
             agent2.setAgentId("Agent-2345-testing2.txt");
             agent2.setDirectoryEntryKey("http://host.domain.com:8001/ToLowerPlace");
             agent2.incrementTimer(1); // init
             agent2.incrementTimer(15);
 
-            Sentinel.Tracker agent3 = new Sentinel.Tracker("MobileAgent-03");
+            AgentTracker agent3 = new AgentTracker("MobileAgent-03");
             agent3.setAgentId("Agent-3456-testing3.txt");
             agent3.setDirectoryEntryKey("http://host.domain.com:8001/ToLowerPlace");
             agent3.incrementTimer(1); // init
             agent3.incrementTimer(9);
 
-            Sentinel.Tracker agent4 = new Sentinel.Tracker("MobileAgent-04");
+            AgentTracker agent4 = new AgentTracker("MobileAgent-04");
             agent4.setAgentId("Agent-4567-testing4.txt");
             agent4.setDirectoryEntryKey("http://host.domain.com:8001/ToUpperPlace");
             agent4.incrementTimer(1); // init
             agent4.incrementTimer(35);
 
-            Sentinel.Tracker agent5 = new Sentinel.Tracker("MobileAgent-05");
+            AgentTracker agent5 = new AgentTracker("MobileAgent-05");
             agent5.setAgentId("Agent-5678-testing5.txt");
             agent5.setDirectoryEntryKey("http://host.domain.com:8001/ToUpperPlace");
             agent5.incrementTimer(1); // init
@@ -272,4 +276,50 @@ class ProtocolTest extends UnitTest {
         }
     }
 
+    @Test
+    void trackerSorting() {
+        AgentTracker tracker1 = new AgentTracker("MobileAgent-01");
+        AgentTracker tracker2 = new AgentTracker("MobileAgent-10");
+        AgentTracker tracker3 = new AgentTracker("MobileAgent-20");
+
+        protocol.trackers.put("MobileAgent-01", tracker1);
+        protocol.trackers.put("MobileAgent-10", tracker2);
+        protocol.trackers.put("MobileAgent-20", tracker3);
+
+        List<AgentTracker> sorted = protocol.trackers.values().stream().sorted().collect(Collectors.toList());
+        assertEquals("MobileAgent-01", sorted.get(0).getAgentName());
+        assertEquals("MobileAgent-10", sorted.get(1).getAgentName());
+        assertEquals("MobileAgent-20", sorted.get(2).getAgentName());
+    }
+
+    @Test
+    void watch() throws Exception {
+        String agentKey = "MobileAgent-01";
+        String placename = "thePlace";
+        String shortname = "testing.txt";
+
+        IMobileAgent hdma = mock(IMobileAgent.class);
+        when(hdma.getName()).thenReturn(agentKey);
+        when(hdma.isInUse()).thenReturn(true);
+        when(hdma.agentId()).thenReturn("Agent-1234-" + shortname);
+        when(hdma.getLastPlaceProcessed()).thenReturn("http://host.domain.com:8001/" + placename);
+
+        Sentinel sm = mock(Sentinel.class);
+        when(sm.getPollingInterval()).thenReturn(5L);
+
+        AgentTracker tracker;
+        try (MockedStatic<Namespace> namespace = Mockito.mockStatic(Namespace.class);
+                MockedStatic<Sentinel> sentinel = Mockito.mockStatic(Sentinel.class)) {
+            namespace.when(Namespace::keySet).thenReturn(Set.of(agentKey));
+            namespace.when(() -> Namespace.lookup(agentKey)).thenReturn(hdma);
+            sentinel.when(() -> Sentinel.lookup()).thenReturn(sm);
+            protocol.run();
+            tracker = protocol.trackers.get(agentKey);
+        }
+
+        assertNotNull(tracker);
+        assertEquals(0, tracker.getTimer());
+        assertEquals(placename, tracker.getPlaceName());
+        assertEquals(shortname, tracker.getShortName());
+    }
 }
