@@ -66,6 +66,7 @@
     <dep.httpcore.version>5.2.1</dep.httpcore.version>
     <dep.icu4j.version>73.2</dep.icu4j.version>
     <dep.jackson.version>2.15.2</dep.jackson.version>
+    <dep.jakarta.annotation-api.version>2.1.1</dep.jakarta.annotation-api.version>
     <dep.jakarta.ws.rs-api.version>3.1.0</dep.jakarta.ws.rs-api.version>
     <dep.jakarta.xml.bind-api.version>3.0.1</dep.jakarta.xml.bind-api.version>
     <dep.janino.version>3.1.12</dep.janino.version>
@@ -197,6 +198,11 @@
         <groupId>info.picocli</groupId>
         <artifactId>picocli</artifactId>
         <version>${dep.picocli.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.annotation</groupId>
+        <artifactId>jakarta.annotation-api</artifactId>
+        <version>${dep.jakarta.annotation-api.version}</version>
       </dependency>
       <dependency>
         <groupId>jakarta.ws.rs</groupId>
