@@ -54,6 +54,8 @@ public abstract class ExtractionTest extends UnitTest {
                     KffDataObjectHandler.SET_FILE_TYPE);
     @Nullable
     protected IServiceProviderPlace place = null;
+    @SuppressWarnings("NonFinalStaticField")
+    private static String systemOsRelease = "";
 
     @BeforeEach
     public void setUpPlace() throws Exception {
@@ -417,11 +419,23 @@ public abstract class ExtractionTest extends UnitTest {
             String os = specifiedOs.getValue();
             switch (os) {
                 case "ubuntu":
-                    return OSReleaseUtil.isUbuntu();
+                    if (systemOsRelease.isEmpty() && OSReleaseUtil.isUbuntu()) {
+                        systemOsRelease = "ubuntu";
+                        return true;
+                    }
+                    return os.equals(systemOsRelease);
                 case "centos":
-                    return OSReleaseUtil.isCentOs();
+                    if (systemOsRelease.isEmpty() && OSReleaseUtil.isCentOs()) {
+                        systemOsRelease = "centos";
+                        return true;
+                    }
+                    return os.equals(systemOsRelease);
                 case "rhel":
-                    return OSReleaseUtil.isRhel();
+                    if (systemOsRelease.isEmpty() && OSReleaseUtil.isRhel()) {
+                        systemOsRelease = "rhel";
+                        return true;
+                    }
+                    return os.equals(systemOsRelease);
                 default:
                     fail("specified OS needs to match ubuntu, centos, or rhel. Provided OS=" + os);
             }
