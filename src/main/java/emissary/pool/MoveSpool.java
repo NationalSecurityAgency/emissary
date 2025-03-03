@@ -9,6 +9,7 @@ import emissary.directory.KeyManipulator;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.PayloadUtil;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Provide a storage area for incoming "moveTo(here)" payloads so that the http transfer can become more asnychronous.

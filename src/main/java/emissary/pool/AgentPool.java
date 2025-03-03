@@ -4,12 +4,12 @@ import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import javax.annotation.Nullable;
 
 /**
  * Extends the GenericObjectPool to hold MobileAgents, each on it's own thread.

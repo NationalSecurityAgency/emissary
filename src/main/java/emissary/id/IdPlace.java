@@ -5,12 +5,13 @@ import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 
+import jakarta.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * Abstract class that is the parent of all places that operate in the ID phase of the workflow.

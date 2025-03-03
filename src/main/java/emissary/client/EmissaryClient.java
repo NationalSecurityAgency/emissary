@@ -5,6 +5,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.annotation.Nullable;
 import jakarta.ws.rs.core.MediaType;
 import org.apache.hc.client5.http.auth.AuthCache;
 import org.apache.hc.client5.http.auth.AuthScope;
@@ -36,7 +37,6 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 
 /**
  * Base class of all the actions that use HttpClient.

@@ -9,6 +9,7 @@ import emissary.pickup.WorkSpace;
 import emissary.test.core.junit5.FunctionalTest;
 import emissary.util.io.ResourceReader;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

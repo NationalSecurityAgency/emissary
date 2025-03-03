@@ -8,6 +8,7 @@ import emissary.core.IBaseDataObject;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.TimeUtil;
 
+import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 
 import static emissary.core.Form.TEXT;
 import static emissary.core.constants.Parameters.EVENT_DATE;

@@ -5,6 +5,7 @@ import emissary.directory.KeyManipulator;
 import emissary.kff.KffDataObjectHandler;
 import emissary.parser.SessionParser;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nullable;
 
 /**
  * Utility methods that assist with working with IBaseDataObject's.

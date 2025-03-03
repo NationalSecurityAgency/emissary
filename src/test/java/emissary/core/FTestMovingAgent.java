@@ -11,6 +11,7 @@ import emissary.pool.MobileAgentFactory;
 import emissary.test.core.junit5.FunctionalTest;
 import emissary.util.Version;
 
+import jakarta.annotation.Nullable;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.AfterEach;
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import javax.annotation.Nullable;
 
 import static emissary.core.Form.TEXT;
 import static org.junit.jupiter.api.Assertions.assertEquals;

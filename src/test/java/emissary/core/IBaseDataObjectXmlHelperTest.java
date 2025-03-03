@@ -9,6 +9,7 @@ import emissary.test.core.junit5.UnitTest;
 import emissary.util.ByteUtil;
 import emissary.util.PlaceComparisonHelper;
 
+import jakarta.annotation.Nullable;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.TreeMap;
-import javax.annotation.Nullable;
 
 import static emissary.core.IBaseDataObjectXmlCodecs.ALWAYS_SHA256_ELEMENT_ENCODERS;
 import static emissary.core.IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_DECODERS;

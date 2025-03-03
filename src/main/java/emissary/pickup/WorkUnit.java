@@ -1,9 +1,10 @@
 package emissary.pickup;
 
+import jakarta.annotation.Nullable;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import javax.annotation.Nullable;
 
 /**
  * A WorkUnit is a unit of work a worker will process. The idea is to replace fileNameList. Currently, WorkBundle is set

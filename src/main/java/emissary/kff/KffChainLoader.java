@@ -5,6 +5,7 @@ import emissary.config.Configurator;
 import emissary.core.Factory;
 import emissary.kff.KffFilter.FilterType;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * Loads a chain of file filter specified by the configuration subsystem Expects to find a configuration file with a

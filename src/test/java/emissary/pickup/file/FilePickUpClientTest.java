@@ -9,6 +9,7 @@ import emissary.util.Hexl;
 import emissary.util.TimeUtil;
 import emissary.util.io.ResourceReader;
 
+import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,6 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 import static emissary.core.constants.Parameters.INPUT_FILENAME;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;

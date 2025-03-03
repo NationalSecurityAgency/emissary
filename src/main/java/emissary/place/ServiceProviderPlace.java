@@ -27,6 +27,7 @@ import emissary.server.mvc.adapters.DirectoryAdapter;
 import emissary.util.JMXUtil;
 
 import com.codahale.metrics.Timer;
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 import static emissary.core.constants.Configurations.PLACE_NAME;
 import static emissary.core.constants.Configurations.PLACE_RESOURCE_LIMIT_MILLIS;

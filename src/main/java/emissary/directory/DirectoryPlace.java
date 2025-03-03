@@ -8,6 +8,7 @@ import emissary.log.MDCConstants;
 import emissary.place.ServiceProviderPlace;
 import emissary.server.mvc.adapters.DirectoryAdapter;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.MDC;
 
 import java.io.IOException;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
-import javax.annotation.Nullable;
 
 /**
  * The DirectoryPlace class is used to store information relating to Places/Services in the Emissary Agent-Based

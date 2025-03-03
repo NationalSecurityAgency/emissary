@@ -1,10 +1,11 @@
 package emissary.util.search;
 
+import jakarta.annotation.Nullable;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Provides the ability to find specified {@code byte[]} patterns inside a larger {@code byte[]}.

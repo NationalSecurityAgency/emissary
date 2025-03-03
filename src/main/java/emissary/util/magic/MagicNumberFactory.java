@@ -2,6 +2,7 @@ package emissary.util.magic;
 
 import emissary.core.EmissaryRuntimeException;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.annotation.Nullable;
 
 public class MagicNumberFactory {
 

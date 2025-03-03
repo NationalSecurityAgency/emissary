@@ -2,6 +2,7 @@ package emissary.kff;
 
 import emissary.core.channels.SeekableByteChannelFactory;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,6 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import javax.annotation.Nullable;
 
 /**
  * A java port of the ssdeep code for "fuzzy hashing". http://ssdeep.sourceforge.net There are a number of ports out

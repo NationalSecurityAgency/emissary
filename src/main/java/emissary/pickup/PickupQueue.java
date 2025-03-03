@@ -1,11 +1,11 @@
 package emissary.pickup;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import javax.annotation.Nullable;
 
 /**
  * A size limited queue for holding data to process.

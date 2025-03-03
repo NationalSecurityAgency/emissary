@@ -7,6 +7,7 @@ import emissary.server.EmissaryServer;
 import emissary.test.util.ThreadDump;
 import emissary.util.io.ResourceReader;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
@@ -29,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;

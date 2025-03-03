@@ -1,6 +1,6 @@
 package emissary.util.search;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Reportable result from MultiKeywordScanner

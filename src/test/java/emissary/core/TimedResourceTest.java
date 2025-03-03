@@ -6,11 +6,11 @@ import emissary.test.core.junit5.UnitTest;
 import emissary.test.core.junit5.extensions.TestAttempts;
 
 import com.codahale.metrics.Timer;
+import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

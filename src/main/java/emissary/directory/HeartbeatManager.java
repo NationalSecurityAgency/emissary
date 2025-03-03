@@ -6,6 +6,7 @@ import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.server.mvc.adapters.HeartbeatAdapter;
 
+import jakarta.annotation.Nullable;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.core5.http.NameValuePair;
@@ -20,7 +21,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nullable;
 
 /**
  * Facility for directory instances to check up on each other by sending a heartbeat message

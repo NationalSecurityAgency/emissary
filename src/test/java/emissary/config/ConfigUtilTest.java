@@ -8,6 +8,7 @@ import emissary.util.shell.Executrix;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import jakarta.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import javax.annotation.Nullable;
 
 import static emissary.config.ConfigUtil.CONFIG_DIR_PROPERTY;
 import static org.junit.jupiter.api.Assertions.assertEquals;

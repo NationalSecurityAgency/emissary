@@ -3,6 +3,7 @@ package emissary.util;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,6 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import javax.annotation.Nullable;
 
 /**
  * Class for Parsing Dates using DateTimeFormatter. Attempts to parse a date of an unknown format with a predefined set

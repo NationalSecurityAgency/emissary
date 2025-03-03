@@ -1,5 +1,6 @@
 package emissary.config;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -32,7 +33,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * This class implements the Configurator interface for services within the Emissary framework.

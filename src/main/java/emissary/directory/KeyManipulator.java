@@ -2,8 +2,9 @@ package emissary.directory;
 
 import emissary.place.IServiceProviderPlace;
 
+import jakarta.annotation.Nullable;
+
 import java.io.Serializable;
-import javax.annotation.Nullable;
 
 /**
  * A class of utility methods for manipulating dictionary keys. Keys are stored in the dictionary with the following

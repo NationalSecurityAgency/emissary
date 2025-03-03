@@ -3,13 +3,13 @@ package emissary.pickup.file;
 import emissary.core.Pausable;
 import emissary.log.MDCConstants;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import javax.annotation.Nullable;
 
 /**
  * Thread to monitor a directory for files

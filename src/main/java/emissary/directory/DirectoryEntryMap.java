@@ -1,5 +1,6 @@
 package emissary.directory;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nullable;
 
 /**
  * Keep a map of DataID to DirectoryEntryList for the Directory Extensible to use other things for the key if desired,

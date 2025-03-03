@@ -2,6 +2,7 @@ package emissary.kff;
 
 import emissary.core.channels.SeekableByteChannelFactory;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.IOException;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.zip.CRC32;
-import javax.annotation.Nullable;
 
 /**
  * ChecksumCalculator is a utility class which computes checksums and message digests.

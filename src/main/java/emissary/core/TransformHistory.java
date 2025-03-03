@@ -3,6 +3,7 @@ package emissary.core;
 import emissary.directory.KeyManipulator;
 import emissary.place.IServiceProviderPlace;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,7 +14,6 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 import static emissary.place.IServiceProviderPlace.SPROUT_KEY;
 

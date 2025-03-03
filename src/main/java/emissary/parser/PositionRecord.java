@@ -1,6 +1,6 @@
 package emissary.parser;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Record offset and length of something in an array

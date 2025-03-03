@@ -4,6 +4,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.util.Hexl;
 
+import jakarta.annotation.Nullable;
 import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.ConnectionFactoryBuilder.Protocol;
 import net.spy.memcached.FailureMode;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 
 /**
  * KffMemcached checks Emissary hashes against a set of external memcached servers. If a given Emissary hash does not

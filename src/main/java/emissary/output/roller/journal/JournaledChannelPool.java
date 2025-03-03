@@ -1,5 +1,6 @@
 package emissary.output.roller.journal;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +13,6 @@ import java.util.Deque;
 import java.util.UUID;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.annotation.Nullable;
 
 /**
  * Pool implementation that utilizes a Journal to durably track state out written data. The implementation will create

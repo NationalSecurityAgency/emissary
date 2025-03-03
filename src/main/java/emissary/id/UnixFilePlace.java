@@ -5,6 +5,8 @@ import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.util.UnixFile;
 
+import jakarta.annotation.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,7 +15,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * Accesses emissary.util.UnixFile to perform file identification tests using emissary.util.UnixFile

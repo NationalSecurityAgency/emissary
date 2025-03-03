@@ -1,5 +1,7 @@
 package emissary.id;
 
+import jakarta.annotation.Nullable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.annotation.Nullable;
 
 /**
  * Response object from an identification engine. Contains a list of types for the currentForm and a list of properties

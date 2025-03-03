@@ -119,6 +119,7 @@
     <plugin.maven-source.version>3.3.1</plugin.maven-source.version>
     <plugin.maven-surefire.version>3.2.3</plugin.maven-surefire.version>
     <plugin.nexus-staging-maven.version>1.6.7</plugin.nexus-staging-maven.version>
+    <plugin.restrict-imports-enforcer-rule.version>2.3.1</plugin.restrict-imports-enforcer-rule.version>
     <plugin.sonar-maven.version>3.9.1.2184</plugin.sonar-maven.version>
     <plugin.sortpom-maven.version>2.15.0</plugin.sortpom-maven.version>
     <plugin.takari-lifecycle>2.0.8</plugin.takari-lifecycle>
@@ -781,6 +782,13 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
           <version>${plugin.maven-enforcer.version}</version>
+          <dependencies>
+            <dependency>
+              <groupId>de.skuzzle.enforcer</groupId>
+              <artifactId>restrict-imports-enforcer-rule</artifactId>
+              <version>${plugin.restrict-imports-enforcer-rule.version}</version>
+            </dependency>
+          </dependencies>
           <executions>
             <execution>
               <goals>
@@ -805,6 +813,21 @@
                     <version>[11,)</version>
                   </requireJavaVersion>
                   <dependencyConvergence />
+                </rules>
+              </configuration>
+            </execution>
+            <execution>
+              <id>check-imports</id>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <phase>process-sources</phase>
+              <configuration>
+                <rules>
+                  <RestrictImports>
+                    <reason>Use jakarta.annotation instead</reason>
+                    <bannedImport>javax.annotation.**</bannedImport>
+                  </RestrictImports>
                 </rules>
               </configuration>
             </execution>

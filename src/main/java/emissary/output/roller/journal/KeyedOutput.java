@@ -1,5 +1,6 @@
 package emissary.output.roller.journal;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +9,6 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
-import javax.annotation.Nullable;
 
 /**
  * Lightweight wrapper holding reference to a pooled object and the pool, which returns the channel to the pool on
