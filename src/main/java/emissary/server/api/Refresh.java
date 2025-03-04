@@ -25,7 +25,7 @@ public class Refresh {
     @POST
     @Path("/" + INVALIDATE)
     @Produces(MediaType.TEXT_HTML)
-    public Response shutdownNow(@Context HttpServletRequest request) {
+    public Response invalidatePlaces(@Context HttpServletRequest request) {
         try {
             EmissaryServer.invalidate();
             return Response.ok("Invalidated services").build();
@@ -38,7 +38,7 @@ public class Refresh {
     @POST
     @Path("/" + REFRESH)
     @Produces(MediaType.TEXT_HTML)
-    public Response forceShutdown(@Context HttpServletRequest request) {
+    public Response refreshPlaces(@Context HttpServletRequest request) {
         try {
             var unused = CompletableFuture.runAsync(EmissaryServer::refresh);
             return Response.ok("Refreshing services").build();

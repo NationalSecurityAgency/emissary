@@ -234,7 +234,8 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
     /**
      * Load the configurator
      *
-     * @param configStream the stream to use or null to auto configure
+     * @param configStream the stream to use or null to autoconfigure
+     * @param placeLocation string name of our location
      */
     protected Configurator loadConfigurator(@Nullable InputStream configStream, String placeLocation) throws IOException {
         // Read the configuration stream
@@ -248,7 +249,8 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
     /**
      * Load the configurator
      *
-     * @param configFileName the file name to use or null to auto configure
+     * @param configFileName the file name to use or null to autoconfigure
+     * @param placeLocation string name of our location
      */
     protected Configurator loadConfigurator(@Nullable String configFileName, String placeLocation) throws IOException {
         // Read the configuration stream
@@ -261,6 +263,8 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
 
     /**
      * Load the configurator, figuring out whence automatically
+     *
+     * @param placeLocation string name of our location
      */
     protected Configurator loadConfigurator(@Nullable String placeLocation) throws IOException {
         if (placeLocation == null) {
@@ -282,7 +286,8 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
     /**
      * Help the constructor get the place running
      *
-     * @param theDir name of our directory
+     * @param theDir key for the directory to use, if null will look up default name
+     * @param placeLocation string name of our location
      */
     protected void setupPlace(@Nullable String theDir, String placeLocation) throws IOException {
         setupPlace(theDir, placeLocation, true);
@@ -291,7 +296,9 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
     /**
      * Help the constructor get the place running
      *
-     * @param theDir name of our directory
+     * @param theDir key for the directory to use, if null will look up default name
+     * @param placeLocation the location of the place
+     * @param register register the newly constructed place with our directory
      */
     protected void setupPlace(@Nullable String theDir, String placeLocation, boolean register) throws IOException {
 
@@ -338,8 +345,6 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
 
         if (register) {
             // Register with the directory
-            // This pushes all our keys out to the directory which
-            // sends them on in turn to peers, &c. in the p2p network
             register();
         }
 
