@@ -16,12 +16,20 @@ import java.util.List;
 import java.util.zip.CRC32;
 
 /**
- * ChecksumCalculator is a utility class which computes checksums and message digests.
+ * <p>
+ * ChecksumCalculator is a utility class which computes SHA-1 and CRC32 checksums for use with a {@link KffChain} to
+ * support document similarity analysis. It can also be configured to compute various other message digests or SSDEEP
+ * hashes over the same data.
+ * </p>
+ * <p>
+ * NOTE: This class is to support Kff ONLY. It is not meant to provide cryptographically secure hashes or checksums.
+ * </p>
  * 
+ * @see KffFile
  * @see java.util.zip.CRC32 java.util.zip.CRC32
  * @see java.security.MessageDigest java.security.MessageDigest
  */
-public class ChecksumCalculator {
+class ChecksumCalculator {
     /** Used for CRC32 calculations */
     @Nullable
     private CRC32 crc = null;
@@ -37,18 +45,18 @@ public class ChecksumCalculator {
      * 
      * @throws NoSuchAlgorithmException if the SHA algorithm isn't available
      */
-    public ChecksumCalculator() throws NoSuchAlgorithmException {
+    ChecksumCalculator() throws NoSuchAlgorithmException {
         this("SHA-1", true);
     }
 
     /**
      * Constructor initializes specified algorithm
      * 
-     * @param alg string name of algorightm, e.g. SHA
+     * @param alg string name of algorithm, e.g. SHA
      * @param useCrc true if CRC32 should be calculated
      * @throws NoSuchAlgorithmException if the algorithm isn't available
      */
-    public ChecksumCalculator(String alg, boolean useCrc) throws NoSuchAlgorithmException {
+    ChecksumCalculator(String alg, boolean useCrc) throws NoSuchAlgorithmException {
         this(List.of(alg));
         setUseCrc(useCrc);
     }
@@ -61,7 +69,7 @@ public class ChecksumCalculator {
      */
     @Deprecated
     @SuppressWarnings("AvoidObjectArrays")
-    public ChecksumCalculator(@Nullable String[] algs) throws NoSuchAlgorithmException {
+    ChecksumCalculator(@Nullable String[] algs) throws NoSuchAlgorithmException {
         if (algs != null && algs.length > 0) {
             for (String alg : algs) {
                 if (alg.equals("CRC32")) {
@@ -81,7 +89,7 @@ public class ChecksumCalculator {
      * @param algs Collection of String algorithm names, put CRC32 on list to enable
      * @throws NoSuchAlgorithmException if an algorithm isn't available
      */
-    public ChecksumCalculator(@Nullable Collection<String> algs) throws NoSuchAlgorithmException {
+    ChecksumCalculator(@Nullable Collection<String> algs) throws NoSuchAlgorithmException {
         if (CollectionUtils.isNotEmpty(algs)) {
             for (String alg : algs) {
                 if (alg.equals("CRC32")) {
