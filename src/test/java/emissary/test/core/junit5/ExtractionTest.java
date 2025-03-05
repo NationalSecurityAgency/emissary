@@ -19,6 +19,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -56,6 +57,17 @@ public abstract class ExtractionTest extends UnitTest {
     protected IServiceProviderPlace place = null;
     @SuppressWarnings("NonFinalStaticField")
     private static String systemOsRelease = "";
+
+    @BeforeAll
+    public static void setSystemOsInfo() {
+        if (OSReleaseUtil.isUbuntu()) {
+            systemOsRelease = "ubuntu";
+        } else if (OSReleaseUtil.isCentOs()) {
+            systemOsRelease = "centos";
+        } else if (OSReleaseUtil.isRhel()) {
+            systemOsRelease = "rhel";
+        }
+    }
 
     @BeforeEach
     public void setUpPlace() throws Exception {
@@ -419,22 +431,8 @@ public abstract class ExtractionTest extends UnitTest {
             String os = specifiedOs.getValue();
             switch (os) {
                 case "ubuntu":
-                    if (systemOsRelease.isEmpty() && OSReleaseUtil.isUbuntu()) {
-                        systemOsRelease = "ubuntu";
-                        return true;
-                    }
-                    return os.equals(systemOsRelease);
                 case "centos":
-                    if (systemOsRelease.isEmpty() && OSReleaseUtil.isCentOs()) {
-                        systemOsRelease = "centos";
-                        return true;
-                    }
-                    return os.equals(systemOsRelease);
                 case "rhel":
-                    if (systemOsRelease.isEmpty() && OSReleaseUtil.isRhel()) {
-                        systemOsRelease = "rhel";
-                        return true;
-                    }
                     return os.equals(systemOsRelease);
                 default:
                     fail("specified OS needs to match ubuntu, centos, or rhel. Provided OS=" + os);
