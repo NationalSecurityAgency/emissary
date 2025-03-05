@@ -107,23 +107,34 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
     /**
      * Reinitialize the place by reloading the configurator and reconfiguring the place. Must call {@link #invalidate()}
      * before attempting to refresh the place.
+     *
+     * @param full true unbind from the namespace and rebuild all directory keys, false to reuse existing keys and just
+     *        refresh place configs
      */
-    public final void refresh(final boolean force) {
-        refresh(force, true);
+    public final void refresh(final boolean full) {
+        refresh(full, true);
     }
 
-    public final void refresh(final boolean force, final boolean silent) {
+    /**
+     * Reinitialize the place by reloading the configurator and reconfiguring the place. Must call {@link #invalidate()}
+     * before attempting to refresh the place.
+     *
+     * @param full true unbind from the namespace and rebuild all directory keys, false to reuse existing keys and just
+     *        refresh place configs
+     * @param silent true to just log any issues that arise, false to throw runtime exceptions
+     */
+    public final void refresh(final boolean full, final boolean silent) {
         logger.trace("Waiting for lock in refresh()");
         synchronized (this.allocatorLock) {
             final String placeName = this.getPlaceName();
             logger.debug("Attempting to refresh place[{}]...", placeName);
             if (!this.defunct.get()) {
                 if (isInvalidated()) {
-                    if (force) {
+                    if (full) {
                         unbindFromNamespace();
                         new ArrayList<>(this.keys).forEach(this::removeKey);
                     }
-                    Factory.create(this.getClass().getName(), this, force);
+                    Factory.create(this.getClass().getName(), this, full);
                     this.defunct.set(true);
                     logger.info("Place[{}] refresh performed successfully", placeName);
                 } else {
