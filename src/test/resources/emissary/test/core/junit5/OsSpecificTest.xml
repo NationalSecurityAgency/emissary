@@ -1,0 +1,27 @@
+<result>
+    <answers>
+        <dataLength os-release="ubuntu">22</dataLength>
+        <dataLength os-release="centos">51</dataLength>
+        <dataLength os-release="rhel">20</dataLength>
+        
+        <meta matchMode="equals">
+            <name>Test</name>
+            <value>Test</value>
+        </meta>
+        <meta matchMode="equals" os-release="ubuntu">
+            <name>ubuntu-test</name>
+            <value>ubuntu-test</value>
+        </meta>
+        <meta matchMode="equals" os-release="centos">
+            <name>centos-test</name>
+            <value>centos-test</value>
+        </meta>
+        <meta matchMode="equals" os-release="rhel">
+            <name>rhel-test</name>
+            <value>rhel-test</value>
+        </meta>>
+        <data matchMode="contains" os-release="FAKE-OS">
+            <value>this should not be checked</value>
+        </data>
+    </answers>
+</result>
