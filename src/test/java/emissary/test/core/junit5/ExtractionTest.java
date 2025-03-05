@@ -19,7 +19,6 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -55,17 +54,18 @@ public abstract class ExtractionTest extends UnitTest {
                     KffDataObjectHandler.SET_FILE_TYPE);
     @Nullable
     protected IServiceProviderPlace place = null;
-    @SuppressWarnings("NonFinalStaticField")
-    private static String systemOsRelease = "";
+    @Nullable
+    private static final String SYSTEM_OS_RELEASE;
 
-    @BeforeAll
-    public static void setSystemOsInfo() {
+    static {
         if (OSReleaseUtil.isUbuntu()) {
-            systemOsRelease = "ubuntu";
+            SYSTEM_OS_RELEASE = "ubuntu";
         } else if (OSReleaseUtil.isCentOs()) {
-            systemOsRelease = "centos";
+            SYSTEM_OS_RELEASE = "centos";
         } else if (OSReleaseUtil.isRhel()) {
-            systemOsRelease = "rhel";
+            SYSTEM_OS_RELEASE = "rhel";
+        } else {
+            SYSTEM_OS_RELEASE = null;
         }
     }
 
@@ -433,7 +433,7 @@ public abstract class ExtractionTest extends UnitTest {
                 case "ubuntu":
                 case "centos":
                 case "rhel":
-                    return os.equals(systemOsRelease);
+                    return os.equals(SYSTEM_OS_RELEASE);
                 default:
                     fail("specified OS needs to match ubuntu, centos, or rhel. Provided OS=" + os);
             }
