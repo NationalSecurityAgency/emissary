@@ -130,10 +130,8 @@ public class PlaceComparisonHelper {
         try {
             ibdoForOldPlace.deleteParameter(DisposeHelper.KEY);
             ibdoForNewPlace.deleteParameter(DisposeHelper.KEY);
-            IBaseDataObjectDiffHelper.diff(ibdoForNewPlace, ibdoForOldPlace, parentDifferences,
-                    options);
-            IBaseDataObjectDiffHelper.diff(newResults, oldResults, identifier, childDifferences,
-                    options);
+            IBaseDataObjectDiffHelper.diff(ibdoForOldPlace, ibdoForNewPlace, parentDifferences, options);
+            IBaseDataObjectDiffHelper.diff(oldResults, newResults, identifier, childDifferences, options);
         } finally {
             // Make sure we put the runnables back on if an error occurs during the diff
             ibdoForOldPlace.setParameter(DisposeHelper.KEY, oldRunnables);
