@@ -2,7 +2,8 @@ package emissary.core.sentinel.protocols.actions;
 
 import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
-import emissary.core.sentinel.Sentinel;
+import emissary.core.sentinel.protocols.trackers.AgentTracker;
+import emissary.core.sentinel.protocols.trackers.Tracker;
 
 import java.util.List;
 import java.util.Map;
@@ -14,10 +15,12 @@ import java.util.stream.Collectors;
 public class Recover extends Action {
 
     @Override
-    public void trigger(Map<String, Sentinel.Tracker> tracker) {
+    public void trigger(Map<String, Tracker> tracker) {
+
         logger.warn("Sentinel detected locked agents, attempting recovery...");
         List<String> agentNames = tracker.values().stream()
-                .map(Sentinel.Tracker::getAgentName)
+                .filter(t -> t instanceof AgentTracker)
+                .map(t -> ((AgentTracker) t).getAgentName())
                 .sorted()
                 .collect(Collectors.toList());
 

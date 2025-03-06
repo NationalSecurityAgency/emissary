@@ -1,6 +1,6 @@
 package emissary.core.sentinel.protocols.actions;
 
-import emissary.core.sentinel.Sentinel;
+import emissary.core.sentinel.protocols.trackers.Tracker;
 
 import java.util.Map;
 
@@ -10,7 +10,7 @@ import java.util.Map;
 public class Notify extends Action {
 
     @Override
-    public void trigger(Map<String, Sentinel.Tracker> trackers) {
+    public void trigger(Map<String, Tracker> trackers) {
         logger.warn("Sentinel detected possible locked agents -- {}", format(trackers));
     }
 }
