@@ -123,22 +123,8 @@ public class PlaceComparisonHelper {
         final List<String> parentDifferences = new ArrayList<>();
         final List<String> childDifferences = new ArrayList<>();
 
-        // Runnables aren't compared for the diff
-        final List<Runnable> oldRunnables = DisposeHelper.get(ibdoForOldPlace);
-        final List<Runnable> newRunnables = DisposeHelper.get(ibdoForNewPlace);
-
-        try {
-            ibdoForOldPlace.deleteParameter(DisposeHelper.KEY);
-            ibdoForNewPlace.deleteParameter(DisposeHelper.KEY);
-            IBaseDataObjectDiffHelper.diff(ibdoForNewPlace, ibdoForOldPlace, parentDifferences,
-                    options);
-            IBaseDataObjectDiffHelper.diff(newResults, oldResults, identifier, childDifferences,
-                    options);
-        } finally {
-            // Make sure we put the runnables back on if an error occurs during the diff
-            ibdoForOldPlace.setParameter(DisposeHelper.KEY, oldRunnables);
-            ibdoForNewPlace.setParameter(DisposeHelper.KEY, newRunnables);
-        }
+        IBaseDataObjectDiffHelper.diff(ibdoForNewPlace, ibdoForOldPlace, parentDifferences, options);
+        IBaseDataObjectDiffHelper.diff(newResults, oldResults, identifier, childDifferences, options);
 
         if (!parentDifferences.isEmpty() || !childDifferences.isEmpty()) {
             final StringBuilder sb = new StringBuilder();
