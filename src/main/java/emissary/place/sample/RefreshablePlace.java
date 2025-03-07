@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * This place performs no action other than holding everything it processes for a configurable amount of milliseconds
+ * This place performs no action other than logging its current config values
  */
 public class RefreshablePlace extends ServiceProviderRefreshablePlace {
 
