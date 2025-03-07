@@ -60,18 +60,19 @@ public abstract class ExtractionTest extends UnitTest {
     private static final String MAJOR_OS_VERSION;
 
     static {
-        // set system os release
         if (OSReleaseUtil.isUbuntu()) {
             SYSTEM_OS_RELEASE = "ubuntu";
+            MAJOR_OS_VERSION = OSReleaseUtil.getMajorReleaseVersion();
         } else if (OSReleaseUtil.isCentOs()) {
             SYSTEM_OS_RELEASE = "centos";
+            MAJOR_OS_VERSION = OSReleaseUtil.getMajorReleaseVersion();
         } else if (OSReleaseUtil.isRhel()) {
             SYSTEM_OS_RELEASE = "rhel";
+            MAJOR_OS_VERSION = OSReleaseUtil.getMajorReleaseVersion();
         } else {
             SYSTEM_OS_RELEASE = null;
+            MAJOR_OS_VERSION = null;
         }
-        // set major os version
-        MAJOR_OS_VERSION = OSReleaseUtil.getMajorReleaseVersion();
     }
 
     @BeforeEach
