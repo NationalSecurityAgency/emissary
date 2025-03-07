@@ -56,8 +56,11 @@ public abstract class ExtractionTest extends UnitTest {
     protected IServiceProviderPlace place = null;
     @Nullable
     private static final String SYSTEM_OS_RELEASE;
+    @Nullable
+    private static final String MAJOR_OS_VERSION;
 
     static {
+        // set system os release
         if (OSReleaseUtil.isUbuntu()) {
             SYSTEM_OS_RELEASE = "ubuntu";
         } else if (OSReleaseUtil.isCentOs()) {
@@ -67,6 +70,8 @@ public abstract class ExtractionTest extends UnitTest {
         } else {
             SYSTEM_OS_RELEASE = null;
         }
+        // set major os version
+        MAJOR_OS_VERSION = OSReleaseUtil.getMajorReleaseVersion();
     }
 
     @BeforeEach
@@ -427,13 +432,19 @@ public abstract class ExtractionTest extends UnitTest {
 
     protected boolean verifyOs(Element element) {
         Attribute specifiedOs = element.getAttribute("os-release");
+        Attribute specifiedVersion = element.getAttribute("os-version");
         if (specifiedOs != null) {
             String os = specifiedOs.getValue();
             switch (os) {
                 case "ubuntu":
                 case "centos":
                 case "rhel":
-                    return os.equals(SYSTEM_OS_RELEASE);
+                    if (specifiedVersion != null) {
+                        return os.equals(SYSTEM_OS_RELEASE) && specifiedVersion.getValue().equals(MAJOR_OS_VERSION);
+                    } else {
+                        // verify os matches, major os version not specified
+                        return os.equals(SYSTEM_OS_RELEASE);
+                    }
                 default:
                     fail("specified OS needs to match ubuntu, centos, or rhel. Provided OS=" + os);
             }
