@@ -17,9 +17,9 @@ public abstract class Rule<T> {
     /**
      * Check the rule conditions
      *
-     * @param collection collection of items to check
+     * @param items collection of items to check
      * @return true if conditions are met, false otherwise
      */
-    public abstract boolean condition(Collection<T> collection);
+    public abstract boolean condition(Collection<T> items);
 
 }

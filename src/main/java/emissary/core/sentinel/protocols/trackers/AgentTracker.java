@@ -1,10 +1,13 @@
 package emissary.core.sentinel.protocols.trackers;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.StringJoiner;
 
 public class AgentTracker implements Tracker, Comparable<AgentTracker> {
+
     private final String agentName;
     private String agentId;
     private String shortName;
@@ -84,6 +87,38 @@ public class AgentTracker implements Tracker, Comparable<AgentTracker> {
     @Override
     public int compareTo(AgentTracker o) {
         return this.agentName.compareTo(o.agentName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof AgentTracker)) {
+            return false;
+        }
+
+        AgentTracker that = (AgentTracker) o;
+
+        return new EqualsBuilder()
+                .append(getTimer(), that.getTimer())
+                .append(getAgentName(), that.getAgentName())
+                .append(getAgentId(), that.getAgentId())
+                .append(getShortName(), that.getShortName())
+                .append(getDirectoryEntryKey(), that.getDirectoryEntryKey())
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(getAgentName())
+                .append(getAgentId())
+                .append(getShortName())
+                .append(getDirectoryEntryKey())
+                .append(getTimer())
+                .toHashCode();
     }
 
     @Override

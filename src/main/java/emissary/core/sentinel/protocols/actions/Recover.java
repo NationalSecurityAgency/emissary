@@ -19,7 +19,7 @@ public class Recover extends Action {
 
         logger.warn("Sentinel detected locked agents, attempting recovery...");
         List<String> agentNames = tracker.values().stream()
-                .filter(t -> t instanceof AgentTracker)
+                .filter(AgentTracker.class::isInstance)
                 .map(t -> ((AgentTracker) t).getAgentName())
                 .sorted()
                 .collect(Collectors.toList());
