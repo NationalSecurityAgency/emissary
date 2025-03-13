@@ -149,8 +149,19 @@ public abstract class RegressionTest extends ExtractionTest {
      * 
      * @return the XML element decoders.
      */
+    @Deprecated
     protected ElementDecoders getDecoders() {
         return DEFAULT_ELEMENT_DECODERS;
+    }
+
+    /**
+     * This method returns the XML element decoders.
+     * 
+     * @param resource the "resource" currently be tested.
+     * @return the XML element decoders.
+     */
+    protected ElementDecoders getDecoders(final String resource) {
+        return getDecoders();
     }
 
     /**
@@ -158,8 +169,19 @@ public abstract class RegressionTest extends ExtractionTest {
      * 
      * @return the XML element encoders.
      */
+    @Deprecated
     protected ElementEncoders getEncoders() {
         return SHA256_ELEMENT_ENCODERS;
+    }
+
+    /**
+     * This method returns the XML element encoders.
+     * 
+     * @param resource the "resource" currently be tested.
+     * @return the XML element encoders.
+     */
+    protected ElementEncoders getEncoders(final String resource) {
+        return getEncoders();
     }
 
     /**
@@ -179,9 +201,9 @@ public abstract class RegressionTest extends ExtractionTest {
 
         final boolean alwaysHash;
 
-        if (SHA256_ELEMENT_ENCODERS.equals(getEncoders())) {
+        if (SHA256_ELEMENT_ENCODERS.equals(getEncoders(tname))) {
             alwaysHash = false;
-        } else if (ALWAYS_SHA256_ELEMENT_ENCODERS.equals(getEncoders())) {
+        } else if (ALWAYS_SHA256_ELEMENT_ENCODERS.equals(getEncoders(tname))) {
             alwaysHash = true;
         } else {
             return;
@@ -310,7 +332,7 @@ public abstract class RegressionTest extends ExtractionTest {
         tweakFinalLogEventsBeforeSerialisation(resource, finalLogEvents);
 
         // Generate the full XML (setup & answers from before & after)
-        RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders(),
+        RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders(resource),
                 super.answerFileClassRef);
     }
 
@@ -340,13 +362,13 @@ public abstract class RegressionTest extends ExtractionTest {
 
     @Override
     protected void setupPayload(final IBaseDataObject payload, final Document answers) {
-        RegressionTestUtil.setupPayload(payload, answers, getDecoders());
+        RegressionTestUtil.setupPayload(payload, answers, getDecoders(payload.getFilename()));
     }
 
     @Override
     protected void checkAnswers(final Document answers, final IBaseDataObject payload,
             final List<IBaseDataObject> attachments, final String tname) {
-        RegressionTestUtil.checkAnswers(answers, payload, actualSimplifiedLogEvents, attachments, place.getClass().getName(), getDecoders(),
+        RegressionTestUtil.checkAnswers(answers, payload, actualSimplifiedLogEvents, attachments, place.getClass().getName(), getDecoders(tname),
                 generateAnswers());
     }
 }
