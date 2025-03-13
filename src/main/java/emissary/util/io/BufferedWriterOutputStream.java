@@ -1,9 +1,10 @@
 package emissary.util.io;
 
+import jakarta.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import javax.annotation.Nullable;
 
 /**
  * BufferedWriterOutputStream: a subclass to support writing bytes to a Writer. This implementation also buffers the

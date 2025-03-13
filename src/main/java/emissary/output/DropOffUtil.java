@@ -9,6 +9,7 @@ import emissary.util.ShortNameComparator;
 import emissary.util.TimeUtil;
 import emissary.util.shell.Executrix;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -35,7 +36,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 import static emissary.core.Form.PREFIXES_LANG;
 import static emissary.core.Form.TEXT;

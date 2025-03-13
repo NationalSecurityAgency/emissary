@@ -1,12 +1,12 @@
 package emissary.command.converter;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.ITypeConverter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import javax.annotation.Nullable;
 
 public class ProjectBaseConverter extends PathExistsConverter implements ITypeConverter<Path> {
     public ProjectBaseConverter() {

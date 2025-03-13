@@ -1,5 +1,6 @@
 package emissary.util.magic;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Nullable;
 
 public class MagicNumber {
 

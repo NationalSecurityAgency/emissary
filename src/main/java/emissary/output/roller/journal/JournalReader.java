@@ -1,5 +1,6 @@
 package emissary.output.roller.journal;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.annotation.Nullable;
 
 import static emissary.output.roller.journal.Journal.CURRENT_VERSION;
 import static emissary.output.roller.journal.Journal.ENTRY_LENGTH;

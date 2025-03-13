@@ -3,7 +3,6 @@ package emissary.test.core.junit5;
 import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
 import emissary.core.IBaseDataObjectHelper;
-import emissary.core.IBaseDataObjectXmlCodecs;
 import emissary.core.IBaseDataObjectXmlCodecs.ElementDecoders;
 import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
 import emissary.place.IServiceProviderPlace;
@@ -23,6 +22,9 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeMap;
 
+import static emissary.core.IBaseDataObjectXmlCodecs.ALWAYS_SHA256_ELEMENT_ENCODERS;
+import static emissary.core.IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_DECODERS;
+import static emissary.core.IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -147,19 +149,8 @@ public abstract class RegressionTest extends ExtractionTest {
      * 
      * @return the XML element decoders.
      */
-    @Deprecated
     protected ElementDecoders getDecoders() {
-        return IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_DECODERS;
-    }
-
-    /**
-     * This method returns the XML element decoders.
-     * 
-     * @param resource the "resource" currently be tested.
-     * @return the XML element decoders.
-     */
-    protected ElementDecoders getDecoders(final String resource) {
-        return getDecoders();
+        return DEFAULT_ELEMENT_DECODERS;
     }
 
     /**
@@ -167,19 +158,8 @@ public abstract class RegressionTest extends ExtractionTest {
      * 
      * @return the XML element encoders.
      */
-    @Deprecated
     protected ElementEncoders getEncoders() {
-        return IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS;
-    }
-
-    /**
-     * This method returns the XML element encoders.
-     * 
-     * @param resource the "resource" currently be tested.
-     * @return the XML element encoders.
-     */
-    protected ElementEncoders getEncoders(final String resource) {
-        return getEncoders();
+        return SHA256_ELEMENT_ENCODERS;
     }
 
     /**
@@ -197,23 +177,29 @@ public abstract class RegressionTest extends ExtractionTest {
             checkAnswersPreHookLogEvents(actualSimplifiedLogEvents);
         }
 
-        if (!IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS.equals(getEncoders(tname))) {
+        final boolean alwaysHash;
+
+        if (SHA256_ELEMENT_ENCODERS.equals(getEncoders())) {
+            alwaysHash = false;
+        } else if (ALWAYS_SHA256_ELEMENT_ENCODERS.equals(getEncoders())) {
+            alwaysHash = true;
+        } else {
             return;
         }
 
         // touch up alternate views to match how their bytes would have encoded into the answer file
         for (Entry<String, byte[]> entry : new TreeMap<>(payload.getAlternateViews()).entrySet()) {
-            Optional<String> viewSha256 = hashBytesIfNonPrintable(entry.getValue());
+            Optional<String> viewSha256 = hashBytesIfNonPrintable(entry.getValue(), alwaysHash);
             viewSha256.ifPresent(s -> payload.addAlternateView(entry.getKey(), s.getBytes(StandardCharsets.UTF_8)));
         }
 
         // touch up primary view if necessary
-        Optional<String> payloadSha256 = hashBytesIfNonPrintable(payload.data());
+        Optional<String> payloadSha256 = hashBytesIfNonPrintable(payload.data(), alwaysHash);
         payloadSha256.ifPresent(s -> payload.setData(s.getBytes(StandardCharsets.UTF_8)));
 
         if (payload.getExtractedRecords() != null) {
             for (final IBaseDataObject extractedRecord : payload.getExtractedRecords()) {
-                Optional<String> recordSha256 = hashBytesIfNonPrintable(extractedRecord.data());
+                Optional<String> recordSha256 = hashBytesIfNonPrintable(extractedRecord.data(), alwaysHash);
                 recordSha256.ifPresent(s -> extractedRecord.setData(s.getBytes(StandardCharsets.UTF_8)));
             }
         }
@@ -221,7 +207,7 @@ public abstract class RegressionTest extends ExtractionTest {
         if (attachments != null) {
             for (final IBaseDataObject attachment : attachments) {
                 if (ByteUtil.hasNonPrintableValues(attachment.data())) {
-                    Optional<String> attachmentSha256 = hashBytesIfNonPrintable(attachment.data());
+                    Optional<String> attachmentSha256 = hashBytesIfNonPrintable(attachment.data(), alwaysHash);
                     attachmentSha256.ifPresent(s -> attachment.setData(s.getBytes(StandardCharsets.UTF_8)));
                 }
             }
@@ -252,10 +238,11 @@ public abstract class RegressionTest extends ExtractionTest {
      * Generates a SHA 256 hash of the provided bytes if they contain any non-printable characters
      * 
      * @param bytes the bytes to evaluate
+     * @param alwaysHash overrides the non-printable check and always hashes the bytes.
      * @return a value optionally containing the generated hash
      */
-    protected Optional<String> hashBytesIfNonPrintable(byte[] bytes) {
-        if (ArrayUtils.isNotEmpty(bytes) && ByteUtil.containsNonIndexableBytes(bytes)) {
+    protected Optional<String> hashBytesIfNonPrintable(byte[] bytes, final boolean alwaysHash) {
+        if (ArrayUtils.isNotEmpty(bytes) && (alwaysHash || ByteUtil.containsNonIndexableBytes(bytes))) {
             return Optional.ofNullable(ByteUtil.sha256Bytes(bytes));
         }
 
@@ -302,7 +289,7 @@ public abstract class RegressionTest extends ExtractionTest {
         // Get the data and create a channel factory to it
         final IBaseDataObject initialIbdo = getInitialIbdo(resource);
         // Clone the BDO to create an 'after' copy
-        final IBaseDataObject finalIbdo = IBaseDataObjectHelper.clone(initialIbdo, true);
+        final IBaseDataObject finalIbdo = IBaseDataObjectHelper.clone(initialIbdo);
         // Actually process the BDO and keep the children
         final List<IBaseDataObject> finalResults;
         final List<SimplifiedLogEvent> finalLogEvents;
@@ -323,7 +310,7 @@ public abstract class RegressionTest extends ExtractionTest {
         tweakFinalLogEventsBeforeSerialisation(resource, finalLogEvents);
 
         // Generate the full XML (setup & answers from before & after)
-        RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders(resource),
+        RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders(),
                 super.answerFileClassRef);
     }
 
@@ -353,13 +340,13 @@ public abstract class RegressionTest extends ExtractionTest {
 
     @Override
     protected void setupPayload(final IBaseDataObject payload, final Document answers) {
-        RegressionTestUtil.setupPayload(payload, answers, getDecoders(payload.getFilename()));
+        RegressionTestUtil.setupPayload(payload, answers, getDecoders());
     }
 
     @Override
     protected void checkAnswers(final Document answers, final IBaseDataObject payload,
             final List<IBaseDataObject> attachments, final String tname) {
-        RegressionTestUtil.checkAnswers(answers, payload, actualSimplifiedLogEvents, attachments, place.getClass().getName(), getDecoders(tname),
+        RegressionTestUtil.checkAnswers(answers, payload, actualSimplifiedLogEvents, attachments, place.getClass().getName(), getDecoders(),
                 generateAnswers());
     }
 }

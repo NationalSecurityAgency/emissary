@@ -2,12 +2,12 @@ package emissary.util;
 
 import emissary.test.core.junit5.UnitTest;
 
+import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;

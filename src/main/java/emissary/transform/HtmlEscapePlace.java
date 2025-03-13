@@ -12,12 +12,12 @@ import emissary.transform.decode.HtmlEscape;
 import emissary.util.CharacterCounterSet;
 import emissary.util.DataUtil;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import javax.annotation.Nullable;
 
 import static emissary.core.Form.HTML;
 import static emissary.core.Form.PREFIXES_LANG;

@@ -3,6 +3,8 @@ package emissary.jni;
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 
+import jakarta.annotation.Nullable;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +13,6 @@ import java.nio.file.Files;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 public class JniRepositoryPlace extends ServiceProviderPlace {
 

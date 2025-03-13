@@ -1,5 +1,6 @@
 package emissary.directory;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -11,7 +12,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import javax.annotation.Nullable;
 
 /**
  * Hold a set of Directory keys (four-tuples) in sorted order by expense, cheapest first, no duplicates
@@ -159,12 +159,10 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
             if (newEntry.isBetterThan(currEntry)) {
                 super.add(i, newEntry);
                 return true;
-            } else if (newEntry.getExpense() == currEntry.getExpense()) {
+            } else if (newEntry.getExpense() == currEntry.getExpense() && newEntry.getServiceName().compareTo(currEntry.getServiceName()) < 0) {
                 // we could have an equal expense and if so, add lexicographically based on service name
-                if (newEntry.getServiceName().compareTo(currEntry.getServiceName()) < 0) {
-                    super.add(i, newEntry);
-                    return true;
-                }
+                super.add(i, newEntry);
+                return true;
             }
         }
 

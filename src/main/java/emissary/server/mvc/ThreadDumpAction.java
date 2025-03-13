@@ -2,6 +2,7 @@ package emissary.server.mvc;
 
 import emissary.util.Version;
 
+import jakarta.annotation.Nullable;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -15,7 +16,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 @Path("")
 // context is emissary

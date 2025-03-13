@@ -1,10 +1,11 @@
 package emissary.output.roller.journal;
 
+import jakarta.annotation.Nullable;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Tracks written progress of a corresponding file. Some formats within the framework don't lend themselves to knowing

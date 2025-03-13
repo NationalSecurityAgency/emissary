@@ -3,6 +3,7 @@ package emissary.util;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Help determine type of data from various data file mappings The name of the file gives some context to the mappings

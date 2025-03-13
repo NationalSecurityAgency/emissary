@@ -3,12 +3,12 @@ package emissary.directory;
 import emissary.core.EmissaryException;
 import emissary.core.Namespace;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * Interface for inter-directory operations over http These methods are designed to only be called by the remote

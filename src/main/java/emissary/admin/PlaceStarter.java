@@ -14,6 +14,7 @@ import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.place.IServiceProviderPlace;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Static methods to start places in the system.

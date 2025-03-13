@@ -1,5 +1,6 @@
 package emissary.util.io;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import javax.annotation.Nullable;
 
 /**
  * This class reads a resource with utilities to read those with common names

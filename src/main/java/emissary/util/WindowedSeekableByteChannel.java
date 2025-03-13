@@ -1,5 +1,6 @@
 package emissary.util;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +10,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
-import javax.annotation.Nullable;
 
 /**
  * This class provides a seekable channel for a portion, or window, within the provided ReadableByteChannel. The

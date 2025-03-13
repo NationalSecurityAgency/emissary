@@ -2,6 +2,7 @@ package emissary.util;
 
 import emissary.test.core.junit5.UnitTest;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;

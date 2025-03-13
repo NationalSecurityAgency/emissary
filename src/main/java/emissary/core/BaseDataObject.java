@@ -8,6 +8,7 @@ import emissary.util.ByteUtil;
 import emissary.util.PayloadUtil;
 
 import com.google.common.collect.LinkedListMultimap;
+import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +36,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 /**
  * Class to hold data, header, footer, and attributes

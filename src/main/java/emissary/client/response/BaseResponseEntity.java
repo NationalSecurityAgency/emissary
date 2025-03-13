@@ -1,5 +1,6 @@
 package emissary.client.response;
 
+import jakarta.annotation.Nullable;
 import jakarta.xml.bind.annotation.XmlAccessOrder;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorOrder;
@@ -9,7 +10,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)

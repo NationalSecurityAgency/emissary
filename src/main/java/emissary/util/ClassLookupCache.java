@@ -1,7 +1,8 @@
 package emissary.util;
 
+import jakarta.annotation.Nullable;
+
 import java.lang.ref.SoftReference;
-import javax.annotation.Nullable;
 
 /**
  * This implements a simple caching mechanism for {@link Class#forName(String)}. For example if the same class name is

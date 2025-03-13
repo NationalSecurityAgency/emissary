@@ -2,6 +2,7 @@ package emissary.directory;
 
 import emissary.util.xml.SaferJDOMUtil;
 
+import jakarta.annotation.Nullable;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -10,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * This class acts as a container and producer for turning a directory entry list into a full xml document

@@ -1,8 +1,9 @@
 package emissary.util.web;
 
+import jakarta.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * The consolidated output from a web page retrieval

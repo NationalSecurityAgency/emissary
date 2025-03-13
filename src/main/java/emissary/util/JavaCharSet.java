@@ -1,9 +1,10 @@
 package emissary.util;
 
+import jakarta.annotation.Nullable;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Convert any charset to a Java Charset name that a JDK 1.1 and up will understand. Just returns ones that need

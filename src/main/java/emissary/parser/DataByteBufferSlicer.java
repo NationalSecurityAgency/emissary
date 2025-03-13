@@ -1,5 +1,6 @@
 package emissary.parser;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +9,6 @@ import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.List;
-import javax.annotation.Nullable;
 
 public class DataByteBufferSlicer {
     private static final Logger logger = LoggerFactory.getLogger(DataByteBufferSlicer.class);

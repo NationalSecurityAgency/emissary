@@ -1,5 +1,6 @@
 package emissary.command.converter;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.ITypeConverter;
@@ -8,7 +9,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import javax.annotation.Nullable;
 
 public class FileExistsConverter implements ITypeConverter<File> {
     private final String optionName;

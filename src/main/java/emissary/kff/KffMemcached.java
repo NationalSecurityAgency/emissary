@@ -4,6 +4,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.util.Hexl;
 
+import jakarta.annotation.Nullable;
 import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.ConnectionFactoryBuilder.Protocol;
 import net.spy.memcached.FailureMode;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 
 /**
  * KffMemcached checks Emissary hashes against a set of external memcached servers. If a given Emissary hash does not
@@ -242,13 +242,11 @@ public class KffMemcached implements KffFilter {
         Object result = future.get(opTimeoutMillis, TimeUnit.MILLISECONDS);
 
         if (result != null) {
-            if (storeIdDupe) {
-                if (!((String) result).equals(id)) {
-                    // As long as the id is not the same as what was already stored, then
-                    // store it on its own
-                    var unused = client.set(id, ageoff, key);
-                    // logger.debug("Storing duplicate Id: {} with value (hash) {}", id, key);
-                }
+            if (storeIdDupe && !result.equals(id)) {
+                // As long as the id is not the same as what was already stored, then
+                // store it on its own
+                var unused = client.set(id, ageoff, key);
+                // logger.debug("Storing duplicate Id: {} with value (hash) {}", id, key);
             }
             // logger.debug("Found key: {} with value {}", key, (String) result);
             // Found the key

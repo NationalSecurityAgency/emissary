@@ -8,6 +8,7 @@ import emissary.core.channels.SeekableByteChannelHelper;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;

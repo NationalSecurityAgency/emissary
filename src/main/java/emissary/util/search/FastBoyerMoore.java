@@ -1,5 +1,6 @@
 package emissary.util.search;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,7 +8,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.Nullable;
 
 @SuppressWarnings("AvoidObjectArrays")
 public class FastBoyerMoore {

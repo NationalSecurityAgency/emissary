@@ -6,6 +6,7 @@ import emissary.place.sample.DevNullPlace;
 import emissary.test.core.junit5.UnitTest;
 
 import com.codahale.metrics.Timer;
+import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

@@ -12,6 +12,7 @@ import emissary.directory.IRemoteDirectory;
 import emissary.directory.KeyManipulator;
 import emissary.log.MDCConstants;
 
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.MediaType;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -29,7 +30,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Stuff for adapting the Directory calls to HTTP All the outbound methods supply the TARGET_DIRECTORY parameter that

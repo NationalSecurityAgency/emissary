@@ -2,13 +2,13 @@ package emissary.spi;
 
 import emissary.core.IBaseDataObject;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
-import javax.annotation.Nullable;
 
 import static net.logstash.logback.marker.Markers.appendEntries;
 

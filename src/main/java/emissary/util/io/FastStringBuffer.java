@@ -2,6 +2,7 @@ package emissary.util.io;
 
 import emissary.util.web.HtmlEscaper;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +12,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * This buffer implementation attempts to improve file creation performance by preventing conversion from byte array to
