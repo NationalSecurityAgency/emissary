@@ -11,6 +11,7 @@ import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
 import jakarta.annotation.Nullable;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -31,6 +32,10 @@ public abstract class BaseCommand implements EmissaryCommand {
     static final Logger LOG = LoggerFactory.getLogger(BaseCommand.class);
 
     public static final String COMMAND_NAME = "BaseCommand";
+
+    @Option(names = {"--config.server"}, description = "config server, i.e. http://localhost:8888/{application}/{profile}/{label}/{file}")
+    @Nullable
+    private String configServer;
 
     @Option(names = {"-c", "--config"}, description = "config dir, comma separated if multiple, defaults to <projectBase>/config",
             converter = PathExistsConverter.class)
@@ -62,6 +67,11 @@ public abstract class BaseCommand implements EmissaryCommand {
 
     @Option(names = {"-q", "--quiet"}, description = "hide banner and non essential messages\nDefault: ${DEFAULT-VALUE}")
     private boolean quiet = false;
+
+    @Nullable
+    public String getConfigServer() {
+        return StringUtils.trimToEmpty(this.configServer);
+    }
 
     public Path getConfig() {
         if (config == null) {
@@ -131,6 +141,7 @@ public abstract class BaseCommand implements EmissaryCommand {
 
     public void setupConfig() {
         logInfo("{} is set to {} ", ConfigUtil.PROJECT_BASE_ENV, getProjectBase().toAbsolutePath().toString());
+        setSystemProperty(ConfigUtil.CONFIG_SERVER_PROPERTY, getConfigServer());
         setSystemProperty(ConfigUtil.CONFIG_DIR_PROPERTY, getConfig().toAbsolutePath().toString());
         setSystemProperty(ConfigUtil.CONFIG_BIN_PROPERTY, getBinDir().toAbsolutePath().toString());
         setSystemProperty(ConfigUtil.CONFIG_OUTPUT_ROOT_PROPERTY, getOutputDir().toAbsolutePath().toString());

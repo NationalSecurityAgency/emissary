@@ -1,16 +1,21 @@
 package emissary.config;
 
+import emissary.client.HTTPConnectionFactory;
 import emissary.core.EmissaryException;
 import emissary.util.io.ResourceReader;
 
 import jakarta.annotation.Nullable;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -20,6 +25,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Pattern;
+
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * This configuration utility collection helps to find configuration for various classes and objects. It responds to
@@ -46,6 +54,12 @@ public class ConfigUtil {
 
     /** Constant string for inventory files name prefix */
     public static final String INVENTORY_FILE_PREFIX = "emissary.admin.ClassNameInventory";
+
+    /**
+     * This property specifies the config server location. When present, we look here first for config info. If not present,
+     * we try and load from the config dir. The property is set with -D{@value}
+     */
+    public static final String CONFIG_SERVER_PROPERTY = "emissary.config.server";
 
     /**
      * This property specifies the config override directory. When present, we look here first for config info. If not
@@ -76,9 +90,15 @@ public class ConfigUtil {
 
     public static final String PROJECT_BASE_ENV = "PROJECT_BASE";
 
+    public static final Pattern VALID_CONFIG_PATTERN = Pattern.compile("^[A-Za-z0-9\\-_.]{1,255}$");
+
     /** The package name where config stuff may be found */
     @Nullable
     private static String configPkg = null;
+
+    /** The config server where config stuff may be found */
+    @Nullable
+    private static String configServerProperty = null;
 
     /** The directory where config stuff may be found */
     @Nullable
@@ -141,6 +161,17 @@ public class ConfigUtil {
     public static void initialize() throws EmissaryException {
         // throws NPE if not defined
         projectRoot = System.getenv(ConfigUtil.PROJECT_BASE_ENV);
+
+        configServerProperty = System.getProperty(CONFIG_SERVER_PROPERTY, "");
+        if (StringUtils.isNotBlank(configServerProperty)) {
+            try {
+                new URL(configServerProperty);
+                configServerProperty = StringUtils.appendIfMissing(configServerProperty, "/");
+            } catch (MalformedURLException e) {
+                logger.warn("Config server property is not valid {}, skipping config server check.", configServerProperty);
+                configServerProperty = EMPTY;
+            }
+        }
 
         configDirProperty = System.getProperty(CONFIG_DIR_PROPERTY, "").replace('\\', '/');
         if (configDirProperty.equals("")) {
@@ -401,17 +432,46 @@ public class ConfigUtil {
      * @return an InputStream caller must close
      */
     public static InputStream getConfigStream(final String name) throws IOException {
+        return configServerConfigStream(name);
+    }
+
+    private static InputStream configServerConfigStream(final String name) throws IOException {
+        // we need to use the HTTPConnectionFactory to connect to the config server, so we must use local config
+        if (StringUtils.isNotBlank(configServerProperty) && !name.contains(HTTPConnectionFactory.class.getName())
+                && VALID_CONFIG_PATTERN.matcher(name).matches()) {
+            final var httpget = new HttpGet(configServerProperty + URLEncoder.encode(name));
+            try (var httpclient = HTTPConnectionFactory.getFactory().buildDefaultClient()) {
+                final var response = httpclient.execute(httpget);
+                if (response.getCode() == 200) {
+                    logger.debug("Found config data from config server {}{}", configServerProperty, name);
+                    return response.getEntity().getContent();
+                } else {
+                    logger.debug("Request failed to {}{} with status code: {}", configServerProperty, name, response.getCode());
+                }
+            }
+            logger.debug("No file config found using config server {}", name);
+        }
+
+        // try and see if the config is local
+        return newStyleConfigStream(name);
+    }
+
+    private static InputStream newStyleConfigStream(final String name) throws IOException {
         // Try the new style override name first ( with package )
-        String sname = getConfigFile(name);
-        File f = new File(sname);
+        var sname = getConfigFile(name);
+        var f = new File(sname);
         if (f.exists() && f.canRead()) {
             logger.debug("Found config data as file {}", f.getPath());
             return Files.newInputStream(f.toPath());
         }
         logger.debug("No file config found using new style {}", f.getName());
 
+        return classpathLoaderConfigStream(name);
+    }
+
+    private static InputStream classpathLoaderConfigStream(final String name) throws IOException {
         // Try the classpath loader
-        final List<String> reznames = toResourceName(name);
+        final var reznames = toResourceName(name);
         for (final String rezname : reznames) {
             final URL url = new ResourceReader().getResource(rezname);
             if (url != null) {
@@ -430,9 +490,13 @@ public class ConfigUtil {
         }
         logger.trace("No stream config found using {}", reznames);
 
+        return oldStyleConfigStream(name);
+    }
+
+    private static InputStream oldStyleConfigStream(final String name) throws IOException {
         // Try the old style override name ( no package )
-        sname = getOldStyleConfigFile(name);
-        f = new File(sname);
+        var sname = getOldStyleConfigFile(name);
+        var f = new File(sname);
         if (f.exists() && f.canRead()) {
             logger.debug("Found config data as file old style {}", f.getPath());
             return Files.newInputStream(f.toPath());

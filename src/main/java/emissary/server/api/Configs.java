@@ -54,8 +54,9 @@ public class Configs {
      */
     public Response getConfigs(String name, boolean detailed) {
         try {
-            return Response.ok().entity(getConfigsResponse(name, detailed)).build();
-        } catch (IOException e) {
+            final var clazz = Class.forName(StringUtils.substringBefore(name, CONFIG_FILE_ENDING));
+            return Response.ok().entity(getConfigsResponse(clazz.getName(), detailed)).build();
+        } catch (ClassNotFoundException | IOException e) {
             ConfigsResponseEntity cre = new ConfigsResponseEntity();
             cre.addError(e.getMessage());
             return Response.serverError().entity(cre).build();
