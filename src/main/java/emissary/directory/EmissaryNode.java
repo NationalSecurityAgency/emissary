@@ -25,6 +25,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Hold some details about being a P2P node in the emissary network The order of preference to find the node
@@ -52,6 +53,9 @@ public class EmissaryNode {
     /** Node service type property */
     public static final String NODE_SERVICE_TYPE_PROPERTY = "emissary.node.service.type";
 
+    /** Node refresh timeout property */
+    public static final String NODE_REFRESH_TIMEOUT_PROPERTY = "emissary.node.refresh.timeout";
+
     /** Node service type is {@value} */
     public static final String DEFAULT_NODE_SERVICE_TYPE = "server";
 
@@ -63,6 +67,9 @@ public class EmissaryNode {
 
     /** Property that determines if server will shut down in the event a place fails to start */
     public static final String STRICT_STARTUP_MODE = "strict.mode";
+
+    /** Property that sets the max amount of time to wait for a refresh before a failure condition */
+    public static final long DEFAULT_REFRESH_TIMEOUT = TimeUnit.MINUTES.toMillis(30);
 
     public enum Mode {
         STANDALONE, CLUSTER;
@@ -80,7 +87,7 @@ public class EmissaryNode {
     protected boolean nodeNameIsDefault = false;
     @Nullable
     protected String nodeServiceType = null;
-
+    protected long nodeRefreshTimeout;
     protected boolean strictStartupMode = false;
 
     public EmissaryNode() {
@@ -109,6 +116,7 @@ public class EmissaryNode {
         this.nodePort = Integer.getInteger(NODE_PORT_PROPERTY, -1).intValue();
         this.nodeType = System.getProperty("os.name", DEFAULT_NODE_TYPE).toLowerCase(Locale.getDefault()).replace(' ', '_');
         this.nodeServiceType = System.getProperty(NODE_SERVICE_TYPE_PROPERTY, DEFAULT_NODE_SERVICE_TYPE);
+        this.nodeRefreshTimeout = Long.getLong(NODE_REFRESH_TIMEOUT_PROPERTY, DEFAULT_REFRESH_TIMEOUT);
         this.strictStartupMode = Boolean.parseBoolean(System.getProperty(STRICT_STARTUP_MODE, String.valueOf(false)));
     }
 
@@ -142,6 +150,13 @@ public class EmissaryNode {
      */
     public String getNodeScheme() {
         return this.nodeScheme;
+    }
+
+    /**
+     * The node max amount of time to wait for a refresh before throwing a failure condition
+     */
+    public long getNodeRefreshTimeout() {
+        return this.nodeRefreshTimeout;
     }
 
     /**
