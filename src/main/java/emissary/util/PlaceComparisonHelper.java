@@ -123,8 +123,8 @@ public class PlaceComparisonHelper {
         final List<String> parentDifferences = new ArrayList<>();
         final List<String> childDifferences = new ArrayList<>();
 
-        IBaseDataObjectDiffHelper.diff(ibdoForNewPlace, ibdoForOldPlace, parentDifferences, options);
-        IBaseDataObjectDiffHelper.diff(newResults, oldResults, identifier, childDifferences, options);
+        IBaseDataObjectDiffHelper.diff(ibdoForOldPlace, ibdoForNewPlace, parentDifferences, options);
+        IBaseDataObjectDiffHelper.diff(oldResults, newResults, identifier, childDifferences, options);
 
         if (!parentDifferences.isEmpty() || !childDifferences.isEmpty()) {
             final StringBuilder sb = new StringBuilder();

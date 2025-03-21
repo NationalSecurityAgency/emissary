@@ -59,14 +59,14 @@ class ComparisonPlaceTest extends UnitTest {
 
     @Test
     void testProcessPlaceAChanges() throws Exception {
-        final String logMessage = "COMPARISONPLACETEST: PDiff: meta are not equal-Differing Keys: [KEY] : []";
+        final String logMessage = "COMPARISONPLACETEST: PDiff: meta are not equal-Differing Keys: [] : [KEY]";
 
         testComparisonPlace(PROCESS_PLACE_A_CHANGES, logMessage);
     }
 
     @Test
     void testProcessPlaceBChanges() throws Exception {
-        final String logMessage = "COMPARISONPLACETEST: PDiff: meta are not equal-Differing Keys: [] : [KEY]";
+        final String logMessage = "COMPARISONPLACETEST: PDiff: meta are not equal-Differing Keys: [KEY] : []";
 
         testComparisonPlace(PROCESS_PLACE_B_CHANGES, logMessage);
     }
@@ -78,16 +78,16 @@ class ComparisonPlaceTest extends UnitTest {
 
     @Test
     void testProcessHDPlaceAChanges() throws Exception {
-        final String logMessage = "COMPARISONPLACETEST: PDiff: meta are not equal-Differing Keys: [KEY] : []\n" +
-                "COMPARISONPLACETEST: CDiff: COMPARISONPLACETEST : 0 : meta are not equal-Differing Keys: [KEY] : []";
+        final String logMessage = "COMPARISONPLACETEST: PDiff: meta are not equal-Differing Keys: [] : [KEY]\n" +
+                "COMPARISONPLACETEST: CDiff: COMPARISONPLACETEST : 0 : meta are not equal-Differing Keys: [] : [KEY]";
 
         testComparisonPlace(PROCESSHD_PLACE_A_CHANGES, logMessage);
     }
 
     @Test
     void testProcessHDPlaceBChanges() throws Exception {
-        final String logMessage = "COMPARISONPLACETEST: PDiff: meta are not equal-Differing Keys: [] : [KEY]\n" +
-                "COMPARISONPLACETEST: CDiff: COMPARISONPLACETEST : 0 : meta are not equal-Differing Keys: [] : [KEY]";
+        final String logMessage = "COMPARISONPLACETEST: PDiff: meta are not equal-Differing Keys: [KEY] : []\n" +
+                "COMPARISONPLACETEST: CDiff: COMPARISONPLACETEST : 0 : meta are not equal-Differing Keys: [KEY] : []";
 
         testComparisonPlace(PROCESSHD_PLACE_B_CHANGES, logMessage);
     }
