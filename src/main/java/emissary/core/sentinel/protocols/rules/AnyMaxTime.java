@@ -1,6 +1,6 @@
 package emissary.core.sentinel.protocols.rules;
 
-import emissary.core.sentinel.protocols.Protocol;
+import emissary.core.sentinel.protocols.AgentProtocol.PlaceAgentStats;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,7 @@ import java.util.Collection;
 /**
  * Looks at the place that has been running for the most amount of time.
  */
-public class AnyMaxTime extends Rule {
+public class AnyMaxTime extends AgentRule {
 
     protected static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -30,8 +30,8 @@ public class AnyMaxTime extends Rule {
      * @return true if any places in mobile agents are over the configured time limit, false otherwise
      */
     @Override
-    protected boolean overTimeLimit(Collection<Protocol.PlaceAgentStats> placeAgentStats) {
-        long maxTimeInPlace = placeAgentStats.stream().mapToLong(Protocol.PlaceAgentStats::getMaxTimeInPlace).max().orElse(0);
+    protected boolean overTimeLimit(Collection<PlaceAgentStats> placeAgentStats) {
+        long maxTimeInPlace = placeAgentStats.stream().mapToLong(PlaceAgentStats::getMaxTimeInPlace).max().orElse(0);
         logger.debug("Testing timeLimit for place={}, maxTime={}, timeLimit={}", place, maxTimeInPlace, timeLimit);
         return maxTimeInPlace >= this.timeLimit;
     }
