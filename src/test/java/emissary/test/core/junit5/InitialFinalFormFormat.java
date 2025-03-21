@@ -1,9 +1,10 @@
 package emissary.test.core.junit5;
 
+import jakarta.annotation.Nullable;
+
 import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 
 /**
  * Utility class to represent a dat file name.

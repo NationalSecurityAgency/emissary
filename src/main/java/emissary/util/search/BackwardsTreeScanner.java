@@ -6,8 +6,9 @@
 
 package emissary.util.search;
 
+import jakarta.annotation.Nullable;
+
 import java.io.PrintStream;
-import javax.annotation.Nullable;
 
 /**
  * This class implements a tree state machine scanner that searches text backwards starting from the end. A list of

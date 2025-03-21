@@ -12,6 +12,7 @@ import emissary.core.TimedResource;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.IOException;
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 import static emissary.core.constants.Configurations.OUTPUT_FORM;
 

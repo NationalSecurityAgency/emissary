@@ -1,12 +1,12 @@
 package emissary.util.web;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import javax.annotation.Nullable;
 
 /**
  * Hold onto fielded data that should be posted to a URL in x-www-urlencoded format.

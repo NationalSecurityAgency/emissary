@@ -1,12 +1,11 @@
 package emissary.util.xml;
 
+import jakarta.annotation.Nullable;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
-
-import javax.annotation.Nullable;
 
 /**
  * Utilities for dealing with JDOM documents. Doctypes are disallowed for DTDs for the prevention of XML entity attacks

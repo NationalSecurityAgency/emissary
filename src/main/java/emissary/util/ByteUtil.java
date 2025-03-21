@@ -1,5 +1,7 @@
 package emissary.util;
 
+import jakarta.annotation.Nullable;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +12,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Common place for the logic to glue byte arrays back together. This is error-prone and shouldn't be thought about any

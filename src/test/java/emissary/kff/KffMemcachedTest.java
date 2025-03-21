@@ -3,6 +3,7 @@ package emissary.kff;
 import emissary.kff.KffFilter.FilterType;
 import emissary.test.core.junit5.UnitTest;
 
+import jakarta.annotation.Nullable;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.GetFuture;
 import net.spy.memcached.internal.OperationFuture;
@@ -26,7 +27,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

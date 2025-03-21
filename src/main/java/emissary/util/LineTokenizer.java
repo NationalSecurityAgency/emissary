@@ -1,7 +1,8 @@
 package emissary.util;
 
+import jakarta.annotation.Nullable;
+
 import java.nio.charset.Charset;
-import javax.annotation.Nullable;
 
 /**
  * Used the default way, this is equivalent to StringTokenizer st = new StringTokenizer(new String(theData),"\n",false);

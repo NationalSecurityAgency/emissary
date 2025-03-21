@@ -1,5 +1,6 @@
 package emissary.util;
 
+import jakarta.annotation.Nullable;
 import jakarta.xml.bind.DatatypeConverter;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -22,7 +23,6 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 

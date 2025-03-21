@@ -7,13 +7,13 @@ import emissary.test.core.junit5.LogbackTester.SimplifiedLogEvent;
 import emissary.test.core.junit5.UnitTest;
 
 import ch.qos.logback.classic.Level;
+import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

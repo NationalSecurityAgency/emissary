@@ -3,10 +3,11 @@ package emissary.util;
 
 import emissary.util.io.ReadOutput;
 
+import jakarta.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.time.Instant;
-import javax.annotation.Nullable;
 
 public class WatcherThread extends Thread {
     @Nullable

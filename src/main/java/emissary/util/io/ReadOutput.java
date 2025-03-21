@@ -1,5 +1,7 @@
 package emissary.util.io;
 
+import jakarta.annotation.Nullable;
+
 /*
  $Id$
  */
@@ -11,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import javax.annotation.Nullable;
 
 public class ReadOutput implements Runnable {
 

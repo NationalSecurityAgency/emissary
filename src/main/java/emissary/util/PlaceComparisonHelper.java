@@ -7,13 +7,13 @@ import emissary.core.IBaseDataObjectDiffHelper;
 import emissary.core.IBaseDataObjectHelper;
 import emissary.place.ServiceProviderPlace;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Helper class to use during development of a major refactoring or replacement of a Place.
@@ -123,20 +123,8 @@ public class PlaceComparisonHelper {
         final List<String> parentDifferences = new ArrayList<>();
         final List<String> childDifferences = new ArrayList<>();
 
-        // Runnables aren't compared for the diff
-        final List<Runnable> oldRunnables = DisposeHelper.get(ibdoForOldPlace);
-        final List<Runnable> newRunnables = DisposeHelper.get(ibdoForNewPlace);
-
-        try {
-            ibdoForOldPlace.deleteParameter(DisposeHelper.KEY);
-            ibdoForNewPlace.deleteParameter(DisposeHelper.KEY);
-            IBaseDataObjectDiffHelper.diff(ibdoForOldPlace, ibdoForNewPlace, parentDifferences, options);
-            IBaseDataObjectDiffHelper.diff(oldResults, newResults, identifier, childDifferences, options);
-        } finally {
-            // Make sure we put the runnables back on if an error occurs during the diff
-            ibdoForOldPlace.setParameter(DisposeHelper.KEY, oldRunnables);
-            ibdoForNewPlace.setParameter(DisposeHelper.KEY, newRunnables);
-        }
+        IBaseDataObjectDiffHelper.diff(ibdoForOldPlace, ibdoForNewPlace, parentDifferences, options);
+        IBaseDataObjectDiffHelper.diff(oldResults, newResults, identifier, childDifferences, options);
 
         if (!parentDifferences.isEmpty() || !childDifferences.isEmpty()) {
             final StringBuilder sb = new StringBuilder();

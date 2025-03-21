@@ -3,9 +3,10 @@ package emissary.roll;
 import emissary.config.Configurator;
 import emissary.core.Factory;
 
+import jakarta.annotation.Nullable;
+
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 
 /**
  * Util class to grab known parameters from configs to help configure Rollable objects.

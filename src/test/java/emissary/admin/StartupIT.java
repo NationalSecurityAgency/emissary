@@ -13,6 +13,7 @@ import emissary.place.sample.DevNullPlace;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 
+import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;

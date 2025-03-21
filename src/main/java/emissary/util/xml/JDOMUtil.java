@@ -1,11 +1,10 @@
 package emissary.util.xml;
 
+import jakarta.annotation.Nullable;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
-
-import javax.annotation.Nullable;
 
 /**
  * Utilities for dealing with JDOM documents. If DTD validation is not needed, consider using {@link SaferJDOMUtil}.

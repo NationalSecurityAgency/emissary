@@ -1,5 +1,6 @@
 package emissary.client.response;
 
+import jakarta.annotation.Nullable;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -10,7 +11,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
 
 @XmlRootElement(name = "agents")
 @XmlAccessorType(XmlAccessType.NONE)

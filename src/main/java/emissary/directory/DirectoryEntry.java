@@ -5,12 +5,12 @@ import emissary.core.NamespaceException;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.xml.JDOMUtil;
 
+import jakarta.annotation.Nullable;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import javax.annotation.Nullable;
 
 import static emissary.directory.KeyManipulator.CLASSSEPARATOR;
 import static emissary.directory.KeyManipulator.DOLLAR;

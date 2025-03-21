@@ -4,9 +4,10 @@ import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.id.WorkUnit;
 
+import jakarta.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 
 public class DataUtil {
 

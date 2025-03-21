@@ -3,7 +3,7 @@ package emissary.core;
 import emissary.directory.DirectoryEntry;
 import emissary.place.IServiceProviderPlace;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * For hacking the move test. This agent forces a move even when place is in the namespace.

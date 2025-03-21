@@ -1,5 +1,6 @@
 package emissary.util;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,6 @@ import java.time.temporal.TemporalAccessor;
 import java.time.zone.ZoneRulesException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 
 public class TimeUtil {
 

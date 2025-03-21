@@ -12,6 +12,7 @@ import emissary.pool.AgentThreadGroup;
 import emissary.util.JMXUtil;
 import emissary.util.PayloadUtil;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -22,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nullable;
 
 /**
  * An autonomous hunk of software
@@ -515,10 +515,8 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         int startType = typeLookup(lastServiceType);
 
         // If we came from transform we can start at the beginning again
-        if (lastEntry != null && startType != 0) {
-            if ("TRANSFORM".equals(lastEntry.getServiceType())) {
-                startType = 0;
-            }
+        if (lastEntry != null && startType != 0 && "TRANSFORM".equals(lastEntry.getServiceType())) {
+            startType = 0;
         }
 
         DirectoryEntry curEntry = null;
@@ -528,12 +526,10 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
             for (String form : dataForms) {
 
                 // Test a full key form to see if it is the correct stage to be chosen
-                if (KeyManipulator.isKeyComplete(form)) {
-                    if (KeyManipulator.getServiceType(form).equals(stageName)) {
-                        logger.debug("Choosing cur form {} in stage {}", form, stageName);
-                        payloadArg.pullFormToTop(form);
-                        return new DirectoryEntry(form);
-                    }
+                if (KeyManipulator.isKeyComplete(form) && KeyManipulator.getServiceType(form).equals(stageName)) {
+                    logger.debug("Choosing cur form {} in stage {}", form, stageName);
+                    payloadArg.pullFormToTop(form);
+                    return new DirectoryEntry(form);
                 }
 
                 String formId = form + KeyManipulator.DATAIDSEPARATOR + stageName;

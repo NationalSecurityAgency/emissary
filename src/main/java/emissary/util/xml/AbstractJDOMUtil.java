@@ -1,5 +1,6 @@
 package emissary.util.xml;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.jdom2.CDATA;
@@ -22,7 +23,6 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import javax.annotation.Nullable;
 
 /**
  * Utilities for dealing with JDOM documents

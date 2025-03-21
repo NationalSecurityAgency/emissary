@@ -14,6 +14,7 @@ import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
 import emissary.spi.SPILoader;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import javax.annotation.Nullable;
 
 /**
  * Hold some details about being a P2P node in the emissary network The order of preference to find the node

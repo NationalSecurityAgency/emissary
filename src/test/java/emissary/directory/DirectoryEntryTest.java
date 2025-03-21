@@ -4,13 +4,12 @@ import emissary.core.Form;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.xml.JDOMUtil;
 
+import jakarta.annotation.Nullable;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
