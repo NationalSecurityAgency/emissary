@@ -124,6 +124,25 @@ public final class IBaseDataObjectHelper {
             final IBaseDataObject childIBaseDataObject, final boolean nullifyFileType,
             final Set<String> alwaysCopyMetadataKeys, final String placeKey,
             final KffDataObjectHandler kffDataObjectHandler) {
+        addParentInformationToChild(parentIBaseDataObject, childIBaseDataObject, nullifyFileType, alwaysCopyMetadataKeys, placeKey,
+                kffDataObjectHandler, true);
+    }
+
+    /**
+     * Used to propagate needed parent information to a sprouted child. NOTE: This is taken from
+     * emissary.place.MultiFileServerPlace.
+     * 
+     * @param parentIBaseDataObject the source of parameters to be copied
+     * @param childIBaseDataObject the destination for parameters to be copied
+     * @param nullifyFileType if true the child fileType is nullified after the copy
+     * @param alwaysCopyMetadataKeys set of metadata keys to always copy from parent to child.
+     * @param placeKey the place key to be added to the transform history.
+     * @param kffDataObjectHandler the kffDataObjectHandler to use to create the kff hashes.
+     */
+    public static void addParentInformationToChild(final IBaseDataObject parentIBaseDataObject,
+            final IBaseDataObject childIBaseDataObject, final boolean nullifyFileType,
+            final Set<String> alwaysCopyMetadataKeys, final String placeKey,
+            final KffDataObjectHandler kffDataObjectHandler, final boolean useSbcf) {
         Validate.notNull(parentIBaseDataObject, "Required: parentIBaseDataObject not null");
         Validate.notNull(childIBaseDataObject, "Required: childIBaseDataObject not null");
         Validate.notNull(alwaysCopyMetadataKeys, "Required: alwaysCopyMetadataKeys not null");
@@ -164,7 +183,7 @@ public final class IBaseDataObjectHelper {
         KffDataObjectHandler.parentToChild(childIBaseDataObject);
 
         // Hash the new child data, overwrites parent hashes if any
-        kffDataObjectHandler.hash(childIBaseDataObject, true);
+        kffDataObjectHandler.hash(childIBaseDataObject, useSbcf);
     }
 
     /**
@@ -181,6 +200,24 @@ public final class IBaseDataObjectHelper {
     public static void addParentInformationToChildren(final IBaseDataObject parent, @Nullable final List<IBaseDataObject> children,
             final boolean nullifyFileType, final Set<String> alwaysCopyMetadataKeys, final String placeKey,
             final KffDataObjectHandler kffDataObjectHandler) {
+        addParentInformationToChildren(parent, children, nullifyFileType, alwaysCopyMetadataKeys, placeKey, kffDataObjectHandler, true);
+    }
+
+    /**
+     * Used to propagate needed parent information to a sprouted child. NOTE: This is taken from
+     * emissary.place.MultiFileServerPlace.
+     * 
+     * @param parent the source of parameters to be copied
+     * @param children the destination for parameters to be copied
+     * @param nullifyFileType if true the child fileType is nullified after the copy
+     * @param alwaysCopyMetadataKeys set of metadata keys to always copy from parent to child.
+     * @param placeKey the place key to be added to the transform history.
+     * @param kffDataObjectHandler the kffDataObjectHandler to use to create the kff hashes.
+     * @param useSbcf chooses whether to use the SeekableByteChannelFactory or byte[] from the IBDO.
+     */
+    public static void addParentInformationToChildren(final IBaseDataObject parent, @Nullable final List<IBaseDataObject> children,
+            final boolean nullifyFileType, final Set<String> alwaysCopyMetadataKeys, final String placeKey,
+            final KffDataObjectHandler kffDataObjectHandler, final boolean useSbcf) {
         Validate.notNull(parent, "Required: parent not null");
         Validate.notNull(alwaysCopyMetadataKeys, "Required: alwaysCopyMetadataKeys not null");
         Validate.notNull(placeKey, "Required: placeKey not null");
@@ -196,7 +233,7 @@ public final class IBaseDataObjectHelper {
                     continue;
                 }
                 addParentInformationToChild(parent, child, nullifyFileType, alwaysCopyMetadataKeys, placeKey,
-                        kffDataObjectHandler);
+                        kffDataObjectHandler, useSbcf);
                 child.setBirthOrder(birthOrder++);
                 child.setNumSiblings(totalNumSiblings);
             }
