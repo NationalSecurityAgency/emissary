@@ -58,6 +58,10 @@ public abstract class ServiceCommand extends HttpCommand {
         return stop;
     }
 
+    public boolean isInvalidate() {
+        return invalidate;
+    }
+
     public boolean isRefresh() {
         return invalidate || refresh;
     }

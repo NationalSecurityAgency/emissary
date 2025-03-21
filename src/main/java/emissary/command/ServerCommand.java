@@ -132,9 +132,9 @@ public class ServerCommand extends ServiceCommand {
     protected void refreshService() {
         EmissaryResponse response = performPost(getServiceRefreshEndpoint());
         if (response.getStatus() != 200) {
-            LOG.error("Failed to refresh Emissary services: {}", response.getContentString());
+            LOG.error("Failed to {} Emissary services: {}", isInvalidate() ? "invalidate" : "refresh", response.getContentString());
         } else {
-            LOG.info("Refreshing Emissary services");
+            LOG.info("{} Emissary services", isInvalidate() ? "Invalidating" : "Refreshing");
         }
     }
 

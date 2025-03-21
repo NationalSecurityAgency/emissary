@@ -13,7 +13,7 @@ import java.io.IOException;
  */
 public class RefreshablePlace extends ServiceProviderRefreshablePlace {
 
-    private static final Logger logger = LoggerFactory.getLogger(RefreshablePlace.class);
+    protected static final Logger logger = LoggerFactory.getLogger(RefreshablePlace.class);
 
     public static final long DEFAULT_CONFIG = 2_000L;
 

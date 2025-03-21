@@ -160,7 +160,7 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
      * @throws IOException if there is an issue loading the config
      */
     private Configurator loadConfigurator(@Nullable final List<String> configLocations, final String placeLocation) throws IOException {
-        logger.debug("Reloading configurator using locations {}", configLocations);
+        logger.info("Reloading configurator using locations {}", configLocations);
         if (CollectionUtils.isNotEmpty(configLocations)) {
             return ConfigUtil.getConfigInfo(configLocations);
         }
