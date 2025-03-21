@@ -304,7 +304,7 @@ public class EmissaryServer {
                         p.refresh(true);
                     });
             unpause();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOG.error("There was an error trying to refresh services, shutting down!!", e);
             stopServer();
         }
