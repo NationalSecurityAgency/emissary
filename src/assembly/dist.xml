@@ -14,6 +14,11 @@
       <outputDirectory>lib/compile</outputDirectory>
       <scope>compile</scope>
     </dependencySet>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputDirectory>lib/compile</outputDirectory>
+      <scope>runtime</scope>
+    </dependencySet>
   </dependencySets>
   <fileSets>
     <fileSet>

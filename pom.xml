@@ -525,10 +525,6 @@
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
-      <artifactId>jersey-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-server</artifactId>
     </dependency>
     <dependency>
@@ -550,10 +546,6 @@
           <artifactId>jakarta.servlet-api</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.inject</groupId>
-      <artifactId>jersey-hk2</artifactId>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
@@ -583,6 +575,11 @@
     <dependency>
       <groupId>org.glassfish.jaxb</groupId>
       <artifactId>jaxb-runtime</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-hk2</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -1254,8 +1251,8 @@
               <goal>analyze-only</goal>
             </goals>
             <configuration>
+              <failOnWarning>true</failOnWarning>
               <ignoreNonCompile>true</ignoreNonCompile>
-              <failOnWarning>false</failOnWarning>
             </configuration>
           </execution>
           <execution>
