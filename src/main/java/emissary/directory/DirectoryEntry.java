@@ -529,6 +529,13 @@ public class DirectoryEntry implements Serializable {
     }
 
     /**
+     * Force a lookup from the namespace
+     */
+    public void clearLocalPlace() {
+        this.lookupAttempted = false;
+    }
+
+    /**
      * Change the key such that the place specified by proxyKey acts as a proxy for the current key. We keep the same data
      * type, service type, service name and expense but change the place to the proxy
      * 

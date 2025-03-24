@@ -11,6 +11,8 @@ import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
 import static emissary.server.api.HealthCheckAction.HEALTH;
+import static emissary.server.api.Refresh.INVALIDATE;
+import static emissary.server.api.Refresh.REFRESH;
 import static emissary.server.api.Shutdown.SHUTDOWN;
 
 /**
@@ -24,12 +26,20 @@ public abstract class ServiceCommand extends HttpCommand {
     public static final String SERVICE_HEALTH_ENDPOINT = "/api/" + HEALTH;
     public static final String SERVICE_SHUTDOWN_ENDPOINT = "/api/" + SHUTDOWN;
     public static final String SERVICE_KILL_ENDPOINT = SERVICE_SHUTDOWN_ENDPOINT + "/force";
+    public static final String SERVICE_INVALIDATE_ENDPOINT = "/api/" + INVALIDATE;
+    public static final String SERVICE_REFRESH_ENDPOINT = "/api/" + REFRESH;
 
     @Option(names = {"--csrf"}, description = "disable csrf protection\nDefault: ${DEFAULT-VALUE}", arity = "1")
     private boolean csrf = true;
 
     @Option(names = {"--stop"}, description = "Shutdown the service\nDefault: ${DEFAULT-VALUE}")
     private boolean stop = false;
+
+    @Option(names = {"--invalidate"}, description = "Invalidate services that are refreshable\nDefault: ${DEFAULT-VALUE}")
+    private boolean invalidate = false;
+
+    @Option(names = {"--refresh"}, description = "Force refresh of services\nDefault: ${DEFAULT-VALUE}")
+    private boolean refresh = false;
 
     @Option(names = {"--kill"}, description = "Force the shutdown of the service\nDefault: ${DEFAULT-VALUE}")
     private boolean kill = false;
@@ -46,6 +56,14 @@ public abstract class ServiceCommand extends HttpCommand {
 
     public boolean isStop() {
         return stop;
+    }
+
+    public boolean isInvalidate() {
+        return invalidate;
+    }
+
+    public boolean isRefresh() {
+        return invalidate || refresh;
     }
 
     public boolean isKill() {
@@ -66,6 +84,10 @@ public abstract class ServiceCommand extends HttpCommand {
 
     public String getServiceShutdownEndpoint() {
         return isKill() ? SERVICE_KILL_ENDPOINT : SERVICE_SHUTDOWN_ENDPOINT;
+    }
+
+    public String getServiceRefreshEndpoint() {
+        return refresh ? SERVICE_REFRESH_ENDPOINT : SERVICE_INVALIDATE_ENDPOINT;
     }
 
     public String getServiceName() {
@@ -109,6 +131,8 @@ public abstract class ServiceCommand extends HttpCommand {
                     pauseService();
                 } else if (isUnpause()) {
                     unpauseService();
+                } else if (isRefresh()) {
+                    refreshService();
                 } else {
                     throw new EmissaryRuntimeException("Emissary " + getServiceName() + " is already running");
                 }
@@ -149,6 +173,13 @@ public abstract class ServiceCommand extends HttpCommand {
      */
     protected void unpauseService() {
         throw new UnsupportedOperationException("Unpause not implemented for " + getServiceName());
+    }
+
+    /**
+     * A method that refreshes services
+     */
+    protected void refreshService() {
+        throw new UnsupportedOperationException("Refresh not implemented for " + getServiceName());
     }
 
 }
