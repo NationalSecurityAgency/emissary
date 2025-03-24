@@ -280,6 +280,11 @@
         <version>${dep.jersey.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.glassfish.jersey.test-framework</groupId>
+        <artifactId>jersey-test-framework-provider-jetty</artifactId>
+        <version>${dep.jersey.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jdom</groupId>
         <artifactId>jdom2</artifactId>
         <version>${dep.jdom.version}</version>
@@ -292,11 +297,6 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>${dep.mockito.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-junit-jupiter</artifactId>
         <version>${dep.mockito.version}</version>
       </dependency>
       <dependency>
@@ -613,10 +613,6 @@
       <scope>test</scope>
       <exclusions>
         <exclusion>
-          <groupId>jakarta.servlet</groupId>
-          <artifactId>jakarta.servlet-api</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>org.hamcrest</groupId>
           <artifactId>*</artifactId>
         </exclusion>
@@ -640,11 +636,6 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -1252,7 +1243,7 @@
             </goals>
             <configuration>
               <failOnWarning>true</failOnWarning>
-              <ignoreNonCompile>true</ignoreNonCompile>
+              <ignoreUnusedRuntime>true</ignoreUnusedRuntime>
             </configuration>
           </execution>
           <execution>
