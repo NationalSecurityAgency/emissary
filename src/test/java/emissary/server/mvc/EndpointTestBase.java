@@ -9,6 +9,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.mustache.MustacheMvcFeature;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
+import org.glassfish.jersey.test.jetty.JettyTestContainerFactory;
 import org.junit.jupiter.api.AfterAll;
 
 public abstract class EndpointTestBase extends JerseyTest {
@@ -25,6 +26,7 @@ public abstract class EndpointTestBase extends JerseyTest {
         // Tells Jersey to use first available port, fixes address already in use exception
         forceSet(TestProperties.CONTAINER_PORT, "0");
         final ResourceConfig application = new ResourceConfig();
+        application.register(JettyTestContainerFactory.class);
         application.register(MultiPartFeature.class);
         application.property(MustacheMvcFeature.TEMPLATE_BASE_PATH, "/templates");
         application.register(MustacheMvcFeature.class).packages("emissary.server.mvc");
