@@ -1,6 +1,6 @@
 package emissary.core.sentinel.protocols.actions;
 
-import emissary.core.sentinel.Sentinel;
+import emissary.core.sentinel.protocols.trackers.Tracker;
 import emissary.server.EmissaryServer;
 
 import java.util.Map;
@@ -12,8 +12,8 @@ import java.util.concurrent.CompletableFuture;
 public class Stop extends Action {
 
     @Override
-    public void trigger(Map<String, Sentinel.Tracker> trackers) {
-        logger.error("Sentinel detected unrecoverable agents, initiating graceful shutdown -- {}", format(trackers));
+    public void trigger(Map<String, Tracker> trackers) {
+        logger.error("Sentinel detected unrecoverable state, initiating graceful shutdown -- {}", format(trackers));
         var unused = CompletableFuture.runAsync(EmissaryServer::stopServer);
     }
 }

@@ -1,6 +1,6 @@
 package emissary.core.sentinel.protocols.actions;
 
-import emissary.core.sentinel.Sentinel;
+import emissary.core.sentinel.protocols.trackers.Tracker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +17,11 @@ public abstract class Action {
     /**
      * Take action when rule conditions are met
      *
-     * @param trackers the listing of agents, places, and filenames that's currently processing
+     * @param trackers the listing of agents, places, filenames, etc. that's currently processing
      */
-    public abstract void trigger(Map<String, Sentinel.Tracker> trackers);
+    public abstract void trigger(Map<String, Tracker> trackers);
 
-    public List<Sentinel.Tracker> format(Map<String, Sentinel.Tracker> trackers) {
+    public List<Tracker> format(Map<String, Tracker> trackers) {
         return trackers.values().stream().sorted().collect(Collectors.toList());
     }
 
