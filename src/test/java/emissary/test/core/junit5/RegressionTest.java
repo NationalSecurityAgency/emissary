@@ -8,6 +8,7 @@ import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.junit5.LogbackTester.SimplifiedLogEvent;
 import emissary.util.ByteUtil;
+import emissary.util.DisposeHelper;
 
 import com.google.errorprone.annotations.ForOverride;
 import org.apache.commons.lang3.ArrayUtils;
@@ -106,6 +107,8 @@ public abstract class RegressionTest extends ExtractionTest {
     @ForOverride
     protected void tweakFinalIbdoBeforeSerialisation(final String resource, final IBaseDataObject finalIbdo) {
         RegressionTestUtil.tweakFinalIbdoWithFormInFilename(resource, finalIbdo);
+
+        fixDisposeRunnables(finalIbdo);
     }
 
     /**
@@ -230,6 +233,8 @@ public abstract class RegressionTest extends ExtractionTest {
                 }
             }
         }
+
+        fixDisposeRunnables(payload);
     }
 
     /**
@@ -346,5 +351,23 @@ public abstract class RegressionTest extends ExtractionTest {
             final List<IBaseDataObject> attachments, final String tname) {
         RegressionTestUtil.checkAnswers(answers, payload, actualSimplifiedLogEvents, attachments, place.getClass().getName(), getDecoders(tname),
                 generateAnswers());
+    }
+
+    /**
+     * Default behavior to fix dispose runnables to change "variant" to "invariant"
+     *
+     * @param ibdo the base data object containing dispose runnables
+     */
+    protected void fixDisposeRunnables(final IBaseDataObject ibdo) {
+        if (ibdo.hasParameter(DisposeHelper.KEY)) {
+            final List<Object> values = ibdo.getParameter(DisposeHelper.KEY);
+            final List<String> newValues = new ArrayList<>();
+
+            for (Object o : values) {
+                newValues.add(o.getClass().getName());
+            }
+
+            ibdo.putParameter(DisposeHelper.KEY, newValues);
+        }
     }
 }
