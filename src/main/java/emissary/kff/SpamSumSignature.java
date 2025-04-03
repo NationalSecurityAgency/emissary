@@ -94,6 +94,7 @@ public class SpamSumSignature {
     }
 
     @Override
+    @SuppressWarnings("UselessOverridingMethod")
     public int hashCode() {
         return super.hashCode();
     }
