@@ -38,6 +38,7 @@ public class Hexl {
      * 
      * @param limit how many bytes of data to print starting from 0
      */
+    @SuppressWarnings("PMD.UselessParentheses")
     public static String toHexString(byte[] data, int limit) {
 
         StringBuilder output = new StringBuilder(2048);

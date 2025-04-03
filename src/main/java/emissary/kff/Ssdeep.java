@@ -31,6 +31,7 @@ public final class Ssdeep {
     private static final int SPAMSUM_LENGTH = 64;
     private static final int MIN_BLOCKSIZE = 3;
 
+    @SuppressWarnings("PMD.UselessParentheses")
     public static final int FUZZY_MAX_RESULT = SPAMSUM_LENGTH + (SPAMSUM_LENGTH / 2 + 20);
 
     /** The window size for the rolling hash. */
