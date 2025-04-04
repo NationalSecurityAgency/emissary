@@ -59,6 +59,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     protected String charset = StandardCharsets.UTF_8.name();
     protected boolean singleOutputAsChild = false;
     protected boolean preserveParentData = false;
+    protected boolean ignoreEmptyFile;
 
     String placeDisplayName = "Some Place";
 
@@ -116,6 +117,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * <li>OUTPUT_CHARSET: charset of the process output, default UTF-8</li>
      * <li>SINGLE_OUTPUT_AS_CHILD: If only one output file keep it as a child and do not replace the parent.</li>
      * <li>PRESERVE_PARENT_DATA: Stops the parent from getting replaced by output data</li>
+     * <li>IGNORE_EMPTY_FILE: gives the option to save 0 length files, default true</li>
      * </ul>
      */
     @Override
@@ -148,6 +150,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         logfilename = configG.findStringEntry("LOG_FILE_NAME", KeyManipulator.getServiceName(keys.get(0)) + ".log");
         singleOutputAsChild = configG.findBooleanEntry("SINGLE_OUTPUT_AS_CHILD", singleOutputAsChild);
         preserveParentData = configG.findBooleanEntry("PRESERVE_PARENT_DATA", preserveParentData);
+        ignoreEmptyFile = configG.findBooleanEntry("IGNORE_EMPTY_FILE", true);
 
         for (String name : configG.findEntries("CUSTOM_FILE_TYPES")) {
             String tmp = configG.findStringEntry(name + "_EXT", null);
@@ -285,7 +288,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
                     logger.debug("Ignoring file '{}' because it is the input file.", fname);
                     continue;
                 }
-                if (file.length() == 0) {
+                if (file.length() == 0 && ignoreEmptyFile) {
                     logger.debug("Ignoring file '{}' because it is empty.", fname);
                     continue;
                 }
