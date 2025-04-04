@@ -1,6 +1,6 @@
 package emissary.core.sentinel.protocols.rules;
 
-import emissary.core.sentinel.protocols.Protocol;
+import emissary.core.sentinel.protocols.AgentProtocol;
 import emissary.pool.AgentPool;
 import emissary.test.core.junit5.UnitTest;
 
@@ -21,13 +21,13 @@ import static org.mockito.Mockito.when;
 
 class AnyMaxTimeTest extends UnitTest {
 
-    Collection<Protocol.PlaceAgentStats> placeAgentStats;
+    Collection<AgentProtocol.PlaceAgentStats> placeAgentStats;
 
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-        Protocol.PlaceAgentStats stats = new Protocol.PlaceAgentStats("TestPlace");
+        AgentProtocol.PlaceAgentStats stats = new AgentProtocol.PlaceAgentStats("TestPlace");
         placeAgentStats = List.of(stats);
         for (int i = 1; i < 6; ++i) {
             stats.update(i);
@@ -53,13 +53,13 @@ class AnyMaxTimeTest extends UnitTest {
 
     @Test
     void overTimeLimit() {
-        Rule rule = new AnyMaxTime("rule1", "TestPlace", 5, 0.75);
+        AgentRule rule = new AnyMaxTime("rule1", "TestPlace", 5, 0.75);
         assertTrue(rule.overTimeLimit(placeAgentStats));
     }
 
     @Test
     void notOverTimeLimit() {
-        Rule rule = new AnyMaxTime("rule1", "TestPlace", 6, 0.75);
+        AgentRule rule = new AnyMaxTime("rule1", "TestPlace", 6, 0.75);
         assertFalse(rule.overTimeLimit(placeAgentStats));
     }
 
@@ -73,7 +73,7 @@ class AnyMaxTimeTest extends UnitTest {
         final int defaultTimeLimit = 5;
 
         AgentPool pool;
-        List<Protocol.PlaceAgentStats> stats;
+        List<AgentProtocol.PlaceAgentStats> stats;
 
         @Override
         @BeforeEach
@@ -137,13 +137,13 @@ class AnyMaxTimeTest extends UnitTest {
             }
         }
 
-        List<Protocol.PlaceAgentStats> stats() {
-            Protocol.PlaceAgentStats lowerStats = new Protocol.PlaceAgentStats("ToLowerPlace");
+        List<AgentProtocol.PlaceAgentStats> stats() {
+            AgentProtocol.PlaceAgentStats lowerStats = new AgentProtocol.PlaceAgentStats("ToLowerPlace");
             lowerStats.update(defaultTimeLimit - 4); // MobileAgent-01
             lowerStats.update(defaultTimeLimit - 2); // MobileAgent-02
             lowerStats.update(defaultTimeLimit - 1); // MobileAgent-03
 
-            Protocol.PlaceAgentStats upperStats = new Protocol.PlaceAgentStats("ToUpperPlace");
+            AgentProtocol.PlaceAgentStats upperStats = new AgentProtocol.PlaceAgentStats("ToUpperPlace");
             upperStats.update(defaultTimeLimit - 3); // MobileAgent-04
             upperStats.update(defaultTimeLimit); // MobileAgent-05
 
