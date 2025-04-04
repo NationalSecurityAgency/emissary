@@ -288,7 +288,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
                     logger.debug("Ignoring file '{}' because it is the input file.", fname);
                     continue;
                 }
-                if (file.length() == 0 && ignoreEmptyFile) {
+                if (ignoreEmptyFile && file.length() == 0) {
                     logger.debug("Ignoring file '{}' because it is empty.", fname);
                     continue;
                 }
