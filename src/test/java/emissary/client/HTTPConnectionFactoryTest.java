@@ -5,7 +5,6 @@ import emissary.config.ServiceConfigGuide;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.PkiUtil;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,6 +21,7 @@ import static emissary.client.HTTPConnectionFactory.DFLT_STORE_TYPE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class HTTPConnectionFactoryTest extends UnitTest {
 
@@ -116,9 +116,9 @@ class HTTPConnectionFactoryTest extends UnitTest {
     void loadPWFromEnv() throws Exception {
         char[] pw = PkiUtil.loadPassword("${PROJECT_BASE}");
         if (pw == null) {
-            Assertions.fail("Failed to read environment variable");
+            fail("Failed to read environment variable");
         }
-        Assertions.assertEquals(projectBase, String.valueOf(pw));
+        assertEquals(projectBase, String.valueOf(pw));
     }
 
     private static void addKeystoreProps(final Configurator cfg) {

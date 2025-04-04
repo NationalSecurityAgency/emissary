@@ -101,27 +101,27 @@ public class DependencyCheck {
         Set<String> optFileSet = getDependencies(OPTIONAL_FILE);
 
         for (String reqExe : reqExeSet) {
-            boolean exists = DependencyCheck.executableExists(reqExe);
+            boolean exists = executableExists(reqExe);
             logger.info("RequiredExecutable: {} exists: {}", reqExe, exists);
         }
         for (String reqDir : reqDirSet) {
-            boolean exists = DependencyCheck.directoryExists(reqDir);
+            boolean exists = directoryExists(reqDir);
             logger.info("RequiredDirectory {} exists: {}", reqDir, exists);
         }
         for (String reqFile : reqFileSet) {
-            boolean exists = DependencyCheck.fileExists(reqFile);
+            boolean exists = fileExists(reqFile);
             logger.info("RequiredFile: {} exists: {}", reqFile, exists);
         }
         for (String optExe : optExeSet) {
-            boolean exists = DependencyCheck.executableExists(optExe);
+            boolean exists = executableExists(optExe);
             logger.info("OptionalExecutable: {} exists: {}", optExe, exists);
         }
         for (String optDir : optDirSet) {
-            boolean exists = DependencyCheck.directoryExists(optDir);
+            boolean exists = directoryExists(optDir);
             logger.info("OptionalDirectory {} exists: {}", optDir, exists);
         }
         for (String optFile : optFileSet) {
-            boolean exists = DependencyCheck.fileExists(optFile);
+            boolean exists = fileExists(optFile);
             logger.info("OptionalFile: {} exists: {}", optFile, exists);
         }
     }

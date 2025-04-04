@@ -9,7 +9,6 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -123,7 +122,7 @@ class TestExtractionTest extends UnitTest {
         Element answers = doc.getRootElement().getChild("answers");
 
         // ensure that the test fails if the meta or nometa tags are not created correctly and a name tag is missing
-        Assertions.assertThrows(AssertionError.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             test.checkAnswers(answers, d, null, MISSING_TAGS_RESOURCE);
         }, "The test should fail if we did not create the nometa tag correctly");
     }
