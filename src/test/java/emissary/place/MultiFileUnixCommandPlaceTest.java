@@ -26,6 +26,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -171,6 +172,17 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
 
     }
 
+    @Test
+    void testMutliFileUnixCommandPlaceOutputEmptyFile() throws Exception {
+        assertNotNull(place, "Place must be created");
+        place.setFileOutputCommand();
+        createScript(Executrix.OUTPUT_TYPE.FILE, 3);
+
+        List<IBaseDataObject> att = place.processHeavyDuty(payload);
+        assertEquals(3, att.size(), "Three Attachments should be created");
+        assertTrue(att.stream().anyMatch(d -> d.dataLength() == 0), "There should be a 0-length attachment");
+    }
+
     private static final String[] LOG_MSGS = {"ERROR script error message", "WARN script warn message", "INFO script info message",
             "DEBUG script debug message"};
 
@@ -205,9 +217,15 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
             fos.write('\n');
 
             // Write a line to outfile.two
-            if (outputCount == 2) {
+            if (outputCount >= 2) {
                 fos.write(("echo '" + W + "'").getBytes());
                 fos.write(" > outfile.two".getBytes());
+                fos.write('\n');
+            }
+
+            // Write nothing to outfile.three
+            if (outputCount >= 3) {
+                fos.write(" > outfile.three".getBytes());
                 fos.write('\n');
             }
 
