@@ -41,7 +41,7 @@ public class JsonEscape {
                 if ((i + 3) < data.length && isOctalDigit(data[i + 3])) {
                     end++;
                 }
-                String s = new String(data, i + 1, (end - i));
+                String s = new String(data, i + 1, end - i);
                 try {
                     int num = Integer.parseInt(s, 8);
                     char[] ch = Character.toChars(num);
@@ -71,7 +71,7 @@ public class JsonEscape {
     }
 
     protected static boolean isOctalDigit(byte b) {
-        return (b >= '0' && b <= '7');
+        return b >= '0' && b <= '7';
     }
 
     /** This class is not meant to be instantiated. */

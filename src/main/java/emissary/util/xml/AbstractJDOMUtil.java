@@ -185,6 +185,7 @@ public abstract class AbstractJDOMUtil {
     /**
      * Create a JDOM element, protecting the data with encoding if needed
      */
+    @SuppressWarnings("PMD.UselessParentheses")
     public static Element protectedElement(final String name, final String s) {
         final Element e = new Element(name);
         int badCount = 0;
