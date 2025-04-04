@@ -4,7 +4,6 @@ import emissary.test.core.junit5.UnitTest;
 
 import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +44,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
      */
     private static void test(@Nullable String date, long expected, String msg) {
         ZonedDateTime unknownParse = FlexibleDateTimeParser.parse(date);
-        Assertions.assertEquals(expected, unknownParse == null ? 0L : unknownParse.toEpochSecond(), "Error on: " + msg);
+        assertEquals(expected, unknownParse == null ? 0L : unknownParse.toEpochSecond(), "Error on: " + msg);
     }
 
     /**
@@ -75,7 +74,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
      */
     private static void testExtensiveParsing(@Nullable String date, long expected, String msg) {
         ZonedDateTime unknownParse = FlexibleDateTimeParser.parse(date, true);
-        Assertions.assertEquals(expected, unknownParse == null ? 0L : unknownParse.toEpochSecond(), "Error on: " + msg);
+        assertEquals(expected, unknownParse == null ? 0L : unknownParse.toEpochSecond(), "Error on: " + msg);
     }
 
 
