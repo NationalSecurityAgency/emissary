@@ -184,6 +184,9 @@ class TestExtractionTest extends UnitTest {
         } else if (OSReleaseUtil.isRhel()) {
             d.setData("rhel-dataLength-test".getBytes());
             d.appendParameter("rhel-test", "rhel-test");
+        } else if (OSReleaseUtil.isMac()) {
+            d.setData("mac-dataLength-test".getBytes());
+            d.appendParameter("mac-test", "mac-test");
         }
 
         // verify if invalid os is specified, AssertionError is thrown

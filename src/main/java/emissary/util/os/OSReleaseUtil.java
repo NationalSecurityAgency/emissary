@@ -1,5 +1,6 @@
 package emissary.util.os;
 
+import org.apache.commons.exec.OS;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -36,6 +37,9 @@ public class OSReleaseUtil {
             } catch (Exception ignored) {
                 // ignore
             }
+        } else {
+            // fallback to the os.version system property for mac support
+            versionId = StringUtils.defaultIfBlank(System.getProperty("os.version"), versionId);
         }
         return versionId;
     }
@@ -50,7 +54,12 @@ public class OSReleaseUtil {
     }
 
     static String getMajorReleaseVersion(Path osReleasePath) {
-        return String.format("%.0f", Float.parseFloat(getVersionId(osReleasePath)));
+        try {
+            return String.format("%.0f", Float.parseFloat(getVersionId(osReleasePath)));
+        } catch (NumberFormatException e) {
+            // support x.y.z format
+            return StringUtils.substringBefore(getVersionId(osReleasePath), ".");
+        }
     }
 
     /**
@@ -90,6 +99,15 @@ public class OSReleaseUtil {
 
     static boolean isRhel(Path osReleasePath) {
         return isOsName(osReleasePath, "rhel");
+    }
+
+    /**
+     * Determine if the OS is macos
+     *
+     * @return true if mac, false otherwise
+     */
+    public static boolean isMac() {
+        return OS.isFamilyMac();
     }
 
     // checks against ID in /etc/os-release
