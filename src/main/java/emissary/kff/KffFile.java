@@ -136,6 +136,7 @@ public class KffFile implements KffFilter {
      * @param crc Result of CRC calculation
      * @return true if the record is in the list, false if it isn't
      */
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private boolean binaryFileSearch(@Nonnull byte[] hash, long crc) {
 
         // Initialize indexes for binary search
@@ -188,6 +189,7 @@ public class KffFile implements KffFilter {
      * @param crc CRC to compare to record
      * @return &lt;0 if given value is less than record, &gt;0 if given value is greater than record, 0 if they match
      */
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private static int compare(@Nonnull byte[] record, @Nonnull byte[] hash, long crc) {
         int i;
 

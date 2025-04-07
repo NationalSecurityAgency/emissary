@@ -337,6 +337,7 @@ public class MagicNumber {
      * Retrieves the data sample
      */
     @Nullable
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private static byte[] getElement(@Nullable byte[] data, int offset, int length) {
         if (data == null) {
             return null;
