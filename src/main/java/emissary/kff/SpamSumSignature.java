@@ -1,5 +1,8 @@
 package emissary.kff;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * A java port of the ssdeep code for "fuzzy hashing". http://ssdeep.sourceforge.net There are a number of ports out
  * there that all look basically the same. This one is from
@@ -94,9 +97,8 @@ public class SpamSumSignature {
     }
 
     @Override
-    @SuppressWarnings("UselessOverridingMethod")
     public int hashCode() {
-        return super.hashCode();
+        return Objects.hash(blockSize, Arrays.hashCode(hash1), Arrays.hashCode(hash2));
     }
 
     public boolean isEqual(SpamSumSignature other) {
