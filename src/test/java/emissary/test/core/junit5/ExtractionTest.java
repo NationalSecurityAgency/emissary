@@ -76,6 +76,9 @@ public abstract class ExtractionTest extends UnitTest {
         } else if (OSReleaseUtil.isRhel()) {
             SYSTEM_OS_RELEASE = "rhel";
             MAJOR_OS_VERSION = OSReleaseUtil.getMajorReleaseVersion();
+        } else if (OSReleaseUtil.isMac()) {
+            SYSTEM_OS_RELEASE = "mac";
+            MAJOR_OS_VERSION = OSReleaseUtil.getMajorReleaseVersion();
         } else {
             SYSTEM_OS_RELEASE = null;
             MAJOR_OS_VERSION = null;
@@ -476,6 +479,7 @@ public abstract class ExtractionTest extends UnitTest {
                 case "ubuntu":
                 case "centos":
                 case "rhel":
+                case "mac":
                     if (specifiedVersion != null) {
                         return os.equals(SYSTEM_OS_RELEASE) && specifiedVersion.getValue().equals(MAJOR_OS_VERSION);
                     } else {
@@ -483,7 +487,7 @@ public abstract class ExtractionTest extends UnitTest {
                         return os.equals(SYSTEM_OS_RELEASE);
                     }
                 default:
-                    fail("specified OS needs to match ubuntu, centos, or rhel. Provided OS=" + os);
+                    fail("specified OS needs to match ubuntu, centos, rhel, or mac. Provided OS=" + os);
             }
         }
         // os-release is not set as an attribute, element applicable for all os

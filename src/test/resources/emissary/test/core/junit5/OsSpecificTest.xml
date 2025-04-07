@@ -3,7 +3,8 @@
         <dataLength os-release="ubuntu">22</dataLength>
         <dataLength os-release="centos">51</dataLength>
         <dataLength os-release="rhel">20</dataLength>
-        
+        <dataLength os-release="mac">19</dataLength>
+
         <meta matchMode="equals">
             <name>Test</name>
             <value>Test</value>
@@ -19,7 +20,11 @@
         <meta matchMode="equals" os-release="rhel">
             <name>rhel-test</name>
             <value>rhel-test</value>
-        </meta>>
+        </meta>
+        <meta matchMode="equals" os-release="mac">
+            <name>mac-test</name>
+            <value>mac-test</value>
+        </meta>
         <data matchMode="contains" os-release="FAKE-OS">
             <value>this should not be checked</value>
         </data>
