@@ -88,6 +88,7 @@ class FTestMobileAgent extends FunctionalTest {
     public static class FakePlace extends ServiceProviderPlace {
         private boolean forcedException = false;
 
+        @SuppressWarnings("PMD.UnusedFormalParameter")
         public FakePlace(final String a, final String b, final String c) throws IOException {}
 
         public void throwExceptionDuringProcessing(final boolean value) {
@@ -104,6 +105,7 @@ class FTestMobileAgent extends FunctionalTest {
     }
 
     public static class FakeEmptyPlace extends ServiceProviderPlace implements EmptyFormPlace {
+        @SuppressWarnings("PMD.UnusedFormalParameter")
         public FakeEmptyPlace(final String a, final String b, final String c) throws IOException {}
 
         @Override

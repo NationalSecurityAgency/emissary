@@ -19,6 +19,7 @@ public class BreakableFilePickUpClient extends FilePickUpClient {
         super(configInfo, dir, placeLoc);
     }
 
+    @SuppressWarnings("PMD.UnusedFormalParameter")
     public BreakableFilePickUpClient(InputStream configInfo, String dir, String placeLoc) throws IOException {
         super((String) null, dir, placeLoc);
     }
