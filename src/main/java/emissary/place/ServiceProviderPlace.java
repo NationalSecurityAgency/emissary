@@ -227,6 +227,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      *
      * @param place the ServiceProviderRefreshablePlace to clone
      */
+    @SuppressWarnings("PMD.UnusedFormalParameter")
     protected ServiceProviderPlace(final ServiceProviderPlace place) {
         super();
     }

@@ -121,6 +121,7 @@ public class KffMemcached implements KffFilter {
      * @param testClient Memcached client to be used if specified (will instantiate a client if null)
      * @throws IOException is thrown if either the file cannot be read of memcached cannot be contacted
      */
+    @SuppressWarnings("PMD.UnusedFormalParameter")
     public KffMemcached(String testIdWithSpaces, String filterName, FilterType duplicate, @Nullable MemcachedClient testClient) throws IOException {
         // Set logger to run time class
         logger = LoggerFactory.getLogger(this.getClass().getName());
