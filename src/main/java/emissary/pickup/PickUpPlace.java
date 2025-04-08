@@ -585,7 +585,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
             logger.debug("Using session parser from raf ident {}", sp.getClass().getName());
 
             // ... and a session producer to crank out the data objects...
-            SessionProducer dof = new SessionProducer(sp, myKey, null);
+            SessionProducer dof = new SessionProducer(sp, (List<String>) null);
 
             long fileStart = System.currentTimeMillis();
             long totalSize = 0;
@@ -640,7 +640,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         SessionParser sp = parserFactory.makeSessionParser(InMemoryChannelFactory.create(data).create());
 
         // .. and a session producer to crank out the data objects...
-        SessionProducer dof = new SessionProducer(sp, myKey, null);
+        SessionProducer dof = new SessionProducer(sp, (List<String>) null);
 
         // For each session get a data object from the producer
         boolean isParserComplete = false;
