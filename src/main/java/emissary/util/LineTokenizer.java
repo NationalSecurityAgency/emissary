@@ -183,6 +183,7 @@ public class LineTokenizer {
         int end = index;
 
         for (; end < data.length && data[end] != delim; end++) {
+            // Do nothing.
         }
 
         byte[] tok = new byte[end - index];
