@@ -135,6 +135,7 @@ public final class ConstructorLookupCache {
      *         matching constructor; otherwise {@code null}.
      */
     @Nullable
+    @SuppressWarnings("PMD.AvoidBranchingStatementAsLastInLoop")
     private static Constructor<?> directConstructorLookup(final Class<?> clazz, final Class<?>[] argTypes) {
         // Look for an exact match.
         try {

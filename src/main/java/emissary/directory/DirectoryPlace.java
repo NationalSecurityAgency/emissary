@@ -966,6 +966,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param entries map of DirectoryEntry stored in this directory
      * @return List of DirectoryEntry with next place to go or empty list if none
      */
+    @SuppressWarnings("PMD.AvoidBranchingStatementAsLastInLoop")
     protected List<DirectoryEntry> nextKeys(final String dataId, final IBaseDataObject payload, @Nullable final DirectoryEntry lastPlace,
             final DirectoryEntryMap entries) {
         // Find the entry list for the type being requested
