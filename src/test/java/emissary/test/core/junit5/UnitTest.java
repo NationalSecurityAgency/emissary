@@ -10,7 +10,10 @@ import emissary.util.io.ResourceReader;
 import jakarta.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
 import org.jdom2.Document;
+import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaderJDOMFactory;
+import org.jdom2.input.sax.XMLReaderSchemaFactory;
 import org.jdom2.input.sax.XMLReaders;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,6 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
+import javax.xml.XMLConstants;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -60,6 +66,8 @@ public abstract class UnitTest {
     protected Package thisPackage = null;
     @Nullable
     protected String origConfigPkg = null;
+
+    protected String answerXsd = "emissary/test/core/schemas/answers.xsd";
 
     /**
      * Create a UnitTest
@@ -252,16 +260,39 @@ public abstract class UnitTest {
                 }
             }
         }
+        return getAnswerDocumentValidated(aname);
+    }
 
-        SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
-        Document answerDoc;
+    @Nullable
+    protected Document getAnswerDocumentValidated(String aname) {
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         try (InputStream is = new ResourceReader().getResourceAsStream(aname)) {
-            answerDoc = builder.build(is);
+            Schema schema = schemaFactory.newSchema(new ResourceReader().getResource(answerXsd));
+            XMLReaderJDOMFactory factory = new XMLReaderSchemaFactory(schema);
+            SAXBuilder sb2 = new SAXBuilder(factory);
+            return sb2.build(is);
+        } catch (JDOMException je) {
+            if (Boolean.getBoolean("validateAnswerFiles")) {
+                fail("Answer document " + aname + " failed to validate against schema " + answerXsd, je);
+            }
+            logger.error("Answer document {} failed to validate against schema {}", aname, answerXsd, je);
+            return getAnswerDocumentNonValidated(aname);
         } catch (Exception ex) {
             logger.debug("No answer document provided for {}", aname, ex);
-            return null;
         }
-        return answerDoc;
+        return null;
+    }
+
+    @Nullable
+    @Deprecated
+    protected Document getAnswerDocumentNonValidated(String aname) {
+        SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
+        try (InputStream is = new ResourceReader().getResourceAsStream(aname)) {
+            return builder.build(is);
+        } catch (Exception ex) {
+            logger.debug("No answer document provided for {}", aname, ex);
+        }
+        return null;
     }
 
     public static class DumpFailuresWatcher implements TestWatcher {

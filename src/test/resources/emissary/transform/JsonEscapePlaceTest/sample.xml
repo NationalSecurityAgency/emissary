@@ -11,6 +11,9 @@
     
     <data matchMode="index">
       <value>٠١٢٣٤٥</value>
+    </data>
+
+    <data matchMode="index">
       <value>some\node\content</value>
     </data>
 

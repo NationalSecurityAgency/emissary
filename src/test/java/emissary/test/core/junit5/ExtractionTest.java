@@ -220,7 +220,7 @@ public abstract class ExtractionTest extends UnitTest {
         // Check each attachment
         for (int attNum = 1; attNum <= attachments.size(); attNum++) {
             String atname = tname + Family.SEP + attNum;
-            Element el = parent.getChild("att" + attNum);
+            Element el = getChildAnswers(parent, "att", attNum);
             if (el != null) {
                 checkAnswersPreHook(el, payload, attachments.get(attNum - 1), atname);
                 checkAnswers(el, attachments.get(attNum - 1), null, atname);
@@ -397,13 +397,12 @@ public abstract class ExtractionTest extends UnitTest {
                         foundCount, tname));
             }
 
-            int attNum = 1;
-            for (IBaseDataObject extractedChild : extractedChildren) {
-                Element extel = el.getChild("extract" + attNum);
+
+            for (int attNum = 1; attNum <= extractedChildren.size(); attNum++) {
+                Element extel = getChildAnswers(el, "extract", attNum);
                 if (extel != null) {
-                    checkAnswers(extel, extractedChild, NO_ATTACHMENTS, String.format("%s::extract%d", tname, attNum));
+                    checkAnswers(extel, extractedChildren.get(attNum - 1), NO_ATTACHMENTS, String.format("%s::extract%d", tname, attNum));
                 }
-                attNum++;
             }
         } else {
             if (extractCount > -1) {
@@ -551,5 +550,18 @@ public abstract class ExtractionTest extends UnitTest {
         if (!didSetFiletype) {
             payload.setFileType(payload.currentForm());
         }
+    }
+
+    protected Element getChildAnswers(Element parent, String name, int index) {
+        // look up the new way i.e <att index="1">
+        Element el = parent.getChildren().stream()
+                .filter(c -> c.getName().equalsIgnoreCase(name) && c.getAttribute("index").getValue().equals(String.valueOf(index)))
+                .findFirst()
+                .orElse(null);
+        if (el == null) {
+            // fallback to the old way i.e. <att1>
+            el = parent.getChild(name + index);
+        }
+        return el;
     }
 }
