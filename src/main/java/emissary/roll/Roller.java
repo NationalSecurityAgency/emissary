@@ -149,18 +149,22 @@ public class Roller implements Runnable {
 
     /*
      * There are a couple of conditions where we would not want to execute when both a progress value and time schedule are
-     * configured: - Time based roll happened and a progress run is scheduled - Progress roll happened between schduled runs
+     * configured: - Time based roll happened and a progress run is scheduled - Progress roll happened between scheduled
+     * runs
      */
     private boolean shouldRoll(long start) {
         // verify both time and progress are set
         // if we're below max we'll check the interval
-        if (period > 0 && max > 0 && progress.get() < max) {
-            // we fired a progress run or delayed start due to starvation. add 100 for clock skew
-            if ((start - lastRun + 100) < getIntervalInMillis()) {
-                return false;
-            }
-        }
-        return true;
+        return ifProgressComplete() || isProgressCompleteWithClockSkew(start);
+    }
+
+    private boolean ifProgressComplete() {
+        return period <= 0 || max <= 0 || progress.get() >= max;
+    }
+
+    private boolean isProgressCompleteWithClockSkew(long start) {
+        // we fired a progress run or delayed start due to starvation. add 100 for clock skew
+        return (start - lastRun + 100) >= getIntervalInMillis();
     }
 
 }
