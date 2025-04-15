@@ -37,6 +37,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
     public static final String MAX_ROLL_FILE_SIZE = "MAX_FILE_SIZE";
     public static final String MAX_OUTPUT_APPENDERS = "MAX_OUTPUT_APPENDERS";
     public static final String ROLL_INTERVAL_UNIT = "ROLL_INTERVAL_UNIT";
+    public static final String ENABLE_OBJECT_TRACE = "ENABLE_OBJECT_TRACE";
 
     protected String defaultOutputPath = "./out";
     protected Path outputPath;
@@ -48,6 +49,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
     protected IJournaler rollable;
     protected FileNameGenerator fileNameGenerator;
     protected boolean appendNewLine = true;
+    protected boolean enableObjectTrace = false;
 
     /**
      * Method to convert payload(s) to an output type
@@ -100,6 +102,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
         this.maxOutputAppenders = this.filterConfig.findIntEntry(MAX_OUTPUT_APPENDERS, AgentPool.computePoolSize());
         this.rollInterval = this.filterConfig.findLongEntry(CFG_ROLL_INTERVAL, rollInterval);
         this.rollIntervalUnits = TimeUnit.valueOf(this.filterConfig.findStringEntry(ROLL_INTERVAL_UNIT, rollIntervalUnits.toString()));
+        this.enableObjectTrace = this.filterConfig.findBooleanEntry(ENABLE_OBJECT_TRACE, enableObjectTrace);
     }
 
     /**
@@ -185,10 +188,13 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
             if (code == STATUS_SUCCESS) {
                 ko.commit();
             }
+
             // Emit dropoff object tracing events
-            for (IBaseDataObject d : payloadList) {
-                ObjectTracingService.emitLifecycleEvent(d, d.getFilename(), ObjectTracing.Stage.DROP_OFF, true, this.filterName,
-                        String.valueOf(ko.getFinalDestination().getFileName()));
+            if (enableObjectTrace) {
+                for (IBaseDataObject d : payloadList) {
+                    ObjectTracingService.emitLifecycleEvent(d, d.getFilename(), ObjectTracing.Stage.DROP_OFF, true, this.filterName,
+                            String.valueOf(ko.getFinalDestination().getFileName()));
+                }
             }
         } catch (IOException e) {
             logger.error("IOException during dropoff.", e);
