@@ -30,8 +30,8 @@ public class MagicNumberFactory {
 
     public static final String UNSUPPORTED_DATATYPE_MSG_SEARCH = "Data Type 'search/N' not supported - e.g. search/1";
     public static final String UNSUPPORTED_DATATYPE_MSG_REGEX = "Data Type 'regex' not supported";
-    public static final String UNSUPORTED_DATATYPE_MSG_UNSIGNED = "Signed Data Types unsupported - e.g. UBELONG";
-    public static final List<String> IGNORABLE_DATATYPE_MSGS = Arrays.asList(UNSUPORTED_DATATYPE_MSG_UNSIGNED,
+    public static final String UNSUPPORTED_DATATYPE_MSG_UNSIGNED = "Signed Data Types unsupported - e.g. UBELONG";
+    protected static final List<String> IGNORABLE_DATATYPE_MSGS = Arrays.asList(UNSUPPORTED_DATATYPE_MSG_UNSIGNED,
             UNSUPPORTED_DATATYPE_MSG_REGEX, UNSUPPORTED_DATATYPE_MSG_SEARCH);
 
     private MagicNumberFactory() {}
@@ -59,7 +59,7 @@ public class MagicNumberFactory {
      * @param configData the byte[] representing the magic file
      * @param zeroDepthErrorList logs errors with zero depth entries
      * @param continuationErrorMap logs errors with continuations - these are entries with depths &gt; 0
-     * @param swallowParseException boolean whether to swallow or propogate ParseExceptions that are IGNORABLE_DATATYPE_MSGS
+     * @param swallowParseException boolean whether to swallow or propagate ParseExceptions that are IGNORABLE_DATATYPE_MSGS
      * @return a {@link List}.
      */
     public static List<MagicNumber> buildMagicNumberList(byte[] configData, @Nullable List<String> zeroDepthErrorList,
@@ -74,7 +74,7 @@ public class MagicNumberFactory {
             int counter = 0;
             while ((s = reader.readLine()) != null) {
                 counter++;
-                if (s == null || s.length() == 0 || s.charAt(0) == '#') {
+                if (s.isEmpty() || s.charAt(0) == '#') {
                     continue;
                 }
                 int depth = getEntryDepth(s);
@@ -146,7 +146,8 @@ public class MagicNumberFactory {
                             continuationErrorMap.put(mItem.toString(), failedExtensions);
                         }
                         failedExtensions.add("[MAGIC LINE# " + counter + "] " + s);
-                    } else if (depth == 0) {
+                    } else {
+                        // depth = 0
                         zeroDepthErrorList.add("[MAGIC LINE# " + counter + "] " + s);
                     }
                 }
@@ -226,14 +227,14 @@ public class MagicNumberFactory {
             throw new ParseException("Error on column 0:" + columns[0] + ". " + e.getMessage());
         }
         try {
-            // columb B parsing
+            // column B parsing
             item.dataType = resolveDataType(columns);
             item.dataTypeLength = getDataTypeByteLength(item);
             item.mask = resolveMask(columns, item);
         } catch (Exception e) {
             if (swallowParseException) {
                 // This means you put TRUE in SWALLOW_IGNORABLE_EXCEPTIONS in a UnixFilePlace.cfg file
-                // so let's log at debug level so you can hide these message easily
+                // so let's log at debug level, so you can hide these message easily
                 log.debug("Warning unable to read column 1\t: {} - {}", columns[1], e.getMessage());
             } else {
                 log.error("original entry   \t: {}", entry);
@@ -307,10 +308,10 @@ public class MagicNumberFactory {
 
         String[] columns = tokenizeEntry(subject);
         for (int count = 0; count < columns.length; count++) {
-            if (count == 3 && columns[count].length() == 0 && !(columns[0].charAt(0) == '>')) {
+            if (count == 3 && columns[count].isEmpty() && columns[0].charAt(0) != '>') {
                 // columns[count] = NULL_DESCRIPTION;
 
-            } else if (columns[count].length() == 0 && count < 3) {
+            } else if (columns[count].isEmpty() && count < 3) {
                 throw new ParseException(ENTRY_4COLUMN_RULE);
             }
         }
@@ -345,7 +346,7 @@ public class MagicNumberFactory {
     }
 
     public static int getEntryDepth(String entry) {
-        if (entry.length() == 0 || (entry.charAt(0) != '>' && !Character.isDigit(entry.charAt(0)))) {
+        if (entry.isEmpty() || (entry.charAt(0) != '>' && !Character.isDigit(entry.charAt(0)))) {
             return -1;
         }
         int depth = 0;
@@ -371,7 +372,7 @@ public class MagicNumberFactory {
             throw new ParseException(UNSUPPORTED_DATATYPE_MSG_REGEX);
         }
         if (subject.charAt(0) == 'u' || subject.charAt(0) == 'U') {
-            throw new ParseException(UNSUPORTED_DATATYPE_MSG_UNSIGNED);
+            throw new ParseException(UNSUPPORTED_DATATYPE_MSG_UNSIGNED);
         }
 
         // parse out any masking
@@ -390,9 +391,7 @@ public class MagicNumberFactory {
         int dataTypeIdInt = typeMap.get(arg.toUpperCase(Locale.getDefault()));
         switch (dataTypeIdInt) {
             case MagicNumber.TYPE_DATE:
-                return -1;
             case MagicNumber.TYPE_BEDATE:
-                return -1;
             case MagicNumber.TYPE_LEDATE:
                 return -1;
             default:
@@ -448,7 +447,7 @@ public class MagicNumberFactory {
 
     private static int unaryPrefixLength(@Nullable String s) {
 
-        if (s == null || s.length() == 0) {
+        if (s == null || s.isEmpty()) {
             return 0;
         }
 
@@ -457,19 +456,15 @@ public class MagicNumberFactory {
         if (!Character.isDigit(op)) {
             switch (op) {
                 case MagicNumber.MAGICOPERATOR_AND:
+                case MagicNumber.MAGICOPERATOR_OR:
+                case MagicNumber.MAGICOPERATOR_BWAND:
+                case MagicNumber.MAGICOPERATOR_BWNOT:
+                case MagicNumber.MAGICOPERATOR_NOT:
                     return 1;
                 case MagicNumber.MAGICOPERATOR_GTHAN:
                     return len > 1 && s.charAt(1) == MagicNumber.MAGICOPERATOR_AND ? 2 : 1;
                 case MagicNumber.MAGICOPERATOR_LTHAN:
                     return len > 1 && s.charAt(1) == MagicNumber.MAGICOPERATOR_AND ? 2 : 1;
-                case MagicNumber.MAGICOPERATOR_OR:
-                    return 1;
-                case MagicNumber.MAGICOPERATOR_BWAND:
-                    return 1;
-                case MagicNumber.MAGICOPERATOR_BWNOT:
-                    return 1;
-                case MagicNumber.MAGICOPERATOR_NOT:
-                    return 1;
                 default:
                     return 0;
             }
@@ -489,19 +484,13 @@ public class MagicNumberFactory {
             case MagicNumber.TYPE_BYTE:
                 return 1;
             case MagicNumber.TYPE_SHORT:
-                return 2;
             case MagicNumber.TYPE_BESHORT:
-                return 2;
             case MagicNumber.TYPE_LESHORT:
                 return 2;
             case MagicNumber.TYPE_LONG:
-                return 4;
             case MagicNumber.TYPE_BELONG:
-                return 4;
             case MagicNumber.TYPE_LELONG:
-                return 4;
             case MagicNumber.TYPE_BEDATE:
-                return 4;
             case MagicNumber.TYPE_LEDATE:
                 return 4;
             default:
@@ -528,7 +517,7 @@ public class MagicNumberFactory {
     public static String resolveReverseDataType(int dataTypeId) {
         initTypeMap();
         for (Map.Entry<String, Integer> entry : typeMap.entrySet()) {
-            if (entry.getValue().intValue() == dataTypeId) {
+            if (entry.getValue() == dataTypeId) {
                 return entry.getKey();
             }
         }
