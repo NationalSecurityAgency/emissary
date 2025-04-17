@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProtocolFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core.sentinel.protocols</a> &gt; <span class="el_source">ProtocolFactory.java</span></div><h1>ProtocolFactory.java</h1><pre class="source lang-java linenums">package emissary.core.sentinel.protocols;
+
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.Factory;
+
+import java.io.IOException;
+
+public class ProtocolFactory {
+
+    private static final String DEFAULT_PROTOCOL_CLASS = &quot;emissary.core.sentinel.protocols.AgentProtocol&quot;;
+
+    public static Protocol get(String conf) {
+        try {
+<span class="nc" id="L15">            Configurator config = ConfigUtil.getConfigInfo(conf);</span>
+<span class="nc" id="L16">            String protocolType = config.findStringEntry(&quot;PROTOCOL_CLASS&quot;, DEFAULT_PROTOCOL_CLASS);</span>
+<span class="nc" id="L17">            return (Protocol) Factory.create(protocolType, config);</span>
+<span class="nc" id="L18">        } catch (IOException e) {</span>
+<span class="nc" id="L19">            throw new IllegalArgumentException(&quot;There was a problem with the supplied config [&quot; + conf + &quot;]&quot;, e);</span>
+        }
+    }
+
+    private ProtocolFactory() {}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
