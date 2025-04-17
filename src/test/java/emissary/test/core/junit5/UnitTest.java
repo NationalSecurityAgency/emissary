@@ -71,6 +71,7 @@ public abstract class UnitTest {
     /**
      * Create a named unit test
      */
+    @SuppressWarnings("PMD.UnusedFormalParameter")
     public UnitTest(String name) {
         configure();
     }

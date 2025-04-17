@@ -10,6 +10,7 @@ public class OOMPlace extends ServiceProviderPlace {
         super(configInfo, dir, placeLoc);
     }
 
+    @SuppressWarnings("PMD.UnusedFormalParameter")
     public OOMPlace(InputStream configInfo, String dir, String placeLoc) throws IOException {
         super((String) null, dir, placeLoc);
     }
