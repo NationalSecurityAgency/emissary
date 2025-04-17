@@ -220,8 +220,10 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
             Preconditions.checkArgument(StringUtils.isNotBlank(path), "Path cannot be blank");
             Preconditions.checkArgument(intervalMinutes > 0, "Monitoring interval is not greater than 0");
 
-            final FileAlterationObserver observer;
             final Path file = Paths.get(path);
+            Preconditions.checkArgument(Files.exists(file), "Path does not exist");
+
+            final FileAlterationObserver observer;
             if (Files.isDirectory(file)) {
                 logger.debug("Monitoring directory {} for changes", file);
                 observer = new FileAlterationObserver(path);
