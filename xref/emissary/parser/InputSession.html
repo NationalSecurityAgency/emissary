@@ -8,15 +8,15 @@
 <div id="overview"><a href="../../../apidocs/emissary/parser/InputSession.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> emissary.parser;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.apache.commons.collections4.CollectionUtils;
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
-<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
-<a class="jxr_linenumber" name="L6" href="#L6">6</a>   
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> java.util.ArrayList;
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> java.util.HashMap;
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> javax.annotation.Nullable;
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> jakarta.annotation.Nullable;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.apache.commons.collections4.CollectionUtils;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> java.util.HashMap;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>  
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_javadoccomment"> * Detailed session information as it is parsed This class just records offsets and length of various things using lists</em>
@@ -418,13 +418,13 @@
 <a class="jxr_linenumber" name="L410" href="#L410">410</a>     @Override
 <a class="jxr_linenumber" name="L411" href="#L411">411</a>     <strong class="jxr_keyword">public</strong> String toString() {
 <a class="jxr_linenumber" name="L412" href="#L412">412</a>         StringBuilder sb = <strong class="jxr_keyword">new</strong> StringBuilder();
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>         sb.append(<span class="jxr_string">"Session is "</span>).append((<strong class="jxr_keyword">this</strong>.isValid() ? <span class="jxr_string">""</span> : <span class="jxr_string">"not"</span>)).append(<span class="jxr_string">"valid"</span>).append(<span class="jxr_string">"\n"</span>);
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>         sb.append(<span class="jxr_string">"Session is "</span>).append(<strong class="jxr_keyword">this</strong>.isValid() ? <span class="jxr_string">""</span> : <span class="jxr_string">"not"</span>).append(<span class="jxr_string">"valid"</span>).append(<span class="jxr_string">"\n"</span>);
 <a class="jxr_linenumber" name="L414" href="#L414">414</a>         sb.append(<span class="jxr_string">"Session overall "</span>).append(<strong class="jxr_keyword">this</strong>.getOverall()).append(<span class="jxr_string">"\n"</span>);
 <a class="jxr_linenumber" name="L415" href="#L415">415</a>         sb.append(<span class="jxr_string">"Header record "</span>).append(<strong class="jxr_keyword">this</strong>.getHeader()).append(<span class="jxr_string">"\n"</span>);
 <a class="jxr_linenumber" name="L416" href="#L416">416</a>         sb.append(<span class="jxr_string">"Data record "</span>).append(<strong class="jxr_keyword">this</strong>.getData()).append(<span class="jxr_string">"\n"</span>);
 <a class="jxr_linenumber" name="L417" href="#L417">417</a>         sb.append(<span class="jxr_string">"Footer record "</span>).append(<strong class="jxr_keyword">this</strong>.getFooter()).append(<span class="jxr_string">"\n"</span>);
 <a class="jxr_linenumber" name="L418" href="#L418">418</a>         Map&lt;String, Object&gt; m = <strong class="jxr_keyword">this</strong>.getMetaData();
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>         sb.append(<span class="jxr_string">"Metadata count "</span>).append((m == <strong class="jxr_keyword">null</strong> ? 0 : m.size())).append(<span class="jxr_string">"\n"</span>);
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>         sb.append(<span class="jxr_string">"Metadata count "</span>).append(m == <strong class="jxr_keyword">null</strong> ? 0 : m.size()).append(<span class="jxr_string">"\n"</span>);
 <a class="jxr_linenumber" name="L420" href="#L420">420</a>         <strong class="jxr_keyword">return</strong> sb.toString();
 <a class="jxr_linenumber" name="L421" href="#L421">421</a>     }
 <a class="jxr_linenumber" name="L422" href="#L422">422</a> 

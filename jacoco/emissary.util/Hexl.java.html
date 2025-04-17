@@ -38,74 +38,75 @@ public class Hexl {
      * 
      * @param limit how many bytes of data to print starting from 0
      */
+    @SuppressWarnings(&quot;PMD.UselessParentheses&quot;)
     public static String toHexString(byte[] data, int limit) {
 
-<span class="nc" id="L43">        StringBuilder output = new StringBuilder(2048);</span>
+<span class="nc" id="L44">        StringBuilder output = new StringBuilder(2048);</span>
 
-<span class="nc" id="L45">        int stop = data.length;</span>
+<span class="nc" id="L46">        int stop = data.length;</span>
 
-<span class="nc bnc" id="L47" title="All 2 branches missed.">        if (limit &lt; stop) {</span>
-<span class="nc" id="L48">            stop = limit;</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (limit &lt; stop) {</span>
+<span class="nc" id="L49">            stop = limit;</span>
         }
 
-<span class="nc" id="L51">        int lineCount = 0;</span>
+<span class="nc" id="L52">        int lineCount = 0;</span>
 
-<span class="nc" id="L53">        byte[] rhs = new byte[CHARS_PER_LINE];</span>
+<span class="nc" id="L54">        byte[] rhs = new byte[CHARS_PER_LINE];</span>
 
-<span class="nc" id="L55">        int j = 0;</span>
+<span class="nc" id="L56">        int j = 0;</span>
 
-<span class="nc bnc" id="L57" title="All 2 branches missed.">        for (int i = 0; i &lt; stop; i++, j++) {</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        for (int i = 0; i &lt; stop; i++, j++) {</span>
 
 
             // end a line
-<span class="nc bnc" id="L61" title="All 2 branches missed.">            if (j &gt;= CHARS_PER_LINE) {</span>
-<span class="nc" id="L62">                output.append(&quot;  &quot;).append(new String(rhs));</span>
-<span class="nc" id="L63">                output.append(System.getProperty(&quot;line.separator&quot;, &quot;\n&quot;));</span>
-<span class="nc" id="L64">                j = 0;</span>
-<span class="nc" id="L65">                lineCount++;</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">            if (j &gt;= CHARS_PER_LINE) {</span>
+<span class="nc" id="L63">                output.append(&quot;  &quot;).append(new String(rhs));</span>
+<span class="nc" id="L64">                output.append(System.getProperty(&quot;line.separator&quot;, &quot;\n&quot;));</span>
+<span class="nc" id="L65">                j = 0;</span>
+<span class="nc" id="L66">                lineCount++;</span>
             }
 
             // start a new line
-<span class="nc bnc" id="L69" title="All 2 branches missed.">            if (j == 0) {</span>
-<span class="nc" id="L70">                String s = Integer.toHexString(lineCount);</span>
-<span class="nc" id="L71">                int pad = COUNTER_SIZE - s.length();</span>
-<span class="nc bnc" id="L72" title="All 2 branches missed.">                while (pad-- &gt; 0) {</span>
-<span class="nc" id="L73">                    output.append(&quot;0&quot;);</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">            if (j == 0) {</span>
+<span class="nc" id="L71">                String s = Integer.toHexString(lineCount);</span>
+<span class="nc" id="L72">                int pad = COUNTER_SIZE - s.length();</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">                while (pad-- &gt; 0) {</span>
+<span class="nc" id="L74">                    output.append(&quot;0&quot;);</span>
                 }
-<span class="nc" id="L75">                output.append(s);</span>
-<span class="nc" id="L76">                output.append(&quot;: &quot;);</span>
+<span class="nc" id="L76">                output.append(s);</span>
+<span class="nc" id="L77">                output.append(&quot;: &quot;);</span>
             }
 
-<span class="nc" id="L79">            String s = Integer.toHexString(data[i] &amp; 0xff);</span>
-<span class="nc bnc" id="L80" title="All 2 branches missed.">            if (s.length() &lt; 2) {</span>
-<span class="nc" id="L81">                output.append(&quot;0&quot;).append(s);</span>
+<span class="nc" id="L80">            String s = Integer.toHexString(data[i] &amp; 0xff);</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            if (s.length() &lt; 2) {</span>
+<span class="nc" id="L82">                output.append(&quot;0&quot;).append(s);</span>
             } else {
-<span class="nc" id="L83">                output.append(s);</span>
+<span class="nc" id="L84">                output.append(s);</span>
             }
 
             // Group hex entries
-<span class="nc bnc" id="L87" title="All 2 branches missed.">            if (j % 2 != 0) {</span>
-<span class="nc" id="L88">                output.append(&quot; &quot;);</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">            if (j % 2 != 0) {</span>
+<span class="nc" id="L89">                output.append(&quot; &quot;);</span>
             }
 
             // Build the rhs
-<span class="nc bnc" id="L92" title="All 2 branches missed.">            if (printable.indexOf(data[i]) &gt; -1) {</span>
-<span class="nc" id="L93">                rhs[j] = data[i];</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">            if (printable.indexOf(data[i]) &gt; -1) {</span>
+<span class="nc" id="L94">                rhs[j] = data[i];</span>
             } else {
-<span class="nc" id="L95">                rhs[j] = (byte) '.';</span>
+<span class="nc" id="L96">                rhs[j] = (byte) '.';</span>
             }
         }
 
-<span class="nc" id="L99">        int pad = ((CHARS_PER_LINE * 2) + (CHARS_PER_LINE / 2) + 1) - ((j * 2) + (j / 2) - 1);</span>
-<span class="nc bnc" id="L100" title="All 2 branches missed.">        while (pad-- &gt; 0) {</span>
-<span class="nc" id="L101">            output.append(&quot; &quot;);</span>
+<span class="nc" id="L100">        int pad = ((CHARS_PER_LINE * 2) + (CHARS_PER_LINE / 2) + 1) - ((j * 2) + (j / 2) - 1);</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        while (pad-- &gt; 0) {</span>
+<span class="nc" id="L102">            output.append(&quot; &quot;);</span>
         }
-<span class="nc bnc" id="L103" title="All 2 branches missed.">        while (j &lt; CHARS_PER_LINE) {</span>
-<span class="nc" id="L104">            rhs[j++] = (byte) ' ';</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        while (j &lt; CHARS_PER_LINE) {</span>
+<span class="nc" id="L105">            rhs[j++] = (byte) ' ';</span>
         }
-<span class="nc" id="L106">        output.append(new String(rhs));</span>
+<span class="nc" id="L107">        output.append(new String(rhs));</span>
 
-<span class="nc" id="L108">        return output.toString();</span>
+<span class="nc" id="L109">        return output.toString();</span>
     }
 
     /** This class is not meant to be instantiated. */
@@ -114,26 +115,26 @@ public class Hexl {
     @SuppressWarnings(&quot;SystemOut&quot;)
     public static void main(String[] argv) {
 
-<span class="nc bnc" id="L117" title="All 2 branches missed.">        if (argv.length &lt; 1) {</span>
-<span class="nc" id="L118">            System.err.println(&quot;usage: java emissary.util.Hexl datafile1 datafile2 ...&quot;);</span>
-<span class="nc" id="L119">            return;</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if (argv.length &lt; 1) {</span>
+<span class="nc" id="L119">            System.err.println(&quot;usage: java emissary.util.Hexl datafile1 datafile2 ...&quot;);</span>
+<span class="nc" id="L120">            return;</span>
         }
 
         byte[] theContent;
 
-<span class="nc bnc" id="L124" title="All 2 branches missed.">        for (int i = 0; i &lt; argv.length; i++) {</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        for (int i = 0; i &lt; argv.length; i++) {</span>
 
-<span class="nc" id="L126">            try (InputStream theFile = Files.newInputStream(Paths.get(argv[i]));</span>
-<span class="nc" id="L127">                    DataInputStream theStream = new DataInputStream(theFile)) {</span>
-<span class="nc" id="L128">                theContent = IOUtils.toByteArray(theStream);</span>
-<span class="nc" id="L129">            } catch (IOException e) {</span>
-<span class="nc" id="L130">                System.err.println(&quot;Error reading from &quot; + argv[i]);</span>
-<span class="nc" id="L131">                continue;</span>
-<span class="nc" id="L132">            }</span>
+<span class="nc" id="L127">            try (InputStream theFile = Files.newInputStream(Paths.get(argv[i]));</span>
+<span class="nc" id="L128">                    DataInputStream theStream = new DataInputStream(theFile)) {</span>
+<span class="nc" id="L129">                theContent = IOUtils.toByteArray(theStream);</span>
+<span class="nc" id="L130">            } catch (IOException e) {</span>
+<span class="nc" id="L131">                System.err.println(&quot;Error reading from &quot; + argv[i]);</span>
+<span class="nc" id="L132">                continue;</span>
+<span class="nc" id="L133">            }</span>
 
-<span class="nc" id="L134">            System.out.println(&quot;File &quot; + argv[i]);</span>
-<span class="nc" id="L135">            System.out.println(toHexString(theContent));</span>
+<span class="nc" id="L135">            System.out.println(&quot;File &quot; + argv[i]);</span>
+<span class="nc" id="L136">            System.out.println(toHexString(theContent));</span>
         }
-<span class="nc" id="L137">    }</span>
+<span class="nc" id="L138">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

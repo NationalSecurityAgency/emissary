@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Journal.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.output.roller.journal</a> &gt; <span class="el_source">Journal.java</span></div><h1>Journal.java</h1><pre class="source lang-java linenums">package emissary.output.roller.journal;
 
+import jakarta.annotation.Nullable;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Tracks written progress of a corresponding file. Some formats within the framework don't lend themselves to knowing
@@ -18,7 +19,7 @@ public final class Journal {
 
     static final byte SEP = 0x00;
     // 6 byte magic
-<span class="fc" id="L21">    static final byte[] MAGIC = &quot;BGJRNL&quot;.getBytes();</span>
+<span class="fc" id="L22">    static final byte[] MAGIC = &quot;BGJRNL&quot;.getBytes();</span>
     static final byte CURRENT_VERSION = 1;
     static final int ENTRY_LENGTH = 1024;
     // eight bytes and a null separator
@@ -31,27 +32,27 @@ public final class Journal {
     String key;
     final Path journalPath;
 
-<span class="fc" id="L34">    ArrayList&lt;JournalEntry&gt; entries = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L35">    ArrayList&lt;JournalEntry&gt; entries = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L36">    public Journal(Path journalPath) {</span>
-<span class="fc" id="L37">        this.journalPath = journalPath;</span>
-<span class="fc" id="L38">    }</span>
+<span class="fc" id="L37">    public Journal(Path journalPath) {</span>
+<span class="fc" id="L38">        this.journalPath = journalPath;</span>
+<span class="fc" id="L39">    }</span>
 
     public List&lt;JournalEntry&gt; getEntries() {
-<span class="fc" id="L41">        return Collections.unmodifiableList(entries);</span>
+<span class="fc" id="L42">        return Collections.unmodifiableList(entries);</span>
     }
 
     void setVersion(byte b) {
-<span class="fc" id="L45">        this.version = b;</span>
-<span class="fc" id="L46">    }</span>
+<span class="fc" id="L46">        this.version = b;</span>
+<span class="fc" id="L47">    }</span>
 
     public byte getVersion() {
-<span class="nc" id="L49">        return version;</span>
+<span class="nc" id="L50">        return version;</span>
     }
 
     void setKey(String key) {
-<span class="fc" id="L53">        this.key = key;</span>
-<span class="fc" id="L54">    }</span>
+<span class="fc" id="L54">        this.key = key;</span>
+<span class="fc" id="L55">    }</span>
 
     /**
      * Unique identifier for this Journal, typically used to identify a target, finalized file name.
@@ -59,11 +60,11 @@ public final class Journal {
      * @return The key, generally a target file, for this Journal
      */
     public String getKey() {
-<span class="fc" id="L62">        return this.key;</span>
+<span class="fc" id="L63">        return this.key;</span>
     }
 
     public Path getJournalPath() {
-<span class="fc" id="L66">        return this.journalPath;</span>
+<span class="fc" id="L67">        return this.journalPath;</span>
     }
 
     /**
@@ -74,7 +75,7 @@ public final class Journal {
      */
     @Nullable
     public JournalEntry getLastEntry() {
-<span class="fc bfc" id="L77" title="All 2 branches covered.">        return entries.isEmpty() ? null : entries.get(entries.size() - 1);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        return entries.isEmpty() ? null : entries.get(entries.size() - 1);</span>
     }
 
     /**
@@ -87,21 +88,21 @@ public final class Journal {
      */
     @Nullable
     public JournalEntry getLastValidEntry(long channelSize) {
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">        if (channelSize &lt; 0) {</span>
-<span class="nc" id="L91">            throw new IllegalArgumentException(&quot;Channel Size must be 0 or larger&quot;);</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">        if (channelSize &lt; 0) {</span>
+<span class="nc" id="L92">            throw new IllegalArgumentException(&quot;Channel Size must be 0 or larger&quot;);</span>
         }
-<span class="pc bpc" id="L93" title="1 of 2 branches missed.">        for (int i = entries.size() - 1; i &gt; 0; i--) {</span>
-<span class="fc" id="L94">            JournalEntry je = entries.get(i);</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">            if (channelSize &gt;= je.getOffset()) {</span>
-<span class="fc" id="L96">                return je;</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">        for (int i = entries.size() - 1; i &gt; 0; i--) {</span>
+<span class="fc" id="L95">            JournalEntry je = entries.get(i);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">            if (channelSize &gt;= je.getOffset()) {</span>
+<span class="fc" id="L97">                return je;</span>
             }
         }
-<span class="nc" id="L99">        return null;</span>
+<span class="nc" id="L100">        return null;</span>
     }
 
     @Override
     public String toString() {
-<span class="nc" id="L104">        return &quot;Journal{&quot; + &quot;version=&quot; + version + &quot;, key=&quot; + key + &quot;, journalPath=&quot; + journalPath + &quot;, entries=&quot; + entries.size() + '}';</span>
+<span class="nc" id="L105">        return &quot;Journal{&quot; + &quot;version=&quot; + version + &quot;, key=&quot; + key + &quot;, journalPath=&quot; + journalPath + &quot;, entries=&quot; + entries.size() + '}';</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

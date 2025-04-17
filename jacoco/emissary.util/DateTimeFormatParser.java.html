@@ -3,6 +3,7 @@
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,6 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import javax.annotation.Nullable;
 
 /**
  * Class for Parsing Dates using DateTimeFormatter. Attempts to parse a date of an unknown format with a predefined set
@@ -141,7 +141,7 @@ public class DateTimeFormatParser {
 
             try {
 <span class="nc" id="L143">                return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(cleanedDateString)).atZone(zone).toLocalDateTime();</span>
-<span class="fc" id="L144">            } catch (DateTimeParseException e) {</span>
+<span class="fc" id="L144">            } catch (DateTimeParseException ignored) {</span>
                 // ignore
             }
 
@@ -168,7 +168,7 @@ public class DateTimeFormatParser {
 <span class="fc" id="L168">                ZonedDateTime zdt = ZonedDateTime.parse(dateString, dtf);</span>
 <span class="fc" id="L169">                zdt = ZonedDateTime.ofInstant(zdt.toInstant(), zone);</span>
 <span class="fc" id="L170">                return zdt.toLocalDateTime();</span>
-<span class="fc" id="L171">            } catch (DateTimeParseException e) {</span>
+<span class="fc" id="L171">            } catch (DateTimeParseException ignored) {</span>
                 // ignore
             }
 <span class="fc" id="L174">        }</span>
@@ -187,7 +187,7 @@ public class DateTimeFormatParser {
 <span class="fc bfc" id="L187" title="All 2 branches covered.">        for (final DateTimeFormatter dtf : dateTimeFormats) {</span>
             try {
 <span class="fc" id="L189">                return LocalDateTime.parse(dateString, dtf);</span>
-<span class="fc" id="L190">            } catch (DateTimeParseException e) {</span>
+<span class="fc" id="L190">            } catch (DateTimeParseException ignored) {</span>
                 // ignore
             }
 <span class="fc" id="L193">        }</span>
@@ -207,7 +207,7 @@ public class DateTimeFormatParser {
             try {
 <span class="fc" id="L208">                OffsetDateTime odt = OffsetDateTime.parse(dateString, dtf);</span>
 <span class="fc" id="L209">                return OffsetDateTime.ofInstant(odt.toInstant(), zone).toLocalDateTime();</span>
-<span class="fc" id="L210">            } catch (DateTimeParseException e) {</span>
+<span class="fc" id="L210">            } catch (DateTimeParseException ignored) {</span>
                 // ignore
             }
 <span class="fc" id="L213">        }</span>
@@ -227,7 +227,7 @@ public class DateTimeFormatParser {
             try {
 <span class="fc" id="L228">                LocalDate d = LocalDate.parse(dateString, dtf);</span>
 <span class="fc" id="L229">                return d.atStartOfDay();</span>
-<span class="fc" id="L230">            } catch (DateTimeParseException e) {</span>
+<span class="fc" id="L230">            } catch (DateTimeParseException ignored) {</span>
                 // ignore
             }
 <span class="fc" id="L233">        }</span>

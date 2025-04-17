@@ -3,9 +3,10 @@
 import emissary.config.Configurator;
 import emissary.core.Factory;
 
+import jakarta.annotation.Nullable;
+
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 
 /**
  * Util class to grab known parameters from configs to help configure Rollable objects.
@@ -17,7 +18,7 @@ public class RollUtil {
      * @return the configured rollable time period
      */
     public static long getPeriod(Configurator configG) {
-<span class="nc" id="L20">        return configG.findLongEntry(&quot;ROLLABLE_TIME_PERIOD&quot;, 10L);</span>
+<span class="nc" id="L21">        return configG.findLongEntry(&quot;ROLLABLE_TIME_PERIOD&quot;, 10L);</span>
     }
 
     /**
@@ -27,7 +28,7 @@ public class RollUtil {
      * @return the configured rollable TimeUnit
      */
     public static TimeUnit getTimeUnit(Configurator configG) {
-<span class="nc" id="L30">        return getUnit(configG.findStringEntry(&quot;ROLLABLE_TIME_UNIT&quot;, &quot;MINUTES&quot;));</span>
+<span class="nc" id="L31">        return getUnit(configG.findStringEntry(&quot;ROLLABLE_TIME_UNIT&quot;, &quot;MINUTES&quot;));</span>
     }
 
     /**
@@ -41,24 +42,24 @@ public class RollUtil {
      * @return a newly configured Roller
      */
     public static Roller buildRoller(Map&lt;String, String&gt; config) {
-<span class="fc" id="L44">        String clz = config.get(&quot;CLASS&quot;);</span>
+<span class="fc" id="L45">        String clz = config.get(&quot;CLASS&quot;);</span>
         // assumes a no-arg constructor and a Rollable instance
-<span class="fc" id="L46">        Rollable r = (Rollable) Factory.create(clz);</span>
-<span class="fc" id="L47">        TimeUnit t = getUnit(config.get(&quot;TIME_UNIT&quot;));</span>
-<span class="fc" id="L48">        long period = getLong(config.get(&quot;TIME_PERIOD&quot;));</span>
-<span class="fc" id="L49">        long max = getLong(config.get(&quot;PROGRESS_MAX&quot;));</span>
-<span class="fc" id="L50">        return new Roller(max, t, period, r);</span>
+<span class="fc" id="L47">        Rollable r = (Rollable) Factory.create(clz);</span>
+<span class="fc" id="L48">        TimeUnit t = getUnit(config.get(&quot;TIME_UNIT&quot;));</span>
+<span class="fc" id="L49">        long period = getLong(config.get(&quot;TIME_PERIOD&quot;));</span>
+<span class="fc" id="L50">        long max = getLong(config.get(&quot;PROGRESS_MAX&quot;));</span>
+<span class="fc" id="L51">        return new Roller(max, t, period, r);</span>
     }
 
     // convert a long from a string or return 0
     private static long getLong(@Nullable String l) {
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        return l == null ? 0L : Long.parseLong(l);</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        return l == null ? 0L : Long.parseLong(l);</span>
     }
 
     // attempt to parse time unit.
     @Nullable
     private static TimeUnit getUnit(@Nullable String unit) {
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        return unit == null ? null : TimeUnit.valueOf(unit);</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        return unit == null ? null : TimeUnit.valueOf(unit);</span>
     }
 
     /** This class is not meant to be instantiated. */

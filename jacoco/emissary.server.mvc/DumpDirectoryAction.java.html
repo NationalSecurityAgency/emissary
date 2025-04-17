@@ -10,6 +10,7 @@ import emissary.directory.KeyManipulator;
 import emissary.server.mvc.adapters.DirectoryAdapter;
 import emissary.server.mvc.adapters.RequestUtil;
 
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 @Path(&quot;&quot;)
 // context is emissary
@@ -152,8 +152,8 @@ import javax.annotation.Nullable;
 <span class="fc" id="L152">            this.expense = entry.getExpense();</span>
 <span class="fc" id="L153">            long ago = now - entry.getAge();</span>
 <span class="fc" id="L154">            long hh = ago / 3600000;</span>
-<span class="fc" id="L155">            long mm = (ago % 3600000) / 60000;</span>
-<span class="fc" id="L156">            long ss = (ago % 60000) / 1000;</span>
+<span class="fc" id="L155">            long mm = ago % 3600000 / 60000;</span>
+<span class="fc" id="L156">            long ss = ago % 60000 / 1000;</span>
 <span class="pc bpc" id="L157" title="1 of 2 branches missed.">            String hhs = (hh &lt; 10 ? &quot;0&quot; : &quot;&quot;) + hh;</span>
 <span class="pc bpc" id="L158" title="1 of 2 branches missed.">            String mms = (mm &lt; 10 ? &quot;0&quot; : &quot;&quot;) + mm;</span>
 <span class="pc bpc" id="L159" title="1 of 2 branches missed.">            String sss = (ss &lt; 10 ? &quot;0&quot; : &quot;&quot;) + ss;</span>

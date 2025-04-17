@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JournalWriter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.output.roller.journal</a> &gt; <span class="el_source">JournalWriter.java</span></div><h1>JournalWriter.java</h1><pre class="source lang-java linenums">package emissary.output.roller.journal;
 
+import jakarta.annotation.Nullable;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -8,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.annotation.Nullable;
 
 import static emissary.output.roller.journal.Journal.SEP;
 
@@ -29,9 +30,9 @@ import static emissary.output.roller.journal.Journal.SEP;
  */
 public class JournalWriter implements Closeable {
 
-<span class="fc" id="L32">    private final ReentrantLock lock = new ReentrantLock();</span>
-<span class="fc" id="L33">    @Nullable</span>
-<span class="fc" id="L34">    private ByteBuffer b = ByteBuffer.allocateDirect(Journal.ENTRY_LENGTH);</span>
+<span class="fc" id="L33">    private final ReentrantLock lock = new ReentrantLock();</span>
+<span class="fc" id="L34">    @Nullable</span>
+<span class="fc" id="L35">    private ByteBuffer b = ByteBuffer.allocateDirect(Journal.ENTRY_LENGTH);</span>
     // full path to journal file
     final Path journalPath;
     // current sequence value
@@ -44,22 +45,22 @@ public class JournalWriter implements Closeable {
     JournalEntry prev;
 
     public JournalWriter(final Path dir, final String key) throws IOException {
-<span class="fc" id="L47">        this(dir, key, key);</span>
-<span class="fc" id="L48">    }</span>
+<span class="fc" id="L48">        this(dir, key, key);</span>
+<span class="fc" id="L49">    }</span>
 
-<span class="fc" id="L50">    public JournalWriter(final Path dir, final String journalFileName, final String key) throws IOException {</span>
-<span class="fc" id="L51">        this.journalPath = dir.resolve(journalFileName + Journal.EXT);</span>
-<span class="fc" id="L52">        this.key = key;</span>
-<span class="fc" id="L53">        checkJournal();</span>
-<span class="fc" id="L54">    }</span>
+<span class="fc" id="L51">    public JournalWriter(final Path dir, final String journalFileName, final String key) throws IOException {</span>
+<span class="fc" id="L52">        this.journalPath = dir.resolve(journalFileName + Journal.EXT);</span>
+<span class="fc" id="L53">        this.key = key;</span>
+<span class="fc" id="L54">        checkJournal();</span>
+<span class="fc" id="L55">    }</span>
 
     private void checkJournal() throws IOException {
-<span class="pc bpc" id="L57" title="3 of 4 branches missed.">        if (Files.exists(journalPath) &amp;&amp; Files.size(journalPath) &gt; 0L) {</span>
-<span class="nc" id="L58">            throw new IllegalStateException(&quot;Journals Are Immutable&quot;);</span>
+<span class="pc bpc" id="L58" title="3 of 4 branches missed.">        if (Files.exists(journalPath) &amp;&amp; Files.size(journalPath) &gt; 0L) {</span>
+<span class="nc" id="L59">            throw new IllegalStateException(&quot;Journals Are Immutable&quot;);</span>
         } else {
-<span class="fc" id="L60">            Files.deleteIfExists(journalPath);</span>
+<span class="fc" id="L61">            Files.deleteIfExists(journalPath);</span>
         }
-<span class="fc" id="L62">    }</span>
+<span class="fc" id="L63">    }</span>
 
     /**
      * Write to journal
@@ -67,75 +68,75 @@ public class JournalWriter implements Closeable {
      * @return position difference between last entry and current
      */
     public long write(JournalEntry e) throws IOException {
-<span class="fc" id="L70">        lock.lock();</span>
+<span class="fc" id="L71">        lock.lock();</span>
         try {
-<span class="fc bfc" id="L72" title="All 2 branches covered.">            if (journal == null) {</span>
-<span class="fc" id="L73">                writeHeader();</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">            if (journal == null) {</span>
+<span class="fc" id="L74">                writeHeader();</span>
             }
-<span class="fc" id="L75">            b.clear();</span>
-<span class="fc" id="L76">            b.putLong(++sequence);</span>
-<span class="fc" id="L77">            b.put(SEP);</span>
-<span class="fc" id="L78">            e.serialize(b);</span>
+<span class="fc" id="L76">            b.clear();</span>
+<span class="fc" id="L77">            b.putLong(++sequence);</span>
+<span class="fc" id="L78">            b.put(SEP);</span>
+<span class="fc" id="L79">            e.serialize(b);</span>
             // fixed record length format so zero out everything
-<span class="fc" id="L80">            nullpad();</span>
-<span class="fc" id="L81">            write();</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">            return prev == null ? e.offset : e.offset - prev.offset;</span>
+<span class="fc" id="L81">            nullpad();</span>
+<span class="fc" id="L82">            write();</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">            return prev == null ? e.offset : e.offset - prev.offset;</span>
         } finally {
-<span class="fc" id="L84">            prev = e;</span>
-<span class="fc" id="L85">            lock.unlock();</span>
+<span class="fc" id="L85">            prev = e;</span>
+<span class="fc" id="L86">            lock.unlock();</span>
         }
     }
 
     private void write() throws IOException {
-<span class="fc" id="L90">        b.flip();</span>
-<span class="fc" id="L91">        journal.write(b);</span>
-<span class="fc" id="L92">        b.clear();</span>
-<span class="fc" id="L93">    }</span>
+<span class="fc" id="L91">        b.flip();</span>
+<span class="fc" id="L92">        journal.write(b);</span>
+<span class="fc" id="L93">        b.clear();</span>
+<span class="fc" id="L94">    }</span>
 
     private void writeHeader() throws IOException {
-<span class="fc" id="L96">        this.journal = FileChannel.open(journalPath, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);</span>
-<span class="fc" id="L97">        b.clear();</span>
-<span class="fc" id="L98">        b.put(Journal.MAGIC);</span>
-<span class="fc" id="L99">        b.put(Journal.CURRENT_VERSION);</span>
-<span class="fc" id="L100">        byte[] keyBytes = key.getBytes();</span>
-<span class="fc" id="L101">        b.putInt(keyBytes.length);</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (int i = 0; i &lt; keyBytes.length; i++) {</span>
-<span class="pc bpc" id="L103" title="1 of 2 branches missed.">            if (b.remaining() == 0) {</span>
-<span class="nc" id="L104">                write();</span>
+<span class="fc" id="L97">        this.journal = FileChannel.open(journalPath, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);</span>
+<span class="fc" id="L98">        b.clear();</span>
+<span class="fc" id="L99">        b.put(Journal.MAGIC);</span>
+<span class="fc" id="L100">        b.put(Journal.CURRENT_VERSION);</span>
+<span class="fc" id="L101">        byte[] keyBytes = key.getBytes();</span>
+<span class="fc" id="L102">        b.putInt(keyBytes.length);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        for (int i = 0; i &lt; keyBytes.length; i++) {</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">            if (b.remaining() == 0) {</span>
+<span class="nc" id="L105">                write();</span>
             }
-<span class="fc" id="L106">            b.put(keyBytes[i]);</span>
+<span class="fc" id="L107">            b.put(keyBytes[i]);</span>
         }
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if (b.remaining() &lt; Journal.NINE) {</span>
-<span class="nc" id="L109">            write();</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (b.remaining() &lt; Journal.NINE) {</span>
+<span class="nc" id="L110">            write();</span>
         }
-<span class="fc" id="L111">        sequence = System.currentTimeMillis();</span>
-<span class="fc" id="L112">        b.putLong(sequence);</span>
-<span class="fc" id="L113">        b.put(SEP);</span>
-<span class="fc" id="L114">        write();</span>
-<span class="fc" id="L115">    }</span>
+<span class="fc" id="L112">        sequence = System.currentTimeMillis();</span>
+<span class="fc" id="L113">        b.putLong(sequence);</span>
+<span class="fc" id="L114">        b.put(SEP);</span>
+<span class="fc" id="L115">        write();</span>
+<span class="fc" id="L116">    }</span>
 
     // fill buffer with zeros from current position to limit
     private void nullpad() {
-<span class="fc bfc" id="L119" title="All 2 branches covered.">        while (b.hasRemaining()) {</span>
-<span class="fc" id="L120">            b.put(SEP);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        while (b.hasRemaining()) {</span>
+<span class="fc" id="L121">            b.put(SEP);</span>
         }
-<span class="fc" id="L122">    }</span>
+<span class="fc" id="L123">    }</span>
 
     /**
      * Closes underlying journal channel.
      */
     @Override
     public void close() throws IOException {
-<span class="fc" id="L129">        lock.lock();</span>
+<span class="fc" id="L130">        lock.lock();</span>
         try {
-<span class="fc bfc" id="L131" title="All 2 branches covered.">            if (journal != null) {</span>
-<span class="fc" id="L132">                journal.close();</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">            if (journal != null) {</span>
+<span class="fc" id="L133">                journal.close();</span>
             }
-<span class="fc" id="L134">            journal = null;</span>
-<span class="fc" id="L135">            b = null;</span>
+<span class="fc" id="L135">            journal = null;</span>
+<span class="fc" id="L136">            b = null;</span>
         } finally {
-<span class="fc" id="L137">            lock.unlock();</span>
+<span class="fc" id="L138">            lock.unlock();</span>
         }
-<span class="fc" id="L139">    }</span>
+<span class="fc" id="L140">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InputSession.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.parser</a> &gt; <span class="el_source">InputSession.java</span></div><h1>InputSession.java</h1><pre class="source lang-java linenums">package emissary.parser;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Detailed session information as it is parsed This class just records offsets and length of various things using lists
@@ -410,13 +410,13 @@ public class InputSession {
     @Override
     public String toString() {
 <span class="nc" id="L412">        StringBuilder sb = new StringBuilder();</span>
-<span class="nc bnc" id="L413" title="All 2 branches missed.">        sb.append(&quot;Session is &quot;).append((this.isValid() ? &quot;&quot; : &quot;not&quot;)).append(&quot;valid&quot;).append(&quot;\n&quot;);</span>
+<span class="nc bnc" id="L413" title="All 2 branches missed.">        sb.append(&quot;Session is &quot;).append(this.isValid() ? &quot;&quot; : &quot;not&quot;).append(&quot;valid&quot;).append(&quot;\n&quot;);</span>
 <span class="nc" id="L414">        sb.append(&quot;Session overall &quot;).append(this.getOverall()).append(&quot;\n&quot;);</span>
 <span class="nc" id="L415">        sb.append(&quot;Header record &quot;).append(this.getHeader()).append(&quot;\n&quot;);</span>
 <span class="nc" id="L416">        sb.append(&quot;Data record &quot;).append(this.getData()).append(&quot;\n&quot;);</span>
 <span class="nc" id="L417">        sb.append(&quot;Footer record &quot;).append(this.getFooter()).append(&quot;\n&quot;);</span>
 <span class="nc" id="L418">        Map&lt;String, Object&gt; m = this.getMetaData();</span>
-<span class="nc bnc" id="L419" title="All 2 branches missed.">        sb.append(&quot;Metadata count &quot;).append((m == null ? 0 : m.size())).append(&quot;\n&quot;);</span>
+<span class="nc bnc" id="L419" title="All 2 branches missed.">        sb.append(&quot;Metadata count &quot;).append(m == null ? 0 : m.size()).append(&quot;\n&quot;);</span>
 <span class="nc" id="L420">        return sb.toString();</span>
     }
 

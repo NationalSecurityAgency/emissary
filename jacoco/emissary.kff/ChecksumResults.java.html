@@ -2,25 +2,26 @@
 
 import emissary.util.Hexl;
 
+import jakarta.annotation.Nullable;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import javax.annotation.Nullable;
 
 /**
  * This class is a value object to store the results of both a CRC32 and a message digest computation.
  */
-<span class="fc" id="L15">public class ChecksumResults implements Serializable {</span>
+<span class="fc" id="L16">public class ChecksumResults implements Serializable {</span>
 
     // serializable
     static final long serialVersionUID = -8187329704593435586L;
 
-<span class="fc" id="L20">    private long crc = -1L;</span>
-<span class="fc" id="L21">    @Nullable</span>
+<span class="fc" id="L21">    private long crc = -1L;</span>
+<span class="fc" id="L22">    @Nullable</span>
     private String ssdeep = null;
-<span class="fc" id="L23">    Map&lt;String, byte[]&gt; hashComp = new TreeMap&lt;&gt;();</span>
+<span class="fc" id="L24">    Map&lt;String, byte[]&gt; hashComp = new TreeMap&lt;&gt;();</span>
 
     /**
      * Gets the value of crc
@@ -29,7 +30,7 @@ import javax.annotation.Nullable;
      * @return the value of crc
      */
     public long getCrc() {
-<span class="fc" id="L32">        return this.crc;</span>
+<span class="fc" id="L33">        return this.crc;</span>
     }
 
     /**
@@ -38,8 +39,8 @@ import javax.annotation.Nullable;
      * @param argCrc Value to assign to this.crc
      */
     public void setCrc(long argCrc) {
-<span class="fc" id="L41">        this.crc = argCrc;</span>
-<span class="fc" id="L42">    }</span>
+<span class="fc" id="L42">        this.crc = argCrc;</span>
+<span class="fc" id="L43">    }</span>
 
     /**
      * Gets the value of ssdeep
@@ -48,7 +49,7 @@ import javax.annotation.Nullable;
      * @return the value of ssdeep
      */
     public String getSsdeep() {
-<span class="fc" id="L51">        return this.ssdeep;</span>
+<span class="fc" id="L52">        return this.ssdeep;</span>
     }
 
     /**
@@ -57,8 +58,8 @@ import javax.annotation.Nullable;
      * @param ssdeep Value to assign to this.ssdeep
      */
     public void setSsdeep(String ssdeep) {
-<span class="fc" id="L60">        this.ssdeep = ssdeep;</span>
-<span class="fc" id="L61">    }</span>
+<span class="fc" id="L61">        this.ssdeep = ssdeep;</span>
+<span class="fc" id="L62">    }</span>
 
     /**
      * Gets the value of requested computation
@@ -67,13 +68,13 @@ import javax.annotation.Nullable;
      * @return the value of hash in bytes
      */
     public byte[] getHash(String alg) {
-<span class="pc bpc" id="L70" title="1 of 4 branches missed.">        if (&quot;CRC32&quot;.equals(alg) &amp;&amp; crc &gt; -1L) {</span>
-<span class="fc" id="L71">            return Long.toString(crc).getBytes();</span>
+<span class="pc bpc" id="L71" title="1 of 4 branches missed.">        if (&quot;CRC32&quot;.equals(alg) &amp;&amp; crc &gt; -1L) {</span>
+<span class="fc" id="L72">            return Long.toString(crc).getBytes();</span>
         }
-<span class="pc bpc" id="L73" title="1 of 4 branches missed.">        if (&quot;SSDEEP&quot;.equals(alg) &amp;&amp; ssdeep != null) {</span>
-<span class="fc" id="L74">            return ssdeep.getBytes();</span>
+<span class="pc bpc" id="L74" title="1 of 4 branches missed.">        if (&quot;SSDEEP&quot;.equals(alg) &amp;&amp; ssdeep != null) {</span>
+<span class="fc" id="L75">            return ssdeep.getBytes();</span>
         }
-<span class="fc" id="L76">        return hashComp.get(alg);</span>
+<span class="fc" id="L77">        return hashComp.get(alg);</span>
     }
 
     /**
@@ -84,18 +85,18 @@ import javax.annotation.Nullable;
      */
     @Nullable
     public String getHashString(String alg) {
-<span class="fc" id="L87">        byte[] comp = hashComp.get(alg);</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">        if (comp == null) {</span>
-<span class="pc bpc" id="L89" title="3 of 4 branches missed.">            if (&quot;CRC32&quot;.equals(alg) &amp;&amp; crc &gt; -1L) {</span>
-<span class="nc" id="L90">                return Long.toString(crc);</span>
+<span class="fc" id="L88">        byte[] comp = hashComp.get(alg);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (comp == null) {</span>
+<span class="pc bpc" id="L90" title="3 of 4 branches missed.">            if (&quot;CRC32&quot;.equals(alg) &amp;&amp; crc &gt; -1L) {</span>
+<span class="nc" id="L91">                return Long.toString(crc);</span>
             }
-<span class="pc bpc" id="L92" title="2 of 4 branches missed.">            if (&quot;SSDEEP&quot;.equals(alg) &amp;&amp; ssdeep != null) {</span>
-<span class="fc" id="L93">                return ssdeep;</span>
+<span class="pc bpc" id="L93" title="2 of 4 branches missed.">            if (&quot;SSDEEP&quot;.equals(alg) &amp;&amp; ssdeep != null) {</span>
+<span class="fc" id="L94">                return ssdeep;</span>
             }
-<span class="nc" id="L95">            return null;</span>
+<span class="nc" id="L96">            return null;</span>
         }
 
-<span class="fc" id="L98">        return Hexl.toUnformattedHexString(comp);</span>
+<span class="fc" id="L99">        return Hexl.toUnformattedHexString(comp);</span>
     }
 
     /**
@@ -105,8 +106,8 @@ import javax.annotation.Nullable;
      * @param argHash Value to assign to this.hash
      */
     public void setHash(String alg, byte[] argHash) {
-<span class="fc" id="L108">        hashComp.put(alg, argHash);</span>
-<span class="fc" id="L109">    }</span>
+<span class="fc" id="L109">        hashComp.put(alg, argHash);</span>
+<span class="fc" id="L110">    }</span>
 
     /**
      * Get names of digest results present
@@ -114,14 +115,14 @@ import javax.annotation.Nullable;
      * @return Set of string algorithm names
      */
     public Set&lt;String&gt; getResultsPresent() {
-<span class="fc" id="L117">        Set&lt;String&gt; set = new TreeSet&lt;&gt;(hashComp.keySet());</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (crc &gt; -1L) {</span>
-<span class="fc" id="L119">            set.add(&quot;CRC32&quot;);</span>
+<span class="fc" id="L118">        Set&lt;String&gt; set = new TreeSet&lt;&gt;(hashComp.keySet());</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        if (crc &gt; -1L) {</span>
+<span class="fc" id="L120">            set.add(&quot;CRC32&quot;);</span>
         }
-<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (ssdeep != null) {</span>
-<span class="fc" id="L122">            set.add(&quot;SSDEEP&quot;);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        if (ssdeep != null) {</span>
+<span class="fc" id="L123">            set.add(&quot;SSDEEP&quot;);</span>
         }
-<span class="fc" id="L124">        return set;</span>
+<span class="fc" id="L125">        return set;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

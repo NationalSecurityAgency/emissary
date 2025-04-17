@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BufferedWriterOutputStream.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.io</a> &gt; <span class="el_source">BufferedWriterOutputStream.java</span></div><h1>BufferedWriterOutputStream.java</h1><pre class="source lang-java linenums">package emissary.util.io;
 
+import jakarta.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import javax.annotation.Nullable;
 
 /**
  * BufferedWriterOutputStream: a subclass to support writing bytes to a Writer. This implementation also buffers the
@@ -11,69 +12,69 @@ import javax.annotation.Nullable;
  */
 public class BufferedWriterOutputStream extends OutputStream {
     /** the writer to write to */
-<span class="nc" id="L14">    @Nullable</span>
+<span class="nc" id="L15">    @Nullable</span>
     private Writer writer = null;
-<span class="nc" id="L16">    @Nullable</span>
+<span class="nc" id="L17">    @Nullable</span>
     private char[] buffer = null;
-<span class="nc" id="L18">    private int bufferLength = 0;</span>
+<span class="nc" id="L19">    private int bufferLength = 0;</span>
 
-<span class="nc" id="L20">    public BufferedWriterOutputStream(Writer writer, int blockSize) {</span>
-<span class="nc" id="L21">        this.writer = writer;</span>
-<span class="nc" id="L22">        buffer = new char[blockSize];</span>
-<span class="nc" id="L23">    }</span>
+<span class="nc" id="L21">    public BufferedWriterOutputStream(Writer writer, int blockSize) {</span>
+<span class="nc" id="L22">        this.writer = writer;</span>
+<span class="nc" id="L23">        buffer = new char[blockSize];</span>
+<span class="nc" id="L24">    }</span>
 
     public BufferedWriterOutputStream(Writer writer) {
-<span class="nc" id="L26">        this(writer, 4096);</span>
-<span class="nc" id="L27">    }</span>
+<span class="nc" id="L27">        this(writer, 4096);</span>
+<span class="nc" id="L28">    }</span>
 
     @Override
     public void write(byte[] bytes, int start, int length) throws IOException {
         // while we have bytes to write
-<span class="nc bnc" id="L32" title="All 2 branches missed.">        while (length &gt; 0) {</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">        while (length &gt; 0) {</span>
             // write up to buffer.length bytes (minus what we already have)
-<span class="nc" id="L34">            int chunkSize = buffer.length - bufferLength;</span>
-<span class="nc bnc" id="L35" title="All 2 branches missed.">            if (length &lt; chunkSize) {</span>
-<span class="nc" id="L36">                chunkSize = length;</span>
+<span class="nc" id="L35">            int chunkSize = buffer.length - bufferLength;</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">            if (length &lt; chunkSize) {</span>
+<span class="nc" id="L37">                chunkSize = length;</span>
             }
             // convert this set of bytes to a character array
-<span class="nc bnc" id="L39" title="All 2 branches missed.">            for (int i = 0; i &lt; chunkSize; i++) {</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">            for (int i = 0; i &lt; chunkSize; i++) {</span>
                 // copy in byte as a character (ensure we do not get negative)
-<span class="nc" id="L41">                buffer[bufferLength++] = (char) (0xFF &amp; (int) bytes[i + start]);</span>
+<span class="nc" id="L42">                buffer[bufferLength++] = (char) (0xFF &amp; (int) bytes[i + start]);</span>
             }
 
             // and write it if full
-<span class="nc bnc" id="L45" title="All 2 branches missed.">            if (bufferLength == buffer.length) {</span>
-<span class="nc" id="L46">                writer.write(buffer);</span>
-<span class="nc" id="L47">                bufferLength = 0;</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">            if (bufferLength == buffer.length) {</span>
+<span class="nc" id="L47">                writer.write(buffer);</span>
+<span class="nc" id="L48">                bufferLength = 0;</span>
             }
 
             // reset out pointers
-<span class="nc" id="L51">            start += chunkSize;</span>
-<span class="nc" id="L52">            length -= chunkSize;</span>
-<span class="nc" id="L53">        }</span>
-<span class="nc" id="L54">    }</span>
+<span class="nc" id="L52">            start += chunkSize;</span>
+<span class="nc" id="L53">            length -= chunkSize;</span>
+<span class="nc" id="L54">        }</span>
+<span class="nc" id="L55">    }</span>
 
     @Override
     public void write(byte[] bytes) throws IOException {
-<span class="nc" id="L58">        write(bytes, 0, bytes.length);</span>
-<span class="nc" id="L59">    }</span>
+<span class="nc" id="L59">        write(bytes, 0, bytes.length);</span>
+<span class="nc" id="L60">    }</span>
 
     @Override
     public void write(int b) throws IOException {
-<span class="nc" id="L63">        buffer[bufferLength++] = ((char) (0xFF &amp; b));</span>
+<span class="nc" id="L64">        buffer[bufferLength++] = ((char) (0xFF &amp; b));</span>
         // and write it if full
-<span class="nc bnc" id="L65" title="All 2 branches missed.">        if (bufferLength == buffer.length) {</span>
-<span class="nc" id="L66">            writer.write(buffer);</span>
-<span class="nc" id="L67">            bufferLength = 0;</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if (bufferLength == buffer.length) {</span>
+<span class="nc" id="L67">            writer.write(buffer);</span>
+<span class="nc" id="L68">            bufferLength = 0;</span>
         }
-<span class="nc" id="L69">    }</span>
+<span class="nc" id="L70">    }</span>
 
     @Override
     public void flush() throws IOException {
-<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (bufferLength &gt; 0) {</span>
-<span class="nc" id="L74">            writer.write(buffer, 0, bufferLength);</span>
-<span class="nc" id="L75">            bufferLength = 0;</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        if (bufferLength &gt; 0) {</span>
+<span class="nc" id="L75">            writer.write(buffer, 0, bufferLength);</span>
+<span class="nc" id="L76">            bufferLength = 0;</span>
         }
-<span class="nc" id="L77">    }</span>
+<span class="nc" id="L78">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OSReleaseUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.os</a> &gt; <span class="el_source">OSReleaseUtil.java</span></div><h1>OSReleaseUtil.java</h1><pre class="source lang-java linenums">package emissary.util.os;
 
+import org.apache.commons.exec.OS;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.util.stream.Stream;
 
 public class OSReleaseUtil {
 
-<span class="fc" id="L13">    private static final Path OS_RELEASE_PATH = Path.of(&quot;/etc/os-release&quot;);</span>
+<span class="fc" id="L14">    private static final Path OS_RELEASE_PATH = Path.of(&quot;/etc/os-release&quot;);</span>
 
     private OSReleaseUtil() {}
 
@@ -20,24 +21,27 @@ public class OSReleaseUtil {
      * @return the VERSION_ID value
      */
     public static String getVersionId() {
-<span class="nc" id="L23">        return getVersionId(OS_RELEASE_PATH);</span>
+<span class="nc" id="L24">        return getVersionId(OS_RELEASE_PATH);</span>
     }
 
     static String getVersionId(Path osReleasePath) {
-<span class="fc" id="L27">        String versionId = &quot;UNKNOWN&quot;;</span>
+<span class="fc" id="L28">        String versionId = &quot;UNKNOWN&quot;;</span>
 
-<span class="pc bpc" id="L29" title="1 of 2 branches missed.">        if (Files.exists(osReleasePath)) {</span>
-<span class="fc" id="L30">            try (Stream&lt;String&gt; lines = Files.lines(osReleasePath)) {</span>
-<span class="fc" id="L31">                Optional&lt;String&gt; versionIdOptional = lines.filter(line -&gt; StringUtils.startsWith(line, &quot;VERSION_ID&quot;)).findFirst();</span>
-<span class="pc bpc" id="L32" title="1 of 2 branches missed.">                if (versionIdOptional.isPresent()) {</span>
-<span class="fc" id="L33">                    String versionIdLine = versionIdOptional.get().replace(&quot;\&quot;&quot;, &quot;&quot;);</span>
-<span class="fc" id="L34">                    versionId = versionIdLine.substring(versionIdLine.indexOf(&quot;=&quot;) + 1);</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        if (Files.exists(osReleasePath)) {</span>
+<span class="fc" id="L31">            try (Stream&lt;String&gt; lines = Files.lines(osReleasePath)) {</span>
+<span class="fc" id="L32">                Optional&lt;String&gt; versionIdOptional = lines.filter(line -&gt; StringUtils.startsWith(line, &quot;VERSION_ID&quot;)).findFirst();</span>
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">                if (versionIdOptional.isPresent()) {</span>
+<span class="fc" id="L34">                    String versionIdLine = versionIdOptional.get().replace(&quot;\&quot;&quot;, &quot;&quot;);</span>
+<span class="fc" id="L35">                    versionId = versionIdLine.substring(versionIdLine.indexOf(&quot;=&quot;) + 1);</span>
                 }
-<span class="nc" id="L36">            } catch (Exception e) {</span>
+<span class="nc" id="L37">            } catch (Exception ignored) {</span>
                 // ignore
-<span class="fc" id="L38">            }</span>
+<span class="pc" id="L39">            }</span>
+        } else {
+            // fallback to the os.version system property for mac support
+<span class="fc" id="L42">            versionId = StringUtils.defaultIfBlank(System.getProperty(&quot;os.version&quot;), versionId);</span>
         }
-<span class="fc" id="L40">        return versionId;</span>
+<span class="fc" id="L44">        return versionId;</span>
     }
 
     /**
@@ -46,11 +50,16 @@ public class OSReleaseUtil {
      * @return the major OS version
      */
     public static String getMajorReleaseVersion() {
-<span class="nc" id="L49">        return getMajorReleaseVersion(OS_RELEASE_PATH);</span>
+<span class="fc" id="L53">        return getMajorReleaseVersion(OS_RELEASE_PATH);</span>
     }
 
     static String getMajorReleaseVersion(Path osReleasePath) {
-<span class="fc" id="L53">        return String.format(&quot;%.0f&quot;, Float.parseFloat(getVersionId(osReleasePath)));</span>
+        try {
+<span class="fc" id="L58">            return String.format(&quot;%.0f&quot;, Float.parseFloat(getVersionId(osReleasePath)));</span>
+<span class="nc" id="L59">        } catch (NumberFormatException e) {</span>
+            // support x.y.z format
+<span class="nc" id="L61">            return StringUtils.substringBefore(getVersionId(osReleasePath), &quot;.&quot;);</span>
+        }
     }
 
     /**
@@ -59,11 +68,11 @@ public class OSReleaseUtil {
      * @return true if ubuntu is found, false otherwise
      */
     public static boolean isUbuntu() {
-<span class="nc" id="L62">        return isUbuntu(OS_RELEASE_PATH);</span>
+<span class="fc" id="L71">        return isUbuntu(OS_RELEASE_PATH);</span>
     }
 
     static boolean isUbuntu(Path osReleasePath) {
-<span class="fc" id="L66">        return isOsName(osReleasePath, &quot;ubuntu&quot;);</span>
+<span class="fc bfc" id="L75" title="All 4 branches covered.">        return isOsName(osReleasePath, &quot;ubuntu&quot;) || isOsLike(osReleasePath, &quot;ubuntu&quot;);</span>
     }
 
     /**
@@ -72,11 +81,11 @@ public class OSReleaseUtil {
      * @return true if CentOS is found, false otherwise
      */
     public static boolean isCentOs() {
-<span class="nc" id="L75">        return isCentOs(OS_RELEASE_PATH);</span>
+<span class="fc" id="L84">        return isCentOs(OS_RELEASE_PATH);</span>
     }
 
     static boolean isCentOs(Path osReleasePath) {
-<span class="fc" id="L79">        return isOsName(osReleasePath, &quot;centos&quot;);</span>
+<span class="fc" id="L88">        return isOsName(osReleasePath, &quot;centos&quot;);</span>
     }
 
     /**
@@ -85,22 +94,44 @@ public class OSReleaseUtil {
      * @return true if RHEL is found, false otherwise
      */
     public static boolean isRhel() {
-<span class="nc" id="L88">        return isRhel(OS_RELEASE_PATH);</span>
+<span class="fc" id="L97">        return isRhel(OS_RELEASE_PATH);</span>
     }
 
     static boolean isRhel(Path osReleasePath) {
-<span class="fc" id="L92">        return isOsName(osReleasePath, &quot;rhel&quot;);</span>
+<span class="fc" id="L101">        return isOsName(osReleasePath, &quot;rhel&quot;);</span>
     }
 
+    /**
+     * Determine if the OS is macos
+     *
+     * @return true if mac, false otherwise
+     */
+    public static boolean isMac() {
+<span class="fc" id="L110">        return OS.isFamilyMac();</span>
+    }
+
+    // checks against ID in /etc/os-release
     private static boolean isOsName(Path osReleasePath, String osName) {
-<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        if (Files.exists(osReleasePath)) {</span>
-<span class="fc" id="L97">            try (Stream&lt;String&gt; lines = Files.lines(osReleasePath)) {</span>
-<span class="fc" id="L98">                return lines.filter(line -&gt; line.startsWith(&quot;ID=&quot;)).anyMatch(entry -&gt; StringUtils.containsIgnoreCase(entry, osName));</span>
-<span class="nc" id="L99">            } catch (IOException ignored) {</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        if (Files.exists(osReleasePath)) {</span>
+<span class="fc" id="L116">            try (Stream&lt;String&gt; lines = Files.lines(osReleasePath)) {</span>
+<span class="fc" id="L117">                return lines.filter(line -&gt; line.startsWith(&quot;ID=&quot;)).anyMatch(entry -&gt; StringUtils.containsIgnoreCase(entry, osName));</span>
+<span class="nc" id="L118">            } catch (IOException ignored) {</span>
                 // ignore
             }
         }
-<span class="nc" id="L103">        return false;</span>
+<span class="fc" id="L122">        return false;</span>
+    }
+
+    // checks against ID_LIKE in /etc/os-release
+    private static boolean isOsLike(Path osReleasePath, String osName) {
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        if (Files.exists(osReleasePath)) {</span>
+<span class="fc" id="L128">            try (Stream&lt;String&gt; lines = Files.lines(osReleasePath)) {</span>
+<span class="fc" id="L129">                return lines.filter(line -&gt; line.startsWith(&quot;ID_LIKE=&quot;)).anyMatch(entry -&gt; StringUtils.containsIgnoreCase(entry, osName));</span>
+<span class="nc" id="L130">            } catch (IOException ignored) {</span>
+                // ignore
+            }
+        }
+<span class="fc" id="L134">        return false;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

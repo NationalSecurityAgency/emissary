@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
         try {
 <span class="nc bnc" id="L50" title="All 2 branches missed.">            return Response.ok(pause ? pause() : unpause()).build();</span>
 <span class="nc" id="L51">        } catch (Exception e) {</span>
-<span class="nc bnc" id="L52" title="All 2 branches missed.">            LOG.warn(&quot;Exception trying to initiate {}&quot;, (pause ? PAUSE : UNPAUSE), e);</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">            LOG.warn(&quot;Exception trying to initiate {}&quot;, pause ? PAUSE : UNPAUSE, e);</span>
 <span class="nc bnc" id="L53" title="All 2 branches missed.">            return Response.serverError().entity(&quot;error trying to &quot; + (pause ? PAUSE : UNPAUSE)).build();</span>
         }
     }

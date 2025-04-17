@@ -79,20 +79,20 @@
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>                  <strong class="jxr_keyword">return</strong> Result.unhealthy(<span class="jxr_string">"Large aggregate file size backed up for FilePickUpPlace = "</span> + aggregateFileSize);
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>              }
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>  
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          } <strong class="jxr_keyword">catch</strong> (<a name="NamespaceException" href="../../emissary/core/NamespaceException.html#NamespaceException">NamespaceException</a> ne) {
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>          } <strong class="jxr_keyword">catch</strong> (<a name="NamespaceException" href="../../emissary/core/NamespaceException.html#NamespaceException">NamespaceException</a> ignored) {
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>              <em class="jxr_comment">// This gets throw if can't find FilePickUpPlace, assume it is not configured</em>
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>              <em class="jxr_comment">// and things are healthy</em>
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          } <strong class="jxr_keyword">catch</strong> (NoSuchFieldException nsfe) {
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          } <strong class="jxr_keyword">catch</strong> (NoSuchFieldException ignored) {
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>              <em class="jxr_comment">// Possibly thrown by getDeclaredField, assume FilePickUpPlace implementation has changed</em>
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          } <strong class="jxr_keyword">catch</strong> (SecurityException se) {
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          } <strong class="jxr_keyword">catch</strong> (SecurityException ignored) {
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>              <em class="jxr_comment">// Possibly thrown by getDeclaredField - would prevent our access to the field</em>
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          } <strong class="jxr_keyword">catch</strong> (NullPointerException npe) {
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>          } <strong class="jxr_keyword">catch</strong> (NullPointerException ignored) {
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>              <em class="jxr_comment">// A variety of methods throw NPEs</em>
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>          } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException iae) {
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>          } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException ignored) {
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>              <em class="jxr_comment">// Thrown by get()</em>
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>          } <strong class="jxr_keyword">catch</strong> (IllegalAccessException iae) {
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>          } <strong class="jxr_keyword">catch</strong> (IllegalAccessException ignored) {
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>              <em class="jxr_comment">// Also thrown by get()</em>
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>          } <strong class="jxr_keyword">catch</strong> (ExceptionInInitializerError eiie) {
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>          } <strong class="jxr_keyword">catch</strong> (ExceptionInInitializerError ignored) {
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>              <em class="jxr_comment">// Also thrown by get()</em>
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>          }
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  

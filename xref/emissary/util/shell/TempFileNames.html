@@ -34,7 +34,7 @@
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment">     * @param inFileEnding input file ending</em>
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment">     * @param outFileEnding output file ending</em>
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <a name="TempFileNames" href="../../../emissary/util/shell/TempFileNames.html#TempFileNames">TempFileNames</a>(String tmpDir, String placeName, String inFileEnding, String outFileEnding) {
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">public</strong> <a name="TempFileNames" href="../../../emissary/util/shell/TempFileNames.html#TempFileNames">TempFileNames</a>(String tmpDir, String placeName, String inFileEnding, String outFileEnding) {
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>          base = Long.toString(System.nanoTime());
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>          tempDir = FileManipulator.mkTempFile(tmpDir, placeName);
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>          in = base + inFileEnding;

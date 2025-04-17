@@ -13,6 +13,7 @@ emissary.core.sentinel
 emissary.core.sentinel.protocols
 emissary.core.sentinel.protocols.actions
 emissary.core.sentinel.protocols.rules
+emissary.core.sentinel.protocols.trackers
 emissary.directory
 emissary.id
 emissary.jni

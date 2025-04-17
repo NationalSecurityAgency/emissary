@@ -2,6 +2,7 @@
 
 import emissary.util.web.HtmlEscaper;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +12,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * This buffer implementation attempts to improve file creation performance by preventing conversion from byte array to
@@ -171,7 +171,7 @@ public class FastStringBuffer extends OutputStream {
                     }
                 } else {
                     // if not writing to stream, then increase the buffer appropriately
-<span class="nc" id="L174">                    final int newSize = Math.max(this.buffer.length + this.buffer.length / 2, (this.curPos + lengthVal) + 1024);</span>
+<span class="nc" id="L174">                    final int newSize = Math.max(this.buffer.length + this.buffer.length / 2, this.curPos + lengthVal + 1024);</span>
 <span class="nc" id="L175">                    final byte[] newArray = new byte[newSize];</span>
 <span class="nc" id="L176">                    System.arraycopy(this.buffer, 0, newArray, 0, this.curPos);// ??</span>
 <span class="nc" id="L177">                    this.buffer = newArray;</span>
@@ -189,7 +189,7 @@ public class FastStringBuffer extends OutputStream {
 <span class="nc" id="L189">            logger.warn(&quot;length={}&quot;, lengthVal);// 1</span>
 <span class="nc" id="L190">            logger.warn(&quot;curPos={}&quot;, this.curPos);// 1</span>
 <span class="nc" id="L191">            logger.warn(&quot;buffer.length={}&quot;, this.buffer.length);// 1</span>
-<span class="nc" id="L192">            logger.warn(&quot;newSize={}&quot;, Math.max(this.buffer.length + this.buffer.length / 2, (this.curPos + lengthVal) + 1024));</span>
+<span class="nc" id="L192">            logger.warn(&quot;newSize={}&quot;, Math.max(this.buffer.length + this.buffer.length / 2, this.curPos + lengthVal + 1024));</span>
 <span class="nc" id="L193">        }</span>
 <span class="nc" id="L194">    }</span>
 

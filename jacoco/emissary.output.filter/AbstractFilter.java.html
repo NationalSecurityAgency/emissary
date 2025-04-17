@@ -7,6 +7,7 @@ import emissary.core.IBaseDataObject;
 import emissary.output.DropOffUtil;
 import emissary.util.JavaCharSet;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 
 /**
  * Provides the base mechanism for a drop off filter

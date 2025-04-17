@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Identification.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.id</a> &gt; <span class="el_source">Identification.java</span></div><h1>Identification.java</h1><pre class="source lang-java linenums">package emissary.id;
 
+import jakarta.annotation.Nullable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.annotation.Nullable;
 
 /**
  * Response object from an identification engine. Contains a list of types for the currentForm and a list of properties
@@ -17,22 +18,22 @@ public class Identification implements Serializable {
     // Serializable
     static final long serialVersionUID = 9212068103720124108L;
 
-<span class="nc" id="L20">    protected List&lt;String&gt; types = new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L21">    protected Map&lt;String, String&gt; props = new TreeMap&lt;&gt;();</span>
+<span class="nc" id="L21">    protected List&lt;String&gt; types = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L22">    protected Map&lt;String, String&gt; props = new TreeMap&lt;&gt;();</span>
 
     /**
      * Create a new Identification object
      */
-<span class="nc" id="L26">    public Identification() {}</span>
+<span class="nc" id="L27">    public Identification() {}</span>
 
     /**
      * Create a new identification for the specified type string
      * 
      * @param type the type string
      */
-<span class="nc" id="L33">    public Identification(final String type) {</span>
-<span class="nc" id="L34">        this.types.add(type);</span>
-<span class="nc" id="L35">    }</span>
+<span class="nc" id="L34">    public Identification(final String type) {</span>
+<span class="nc" id="L35">        this.types.add(type);</span>
+<span class="nc" id="L36">    }</span>
 
     /**
      * Add a type to the list
@@ -40,8 +41,8 @@ public class Identification implements Serializable {
      * @param type the new type
      */
     public void addType(final String type) {
-<span class="nc" id="L43">        this.types.add(type);</span>
-<span class="nc" id="L44">    }</span>
+<span class="nc" id="L44">        this.types.add(type);</span>
+<span class="nc" id="L45">    }</span>
 
     /**
      * Add new types to the list
@@ -49,8 +50,8 @@ public class Identification implements Serializable {
      * @param additionalTypes the new types
      */
     public void addTypes(final Collection&lt;String&gt; additionalTypes) {
-<span class="nc" id="L52">        this.types.addAll(additionalTypes);</span>
-<span class="nc" id="L53">    }</span>
+<span class="nc" id="L53">        this.types.addAll(additionalTypes);</span>
+<span class="nc" id="L54">    }</span>
 
     /**
      * Remove any types and set the type to the value specified
@@ -58,9 +59,9 @@ public class Identification implements Serializable {
      * @param type the new type value
      */
     public void setType(final String type) {
-<span class="nc" id="L61">        this.types.clear();</span>
-<span class="nc" id="L62">        addType(type);</span>
-<span class="nc" id="L63">    }</span>
+<span class="nc" id="L62">        this.types.clear();</span>
+<span class="nc" id="L63">        addType(type);</span>
+<span class="nc" id="L64">    }</span>
 
     /**
      * Remove any types and set theh values specified
@@ -68,22 +69,22 @@ public class Identification implements Serializable {
      * @param theTypes the new type values
      */
     public void setTypes(final Collection&lt;String&gt; theTypes) {
-<span class="nc" id="L71">        this.types.clear();</span>
-<span class="nc" id="L72">        addTypes(theTypes);</span>
-<span class="nc" id="L73">    }</span>
+<span class="nc" id="L72">        this.types.clear();</span>
+<span class="nc" id="L73">        addTypes(theTypes);</span>
+<span class="nc" id="L74">    }</span>
 
     /**
      * Get a count of types
      */
     public int getTypeCount() {
-<span class="nc" id="L79">        return this.types.size();</span>
+<span class="nc" id="L80">        return this.types.size();</span>
     }
 
     /**
      * Get a list of the types present
      */
     public List&lt;String&gt; getTypes() {
-<span class="nc" id="L86">        return new ArrayList&lt;&gt;(this.types);</span>
+<span class="nc" id="L87">        return new ArrayList&lt;&gt;(this.types);</span>
     }
 
     /**
@@ -91,10 +92,10 @@ public class Identification implements Serializable {
      */
     @Nullable
     public String getFirstType() {
-<span class="nc bnc" id="L94" title="All 2 branches missed.">        if (this.types.isEmpty()) {</span>
-<span class="nc" id="L95">            return null;</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        if (this.types.isEmpty()) {</span>
+<span class="nc" id="L96">            return null;</span>
         } else {
-<span class="nc" id="L97">            return this.types.get(0);</span>
+<span class="nc" id="L98">            return this.types.get(0);</span>
         }
     }
 
@@ -102,28 +103,28 @@ public class Identification implements Serializable {
      * Get a comma separated string list of all the types
      */
     public String getTypeString() {
-<span class="nc" id="L105">        final StringBuilder b = new StringBuilder();</span>
-<span class="nc bnc" id="L106" title="All 2 branches missed.">        for (final String t : this.types) {</span>
-<span class="nc bnc" id="L107" title="All 2 branches missed.">            if (b.length() &gt; 0) {</span>
-<span class="nc" id="L108">                b.append(',');</span>
+<span class="nc" id="L106">        final StringBuilder b = new StringBuilder();</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        for (final String t : this.types) {</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">            if (b.length() &gt; 0) {</span>
+<span class="nc" id="L109">                b.append(',');</span>
             }
-<span class="nc" id="L110">            b.append(t);</span>
-<span class="nc" id="L111">        }</span>
-<span class="nc" id="L112">        return b.toString();</span>
+<span class="nc" id="L111">            b.append(t);</span>
+<span class="nc" id="L112">        }</span>
+<span class="nc" id="L113">        return b.toString();</span>
     }
 
     /**
      * Add the key value pair to the properties list
      */
     public void addProperty(final String key, final String value) {
-<span class="nc" id="L119">        this.props.put(key, value);</span>
-<span class="nc" id="L120">    }</span>
+<span class="nc" id="L120">        this.props.put(key, value);</span>
+<span class="nc" id="L121">    }</span>
 
     /**
      * Return a map of all the properties
      */
     public Map&lt;String, String&gt; getProperties() {
-<span class="nc" id="L126">        return new HashMap&lt;&gt;(this.props);</span>
+<span class="nc" id="L127">        return new HashMap&lt;&gt;(this.props);</span>
     }
 
     /**
@@ -132,7 +133,7 @@ public class Identification implements Serializable {
      * @param key the property name
      */
     public String getProperty(final String key) {
-<span class="nc" id="L135">        return this.props.get(key);</span>
+<span class="nc" id="L136">        return this.props.get(key);</span>
     }
 
     /**
@@ -141,11 +142,11 @@ public class Identification implements Serializable {
      * @param key the property name
      */
     public String popProperty(final String key) {
-<span class="nc" id="L144">        final String val = this.props.get(key);</span>
-<span class="nc bnc" id="L145" title="All 2 branches missed.">        if (val != null) {</span>
-<span class="nc" id="L146">            this.props.remove(key);</span>
+<span class="nc" id="L145">        final String val = this.props.get(key);</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">        if (val != null) {</span>
+<span class="nc" id="L147">            this.props.remove(key);</span>
         }
-<span class="nc" id="L148">        return val;</span>
+<span class="nc" id="L149">        return val;</span>
     }
 
     /**
@@ -155,10 +156,10 @@ public class Identification implements Serializable {
      */
     @Nullable
     public String popType() {
-<span class="nc bnc" id="L158" title="All 2 branches missed.">        if (this.types.isEmpty()) {</span>
-<span class="nc" id="L159">            return null;</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">        if (this.types.isEmpty()) {</span>
+<span class="nc" id="L160">            return null;</span>
         } else {
-<span class="nc" id="L161">            return this.types.remove(0);</span>
+<span class="nc" id="L162">            return this.types.remove(0);</span>
         }
     }
 
@@ -166,15 +167,15 @@ public class Identification implements Serializable {
      * Add the type to the front of the list and return it
      */
     public void pushType(String s) {
-<span class="nc" id="L169">        this.types.add(0, s);</span>
-<span class="nc" id="L170">    }</span>
+<span class="nc" id="L170">        this.types.add(0, s);</span>
+<span class="nc" id="L171">    }</span>
 
     /**
      * String representation of this object
      */
     @Override
     public String toString() {
-<span class="nc" id="L177">        return this.types.toString();</span>
+<span class="nc" id="L178">        return this.types.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

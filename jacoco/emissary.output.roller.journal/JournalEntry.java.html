@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JournalEntry.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.output.roller.journal</a> &gt; <span class="el_source">JournalEntry.java</span></div><h1>JournalEntry.java</h1><pre class="source lang-java linenums">package emissary.output.roller.journal;
 
+import jakarta.annotation.Nullable;
+
 import java.nio.ByteBuffer;
 import java.util.Objects;
-import javax.annotation.Nullable;
 
 /**
  * Journal Entry containing a value, generally a file name, and an offset.
@@ -12,74 +13,74 @@ public final class JournalEntry {
     final String val;
     long offset;
 
-<span class="fc" id="L15">    public JournalEntry(final String val, final long offset) {</span>
-<span class="pc bpc" id="L16" title="2 of 4 branches missed.">        if (val == null || val.length() &gt; 512) {</span>
-<span class="nc" id="L17">            throw new IllegalArgumentException(&quot;Val must be present and cannot exceed 512 bytes&quot;);</span>
+<span class="fc" id="L16">    public JournalEntry(final String val, final long offset) {</span>
+<span class="pc bpc" id="L17" title="2 of 4 branches missed.">        if (val == null || val.length() &gt; 512) {</span>
+<span class="nc" id="L18">            throw new IllegalArgumentException(&quot;Val must be present and cannot exceed 512 bytes&quot;);</span>
         }
-<span class="fc" id="L19">        this.val = val;</span>
-<span class="fc" id="L20">        this.offset = offset;</span>
-<span class="fc" id="L21">    }</span>
+<span class="fc" id="L20">        this.val = val;</span>
+<span class="fc" id="L21">        this.offset = offset;</span>
+<span class="fc" id="L22">    }</span>
 
     void serialize(final ByteBuffer b) {
-<span class="fc" id="L24">        b.putInt(this.val.length());</span>
-<span class="fc" id="L25">        b.put(SEP);</span>
-<span class="fc" id="L26">        b.put(this.val.getBytes());</span>
-<span class="fc" id="L27">        b.put(SEP);</span>
-<span class="fc" id="L28">        b.putLong(this.offset);</span>
-<span class="fc" id="L29">    }</span>
+<span class="fc" id="L25">        b.putInt(this.val.length());</span>
+<span class="fc" id="L26">        b.put(SEP);</span>
+<span class="fc" id="L27">        b.put(this.val.getBytes());</span>
+<span class="fc" id="L28">        b.put(SEP);</span>
+<span class="fc" id="L29">        b.putLong(this.offset);</span>
+<span class="fc" id="L30">    }</span>
 
     @Override
     public String toString() {
-<span class="nc" id="L33">        return &quot;JournalEntry{&quot; + &quot;value=&quot; + val + &quot;, offset=&quot; + offset + '}';</span>
+<span class="nc" id="L34">        return &quot;JournalEntry{&quot; + &quot;value=&quot; + val + &quot;, offset=&quot; + offset + '}';</span>
     }
 
     static JournalEntry deserialize(final ByteBuffer b) {
-<span class="fc" id="L37">        final int keyLen = b.getInt();</span>
-<span class="fc" id="L38">        validateSep(b.get());</span>
-<span class="fc" id="L39">        final byte[] keyBytes = new byte[keyLen];</span>
-<span class="fc" id="L40">        b.get(keyBytes, 0, keyLen);</span>
-<span class="fc" id="L41">        validateSep(b.get());</span>
-<span class="fc" id="L42">        final long offset = b.getLong();</span>
-<span class="fc" id="L43">        return new JournalEntry(new String(keyBytes), offset);</span>
+<span class="fc" id="L38">        final int keyLen = b.getInt();</span>
+<span class="fc" id="L39">        validateSep(b.get());</span>
+<span class="fc" id="L40">        final byte[] keyBytes = new byte[keyLen];</span>
+<span class="fc" id="L41">        b.get(keyBytes, 0, keyLen);</span>
+<span class="fc" id="L42">        validateSep(b.get());</span>
+<span class="fc" id="L43">        final long offset = b.getLong();</span>
+<span class="fc" id="L44">        return new JournalEntry(new String(keyBytes), offset);</span>
     }
 
     static void validateSep(final byte b) {
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        if (SEP != b) {</span>
-<span class="nc" id="L48">            throw new IllegalArgumentException(&quot;Null byte separator expected &quot; + b);</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        if (SEP != b) {</span>
+<span class="nc" id="L49">            throw new IllegalArgumentException(&quot;Null byte separator expected &quot; + b);</span>
         }
-<span class="fc" id="L50">    }</span>
+<span class="fc" id="L51">    }</span>
 
     @Override
     public int hashCode() {
-<span class="nc" id="L54">        int hash = 7;</span>
-<span class="nc" id="L55">        hash = 83 * hash + Objects.hashCode(this.val);</span>
-<span class="nc" id="L56">        return hash;</span>
+<span class="nc" id="L55">        int hash = 7;</span>
+<span class="nc" id="L56">        hash = 83 * hash + Objects.hashCode(this.val);</span>
+<span class="nc" id="L57">        return hash;</span>
     }
 
     @Override
     public boolean equals(@Nullable final Object obj) {
-<span class="nc bnc" id="L61" title="All 2 branches missed.">        if (this == obj) {</span>
-<span class="nc" id="L62">            return true;</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (this == obj) {</span>
+<span class="nc" id="L63">            return true;</span>
         }
-<span class="nc bnc" id="L64" title="All 2 branches missed.">        if (obj == null) {</span>
-<span class="nc" id="L65">            return false;</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        if (obj == null) {</span>
+<span class="nc" id="L66">            return false;</span>
         }
-<span class="nc bnc" id="L67" title="All 2 branches missed.">        if (getClass() != obj.getClass()) {</span>
-<span class="nc" id="L68">            return false;</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        if (getClass() != obj.getClass()) {</span>
+<span class="nc" id="L69">            return false;</span>
         }
-<span class="nc" id="L70">        final JournalEntry other = (JournalEntry) obj;</span>
-<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (!Objects.equals(this.val, other.val)) {</span>
-<span class="nc" id="L72">            return false;</span>
+<span class="nc" id="L71">        final JournalEntry other = (JournalEntry) obj;</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        if (!Objects.equals(this.val, other.val)) {</span>
+<span class="nc" id="L73">            return false;</span>
         }
-<span class="nc" id="L74">        return true;</span>
+<span class="nc" id="L75">        return true;</span>
     }
 
     public String getVal() {
-<span class="fc" id="L78">        return this.val;</span>
+<span class="fc" id="L79">        return this.val;</span>
     }
 
     public long getOffset() {
-<span class="fc" id="L82">        return this.offset;</span>
+<span class="fc" id="L83">        return this.offset;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

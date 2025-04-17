@@ -5,6 +5,7 @@ import emissary.core.IBaseDataObject.MergePolicy;
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.core.channels.SeekableByteChannelHelper;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,6 @@ import java.nio.channels.SeekableByteChannel;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * A helpful class to set and evaluate the KFF details of a BaseDataObject
@@ -198,9 +198,9 @@ public class KffDataObjectHandler {
 <span class="fc" id="L198">            removeHash(d);</span>
 
             // Compute and add the hashes
-<span class="pc bpc" id="L201" title="1 of 4 branches missed.">            if (useSbc &amp;&amp; d.getChannelSize() &gt; 0) {</span>
+<span class="fc bfc" id="L201" title="All 4 branches covered.">            if (useSbc &amp;&amp; d.getChannelSize() &gt; 0) {</span>
 <span class="fc" id="L202">                d.putParameters(hashData(d.getChannelFactory(), d.shortName(), &quot;&quot;), MergePolicy.DROP_EXISTING);</span>
-<span class="pc bpc" id="L203" title="1 of 4 branches missed.">            } else if (!useSbc &amp;&amp; d.dataLength() &gt; 0) {</span>
+<span class="fc bfc" id="L203" title="All 4 branches covered.">            } else if (!useSbc &amp;&amp; d.dataLength() &gt; 0) {</span>
 <span class="fc" id="L204">                d.putParameters(hashData(d.data(), d.shortName()), MergePolicy.DROP_EXISTING);</span>
             } else {
 <span class="fc" id="L206">                return; // NOSONAR</span>

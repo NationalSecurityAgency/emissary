@@ -6,15 +6,16 @@ import emissary.core.IBaseDataObject;
 import emissary.output.DropOffPlace;
 import emissary.util.PayloadUtil;
 
+import jakarta.annotation.Nullable;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Filter that writes unadorned data as utf-8.
  */
-<span class="fc" id="L17">public class XmlOutputFilter extends AbstractRollableFilter {</span>
+<span class="fc" id="L18">public class XmlOutputFilter extends AbstractRollableFilter {</span>
 
     /**
      * Initialize reads the configuration items for this filter
@@ -25,16 +26,16 @@ import javax.annotation.Nullable;
      */
     @Override
     public void initialize(Configurator configG, @Nullable String filterName, Configurator filterConfig) {
-<span class="pc bpc" id="L28" title="1 of 2 branches missed.">        if (filterName == null) {</span>
-<span class="nc" id="L29">            setFilterName(&quot;XML&quot;);</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">        if (filterName == null) {</span>
+<span class="nc" id="L30">            setFilterName(&quot;XML&quot;);</span>
         }
-<span class="fc" id="L31">        super.initialize(configG, filterName, filterConfig);</span>
-<span class="fc" id="L32">        this.appendNewLine = false;</span>
-<span class="fc" id="L33">    }</span>
+<span class="fc" id="L32">        super.initialize(configG, filterName, filterConfig);</span>
+<span class="fc" id="L33">        this.appendNewLine = false;</span>
+<span class="fc" id="L34">    }</span>
 
     @Override
     public byte[] convert(final List&lt;IBaseDataObject&gt; list, final Map&lt;String, Object&gt; params) throws IOException {
-<span class="fc" id="L37">        return PayloadUtil.toXmlString(list).getBytes();</span>
+<span class="fc" id="L38">        return PayloadUtil.toXmlString(list).getBytes();</span>
     }
 
     /**
@@ -42,16 +43,16 @@ import javax.annotation.Nullable;
      */
     @SuppressWarnings(&quot;SystemOut&quot;)
     public static void main(String[] args) {
-<span class="nc bnc" id="L45" title="All 2 branches missed.">        String name = args.length &gt; 0 ? args[0] : null;</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        String name = args.length &gt; 0 ? args[0] : null;</span>
 
-<span class="nc" id="L47">        XmlOutputFilter filter = new XmlOutputFilter();</span>
+<span class="nc" id="L48">        XmlOutputFilter filter = new XmlOutputFilter();</span>
         try {
-<span class="nc" id="L49">            Configurator config = ConfigUtil.getConfigInfo(DropOffPlace.class);</span>
-<span class="nc" id="L50">            filter.initialize(config, name);</span>
-<span class="nc" id="L51">            System.out.println(&quot;Output types &quot; + filter.outputTypes);</span>
-<span class="nc" id="L52">        } catch (Exception ex) {</span>
-<span class="nc" id="L53">            System.err.println(&quot;Cannot configure filter: &quot; + ex.getMessage());</span>
-<span class="nc" id="L54">        }</span>
-<span class="nc" id="L55">    }</span>
+<span class="nc" id="L50">            Configurator config = ConfigUtil.getConfigInfo(DropOffPlace.class);</span>
+<span class="nc" id="L51">            filter.initialize(config, name);</span>
+<span class="nc" id="L52">            System.out.println(&quot;Output types &quot; + filter.outputTypes);</span>
+<span class="nc" id="L53">        } catch (Exception ex) {</span>
+<span class="nc" id="L54">            System.err.println(&quot;Cannot configure filter: &quot; + ex.getMessage());</span>
+<span class="nc" id="L55">        }</span>
+<span class="nc" id="L56">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

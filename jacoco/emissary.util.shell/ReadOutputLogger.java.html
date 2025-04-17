@@ -39,13 +39,13 @@ public class ReadOutputLogger extends ProcessReader {
                     // logger.info(&quot;{}:{}&quot;, this.name, aLine.replace('\n', '~'));
                 }
 <span class="pc bpc" id="L41" title="1 of 4 branches missed.">            } while (aLine != null &amp;&amp; !this.finished);</span>
-<span class="nc" id="L42">        } catch (IOException iox) {</span>
+<span class="nc" id="L42">        } catch (IOException ignored) {</span>
             // ignore
 <span class="fc" id="L44">        }</span>
         try {
 <span class="fc" id="L46">            this.inputReader.close();</span>
 <span class="fc" id="L47">            this.bufferedReader.close();</span>
-<span class="nc" id="L48">        } catch (IOException iox) {</span>
+<span class="nc" id="L48">        } catch (IOException ignored) {</span>
             // ignore
 <span class="fc" id="L50">        }</span>
 <span class="fc" id="L51">    }</span>

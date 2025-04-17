@@ -6,18 +6,19 @@ import emissary.core.IBaseDataObject;
 import emissary.output.DropOffPlace;
 import emissary.output.DropOffUtil;
 
+import jakarta.annotation.Nullable;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * Filter that writes unadorned data as raw bytes
  */
-<span class="fc" id="L20">public class DataFilter extends AbstractFilter {</span>
+<span class="fc" id="L21">public class DataFilter extends AbstractFilter {</span>
 
     /**
      * Initialize reads the configuration items for this filter
@@ -28,11 +29,11 @@ import javax.annotation.Nullable;
      */
     @Override
     public void initialize(final Configurator configG, @Nullable final String filterName, final Configurator filterConfig) {
-<span class="pc bpc" id="L31" title="1 of 2 branches missed.">        if (filterName == null) {</span>
-<span class="nc" id="L32">            setFilterName(&quot;DATA&quot;);</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if (filterName == null) {</span>
+<span class="nc" id="L33">            setFilterName(&quot;DATA&quot;);</span>
         }
-<span class="fc" id="L34">        super.initialize(configG, filterName, filterConfig);</span>
-<span class="fc" id="L35">    }</span>
+<span class="fc" id="L35">        super.initialize(configG, filterName, filterConfig);</span>
+<span class="fc" id="L36">    }</span>
 
     /**
      * Output one payload item
@@ -42,39 +43,39 @@ import javax.annotation.Nullable;
      */
     @Override
     public int filter(final IBaseDataObject d, final Map&lt;String, Object&gt; params) {
-<span class="fc" id="L45">        final Set&lt;String&gt; checkTypes = getTypesToCheck(d);</span>
-<span class="fc" id="L46">        final IBaseDataObject tld = (IBaseDataObject) params.get(IDropOffFilter.TLD_PARAM);</span>
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        if (!isOutputtable(checkTypes)) {</span>
-<span class="nc" id="L48">            logger.debug(&quot;Skipping {} is not outputtable by this filter on types {}&quot;, d.shortName(), checkTypes);</span>
-<span class="nc" id="L49">            return IDropOffFilter.STATUS_SUCCESS;</span>
+<span class="fc" id="L46">        final Set&lt;String&gt; checkTypes = getTypesToCheck(d);</span>
+<span class="fc" id="L47">        final IBaseDataObject tld = (IBaseDataObject) params.get(IDropOffFilter.TLD_PARAM);</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        if (!isOutputtable(checkTypes)) {</span>
+<span class="nc" id="L49">            logger.debug(&quot;Skipping {} is not outputtable by this filter on types {}&quot;, d.shortName(), checkTypes);</span>
+<span class="nc" id="L50">            return IDropOffFilter.STATUS_SUCCESS;</span>
         }
 
 
         // Set up base location from configured spec
-<span class="fc" id="L54">        final String baseFileName = dropOffUtil.getPathFromSpec(outputSpec, d, tld);</span>
-<span class="fc" id="L55">        final String fileType = DropOffUtil.getFileType(d);</span>
-<span class="fc" id="L56">        final String currentForm = d.currentForm();</span>
-<span class="fc" id="L57">        getCharset(d, StandardCharsets.UTF_8.name());</span>
-<span class="fc" id="L58">        final String lang = dropOffUtil.getLanguage(d);</span>
+<span class="fc" id="L55">        final String baseFileName = dropOffUtil.getPathFromSpec(outputSpec, d, tld);</span>
+<span class="fc" id="L56">        final String fileType = DropOffUtil.getFileType(d);</span>
+<span class="fc" id="L57">        final String currentForm = d.currentForm();</span>
+<span class="fc" id="L58">        getCharset(d, StandardCharsets.UTF_8.name());</span>
+<span class="fc" id="L59">        final String lang = dropOffUtil.getLanguage(d);</span>
 
-<span class="fc" id="L60">        int writeCount = 0;</span>
+<span class="fc" id="L61">        int writeCount = 0;</span>
 
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if (isPrimaryViewOutputtable(lang, fileType, currentForm)) {</span>
-<span class="fc" id="L63">            final byte[] data = d.data();</span>
-<span class="fc" id="L64">            final boolean status = writeDataFile(d, tld, baseFileName, data, null);</span>
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">            writeCount += (status ? 1 : -1);</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">        if (isPrimaryViewOutputtable(lang, fileType, currentForm)) {</span>
+<span class="fc" id="L64">            final byte[] data = d.data();</span>
+<span class="fc" id="L65">            final boolean status = writeDataFile(d, tld, baseFileName, data, null);</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">            writeCount += (status ? 1 : -1);</span>
         }
 
         // Check each alt view
-<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        for (final String viewName : d.getAlternateViewNames()) {</span>
-<span class="nc bnc" id="L70" title="All 2 branches missed.">            if (isViewOutputtable(lang, fileType, currentForm, viewName)) {</span>
-<span class="nc" id="L71">                final String fixedViewName = viewName.replace(&quot; &quot;, &quot;_&quot;);</span>
-<span class="nc" id="L72">                final boolean status = writeDataFile(d, tld, baseFileName, d.getAlternateView(viewName), fixedViewName);</span>
-<span class="nc bnc" id="L73" title="All 2 branches missed.">                writeCount += (status ? 1 : -1);</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        for (final String viewName : d.getAlternateViewNames()) {</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">            if (isViewOutputtable(lang, fileType, currentForm, viewName)) {</span>
+<span class="nc" id="L72">                final String fixedViewName = viewName.replace(&quot; &quot;, &quot;_&quot;);</span>
+<span class="nc" id="L73">                final boolean status = writeDataFile(d, tld, baseFileName, d.getAlternateView(viewName), fixedViewName);</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                writeCount += (status ? 1 : -1);</span>
             }
-<span class="nc" id="L75">        }</span>
+<span class="nc" id="L76">        }</span>
 
-<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        return (writeCount &gt;= 0) ? IDropOffFilter.STATUS_SUCCESS : IDropOffFilter.STATUS_FAILURE;</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        return (writeCount &gt;= 0) ? IDropOffFilter.STATUS_SUCCESS : IDropOffFilter.STATUS_FAILURE;</span>
     }
 
     /**
@@ -86,54 +87,54 @@ import javax.annotation.Nullable;
      */
     @Override
     public int filter(final IBaseDataObject d, final Map&lt;String, Object&gt; params, final OutputStream output) {
-<span class="nc" id="L89">        final Set&lt;String&gt; checkTypes = getTypesToCheck(d);</span>
-<span class="nc" id="L90">        final IBaseDataObject tld = (IBaseDataObject) params.get(IDropOffFilter.TLD_PARAM);</span>
-<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (!isOutputtable(checkTypes)) {</span>
-<span class="nc" id="L92">            logger.debug(&quot;Skipping {} is not outputtable by this filter on types {}&quot;, d.shortName(), checkTypes);</span>
-<span class="nc" id="L93">            return IDropOffFilter.STATUS_SUCCESS;</span>
+<span class="nc" id="L90">        final Set&lt;String&gt; checkTypes = getTypesToCheck(d);</span>
+<span class="nc" id="L91">        final IBaseDataObject tld = (IBaseDataObject) params.get(IDropOffFilter.TLD_PARAM);</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        if (!isOutputtable(checkTypes)) {</span>
+<span class="nc" id="L93">            logger.debug(&quot;Skipping {} is not outputtable by this filter on types {}&quot;, d.shortName(), checkTypes);</span>
+<span class="nc" id="L94">            return IDropOffFilter.STATUS_SUCCESS;</span>
         }
 
         // Set up base location from configured spec
-<span class="nc" id="L97">        final String fileType = DropOffUtil.getFileType(d);</span>
-<span class="nc" id="L98">        final String currentForm = d.currentForm();</span>
-<span class="nc" id="L99">        final String lang = dropOffUtil.getLanguage(d);</span>
+<span class="nc" id="L98">        final String fileType = DropOffUtil.getFileType(d);</span>
+<span class="nc" id="L99">        final String currentForm = d.currentForm();</span>
+<span class="nc" id="L100">        final String lang = dropOffUtil.getLanguage(d);</span>
 
-<span class="nc" id="L101">        int writeCount = 0;</span>
+<span class="nc" id="L102">        int writeCount = 0;</span>
 
-<span class="nc bnc" id="L103" title="All 2 branches missed.">        if (isPrimaryViewOutputtable(lang, fileType, currentForm)) {</span>
-<span class="nc" id="L104">            final byte[] data = d.data();</span>
-<span class="nc" id="L105">            final boolean status = writeDataStream(d, tld, output, data, null);</span>
-<span class="nc bnc" id="L106" title="All 2 branches missed.">            writeCount += (status ? 1 : -1);</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (isPrimaryViewOutputtable(lang, fileType, currentForm)) {</span>
+<span class="nc" id="L105">            final byte[] data = d.data();</span>
+<span class="nc" id="L106">            final boolean status = writeDataStream(d, tld, output, data, null);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">            writeCount += (status ? 1 : -1);</span>
         }
 
         // Check each alt view
-<span class="nc bnc" id="L110" title="All 2 branches missed.">        for (final String viewName : d.getAlternateViewNames()) {</span>
-<span class="nc bnc" id="L111" title="All 2 branches missed.">            if (isViewOutputtable(lang, fileType, currentForm, viewName)) {</span>
-<span class="nc" id="L112">                final String fixedViewName = viewName.replace(&quot; &quot;, &quot;_&quot;);</span>
-<span class="nc" id="L113">                final boolean status = writeDataStream(d, tld, output, d.getAlternateView(viewName), fixedViewName);</span>
-<span class="nc bnc" id="L114" title="All 2 branches missed.">                writeCount += (status ? 1 : -1);</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        for (final String viewName : d.getAlternateViewNames()) {</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">            if (isViewOutputtable(lang, fileType, currentForm, viewName)) {</span>
+<span class="nc" id="L113">                final String fixedViewName = viewName.replace(&quot; &quot;, &quot;_&quot;);</span>
+<span class="nc" id="L114">                final boolean status = writeDataStream(d, tld, output, d.getAlternateView(viewName), fixedViewName);</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">                writeCount += (status ? 1 : -1);</span>
             }
-<span class="nc" id="L116">        }</span>
+<span class="nc" id="L117">        }</span>
 
-<span class="nc bnc" id="L118" title="All 2 branches missed.">        return writeCount &gt;= 0 ? IDropOffFilter.STATUS_SUCCESS : IDropOffFilter.STATUS_FAILURE;</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        return writeCount &gt;= 0 ? IDropOffFilter.STATUS_SUCCESS : IDropOffFilter.STATUS_FAILURE;</span>
     }
 
     protected boolean isPrimaryViewOutputtable(final String lang, final String fileType, final String currentForm) {
-<span class="pc bpc" id="L122" title="1 of 4 branches missed.">        return isOutputtable(lang + AbstractFilter.LANGUAGE_VIEW) || isOutputtable(lang + AbstractFilter.LANGUAGE_VIEW + AbstractFilter.PRIMARY_VIEW)</span>
-<span class="pc bpc" id="L123" title="2 of 4 branches missed.">                || isOutputtable(fileType) || isOutputtable(fileType + AbstractFilter.PRIMARY_VIEW)</span>
-<span class="nc bnc" id="L124" title="All 6 branches missed.">                || (isOutputtable(AbstractFilter.ALL_LANGUAGE_VIEWS) &amp;&amp; !&quot;NONE&quot;.equals(lang)) || isOutputtable(AbstractFilter.ALL_PRIMARY_VIEWS)</span>
-<span class="nc bnc" id="L125" title="All 6 branches missed.">                || isOutputtable(currentForm) || isOutputtable(currentForm + AbstractFilter.PRIMARY_VIEW) || isOutputtable(lang + &quot;.&quot; + fileType)</span>
-<span class="nc bnc" id="L126" title="All 4 branches missed.">                || isOutputtable(lang + &quot;.&quot; + fileType + AbstractFilter.PRIMARY_VIEW) || isOutputtable(lang + &quot;.&quot; + currentForm)</span>
-<span class="pc bnc" id="L127" title="All 2 branches missed.">                || isOutputtable(lang + &quot;.&quot; + currentForm + AbstractFilter.PRIMARY_VIEW);</span>
+<span class="pc bpc" id="L123" title="1 of 4 branches missed.">        return isOutputtable(lang + AbstractFilter.LANGUAGE_VIEW) || isOutputtable(lang + AbstractFilter.LANGUAGE_VIEW + AbstractFilter.PRIMARY_VIEW)</span>
+<span class="pc bpc" id="L124" title="2 of 4 branches missed.">                || isOutputtable(fileType) || isOutputtable(fileType + AbstractFilter.PRIMARY_VIEW)</span>
+<span class="nc bnc" id="L125" title="All 6 branches missed.">                || (isOutputtable(AbstractFilter.ALL_LANGUAGE_VIEWS) &amp;&amp; !&quot;NONE&quot;.equals(lang)) || isOutputtable(AbstractFilter.ALL_PRIMARY_VIEWS)</span>
+<span class="nc bnc" id="L126" title="All 6 branches missed.">                || isOutputtable(currentForm) || isOutputtable(currentForm + AbstractFilter.PRIMARY_VIEW) || isOutputtable(lang + &quot;.&quot; + fileType)</span>
+<span class="nc bnc" id="L127" title="All 4 branches missed.">                || isOutputtable(lang + &quot;.&quot; + fileType + AbstractFilter.PRIMARY_VIEW) || isOutputtable(lang + &quot;.&quot; + currentForm)</span>
+<span class="pc bnc" id="L128" title="All 2 branches missed.">                || isOutputtable(lang + &quot;.&quot; + currentForm + AbstractFilter.PRIMARY_VIEW);</span>
     }
 
     protected boolean isViewOutputtable(final String lang, final String fileType, final String currentForm, final String viewName) {
-<span class="nc bnc" id="L131" title="All 4 branches missed.">        return isOutputtable(lang + AbstractFilter.LANGUAGE_VIEW) || isOutputtable(lang + AbstractFilter.LANGUAGE_VIEW + &quot;.&quot; + viewName)</span>
-<span class="nc bnc" id="L132" title="All 4 branches missed.">                || isOutputtable(fileType) || isOutputtable(fileType + &quot;.&quot; + viewName)</span>
-<span class="nc bnc" id="L133" title="All 6 branches missed.">                || (isOutputtable(AbstractFilter.ALL_LANGUAGE_VIEWS) &amp;&amp; !&quot;NONE&quot;.equals(lang)) || isOutputtable(AbstractFilter.ALL_ALT_VIEWS)</span>
-<span class="nc bnc" id="L134" title="All 6 branches missed.">                || isOutputtable(currentForm) || isOutputtable(currentForm + &quot;.&quot; + viewName) || isOutputtable(lang + &quot;.&quot; + fileType)</span>
-<span class="nc bnc" id="L135" title="All 4 branches missed.">                || isOutputtable(lang + &quot;.&quot; + fileType + &quot;.&quot; + viewName) || isOutputtable(lang + &quot;.&quot; + currentForm)</span>
-<span class="nc bnc" id="L136" title="All 2 branches missed.">                || isOutputtable(lang + &quot;.&quot; + currentForm + &quot;.&quot; + viewName);</span>
+<span class="nc bnc" id="L132" title="All 4 branches missed.">        return isOutputtable(lang + AbstractFilter.LANGUAGE_VIEW) || isOutputtable(lang + AbstractFilter.LANGUAGE_VIEW + &quot;.&quot; + viewName)</span>
+<span class="nc bnc" id="L133" title="All 4 branches missed.">                || isOutputtable(fileType) || isOutputtable(fileType + &quot;.&quot; + viewName)</span>
+<span class="nc bnc" id="L134" title="All 6 branches missed.">                || (isOutputtable(AbstractFilter.ALL_LANGUAGE_VIEWS) &amp;&amp; !&quot;NONE&quot;.equals(lang)) || isOutputtable(AbstractFilter.ALL_ALT_VIEWS)</span>
+<span class="nc bnc" id="L135" title="All 6 branches missed.">                || isOutputtable(currentForm) || isOutputtable(currentForm + &quot;.&quot; + viewName) || isOutputtable(lang + &quot;.&quot; + fileType)</span>
+<span class="nc bnc" id="L136" title="All 4 branches missed.">                || isOutputtable(lang + &quot;.&quot; + fileType + &quot;.&quot; + viewName) || isOutputtable(lang + &quot;.&quot; + currentForm)</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">                || isOutputtable(lang + &quot;.&quot; + currentForm + &quot;.&quot; + viewName);</span>
     }
 
     /**
@@ -147,41 +148,41 @@ import javax.annotation.Nullable;
      */
     protected boolean writeDataFile(final IBaseDataObject d, final IBaseDataObject tld, final String baseFileName, final byte[] data,
             @Nullable final String type) {
-<span class="fc" id="L150">        String fileName = baseFileName;</span>
-<span class="pc bpc" id="L151" title="1 of 2 branches missed.">        if (type != null) {</span>
-<span class="nc" id="L152">            fileName += &quot;.&quot; + type;</span>
+<span class="fc" id="L151">        String fileName = baseFileName;</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        if (type != null) {</span>
+<span class="nc" id="L153">            fileName += &quot;.&quot; + type;</span>
         }
 
-<span class="pc bpc" id="L155" title="1 of 2 branches missed.">        if (!dropOffUtil.setupPath(fileName)) {</span>
-<span class="nc" id="L156">            logger.error(&quot;Cannot setup path for {}&quot;, fileName);</span>
-<span class="nc" id="L157">            return false;</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">        if (!dropOffUtil.setupPath(fileName)) {</span>
+<span class="nc" id="L157">            logger.error(&quot;Cannot setup path for {}&quot;, fileName);</span>
+<span class="nc" id="L158">            return false;</span>
         }
 
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">        if (!dropOffUtil.removeExistingFile(fileName)) {</span>
-<span class="nc" id="L161">            logger.error(&quot;Cannot remove existing file at {}&quot;, fileName);</span>
-<span class="nc" id="L162">            return false;</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        if (!dropOffUtil.removeExistingFile(fileName)) {</span>
+<span class="nc" id="L162">            logger.error(&quot;Cannot remove existing file at {}&quot;, fileName);</span>
+<span class="nc" id="L163">            return false;</span>
         }
 
         // Write it out
-<span class="fc" id="L166">        try (FileOutputStream fos = new FileOutputStream(fileName)) {</span>
-<span class="fc" id="L167">            fos.write(data, 0, data.length);</span>
-<span class="nc" id="L168">        } catch (IOException ex) {</span>
-<span class="nc" id="L169">            logger.error(&quot;Cannot write output to {}&quot;, fileName, ex);</span>
-<span class="nc" id="L170">            return false;</span>
-<span class="fc" id="L171">        }</span>
+<span class="fc" id="L167">        try (FileOutputStream fos = new FileOutputStream(fileName)) {</span>
+<span class="fc" id="L168">            fos.write(data, 0, data.length);</span>
+<span class="nc" id="L169">        } catch (IOException ex) {</span>
+<span class="nc" id="L170">            logger.error(&quot;Cannot write output to {}&quot;, fileName, ex);</span>
+<span class="nc" id="L171">            return false;</span>
+<span class="fc" id="L172">        }</span>
 
-<span class="fc" id="L173">        return true;</span>
+<span class="fc" id="L174">        return true;</span>
     }
 
     protected boolean writeDataStream(final IBaseDataObject d, final IBaseDataObject tld, final OutputStream output, final byte[] data,
             @Nullable final String type) {
         try {
-<span class="nc" id="L179">            output.write(data);</span>
-<span class="nc" id="L180">        } catch (IOException ex) {</span>
-<span class="nc" id="L181">            logger.error(&quot;Cannot write output&quot;, ex);</span>
-<span class="nc" id="L182">            return false;</span>
-<span class="nc" id="L183">        }</span>
-<span class="nc" id="L184">        return true;</span>
+<span class="nc" id="L180">            output.write(data);</span>
+<span class="nc" id="L181">        } catch (IOException ex) {</span>
+<span class="nc" id="L182">            logger.error(&quot;Cannot write output&quot;, ex);</span>
+<span class="nc" id="L183">            return false;</span>
+<span class="nc" id="L184">        }</span>
+<span class="nc" id="L185">        return true;</span>
     }
 
     /**
@@ -189,16 +190,16 @@ import javax.annotation.Nullable;
      */
     @SuppressWarnings(&quot;SystemOut&quot;)
     public static void main(final String[] args) {
-<span class="nc bnc" id="L192" title="All 2 branches missed.">        final String name = args.length &gt; 0 ? args[0] : null;</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">        final String name = args.length &gt; 0 ? args[0] : null;</span>
 
-<span class="nc" id="L194">        final DataFilter filter = new DataFilter();</span>
+<span class="nc" id="L195">        final DataFilter filter = new DataFilter();</span>
         try {
-<span class="nc" id="L196">            final Configurator config = ConfigUtil.getConfigInfo(DropOffPlace.class);</span>
-<span class="nc" id="L197">            filter.initialize(config, name);</span>
-<span class="nc" id="L198">            System.out.println(&quot;Output types &quot; + filter.outputTypes);</span>
-<span class="nc" id="L199">        } catch (Exception ex) {</span>
-<span class="nc" id="L200">            System.err.println(&quot;Cannot configure filter: &quot; + ex.getMessage());</span>
-<span class="nc" id="L201">        }</span>
-<span class="nc" id="L202">    }</span>
+<span class="nc" id="L197">            final Configurator config = ConfigUtil.getConfigInfo(DropOffPlace.class);</span>
+<span class="nc" id="L198">            filter.initialize(config, name);</span>
+<span class="nc" id="L199">            System.out.println(&quot;Output types &quot; + filter.outputTypes);</span>
+<span class="nc" id="L200">        } catch (Exception ex) {</span>
+<span class="nc" id="L201">            System.err.println(&quot;Cannot configure filter: &quot; + ex.getMessage());</span>
+<span class="nc" id="L202">        }</span>
+<span class="nc" id="L203">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

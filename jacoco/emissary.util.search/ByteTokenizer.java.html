@@ -259,7 +259,7 @@ public class ByteTokenizer implements Iterator&lt;String&gt; {
          * in that next() invocation.
          */
 <span class="nc" id="L261">        newPosition = skipDelimiters(currentPosition);</span>
-<span class="nc bnc" id="L262" title="All 2 branches missed.">        return (newPosition &lt; maxPosition);</span>
+<span class="nc bnc" id="L262" title="All 2 branches missed.">        return newPosition &lt; maxPosition;</span>
     }
 
     /**
@@ -294,7 +294,7 @@ public class ByteTokenizer implements Iterator&lt;String&gt; {
             } else {
 <span class="nc" id="L295">                token = new String(data, start, currentPosition - start);</span>
             }
-<span class="nc" id="L297">        } catch (UnsupportedEncodingException uee) {</span>
+<span class="nc" id="L297">        } catch (UnsupportedEncodingException ignored) {</span>
             // cannot happen...we already verified in constructor
 <span class="nc" id="L299">        }</span>
 <span class="nc" id="L300">        return token;</span>

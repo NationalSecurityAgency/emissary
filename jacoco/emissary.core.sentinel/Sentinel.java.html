@@ -2,13 +2,11 @@
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
-import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.core.sentinel.protocols.Protocol;
-import emissary.pool.MobileAgentFactory;
+import emissary.core.sentinel.protocols.ProtocolFactory;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ThreadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,65 +14,56 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.StringJoiner;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * Track mobile agents and take action on suspicious behavior
  */
 public class Sentinel implements Runnable {
 
-<span class="fc" id="L33">    protected static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());</span>
+<span class="fc" id="L25">    protected static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());</span>
 
     public static final String DEFAULT_NAMESPACE_NAME = &quot;Sentinel&quot;;
 
-    // key: agent name, value: how long Sentinel has observed the mobile agent
-<span class="fc" id="L38">    protected final Map&lt;String, Tracker&gt; trackers = new ConcurrentHashMap&lt;&gt;();</span>
-
     // protocols contain an action to perform when the set of rule conditions are met
-<span class="fc" id="L41">    protected final Set&lt;Protocol&gt; protocols = new LinkedHashSet&lt;&gt;();</span>
+<span class="fc" id="L30">    protected final Set&lt;Protocol&gt; protocols = new LinkedHashSet&lt;&gt;();</span>
 
     // the default configuration Sentinel.cfg
     protected Configurator config;
 
-    // how many minutes to sleep before checking the mobile agents
-<span class="fc" id="L47">    protected long pollingInterval = 5;</span>
+    // how many minutes to sleep before checking protocols
+<span class="fc" id="L36">    protected long pollingInterval = 5;</span>
 
     // Loop control
-<span class="fc" id="L50">    protected boolean timeToQuit = false;</span>
+<span class="fc" id="L39">    protected boolean timeToQuit = false;</span>
 
     // turn on/off sentinel
-<span class="fc" id="L53">    protected boolean enabled = false;</span>
+<span class="fc" id="L42">    protected boolean enabled = false;</span>
 
     /**
      * Create a Sentinel - set it running and bind into the {@link Namespace}
      */
     @SuppressWarnings(&quot;ThreadPriorityCheck&quot;)
-<span class="fc" id="L59">    public Sentinel() {</span>
-<span class="fc" id="L60">        configure();</span>
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        if (this.enabled) {</span>
-<span class="nc" id="L62">            final Thread thread = new Thread(this, DEFAULT_NAMESPACE_NAME);</span>
-<span class="nc" id="L63">            thread.setPriority(Thread.NORM_PRIORITY);</span>
-<span class="nc" id="L64">            thread.setDaemon(true);</span>
-<span class="nc" id="L65">            Namespace.bind(DEFAULT_NAMESPACE_NAME, this);</span>
-<span class="nc" id="L66">            thread.start();</span>
-<span class="nc" id="L67">        } else {</span>
-<span class="fc" id="L68">            logger.info(&quot;Sentinel is disabled&quot;);</span>
+<span class="fc" id="L48">    public Sentinel() {</span>
+<span class="fc" id="L49">        configure();</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if (this.enabled) {</span>
+<span class="nc" id="L51">            final Thread thread = new Thread(this, DEFAULT_NAMESPACE_NAME);</span>
+<span class="nc" id="L52">            thread.setPriority(Thread.NORM_PRIORITY);</span>
+<span class="nc" id="L53">            thread.setDaemon(true);</span>
+<span class="nc" id="L54">            Namespace.bind(DEFAULT_NAMESPACE_NAME, this);</span>
+<span class="nc" id="L55">            thread.start();</span>
+<span class="nc" id="L56">        } else {</span>
+<span class="fc" id="L57">            logger.info(&quot;Sentinel is disabled&quot;);</span>
         }
-<span class="fc" id="L70">    }</span>
+<span class="fc" id="L59">    }</span>
 
     /**
      * Start up the Sentinel thread
      */
     public static void start() {
-<span class="fc" id="L76">        new Sentinel();</span>
-<span class="fc" id="L77">    }</span>
+<span class="fc" id="L65">        new Sentinel();</span>
+<span class="fc" id="L66">    }</span>
 
     /**
      * Lookup the default Sentinel in the {@link Namespace}
@@ -82,43 +71,58 @@ public class Sentinel implements Runnable {
      * @return The registered Sentinel
      */
     public static Sentinel lookup() throws NamespaceException {
-<span class="nc" id="L85">        return (Sentinel) Namespace.lookup(DEFAULT_NAMESPACE_NAME);</span>
+<span class="nc" id="L74">        return (Sentinel) Namespace.lookup(DEFAULT_NAMESPACE_NAME);</span>
+    }
+
+    /**
+     * Get the currently configured polling interval
+     *
+     * @return the currently configured polling interval
+     */
+    public long getPollingInterval() {
+<span class="nc" id="L83">        return pollingInterval;</span>
     }
 
     /**
      * Safely stop the monitoring Thread
      */
     public void quit() {
-<span class="nc" id="L92">        logger.info(&quot;Stopping Sentinel...&quot;);</span>
-<span class="nc" id="L93">        this.timeToQuit = true;</span>
-<span class="nc" id="L94">        ThreadUtils.findThreadsByName(DEFAULT_NAMESPACE_NAME).forEach(Thread::interrupt);</span>
-<span class="nc" id="L95">    }</span>
+<span class="nc" id="L90">        logger.info(&quot;Stopping Sentinel...&quot;);</span>
+<span class="nc" id="L91">        this.timeToQuit = true;</span>
+<span class="nc" id="L92">        ThreadUtils.findThreadsByName(DEFAULT_NAMESPACE_NAME).forEach(Thread::interrupt);</span>
+<span class="nc" id="L93">    }</span>
 
     /**
      * Runnable interface where we get to monitor stuff
      */
     @Override
     public void run() {
-<span class="nc" id="L102">        logger.info(&quot;Sentinel is watching&quot;);</span>
-<span class="nc bnc" id="L103" title="All 2 branches missed.">        while (!this.timeToQuit) {</span>
+<span class="nc" id="L100">        logger.info(&quot;Sentinel is watching&quot;);</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        while (!this.timeToQuit) {</span>
             // Delay this loop
             try {
-<span class="nc" id="L106">                Thread.sleep(TimeUnit.MINUTES.toMillis(pollingInterval));</span>
-<span class="nc" id="L107">                logger.debug(&quot;Sentinel is still watching&quot;);</span>
-<span class="nc" id="L108">                watch();</span>
-<span class="nc" id="L109">            } catch (InterruptedException ignore) {</span>
-<span class="nc" id="L110">                Thread.currentThread().interrupt();</span>
-<span class="nc" id="L111">            } catch (NamespaceException e) {</span>
-<span class="nc" id="L112">                logger.error(&quot;There was an error in lookup&quot;, e);</span>
-<span class="nc" id="L113">            }</span>
+<span class="nc" id="L104">                Thread.sleep(TimeUnit.MINUTES.toMillis(pollingInterval));</span>
+<span class="nc" id="L105">                logger.debug(&quot;Sentinel is still watching&quot;);</span>
+<span class="nc" id="L106">                protocols.forEach(this::run);</span>
+<span class="nc" id="L107">            } catch (InterruptedException ignore) {</span>
+<span class="nc" id="L108">                Thread.currentThread().interrupt();</span>
+<span class="nc" id="L109">            }</span>
         }
-<span class="nc" id="L115">        Namespace.unbind(DEFAULT_NAMESPACE_NAME);</span>
-<span class="nc" id="L116">        logger.info(&quot;Sentinel stopped&quot;);</span>
-<span class="nc" id="L117">    }</span>
+<span class="nc" id="L111">        Namespace.unbind(DEFAULT_NAMESPACE_NAME);</span>
+<span class="nc" id="L112">        logger.info(&quot;Sentinel stopped&quot;);</span>
+<span class="nc" id="L113">    }</span>
+
+    protected void run(final Protocol protocol) {
+        try {
+<span class="nc" id="L117">            protocol.run();</span>
+<span class="nc" id="L118">        } catch (IOException e) {</span>
+<span class="nc" id="L119">            logger.error(&quot;There was an error running protocol&quot;, e);</span>
+<span class="nc" id="L120">        }</span>
+<span class="nc" id="L121">    }</span>
 
     @Override
     public String toString() {
-<span class="nc" id="L121">        return &quot;Watching agents with &quot; + protocols;</span>
+<span class="nc" id="L125">        return &quot;Watching agents with &quot; + protocols;</span>
     }
 
     /**
@@ -126,176 +130,43 @@ public class Sentinel implements Runnable {
      */
     protected void configure() {
         try {
-<span class="fc" id="L129">            this.config = ConfigUtil.getConfigInfo(Sentinel.class);</span>
-<span class="fc" id="L130">            init();</span>
-<span class="nc" id="L131">        } catch (IOException e) {</span>
-<span class="nc" id="L132">            logger.warn(&quot;Cannot read Sentinel.cfg, taking default values&quot;);</span>
-<span class="fc" id="L133">        }</span>
-<span class="fc" id="L134">    }</span>
+<span class="fc" id="L133">            this.config = ConfigUtil.getConfigInfo(Sentinel.class);</span>
+<span class="fc" id="L134">            init();</span>
+<span class="nc" id="L135">        } catch (IOException e) {</span>
+<span class="nc" id="L136">            logger.warn(&quot;Cannot read Sentinel.cfg, taking default values&quot;);</span>
+<span class="fc" id="L137">        }</span>
+<span class="fc" id="L138">    }</span>
 
     /**
      * Initialize Protocols
      */
     protected void init() {
-<span class="fc" id="L140">        this.enabled = config.findBooleanEntry(&quot;ENABLED&quot;, false);</span>
-<span class="pc bpc" id="L141" title="1 of 2 branches missed.">        if (this.enabled) {</span>
-<span class="nc" id="L142">            this.pollingInterval = this.config.findIntEntry(&quot;POLLING_INTERVAL_MINUTES&quot;, 5);</span>
+<span class="fc" id="L144">        this.enabled = config.findBooleanEntry(&quot;ENABLED&quot;, false);</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        if (this.enabled) {</span>
+<span class="nc" id="L146">            this.pollingInterval = this.config.findIntEntry(&quot;POLLING_INTERVAL_MINUTES&quot;, 5);</span>
 
-<span class="nc" id="L144">            logger.trace(&quot;Sentinel protocols initializing...&quot;);</span>
-<span class="nc bnc" id="L145" title="All 2 branches missed.">            for (String protocolConfig : this.config.findEntries(&quot;PROTOCOL&quot;)) {</span>
+<span class="nc" id="L148">            logger.trace(&quot;Sentinel protocols initializing...&quot;);</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">            for (String protocolConfig : this.config.findEntries(&quot;PROTOCOL&quot;)) {</span>
                 try {
-<span class="nc" id="L147">                    Protocol protocol = new Protocol(protocolConfig);</span>
-<span class="nc bnc" id="L148" title="All 2 branches missed.">                    if (protocol.isEnabled()) {</span>
-<span class="nc" id="L149">                        logger.debug(&quot;Sentinel protocol initialized {}&quot;, protocol);</span>
-<span class="nc" id="L150">                        this.protocols.add(protocol);</span>
+<span class="nc" id="L151">                    Protocol protocol = ProtocolFactory.get(protocolConfig);</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">                    if (protocol.isEnabled()) {</span>
+<span class="nc" id="L153">                        logger.debug(&quot;Sentinel protocol initialized {}&quot;, protocol);</span>
+<span class="nc" id="L154">                        this.protocols.add(protocol);</span>
                     } else {
-<span class="nc" id="L152">                        logger.debug(&quot;Sentinel protocol disabled {}&quot;, protocol);</span>
+<span class="nc" id="L156">                        logger.debug(&quot;Sentinel protocol disabled {}&quot;, protocol);</span>
                     }
-<span class="nc" id="L154">                } catch (RuntimeException e) {</span>
-<span class="nc" id="L155">                    logger.warn(&quot;Unable to configure Sentinel Protocol[{}]: {}&quot;, protocolConfig, e.getMessage());</span>
-<span class="nc" id="L156">                }</span>
-<span class="nc" id="L157">            }</span>
-<span class="nc bnc" id="L158" title="All 2 branches missed.">            if (this.protocols.isEmpty()) {</span>
-<span class="nc" id="L159">                logger.warn(&quot;Sentinel initialization failed due to no protocols found, disabling&quot;);</span>
-<span class="nc" id="L160">                this.enabled = false;</span>
+<span class="nc" id="L158">                } catch (RuntimeException e) {</span>
+<span class="nc" id="L159">                    logger.warn(&quot;Unable to configure Sentinel Protocol[{}]: {}&quot;, protocolConfig, e.getMessage());</span>
+<span class="nc" id="L160">                }</span>
+<span class="nc" id="L161">            }</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">            if (this.protocols.isEmpty()) {</span>
+<span class="nc" id="L163">                logger.warn(&quot;Sentinel initialization failed due to no protocols found, disabling&quot;);</span>
+<span class="nc" id="L164">                this.enabled = false;</span>
             } else {
-<span class="nc" id="L162">                logger.info(&quot;Sentinel initialized protocols {}&quot;, protocols);</span>
+<span class="nc" id="L166">                logger.info(&quot;Sentinel initialized protocols {}&quot;, protocols);</span>
             }
         }
-<span class="fc" id="L165">    }</span>
+<span class="fc" id="L169">    }</span>
 
-    /**
-     * Checks to see if the mobile agents are processing the same data since the last polling event
-     *
-     * @throws NamespaceException if there is a problem looking up resources in the {@link Namespace}
-     */
-    protected void watch() throws NamespaceException {
-<span class="fc" id="L173">        List&lt;String&gt; agentKeys = Namespace.keySet().stream()</span>
-<span class="fc" id="L174">                .filter(k -&gt; k.startsWith(MobileAgentFactory.AGENT_NAME))</span>
-<span class="fc" id="L175">                .sorted()</span>
-<span class="fc" id="L176">                .collect(Collectors.toList());</span>
-<span class="fc bfc" id="L177" title="All 2 branches covered.">        for (String agentKey : agentKeys) {</span>
-<span class="fc" id="L178">            watch(agentKey);</span>
-<span class="fc" id="L179">        }</span>
-<span class="pc" id="L180">        protocols.forEach(protocol -&gt; protocol.run(trackers));</span>
-<span class="fc" id="L181">    }</span>
-
-    /**
-     * Checks to see if the mobile agent is processing the same data since the last polling event
-     *
-     * @param agentKey the agent key, i.e. MobileAgent-01
-     * @throws NamespaceException if there is a problem looking up resources in the {@link Namespace}
-     */
-    protected void watch(String agentKey) throws NamespaceException {
-<span class="fc" id="L190">        logger.trace(&quot;Searching for agent [{}]&quot;, agentKey);</span>
-<span class="fc" id="L191">        IMobileAgent mobileAgent = (IMobileAgent) Namespace.lookup(agentKey);</span>
-<span class="fc" id="L192">        Tracker trackedAgent = trackers.computeIfAbsent(mobileAgent.getName(), Tracker::new);</span>
-<span class="pc bpc" id="L193" title="1 of 2 branches missed.">        if (mobileAgent.isInUse()) {</span>
-<span class="pc bpc" id="L194" title="1 of 2 branches missed.">            if (!Objects.equals(mobileAgent.agentId(), trackedAgent.getAgentId())</span>
-<span class="nc bnc" id="L195" title="All 2 branches missed.">                    || !Objects.equals(mobileAgent.getLastPlaceProcessed(), trackedAgent.getDirectoryEntryKey())) {</span>
-<span class="fc" id="L196">                trackedAgent.clear();</span>
-<span class="fc" id="L197">                trackedAgent.setAgentId(mobileAgent.agentId());</span>
-<span class="fc" id="L198">                trackedAgent.setDirectoryEntryKey(mobileAgent.getLastPlaceProcessed());</span>
-            }
-<span class="fc" id="L200">            trackedAgent.incrementTimer(pollingInterval);</span>
-<span class="fc" id="L201">            logger.trace(&quot;Agent acquired {}&quot;, trackedAgent);</span>
-        } else {
-<span class="nc" id="L203">            trackedAgent.clear();</span>
-<span class="nc" id="L204">            logger.trace(&quot;Agent not in use [{}]&quot;, agentKey);</span>
-        }
-<span class="fc" id="L206">    }</span>
-
-    public static class Tracker implements Comparable&lt;Tracker&gt; {
-        private final String agentName;
-        private String agentId;
-        private String shortName;
-        private String directoryEntryKey;
-<span class="fc" id="L213">        private long timer = -1;</span>
-
-<span class="fc" id="L215">        public Tracker(String agentName) {</span>
-<span class="fc" id="L216">            this.agentName = agentName;</span>
-<span class="fc" id="L217">        }</span>
-
-        public String getAgentName() {
-<span class="fc" id="L220">            return agentName;</span>
-        }
-
-        public String getAgentId() {
-<span class="fc" id="L224">            return agentId;</span>
-        }
-
-        public void setAgentId(String agentId) {
-<span class="fc bfc" id="L228" title="All 2 branches covered.">            if (StringUtils.contains(agentId, &quot;No_AgentID_Set&quot;)) {</span>
-<span class="fc" id="L229">                clear();</span>
-            } else {
-<span class="fc" id="L231">                this.agentId = agentId;</span>
-<span class="pc bpc" id="L232" title="1 of 2 branches missed.">                if (StringUtils.contains(agentId, &quot;Agent-&quot;)) {</span>
-<span class="fc" id="L233">                    this.shortName = getShortName(agentId);</span>
-                }
-            }
-<span class="fc" id="L236">        }</span>
-
-        public String getShortName() {
-<span class="fc" id="L239">            return shortName;</span>
-        }
-
-        public static String getShortName(String agentId) {
-<span class="fc" id="L243">            return StringUtils.substringAfter(StringUtils.substringAfter(agentId, &quot;Agent-&quot;), &quot;-&quot;);</span>
-        }
-
-        public String getDirectoryEntryKey() {
-<span class="fc" id="L247">            return directoryEntryKey;</span>
-        }
-
-        public void setDirectoryEntryKey(String directoryEntryKey) {
-<span class="fc" id="L251">            this.directoryEntryKey = directoryEntryKey;</span>
-<span class="fc" id="L252">        }</span>
-
-        public String getPlaceName() {
-<span class="fc" id="L255">            return getPlaceName(this.directoryEntryKey);</span>
-        }
-
-        public static String getPlaceName(String directoryEntryKey) {
-<span class="fc" id="L259">            return StringUtils.defaultString(StringUtils.substringAfterLast(directoryEntryKey, &quot;/&quot;));</span>
-        }
-
-        public long getTimer() {
-<span class="fc" id="L263">            return timer;</span>
-        }
-
-        public void resetTimer() {
-<span class="fc" id="L267">            this.timer = -1;</span>
-<span class="fc" id="L268">        }</span>
-
-        public void incrementTimer(long time) {
-<span class="fc bfc" id="L271" title="All 2 branches covered.">            if (this.timer == -1) {</span>
-<span class="fc" id="L272">                this.timer = 0;</span>
-            } else {
-<span class="fc" id="L274">                this.timer += time;</span>
-            }
-<span class="fc" id="L276">        }</span>
-
-        public void clear() {
-<span class="fc" id="L279">            this.agentId = &quot;&quot;;</span>
-<span class="fc" id="L280">            this.shortName = &quot;&quot;;</span>
-<span class="fc" id="L281">            this.directoryEntryKey = &quot;&quot;;</span>
-<span class="fc" id="L282">            resetTimer();</span>
-<span class="fc" id="L283">        }</span>
-
-        @Override
-        public int compareTo(Tracker o) {
-<span class="fc" id="L287">            return this.agentName.compareTo(o.agentName);</span>
-        }
-
-        @Override
-        public String toString() {
-<span class="fc" id="L292">            return new StringJoiner(&quot;, &quot;, &quot;{&quot;, &quot;}&quot;)</span>
-<span class="fc" id="L293">                    .add(&quot;\&quot;agentName\&quot;:\&quot;&quot; + agentName + &quot;\&quot;&quot;)</span>
-<span class="fc" id="L294">                    .add(&quot;\&quot;directoryEntry\&quot;:\&quot;&quot; + directoryEntryKey + &quot;\&quot;&quot;)</span>
-<span class="fc" id="L295">                    .add(&quot;\&quot;shortName\&quot;:\&quot;&quot; + shortName + &quot;\&quot;&quot;)</span>
-<span class="fc" id="L296">                    .add(&quot;\&quot;timeInMinutes\&quot;:&quot; + timer)</span>
-<span class="fc" id="L297">                    .toString();</span>
-        }
-    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

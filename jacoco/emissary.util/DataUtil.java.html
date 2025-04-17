@@ -4,13 +4,14 @@ import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.id.WorkUnit;
 
+import jakarta.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 
 public class DataUtil {
 
-<span class="fc" id="L13">    private static final Pattern NL_REPL = Pattern.compile(&quot;[\n\r]+&quot;);</span>
+<span class="fc" id="L14">    private static final Pattern NL_REPL = Pattern.compile(&quot;[\n\r]+&quot;);</span>
 
     /**
      * As {@link IBaseDataObject#pushCurrentForm(String)} but makes sure each form is not already on the stack first.
@@ -19,10 +20,10 @@ public class DataUtil {
      * @param forms that are pushed into current forms if not already present
      */
     public static void pushDedupedForms(final IBaseDataObject d, final Collection&lt;String&gt; forms) {
-<span class="fc bfc" id="L22" title="All 2 branches covered.">        for (final String f : forms) {</span>
-<span class="fc" id="L23">            pushDedupedForm(d, f);</span>
-<span class="fc" id="L24">        }</span>
-<span class="fc" id="L25">    }</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        for (final String f : forms) {</span>
+<span class="fc" id="L24">            pushDedupedForm(d, f);</span>
+<span class="fc" id="L25">        }</span>
+<span class="fc" id="L26">    }</span>
 
     /**
      * As {@link IBaseDataObject#pushCurrentForm(String)} but makes sure each form is not already on the stack first.
@@ -31,10 +32,10 @@ public class DataUtil {
      * @param form that are pushed into current forms if not already present
      */
     public static void pushDedupedForm(final IBaseDataObject d, final String form) {
-<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (d.searchCurrentForm(form) == -1) {</span>
-<span class="fc" id="L35">            d.pushCurrentForm(form);</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (d.searchCurrentForm(form) == -1) {</span>
+<span class="fc" id="L36">            d.pushCurrentForm(form);</span>
         }
-<span class="fc" id="L37">    }</span>
+<span class="fc" id="L38">    }</span>
 
     /**
      * Check that a data object is neither null nor empty.
@@ -43,15 +44,15 @@ public class DataUtil {
      * @return true if d is not null and not empty
      */
     public static boolean isNotEmpty(@Nullable final IBaseDataObject d) {
-<span class="fc bfc" id="L46" title="All 4 branches covered.">        return (d != null) &amp;&amp; !isEmpty(d);</span>
+<span class="fc bfc" id="L47" title="All 4 branches covered.">        return (d != null) &amp;&amp; !isEmpty(d);</span>
     }
 
     /**
      * Return true if the data slot is empty
      */
     public static boolean isEmpty(final IBaseDataObject d) {
-<span class="fc" id="L53">        final byte[] data = d.data();</span>
-<span class="fc" id="L54">        return isEmpty(data);</span>
+<span class="fc" id="L54">        final byte[] data = d.data();</span>
+<span class="fc" id="L55">        return isEmpty(data);</span>
     }
 
     /**
@@ -61,15 +62,15 @@ public class DataUtil {
      * @return true if data is null or devoid of real characters
      */
     public static boolean isEmpty(@Nullable final byte[] data) {
-<span class="fc bfc" id="L64" title="All 4 branches covered.">        return (data == null) || (data.length == 0);</span>
+<span class="fc bfc" id="L65" title="All 4 branches covered.">        return (data == null) || (data.length == 0);</span>
     }
 
     /**
      * Return true if the data slot is empty
      */
     public static boolean isEmpty(final WorkUnit u) {
-<span class="fc" id="L71">        final byte[] data = u.getData();</span>
-<span class="fc" id="L72">        return isEmpty(data);</span>
+<span class="fc" id="L72">        final byte[] data = u.getData();</span>
+<span class="fc" id="L73">        return isEmpty(data);</span>
     }
 
     /**
@@ -78,25 +79,25 @@ public class DataUtil {
      * @param d the object to set as empty
      */
     public static void setEmptySession(final IBaseDataObject d) {
-<span class="fc" id="L81">        d.setCurrentForm(Form.EMPTY);</span>
-<span class="fc" id="L82">        d.setFileTypeIfEmpty(Form.EMPTY);</span>
-<span class="fc" id="L83">    }</span>
+<span class="fc" id="L82">        d.setCurrentForm(Form.EMPTY);</span>
+<span class="fc" id="L83">        d.setFileTypeIfEmpty(Form.EMPTY);</span>
+<span class="fc" id="L84">    }</span>
 
     /**
      * Escape a string so it is suitable for use in a CSV record
      */
     public static String csvescape(final String field) {
-<span class="fc" id="L89">        final String SEP = &quot;,&quot;;</span>
-<span class="fc" id="L90">        String s = field;</span>
-<span class="pc bpc" id="L91" title="1 of 6 branches missed.">        if ((s != null) &amp;&amp; (s.contains(&quot;\n&quot;) || s.contains(&quot;\r&quot;))) {</span>
-<span class="fc" id="L92">            s = NL_REPL.matcher(s).replaceAll(&quot; &quot;);</span>
+<span class="fc" id="L90">        final String SEP = &quot;,&quot;;</span>
+<span class="fc" id="L91">        String s = field;</span>
+<span class="pc bpc" id="L92" title="1 of 6 branches missed.">        if ((s != null) &amp;&amp; (s.contains(&quot;\n&quot;) || s.contains(&quot;\r&quot;))) {</span>
+<span class="fc" id="L93">            s = NL_REPL.matcher(s).replaceAll(&quot; &quot;);</span>
         }
 
-<span class="pc bpc" id="L95" title="1 of 6 branches missed.">        if ((s != null) &amp;&amp; (s.contains(SEP) || s.indexOf('&quot;') &gt; -1)) {</span>
-<span class="fc" id="L96">            s = &quot;\&quot;&quot; + s.replace(&quot;\&quot;&quot;, &quot;\&quot;\&quot;&quot;) + &quot;\&quot;&quot;; // escape quotes</span>
+<span class="pc bpc" id="L96" title="1 of 6 branches missed.">        if ((s != null) &amp;&amp; (s.contains(SEP) || s.indexOf('&quot;') &gt; -1)) {</span>
+<span class="fc" id="L97">            s = &quot;\&quot;&quot; + s.replace(&quot;\&quot;&quot;, &quot;\&quot;\&quot;&quot;) + &quot;\&quot;&quot;; // escape quotes</span>
         }
 
-<span class="fc" id="L99">        return s;</span>
+<span class="fc" id="L100">        return s;</span>
     }
 
     /**
@@ -110,10 +111,10 @@ public class DataUtil {
     @Deprecated
     @SuppressWarnings(&quot;AvoidObjectArrays&quot;)
     public static void copyParams(final IBaseDataObject source, final IBaseDataObject target, final String[] keys) {
-<span class="nc bnc" id="L113" title="All 2 branches missed.">        for (final String k : keys) {</span>
-<span class="nc" id="L114">            copyParam(source, target, k);</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        for (final String k : keys) {</span>
+<span class="nc" id="L115">            copyParam(source, target, k);</span>
         }
-<span class="nc" id="L116">    }</span>
+<span class="nc" id="L117">    }</span>
 
     /**
      * Copy an collection of metadata parameters from one data object to another
@@ -123,10 +124,10 @@ public class DataUtil {
      * @param keys collection of metadata keys to copy
      */
     public static void copyParams(final IBaseDataObject source, final IBaseDataObject target, final Collection&lt;String&gt; keys) {
-<span class="nc bnc" id="L126" title="All 2 branches missed.">        for (final String k : keys) {</span>
-<span class="nc" id="L127">            copyParam(source, target, k);</span>
-<span class="nc" id="L128">        }</span>
-<span class="nc" id="L129">    }</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        for (final String k : keys) {</span>
+<span class="nc" id="L128">            copyParam(source, target, k);</span>
+<span class="nc" id="L129">        }</span>
+<span class="nc" id="L130">    }</span>
 
     /**
      * Copy a metadata item from one payload to another
@@ -136,11 +137,11 @@ public class DataUtil {
      * @param key metadata key to copy
      */
     public static void copyParam(final IBaseDataObject source, final IBaseDataObject target, final String key) {
-<span class="nc" id="L139">        final Object value = source.getParameter(key);</span>
-<span class="nc bnc" id="L140" title="All 2 branches missed.">        if (value != null) {</span>
-<span class="nc" id="L141">            target.setParameter(key, value);</span>
+<span class="nc" id="L140">        final Object value = source.getParameter(key);</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (value != null) {</span>
+<span class="nc" id="L142">            target.setParameter(key, value);</span>
         }
-<span class="nc" id="L143">    }</span>
+<span class="nc" id="L144">    }</span>
 
     /**
      * Convenience method for using same value as currentForm (pushed) and filetype for a {@link IBaseDataObject}
@@ -149,9 +150,9 @@ public class DataUtil {
      * @param form added as current form and filetype for dataobj
      */
     public static void setCurrentFormAndFiletype(final IBaseDataObject dataobj, final String form) {
-<span class="fc" id="L152">        dataobj.pushCurrentForm(form);</span>
-<span class="fc" id="L153">        dataobj.setFileType(form);</span>
-<span class="fc" id="L154">    }</span>
+<span class="fc" id="L153">        dataobj.pushCurrentForm(form);</span>
+<span class="fc" id="L154">        dataobj.setFileType(form);</span>
+<span class="fc" id="L155">    }</span>
 
     /** This class is not meant to be instantiated. */
     private DataUtil() {}

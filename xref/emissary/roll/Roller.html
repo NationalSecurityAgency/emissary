@@ -162,7 +162,7 @@
 <a class="jxr_linenumber" name="L154" href="#L154">154</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> shouldRoll(<strong class="jxr_keyword">long</strong> start) {
 <a class="jxr_linenumber" name="L155" href="#L155">155</a>         <em class="jxr_comment">// verify both time and progress are set</em>
 <a class="jxr_linenumber" name="L156" href="#L156">156</a>         <em class="jxr_comment">// if we're below max we'll check the interval</em>
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>         <strong class="jxr_keyword">if</strong> ((period &gt; 0 &amp;&amp; max &gt; 0) &amp;&amp; progress.get() &lt; max) {
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>         <strong class="jxr_keyword">if</strong> (period &gt; 0 &amp;&amp; max &gt; 0 &amp;&amp; progress.get() &lt; max) {
 <a class="jxr_linenumber" name="L158" href="#L158">158</a>             <em class="jxr_comment">// we fired a progress run or delayed start due to starvation. add 100 for clock skew</em>
 <a class="jxr_linenumber" name="L159" href="#L159">159</a>             <strong class="jxr_keyword">if</strong> ((start - lastRun + 100) &lt; getIntervalInMillis()) {
 <a class="jxr_linenumber" name="L160" href="#L160">160</a>                 <strong class="jxr_keyword">return</strong> false;

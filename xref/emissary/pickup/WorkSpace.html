@@ -27,30 +27,30 @@
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> emissary.util.Version;
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> emissary.util.io.FileFind;
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.HttpStatus;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.eclipse.jetty.server.Server;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> java.io.File;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> java.lang.management.ManagementFactory;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> java.lang.management.MemoryMXBean;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> java.lang.management.MemoryUsage;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> java.nio.file.Files;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> java.nio.file.Paths;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> java.util.Arrays;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> java.util.Collection;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> java.util.Collections;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> java.util.HashSet;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> java.util.Iterator;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> java.util.PriorityQueue;
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.CopyOnWriteArrayList;
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> javax.annotation.Nullable;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> jakarta.annotation.Nullable;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.HttpStatus;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.eclipse.jetty.server.Server;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> java.io.File;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> java.lang.management.ManagementFactory;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> java.lang.management.MemoryMXBean;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> java.lang.management.MemoryUsage;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> java.nio.file.Files;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> java.nio.file.Paths;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> java.util.Arrays;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> java.util.Collection;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> java.util.Collections;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> java.util.HashSet;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> java.util.Iterator;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> java.util.PriorityQueue;
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.CopyOnWriteArrayList;
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> * Recursively process input and distribute files to one or more remote PickUp client instances when they ask for a</em>
@@ -663,7 +663,7 @@
 <a class="jxr_linenumber" name="L655" href="#L655">655</a>         }
 <a class="jxr_linenumber" name="L656" href="#L656">656</a> 
 <a class="jxr_linenumber" name="L657" href="#L657">657</a>         <strong class="jxr_keyword">if</strong> (logger.isInfoEnabled()) {
-<a class="jxr_linenumber" name="L658" href="#L658">658</a>             logger.info(<span class="jxr_string">"Notified {} in {} attempts: {}"</span>, pup, tryCount, (notified ? <span class="jxr_string">"SUCCESS"</span> : <span class="jxr_string">"FAILED"</span>));
+<a class="jxr_linenumber" name="L658" href="#L658">658</a>             logger.info(<span class="jxr_string">"Notified {} in {} attempts: {}"</span>, pup, tryCount, notified ? <span class="jxr_string">"SUCCESS"</span> : <span class="jxr_string">"FAILED"</span>);
 <a class="jxr_linenumber" name="L659" href="#L659">659</a>         }
 <a class="jxr_linenumber" name="L660" href="#L660">660</a> 
 <a class="jxr_linenumber" name="L661" href="#L661">661</a>         <strong class="jxr_keyword">return</strong> notified;
@@ -775,7 +775,7 @@
 <a class="jxr_linenumber" name="L767" href="#L767">767</a>         }
 <a class="jxr_linenumber" name="L768" href="#L768">768</a> 
 <a class="jxr_linenumber" name="L769" href="#L769">769</a>         <strong class="jxr_keyword">if</strong> (logger.isInfoEnabled()) {
-<a class="jxr_linenumber" name="L770" href="#L770">770</a>             logger.info(<span class="jxr_string">"Adding workbundle {} size {} filesSeen {}"</span>, wb, (sz + 1), <strong class="jxr_keyword">this</strong>.filesSeen.size());
+<a class="jxr_linenumber" name="L770" href="#L770">770</a>             logger.info(<span class="jxr_string">"Adding workbundle {} size {} filesSeen {}"</span>, wb, sz + 1, <strong class="jxr_keyword">this</strong>.filesSeen.size());
 <a class="jxr_linenumber" name="L771" href="#L771">771</a>         }
 <a class="jxr_linenumber" name="L772" href="#L772">772</a>     }
 <a class="jxr_linenumber" name="L773" href="#L773">773</a> 
@@ -856,7 +856,7 @@
 <a class="jxr_linenumber" name="L848" href="#L848">848</a>         }
 <a class="jxr_linenumber" name="L849" href="#L849">849</a>         <strong class="jxr_keyword">if</strong> (logger.isDebugEnabled()) {
 <a class="jxr_linenumber" name="L850" href="#L850">850</a>             logger.debug(<span class="jxr_string">"Bundle {} completed by {}{}"</span>, bundleId, remoteName,
-<a class="jxr_linenumber" name="L851" href="#L851">851</a>                     (itWorked ? <span class="jxr_string">""</span> : (<span class="jxr_string">" but failed for the "</span> + (item != <strong class="jxr_keyword">null</strong> ? item.getErrorCount() : -1) + <span class="jxr_string">" time"</span>)));
+<a class="jxr_linenumber" name="L851" href="#L851">851</a>                     itWorked ? <span class="jxr_string">""</span> : (<span class="jxr_string">" but failed for the "</span> + (item != <strong class="jxr_keyword">null</strong> ? item.getErrorCount() : -1) + <span class="jxr_string">" time"</span>));
 <a class="jxr_linenumber" name="L852" href="#L852">852</a>         }
 <a class="jxr_linenumber" name="L853" href="#L853">853</a>         <strong class="jxr_keyword">return</strong> item != <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L854" href="#L854">854</a>     }
@@ -1179,7 +1179,7 @@
 <a class="jxr_linenumber" name="L1171" href="#L1171">1171</a>                 WorkSpace.<strong class="jxr_keyword">this</strong>.numberOfBundlesToSkip = 0;
 <a class="jxr_linenumber" name="L1172" href="#L1172">1172</a> 
 <a class="jxr_linenumber" name="L1173" href="#L1173">1173</a>                 logger.info(<span class="jxr_string">"Collected {} file bundles in {}s in loop iteration {}, {} items in outbound queue"</span>, collectCount,
-<a class="jxr_linenumber" name="L1174" href="#L1174">1174</a>                         ((stop - start) / 1000.0), loopCount, WorkSpace.<strong class="jxr_keyword">this</strong>.outbound.size());
+<a class="jxr_linenumber" name="L1174" href="#L1174">1174</a>                         (stop - start) / 1000.0, loopCount, WorkSpace.<strong class="jxr_keyword">this</strong>.outbound.size());
 <a class="jxr_linenumber" name="L1175" href="#L1175">1175</a> 
 <a class="jxr_linenumber" name="L1176" href="#L1176">1176</a>                 <strong class="jxr_keyword">if</strong> ((collectCount == 0) &amp;&amp; WorkSpace.<strong class="jxr_keyword">this</strong>.loop) {
 <a class="jxr_linenumber" name="L1177" href="#L1177">1177</a>                     <em class="jxr_comment">// Wait pause time seconds and try again if looping</em>
@@ -1374,7 +1374,7 @@
 <a class="jxr_linenumber" name="L1366" href="#L1366">1366</a>             <strong class="jxr_keyword">if</strong> (count &gt; 0 &amp;&amp; logger.isDebugEnabled()) {
 <a class="jxr_linenumber" name="L1367" href="#L1367">1367</a>                 logger.debug(
 <a class="jxr_linenumber" name="L1368" href="#L1368">1368</a>                         <span class="jxr_string">"Paused collector {} times for {}s waiting for memory usage to go below threshold {} resuming at {}, queueSize was/is={}/{}"</span>,
-<a class="jxr_linenumber" name="L1369" href="#L1369">1369</a>                         count, (intv / 1000), MEM_THRESHOLD, heap, initialQueueSize, getOutboundQueueSize());
+<a class="jxr_linenumber" name="L1369" href="#L1369">1369</a>                         count, intv / 1000, MEM_THRESHOLD, heap, initialQueueSize, getOutboundQueueSize());
 <a class="jxr_linenumber" name="L1370" href="#L1370">1370</a>             }
 <a class="jxr_linenumber" name="L1371" href="#L1371">1371</a>         }
 <a class="jxr_linenumber" name="L1372" href="#L1372">1372</a>     }

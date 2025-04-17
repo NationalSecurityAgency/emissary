@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServiceConfigGuide.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.config</a> &gt; <span class="el_source">ServiceConfigGuide.java</span></div><h1>ServiceConfigGuide.java</h1><pre class="source lang-java linenums">package emissary.config;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -26,12 +27,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * This class implements the Configurator interface for services within the Emissary framework.
@@ -44,7 +45,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     public static final char COLON = ':';
     public static final String DOUBLESLASH = &quot;//&quot;;
 
-<span class="fc" id="L47">    protected static final Logger logger = LoggerFactory.getLogger(ServiceConfigGuide.class);</span>
+<span class="fc" id="L48">    protected static final Logger logger = LoggerFactory.getLogger(ServiceConfigGuide.class);</span>
 
     protected static final String DEFAULT_FILE_NAME = &quot;default.cfg&quot;;
     protected static final String POST_FILE_NAME = &quot;post.cfg&quot;;
@@ -54,10 +55,10 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     protected static final String NULL_VALUE = &quot;&lt;null&gt;&quot;;
 
     // Hold all service specific parameters in a list
-<span class="fc" id="L57">    protected List&lt;ConfigEntry&gt; serviceParameters = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L58">    protected List&lt;ConfigEntry&gt; serviceParameters = new ArrayList&lt;&gt;();</span>
 
     // Hold all remove config entries, operator of !=
-<span class="fc" id="L60">    protected List&lt;ConfigEntry&gt; removeParameters = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L61">    protected List&lt;ConfigEntry&gt; removeParameters = new ArrayList&lt;&gt;();</span>
 
     protected String operator;
 
@@ -74,7 +75,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     protected static final String ENVSTOP = &quot;'}&quot;;
 
     // Map of last values seen
-<span class="fc" id="L77">    protected Map&lt;String, String&gt; values = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L78">    protected Map&lt;String, String&gt; values = new HashMap&lt;&gt;();</span>
 
     // Get this once per jvm
     private static final String hostname;
@@ -83,20 +84,20 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     static {
         String tmpHostname;
         try {
-<span class="fc" id="L86">            tmpHostname = InetAddress.getLocalHost().getCanonicalHostName();</span>
-<span class="nc" id="L87">        } catch (UnknownHostException e) {</span>
-<span class="nc" id="L88">            logger.error(&quot;Error getting host name&quot;, e);</span>
-<span class="nc" id="L89">            tmpHostname = &quot;localhost&quot;;</span>
-<span class="fc" id="L90">        }</span>
-<span class="fc" id="L91">        hostname = tmpHostname;</span>
-<span class="fc" id="L92">    }</span>
+<span class="fc" id="L87">            tmpHostname = InetAddress.getLocalHost().getCanonicalHostName();</span>
+<span class="nc" id="L88">        } catch (UnknownHostException e) {</span>
+<span class="nc" id="L89">            logger.error(&quot;Error getting host name&quot;, e);</span>
+<span class="nc" id="L90">            tmpHostname = &quot;localhost&quot;;</span>
+<span class="fc" id="L91">        }</span>
+<span class="fc" id="L92">        hostname = tmpHostname;</span>
+<span class="fc" id="L93">    }</span>
 
     /**
      * Public default constructor
      */
-<span class="fc" id="L97">    public ServiceConfigGuide() {</span>
-<span class="fc" id="L98">        initializeValues();</span>
-<span class="fc" id="L99">    }</span>
+<span class="fc" id="L98">    public ServiceConfigGuide() {</span>
+<span class="fc" id="L99">        initializeValues();</span>
+<span class="fc" id="L100">    }</span>
 
     /**
      * Public constructor with dir and filename
@@ -105,8 +106,8 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @param file the name of te file in the directory
      */
     public ServiceConfigGuide(final String path, final String file) throws IOException {
-<span class="fc" id="L108">        this(path + File.separator + file);</span>
-<span class="fc" id="L109">    }</span>
+<span class="fc" id="L109">        this(path + File.separator + file);</span>
+<span class="fc" id="L110">    }</span>
 
     /**
      * Public default constructor with file name
@@ -114,13 +115,13 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @param filename the name of the disk file
      */
     public ServiceConfigGuide(final String filename) throws IOException {
-<span class="fc" id="L117">        this();</span>
+<span class="fc" id="L118">        this();</span>
         try {
-<span class="fc" id="L119">            readConfigData(filename);</span>
-<span class="nc" id="L120">        } catch (ConfigSyntaxException ex) {</span>
-<span class="nc" id="L121">            throw new IOException(&quot;Cannot parse configuration file &quot; + ex.getMessage(), ex);</span>
-<span class="fc" id="L122">        }</span>
-<span class="fc" id="L123">    }</span>
+<span class="fc" id="L120">            readConfigData(filename);</span>
+<span class="nc" id="L121">        } catch (ConfigSyntaxException ex) {</span>
+<span class="nc" id="L122">            throw new IOException(&quot;Cannot parse configuration file &quot; + ex.getMessage(), ex);</span>
+<span class="fc" id="L123">        }</span>
+<span class="fc" id="L124">    }</span>
 
     /**
      * Public default constructor with InputStream
@@ -128,13 +129,13 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @param is the InputStream
      */
     public ServiceConfigGuide(final InputStream is) throws IOException {
-<span class="fc" id="L131">        this();</span>
+<span class="fc" id="L132">        this();</span>
         try {
-<span class="fc" id="L133">            readConfigData(is);</span>
-<span class="nc" id="L134">        } catch (ConfigSyntaxException ex) {</span>
-<span class="nc" id="L135">            throw new IOException(&quot;Cannot parse configuration file &quot; + ex.getMessage(), ex);</span>
-<span class="fc" id="L136">        }</span>
-<span class="fc" id="L137">    }</span>
+<span class="fc" id="L134">            readConfigData(is);</span>
+<span class="nc" id="L135">        } catch (ConfigSyntaxException ex) {</span>
+<span class="nc" id="L136">            throw new IOException(&quot;Cannot parse configuration file &quot; + ex.getMessage(), ex);</span>
+<span class="fc" id="L137">        }</span>
+<span class="fc" id="L138">    }</span>
 
     /**
      * Public default constructor with InputStream and name
@@ -143,116 +144,116 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @param name the name of the stream good for reporting errors
      */
     public ServiceConfigGuide(final InputStream is, final String name) throws IOException {
-<span class="fc" id="L146">        this();</span>
+<span class="fc" id="L147">        this();</span>
         try {
-<span class="fc" id="L148">            readConfigData(is, name);</span>
-<span class="fc" id="L149">        } catch (ConfigSyntaxException ex) {</span>
-<span class="fc" id="L150">            logger.error(&quot;Caught ConfigSytaxException {}&quot;, ex.getMessage());</span>
-<span class="fc" id="L151">            throw new IOException(&quot;Cannot parse configuration file &quot; + ex.getMessage(), ex);</span>
-<span class="fc" id="L152">        }</span>
-<span class="fc" id="L153">    }</span>
+<span class="fc" id="L149">            readConfigData(is, name);</span>
+<span class="fc" id="L150">        } catch (ConfigSyntaxException ex) {</span>
+<span class="fc" id="L151">            logger.error(&quot;Caught ConfigSytaxException {}&quot;, ex.getMessage());</span>
+<span class="fc" id="L152">            throw new IOException(&quot;Cannot parse configuration file &quot; + ex.getMessage(), ex);</span>
+<span class="fc" id="L153">        }</span>
+<span class="fc" id="L154">    }</span>
 
     /**
      * Initialize the values map, which is used to replace stuff in the configs
      */
     protected void initializeValues() {
-<span class="fc" id="L159">        this.values.clear();</span>
+<span class="fc" id="L160">        this.values.clear();</span>
 
         // TODO: see if we can stop adding all env variables and
         // system properties to the replace values
 
         // Add all the environment variables
-<span class="fc" id="L165">        this.values.putAll(System.getenv());</span>
+<span class="fc" id="L166">        this.values.putAll(System.getenv());</span>
 
         // Add all the system properties
-<span class="fc" id="L168">        final Properties props = System.getProperties();</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">        for (Enumeration&lt;?&gt; e = props.propertyNames(); e.hasMoreElements();) {</span>
-<span class="fc" id="L170">            final String key = (String) e.nextElement();</span>
-<span class="fc" id="L171">            logger.trace(&quot;Adding {} to replaceable properties&quot;, key);</span>
-<span class="fc" id="L172">            this.values.put(key, props.getProperty(key));</span>
-<span class="fc" id="L173">        }</span>
+<span class="fc" id="L169">        final Properties props = System.getProperties();</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        for (Enumeration&lt;?&gt; e = props.propertyNames(); e.hasMoreElements();) {</span>
+<span class="fc" id="L171">            final String key = (String) e.nextElement();</span>
+<span class="fc" id="L172">            logger.trace(&quot;Adding {} to replaceable properties&quot;, key);</span>
+<span class="fc" id="L173">            this.values.put(key, props.getProperty(key));</span>
+<span class="fc" id="L174">        }</span>
 
         // used for substitution when reading cfg files
-<span class="fc" id="L176">        this.values.put(&quot;CONFIG_DIR&quot;, StringUtils.join(ConfigUtil.getConfigDirs(), &quot;,&quot;));</span>
-<span class="fc" id="L177">        this.values.put(&quot;PRJ_BASE&quot;, ConfigUtil.getProjectBase());</span>
-<span class="fc" id="L178">        this.values.put(&quot;PROJECT_BASE&quot;, ConfigUtil.getProjectBase());</span>
-<span class="fc" id="L179">        this.values.put(&quot;OUTPUT_ROOT&quot;, ConfigUtil.getOutputRoot());</span>
-<span class="fc" id="L180">        this.values.put(&quot;BIN_DIR&quot;, ConfigUtil.getBinDir());</span>
-<span class="fc" id="L181">        this.values.put(&quot;HOST&quot;, hostname);</span>
-<span class="fc" id="L182">        this.values.put(&quot;/&quot;, File.separator);</span>
-<span class="fc" id="L183">        this.values.put(&quot;TMPDIR&quot;, System.getProperty(&quot;java.io.tmpdir&quot;));</span>
-<span class="fc" id="L184">        this.values.put(&quot;NULL&quot;, null);</span>
-<span class="fc" id="L185">        this.values.put(&quot;OS.NAME&quot;, System.getProperty(&quot;os.name&quot;).replace(' ', '_'));</span>
-<span class="fc" id="L186">        this.values.put(&quot;OS.VER&quot;, System.getProperty(&quot;os.version&quot;).replace(' ', '_'));</span>
-<span class="fc" id="L187">        this.values.put(&quot;OS.ARCH&quot;, System.getProperty(&quot;os.arch&quot;).replace(' ', '_'));</span>
-<span class="fc" id="L188">    }</span>
+<span class="fc" id="L177">        this.values.put(&quot;CONFIG_DIR&quot;, StringUtils.join(ConfigUtil.getConfigDirs(), &quot;,&quot;));</span>
+<span class="fc" id="L178">        this.values.put(&quot;PRJ_BASE&quot;, ConfigUtil.getProjectBase());</span>
+<span class="fc" id="L179">        this.values.put(&quot;PROJECT_BASE&quot;, ConfigUtil.getProjectBase());</span>
+<span class="fc" id="L180">        this.values.put(&quot;OUTPUT_ROOT&quot;, ConfigUtil.getOutputRoot());</span>
+<span class="fc" id="L181">        this.values.put(&quot;BIN_DIR&quot;, ConfigUtil.getBinDir());</span>
+<span class="fc" id="L182">        this.values.put(&quot;HOST&quot;, hostname);</span>
+<span class="fc" id="L183">        this.values.put(&quot;/&quot;, File.separator);</span>
+<span class="fc" id="L184">        this.values.put(&quot;TMPDIR&quot;, System.getProperty(&quot;java.io.tmpdir&quot;));</span>
+<span class="fc" id="L185">        this.values.put(&quot;NULL&quot;, null);</span>
+<span class="fc" id="L186">        this.values.put(&quot;OS.NAME&quot;, System.getProperty(&quot;os.name&quot;).replace(' ', '_'));</span>
+<span class="fc" id="L187">        this.values.put(&quot;OS.VER&quot;, System.getProperty(&quot;os.version&quot;).replace(' ', '_'));</span>
+<span class="fc" id="L188">        this.values.put(&quot;OS.ARCH&quot;, System.getProperty(&quot;os.arch&quot;).replace(' ', '_'));</span>
+<span class="fc" id="L189">    }</span>
 
     /**
      * Reads the configuration file specified in the argument and sets the mandatory parameters.
      */
     protected void readConfigData(final String filename) throws IOException, ConfigSyntaxException {
-<span class="fc" id="L194">        readSingleConfigFile(filename);</span>
-<span class="fc" id="L195">    }</span>
+<span class="fc" id="L195">        readSingleConfigFile(filename);</span>
+<span class="fc" id="L196">    }</span>
 
     public void readConfigData(final InputStream is) throws IOException, ConfigSyntaxException {
-<span class="fc" id="L198">        readConfigData(is, &quot;UNKNOWN&quot;);</span>
-<span class="fc" id="L199">    }</span>
+<span class="fc" id="L199">        readConfigData(is, &quot;UNKNOWN&quot;);</span>
+<span class="fc" id="L200">    }</span>
 
 
     protected void readConfigData(final InputStream is, final String filename) throws IOException, ConfigSyntaxException {
-<span class="fc" id="L203">        final Reader r = new BufferedReader(new InputStreamReader(is));</span>
-<span class="fc" id="L204">        final StreamTokenizer in = new StreamTokenizer(r);</span>
-<span class="fc" id="L205">        int nextToken = StreamTokenizer.TT_WORD;</span>
+<span class="fc" id="L204">        final Reader r = new BufferedReader(new InputStreamReader(is));</span>
+<span class="fc" id="L205">        final StreamTokenizer in = new StreamTokenizer(r);</span>
+<span class="fc" id="L206">        int nextToken = StreamTokenizer.TT_WORD;</span>
         String parmName;
         String sval;
 
-<span class="fc" id="L209">        in.commentChar('#');</span>
-<span class="fc" id="L210">        in.wordChars(33, 33);</span>
-<span class="fc" id="L211">        in.wordChars(36, 47);</span>
-<span class="fc" id="L212">        in.wordChars(58, 64);</span>
-<span class="fc" id="L213">        in.wordChars(91, 96);</span>
-<span class="fc" id="L214">        in.wordChars(123, 65536);</span>
+<span class="fc" id="L210">        in.commentChar('#');</span>
+<span class="fc" id="L211">        in.wordChars(33, 33);</span>
+<span class="fc" id="L212">        in.wordChars(36, 47);</span>
+<span class="fc" id="L213">        in.wordChars(58, 64);</span>
+<span class="fc" id="L214">        in.wordChars(91, 96);</span>
+<span class="fc" id="L215">        in.wordChars(123, 65536);</span>
 
-<span class="pc bpc" id="L216" title="1 of 2 branches missed.">        while (nextToken != StreamTokenizer.TT_EOF) {</span>
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">        while (nextToken != StreamTokenizer.TT_EOF) {</span>
             // Read three tokens at a time (X = Y)
-<span class="fc" id="L218">            nextToken = in.nextToken();</span>
+<span class="fc" id="L219">            nextToken = in.nextToken();</span>
 
             // Make sure the first token in the tuple is a word
-<span class="fc bfc" id="L221" title="All 2 branches covered.">            if (nextToken == StreamTokenizer.TT_EOF) {</span>
-<span class="fc" id="L222">                break;</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">            if (nextToken == StreamTokenizer.TT_EOF) {</span>
+<span class="fc" id="L223">                break;</span>
             }
-<span class="fc bfc" id="L224" title="All 2 branches covered.">            if (nextToken == StreamTokenizer.TT_NUMBER) {</span>
-<span class="fc" id="L225">                throw new ConfigSyntaxException(&quot;Illegal token &quot; + in.sval + &quot;, missing quote on line &quot; + in.lineno() + &quot;?&quot;);</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">            if (nextToken == StreamTokenizer.TT_NUMBER) {</span>
+<span class="fc" id="L226">                throw new ConfigSyntaxException(&quot;Illegal token &quot; + in.sval + &quot;, missing quote on line &quot; + in.lineno() + &quot;?&quot;);</span>
             }
 
-<span class="fc" id="L228">            parmName = in.sval;</span>
+<span class="fc" id="L229">            parmName = in.sval;</span>
 
-<span class="fc" id="L230">            nextToken = in.nextToken();</span>
-<span class="fc" id="L231">            this.operator = in.sval;</span>
+<span class="fc" id="L231">            nextToken = in.nextToken();</span>
+<span class="fc" id="L232">            this.operator = in.sval;</span>
 
-<span class="fc" id="L233">            nextToken = in.nextToken();</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">            if (nextToken == StreamTokenizer.TT_NUMBER) {</span>
-<span class="fc" id="L235">                sval = Long.toString((long) in.nval);</span>
+<span class="fc" id="L234">            nextToken = in.nextToken();</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">            if (nextToken == StreamTokenizer.TT_NUMBER) {</span>
+<span class="fc" id="L236">                sval = Long.toString((long) in.nval);</span>
             } else {
-<span class="fc" id="L237">                sval = in.sval;</span>
+<span class="fc" id="L238">                sval = in.sval;</span>
             }
 
-<span class="fc bfc" id="L240" title="All 2 branches covered.">            if (sval == null) {</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">            if (sval == null) {</span>
                 // Problem is likely on previous line
-<span class="fc" id="L242">                throw new ConfigSyntaxException(&quot;Illegal token &quot; + parmName + &quot;, missing space or value on line &quot; + (in.lineno() - 1) + &quot;?&quot;);</span>
+<span class="fc" id="L243">                throw new ConfigSyntaxException(&quot;Illegal token &quot; + parmName + &quot;, missing space or value on line &quot; + (in.lineno() - 1) + &quot;?&quot;);</span>
             }
 
-<span class="fc" id="L245">            handleNewEntry(parmName, sval, this.operator, filename, in.lineno() - 1, false);</span>
+<span class="fc" id="L246">            handleNewEntry(parmName, sval, this.operator, filename, in.lineno() - 1, false);</span>
         }
-<span class="fc" id="L247">        r.close();</span>
-<span class="fc" id="L248">        is.close();</span>
-<span class="fc" id="L249">    }</span>
+<span class="fc" id="L248">        r.close();</span>
+<span class="fc" id="L249">        is.close();</span>
+<span class="fc" id="L250">    }</span>
 
     protected void readSingleConfigFile(final String filename) throws IOException, ConfigSyntaxException {
-<span class="fc" id="L252">        logger.debug(&quot;Reading config file {}&quot;, filename);</span>
-<span class="fc" id="L253">        final InputStream is = ConfigUtil.getConfigData(filename);</span>
-<span class="fc" id="L254">        readConfigData(is, filename);</span>
-<span class="fc" id="L255">    }</span>
+<span class="fc" id="L253">        logger.debug(&quot;Reading config file {}&quot;, filename);</span>
+<span class="fc" id="L254">        final InputStream is = ConfigUtil.getConfigData(filename);</span>
+<span class="fc" id="L255">        readConfigData(is, filename);</span>
+<span class="fc" id="L256">    }</span>
 
     /**
      * Handle a newly parsed or passed in entry. Substitutions are handled on both the LHS and RHS, then the values are
@@ -270,72 +271,72 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     protected ConfigEntry handleNewEntry(final String parmNameArg, final String svalArg, final String operatorArg, final String filename,
             final int lineno, final boolean merge) throws IOException {
-<span class="fc" id="L273">        final String parmName = handleReplacements(parmNameArg, filename, lineno);</span>
-<span class="fc" id="L274">        final String sval = handleReplacements(svalArg, filename, lineno);</span>
+<span class="fc" id="L274">        final String parmName = handleReplacements(parmNameArg, filename, lineno);</span>
+<span class="fc" id="L275">        final String sval = handleReplacements(svalArg, filename, lineno);</span>
 
         // Create a config entry from this
-<span class="fc" id="L277">        final ConfigEntry anEntry = new ConfigEntry(parmName, sval);</span>
+<span class="fc" id="L278">        final ConfigEntry anEntry = new ConfigEntry(parmName, sval);</span>
 
-<span class="fc bfc" id="L279" title="All 2 branches covered.">        if (&quot;!=&quot;.equals(operatorArg)) {</span>
-<span class="fc bfc" id="L280" title="All 2 branches covered.">            if (&quot;*&quot;.equals(sval)) {</span>
-<span class="fc" id="L281">                removeAllEntries(parmName);</span>
-<span class="fc" id="L282">                this.values.remove(parmName);</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">        if (&quot;!=&quot;.equals(operatorArg)) {</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">            if (&quot;*&quot;.equals(sval)) {</span>
+<span class="fc" id="L282">                removeAllEntries(parmName);</span>
+<span class="fc" id="L283">                this.values.remove(parmName);</span>
             } else {
-<span class="fc" id="L284">                removeEntry(anEntry);</span>
-<span class="fc bfc" id="L285" title="All 2 branches covered.">                if (sval.equals(this.values.get(parmName))) {</span>
-<span class="fc" id="L286">                    this.values.remove(parmName);</span>
+<span class="fc" id="L285">                removeEntry(anEntry);</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">                if (sval.equals(this.values.get(parmName))) {</span>
+<span class="fc" id="L287">                    this.values.remove(parmName);</span>
                 }
             }
-<span class="fc" id="L289">            this.removeParameters.add(anEntry);</span>
+<span class="fc" id="L290">            this.removeParameters.add(anEntry);</span>
         } else {
             // Save the entry in the list
-<span class="fc bfc" id="L292" title="All 2 branches covered.">            if (merge) {</span>
-<span class="fc" id="L293">                this.serviceParameters.add(0, anEntry);</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">            if (merge) {</span>
+<span class="fc" id="L294">                this.serviceParameters.add(0, anEntry);</span>
             } else {
-<span class="fc" id="L295">                this.serviceParameters.add(anEntry);</span>
+<span class="fc" id="L296">                this.serviceParameters.add(anEntry);</span>
             }
 
             // Save this pair in the map
-<span class="fc" id="L299">            this.values.put(parmName, sval);</span>
+<span class="fc" id="L300">            this.values.put(parmName, sval);</span>
         }
 
-<span class="fc bfc" id="L302" title="All 4 branches covered.">        if (&quot;IMPORT_FILE&quot;.equals(parmName) || &quot;OPT_IMPORT_FILE&quot;.equals(parmName)) {</span>
-<span class="fc" id="L303">            final List&lt;String&gt; fileFlavorList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L303" title="All 4 branches covered.">        if (&quot;IMPORT_FILE&quot;.equals(parmName) || &quot;OPT_IMPORT_FILE&quot;.equals(parmName)) {</span>
+<span class="fc" id="L304">            final List&lt;String&gt; fileFlavorList = new ArrayList&lt;&gt;();</span>
             // Add the base file and then add all the flavor versions
-<span class="fc" id="L305">            fileFlavorList.add(sval);</span>
-<span class="fc" id="L306">            final String[] fileFlavors = ConfigUtil.addFlavors(sval);</span>
-<span class="fc bfc" id="L307" title="All 2 branches covered.">            if (ArrayUtils.isNotEmpty(fileFlavors)) {</span>
-<span class="fc" id="L308">                fileFlavorList.addAll(Arrays.asList(fileFlavors));</span>
+<span class="fc" id="L306">            fileFlavorList.add(sval);</span>
+<span class="fc" id="L307">            final String[] fileFlavors = ConfigUtil.addFlavors(sval);</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">            if (ArrayUtils.isNotEmpty(fileFlavors)) {</span>
+<span class="fc" id="L309">                fileFlavorList.addAll(Arrays.asList(fileFlavors));</span>
             }
-<span class="fc" id="L310">            logger.debug(&quot;ServiceConfigGuide::handleNewEntry -- FileFlavorList = {}&quot;, fileFlavorList);</span>
+<span class="fc" id="L311">            logger.debug(&quot;ServiceConfigGuide::handleNewEntry -- FileFlavorList = {}&quot;, fileFlavorList);</span>
 
             // loop through the files and attempt to read/merger the configurations.
-<span class="fc bfc" id="L313" title="All 2 branches covered.">            for (int i = 0; i &lt; fileFlavorList.size(); i++) {</span>
-<span class="fc" id="L314">                final String fileFlavor = fileFlavorList.get(i);</span>
+<span class="fc bfc" id="L314" title="All 2 branches covered.">            for (int i = 0; i &lt; fileFlavorList.size(); i++) {</span>
+<span class="fc" id="L315">                final String fileFlavor = fileFlavorList.get(i);</span>
                 // recursion alert: This could lead to getFile being called
                 try {
-<span class="fc" id="L317">                    readConfigData(ConfigUtil.getConfigStream(fileFlavor), fileFlavor);</span>
-<span class="fc" id="L318">                } catch (ConfigSyntaxException e) {</span>
+<span class="fc" id="L318">                    readConfigData(ConfigUtil.getConfigStream(fileFlavor), fileFlavor);</span>
+<span class="fc" id="L319">                } catch (ConfigSyntaxException e) {</span>
                     // whether opt or not, syntax errors are a problem
-<span class="fc" id="L320">                    throw new IOException(parmName + &quot; = &quot; + sval + &quot; from &quot; + filename + &quot; failed &quot; + e.getMessage(), e);</span>
-<span class="fc" id="L321">                } catch (IOException e) {</span>
+<span class="fc" id="L321">                    throw new IOException(parmName + &quot; = &quot; + sval + &quot; from &quot; + filename + &quot; failed &quot; + e.getMessage(), e);</span>
+<span class="fc" id="L322">                } catch (IOException e) {</span>
                     // Throw exception if it is an IMPORT_FILE and the base file is not found
-<span class="fc bfc" id="L323" title="All 4 branches covered.">                    if (&quot;IMPORT_FILE&quot;.equals(parmName) &amp;&amp; i == 0) {</span>
-<span class="fc" id="L324">                        String importFileName = Paths.get(svalArg).getFileName().toString();</span>
-<span class="fc" id="L325">                        throw new IOException(&quot;In &quot; + filename + &quot;, cannot find IMPORT_FILE: &quot; + sval</span>
+<span class="fc bfc" id="L324" title="All 4 branches covered.">                    if (&quot;IMPORT_FILE&quot;.equals(parmName) &amp;&amp; i == 0) {</span>
+<span class="fc" id="L325">                        String importFileName = Paths.get(svalArg).getFileName().toString();</span>
+<span class="fc" id="L326">                        throw new IOException(&quot;In &quot; + filename + &quot;, cannot find IMPORT_FILE: &quot; + sval</span>
                                 + &quot; on the specified path. Make sure IMPORT_FILE (&quot; + importFileName + &quot;) exists, and the file path is correct.&quot;,
                                 e);
                     }
-<span class="fc" id="L329">                }</span>
+<span class="fc" id="L330">                }</span>
             }
-<span class="fc" id="L331">            return anEntry;</span>
-<span class="pc bpc" id="L332" title="1 of 4 branches missed.">        } else if (&quot;CREATE_DIRECTORY&quot;.equals(parmName) &amp;&amp; !createDirectory(sval)) {</span>
-<span class="nc" id="L333">            logger.warn(&quot;{}: Cannot create directory {}&quot;, filename, sval);</span>
-<span class="pc bpc" id="L334" title="1 of 4 branches missed.">        } else if (&quot;CREATE_FILE&quot;.equals(parmName) &amp;&amp; !createFile(sval)) {</span>
-<span class="nc" id="L335">            logger.warn(&quot;{}: Cannot create file {}&quot;, filename, sval);</span>
+<span class="fc" id="L332">            return anEntry;</span>
+<span class="pc bpc" id="L333" title="1 of 4 branches missed.">        } else if (&quot;CREATE_DIRECTORY&quot;.equals(parmName) &amp;&amp; !createDirectory(sval)) {</span>
+<span class="nc" id="L334">            logger.warn(&quot;{}: Cannot create directory {}&quot;, filename, sval);</span>
+<span class="pc bpc" id="L335" title="1 of 4 branches missed.">        } else if (&quot;CREATE_FILE&quot;.equals(parmName) &amp;&amp; !createFile(sval)) {</span>
+<span class="nc" id="L336">            logger.warn(&quot;{}: Cannot create file {}&quot;, filename, sval);</span>
         }
 
-<span class="fc" id="L338">        return anEntry;</span>
+<span class="fc" id="L339">        return anEntry;</span>
     }
 
     /**
@@ -348,41 +349,41 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @throws IOException when the value is malformed
      */
     protected String handleReplacements(final String svalArg, final String filename, final int lineno) throws IOException {
-<span class="fc" id="L351">        String sval = svalArg;</span>
-<span class="fc" id="L352">        int startpos = 0;</span>
-<span class="fc bfc" id="L353" title="All 4 branches covered.">        while (sval != null &amp;&amp; sval.indexOf(VSTART, startpos) &gt; -1) {</span>
-<span class="fc" id="L354">            final int ndx = sval.indexOf(VSTART, startpos);</span>
-<span class="fc" id="L355">            final int edx = sval.indexOf(VEND, ndx + VSTART.length());</span>
-<span class="pc bpc" id="L356" title="3 of 4 branches missed.">            if (ndx == -1 &amp;&amp; ndx &gt;= edx) {</span>
-<span class="nc" id="L357">                throw new IOException(&quot;Problem parsing line &quot; + lineno + &quot; &quot; + sval);</span>
+<span class="fc" id="L352">        String sval = svalArg;</span>
+<span class="fc" id="L353">        int startpos = 0;</span>
+<span class="fc bfc" id="L354" title="All 4 branches covered.">        while (sval != null &amp;&amp; sval.indexOf(VSTART, startpos) &gt; -1) {</span>
+<span class="fc" id="L355">            final int ndx = sval.indexOf(VSTART, startpos);</span>
+<span class="fc" id="L356">            final int edx = sval.indexOf(VEND, ndx + VSTART.length());</span>
+<span class="pc bpc" id="L357" title="3 of 4 branches missed.">            if (ndx == -1 &amp;&amp; ndx &gt;= edx) {</span>
+<span class="nc" id="L358">                throw new IOException(&quot;Problem parsing line &quot; + lineno + &quot; &quot; + sval);</span>
             }
-<span class="fc" id="L359">            final String tok = sval.substring(ndx + VSTART.length(), edx);</span>
-<span class="fc" id="L360">            logger.debug(&quot;Replacement token is {}&quot;, tok);</span>
-<span class="fc" id="L361">            final String mapval = this.values.get(tok);</span>
-<span class="fc bfc" id="L362" title="All 2 branches covered.">            if (mapval != null) {</span>
-<span class="fc" id="L363">                sval = sval.substring(0, ndx) + mapval + sval.substring(edx + VEND.length());</span>
+<span class="fc" id="L360">            final String tok = sval.substring(ndx + VSTART.length(), edx);</span>
+<span class="fc" id="L361">            logger.debug(&quot;Replacement token is {}&quot;, tok);</span>
+<span class="fc" id="L362">            final String mapval = this.values.get(tok);</span>
+<span class="fc bfc" id="L363" title="All 2 branches covered.">            if (mapval != null) {</span>
+<span class="fc" id="L364">                sval = sval.substring(0, ndx) + mapval + sval.substring(edx + VEND.length());</span>
             } else {
-<span class="fc" id="L365">                logger.warn(&quot;Did not find replacement for '{}' in file {} at line {}&quot;, tok, filename, lineno);</span>
-<span class="fc" id="L366">                startpos = edx + VEND.length();</span>
+<span class="fc" id="L366">                logger.warn(&quot;Did not find replacement for '{}' in file {} at line {}&quot;, tok, filename, lineno);</span>
+<span class="fc" id="L367">                startpos = edx + VEND.length();</span>
             }
-<span class="fc" id="L368">        }</span>
+<span class="fc" id="L369">        }</span>
 
         // This is obsolete
-<span class="fc bfc" id="L371" title="All 4 branches covered.">        if (sval != null &amp;&amp; sval.contains(ENVSTART)) {</span>
-<span class="fc" id="L372">            sval = substituteEnvProps(sval, filename, lineno);</span>
+<span class="fc bfc" id="L372" title="All 4 branches covered.">        if (sval != null &amp;&amp; sval.contains(ENVSTART)) {</span>
+<span class="fc" id="L373">            sval = substituteEnvProps(sval, filename, lineno);</span>
         }
 
         // Do unicode stuff
-<span class="fc bfc" id="L376" title="All 6 branches covered.">        if (sval != null &amp;&amp; (sval.contains(&quot;\\u&quot;) || sval.contains(&quot;\\U&quot;))) {</span>
-<span class="fc" id="L377">            sval = substituteUtfChars(sval, filename, lineno);</span>
+<span class="fc bfc" id="L377" title="All 6 branches covered.">        if (sval != null &amp;&amp; (sval.contains(&quot;\\u&quot;) || sval.contains(&quot;\\U&quot;))) {</span>
+<span class="fc" id="L378">            sval = substituteUtfChars(sval, filename, lineno);</span>
         }
 
         // This is obsolete
-<span class="pc bpc" id="L381" title="1 of 4 branches missed.">        if (sval != null &amp;&amp; sval.equals(NULL_VALUE)) {</span>
-<span class="nc" id="L382">            sval = null;</span>
-<span class="nc" id="L383">            logger.debug(&quot;Using {} is deprecated, please just use {}NULL{}&quot;, NULL_VALUE, VSTART, VEND);</span>
+<span class="pc bpc" id="L382" title="1 of 4 branches missed.">        if (sval != null &amp;&amp; sval.equals(NULL_VALUE)) {</span>
+<span class="nc" id="L383">            sval = null;</span>
+<span class="nc" id="L384">            logger.debug(&quot;Using {} is deprecated, please just use {}NULL{}&quot;, NULL_VALUE, VSTART, VEND);</span>
         }
-<span class="fc" id="L385">        return sval;</span>
+<span class="fc" id="L386">        return sval;</span>
     }
 
     /**
@@ -394,36 +395,36 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @return string with character values replaced
      */
     protected String substituteUtfChars(final String s, final String filename, final int lnum) throws IOException {
-<span class="fc" id="L397">        final int slen = s.length();</span>
-<span class="fc" id="L398">        final StringBuilder sb = new StringBuilder(slen);</span>
-<span class="fc bfc" id="L399" title="All 2 branches covered.">        for (int i = 0; i &lt; slen; i++) {</span>
-<span class="fc bfc" id="L400" title="All 2 branches covered.">            if (s.charAt(i) != '\\') {</span>
-<span class="fc" id="L401">                sb.append(s.charAt(i));</span>
-<span class="pc bpc" id="L402" title="1 of 6 branches missed.">            } else if ((i + 4) &lt; slen &amp;&amp; (s.charAt(i + 1) == 'u' || s.charAt(i + 1) == 'U')) {</span>
-<span class="fc" id="L403">                int epos = i + 2;</span>
-<span class="fc bfc" id="L404" title="All 4 branches covered.">                final int max = (s.charAt(epos) == '1' || s.charAt(epos) == '0') ? (i + 7) : (i + 6);</span>
-<span class="fc bfc" id="L405" title="All 4 branches covered.">                while (epos &lt; slen</span>
+<span class="fc" id="L398">        final int slen = s.length();</span>
+<span class="fc" id="L399">        final StringBuilder sb = new StringBuilder(slen);</span>
+<span class="fc bfc" id="L400" title="All 2 branches covered.">        for (int i = 0; i &lt; slen; i++) {</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">            if (s.charAt(i) != '\\') {</span>
+<span class="fc" id="L402">                sb.append(s.charAt(i));</span>
+<span class="pc bpc" id="L403" title="1 of 6 branches missed.">            } else if ((i + 4) &lt; slen &amp;&amp; (s.charAt(i + 1) == 'u' || s.charAt(i + 1) == 'U')) {</span>
+<span class="fc" id="L404">                int epos = i + 2;</span>
+<span class="fc bfc" id="L405" title="All 4 branches covered.">                final int max = (s.charAt(epos) == '1' || s.charAt(epos) == '0') ? (i + 7) : (i + 6);</span>
+<span class="fc bfc" id="L406" title="All 4 branches covered.">                while (epos &lt; slen</span>
                         &amp;&amp; epos &lt; max
-<span class="pc bpc" id="L407" title="2 of 8 branches missed.">                        &amp;&amp; ((s.charAt(epos) &gt;= '0' &amp;&amp; s.charAt(epos) &lt;= '9') || (s.charAt(epos) &gt;= 'A' &amp;&amp; s.charAt(epos) &lt;= 'F')</span>
-<span class="pc bpc" id="L408" title="1 of 2 branches missed.">                                || (s.charAt(epos) &gt;= 'a' &amp;&amp; s</span>
-<span class="pc bpc" id="L409" title="1 of 2 branches missed.">                                        .charAt(epos) &lt;= 'f'))) {</span>
-<span class="fc" id="L410">                    epos++;</span>
+<span class="pc bpc" id="L408" title="2 of 8 branches missed.">                        &amp;&amp; ((s.charAt(epos) &gt;= '0' &amp;&amp; s.charAt(epos) &lt;= '9') || (s.charAt(epos) &gt;= 'A' &amp;&amp; s.charAt(epos) &lt;= 'F')</span>
+<span class="pc bpc" id="L409" title="1 of 2 branches missed.">                                || (s.charAt(epos) &gt;= 'a' &amp;&amp; s</span>
+<span class="pc bpc" id="L410" title="1 of 2 branches missed.">                                        .charAt(epos) &lt;= 'f'))) {</span>
+<span class="fc" id="L411">                    epos++;</span>
                 }
-<span class="pc bpc" id="L412" title="1 of 2 branches missed.">                if (epos &lt;= slen) {</span>
+<span class="pc bpc" id="L413" title="1 of 2 branches missed.">                if (epos &lt;= slen) {</span>
                     try {
-<span class="fc" id="L414">                        final int digit = Integer.parseInt(s.substring(i + 2, epos), 16);</span>
-<span class="fc" id="L415">                        sb.appendCodePoint(digit);</span>
-<span class="fc" id="L416">                        i = epos - 1;</span>
-<span class="nc" id="L417">                    } catch (RuntimeException ex) {</span>
-<span class="nc" id="L418">                        throw new IOException(&quot;Unable to convert characters in &quot; + s + &quot;, from filename=&quot; + filename + &quot; line &quot; + lnum, ex);</span>
-<span class="fc" id="L419">                    }</span>
+<span class="fc" id="L415">                        final int digit = Integer.parseInt(s.substring(i + 2, epos), 16);</span>
+<span class="fc" id="L416">                        sb.appendCodePoint(digit);</span>
+<span class="fc" id="L417">                        i = epos - 1;</span>
+<span class="nc" id="L418">                    } catch (RuntimeException ex) {</span>
+<span class="nc" id="L419">                        throw new IOException(&quot;Unable to convert characters in &quot; + s + &quot;, from filename=&quot; + filename + &quot; line &quot; + lnum, ex);</span>
+<span class="fc" id="L420">                    }</span>
                 }
-<span class="fc" id="L421">            } else {</span>
-<span class="fc" id="L422">                sb.append(s.charAt(i));</span>
+<span class="fc" id="L422">            } else {</span>
+<span class="fc" id="L423">                sb.append(s.charAt(i));</span>
             }
         }
 
-<span class="fc" id="L426">        return sb.toString();</span>
+<span class="fc" id="L427">        return sb.toString();</span>
     }
 
     /**
@@ -436,55 +437,55 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @return string with env values replaced
      */
     protected String substituteEnvProps(final String str, final String filename, final int lnum) throws IOException {
-<span class="fc" id="L439">        int lastPos = -1;</span>
-<span class="fc" id="L440">        int thisPos = 0;</span>
-<span class="fc" id="L441">        int count = 0;</span>
+<span class="fc" id="L440">        int lastPos = -1;</span>
+<span class="fc" id="L441">        int thisPos = 0;</span>
+<span class="fc" id="L442">        int count = 0;</span>
 
-<span class="fc" id="L443">        logger.debug(&quot;{}{} style substitution is deprecated. Please just use {}yourvalue{}&quot;, ENVSTART, ENVSTOP, VSTART, VEND);</span>
+<span class="fc" id="L444">        logger.debug(&quot;{}{} style substitution is deprecated. Please just use {}yourvalue{}&quot;, ENVSTART, ENVSTOP, VSTART, VEND);</span>
 
-<span class="fc" id="L445">        String currentStr = str;</span>
-<span class="fc bfc" id="L446" title="All 2 branches covered.">        while ((thisPos = currentStr.indexOf(ENVSTART, thisPos)) &gt; lastPos) {</span>
-<span class="fc" id="L447">            final int start = thisPos + ENVSTART.length();</span>
-<span class="fc" id="L448">            final int stop = currentStr.indexOf(ENVSTOP, thisPos);</span>
-<span class="fc" id="L449">            count++;</span>
+<span class="fc" id="L446">        String currentStr = str;</span>
+<span class="fc bfc" id="L447" title="All 2 branches covered.">        while ((thisPos = currentStr.indexOf(ENVSTART, thisPos)) &gt; lastPos) {</span>
+<span class="fc" id="L448">            final int start = thisPos + ENVSTART.length();</span>
+<span class="fc" id="L449">            final int stop = currentStr.indexOf(ENVSTOP, thisPos);</span>
+<span class="fc" id="L450">            count++;</span>
             // Pull out the env name they specified
-<span class="pc bpc" id="L451" title="1 of 2 branches missed.">            if (stop &gt; start) {</span>
-<span class="fc" id="L452">                final String envName = currentStr.substring(start, stop);</span>
-<span class="fc" id="L453">                String envVal = System.getProperty(envName);</span>
-<span class="fc bfc" id="L454" title="All 2 branches covered.">                if (envVal == null) {</span>
-<span class="fc" id="L455">                    envVal = System.getenv(envName);</span>
+<span class="pc bpc" id="L452" title="1 of 2 branches missed.">            if (stop &gt; start) {</span>
+<span class="fc" id="L453">                final String envName = currentStr.substring(start, stop);</span>
+<span class="fc" id="L454">                String envVal = System.getProperty(envName);</span>
+<span class="fc bfc" id="L455" title="All 2 branches covered.">                if (envVal == null) {</span>
+<span class="fc" id="L456">                    envVal = System.getenv(envName);</span>
                 }
                 // We got a replacement, do the subst
-<span class="fc bfc" id="L458" title="All 2 branches covered.">                if (envVal != null) {</span>
-<span class="fc" id="L459">                    currentStr = currentStr.substring(0, thisPos) + // before</span>
+<span class="fc bfc" id="L459" title="All 2 branches covered.">                if (envVal != null) {</span>
+<span class="fc" id="L460">                    currentStr = currentStr.substring(0, thisPos) + // before</span>
                             envVal + // replacement value
-<span class="fc" id="L461">                            currentStr.substring(stop + ENVSTOP.length()); // tail</span>
-<span class="fc" id="L462">                    logger.debug(&quot;Replaced {} with {} at {}: {}&quot;, envName, envVal, filename, lnum);</span>
+<span class="fc" id="L462">                            currentStr.substring(stop + ENVSTOP.length()); // tail</span>
+<span class="fc" id="L463">                    logger.debug(&quot;Replaced {} with {} at {}: {}&quot;, envName, envVal, filename, lnum);</span>
                 } else {
-<span class="fc" id="L464">                    logger.debug(&quot;No env value for {} at {}: {}&quot;, envName, filename, lnum);</span>
+<span class="fc" id="L465">                    logger.debug(&quot;No env value for {} at {}: {}&quot;, envName, filename, lnum);</span>
                 }
-<span class="fc" id="L466">            } else {</span>
-<span class="nc" id="L467">                throw new IOException(&quot;Runaway string on line -&gt;&quot; + currentStr + &quot;&lt;- at &quot; + filename + &quot;: &quot; + lnum);</span>
+<span class="fc" id="L467">            } else {</span>
+<span class="nc" id="L468">                throw new IOException(&quot;Runaway string on line -&gt;&quot; + currentStr + &quot;&lt;- at &quot; + filename + &quot;: &quot; + lnum);</span>
             }
 
-<span class="fc" id="L470">            lastPos = thisPos;</span>
-<span class="fc" id="L471">        }</span>
-<span class="fc" id="L472">        logger.debug(&quot;Found {} env vars to subst --&gt; {}&quot;, count, currentStr);</span>
-<span class="fc" id="L473">        return currentStr;</span>
+<span class="fc" id="L471">            lastPos = thisPos;</span>
+<span class="fc" id="L472">        }</span>
+<span class="fc" id="L473">        logger.debug(&quot;Found {} env vars to subst --&gt; {}&quot;, count, currentStr);</span>
+<span class="fc" id="L474">        return currentStr;</span>
     }
 
     /**
      * Create a directory as specified by the config driver
      */
     protected boolean createDirectory(final String sval) {
-<span class="fc" id="L480">        final String fixedSval = sval.replace('\\', '/');</span>
-<span class="fc" id="L481">        logger.debug(&quot;Trying to create dir {}&quot;, fixedSval);</span>
-<span class="fc" id="L482">        final File d = new File(fixedSval);</span>
-<span class="pc bpc" id="L483" title="1 of 4 branches missed.">        if (!d.exists() &amp;&amp; !d.mkdirs()) {</span>
-<span class="nc" id="L484">            logger.debug(&quot;Failed to create directory {}&quot;, fixedSval);</span>
-<span class="nc" id="L485">            return false;</span>
+<span class="fc" id="L481">        final String fixedSval = sval.replace('\\', '/');</span>
+<span class="fc" id="L482">        logger.debug(&quot;Trying to create dir {}&quot;, fixedSval);</span>
+<span class="fc" id="L483">        final File d = new File(fixedSval);</span>
+<span class="pc bpc" id="L484" title="1 of 4 branches missed.">        if (!d.exists() &amp;&amp; !d.mkdirs()) {</span>
+<span class="nc" id="L485">            logger.debug(&quot;Failed to create directory {}&quot;, fixedSval);</span>
+<span class="nc" id="L486">            return false;</span>
         }
-<span class="fc" id="L487">        return true;</span>
+<span class="fc" id="L488">        return true;</span>
     }
 
     /**
@@ -492,34 +493,34 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     protected boolean createFile(final String sval) {
 
-<span class="fc" id="L495">        final String fixedSval = sval.replace('\\', '/');</span>
-<span class="fc" id="L496">        logger.debug(&quot;Trying to create file {}&quot;, fixedSval);</span>
-<span class="fc" id="L497">        final File d = new File(fixedSval);</span>
-<span class="fc" id="L498">        FileWriter newFile = null;</span>
-<span class="fc bfc" id="L499" title="All 2 branches covered.">        if (!d.exists()) {</span>
+<span class="fc" id="L496">        final String fixedSval = sval.replace('\\', '/');</span>
+<span class="fc" id="L497">        logger.debug(&quot;Trying to create file {}&quot;, fixedSval);</span>
+<span class="fc" id="L498">        final File d = new File(fixedSval);</span>
+<span class="fc" id="L499">        FileWriter newFile = null;</span>
+<span class="fc bfc" id="L500" title="All 2 branches covered.">        if (!d.exists()) {</span>
             try {
                 // Ensure the directory exists to hold the file
-<span class="fc" id="L502">                final File parent = new File(new File(d.getCanonicalPath()).getParent());</span>
-<span class="pc bpc" id="L503" title="1 of 4 branches missed.">                if (!parent.exists() &amp;&amp; !createDirectory(parent.toString())) {</span>
-<span class="nc" id="L504">                    logger.debug(&quot;Failed to create parent directory for {}&quot;, fixedSval);</span>
-<span class="nc" id="L505">                    return false;</span>
+<span class="fc" id="L503">                final File parent = new File(new File(d.getCanonicalPath()).getParent());</span>
+<span class="pc bpc" id="L504" title="1 of 4 branches missed.">                if (!parent.exists() &amp;&amp; !createDirectory(parent.toString())) {</span>
+<span class="nc" id="L505">                    logger.debug(&quot;Failed to create parent directory for {}&quot;, fixedSval);</span>
+<span class="nc" id="L506">                    return false;</span>
                 }
                 // Create the file in the directory
-<span class="fc" id="L508">                newFile = new FileWriter(d);</span>
-<span class="nc" id="L509">            } catch (IOException e) {</span>
-<span class="nc" id="L510">                logger.debug(&quot;Failed to create file {}&quot;, fixedSval, e);</span>
-<span class="nc" id="L511">                return false;</span>
+<span class="fc" id="L509">                newFile = new FileWriter(d);</span>
+<span class="nc" id="L510">            } catch (IOException e) {</span>
+<span class="nc" id="L511">                logger.debug(&quot;Failed to create file {}&quot;, fixedSval, e);</span>
+<span class="nc" id="L512">                return false;</span>
             } finally {
-<span class="pc bpc" id="L513" title="1 of 2 branches missed.">                if (newFile != null) {</span>
+<span class="pc bpc" id="L514" title="1 of 2 branches missed.">                if (newFile != null) {</span>
                     try {
-<span class="fc" id="L515">                        newFile.close();</span>
-<span class="nc" id="L516">                    } catch (IOException ioe) {</span>
-<span class="nc" id="L517">                        logger.debug(&quot;Error closing file&quot;, ioe);</span>
-<span class="fc" id="L518">                    }</span>
+<span class="fc" id="L516">                        newFile.close();</span>
+<span class="nc" id="L517">                    } catch (IOException ioe) {</span>
+<span class="nc" id="L518">                        logger.debug(&quot;Error closing file&quot;, ioe);</span>
+<span class="fc" id="L519">                    }</span>
                 }
             }
         }
-<span class="fc" id="L522">        return true;</span>
+<span class="fc" id="L523">        return true;</span>
     }
 
     /**
@@ -528,11 +529,11 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public Set&lt;String&gt; entryKeys() {
-<span class="fc" id="L531">        final Set&lt;String&gt; set = new HashSet&lt;&gt;();</span>
-<span class="fc bfc" id="L532" title="All 2 branches covered.">        for (final ConfigEntry curEntry : this.serviceParameters) {</span>
-<span class="fc" id="L533">            set.add(curEntry.getKey());</span>
-<span class="fc" id="L534">        }</span>
-<span class="fc" id="L535">        return set;</span>
+<span class="fc" id="L532">        final Set&lt;String&gt; set = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L533" title="All 2 branches covered.">        for (final ConfigEntry curEntry : this.serviceParameters) {</span>
+<span class="fc" id="L534">            set.add(curEntry.getKey());</span>
+<span class="fc" id="L535">        }</span>
+<span class="fc" id="L536">        return set;</span>
     }
 
     /**
@@ -540,7 +541,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public List&lt;ConfigEntry&gt; getEntries() {
-<span class="fc" id="L543">        return new ArrayList&lt;&gt;(this.serviceParameters);</span>
+<span class="fc" id="L544">        return new ArrayList&lt;&gt;(this.serviceParameters);</span>
     }
 
     /**
@@ -548,7 +549,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * not part of the Configurator interface.
      */
     protected List&lt;ConfigEntry&gt; getRemoveEntries() {
-<span class="fc" id="L551">        return new ArrayList&lt;&gt;(this.removeParameters);</span>
+<span class="fc" id="L552">        return new ArrayList&lt;&gt;(this.removeParameters);</span>
     }
 
     /**
@@ -560,13 +561,13 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public ConfigEntry addEntry(final String key, final String value) {
-<span class="fc" id="L563">        ConfigEntry entry = null;</span>
+<span class="fc" id="L564">        ConfigEntry entry = null;</span>
         try {
-<span class="fc" id="L565">            entry = handleNewEntry(key, value, &quot;=&quot;, &quot;&lt;user&gt;&quot;, 1, false);</span>
-<span class="nc" id="L566">        } catch (IOException ex) {</span>
-<span class="nc" id="L567">            logger.error(&quot;Could not add entry for {}&quot;, key, ex);</span>
-<span class="fc" id="L568">        }</span>
-<span class="fc" id="L569">        return entry;</span>
+<span class="fc" id="L566">            entry = handleNewEntry(key, value, &quot;=&quot;, &quot;&lt;user&gt;&quot;, 1, false);</span>
+<span class="nc" id="L567">        } catch (IOException ex) {</span>
+<span class="nc" id="L568">            logger.error(&quot;Could not add entry for {}&quot;, key, ex);</span>
+<span class="fc" id="L569">        }</span>
+<span class="fc" id="L570">        return entry;</span>
     }
 
     /**
@@ -578,17 +579,17 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public List&lt;ConfigEntry&gt; addEntries(final String key, final List&lt;String&gt; values) {
-<span class="fc" id="L581">        final List&lt;ConfigEntry&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L582">        final List&lt;ConfigEntry&gt; list = new ArrayList&lt;&gt;();</span>
         try {
-<span class="fc" id="L583">            int i = 1;</span>
-<span class="fc bfc" id="L584" title="All 2 branches covered.">            for (final String value : values) {</span>
-<span class="fc" id="L585">                final ConfigEntry entry = handleNewEntry(key, value, &quot;=&quot;, &quot;&lt;user&gt;&quot;, i++, false);</span>
-<span class="fc" id="L586">                list.add(entry);</span>
-<span class="fc" id="L587">            }</span>
-<span class="nc" id="L588">        } catch (IOException ex) {</span>
-<span class="nc" id="L589">            logger.error(&quot;Error adding entries for {}&quot;, key, ex);</span>
-<span class="fc" id="L590">        }</span>
-<span class="fc" id="L591">        return list;</span>
+<span class="fc" id="L584">            int i = 1;</span>
+<span class="fc bfc" id="L585" title="All 2 branches covered.">            for (final String value : values) {</span>
+<span class="fc" id="L586">                final ConfigEntry entry = handleNewEntry(key, value, &quot;=&quot;, &quot;&lt;user&gt;&quot;, i++, false);</span>
+<span class="fc" id="L587">                list.add(entry);</span>
+<span class="fc" id="L588">            }</span>
+<span class="nc" id="L589">        } catch (IOException ex) {</span>
+<span class="nc" id="L590">            logger.error(&quot;Error adding entries for {}&quot;, key, ex);</span>
+<span class="fc" id="L591">        }</span>
+<span class="fc" id="L592">        return list;</span>
     }
 
     /**
@@ -600,11 +601,11 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     @Override
     public void removeEntry(final String key, final String value) {
         try {
-<span class="fc" id="L603">            handleNewEntry(key, value, &quot;!=&quot;, &quot;&lt;user&gt;&quot;, 1, false);</span>
-<span class="nc" id="L604">        } catch (IOException ex) {</span>
-<span class="nc" id="L605">            logger.warn(&quot;Cannot remove entry&quot;, ex);</span>
-<span class="fc" id="L606">        }</span>
-<span class="fc" id="L607">    }</span>
+<span class="fc" id="L604">            handleNewEntry(key, value, &quot;!=&quot;, &quot;&lt;user&gt;&quot;, 1, false);</span>
+<span class="nc" id="L605">        } catch (IOException ex) {</span>
+<span class="nc" id="L606">            logger.warn(&quot;Cannot remove entry&quot;, ex);</span>
+<span class="fc" id="L607">        }</span>
+<span class="fc" id="L608">    }</span>
 
     /**
      * Remove an entry from the list of parameters matching the ConfigEntry argument passed in.
@@ -613,16 +614,16 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     public void removeEntry(final ConfigEntry anEntry) {
         // NB: enhanced for loop does not support remove
-<span class="fc bfc" id="L616" title="All 2 branches covered.">        for (final Iterator&lt;ConfigEntry&gt; i = this.serviceParameters.iterator(); i.hasNext();) {</span>
-<span class="fc" id="L617">            final ConfigEntry curEntry = i.next();</span>
-<span class="fc bfc" id="L618" title="All 2 branches covered.">            if (anEntry.getKey().equals(curEntry.getKey())</span>
-<span class="pc bpc" id="L619" title="4 of 8 branches missed.">                    &amp;&amp; ((anEntry.getValue() == null &amp;&amp; curEntry.getValue() == null) || (anEntry.getValue() != null &amp;&amp; anEntry.getValue().equals(</span>
-<span class="fc" id="L620">                            curEntry.getValue())))) {</span>
-<span class="fc" id="L621">                logger.debug(&quot;Removing {} = {}&quot;, curEntry.getKey(), curEntry.getValue());</span>
-<span class="fc" id="L622">                i.remove();</span>
+<span class="fc bfc" id="L617" title="All 2 branches covered.">        for (final Iterator&lt;ConfigEntry&gt; i = this.serviceParameters.iterator(); i.hasNext();) {</span>
+<span class="fc" id="L618">            final ConfigEntry curEntry = i.next();</span>
+<span class="fc bfc" id="L619" title="All 2 branches covered.">            if (anEntry.getKey().equals(curEntry.getKey())</span>
+<span class="pc bpc" id="L620" title="4 of 8 branches missed.">                    &amp;&amp; ((anEntry.getValue() == null &amp;&amp; curEntry.getValue() == null) || (anEntry.getValue() != null &amp;&amp; anEntry.getValue().equals(</span>
+<span class="fc" id="L621">                            curEntry.getValue())))) {</span>
+<span class="fc" id="L622">                logger.debug(&quot;Removing {} = {}&quot;, curEntry.getKey(), curEntry.getValue());</span>
+<span class="fc" id="L623">                i.remove();</span>
             }
-<span class="fc" id="L624">        }</span>
-<span class="fc" id="L625">    }</span>
+<span class="fc" id="L625">        }</span>
+<span class="fc" id="L626">    }</span>
 
     /**
      * Return a list containing all the parameter values matching the key argument passed in.
@@ -633,11 +634,11 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public List&lt;String&gt; findEntries(final String theParameter, final String defaultString) {
-<span class="fc" id="L636">        final List&lt;String&gt; result = findEntries(theParameter);</span>
-<span class="fc bfc" id="L637" title="All 2 branches covered.">        if (result.isEmpty()) {</span>
-<span class="fc" id="L638">            result.add(defaultString);</span>
+<span class="fc" id="L637">        final List&lt;String&gt; result = findEntries(theParameter);</span>
+<span class="fc bfc" id="L638" title="All 2 branches covered.">        if (result.isEmpty()) {</span>
+<span class="fc" id="L639">            result.add(defaultString);</span>
         }
-<span class="fc" id="L640">        return result;</span>
+<span class="fc" id="L641">        return result;</span>
     }
 
     /**
@@ -648,14 +649,14 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public List&lt;String&gt; findEntries(final String theParameter) {
-<span class="fc" id="L651">        final List&lt;String&gt; matchingEntries = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L652">        final List&lt;String&gt; matchingEntries = new ArrayList&lt;&gt;();</span>
 
-<span class="fc bfc" id="L653" title="All 2 branches covered.">        for (final ConfigEntry curEntry : this.serviceParameters) {</span>
-<span class="fc bfc" id="L654" title="All 2 branches covered.">            if (theParameter.equals(curEntry.getKey())) {</span>
-<span class="fc" id="L655">                matchingEntries.add(curEntry.getValue());</span>
+<span class="fc bfc" id="L654" title="All 2 branches covered.">        for (final ConfigEntry curEntry : this.serviceParameters) {</span>
+<span class="fc bfc" id="L655" title="All 2 branches covered.">            if (theParameter.equals(curEntry.getKey())) {</span>
+<span class="fc" id="L656">                matchingEntries.add(curEntry.getValue());</span>
             }
-<span class="fc" id="L657">        }</span>
-<span class="fc" id="L658">        return matchingEntries;</span>
+<span class="fc" id="L658">        }</span>
+<span class="fc" id="L659">        return matchingEntries;</span>
     }
 
     /**
@@ -665,14 +666,14 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     public void removeAllEntries(final String theParameter) {
         // NB: enhanced for loop does not support remove
-<span class="fc bfc" id="L668" title="All 2 branches covered.">        for (final Iterator&lt;ConfigEntry&gt; i = this.serviceParameters.iterator(); i.hasNext();) {</span>
-<span class="fc" id="L669">            final ConfigEntry curEntry = i.next();</span>
-<span class="fc bfc" id="L670" title="All 2 branches covered.">            if (theParameter.equals(curEntry.getKey())) {</span>
-<span class="fc" id="L671">                logger.debug(&quot;Removing {} = {}&quot;, curEntry.getKey(), curEntry.getValue());</span>
-<span class="fc" id="L672">                i.remove();</span>
+<span class="fc bfc" id="L669" title="All 2 branches covered.">        for (final Iterator&lt;ConfigEntry&gt; i = this.serviceParameters.iterator(); i.hasNext();) {</span>
+<span class="fc" id="L670">            final ConfigEntry curEntry = i.next();</span>
+<span class="fc bfc" id="L671" title="All 2 branches covered.">            if (theParameter.equals(curEntry.getKey())) {</span>
+<span class="fc" id="L672">                logger.debug(&quot;Removing {} = {}&quot;, curEntry.getKey(), curEntry.getValue());</span>
+<span class="fc" id="L673">                i.remove();</span>
             }
-<span class="fc" id="L674">        }</span>
-<span class="fc" id="L675">    }</span>
+<span class="fc" id="L675">        }</span>
+<span class="fc" id="L676">    }</span>
 
     /**
      * Return a set with all parameter values as members
@@ -683,14 +684,14 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     @Override
     public Set&lt;String&gt; findEntriesAsSet(final String theParameter) {
 
-<span class="fc" id="L686">        final Set&lt;String&gt; matchingEntries = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L687">        final Set&lt;String&gt; matchingEntries = new HashSet&lt;&gt;();</span>
 
-<span class="fc bfc" id="L688" title="All 2 branches covered.">        for (final ConfigEntry curEntry : this.serviceParameters) {</span>
-<span class="fc bfc" id="L689" title="All 2 branches covered.">            if (theParameter.equals(curEntry.getKey())) {</span>
-<span class="fc" id="L690">                matchingEntries.add(curEntry.getValue());</span>
+<span class="fc bfc" id="L689" title="All 2 branches covered.">        for (final ConfigEntry curEntry : this.serviceParameters) {</span>
+<span class="fc bfc" id="L690" title="All 2 branches covered.">            if (theParameter.equals(curEntry.getKey())) {</span>
+<span class="fc" id="L691">                matchingEntries.add(curEntry.getValue());</span>
             }
-<span class="fc" id="L692">        }</span>
-<span class="fc" id="L693">        return matchingEntries;</span>
+<span class="fc" id="L693">        }</span>
+<span class="fc" id="L694">        return matchingEntries;</span>
     }
 
     /**
@@ -702,14 +703,14 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     @Override
     public List&lt;ConfigEntry&gt; findStringMatchEntries(final String theParameter) {
 
-<span class="fc" id="L705">        final List&lt;ConfigEntry&gt; matchingEntries = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L706">        final List&lt;ConfigEntry&gt; matchingEntries = new ArrayList&lt;&gt;();</span>
 
-<span class="fc bfc" id="L707" title="All 2 branches covered.">        for (final ConfigEntry curEntry : this.serviceParameters) {</span>
-<span class="fc bfc" id="L708" title="All 2 branches covered.">            if (curEntry.getKey().startsWith(theParameter)) {</span>
-<span class="fc" id="L709">                matchingEntries.add(curEntry);</span>
+<span class="fc bfc" id="L708" title="All 2 branches covered.">        for (final ConfigEntry curEntry : this.serviceParameters) {</span>
+<span class="fc bfc" id="L709" title="All 2 branches covered.">            if (curEntry.getKey().startsWith(theParameter)) {</span>
+<span class="fc" id="L710">                matchingEntries.add(curEntry);</span>
             }
-<span class="fc" id="L711">        }</span>
-<span class="fc" id="L712">        return matchingEntries;</span>
+<span class="fc" id="L712">        }</span>
+<span class="fc" id="L713">        return matchingEntries;</span>
     }
 
     /**
@@ -721,11 +722,11 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public List&lt;ConfigEntry&gt; findStringMatchList(final String theParameter) {
-<span class="fc" id="L724">        final List&lt;ConfigEntry&gt; list = findStringMatchEntries(theParameter);</span>
-<span class="fc bfc" id="L725" title="All 2 branches covered.">        for (final ConfigEntry entry : list) {</span>
-<span class="fc" id="L726">            entry.setKey(entry.getKey().substring(theParameter.length()));</span>
-<span class="fc" id="L727">        }</span>
-<span class="fc" id="L728">        return list;</span>
+<span class="fc" id="L725">        final List&lt;ConfigEntry&gt; list = findStringMatchEntries(theParameter);</span>
+<span class="fc bfc" id="L726" title="All 2 branches covered.">        for (final ConfigEntry entry : list) {</span>
+<span class="fc" id="L727">            entry.setKey(entry.getKey().substring(theParameter.length()));</span>
+<span class="fc" id="L728">        }</span>
+<span class="fc" id="L729">        return list;</span>
     }
 
     /**
@@ -736,7 +737,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public Map&lt;String, String&gt; findStringMatchMap(final String theParameter) {
-<span class="fc" id="L739">        return findStringMatchMap(theParameter, false);</span>
+<span class="fc" id="L740">        return findStringMatchMap(theParameter, false);</span>
     }
 
     /**
@@ -761,7 +762,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public Map&lt;String, String&gt; findStringMatchMap(final String theParameter, final boolean preserveCase) {
-<span class="fc" id="L764">        return findStringMatchMap(theParameter, preserveCase, false);</span>
+<span class="fc" id="L765">        return findStringMatchMap(theParameter, preserveCase, false);</span>
     }
 
     /**
@@ -787,22 +788,22 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public Map&lt;String, String&gt; findStringMatchMap(@Nullable final String theParameter, final boolean preserveCase, final boolean preserveOrder) {
-<span class="fc bfc" id="L790" title="All 2 branches covered.">        if (theParameter == null) {</span>
-<span class="fc" id="L791">            return Collections.emptyMap();</span>
+<span class="fc bfc" id="L791" title="All 2 branches covered.">        if (theParameter == null) {</span>
+<span class="fc" id="L792">            return Collections.emptyMap();</span>
         }
 
-<span class="fc bfc" id="L794" title="All 2 branches covered.">        final Map&lt;String, String&gt; theHash = preserveOrder ? new LinkedHashMap&lt;&gt;() : new HashMap&lt;&gt;();</span>
-<span class="fc" id="L795">        final List&lt;ConfigEntry&gt; parameters = this.findStringMatchEntries(theParameter);</span>
+<span class="fc bfc" id="L795" title="All 2 branches covered.">        final Map&lt;String, String&gt; theHash = preserveOrder ? new LinkedHashMap&lt;&gt;() : new HashMap&lt;&gt;();</span>
+<span class="fc" id="L796">        final List&lt;ConfigEntry&gt; parameters = this.findStringMatchEntries(theParameter);</span>
 
-<span class="fc bfc" id="L797" title="All 2 branches covered.">        for (final ConfigEntry el : parameters) {</span>
-<span class="fc" id="L798">            String key = el.getKey();</span>
-<span class="fc" id="L799">            key = key.substring(theParameter.length());</span>
-<span class="fc bfc" id="L800" title="All 2 branches covered.">            if (!preserveCase) {</span>
-<span class="fc" id="L801">                key = key.toUpperCase(Locale.getDefault());</span>
+<span class="fc bfc" id="L798" title="All 2 branches covered.">        for (final ConfigEntry el : parameters) {</span>
+<span class="fc" id="L799">            String key = el.getKey();</span>
+<span class="fc" id="L800">            key = key.substring(theParameter.length());</span>
+<span class="fc bfc" id="L801" title="All 2 branches covered.">            if (!preserveCase) {</span>
+<span class="fc" id="L802">                key = key.toUpperCase(Locale.getDefault());</span>
             }
-<span class="fc" id="L803">            theHash.put(key, el.getValue());</span>
-<span class="fc" id="L804">        }</span>
-<span class="fc" id="L805">        return theHash;</span>
+<span class="fc" id="L804">            theHash.put(key, el.getValue());</span>
+<span class="fc" id="L805">        }</span>
+<span class="fc" id="L806">        return theHash;</span>
     }
 
     /**
@@ -829,26 +830,59 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public Map&lt;String, Set&lt;String&gt;&gt; findStringMatchMultiMap(@Nullable final String param) {
-
 <span class="pc bpc" id="L833" title="1 of 2 branches missed.">        if (param == null) {</span>
 <span class="nc" id="L834">            return Map.of();</span>
         }
 
-<span class="fc" id="L837">        final Map&lt;String, Set&lt;String&gt;&gt; theHash = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L838">        final List&lt;ConfigEntry&gt; parameters = this.findStringMatchEntries(param);</span>
+<span class="fc" id="L837">        return findStringMatchMultiMap(param, false);</span>
+    }
 
-<span class="fc bfc" id="L840" title="All 2 branches covered.">        for (final ConfigEntry el : parameters) {</span>
-<span class="fc" id="L841">            final String key = el.getKey().substring(param.length()).toUpperCase(Locale.getDefault());</span>
+    /**
+     * Find entries beginning with the specified string and return a hash keyed on the remainder of the string with the
+     * value of the config line as the value of the hash Multiple values for the same hash are allowed and returned as a
+     * Set.
+     *
+     * &lt;pre&gt;
+     * {@code
+     * Example config entries
+     *    FOO_ONE: AAA
+     *    FOO_TWO: BBB
+     *    FOO_TWO: CCC
+     * Calling findStringMatchMap(&quot;FOO_&quot;,true)
+     * will yield a map with Sets
+     *     ONE -&gt; {AAA}
+     *     TWO -&gt; {BBB,CCC}
+     * }
+     * &lt;/pre&gt;
+     *
+     * @param param the key to look for in the config file
+     * @param preserveOrder ordering of keys is preserved
+     * @return map where key is remainder after match and value is a Set of all found config values, or an empty map if none
+     *         found
+     */
+    @Override
+    public Map&lt;String, Set&lt;String&gt;&gt; findStringMatchMultiMap(@Nullable final String param, final boolean preserveOrder) {
 
-<span class="pc bpc" id="L843" title="1 of 2 branches missed.">            if (theHash.containsKey(key)) {</span>
-<span class="nc" id="L844">                theHash.get(key).add(el.getValue());</span>
+<span class="pc bpc" id="L866" title="1 of 2 branches missed.">        if (param == null) {</span>
+<span class="nc" id="L867">            return Map.of();</span>
+        }
+
+<span class="fc bfc" id="L870" title="All 2 branches covered.">        final Map&lt;String, Set&lt;String&gt;&gt; theHash = preserveOrder ? new LinkedHashMap&lt;&gt;() : new HashMap&lt;&gt;();</span>
+<span class="fc" id="L871">        final List&lt;ConfigEntry&gt; parameters = this.findStringMatchEntries(param);</span>
+
+<span class="fc bfc" id="L873" title="All 2 branches covered.">        for (final ConfigEntry el : parameters) {</span>
+<span class="fc" id="L874">            final String key = el.getKey().substring(param.length()).toUpperCase(Locale.getDefault());</span>
+
+<span class="fc bfc" id="L876" title="All 2 branches covered.">            if (theHash.containsKey(key)) {</span>
+<span class="fc" id="L877">                theHash.get(key).add(el.getValue());</span>
             } else {
-<span class="fc" id="L846">                final Set&lt;String&gt; values = new HashSet&lt;&gt;();</span>
-<span class="fc" id="L847">                values.add(el.getValue());</span>
-<span class="fc" id="L848">                theHash.put(key, values);</span>
+<span class="fc bfc" id="L879" title="All 2 branches covered.">                final Set&lt;String&gt; values = preserveOrder ? new LinkedHashSet&lt;&gt;() : new HashSet&lt;&gt;();</span>
+<span class="fc" id="L880">                values.add(el.getValue());</span>
+<span class="fc" id="L881">                theHash.put(key, values);</span>
             }
-<span class="fc" id="L850">        }</span>
-<span class="fc" id="L851">        return theHash;</span>
+<span class="fc" id="L883">        }</span>
+<span class="fc" id="L884">        return theHash;</span>
+
     }
 
     /**
@@ -860,9 +894,9 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public String findRequiredStringEntry(final String theParameter) {
-<span class="fc" id="L863">        String value = findStringEntry(theParameter, null);</span>
-<span class="fc" id="L864">        Validate.notBlank(value, &quot;Missing required parameter [%s]&quot;, theParameter);</span>
-<span class="fc" id="L865">        return value;</span>
+<span class="fc" id="L897">        String value = findStringEntry(theParameter, null);</span>
+<span class="fc" id="L898">        Validate.notBlank(value, &quot;Missing required parameter [%s]&quot;, theParameter);</span>
+<span class="fc" id="L899">        return value;</span>
     }
 
     /**
@@ -874,13 +908,13 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public String findStringEntry(final String theParameter, @Nullable final String dflt) {
-<span class="fc" id="L877">        final List&lt;String&gt; matchingEntries = findEntries(theParameter);</span>
-<span class="fc bfc" id="L878" title="All 2 branches covered.">        for (final String entry : matchingEntries) {</span>
-<span class="fc bfc" id="L879" title="All 2 branches covered.">            if (entry != null) {</span>
-<span class="fc" id="L880">                return entry;</span>
+<span class="fc" id="L911">        final List&lt;String&gt; matchingEntries = findEntries(theParameter);</span>
+<span class="fc bfc" id="L912" title="All 2 branches covered.">        for (final String entry : matchingEntries) {</span>
+<span class="fc bfc" id="L913" title="All 2 branches covered.">            if (entry != null) {</span>
+<span class="fc" id="L914">                return entry;</span>
             }
-<span class="fc" id="L882">        }</span>
-<span class="fc" id="L883">        return dflt;</span>
+<span class="fc" id="L916">        }</span>
+<span class="fc" id="L917">        return dflt;</span>
     }
 
     /**
@@ -891,7 +925,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public String findStringEntry(final String theParameter) {
-<span class="fc" id="L894">        return findStringEntry(theParameter, null);</span>
+<span class="fc" id="L928">        return findStringEntry(theParameter, null);</span>
     }
 
     /**
@@ -902,13 +936,13 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public String findLastStringEntry(final String theParameter) {
-<span class="fc" id="L905">        String result = &quot;&quot;;</span>
-<span class="fc bfc" id="L906" title="All 2 branches covered.">        for (final ConfigEntry curEntry : this.serviceParameters) {</span>
-<span class="pc bpc" id="L907" title="1 of 2 branches missed.">            if (theParameter.equals(curEntry.getKey())) {</span>
-<span class="fc" id="L908">                result = curEntry.getValue();</span>
+<span class="fc" id="L939">        String result = &quot;&quot;;</span>
+<span class="fc bfc" id="L940" title="All 2 branches covered.">        for (final ConfigEntry curEntry : this.serviceParameters) {</span>
+<span class="pc bpc" id="L941" title="1 of 2 branches missed.">            if (theParameter.equals(curEntry.getKey())) {</span>
+<span class="fc" id="L942">                result = curEntry.getValue();</span>
             }
-<span class="fc" id="L910">        }</span>
-<span class="fc" id="L911">        return result;</span>
+<span class="fc" id="L944">        }</span>
+<span class="fc" id="L945">        return result;</span>
     }
 
     /**
@@ -922,29 +956,29 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public long findSizeEntry(final String theParameter, final long dflt) {
-<span class="fc" id="L925">        final List&lt;String&gt; matchingEntries = findEntries(theParameter);</span>
-<span class="fc bfc" id="L926" title="All 2 branches covered.">        if (!matchingEntries.isEmpty()) {</span>
-<span class="fc" id="L927">            long val = dflt;</span>
-<span class="fc" id="L928">            final String s = matchingEntries.get(0);</span>
-<span class="fc" id="L929">            final char c = Character.toUpperCase(s.charAt(s.length() - 1));</span>
-<span class="fc" id="L930">            final String ss = s.substring(0, s.length() - 1);</span>
-<span class="fc" id="L931">            boolean broken = false;</span>
-<span class="fc bfc" id="L932" title="All 7 branches covered.">            switch (c) {</span>
+<span class="fc" id="L959">        final List&lt;String&gt; matchingEntries = findEntries(theParameter);</span>
+<span class="fc bfc" id="L960" title="All 2 branches covered.">        if (!matchingEntries.isEmpty()) {</span>
+<span class="fc" id="L961">            long val = dflt;</span>
+<span class="fc" id="L962">            final String s = matchingEntries.get(0);</span>
+<span class="fc" id="L963">            final char c = Character.toUpperCase(s.charAt(s.length() - 1));</span>
+<span class="fc" id="L964">            final String ss = s.substring(0, s.length() - 1);</span>
+<span class="fc" id="L965">            boolean broken = false;</span>
+<span class="fc bfc" id="L966" title="All 7 branches covered.">            switch (c) {</span>
                 case 'T':
-<span class="fc" id="L934">                    val = Long.parseLong(ss) * 1024 * 1024 * 1024 * 1024;</span>
-<span class="fc" id="L935">                    break;</span>
+<span class="fc" id="L968">                    val = Long.parseLong(ss) * 1024 * 1024 * 1024 * 1024;</span>
+<span class="fc" id="L969">                    break;</span>
                 case 'G':
-<span class="fc" id="L937">                    val = Long.parseLong(ss) * 1024 * 1024 * 1024;</span>
-<span class="fc" id="L938">                    break;</span>
+<span class="fc" id="L971">                    val = Long.parseLong(ss) * 1024 * 1024 * 1024;</span>
+<span class="fc" id="L972">                    break;</span>
                 case 'M':
-<span class="fc" id="L940">                    val = Long.parseLong(ss) * 1024 * 1024;</span>
-<span class="fc" id="L941">                    break;</span>
+<span class="fc" id="L974">                    val = Long.parseLong(ss) * 1024 * 1024;</span>
+<span class="fc" id="L975">                    break;</span>
                 case 'K':
-<span class="fc" id="L943">                    val = Long.parseLong(ss) * 1024;</span>
-<span class="fc" id="L944">                    break;</span>
+<span class="fc" id="L977">                    val = Long.parseLong(ss) * 1024;</span>
+<span class="fc" id="L978">                    break;</span>
                 case 'B':
-<span class="fc" id="L946">                    val = Long.parseLong(ss);</span>
-<span class="fc" id="L947">                    break;</span>
+<span class="fc" id="L980">                    val = Long.parseLong(ss);</span>
+<span class="fc" id="L981">                    break;</span>
                 case '0':
                 case '1':
                 case '2':
@@ -955,18 +989,18 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                 case '7':
                 case '8':
                 case '9':
-<span class="fc" id="L958">                    val = Long.parseLong(s);</span>
-<span class="fc" id="L959">                    break;</span>
+<span class="fc" id="L992">                    val = Long.parseLong(s);</span>
+<span class="fc" id="L993">                    break;</span>
                 default:
-<span class="fc" id="L961">                    broken = true;</span>
+<span class="fc" id="L995">                    broken = true;</span>
             }
 
-<span class="fc bfc" id="L964" title="All 2 branches covered.">            if (!broken) {</span>
-<span class="fc" id="L965">                return val;</span>
+<span class="fc bfc" id="L998" title="All 2 branches covered.">            if (!broken) {</span>
+<span class="fc" id="L999">                return val;</span>
             }
-<span class="fc" id="L967">            return dflt;</span>
+<span class="fc" id="L1001">            return dflt;</span>
         }
-<span class="fc" id="L969">        return dflt;</span>
+<span class="fc" id="L1003">        return dflt;</span>
     }
 
     /**
@@ -978,15 +1012,15 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public String findCanonicalFileNameEntry(final String theParameter, final String dflt) {
-<span class="fc" id="L981">        final String fn = findStringEntry(theParameter, dflt);</span>
-<span class="pc bpc" id="L982" title="1 of 4 branches missed.">        if (fn != null &amp;&amp; fn.length() &gt; 0) {</span>
+<span class="fc" id="L1015">        final String fn = findStringEntry(theParameter, dflt);</span>
+<span class="pc bpc" id="L1016" title="1 of 4 branches missed.">        if (fn != null &amp;&amp; fn.length() &gt; 0) {</span>
             try {
-<span class="fc" id="L984">                return new File(fn).getCanonicalPath();</span>
-<span class="nc" id="L985">            } catch (IOException ex) {</span>
-<span class="nc" id="L986">                logger.error(&quot;Cannot compute canonical path on {}&quot;, fn, ex);</span>
+<span class="fc" id="L1018">                return new File(fn).getCanonicalPath();</span>
+<span class="nc" id="L1019">            } catch (IOException ex) {</span>
+<span class="nc" id="L1020">                logger.error(&quot;Cannot compute canonical path on {}&quot;, fn, ex);</span>
             }
         }
-<span class="fc" id="L989">        return fn;</span>
+<span class="fc" id="L1023">        return fn;</span>
     }
 
     /**
@@ -998,16 +1032,16 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public int findIntEntry(final String theParameter, final int dflt) {
-<span class="fc" id="L1001">        final List&lt;String&gt; matchingEntries = findEntries(theParameter);</span>
+<span class="fc" id="L1035">        final List&lt;String&gt; matchingEntries = findEntries(theParameter);</span>
 
-<span class="fc bfc" id="L1003" title="All 2 branches covered.">        if (!matchingEntries.isEmpty()) {</span>
+<span class="fc bfc" id="L1037" title="All 2 branches covered.">        if (!matchingEntries.isEmpty()) {</span>
             try {
-<span class="fc" id="L1005">                return Integer.parseInt(matchingEntries.get(0));</span>
-<span class="nc" id="L1006">            } catch (NumberFormatException e) {</span>
-<span class="nc" id="L1007">                logger.warn(&quot;{} is non-numeric returning default value: {}&quot;, theParameter, dflt);</span>
+<span class="fc" id="L1039">                return Integer.parseInt(matchingEntries.get(0));</span>
+<span class="nc" id="L1040">            } catch (NumberFormatException e) {</span>
+<span class="nc" id="L1041">                logger.warn(&quot;{} is non-numeric returning default value: {}&quot;, theParameter, dflt);</span>
             }
         }
-<span class="fc" id="L1010">        return dflt;</span>
+<span class="fc" id="L1044">        return dflt;</span>
     }
 
     /**
@@ -1019,16 +1053,16 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public long findLongEntry(final String theParameter, final long dflt) {
-<span class="fc" id="L1022">        final List&lt;String&gt; matchingEntries = findEntries(theParameter);</span>
+<span class="fc" id="L1056">        final List&lt;String&gt; matchingEntries = findEntries(theParameter);</span>
 
-<span class="fc bfc" id="L1024" title="All 2 branches covered.">        if (!matchingEntries.isEmpty()) {</span>
+<span class="fc bfc" id="L1058" title="All 2 branches covered.">        if (!matchingEntries.isEmpty()) {</span>
             try {
-<span class="fc" id="L1026">                return Long.parseLong(matchingEntries.get(0));</span>
-<span class="nc" id="L1027">            } catch (NumberFormatException e) {</span>
-<span class="nc" id="L1028">                logger.warn(&quot;{} is non-numeric returning default value: {}&quot;, theParameter, dflt);</span>
+<span class="fc" id="L1060">                return Long.parseLong(matchingEntries.get(0));</span>
+<span class="nc" id="L1061">            } catch (NumberFormatException e) {</span>
+<span class="nc" id="L1062">                logger.warn(&quot;{} is non-numeric returning default value: {}&quot;, theParameter, dflt);</span>
             }
         }
-<span class="fc" id="L1031">        return dflt;</span>
+<span class="fc" id="L1065">        return dflt;</span>
     }
 
     /**
@@ -1040,16 +1074,16 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public double findDoubleEntry(final String theParameter, final double dflt) {
-<span class="fc" id="L1043">        final List&lt;String&gt; matchingEntries = findEntries(theParameter);</span>
+<span class="fc" id="L1077">        final List&lt;String&gt; matchingEntries = findEntries(theParameter);</span>
 
-<span class="fc bfc" id="L1045" title="All 2 branches covered.">        if (!matchingEntries.isEmpty()) {</span>
+<span class="fc bfc" id="L1079" title="All 2 branches covered.">        if (!matchingEntries.isEmpty()) {</span>
             try {
-<span class="fc" id="L1047">                return Double.parseDouble(matchingEntries.get(0));</span>
-<span class="nc" id="L1048">            } catch (NumberFormatException e) {</span>
-<span class="nc" id="L1049">                logger.warn(&quot;{} is non-numeric returning default value: {}&quot;, theParameter, dflt);</span>
+<span class="fc" id="L1081">                return Double.parseDouble(matchingEntries.get(0));</span>
+<span class="nc" id="L1082">            } catch (NumberFormatException e) {</span>
+<span class="nc" id="L1083">                logger.warn(&quot;{} is non-numeric returning default value: {}&quot;, theParameter, dflt);</span>
             }
         }
-<span class="fc" id="L1052">        return dflt;</span>
+<span class="fc" id="L1086">        return dflt;</span>
     }
 
     /**
@@ -1061,18 +1095,18 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public boolean findBooleanEntry(final String theParameter, final boolean dflt) {
-<span class="fc" id="L1064">        final List&lt;String&gt; matchingEntries = findEntries(theParameter);</span>
+<span class="fc" id="L1098">        final List&lt;String&gt; matchingEntries = findEntries(theParameter);</span>
 
-<span class="fc bfc" id="L1066" title="All 2 branches covered.">        if (!matchingEntries.isEmpty()) {</span>
-<span class="fc" id="L1067">            String el = matchingEntries.get(0);</span>
-<span class="fc" id="L1068">            el = el.toUpperCase(Locale.getDefault());</span>
-<span class="fc bfc" id="L1069" title="All 2 branches covered.">            if (el.startsWith(&quot;F&quot;)) {</span>
-<span class="fc" id="L1070">                return false;</span>
-<span class="fc bfc" id="L1071" title="All 2 branches covered.">            } else if (el.startsWith(&quot;T&quot;)) {</span>
-<span class="fc" id="L1072">                return true;</span>
+<span class="fc bfc" id="L1100" title="All 2 branches covered.">        if (!matchingEntries.isEmpty()) {</span>
+<span class="fc" id="L1101">            String el = matchingEntries.get(0);</span>
+<span class="fc" id="L1102">            el = el.toUpperCase(Locale.getDefault());</span>
+<span class="fc bfc" id="L1103" title="All 2 branches covered.">            if (el.startsWith(&quot;F&quot;)) {</span>
+<span class="fc" id="L1104">                return false;</span>
+<span class="fc bfc" id="L1105" title="All 2 branches covered.">            } else if (el.startsWith(&quot;T&quot;)) {</span>
+<span class="fc" id="L1106">                return true;</span>
             }
         }
-<span class="fc" id="L1075">        return dflt;</span>
+<span class="fc" id="L1109">        return dflt;</span>
     }
 
     /**
@@ -1084,7 +1118,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public boolean findBooleanEntry(final String theParameter, final String dflt) {
-<span class="fc" id="L1087">        return findBooleanEntry(theParameter, Boolean.parseBoolean(dflt));</span>
+<span class="fc" id="L1121">        return findBooleanEntry(theParameter, Boolean.parseBoolean(dflt));</span>
     }
 
     /**
@@ -1093,20 +1127,20 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @param name the name of the parameter
      */
     protected int getNumericParameter(final String name) {
-<span class="nc" id="L1096">        final String val = this.values.get(name);</span>
-<span class="nc" id="L1097">        int i = -1;</span>
-<span class="nc bnc" id="L1098" title="All 2 branches missed.">        if (val != null) {</span>
+<span class="nc" id="L1130">        final String val = this.values.get(name);</span>
+<span class="nc" id="L1131">        int i = -1;</span>
+<span class="nc bnc" id="L1132" title="All 2 branches missed.">        if (val != null) {</span>
             try {
-<span class="nc" id="L1100">                i = Integer.parseInt(val);</span>
-<span class="nc" id="L1101">            } catch (NumberFormatException ex) {</span>
-<span class="nc" id="L1102">                logger.warn(&quot;{} is non-numeric: {}&quot;, name, val);</span>
-<span class="nc" id="L1103">            }</span>
+<span class="nc" id="L1134">                i = Integer.parseInt(val);</span>
+<span class="nc" id="L1135">            } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L1136">                logger.warn(&quot;{} is non-numeric: {}&quot;, name, val);</span>
+<span class="nc" id="L1137">            }</span>
         }
-<span class="nc" id="L1105">        return i;</span>
+<span class="nc" id="L1139">        return i;</span>
     }
 
     public boolean debug() {
-<span class="fc" id="L1109">        return &quot;TRUE&quot;.equalsIgnoreCase(this.values.get(&quot;DEBUG&quot;));</span>
+<span class="fc" id="L1143">        return &quot;TRUE&quot;.equalsIgnoreCase(this.values.get(&quot;DEBUG&quot;));</span>
     }
 
     /**
@@ -1122,43 +1156,43 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public void merge(final Configurator other) throws IOException {
-<span class="fc" id="L1125">        int i = 1;</span>
+<span class="fc" id="L1159">        int i = 1;</span>
 
         // First handle the remove entries from &quot;other&quot;
-<span class="pc bpc" id="L1128" title="1 of 2 branches missed.">        if (other instanceof ServiceConfigGuide) {</span>
-<span class="fc bfc" id="L1129" title="All 2 branches covered.">            for (final ConfigEntry entry : ((ServiceConfigGuide) other).getRemoveEntries()) {</span>
-<span class="fc" id="L1130">                handleNewEntry(entry.getKey(), entry.getValue(), &quot;!=&quot;, &quot;&lt;merge&gt;&quot;, i++, true);</span>
-<span class="fc" id="L1131">            }</span>
+<span class="pc bpc" id="L1162" title="1 of 2 branches missed.">        if (other instanceof ServiceConfigGuide) {</span>
+<span class="fc bfc" id="L1163" title="All 2 branches covered.">            for (final ConfigEntry entry : ((ServiceConfigGuide) other).getRemoveEntries()) {</span>
+<span class="fc" id="L1164">                handleNewEntry(entry.getKey(), entry.getValue(), &quot;!=&quot;, &quot;&lt;merge&gt;&quot;, i++, true);</span>
+<span class="fc" id="L1165">            }</span>
         }
 
         // Add in new entries from &quot;other&quot; at the top of the list
-<span class="fc bfc" id="L1135" title="All 2 branches covered.">        for (final ConfigEntry entry : other.getEntries()) {</span>
-<span class="fc" id="L1136">            handleNewEntry(entry.getKey(), entry.getValue(), &quot;=&quot;, &quot;&lt;merge&gt;&quot;, i++, true);</span>
-<span class="fc" id="L1137">        }</span>
-<span class="fc" id="L1138">    }</span>
+<span class="fc bfc" id="L1169" title="All 2 branches covered.">        for (final ConfigEntry entry : other.getEntries()) {</span>
+<span class="fc" id="L1170">            handleNewEntry(entry.getKey(), entry.getValue(), &quot;=&quot;, &quot;&lt;merge&gt;&quot;, i++, true);</span>
+<span class="fc" id="L1171">        }</span>
+<span class="fc" id="L1172">    }</span>
 
     /**
      * Public main used to verify config file construction off-line
      */
     public static void main(final String[] args) {
-<span class="nc bnc" id="L1144" title="All 2 branches missed.">        if (args.length &lt; 1) {</span>
-<span class="nc" id="L1145">            logger.error(&quot;usage: java ServiceConfigGuide configfile&quot;);</span>
-<span class="nc" id="L1146">            return;</span>
+<span class="nc bnc" id="L1178" title="All 2 branches missed.">        if (args.length &lt; 1) {</span>
+<span class="nc" id="L1179">            logger.error(&quot;usage: java ServiceConfigGuide configfile&quot;);</span>
+<span class="nc" id="L1180">            return;</span>
         }
 
-<span class="nc bnc" id="L1149" title="All 2 branches missed.">        for (String arg : args) {</span>
+<span class="nc bnc" id="L1183" title="All 2 branches missed.">        for (String arg : args) {</span>
             try {
-<span class="nc" id="L1151">                final ServiceConfigGuide sc = new ServiceConfigGuide(arg);</span>
-<span class="nc" id="L1152">                logger.info(&quot;Config File:{} &quot;, arg);</span>
-<span class="nc bnc" id="L1153" title="All 2 branches missed.">                for (int i = 0; i &lt; sc.serviceParameters.size(); i++) {</span>
-<span class="nc" id="L1154">                    final ConfigEntry c = sc.serviceParameters.get(i);</span>
-<span class="nc" id="L1155">                    logger.info(&quot;{}: {}&quot;, c.getKey(), c.getValue());</span>
+<span class="nc" id="L1185">                final ServiceConfigGuide sc = new ServiceConfigGuide(arg);</span>
+<span class="nc" id="L1186">                logger.info(&quot;Config File:{} &quot;, arg);</span>
+<span class="nc bnc" id="L1187" title="All 2 branches missed.">                for (int i = 0; i &lt; sc.serviceParameters.size(); i++) {</span>
+<span class="nc" id="L1188">                    final ConfigEntry c = sc.serviceParameters.get(i);</span>
+<span class="nc" id="L1189">                    logger.info(&quot;{}: {}&quot;, c.getKey(), c.getValue());</span>
                 }
-<span class="nc" id="L1157">                logger.info(&quot;---&quot;);</span>
-<span class="nc" id="L1158">            } catch (IOException e) {</span>
-<span class="nc" id="L1159">                logger.info(&quot;Cannot process {}:{}&quot;, arg, e.getLocalizedMessage());</span>
-<span class="nc" id="L1160">            }</span>
+<span class="nc" id="L1191">                logger.info(&quot;---&quot;);</span>
+<span class="nc" id="L1192">            } catch (IOException e) {</span>
+<span class="nc" id="L1193">                logger.info(&quot;Cannot process {}:{}&quot;, arg, e.getLocalizedMessage());</span>
+<span class="nc" id="L1194">            }</span>
         }
-<span class="nc" id="L1162">    }</span>
+<span class="nc" id="L1196">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

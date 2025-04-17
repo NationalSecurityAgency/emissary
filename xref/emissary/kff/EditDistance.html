@@ -8,7 +8,7 @@
 <div id="overview"><a href="../../../apidocs/emissary/kff/EditDistance.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> emissary.kff;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> javax.annotation.Nullable;
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> jakarta.annotation.Nullable;
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_javadoccomment"> * A java port of the ssdeep code for "fuzzy hashing". <a href="http://ssdeep.sourceforge.net" target="alexandria_uri">http://ssdeep.sourceforge.net</a> There are a number of ports out</em>
@@ -84,14 +84,14 @@
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">int</strong> mx = x;
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">int</strong> my = y;
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>          <strong class="jxr_keyword">int</strong> mz = z;
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          <strong class="jxr_keyword">return</strong> (mx &lt; my ? (mx &lt; mz ? mx : mz) : (mz &lt; my) ? mz : my);
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          <strong class="jxr_keyword">return</strong> mx &lt; my ? (mx &lt; mz ? mx : mz) : (mz &lt; my) ? mz : my;
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>      }
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>      <em class="jxr_comment">// #define min2(x,y) (_mx = (x), _my = (y), (_mx &lt; _my ? _mx : _my))</em>
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> min2(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>          <strong class="jxr_keyword">int</strong> mx = x;
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>          <strong class="jxr_keyword">int</strong> my = y;
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>          <strong class="jxr_keyword">return</strong> (mx &lt; my ? mx : my);
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>          <strong class="jxr_keyword">return</strong> mx &lt; my ? mx : my;
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>      }
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> insertCost = 1;
@@ -123,7 +123,7 @@
 <a class="jxr_linenumber" name="L115" href="#L115">115</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> toLen;
 <a class="jxr_linenumber" name="L116" href="#L116">116</a> 
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> ar(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y, <strong class="jxr_keyword">int</strong> index) {
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>         <strong class="jxr_keyword">return</strong> ((x == 0) ? y * del : ((y == 0) ? x * ins : buffer[mod(index)]));
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>         <strong class="jxr_keyword">return</strong> (x == 0) ? y * del : (y == 0) ? x * ins : buffer[mod(index)];
 <a class="jxr_linenumber" name="L119" href="#L119">119</a>     }
 <a class="jxr_linenumber" name="L120" href="#L120">120</a> 
 <a class="jxr_linenumber" name="L121" href="#L121">121</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> nw(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
@@ -143,7 +143,7 @@
 <a class="jxr_linenumber" name="L135" href="#L135">135</a>     }
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> 
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> mod(<strong class="jxr_keyword">int</strong> x) {
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>         <strong class="jxr_keyword">return</strong> (x % radix);
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>         <strong class="jxr_keyword">return</strong> x % radix;
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>     }
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> 
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>     <em class="jxr_comment">/*</em>
@@ -219,7 +219,7 @@
 <a class="jxr_linenumber" name="L211" href="#L211">211</a>         <em class="jxr_comment">// /#define mod(x) ((x) % radix)</em>
 <a class="jxr_linenumber" name="L212" href="#L212">212</a> 
 <a class="jxr_linenumber" name="L213" href="#L213">213</a> 
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>         buffer[index++] = min2(ins + del, (from[0] == to[0] ? 0 : ch));
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>         buffer[index++] = min2(ins + del, from[0] == to[0] ? 0 : ch);
 <a class="jxr_linenumber" name="L215" href="#L215">215</a> 
 <a class="jxr_linenumber" name="L216" href="#L216">216</a>         low = buffer[mod(index + radix - 1)];
 <a class="jxr_linenumber" name="L217" href="#L217">217</a>         <strong class="jxr_keyword">for</strong> (col = 1; col &lt; EditDistance.fromLen; col++) {

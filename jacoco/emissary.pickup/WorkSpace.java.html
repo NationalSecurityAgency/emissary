@@ -19,6 +19,7 @@ import emissary.server.mvc.adapters.WorkSpaceAdapter;
 import emissary.util.Version;
 import emissary.util.io.FileFind;
 
+import jakarta.annotation.Nullable;
 import org.apache.hc.core5.http.HttpStatus;
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
@@ -42,7 +43,6 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import javax.annotation.Nullable;
 
 /**
  * Recursively process input and distribute files to one or more remote PickUp client instances when they ask for a
@@ -655,7 +655,7 @@ public class WorkSpace implements Runnable {
 <span class="nc" id="L655">        }</span>
 
 <span class="nc bnc" id="L657" title="All 2 branches missed.">        if (logger.isInfoEnabled()) {</span>
-<span class="nc bnc" id="L658" title="All 2 branches missed.">            logger.info(&quot;Notified {} in {} attempts: {}&quot;, pup, tryCount, (notified ? &quot;SUCCESS&quot; : &quot;FAILED&quot;));</span>
+<span class="nc bnc" id="L658" title="All 2 branches missed.">            logger.info(&quot;Notified {} in {} attempts: {}&quot;, pup, tryCount, notified ? &quot;SUCCESS&quot; : &quot;FAILED&quot;);</span>
         }
 
 <span class="nc" id="L661">        return notified;</span>
@@ -767,7 +767,7 @@ public class WorkSpace implements Runnable {
 <span class="fc" id="L767">        }</span>
 
 <span class="pc bpc" id="L769" title="1 of 2 branches missed.">        if (logger.isInfoEnabled()) {</span>
-<span class="fc" id="L770">            logger.info(&quot;Adding workbundle {} size {} filesSeen {}&quot;, wb, (sz + 1), this.filesSeen.size());</span>
+<span class="fc" id="L770">            logger.info(&quot;Adding workbundle {} size {} filesSeen {}&quot;, wb, sz + 1, this.filesSeen.size());</span>
         }
 <span class="fc" id="L772">    }</span>
 
@@ -848,7 +848,7 @@ public class WorkSpace implements Runnable {
         }
 <span class="pc bpc" id="L849" title="1 of 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
 <span class="nc" id="L850">            logger.debug(&quot;Bundle {} completed by {}{}&quot;, bundleId, remoteName,</span>
-<span class="nc bnc" id="L851" title="All 4 branches missed.">                    (itWorked ? &quot;&quot; : (&quot; but failed for the &quot; + (item != null ? item.getErrorCount() : -1) + &quot; time&quot;)));</span>
+<span class="nc bnc" id="L851" title="All 4 branches missed.">                    itWorked ? &quot;&quot; : (&quot; but failed for the &quot; + (item != null ? item.getErrorCount() : -1) + &quot; time&quot;));</span>
         }
 <span class="pc bpc" id="L853" title="1 of 2 branches missed.">        return item != null;</span>
     }
@@ -1171,7 +1171,7 @@ public class WorkSpace implements Runnable {
 <span class="nc" id="L1171">                WorkSpace.this.numberOfBundlesToSkip = 0;</span>
 
 <span class="nc" id="L1173">                logger.info(&quot;Collected {} file bundles in {}s in loop iteration {}, {} items in outbound queue&quot;, collectCount,</span>
-<span class="nc" id="L1174">                        ((stop - start) / 1000.0), loopCount, WorkSpace.this.outbound.size());</span>
+<span class="nc" id="L1174">                        (stop - start) / 1000.0, loopCount, WorkSpace.this.outbound.size());</span>
 
 <span class="nc bnc" id="L1176" title="All 4 branches missed.">                if ((collectCount == 0) &amp;&amp; WorkSpace.this.loop) {</span>
                     // Wait pause time seconds and try again if looping
@@ -1366,7 +1366,7 @@ public class WorkSpace implements Runnable {
 <span class="nc bnc" id="L1366" title="All 4 branches missed.">            if (count &gt; 0 &amp;&amp; logger.isDebugEnabled()) {</span>
 <span class="nc" id="L1367">                logger.debug(</span>
                         &quot;Paused collector {} times for {}s waiting for memory usage to go below threshold {} resuming at {}, queueSize was/is={}/{}&quot;,
-<span class="nc" id="L1369">                        count, (intv / 1000), MEM_THRESHOLD, heap, initialQueueSize, getOutboundQueueSize());</span>
+<span class="nc" id="L1369">                        count, intv / 1000, MEM_THRESHOLD, heap, initialQueueSize, getOutboundQueueSize());</span>
             }
 <span class="nc" id="L1371">        }</span>
     }

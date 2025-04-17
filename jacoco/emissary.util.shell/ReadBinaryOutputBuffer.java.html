@@ -20,8 +20,8 @@ public class ReadBinaryOutputBuffer extends ProcessReader {
 
         try {
 <span class="fc" id="L22">            IOUtils.copy(inputStream, baos);</span>
-<span class="nc" id="L23">        } catch (Exception e) {</span>
-            //
+<span class="nc" id="L23">        } catch (Exception ignored) {</span>
+            // ignored.
 <span class="fc" id="L25">        }</span>
 <span class="fc" id="L26">    }</span>
 

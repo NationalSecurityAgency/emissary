@@ -8,6 +8,7 @@ import emissary.util.ByteUtil;
 import emissary.util.PayloadUtil;
 
 import com.google.common.collect.LinkedListMultimap;
+import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +36,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 /**
  * Class to hold data, header, footer, and attributes
@@ -894,7 +894,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
 <span class="fc" id="L895">            final Object value = entry.getValue();</span>
 
-<span class="fc bfc" id="L897" title="All 2 branches covered.">            if ((policy == MergePolicy.DROP_EXISTING)) {</span>
+<span class="fc bfc" id="L897" title="All 2 branches covered.">            if (policy == MergePolicy.DROP_EXISTING) {</span>
                 // store the provided value for this key, discarding any previously-stored value
 <span class="fc" id="L899">                setParameter(name, value);</span>
 <span class="fc" id="L900">                continue;</span>
@@ -1274,7 +1274,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public boolean isBroken() {
-<span class="fc bfc" id="L1277" title="All 2 branches covered.">        return (this.brokenDocument != null);</span>
+<span class="fc bfc" id="L1277" title="All 2 branches covered.">        return this.brokenDocument != null;</span>
     }
 
     @Override

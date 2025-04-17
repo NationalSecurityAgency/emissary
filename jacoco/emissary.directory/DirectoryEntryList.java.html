@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DirectoryEntryList.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.directory</a> &gt; <span class="el_source">DirectoryEntryList.java</span></div><h1>DirectoryEntryList.java</h1><pre class="source lang-java linenums">package emissary.directory;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -11,7 +12,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import javax.annotation.Nullable;
 
 /**
  * Hold a set of Directory keys (four-tuples) in sorted order by expense, cheapest first, no duplicates
@@ -159,17 +159,15 @@ public class DirectoryEntryList extends CopyOnWriteArrayList&lt;DirectoryEntry&g
 <span class="fc bfc" id="L159" title="All 2 branches covered.">            if (newEntry.isBetterThan(currEntry)) {</span>
 <span class="fc" id="L160">                super.add(i, newEntry);</span>
 <span class="fc" id="L161">                return true;</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">            } else if ((newEntry.getExpense() == currEntry.getExpense())) {</span>
+<span class="fc bfc" id="L162" title="All 4 branches covered.">            } else if (newEntry.getExpense() == currEntry.getExpense() &amp;&amp; newEntry.getServiceName().compareTo(currEntry.getServiceName()) &lt; 0) {</span>
                 // we could have an equal expense and if so, add lexicographically based on service name
-<span class="fc bfc" id="L164" title="All 2 branches covered.">                if (newEntry.getServiceName().compareTo(currEntry.getServiceName()) &lt; 0) {</span>
-<span class="fc" id="L165">                    super.add(i, newEntry);</span>
-<span class="fc" id="L166">                    return true;</span>
-                }
+<span class="fc" id="L164">                super.add(i, newEntry);</span>
+<span class="fc" id="L165">                return true;</span>
             }
         }
 
         // Add it at the end
-<span class="fc" id="L172">        return super.add(newEntry);</span>
+<span class="fc" id="L170">        return super.add(newEntry);</span>
     }
 
     /**
@@ -179,7 +177,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList&lt;DirectoryEntry&g
      * @return DirectoryEntry at position i
      */
     public DirectoryEntry getEntry(final int i) {
-<span class="fc" id="L182">        return super.get(i);</span>
+<span class="fc" id="L180">        return super.get(i);</span>
     }
 
     /**
@@ -190,12 +188,12 @@ public class DirectoryEntryList extends CopyOnWriteArrayList&lt;DirectoryEntry&g
         // because it's iterator does not support Iterator.set !!
         // I think this is totally BOGUS.
         // Collections.sort(this,new DirectoryEntryComparator());
-<span class="fc" id="L193">        final DirectoryEntry[] a = this.toArray(new DirectoryEntry[0]);</span>
-<span class="fc" id="L194">        Arrays.sort(a, new DirectoryEntryComparator());</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">        for (int j = 0; j &lt; a.length; j++) {</span>
-<span class="fc" id="L196">            this.set(j, a[j]);</span>
+<span class="fc" id="L191">        final DirectoryEntry[] a = this.toArray(new DirectoryEntry[0]);</span>
+<span class="fc" id="L192">        Arrays.sort(a, new DirectoryEntryComparator());</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        for (int j = 0; j &lt; a.length; j++) {</span>
+<span class="fc" id="L194">            this.set(j, a[j]);</span>
         }
-<span class="fc" id="L198">    }</span>
+<span class="fc" id="L196">    }</span>
 
     /**
      * Pick one of any that are tied for expense at random
@@ -203,65 +201,65 @@ public class DirectoryEntryList extends CopyOnWriteArrayList&lt;DirectoryEntry&g
      * @param desiredExpense the expense we want
      */
     public DirectoryEntry pickOneOf(final int desiredExpense) {
-<span class="fc" id="L206">        int min = 0;</span>
-<span class="fc" id="L207">        int max = 0;</span>
-<span class="fc" id="L208">        int pos = 0;</span>
+<span class="fc" id="L204">        int min = 0;</span>
+<span class="fc" id="L205">        int max = 0;</span>
+<span class="fc" id="L206">        int pos = 0;</span>
 
-<span class="pc bpc" id="L210" title="1 of 2 branches missed.">        while (pos &lt; this.size()) {</span>
-<span class="fc" id="L211">            final DirectoryEntry e = getEntry(pos);</span>
-<span class="fc bfc" id="L212" title="All 2 branches covered.">            if (e.getExpense() == desiredExpense) {</span>
-<span class="fc" id="L213">                min = pos;</span>
-<span class="fc" id="L214">                max = pos;</span>
-<span class="fc" id="L215">                break;</span>
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">        while (pos &lt; this.size()) {</span>
+<span class="fc" id="L209">            final DirectoryEntry e = getEntry(pos);</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">            if (e.getExpense() == desiredExpense) {</span>
+<span class="fc" id="L211">                min = pos;</span>
+<span class="fc" id="L212">                max = pos;</span>
+<span class="fc" id="L213">                break;</span>
             }
-<span class="fc" id="L217">            pos++;</span>
-<span class="fc" id="L218">        }</span>
+<span class="fc" id="L215">            pos++;</span>
+<span class="fc" id="L216">        }</span>
 
-<span class="fc bfc" id="L220" title="All 2 branches covered.">        while (pos &lt; this.size()) {</span>
-<span class="fc" id="L221">            final DirectoryEntry e = getEntry(pos);</span>
-<span class="fc bfc" id="L222" title="All 2 branches covered.">            if (e.getExpense() != desiredExpense) {</span>
-<span class="fc" id="L223">                break;</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">        while (pos &lt; this.size()) {</span>
+<span class="fc" id="L219">            final DirectoryEntry e = getEntry(pos);</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">            if (e.getExpense() != desiredExpense) {</span>
+<span class="fc" id="L221">                break;</span>
             }
-<span class="fc" id="L225">            max = pos;</span>
-<span class="fc" id="L226">            pos++;</span>
-<span class="fc" id="L227">        }</span>
+<span class="fc" id="L223">            max = pos;</span>
+<span class="fc" id="L224">            pos++;</span>
+<span class="fc" id="L225">        }</span>
 
         // if there's only one pick it
-<span class="pc bpc" id="L230" title="1 of 2 branches missed.">        if (min == max) {</span>
-<span class="fc" id="L231">            return getEntry(min);</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">        if (min == max) {</span>
+<span class="fc" id="L229">            return getEntry(min);</span>
         }
 
         // we have more than one (which we really should prevent at start-up)
-<span class="nc" id="L235">        List&lt;String&gt; serviceList = new ArrayList&lt;&gt;();</span>
-<span class="nc bnc" id="L236" title="All 2 branches missed.">        for (DirectoryEntry entry : this) {</span>
-<span class="nc" id="L237">            serviceList.add(entry.getKey());</span>
-<span class="nc" id="L238">        }</span>
-<span class="nc" id="L239">        logger.error(&quot;There is a service cost/quality collision at {} for {}.&quot;, desiredExpense, StringUtils.join(serviceList, &quot;,&quot;));</span>
+<span class="nc" id="L233">        List&lt;String&gt; serviceList = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">        for (DirectoryEntry entry : this) {</span>
+<span class="nc" id="L235">            serviceList.add(entry.getKey());</span>
+<span class="nc" id="L236">        }</span>
+<span class="nc" id="L237">        logger.error(&quot;There is a service cost/quality collision at {} for {}.&quot;, desiredExpense, StringUtils.join(serviceList, &quot;,&quot;));</span>
         // since the entries should be sorted, the first one should always be the same
-<span class="nc" id="L241">        return getEntry(min);</span>
+<span class="nc" id="L239">        return getEntry(min);</span>
     }
 
     /**
      * Build an entry list from the supplied xml fragment
      */
     public static DirectoryEntryList fromXml(final Element e) {
-<span class="fc" id="L248">        final DirectoryEntryList d = new DirectoryEntryList();</span>
-<span class="fc" id="L249">        final List&lt;Element&gt; entryElements = e.getChildren(DirectoryEntry.ENTRY);</span>
-<span class="fc bfc" id="L250" title="All 2 branches covered.">        for (Element entryElement : entryElements) {</span>
-<span class="fc" id="L251">            d.add(DirectoryEntry.fromXml(entryElement));</span>
-<span class="fc" id="L252">        }</span>
-<span class="fc" id="L253">        return d;</span>
+<span class="fc" id="L246">        final DirectoryEntryList d = new DirectoryEntryList();</span>
+<span class="fc" id="L247">        final List&lt;Element&gt; entryElements = e.getChildren(DirectoryEntry.ENTRY);</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">        for (Element entryElement : entryElements) {</span>
+<span class="fc" id="L249">            d.add(DirectoryEntry.fromXml(entryElement));</span>
+<span class="fc" id="L250">        }</span>
+<span class="fc" id="L251">        return d;</span>
     }
 
     /**
      * Turn this list into an XML fragment
      */
     public Element getXml() {
-<span class="fc" id="L260">        final Element root = new Element(ENTRYLIST);</span>
-<span class="fc bfc" id="L261" title="All 2 branches covered.">        for (final DirectoryEntry entry : this) {</span>
-<span class="fc" id="L262">            root.addContent(entry.getXml());</span>
-<span class="fc" id="L263">        }</span>
-<span class="fc" id="L264">        return root;</span>
+<span class="fc" id="L258">        final Element root = new Element(ENTRYLIST);</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">        for (final DirectoryEntry entry : this) {</span>
+<span class="fc" id="L260">            root.addContent(entry.getXml());</span>
+<span class="fc" id="L261">        }</span>
+<span class="fc" id="L262">        return root;</span>
     }
 
     /**
@@ -272,17 +270,17 @@ public class DirectoryEntryList extends CopyOnWriteArrayList&lt;DirectoryEntry&g
      * @return the new list
      */
     public static List&lt;DirectoryEntry&gt; deepCopy(@Nullable final List&lt;DirectoryEntry&gt; that, final boolean sort) {
-<span class="fc" id="L275">        final List&lt;DirectoryEntry&gt; copies = new ArrayList&lt;&gt;();</span>
-<span class="pc bpc" id="L276" title="1 of 2 branches missed.">        if (that != null) {</span>
-<span class="fc bfc" id="L277" title="All 2 branches covered.">            for (final DirectoryEntry e : that) {</span>
-<span class="fc" id="L278">                copies.add(new DirectoryEntry(e));</span>
-<span class="fc" id="L279">            }</span>
+<span class="fc" id="L273">        final List&lt;DirectoryEntry&gt; copies = new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">        if (that != null) {</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">            for (final DirectoryEntry e : that) {</span>
+<span class="fc" id="L276">                copies.add(new DirectoryEntry(e));</span>
+<span class="fc" id="L277">            }</span>
 
-<span class="pc bpc" id="L281" title="1 of 2 branches missed.">            if (sort) {</span>
-<span class="fc" id="L282">                Collections.sort(copies, new DirectoryEntryComparator());</span>
+<span class="pc bpc" id="L279" title="1 of 2 branches missed.">            if (sort) {</span>
+<span class="fc" id="L280">                Collections.sort(copies, new DirectoryEntryComparator());</span>
             }
         }
-<span class="fc" id="L285">        return copies;</span>
+<span class="fc" id="L283">        return copies;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

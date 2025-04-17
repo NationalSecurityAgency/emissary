@@ -6,6 +6,7 @@ import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.server.mvc.adapters.HeartbeatAdapter;
 
+import jakarta.annotation.Nullable;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.core5.http.NameValuePair;
@@ -20,7 +21,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nullable;
 
 /**
  * Facility for directory instances to check up on each other by sending a heartbeat message
@@ -121,7 +121,7 @@ public class HeartbeatManager {
         }
 
         // &quot;smooth&quot; execution every 30 seconds starting in 2 minutes
-<span class="fc" id="L124">        this.timer.schedule(new HeartbeatTask(), (this.initialDelaySeconds * 1000L), (this.intervalSeconds * 1000L));</span>
+<span class="fc" id="L124">        this.timer.schedule(new HeartbeatTask(), this.initialDelaySeconds * 1000L, this.intervalSeconds * 1000L);</span>
 <span class="fc" id="L125">    }</span>
 
     /**
@@ -280,7 +280,7 @@ public class HeartbeatManager {
         try {
 <span class="nc" id="L281">            final IRemoteDirectory d = (IRemoteDirectory) Namespace.lookup(myKey);</span>
 <span class="nc" id="L282">            final int count = d.irdFailDirectory(key, permanent);</span>
-<span class="nc bnc" id="L283" title="All 2 branches missed.">            logger.info(&quot;Notified {} of failed directory {}{}, {} keys removed&quot;, myKey, key, (permanent ? &quot; permanently!&quot; : &quot;&quot;), count);</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">            logger.info(&quot;Notified {} of failed directory {}{}, {} keys removed&quot;, myKey, key, permanent ? &quot; permanently!&quot; : &quot;&quot;, count);</span>
 <span class="nc" id="L284">        } catch (NamespaceException ne) {</span>
 <span class="nc" id="L285">            logger.error(&quot;Tried to fail a remote directory {} but cannot look up my own directory using {}&quot;, key, myKey, ne);</span>
 <span class="nc" id="L286">        }</span>

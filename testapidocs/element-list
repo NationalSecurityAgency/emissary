@@ -7,6 +7,7 @@ emissary.command.converter
 emissary.config
 emissary.core
 emissary.core.channels
+emissary.core.constants
 emissary.core.sentinel
 emissary.core.sentinel.protocols
 emissary.core.sentinel.protocols.rules

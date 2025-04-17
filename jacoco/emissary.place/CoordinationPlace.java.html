@@ -12,6 +12,7 @@ import emissary.core.TimedResource;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.IOException;
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 import static emissary.core.constants.Configurations.OUTPUT_FORM;
 
@@ -275,7 +275,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
      * @return if an error occurred
      */
     protected boolean handlePlaceException(IServiceProviderPlace p, boolean hd, Exception ex) {
-<span class="nc bnc" id="L278" title="All 2 branches missed.">        logger.warn(&quot;agentProcess{} called from Coordinate problem&quot;, (hd ? &quot;HeavyDuty&quot; : &quot;Call&quot;), ex);</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">        logger.warn(&quot;agentProcess{} called from Coordinate problem&quot;, hd ? &quot;HeavyDuty&quot; : &quot;Call&quot;, ex);</span>
 <span class="nc" id="L279">        return true;</span>
     }
 

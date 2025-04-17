@@ -267,7 +267,7 @@
 <a class="jxr_linenumber" name="L259" href="#L259">259</a> <em class="jxr_comment">         * in that next() invocation.</em>
 <a class="jxr_linenumber" name="L260" href="#L260">260</a> <em class="jxr_comment">         */</em>
 <a class="jxr_linenumber" name="L261" href="#L261">261</a>         newPosition = skipDelimiters(currentPosition);
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>         <strong class="jxr_keyword">return</strong> (newPosition &lt; maxPosition);
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>         <strong class="jxr_keyword">return</strong> newPosition &lt; maxPosition;
 <a class="jxr_linenumber" name="L263" href="#L263">263</a>     }
 <a class="jxr_linenumber" name="L264" href="#L264">264</a> 
 <a class="jxr_linenumber" name="L265" href="#L265">265</a>     <em class="jxr_javadoccomment">/**</em>
@@ -302,7 +302,7 @@
 <a class="jxr_linenumber" name="L294" href="#L294">294</a>             } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L295" href="#L295">295</a>                 token = <strong class="jxr_keyword">new</strong> String(data, start, currentPosition - start);
 <a class="jxr_linenumber" name="L296" href="#L296">296</a>             }
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>         } <strong class="jxr_keyword">catch</strong> (UnsupportedEncodingException uee) {
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>         } <strong class="jxr_keyword">catch</strong> (UnsupportedEncodingException ignored) {
 <a class="jxr_linenumber" name="L298" href="#L298">298</a>             <em class="jxr_comment">// cannot happen...we already verified in constructor</em>
 <a class="jxr_linenumber" name="L299" href="#L299">299</a>         }
 <a class="jxr_linenumber" name="L300" href="#L300">300</a>         <strong class="jxr_keyword">return</strong> token;

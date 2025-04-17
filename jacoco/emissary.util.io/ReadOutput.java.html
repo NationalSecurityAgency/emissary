@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReadOutput.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.io</a> &gt; <span class="el_source">ReadOutput.java</span></div><h1>ReadOutput.java</h1><pre class="source lang-java linenums">package emissary.util.io;
 
+import jakarta.annotation.Nullable;
+
 /*
  $Id$
  */
@@ -11,46 +13,45 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import javax.annotation.Nullable;
 
 public class ReadOutput implements Runnable {
 
     private final BufferedReader br;
-<span class="nc" id="L19">    @Nullable</span>
+<span class="nc" id="L20">    @Nullable</span>
     private PrintStream ps = null;
     private final String tag;
-<span class="nc" id="L22">    public boolean finished = false;</span>
+<span class="nc" id="L23">    public boolean finished = false;</span>
 
-<span class="nc" id="L24">    public ReadOutput(InputStream is, String str) {</span>
-<span class="nc" id="L25">        br = new BufferedReader(new InputStreamReader(is));</span>
-<span class="nc" id="L26">        tag = str;</span>
-<span class="nc" id="L27">    }</span>
+<span class="nc" id="L25">    public ReadOutput(InputStream is, String str) {</span>
+<span class="nc" id="L26">        br = new BufferedReader(new InputStreamReader(is));</span>
+<span class="nc" id="L27">        tag = str;</span>
+<span class="nc" id="L28">    }</span>
 
-<span class="nc" id="L29">    public ReadOutput(InputStream is, String str, PrintStream outp) {</span>
-<span class="nc" id="L30">        br = new BufferedReader(new InputStreamReader(is));</span>
-<span class="nc" id="L31">        tag = str;</span>
-<span class="nc" id="L32">        ps = outp;</span>
-<span class="nc" id="L33">    }</span>
+<span class="nc" id="L30">    public ReadOutput(InputStream is, String str, PrintStream outp) {</span>
+<span class="nc" id="L31">        br = new BufferedReader(new InputStreamReader(is));</span>
+<span class="nc" id="L32">        tag = str;</span>
+<span class="nc" id="L33">        ps = outp;</span>
+<span class="nc" id="L34">    }</span>
 
     @Override
     public void run() {
-<span class="nc" id="L37">        String aLine = &quot;&quot;;</span>
-<span class="nc" id="L38">        finished = false;</span>
+<span class="nc" id="L38">        String aLine = &quot;&quot;;</span>
+<span class="nc" id="L39">        finished = false;</span>
         try {
-<span class="nc bnc" id="L40" title="All 4 branches missed.">            while ((aLine = br.readLine()) != null &amp;&amp; !finished) {</span>
-<span class="nc bnc" id="L41" title="All 2 branches missed.">                if (ps != null) {</span>
-<span class="nc" id="L42">                    ps.println(tag + aLine);</span>
+<span class="nc bnc" id="L41" title="All 4 branches missed.">            while ((aLine = br.readLine()) != null &amp;&amp; !finished) {</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">                if (ps != null) {</span>
+<span class="nc" id="L43">                    ps.println(tag + aLine);</span>
                 }
             }
-<span class="nc" id="L45">            br.close();</span>
-<span class="nc" id="L46">        } catch (IOException iox) {</span>
+<span class="nc" id="L46">            br.close();</span>
+<span class="nc" id="L47">        } catch (IOException ignored) {</span>
             // empty catch block
-<span class="nc" id="L48">        }</span>
+<span class="nc" id="L49">        }</span>
 
-<span class="nc" id="L50">    }</span>
+<span class="nc" id="L51">    }</span>
 
     public void finish() {
-<span class="nc" id="L53">        finished = true;</span>
-<span class="nc" id="L54">    }</span>
+<span class="nc" id="L54">        finished = true;</span>
+<span class="nc" id="L55">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

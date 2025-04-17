@@ -8,7 +8,7 @@
 <div id="overview"><a href="../../../../../../testapidocs/emissary/core/sentinel/protocols/rules/AnyMaxTimeTest.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> emissary.core.sentinel.protocols.rules;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> emissary.core.sentinel.protocols.Protocol;
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> emissary.core.sentinel.protocols.AgentProtocol;
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> emissary.pool.AgentPool;
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> emissary.test.core.junit5.UnitTest;
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   
@@ -29,13 +29,13 @@
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">class</strong> <a name="AnyMaxTimeTest" href="../../../../../emissary/core/sentinel/protocols/rules/AnyMaxTimeTest.html#AnyMaxTimeTest">AnyMaxTimeTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../../../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>      Collection&lt;Protocol.PlaceAgentStats&gt; placeAgentStats;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>      Collection&lt;AgentProtocol.PlaceAgentStats&gt; placeAgentStats;
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>      @Override
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>      @BeforeEach
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setUp() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>          <strong class="jxr_keyword">super</strong>.setUp();
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>          Protocol.PlaceAgentStats stats = <strong class="jxr_keyword">new</strong> Protocol.PlaceAgentStats(<span class="jxr_string">"TestPlace"</span>);
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>          AgentProtocol.PlaceAgentStats stats = <strong class="jxr_keyword">new</strong> AgentProtocol.PlaceAgentStats(<span class="jxr_string">"TestPlace"</span>);
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>          placeAgentStats = List.of(stats);
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt; 6; ++i) {
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>              stats.update(i);
@@ -61,13 +61,13 @@
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>      @Test
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>      <strong class="jxr_keyword">void</strong> overTimeLimit() {
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          Rule rule = <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"rule1"</span>, <span class="jxr_string">"TestPlace"</span>, 5, 0.75);
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          AgentRule rule = <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"rule1"</span>, <span class="jxr_string">"TestPlace"</span>, 5, 0.75);
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>          assertTrue(rule.overTimeLimit(placeAgentStats));
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>      }
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>      @Test
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>      <strong class="jxr_keyword">void</strong> notOverTimeLimit() {
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>          Rule rule = <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"rule1"</span>, <span class="jxr_string">"TestPlace"</span>, 6, 0.75);
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          AgentRule rule = <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"rule1"</span>, <span class="jxr_string">"TestPlace"</span>, 6, 0.75);
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>          assertFalse(rule.overTimeLimit(placeAgentStats));
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>      }
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  
@@ -81,7 +81,7 @@
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>          <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> defaultTimeLimit = 5;
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>          AgentPool pool;
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          List&lt;Protocol.PlaceAgentStats&gt; stats;
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          List&lt;AgentProtocol.PlaceAgentStats&gt; stats;
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>  
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>          @Override
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>          @BeforeEach
@@ -145,13 +145,13 @@
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>             }
 <a class="jxr_linenumber" name="L138" href="#L138">138</a>         }
 <a class="jxr_linenumber" name="L139" href="#L139">139</a> 
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>         List&lt;Protocol.PlaceAgentStats&gt; stats() {
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>             Protocol.PlaceAgentStats lowerStats = <strong class="jxr_keyword">new</strong> Protocol.PlaceAgentStats(<span class="jxr_string">"ToLowerPlace"</span>);
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>         List&lt;AgentProtocol.PlaceAgentStats&gt; stats() {
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>             AgentProtocol.PlaceAgentStats lowerStats = <strong class="jxr_keyword">new</strong> AgentProtocol.PlaceAgentStats(<span class="jxr_string">"ToLowerPlace"</span>);
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>             lowerStats.update(defaultTimeLimit - 4); <em class="jxr_comment">// MobileAgent-01</em>
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>             lowerStats.update(defaultTimeLimit - 2); <em class="jxr_comment">// MobileAgent-02</em>
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>             lowerStats.update(defaultTimeLimit - 1); <em class="jxr_comment">// MobileAgent-03</em>
 <a class="jxr_linenumber" name="L145" href="#L145">145</a> 
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>             Protocol.PlaceAgentStats upperStats = <strong class="jxr_keyword">new</strong> Protocol.PlaceAgentStats(<span class="jxr_string">"ToUpperPlace"</span>);
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>             AgentProtocol.PlaceAgentStats upperStats = <strong class="jxr_keyword">new</strong> AgentProtocol.PlaceAgentStats(<span class="jxr_string">"ToUpperPlace"</span>);
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>             upperStats.update(defaultTimeLimit - 3); <em class="jxr_comment">// MobileAgent-04</em>
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>             upperStats.update(defaultTimeLimit); <em class="jxr_comment">// MobileAgent-05</em>
 <a class="jxr_linenumber" name="L149" href="#L149">149</a> 

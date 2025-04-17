@@ -56,7 +56,7 @@ public final class BufferedChannelFactory {
 <span class="fc bfc" id="L56" title="All 2 branches covered.">                if (sbc.size() &lt; maxBufferSize) {</span>
 <span class="fc" id="L57">                    b = (int) sbc.size();</span>
                 }
-<span class="nc" id="L59">            } catch (IOException e) {</span>
+<span class="nc" id="L59">            } catch (IOException ignored) {</span>
                 // Leave b as maxBufferSize.
 <span class="fc" id="L61">            }</span>
 

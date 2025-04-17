@@ -1,80 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExtractedRecord.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core</a> &gt; <span class="el_source">ExtractedRecord.java</span></div><h1>ExtractedRecord.java</h1><pre class="source lang-java linenums">package emissary.core;
 
+import jakarta.annotation.Nullable;
+
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 
 public class ExtractedRecord extends BaseDataObject implements IExtractedRecord {
 
     private static final long serialVersionUID = -6716572014928830135L;
 
     public ExtractedRecord() {
-<span class="fc" id="L12">        super();</span>
-<span class="fc" id="L13">        configure();</span>
-<span class="fc" id="L14">    }</span>
+<span class="fc" id="L13">        super();</span>
+<span class="fc" id="L14">        configure();</span>
+<span class="fc" id="L15">    }</span>
 
     public ExtractedRecord(byte[] newData, String name) {
-<span class="fc" id="L17">        super(newData, name);</span>
-<span class="fc" id="L18">        configure();</span>
-<span class="fc" id="L19">    }</span>
+<span class="fc" id="L18">        super(newData, name);</span>
+<span class="fc" id="L19">        configure();</span>
+<span class="fc" id="L20">    }</span>
 
     @SuppressWarnings(&quot;unused&quot;)
     public ExtractedRecord(byte[] newData, String name, @Nullable String form) {
-<span class="nc" id="L23">        super(newData, name, form);</span>
-<span class="nc" id="L24">        configure();</span>
-<span class="nc" id="L25">    }</span>
+<span class="nc" id="L24">        super(newData, name, form);</span>
+<span class="nc" id="L25">        configure();</span>
+<span class="nc" id="L26">    }</span>
 
     @SuppressWarnings(&quot;unused&quot;)
     public ExtractedRecord(byte[] newData, String name, String form, @Nullable String fileType) {
-<span class="fc" id="L29">        super(newData, name, form, fileType);</span>
-<span class="fc" id="L30">        configure();</span>
-<span class="fc" id="L31">    }</span>
+<span class="fc" id="L30">        super(newData, name, form, fileType);</span>
+<span class="fc" id="L31">        configure();</span>
+<span class="fc" id="L32">    }</span>
 
     private void configure() {
-<span class="fc" id="L34">        this.extractedRecords = Collections.emptyList();</span>
-<span class="fc" id="L35">    }</span>
+<span class="fc" id="L35">        this.extractedRecords = Collections.emptyList();</span>
+<span class="fc" id="L36">    }</span>
 
     @Override
     @Deprecated
     @Nullable
     public List&lt;IBaseDataObject&gt; getExtractedRecords() {
-<span class="fc" id="L41">        return null;</span>
+<span class="fc" id="L42">        return null;</span>
     }
 
     @Override
     @Deprecated
     public void setExtractedRecords(final List&lt;? extends IBaseDataObject&gt; extractedRecords) {
-<span class="fc" id="L47">        throw new UnsupportedOperationException();</span>
+<span class="fc" id="L48">        throw new UnsupportedOperationException();</span>
     }
 
     @Override
     @Deprecated
     public void addExtractedRecord(final IBaseDataObject extractedRecord) {
-<span class="fc" id="L53">        throw new UnsupportedOperationException();</span>
+<span class="fc" id="L54">        throw new UnsupportedOperationException();</span>
     }
 
     @Override
     @Deprecated
     public void addExtractedRecords(final List&lt;? extends IBaseDataObject&gt; extractedRecords) {
-<span class="fc" id="L59">        throw new UnsupportedOperationException();</span>
+<span class="fc" id="L60">        throw new UnsupportedOperationException();</span>
     }
 
     @Override
     @Deprecated
     public boolean hasExtractedRecords() {
-<span class="fc" id="L65">        return false;</span>
+<span class="fc" id="L66">        return false;</span>
     }
 
     @Override
     @Deprecated
     public void clearExtractedRecords() {
-<span class="fc" id="L71">        throw new UnsupportedOperationException();</span>
+<span class="fc" id="L72">        throw new UnsupportedOperationException();</span>
     }
 
     @Override
     @Deprecated
     public int getExtractedRecordCount() {
-<span class="fc" id="L77">        return 0;</span>
+<span class="fc" id="L78">        return 0;</span>
     }
 
 }

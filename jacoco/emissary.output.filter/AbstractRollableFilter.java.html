@@ -105,14 +105,14 @@ import static emissary.roll.Roller.CFG_ROLL_INTERVAL;
      */
     @SuppressWarnings(&quot;SystemExitOutsideMain&quot;)
     protected void setupLocalOutputDir() {
-<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (!Files.exists(this.outputPath)) {</span>
-<span class="fc" id="L109">            logger.info(&quot;Attempting to create {} output directory, {}&quot;, getFilterName(), this.outputPath);</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if (!Files.exists(this.outputPath)) {</span>
+<span class="nc" id="L109">            logger.info(&quot;Attempting to create {} output directory, {}&quot;, getFilterName(), this.outputPath);</span>
             try {
-<span class="fc" id="L111">                Files.createDirectories(this.outputPath);</span>
+<span class="nc" id="L111">                Files.createDirectories(this.outputPath);</span>
 <span class="nc" id="L112">            } catch (IOException e) {</span>
 <span class="nc" id="L113">                logger.error(&quot;Unable to create directory for {} output, exiting immediately.&quot;, getFilterName(), e);</span>
 <span class="nc" id="L114">                System.exit(1);</span>
-<span class="fc" id="L115">            }</span>
+<span class="nc" id="L115">            }</span>
         }
 <span class="fc" id="L117">    }</span>
 

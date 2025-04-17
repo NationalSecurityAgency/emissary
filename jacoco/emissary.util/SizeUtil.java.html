@@ -2,10 +2,11 @@
 
 import emissary.core.IBaseDataObject;
 
+import jakarta.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * This class provides routines for approximating the RAM size of Emissary objects - primarily the
@@ -29,14 +30,14 @@ public class SizeUtil {
     private static final long OBJ_OVERHEAD = 8L;
 
     static {
-<span class="nc bnc" id="L32" title="All 2 branches missed.">        if (System.getProperty(&quot;os.arch&quot;).contains(&quot;64&quot;)) {</span>
-<span class="nc" id="L33">            arch64 = true;</span>
-<span class="nc" id="L34">            refSize = 8L;</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">        if (System.getProperty(&quot;os.arch&quot;).contains(&quot;64&quot;)) {</span>
+<span class="nc" id="L34">            arch64 = true;</span>
+<span class="nc" id="L35">            refSize = 8L;</span>
         } else {
-<span class="nc" id="L36">            arch64 = false;</span>
-<span class="nc" id="L37">            refSize = 4L;</span>
+<span class="nc" id="L37">            arch64 = false;</span>
+<span class="nc" id="L38">            refSize = 4L;</span>
         }
-<span class="nc" id="L39">    }</span>
+<span class="nc" id="L40">    }</span>
 
     /**
      * &lt;i&gt;Approximate&lt;/i&gt; the amount of RAM consumed by a String.
@@ -52,13 +53,13 @@ public class SizeUtil {
      * @return The approximate size, in bytes, in RAM for str
      */
     public static long sizeof(@Nullable String str) {
-<span class="nc bnc" id="L55" title="All 2 branches missed.">        if (str == null) {</span>
-<span class="nc" id="L56">            return 0L;</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if (str == null) {</span>
+<span class="nc" id="L57">            return 0L;</span>
         }
-<span class="nc bnc" id="L58" title="All 2 branches missed.">        if (arch64) {</span>
-<span class="nc" id="L59">            return (str.length() * 2L) + 52; // 2 bytes per UTF-16, 52 for JVM overhead &amp; bookkeeping, 64-bit arch</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (arch64) {</span>
+<span class="nc" id="L60">            return (str.length() * 2L) + 52; // 2 bytes per UTF-16, 52 for JVM overhead &amp; bookkeeping, 64-bit arch</span>
         } else {
-<span class="nc" id="L61">            return (str.length() * 2L) + 48; // 2 bytes per UTF-16, 48 for JVM overhead &amp; bookkeeping, 32-bit arch</span>
+<span class="nc" id="L62">            return (str.length() * 2L) + 48; // 2 bytes per UTF-16, 48 for JVM overhead &amp; bookkeeping, 32-bit arch</span>
         }
     }
 
@@ -72,52 +73,52 @@ public class SizeUtil {
      * @return The approximate size, in bytes, in RAM for the IBaseDataObject
      */
     public static long sizeof(@Nullable IBaseDataObject ibdo) {
-<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (ibdo == null) {</span>
-<span class="nc" id="L76">            return 0L;</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (ibdo == null) {</span>
+<span class="nc" id="L77">            return 0L;</span>
         }
 
-<span class="nc" id="L79">        long totalSize = 0L;</span>
+<span class="nc" id="L80">        long totalSize = 0L;</span>
 
         // Primary view (potentially gigantic)
-<span class="nc" id="L82">        totalSize += getPayloadMemorySize(ibdo);</span>
+<span class="nc" id="L83">        totalSize += getPayloadMemorySize(ibdo);</span>
 
         // Factor in the extracted records
-<span class="nc" id="L85">        totalSize += getExtractedRecordMemorySize(ibdo);</span>
+<span class="nc" id="L86">        totalSize += getExtractedRecordMemorySize(ibdo);</span>
 
-<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (ibdo.getParameters() == null) {</span>
-<span class="nc" id="L88">            return totalSize;</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        if (ibdo.getParameters() == null) {</span>
+<span class="nc" id="L89">            return totalSize;</span>
         } // This should never be null, but still check
 
         // Finally, estimate the size of the metadata parameters, assuming the underlying Strings are UTF-16
-<span class="nc bnc" id="L92" title="All 2 branches missed.">        for (Map.Entry&lt;String, Collection&lt;Object&gt;&gt; entry : ibdo.getParameters().entrySet()) {</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        for (Map.Entry&lt;String, Collection&lt;Object&gt;&gt; entry : ibdo.getParameters().entrySet()) {</span>
 
             // Note: The core multimap in Emissary has CharSequence as keys. This is to allow for more
             // flexibility in key design. Under the hood, they are still Strings so the following
             // routines are safe for the time-being, but will need to be changed if the keys change
 
             // Get the size of the key
-<span class="nc" id="L99">            String k = entry.getKey();</span>
-<span class="nc" id="L100">            totalSize += sizeof(k);</span>
-<span class="nc" id="L101">            totalSize += refSize;</span>
+<span class="nc" id="L100">            String k = entry.getKey();</span>
+<span class="nc" id="L101">            totalSize += sizeof(k);</span>
+<span class="nc" id="L102">            totalSize += refSize;</span>
 
             // Similar to the above, the values in Emissary are generic Objects although almost all of them
             // are Strings. That is why the following check is made in the for loop.
 
             // Get the size of the List of values
-<span class="nc" id="L107">            Collection&lt;Object&gt; values = entry.getValue();</span>
-<span class="nc bnc" id="L108" title="All 2 branches missed.">            for (Object v : values) {</span>
-<span class="nc bnc" id="L109" title="All 2 branches missed.">                if (v instanceof String) {</span>
-<span class="nc" id="L110">                    totalSize += sizeof((String) v);</span>
-<span class="nc" id="L111">                    totalSize += refSize;</span>
+<span class="nc" id="L108">            Collection&lt;Object&gt; values = entry.getValue();</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">            for (Object v : values) {</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">                if (v instanceof String) {</span>
+<span class="nc" id="L111">                    totalSize += sizeof((String) v);</span>
+<span class="nc" id="L112">                    totalSize += refSize;</span>
                 }
                 // TODO: factor in non-String objects
                 // but this is not that important since there
                 // are not many of them and will change the overall
                 // size minimally at this time
-<span class="nc" id="L117">            }</span>
-<span class="nc" id="L118">        }</span>
+<span class="nc" id="L118">            }</span>
+<span class="nc" id="L119">        }</span>
 
-<span class="nc" id="L120">        return totalSize;</span>
+<span class="nc" id="L121">        return totalSize;</span>
     }
 
     /**
@@ -128,18 +129,18 @@ public class SizeUtil {
      * @return - the approximate size, in bytes, in RAM for the familyTree
      */
     public static long sizeof(@Nullable List&lt;IBaseDataObject&gt; familyTree) {
-<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (familyTree == null) {</span>
-<span class="nc" id="L132">            return 0L;</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        if (familyTree == null) {</span>
+<span class="nc" id="L133">            return 0L;</span>
         }
 
-<span class="nc" id="L135">        long totalSize = 0L;</span>
-<span class="nc bnc" id="L136" title="All 2 branches missed.">        for (IBaseDataObject ibdo : familyTree) {</span>
-<span class="nc bnc" id="L137" title="All 2 branches missed.">            if (ibdo != null) {</span>
-<span class="nc" id="L138">                totalSize += sizeof(ibdo);</span>
-<span class="nc" id="L139">                totalSize += OBJ_OVERHEAD + refSize; // For the pointer to ibdo in familyTree (Object overhead)</span>
+<span class="nc" id="L136">        long totalSize = 0L;</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        for (IBaseDataObject ibdo : familyTree) {</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">            if (ibdo != null) {</span>
+<span class="nc" id="L139">                totalSize += sizeof(ibdo);</span>
+<span class="nc" id="L140">                totalSize += OBJ_OVERHEAD + refSize; // For the pointer to ibdo in familyTree (Object overhead)</span>
             }
-<span class="nc" id="L141">        }</span>
-<span class="nc" id="L142">        return totalSize;</span>
+<span class="nc" id="L142">        }</span>
+<span class="nc" id="L143">        return totalSize;</span>
     }
 
     /**
@@ -152,27 +153,27 @@ public class SizeUtil {
      * @return - The approximate memory footprint, in bytes, for extracted records of an IBaseDataObject
      */
     public static long getExtractedRecordMemorySize(@Nullable IBaseDataObject ibdo) {
-<span class="nc bnc" id="L155" title="All 2 branches missed.">        if (ibdo == null) {</span>
-<span class="nc" id="L156">            return 0L;</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">        if (ibdo == null) {</span>
+<span class="nc" id="L157">            return 0L;</span>
         }
 
-<span class="nc" id="L159">        long totalSize = 0L;</span>
+<span class="nc" id="L160">        long totalSize = 0L;</span>
 
         // Count up the size of any extracted children
-<span class="nc bnc" id="L162" title="All 2 branches missed.">        if (ibdo.hasExtractedRecords()) {</span>
-<span class="nc" id="L163">            List&lt;IBaseDataObject&gt; childObjList = ibdo.getExtractedRecords();</span>
-<span class="nc bnc" id="L164" title="All 2 branches missed.">            if (childObjList != null) {</span>
-<span class="nc bnc" id="L165" title="All 2 branches missed.">                for (IBaseDataObject child : childObjList) {</span>
-<span class="nc bnc" id="L166" title="All 2 branches missed.">                    if (child != null) {</span>
-<span class="nc" id="L167">                        totalSize += sizeof(child);</span>
-<span class="nc" id="L168">                        totalSize += OBJ_OVERHEAD + refSize; // For the pointer to child in childObjList (Object</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        if (ibdo.hasExtractedRecords()) {</span>
+<span class="nc" id="L164">            List&lt;IBaseDataObject&gt; childObjList = ibdo.getExtractedRecords();</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">            if (childObjList != null) {</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">                for (IBaseDataObject child : childObjList) {</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">                    if (child != null) {</span>
+<span class="nc" id="L168">                        totalSize += sizeof(child);</span>
+<span class="nc" id="L169">                        totalSize += OBJ_OVERHEAD + refSize; // For the pointer to child in childObjList (Object</span>
                                                              // overhead)
                     }
-<span class="nc" id="L171">                }</span>
+<span class="nc" id="L172">                }</span>
             }
         }
 
-<span class="nc" id="L175">        return totalSize;</span>
+<span class="nc" id="L176">        return totalSize;</span>
     }
 
     /**
@@ -183,11 +184,11 @@ public class SizeUtil {
      * @return - The approximate memory footprint, in bytes, for the IBaseDataObject
      */
     public static long getPayloadMemorySize(@Nullable IBaseDataObject ibdo) {
-<span class="nc bnc" id="L186" title="All 2 branches missed.">        if (ibdo == null) {</span>
-<span class="nc" id="L187">            return 0L;</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">        if (ibdo == null) {</span>
+<span class="nc" id="L188">            return 0L;</span>
         }
 
-<span class="nc" id="L190">        long totalSize = 0L;</span>
+<span class="nc" id="L191">        long totalSize = 0L;</span>
 
         // We don't concern ourselves with object references here, because they are likely
         // tiny compared to the various &quot;payloads&quot; and altViews. A more accurate
@@ -195,24 +196,24 @@ public class SizeUtil {
         // negligible
 
         // Primary view (potentially gigantic)
-<span class="nc" id="L198">        totalSize += ibdo.dataLength(); // This always returns an int</span>
+<span class="nc" id="L199">        totalSize += ibdo.dataLength(); // This always returns an int</span>
 
         // Header and footer size (probably not big)
-<span class="nc bnc" id="L201" title="All 2 branches missed.">        if (ibdo.footer() != null) {</span>
-<span class="nc" id="L202">            totalSize += ibdo.footer().length;</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">        if (ibdo.footer() != null) {</span>
+<span class="nc" id="L203">            totalSize += ibdo.footer().length;</span>
         }
-<span class="nc bnc" id="L204" title="All 2 branches missed.">        if (ibdo.header() != null) {</span>
-<span class="nc" id="L205">            totalSize += ibdo.header().length;</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">        if (ibdo.header() != null) {</span>
+<span class="nc" id="L206">            totalSize += ibdo.header().length;</span>
         }
 
         // Size up the alternative views
-<span class="nc bnc" id="L209" title="All 2 branches missed.">        for (Map.Entry&lt;String, byte[]&gt; altView : ibdo.getAlternateViews().entrySet()) {</span>
-<span class="nc bnc" id="L210" title="All 2 branches missed.">            if (altView.getValue() != null) {</span>
-<span class="nc" id="L211">                totalSize += altView.getValue().length;</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">        for (Map.Entry&lt;String, byte[]&gt; altView : ibdo.getAlternateViews().entrySet()) {</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">            if (altView.getValue() != null) {</span>
+<span class="nc" id="L212">                totalSize += altView.getValue().length;</span>
             }
-<span class="nc" id="L213">        }</span>
+<span class="nc" id="L214">        }</span>
 
-<span class="nc" id="L215">        return totalSize;</span>
+<span class="nc" id="L216">        return totalSize;</span>
     }
 
     /** This class is not meant to be instantiated. */

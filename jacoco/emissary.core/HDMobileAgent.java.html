@@ -6,6 +6,7 @@ import emissary.log.MDCConstants;
 import emissary.place.EmptyFormPlace;
 import emissary.place.IServiceProviderPlace;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -15,7 +16,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * This mobile agent carries around an ArrayList of payload that can be added onto instead of sprouting. The agent is
@@ -239,8 +239,8 @@ public class HDMobileAgent extends MobileAgent {
 
 <span class="nc bnc" id="L240" title="All 2 branches missed.">                            if (logger.isDebugEnabled()) {</span>
 <span class="nc" id="L241">                                logger.debug(&quot;Adding slug {} with key {} to ride with {} having key {} current form {}&quot;, slug.shortName(),</span>
-<span class="nc bnc" id="L242" title="All 2 branches missed.">                                        (slugLastPlaceVisited == null ? &quot;null&quot; : slugLastPlaceVisited.getKey()), mypayload.shortName(),</span>
-<span class="nc bnc" id="L243" title="All 2 branches missed.">                                        (primaryLastEntry == null ? &quot;null&quot; : primaryLastEntry.getKey()), primaryCurrentForm);</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">                                        slugLastPlaceVisited == null ? &quot;null&quot; : slugLastPlaceVisited.getKey(), mypayload.shortName(),</span>
+<span class="nc bnc" id="L243" title="All 2 branches missed.">                                        primaryLastEntry == null ? &quot;null&quot; : primaryLastEntry.getKey(), primaryCurrentForm);</span>
                             }
                         }
 <span class="fc" id="L246">                    }</span>
@@ -564,7 +564,7 @@ public class HDMobileAgent extends MobileAgent {
             try {
 <span class="nc" id="L565">                sn = this.payloadList.get(0).shortName();</span>
 <span class="nc" id="L566">                sz = this.payloadList.size();</span>
-<span class="nc" id="L567">            } catch (Throwable t) {</span>
+<span class="nc" id="L567">            } catch (Throwable ignored) {</span>
                 // empty catch block
 <span class="nc" id="L569">            }</span>
         }

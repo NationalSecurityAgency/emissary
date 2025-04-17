@@ -23,7 +23,7 @@
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>      @Test
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>      <strong class="jxr_keyword">void</strong> testNonParameter() {
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>          <strong class="jxr_keyword">final</strong> DiffCheckBuilder diffCheckBuilder = DiffCheckConfiguration.configure();
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>          <strong class="jxr_keyword">final</strong> DiffCheckConfiguration emptyConfiguration = diffCheckBuilder.build();
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>          <strong class="jxr_keyword">final</strong> <a name="DiffCheckConfiguration" href="../../emissary/core/DiffCheckConfiguration.html#DiffCheckConfiguration">DiffCheckConfiguration</a> emptyConfiguration = diffCheckBuilder.build();
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>          assertEquals(0, emptyConfiguration.getEnabled().size(), <span class="jxr_string">"Configuration should be empty!"</span>);
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  
@@ -32,7 +32,7 @@
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>          diffCheckBuilder.enableTimestamp();
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>          diffCheckBuilder.enableTransformHistory();
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>          <strong class="jxr_keyword">final</strong> DiffCheckConfiguration nonParameterConfiguration = diffCheckBuilder.build();
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>          <strong class="jxr_keyword">final</strong> <a name="DiffCheckConfiguration" href="../../emissary/core/DiffCheckConfiguration.html#DiffCheckConfiguration">DiffCheckConfiguration</a> nonParameterConfiguration = diffCheckBuilder.build();
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>          assertTrue(nonParameterConfiguration.checkData());
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>          assertTrue(nonParameterConfiguration.checkInternalId());
@@ -55,14 +55,14 @@
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>          diffCheckBuilder.enableDetailedParameterDiff();
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>          <strong class="jxr_keyword">final</strong> DiffCheckConfiguration detailedParameterConfiguration = diffCheckBuilder.build();
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          <strong class="jxr_keyword">final</strong> <a name="DiffCheckConfiguration" href="../../emissary/core/DiffCheckConfiguration.html#DiffCheckConfiguration">DiffCheckConfiguration</a> detailedParameterConfiguration = diffCheckBuilder.build();
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>          assertTrue(detailedParameterConfiguration.performDetailedParameterDiff());
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>          assertFalse(detailedParameterConfiguration.performKeyValueParameterDiff());
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>          diffCheckBuilder.enableKeyValueParameterDiff();
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          <strong class="jxr_keyword">final</strong> DiffCheckConfiguration keyValueParameterConfiguration = diffCheckBuilder.build();
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>          <strong class="jxr_keyword">final</strong> <a name="DiffCheckConfiguration" href="../../emissary/core/DiffCheckConfiguration.html#DiffCheckConfiguration">DiffCheckConfiguration</a> keyValueParameterConfiguration = diffCheckBuilder.build();
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>          assertFalse(keyValueParameterConfiguration.performDetailedParameterDiff());
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>          assertTrue(keyValueParameterConfiguration.performKeyValueParameterDiff());
@@ -73,14 +73,14 @@
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>          diffCheckBuilder.enableKeyValueParameterDiff();
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          <strong class="jxr_keyword">final</strong> DiffCheckConfiguration keyValueParameterConfiguration2 = diffCheckBuilder.build();
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          <strong class="jxr_keyword">final</strong> <a name="DiffCheckConfiguration" href="../../emissary/core/DiffCheckConfiguration.html#DiffCheckConfiguration">DiffCheckConfiguration</a> keyValueParameterConfiguration2 = diffCheckBuilder.build();
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>          assertFalse(keyValueParameterConfiguration2.performDetailedParameterDiff());
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>          assertTrue(keyValueParameterConfiguration2.performKeyValueParameterDiff());
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>          diffCheckBuilder.enableDetailedParameterDiff();
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          <strong class="jxr_keyword">final</strong> DiffCheckConfiguration detailedParameterConfiguration2 = diffCheckBuilder.build();
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>          <strong class="jxr_keyword">final</strong> <a name="DiffCheckConfiguration" href="../../emissary/core/DiffCheckConfiguration.html#DiffCheckConfiguration">DiffCheckConfiguration</a> detailedParameterConfiguration2 = diffCheckBuilder.build();
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>          assertTrue(detailedParameterConfiguration2.performDetailedParameterDiff());
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>          assertFalse(detailedParameterConfiguration2.performKeyValueParameterDiff());
@@ -107,7 +107,7 @@
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>      @Test
 <a class="jxr_linenumber" name="L100" href="#L100">100</a>     <strong class="jxr_keyword">void</strong> checkExplicit() {
 <a class="jxr_linenumber" name="L101" href="#L101">101</a>         <strong class="jxr_keyword">final</strong> DiffCheckBuilder diffCheckBuilder = DiffCheckConfiguration.configure();
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>         <strong class="jxr_keyword">final</strong> DiffCheckConfiguration explicitDetailedConfiguration = diffCheckBuilder.explicit(
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>         <strong class="jxr_keyword">final</strong> <a name="DiffCheckConfiguration" href="../../emissary/core/DiffCheckConfiguration.html#DiffCheckConfiguration">DiffCheckConfiguration</a> explicitDetailedConfiguration = diffCheckBuilder.explicit(
 <a class="jxr_linenumber" name="L103" href="#L103">103</a>                 DiffCheckOptions.DATA,
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>                 DiffCheckOptions.DETAILED_PARAMETER_DIFF,
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>                 DiffCheckOptions.INTERNAL_ID,
@@ -121,7 +121,7 @@
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>         assertTrue(explicitDetailedConfiguration.performDetailedParameterDiff());
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>         assertFalse(explicitDetailedConfiguration.performKeyValueParameterDiff());
 <a class="jxr_linenumber" name="L115" href="#L115">115</a> 
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>         <strong class="jxr_keyword">final</strong> DiffCheckConfiguration explicitKeyValueConfiguration = diffCheckBuilder.explicit(
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>         <strong class="jxr_keyword">final</strong> <a name="DiffCheckConfiguration" href="../../emissary/core/DiffCheckConfiguration.html#DiffCheckConfiguration">DiffCheckConfiguration</a> explicitKeyValueConfiguration = diffCheckBuilder.explicit(
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>                 DiffCheckOptions.DATA,
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>                 DiffCheckOptions.KEY_VALUE_PARAMETER_DIFF,
 <a class="jxr_linenumber" name="L119" href="#L119">119</a>                 DiffCheckOptions.INTERNAL_ID,

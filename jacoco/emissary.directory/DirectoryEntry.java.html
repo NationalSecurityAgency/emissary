@@ -5,12 +5,12 @@ import emissary.core.NamespaceException;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.xml.JDOMUtil;
 
+import jakarta.annotation.Nullable;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import javax.annotation.Nullable;
 
 import static emissary.directory.KeyManipulator.CLASSSEPARATOR;
 import static emissary.directory.KeyManipulator.DOLLAR;
@@ -496,7 +496,7 @@ public class DirectoryEntry implements Serializable {
      * @param quality the quality
      */
     public static int calculateExpense(final int cost, final int quality) {
-<span class="fc" id="L499">        return (cost * 100) + (100 - quality);</span>
+<span class="fc" id="L499">        return cost * 100 + 100 - quality;</span>
     }
 
     /**
@@ -518,7 +518,7 @@ public class DirectoryEntry implements Serializable {
 <span class="fc bfc" id="L518" title="All 2 branches covered.">        if (!this.lookupAttempted) {</span>
             try {
 <span class="fc" id="L520">                setLocalPlace((IServiceProviderPlace) Namespace.lookup(this.serviceLocation));</span>
-<span class="fc" id="L521">            } catch (NamespaceException e) {</span>
+<span class="fc" id="L521">            } catch (NamespaceException ignored) {</span>
                 // empty catch block
 <span class="fc" id="L523">            }</span>
 <span class="fc bfc" id="L524" title="All 2 branches covered.">            logger.debug(&quot;NS Lookup for locality on {}{}&quot;, this.serviceLocation, this.localPlace == null ? &quot; failed&quot; : &quot; passed&quot;);</span>
@@ -529,21 +529,28 @@ public class DirectoryEntry implements Serializable {
     }
 
     /**
+     * Force a lookup from the namespace
+     */
+    public void clearLocalPlace() {
+<span class="nc" id="L535">        this.lookupAttempted = false;</span>
+<span class="nc" id="L536">    }</span>
+
+    /**
      * Change the key such that the place specified by proxyKey acts as a proxy for the current key. We keep the same data
      * type, service type, service name and expense but change the place to the proxy
      * 
      * @param proxyKey the replacement key
      */
     public void proxyFor(final String proxyKey) {
-<span class="fc" id="L538">        final String newKey = KeyManipulator.makeProxyKey(this.theKey, proxyKey, this.theExpense);</span>
-<span class="fc" id="L539">        setKey(newKey);</span>
-<span class="fc" id="L540">    }</span>
+<span class="fc" id="L545">        final String newKey = KeyManipulator.makeProxyKey(this.theKey, proxyKey, this.theExpense);</span>
+<span class="fc" id="L546">        setKey(newKey);</span>
+<span class="fc" id="L547">    }</span>
 
     /**
      * Show the creation date of this entry
      */
     public long getAge() {
-<span class="fc" id="L546">        return this.age;</span>
+<span class="fc" id="L553">        return this.age;</span>
     }
 
     /**
@@ -552,8 +559,8 @@ public class DirectoryEntry implements Serializable {
      * @param age the age to be preserved
      */
     void preserveCopyAge(final long age) {
-<span class="fc" id="L555">        this.age = age;</span>
-<span class="fc" id="L556">    }</span>
+<span class="fc" id="L562">        this.age = age;</span>
+<span class="fc" id="L563">    }</span>
 
     /**
      * Build an entry from the supplied xml fragment
@@ -561,24 +568,24 @@ public class DirectoryEntry implements Serializable {
      * @param e a JDOM Element
      */
     public static DirectoryEntry fromXml(final Element e) {
-<span class="fc" id="L564">        final String key = e.getChildTextTrim(KEY);</span>
-<span class="fc" id="L565">        final String desc = e.getChildTextTrim(DESC);</span>
-<span class="fc" id="L566">        final int cost = JDOMUtil.getChildIntValue(e, COST);</span>
-<span class="fc" id="L567">        final int quality = JDOMUtil.getChildIntValue(e, QUALITY);</span>
-<span class="fc" id="L568">        return new DirectoryEntry(key, desc, cost, quality);</span>
+<span class="fc" id="L571">        final String key = e.getChildTextTrim(KEY);</span>
+<span class="fc" id="L572">        final String desc = e.getChildTextTrim(DESC);</span>
+<span class="fc" id="L573">        final int cost = JDOMUtil.getChildIntValue(e, COST);</span>
+<span class="fc" id="L574">        final int quality = JDOMUtil.getChildIntValue(e, QUALITY);</span>
+<span class="fc" id="L575">        return new DirectoryEntry(key, desc, cost, quality);</span>
     }
 
     /**
      * Turn this entry into an xml fragment
      */
     public Element getXml() {
-<span class="fc" id="L575">        final Element root = new Element(ENTRY);</span>
-<span class="fc" id="L576">        root.addContent(JDOMUtil.simpleElement(KEY, this.theKey));</span>
-<span class="fc" id="L577">        root.addContent(JDOMUtil.simpleElement(DESC, this.description));</span>
-<span class="fc" id="L578">        root.addContent(JDOMUtil.simpleElement(COST, this.theCost));</span>
-<span class="fc" id="L579">        root.addContent(JDOMUtil.simpleElement(QUALITY, this.theQuality));</span>
-<span class="fc" id="L580">        root.addContent(JDOMUtil.simpleElement(EXPENSE, this.theExpense));</span>
-<span class="fc" id="L581">        return root;</span>
+<span class="fc" id="L582">        final Element root = new Element(ENTRY);</span>
+<span class="fc" id="L583">        root.addContent(JDOMUtil.simpleElement(KEY, this.theKey));</span>
+<span class="fc" id="L584">        root.addContent(JDOMUtil.simpleElement(DESC, this.description));</span>
+<span class="fc" id="L585">        root.addContent(JDOMUtil.simpleElement(COST, this.theCost));</span>
+<span class="fc" id="L586">        root.addContent(JDOMUtil.simpleElement(QUALITY, this.theQuality));</span>
+<span class="fc" id="L587">        root.addContent(JDOMUtil.simpleElement(EXPENSE, this.theExpense));</span>
+<span class="fc" id="L588">        return root;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

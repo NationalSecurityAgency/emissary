@@ -26,7 +26,7 @@ public class TempFileNames {
      * @param inFileEnding input file ending
      * @param outFileEnding output file ending
      */
-<span class="fc" id="L29">    TempFileNames(String tmpDir, String placeName, String inFileEnding, String outFileEnding) {</span>
+<span class="fc" id="L29">    public TempFileNames(String tmpDir, String placeName, String inFileEnding, String outFileEnding) {</span>
 <span class="fc" id="L30">        base = Long.toString(System.nanoTime());</span>
 <span class="fc" id="L31">        tempDir = FileManipulator.mkTempFile(tmpDir, placeName);</span>
 <span class="fc" id="L32">        in = base + inFileEnding;</span>

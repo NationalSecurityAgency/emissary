@@ -36,7 +36,7 @@ public class DevNullPlace extends ServiceProviderPlace implements EmptyFormPlace
 <span class="nc" id="L36">        tData.currentForm();</span>
 <span class="nc" id="L37">        int before = tData.currentFormSize();</span>
 <span class="nc" id="L38">        int after = nukeMyProxies(tData);</span>
-<span class="nc" id="L39">        logger.debug(&quot;Nuked {} of {} current form values leaving {}&quot;, (after - before), before, tData.getAllCurrentForms());</span>
+<span class="nc" id="L39">        logger.debug(&quot;Nuked {} of {} current form values leaving {}&quot;, after - before, before, tData.getAllCurrentForms());</span>
 <span class="nc" id="L40">    }</span>
 
 }

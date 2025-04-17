@@ -16,6 +16,7 @@ import emissary.place.CoordinationPlace;
 import emissary.place.IServiceProviderPlace;
 import emissary.server.EmissaryServer;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nullable;
 
 public class Startup {
 

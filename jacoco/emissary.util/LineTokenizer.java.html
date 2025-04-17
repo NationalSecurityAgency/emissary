@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LineTokenizer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util</a> &gt; <span class="el_source">LineTokenizer.java</span></div><h1>LineTokenizer.java</h1><pre class="source lang-java linenums">package emissary.util;
 
+import jakarta.annotation.Nullable;
+
 import java.nio.charset.Charset;
-import javax.annotation.Nullable;
 
 /**
  * Used the default way, this is equivalent to StringTokenizer st = new StringTokenizer(new String(theData),&quot;\n&quot;,false);
@@ -9,13 +10,13 @@ import javax.annotation.Nullable;
  */
 public class LineTokenizer {
 
-<span class="fc" id="L12">    protected int previousIndex = -1;</span>
-<span class="fc" id="L13">    protected int index = 0;</span>
-<span class="fc" id="L14">    protected byte delim = (byte) '\n';</span>
-<span class="fc" id="L15">    protected int tokenCount = 0;</span>
+<span class="fc" id="L13">    protected int previousIndex = -1;</span>
+<span class="fc" id="L14">    protected int index = 0;</span>
+<span class="fc" id="L15">    protected byte delim = (byte) '\n';</span>
+<span class="fc" id="L16">    protected int tokenCount = 0;</span>
     protected byte[] data;
-<span class="fc" id="L17">    @Nullable</span>
-<span class="fc" id="L18">    protected Charset charset = Charset.forName(&quot;8859_1&quot;);</span>
+<span class="fc" id="L18">    @Nullable</span>
+<span class="fc" id="L19">    protected Charset charset = Charset.forName(&quot;8859_1&quot;);</span>
 
     /**
      * Create a line tokenizer to operate on some data
@@ -23,8 +24,8 @@ public class LineTokenizer {
      * @param theData byte array of data
      */
     public LineTokenizer(byte[] theData) {
-<span class="fc" id="L26">        this(theData, (byte) ('\n' &amp; 0xff));</span>
-<span class="fc" id="L27">    }</span>
+<span class="fc" id="L27">        this(theData, (byte) ('\n' &amp; 0xff));</span>
+<span class="fc" id="L28">    }</span>
 
     /**
      * Create a line tokenizer to operate on some data
@@ -32,25 +33,25 @@ public class LineTokenizer {
      * @param theData byte array of data
      * @param delim the delimiter to mark off lines
      */
-<span class="fc" id="L35">    public LineTokenizer(byte[] theData, byte delim) {</span>
-<span class="fc" id="L36">        this.delim = delim;</span>
-<span class="fc" id="L37">        data = new byte[theData.length];</span>
+<span class="fc" id="L36">    public LineTokenizer(byte[] theData, byte delim) {</span>
+<span class="fc" id="L37">        this.delim = delim;</span>
+<span class="fc" id="L38">        data = new byte[theData.length];</span>
 
         // Count delimiter tokens in data
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        if (data.length &gt; 0) {</span>
-<span class="fc bfc" id="L41" title="All 2 branches covered.">            for (int i = 0; i &lt; theData.length; i++) {</span>
-<span class="fc" id="L42">                data[i] = theData[i];</span>
-<span class="fc bfc" id="L43" title="All 2 branches covered.">                if (data[i] == delim) {</span>
-<span class="fc" id="L44">                    tokenCount++;</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if (data.length &gt; 0) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">            for (int i = 0; i &lt; theData.length; i++) {</span>
+<span class="fc" id="L43">                data[i] = theData[i];</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">                if (data[i] == delim) {</span>
+<span class="fc" id="L45">                    tokenCount++;</span>
                 }
             }
 
             // Trailing portion with no trailing delim
-<span class="fc bfc" id="L49" title="All 2 branches covered.">            if (data[data.length - 1] != delim) {</span>
-<span class="fc" id="L50">                tokenCount++;</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            if (data[data.length - 1] != delim) {</span>
+<span class="fc" id="L51">                tokenCount++;</span>
             }
         }
-<span class="fc" id="L53">    }</span>
+<span class="fc" id="L54">    }</span>
 
     /**
      * Create a line tokenizer to operate on some data
@@ -60,9 +61,9 @@ public class LineTokenizer {
      * @param charset the character set to use the outputting tokens as strings
      */
     public LineTokenizer(byte[] theData, byte delim, @Nullable String charset) {
-<span class="fc" id="L63">        this(theData, delim);</span>
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        this.charset = (charset == null ? null : Charset.forName(charset));</span>
-<span class="fc" id="L65">    }</span>
+<span class="fc" id="L64">        this(theData, delim);</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        this.charset = (charset == null ? null : Charset.forName(charset));</span>
+<span class="fc" id="L66">    }</span>
 
     /**
      * Create a line tokenizer to operate on some data
@@ -72,9 +73,9 @@ public class LineTokenizer {
      * @param charset the character set to use the outputting tokens as strings
      */
     public LineTokenizer(byte[] theData, byte delim, Charset charset) {
-<span class="fc" id="L75">        this(theData, delim);</span>
-<span class="fc" id="L76">        this.charset = charset;</span>
-<span class="fc" id="L77">    }</span>
+<span class="fc" id="L76">        this(theData, delim);</span>
+<span class="fc" id="L77">        this.charset = charset;</span>
+<span class="fc" id="L78">    }</span>
 
     /**
      * Create a line tokenizer to operate on some data
@@ -83,9 +84,9 @@ public class LineTokenizer {
      * @param charset the character set to use the outputting tokens as strings
      */
     public LineTokenizer(byte[] theData, @Nullable String charset) {
-<span class="nc" id="L86">        this(theData);</span>
-<span class="nc bnc" id="L87" title="All 2 branches missed.">        this.charset = (charset == null ? null : Charset.forName(charset));</span>
-<span class="nc" id="L88">    }</span>
+<span class="nc" id="L87">        this(theData);</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        this.charset = (charset == null ? null : Charset.forName(charset));</span>
+<span class="nc" id="L89">    }</span>
 
     /**
      * Create a line tokenizer to operate on some data
@@ -94,9 +95,9 @@ public class LineTokenizer {
      * @param charset the character set to use the outputting tokens as strings
      */
     public LineTokenizer(byte[] theData, Charset charset) {
-<span class="fc" id="L97">        this(theData);</span>
-<span class="fc" id="L98">        this.charset = charset;</span>
-<span class="fc" id="L99">    }</span>
+<span class="fc" id="L98">        this(theData);</span>
+<span class="fc" id="L99">        this.charset = charset;</span>
+<span class="fc" id="L100">    }</span>
 
     /**
      * Set the character set to use when outputting tokens as strings default is 8859_1
@@ -104,8 +105,8 @@ public class LineTokenizer {
      * @param charset the java charset value
      */
     public void setCharset(@Nullable String charset) {
-<span class="nc bnc" id="L107" title="All 2 branches missed.">        this.charset = (charset == null ? null : Charset.forName(charset));</span>
-<span class="nc" id="L108">    }</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        this.charset = (charset == null ? null : Charset.forName(charset));</span>
+<span class="nc" id="L109">    }</span>
 
     /**
      * Set the character set to use when outputting tokens as strings default is 8859_1
@@ -113,8 +114,8 @@ public class LineTokenizer {
      * @param charset the java charset value
      */
     public void setCharset(Charset charset) {
-<span class="nc" id="L116">        this.charset = charset;</span>
-<span class="nc" id="L117">    }</span>
+<span class="nc" id="L117">        this.charset = charset;</span>
+<span class="nc" id="L118">    }</span>
 
     /**
      * Indicate if there are more lines
@@ -122,7 +123,7 @@ public class LineTokenizer {
      * @return true if there are more lines
      */
     public boolean hasMoreTokens() {
-<span class="pc bpc" id="L125" title="1 of 2 branches missed.">        return (tokenCount &gt; 0);</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        return tokenCount &gt; 0;</span>
     }
 
     /**
@@ -131,7 +132,7 @@ public class LineTokenizer {
      * @return count of tokens remaining
      */
     public int countTokens() {
-<span class="fc" id="L134">        return tokenCount;</span>
+<span class="fc" id="L135">        return tokenCount;</span>
     }
 
     /**
@@ -141,7 +142,7 @@ public class LineTokenizer {
      * @return current byte offset
      */
     public int getCurrentPosition() {
-<span class="nc" id="L144">        return index - 1;</span>
+<span class="nc" id="L145">        return index - 1;</span>
     }
 
     /**
@@ -152,19 +153,19 @@ public class LineTokenizer {
      */
     public String nextToken() {
 
-<span class="fc" id="L155">        byte[] btok = nextTokenBytes();</span>
-<span class="fc" id="L156">        String tok = null;</span>
+<span class="fc" id="L156">        byte[] btok = nextTokenBytes();</span>
+<span class="fc" id="L157">        String tok = null;</span>
 
-<span class="fc bfc" id="L158" title="All 2 branches covered.">        if (btok != null) {</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (btok != null) {</span>
 
             // Use the specified charset to create the string
-<span class="pc bpc" id="L161" title="1 of 2 branches missed.">            if (charset != null) {</span>
-<span class="fc" id="L162">                tok = new String(btok, charset);</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">            if (charset != null) {</span>
+<span class="fc" id="L163">                tok = new String(btok, charset);</span>
             } else {
-<span class="nc" id="L164">                tok = new String(btok);</span>
+<span class="nc" id="L165">                tok = new String(btok);</span>
             }
         }
-<span class="fc" id="L167">        return tok;</span>
+<span class="fc" id="L168">        return tok;</span>
     }
 
     /**
@@ -175,27 +176,27 @@ public class LineTokenizer {
     @Nullable
     public byte[] nextTokenBytes() {
 
-<span class="fc bfc" id="L178" title="All 2 branches covered.">        if (tokenCount == 0) {</span>
-<span class="fc" id="L179">            return null;</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">        if (tokenCount == 0) {</span>
+<span class="fc" id="L180">            return null;</span>
         }
 
-<span class="fc" id="L182">        int end = index;</span>
+<span class="fc" id="L183">        int end = index;</span>
 
-<span class="fc bfc" id="L184" title="All 4 branches covered.">        for (; end &lt; data.length &amp;&amp; data[end] != delim; end++) {</span>
+<span class="fc bfc" id="L185" title="All 4 branches covered.">        for (; end &lt; data.length &amp;&amp; data[end] != delim; end++) {</span>
         }
 
-<span class="fc" id="L187">        byte[] tok = new byte[end - index];</span>
-<span class="fc" id="L188">        System.arraycopy(data, index, tok, 0, end - index);</span>
+<span class="fc" id="L188">        byte[] tok = new byte[end - index];</span>
+<span class="fc" id="L189">        System.arraycopy(data, index, tok, 0, end - index);</span>
 
-<span class="fc" id="L190">        tokenCount--;</span>
-<span class="fc" id="L191">        previousIndex = index;</span>
-<span class="pc bpc" id="L192" title="1 of 4 branches missed.">        if (tokenCount &gt; 0 &amp;&amp; data[end] == delim) {</span>
-<span class="fc" id="L193">            index = end + 1;</span>
+<span class="fc" id="L191">        tokenCount--;</span>
+<span class="fc" id="L192">        previousIndex = index;</span>
+<span class="pc bpc" id="L193" title="1 of 4 branches missed.">        if (tokenCount &gt; 0 &amp;&amp; data[end] == delim) {</span>
+<span class="fc" id="L194">            index = end + 1;</span>
         } else {
-<span class="fc" id="L195">            index = end;</span>
+<span class="fc" id="L196">            index = end;</span>
         }
 
-<span class="fc" id="L198">        return tok;</span>
+<span class="fc" id="L199">        return tok;</span>
     }
 
     /**
@@ -203,12 +204,12 @@ public class LineTokenizer {
      * index
      */
     public void pushBack() {
-<span class="pc bpc" id="L206" title="1 of 2 branches missed.">        if (previousIndex == -1) {</span>
-<span class="nc" id="L207">            return; // already at beginning</span>
+<span class="pc bpc" id="L207" title="1 of 2 branches missed.">        if (previousIndex == -1) {</span>
+<span class="nc" id="L208">            return; // already at beginning</span>
         }
-<span class="fc" id="L209">        tokenCount++;</span>
-<span class="fc" id="L210">        index = previousIndex;</span>
-<span class="fc" id="L211">        previousIndex = -1;</span>
-<span class="fc" id="L212">    }</span>
+<span class="fc" id="L210">        tokenCount++;</span>
+<span class="fc" id="L211">        index = previousIndex;</span>
+<span class="fc" id="L212">        previousIndex = -1;</span>
+<span class="fc" id="L213">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

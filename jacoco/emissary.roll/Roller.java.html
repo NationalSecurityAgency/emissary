@@ -154,7 +154,7 @@ public class Roller implements Runnable {
     private boolean shouldRoll(long start) {
         // verify both time and progress are set
         // if we're below max we'll check the interval
-<span class="pc bpc" id="L157" title="1 of 6 branches missed.">        if ((period &gt; 0 &amp;&amp; max &gt; 0) &amp;&amp; progress.get() &lt; max) {</span>
+<span class="pc bpc" id="L157" title="1 of 6 branches missed.">        if (period &gt; 0 &amp;&amp; max &gt; 0 &amp;&amp; progress.get() &lt; max) {</span>
             // we fired a progress run or delayed start due to starvation. add 100 for clock skew
 <span class="fc bfc" id="L159" title="All 2 branches covered.">            if ((start - lastRun + 100) &lt; getIntervalInMillis()) {</span>
 <span class="fc" id="L160">                return false;</span>

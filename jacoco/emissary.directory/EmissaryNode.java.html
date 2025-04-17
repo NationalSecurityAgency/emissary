@@ -14,6 +14,7 @@ import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
 import emissary.spi.SPILoader;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import javax.annotation.Nullable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Hold some details about being a P2P node in the emissary network The order of preference to find the node
@@ -38,7 +39,7 @@ import javax.annotation.Nullable;
  * &lt;/ol&gt;
  */
 public class EmissaryNode {
-<span class="fc" id="L41">    private static final Logger logger = LoggerFactory.getLogger(EmissaryNode.class);</span>
+<span class="fc" id="L42">    private static final Logger logger = LoggerFactory.getLogger(EmissaryNode.class);</span>
 
     /** Node name property is {@value} */
     public static final String NODE_NAME_PROPERTY = &quot;emissary.node.name&quot;;
@@ -52,6 +53,9 @@ public class EmissaryNode {
     /** Node service type property */
     public static final String NODE_SERVICE_TYPE_PROPERTY = &quot;emissary.node.service.type&quot;;
 
+    /** Node refresh timeout property */
+    public static final String NODE_REFRESH_TIMEOUT_PROPERTY = &quot;emissary.node.refresh.timeout&quot;;
+
     /** Node service type is {@value} */
     public static final String DEFAULT_NODE_SERVICE_TYPE = &quot;server&quot;;
 
@@ -64,132 +68,143 @@ public class EmissaryNode {
     /** Property that determines if server will shut down in the event a place fails to start */
     public static final String STRICT_STARTUP_MODE = &quot;strict.mode&quot;;
 
-<span class="fc" id="L67">    public enum Mode {</span>
-<span class="fc" id="L68">        STANDALONE, CLUSTER;</span>
+    /** Property that sets the max amount of time to wait for a refresh before a failure condition */
+<span class="fc" id="L72">    public static final long DEFAULT_REFRESH_TIMEOUT = TimeUnit.MINUTES.toMillis(30);</span>
+
+<span class="fc" id="L74">    public enum Mode {</span>
+<span class="fc" id="L75">        STANDALONE, CLUSTER;</span>
     }
 
-<span class="fc" id="L71">    @Nullable</span>
+<span class="fc" id="L78">    @Nullable</span>
     protected String nodeName = null;
-<span class="fc" id="L73">    protected int nodePort = -1;</span>
-<span class="fc" id="L74">    @Nullable</span>
+<span class="fc" id="L80">    protected int nodePort = -1;</span>
+<span class="fc" id="L81">    @Nullable</span>
     protected String nodeScheme = null;
     // this is the OS for all practical purposes
-<span class="fc" id="L77">    @Nullable</span>
+<span class="fc" id="L84">    @Nullable</span>
     protected String nodeType = null;
     protected Mode nodeMode;
-<span class="fc" id="L80">    protected boolean nodeNameIsDefault = false;</span>
-<span class="fc" id="L81">    @Nullable</span>
+<span class="fc" id="L87">    protected boolean nodeNameIsDefault = false;</span>
+<span class="fc" id="L88">    @Nullable</span>
     protected String nodeServiceType = null;
-
-<span class="fc" id="L84">    protected boolean strictStartupMode = false;</span>
+    protected long nodeRefreshTimeout;
+<span class="fc" id="L91">    protected boolean strictStartupMode = false;</span>
 
     public EmissaryNode() {
-<span class="fc" id="L87">        this(Mode.STANDALONE);</span>
-<span class="fc" id="L88">    }</span>
+<span class="fc" id="L94">        this(Mode.STANDALONE);</span>
+<span class="fc" id="L95">    }</span>
 
     /**
      * Construct the node. The node name and port are from system properties. The node type is based on the os.name in this
      * implementation
      */
-<span class="fc" id="L94">    public EmissaryNode(Mode nodeMode) {</span>
-<span class="fc" id="L95">        this.nodeMode = nodeMode;</span>
-<span class="fc" id="L96">        this.nodeName = System.getProperty(NODE_NAME_PROPERTY);</span>
-<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        if (this.nodeName == null) {</span>
+<span class="fc" id="L101">    public EmissaryNode(Mode nodeMode) {</span>
+<span class="fc" id="L102">        this.nodeMode = nodeMode;</span>
+<span class="fc" id="L103">        this.nodeName = System.getProperty(NODE_NAME_PROPERTY);</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if (this.nodeName == null) {</span>
             // Use IP Address for default node name since it is
             // the only globally addressable thing we have for sure
             try {
-<span class="nc" id="L101">                final InetAddress local = InetAddress.getLocalHost();</span>
-<span class="nc" id="L102">                this.nodeName = local.getHostAddress();</span>
-<span class="nc" id="L103">                this.nodeNameIsDefault = true;</span>
-<span class="nc" id="L104">            } catch (UnknownHostException ex) {</span>
+<span class="nc" id="L108">                final InetAddress local = InetAddress.getLocalHost();</span>
+<span class="nc" id="L109">                this.nodeName = local.getHostAddress();</span>
+<span class="nc" id="L110">                this.nodeNameIsDefault = true;</span>
+<span class="nc" id="L111">            } catch (UnknownHostException ignored) {</span>
                 // empty catch block
-<span class="nc" id="L106">            }</span>
+<span class="nc" id="L113">            }</span>
         }
-<span class="fc" id="L108">        this.nodeScheme = System.getProperty(NODE_SCHEME_PROPERTY, &quot;http&quot;);</span>
-<span class="fc" id="L109">        this.nodePort = Integer.getInteger(NODE_PORT_PROPERTY, -1).intValue();</span>
-<span class="fc" id="L110">        this.nodeType = System.getProperty(&quot;os.name&quot;, DEFAULT_NODE_TYPE).toLowerCase(Locale.getDefault()).replace(' ', '_');</span>
-<span class="fc" id="L111">        this.nodeServiceType = System.getProperty(NODE_SERVICE_TYPE_PROPERTY, DEFAULT_NODE_SERVICE_TYPE);</span>
-<span class="fc" id="L112">        this.strictStartupMode = Boolean.parseBoolean(System.getProperty(STRICT_STARTUP_MODE, String.valueOf(false)));</span>
-<span class="fc" id="L113">    }</span>
+<span class="fc" id="L115">        this.nodeScheme = System.getProperty(NODE_SCHEME_PROPERTY, &quot;http&quot;);</span>
+<span class="fc" id="L116">        this.nodePort = Integer.getInteger(NODE_PORT_PROPERTY, -1).intValue();</span>
+<span class="fc" id="L117">        this.nodeType = System.getProperty(&quot;os.name&quot;, DEFAULT_NODE_TYPE).toLowerCase(Locale.getDefault()).replace(' ', '_');</span>
+<span class="fc" id="L118">        this.nodeServiceType = System.getProperty(NODE_SERVICE_TYPE_PROPERTY, DEFAULT_NODE_SERVICE_TYPE);</span>
+<span class="fc" id="L119">        this.nodeRefreshTimeout = Long.getLong(NODE_REFRESH_TIMEOUT_PROPERTY, DEFAULT_REFRESH_TIMEOUT);</span>
+<span class="fc" id="L120">        this.strictStartupMode = Boolean.parseBoolean(System.getProperty(STRICT_STARTUP_MODE, String.valueOf(false)));</span>
+<span class="fc" id="L121">    }</span>
 
     public Mode getNodeMode() {
-<span class="fc" id="L116">        return nodeMode;</span>
+<span class="fc" id="L124">        return nodeMode;</span>
     }
 
     /**
      * The node name
      */
     public String getNodeName() {
-<span class="fc" id="L123">        return this.nodeName;</span>
+<span class="fc" id="L131">        return this.nodeName;</span>
     }
 
     /**
      * The node port
      */
     public int getNodePort() {
-<span class="fc" id="L130">        return this.nodePort;</span>
+<span class="fc" id="L138">        return this.nodePort;</span>
     }
 
     /**
      * The node type
      */
     public String getNodeType() {
-<span class="fc" id="L137">        return this.nodeType;</span>
+<span class="fc" id="L145">        return this.nodeType;</span>
     }
 
     /**
      * The node scheme
      */
     public String getNodeScheme() {
-<span class="fc" id="L144">        return this.nodeScheme;</span>
+<span class="fc" id="L152">        return this.nodeScheme;</span>
+    }
+
+    /**
+     * The node max amount of time to wait for a refresh before throwing a failure condition
+     */
+    public long getNodeRefreshTimeout() {
+<span class="nc" id="L159">        return this.nodeRefreshTimeout;</span>
     }
 
     /**
      * Get the value as a url
      */
     public String asUrlKey() {
-<span class="fc" id="L151">        return &quot;http://&quot; + getNodeName() + &quot;:&quot; + getNodePort() + &quot;/&quot;;</span>
+<span class="fc" id="L166">        return &quot;http://&quot; + getNodeName() + &quot;:&quot; + getNodePort() + &quot;/&quot;;</span>
     }
 
     /**
      * Get the inet socket address for this emissary node
      */
     public InetSocketAddress getInetSocketAddress() {
-<span class="nc" id="L158">        return new InetSocketAddress(getNodeName(), getNodePort());</span>
+<span class="nc" id="L173">        return new InetSocketAddress(getNodeName(), getNodePort());</span>
     }
 
     /**
      * True if we have enough configured to be a P2P emissary node
      */
     public boolean isValid() {
-<span class="pc bpc" id="L165" title="3 of 6 branches missed.">        return (getNodeName() != null) &amp;&amp; (getNodePort() &gt; 0) &amp;&amp; (getNodeType() != null);</span>
+<span class="pc bpc" id="L180" title="3 of 6 branches missed.">        return (getNodeName() != null) &amp;&amp; (getNodePort() &gt; 0) &amp;&amp; (getNodeType() != null);</span>
     }
 
     /**
      * True if we have enough configured to be a stand-alone (non P2P) node
      */
     public boolean isValidStandalone() {
-<span class="pc bpc" id="L172" title="2 of 4 branches missed.">        return (getNodeName() != null) &amp;&amp; (getNodeType() != null);</span>
+<span class="pc bpc" id="L187" title="2 of 4 branches missed.">        return (getNodeName() != null) &amp;&amp; (getNodeType() != null);</span>
     }
 
     /**
      * True if this node appears to be a stand-alone (non P2P) node
      */
     public boolean isStandalone() {
-<span class="pc bpc" id="L179" title="1 of 4 branches missed.">        return isValidStandalone() &amp;&amp; getNodeMode().equals(Mode.STANDALONE);</span>
+<span class="pc bpc" id="L194" title="1 of 4 branches missed.">        return isValidStandalone() &amp;&amp; getNodeMode().equals(Mode.STANDALONE);</span>
     }
 
     public boolean isStrictStartupMode() {
-<span class="fc" id="L183">        return strictStartupMode;</span>
+<span class="fc" id="L198">        return strictStartupMode;</span>
     }
 
     public void setStrictStartupMode(boolean strictStartupMode) {
-<span class="nc" id="L187">        this.strictStartupMode = strictStartupMode;</span>
-<span class="nc" id="L188">    }</span>
+<span class="nc" id="L202">        this.strictStartupMode = strictStartupMode;</span>
+<span class="nc" id="L203">    }</span>
 
     @Override
     public String toString() {
-<span class="fc" id="L192">        return &quot;node-&quot; + getNodeName() + &quot;-&quot; + getNodePort() + &quot;-&quot; + getNodeType();</span>
+<span class="fc" id="L207">        return &quot;node-&quot; + getNodeName() + &quot;-&quot; + getNodePort() + &quot;-&quot; + getNodeType();</span>
     }
 
 
@@ -197,23 +212,23 @@ public class EmissaryNode {
      * Get the configuration stream for this node
      */
     public Configurator getNodeConfigurator() throws IOException {
-<span class="fc" id="L200">        return internalGetConfigurator(&quot;node&quot;);</span>
+<span class="fc" id="L215">        return internalGetConfigurator(&quot;node&quot;);</span>
     }
 
     /**
      * Get the peer configuration stream for this node
      */
     public Configurator getPeerConfigurator() throws IOException {
-<span class="fc bfc" id="L207" title="All 2 branches covered.">        if (isStandalone()) {</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">        if (isStandalone()) {</span>
             // return a configurator here with just standalone, don't actually read the peer.cfg
             // This is a hack until we can TODO: refactor all this so standalone doesn't need peers
             // maybe even warn if there is a peer.cfg
-<span class="fc" id="L211">            logger.debug(&quot;Node is standalone, ignoring any peer.cfg and only constructing one rendezvous peer with the local node&quot;);</span>
-<span class="fc" id="L212">            Configurator cfg = new ServiceConfigGuide();</span>
-<span class="fc" id="L213">            cfg.addEntry(&quot;RENDEZVOUS_PEER&quot;, this.asUrlKey());</span>
-<span class="fc" id="L214">            return cfg;</span>
+<span class="fc" id="L226">            logger.debug(&quot;Node is standalone, ignoring any peer.cfg and only constructing one rendezvous peer with the local node&quot;);</span>
+<span class="fc" id="L227">            Configurator cfg = new ServiceConfigGuide();</span>
+<span class="fc" id="L228">            cfg.addEntry(&quot;RENDEZVOUS_PEER&quot;, this.asUrlKey());</span>
+<span class="fc" id="L229">            return cfg;</span>
         }
-<span class="fc" id="L216">        return internalGetConfigurator(&quot;peer&quot;);</span>
+<span class="fc" id="L231">        return internalGetConfigurator(&quot;peer&quot;);</span>
     }
 
     /**
@@ -222,26 +237,26 @@ public class EmissaryNode {
      * @param prefix the file prefix
      */
     protected Configurator internalGetConfigurator(final String prefix) throws IOException {
-<span class="fc" id="L225">        final List&lt;String&gt; configPrefs = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L226">        configPrefs.add(prefix + &quot;-&quot; + getNodeName() + &quot;-&quot; + getNodePort() + ConfigUtil.CONFIG_FILE_ENDING);</span>
-<span class="pc bpc" id="L227" title="1 of 2 branches missed.">        if (this.nodeNameIsDefault) {</span>
-<span class="nc" id="L228">            configPrefs.add(prefix + &quot;-&quot; + getNodeName().replace('.', '_') + &quot;-&quot; + getNodePort() + ConfigUtil.CONFIG_FILE_ENDING);</span>
+<span class="fc" id="L240">        final List&lt;String&gt; configPrefs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L241">        configPrefs.add(prefix + &quot;-&quot; + getNodeName() + &quot;-&quot; + getNodePort() + ConfigUtil.CONFIG_FILE_ENDING);</span>
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">        if (this.nodeNameIsDefault) {</span>
+<span class="nc" id="L243">            configPrefs.add(prefix + &quot;-&quot; + getNodeName().replace('.', '_') + &quot;-&quot; + getNodePort() + ConfigUtil.CONFIG_FILE_ENDING);</span>
         }
-<span class="fc" id="L230">        configPrefs.add(prefix + &quot;-&quot; + getNodeName() + ConfigUtil.CONFIG_FILE_ENDING);</span>
-<span class="pc bpc" id="L231" title="1 of 2 branches missed.">        if (this.nodeNameIsDefault) {</span>
-<span class="nc" id="L232">            configPrefs.add(prefix + &quot;-&quot; + getNodeName().replace('.', '_') + ConfigUtil.CONFIG_FILE_ENDING);</span>
-        }
-
-<span class="fc" id="L235">        configPrefs.add(prefix + &quot;-&quot; + getNodePort() + ConfigUtil.CONFIG_FILE_ENDING);</span>
-
-<span class="fc" id="L237">        configPrefs.add(prefix + &quot;-&quot; + getNodeType() + ConfigUtil.CONFIG_FILE_ENDING);</span>
-<span class="fc" id="L238">        configPrefs.add(prefix + ConfigUtil.CONFIG_FILE_ENDING);</span>
-
-<span class="pc bpc" id="L240" title="1 of 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
-<span class="nc" id="L241">            logger.debug(&quot;Searching for {} config in preferences {}&quot;, prefix, configPrefs);</span>
+<span class="fc" id="L245">        configPrefs.add(prefix + &quot;-&quot; + getNodeName() + ConfigUtil.CONFIG_FILE_ENDING);</span>
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">        if (this.nodeNameIsDefault) {</span>
+<span class="nc" id="L247">            configPrefs.add(prefix + &quot;-&quot; + getNodeName().replace('.', '_') + ConfigUtil.CONFIG_FILE_ENDING);</span>
         }
 
-<span class="fc" id="L244">        return ConfigUtil.getConfigInfo(configPrefs);</span>
+<span class="fc" id="L250">        configPrefs.add(prefix + &quot;-&quot; + getNodePort() + ConfigUtil.CONFIG_FILE_ENDING);</span>
+
+<span class="fc" id="L252">        configPrefs.add(prefix + &quot;-&quot; + getNodeType() + ConfigUtil.CONFIG_FILE_ENDING);</span>
+<span class="fc" id="L253">        configPrefs.add(prefix + ConfigUtil.CONFIG_FILE_ENDING);</span>
+
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L256">            logger.debug(&quot;Searching for {} config in preferences {}&quot;, prefix, configPrefs);</span>
+        }
+
+<span class="fc" id="L259">        return ConfigUtil.getConfigInfo(configPrefs);</span>
     }
 
     /**
@@ -250,39 +265,39 @@ public class EmissaryNode {
     public void configureEmissaryServer() throws EmissaryException {
         // Create the core objects we need to get going
         // The AgentPool
-<span class="fc" id="L253">        AgentPool pool = new AgentPool(new MobileAgentFactory());</span>
-<span class="fc" id="L254">        logger.debug(&quot;Setup AgentPool with {} agents...&quot;, pool.getNumIdle());</span>
+<span class="fc" id="L268">        AgentPool pool = new AgentPool(new MobileAgentFactory());</span>
+<span class="fc" id="L269">        logger.debug(&quot;Setup AgentPool with {} agents...&quot;, pool.getNumIdle());</span>
 
         // The MoveSpool
-<span class="fc" id="L257">        MoveSpool spool = new MoveSpool();</span>
-<span class="fc" id="L258">        logger.debug(&quot;Started MoveSpool...{}&quot;, spool);</span>
+<span class="fc" id="L272">        MoveSpool spool = new MoveSpool();</span>
+<span class="fc" id="L273">        logger.debug(&quot;Started MoveSpool...{}&quot;, spool);</span>
 
         // The metrics manager
-<span class="fc" id="L261">        MetricsManager metricsManager = new MetricsManager();</span>
-<span class="fc" id="L262">        logger.debug(&quot;Started metrics manager...{}&quot;, metricsManager);</span>
+<span class="fc" id="L276">        MetricsManager metricsManager = new MetricsManager();</span>
+<span class="fc" id="L277">        logger.debug(&quot;Started metrics manager...{}&quot;, metricsManager);</span>
 
         // The resource watcher
-<span class="fc" id="L265">        ResourceWatcher watcher = new ResourceWatcher(metricsManager);</span>
-<span class="fc" id="L266">        logger.debug(&quot;Started resource watcher...{}&quot;, watcher);</span>
+<span class="fc" id="L280">        ResourceWatcher watcher = new ResourceWatcher(metricsManager);</span>
+<span class="fc" id="L281">        logger.debug(&quot;Started resource watcher...{}&quot;, watcher);</span>
 
         // Initialize list of configured spi classes
-<span class="fc" id="L269">        SPILoader.load();</span>
+<span class="fc" id="L284">        SPILoader.load();</span>
 
         // Initialize the rolling framework
-<span class="fc" id="L272">        RollManager.getManager();</span>
+<span class="fc" id="L287">        RollManager.getManager();</span>
 
         // Startup places on this emissary node
         try {
-<span class="fc" id="L276">            Configurator nodeConfigStream = getNodeConfigurator();</span>
-<span class="fc" id="L277">            Startup startupEngine = new Startup(nodeConfigStream, this);</span>
-<span class="fc" id="L278">            startupEngine.start();</span>
-<span class="fc" id="L279">            logger.debug(&quot;The system is up and running fine. All ahead Warp-7.&quot;);</span>
-<span class="nc" id="L280">        } catch (IOException iox) {</span>
-<span class="nc" id="L281">            throw new EmissaryException(&quot;Unable to configure Emissary Node services&quot;, iox);</span>
-<span class="fc" id="L282">        }</span>
+<span class="fc" id="L291">            Configurator nodeConfigStream = getNodeConfigurator();</span>
+<span class="fc" id="L292">            Startup startupEngine = new Startup(nodeConfigStream, this);</span>
+<span class="fc" id="L293">            startupEngine.start();</span>
+<span class="fc" id="L294">            logger.debug(&quot;The system is up and running fine. All ahead Warp-7.&quot;);</span>
+<span class="nc" id="L295">        } catch (IOException iox) {</span>
+<span class="nc" id="L296">            throw new EmissaryException(&quot;Unable to configure Emissary Node services&quot;, iox);</span>
+<span class="fc" id="L297">        }</span>
 
         // The mobile agent watcher
-<span class="fc" id="L285">        Sentinel.start();</span>
-<span class="fc" id="L286">    }</span>
+<span class="fc" id="L300">        Sentinel.start();</span>
+<span class="fc" id="L301">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

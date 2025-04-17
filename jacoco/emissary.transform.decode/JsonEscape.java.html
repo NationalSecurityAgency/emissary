@@ -41,7 +41,7 @@ public class JsonEscape {
 <span class="fc bfc" id="L41" title="All 4 branches covered.">                if ((i + 3) &lt; data.length &amp;&amp; isOctalDigit(data[i + 3])) {</span>
 <span class="fc" id="L42">                    end++;</span>
                 }
-<span class="fc" id="L44">                String s = new String(data, i + 1, (end - i));</span>
+<span class="fc" id="L44">                String s = new String(data, i + 1, end - i);</span>
                 try {
 <span class="fc" id="L46">                    int num = Integer.parseInt(s, 8);</span>
 <span class="fc" id="L47">                    char[] ch = Character.toChars(num);</span>
@@ -71,7 +71,7 @@ public class JsonEscape {
     }
 
     protected static boolean isOctalDigit(byte b) {
-<span class="pc bpc" id="L74" title="1 of 4 branches missed.">        return (b &gt;= '0' &amp;&amp; b &lt;= '7');</span>
+<span class="pc bpc" id="L74" title="1 of 4 branches missed.">        return b &gt;= '0' &amp;&amp; b &lt;= '7';</span>
     }
 
     /** This class is not meant to be instantiated. */

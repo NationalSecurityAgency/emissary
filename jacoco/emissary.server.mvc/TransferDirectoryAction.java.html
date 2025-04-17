@@ -8,6 +8,7 @@ import emissary.directory.IDirectoryPlace;
 import emissary.server.mvc.adapters.RequestUtil;
 import emissary.util.web.HtmlEscaper;
 
+import jakarta.annotation.Nullable;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -17,12 +18,10 @@ import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-
 @Path(&quot;&quot;)
 // context is emissary
-<span class="fc" id="L24">public class TransferDirectoryAction {</span>
-<span class="fc" id="L25">    private static final Logger LOG = LoggerFactory.getLogger(TransferDirectoryAction.class);</span>
+<span class="fc" id="L23">public class TransferDirectoryAction {</span>
+<span class="fc" id="L24">    private static final Logger LOG = LoggerFactory.getLogger(TransferDirectoryAction.class);</span>
 
     public static final String TARGET_DIR_PARAM = &quot;targetDir&quot;;
 
@@ -31,25 +30,25 @@ import javax.annotation.Nullable;
     @Produces(MediaType.APPLICATION_XML)
     public Response dumpDirectory(@Nullable @QueryParam(TARGET_DIR_PARAM) String dirname) {
         final IDirectoryPlace value;
-<span class="fc" id="L34">        String cleanDirectoryName = RequestUtil.sanitizeParameter(dirname);</span>
+<span class="fc" id="L33">        String cleanDirectoryName = RequestUtil.sanitizeParameter(dirname);</span>
         try {
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">            if (cleanDirectoryName == null) {</span>
-<span class="fc" id="L37">                LOG.debug(&quot;Lookup is using default name since no {} was specified&quot;, TARGET_DIR_PARAM);</span>
-<span class="fc" id="L38">                value = DirectoryPlace.lookup();</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">            if (cleanDirectoryName == null) {</span>
+<span class="fc" id="L36">                LOG.debug(&quot;Lookup is using default name since no {} was specified&quot;, TARGET_DIR_PARAM);</span>
+<span class="fc" id="L37">                value = DirectoryPlace.lookup();</span>
             } else {
-<span class="nc" id="L40">                LOG.debug(&quot;Lookup is using directory name {}&quot;, cleanDirectoryName);</span>
-<span class="nc" id="L41">                value = (IDirectoryPlace) Namespace.lookup(cleanDirectoryName);</span>
+<span class="nc" id="L39">                LOG.debug(&quot;Lookup is using directory name {}&quot;, cleanDirectoryName);</span>
+<span class="nc" id="L40">                value = (IDirectoryPlace) Namespace.lookup(cleanDirectoryName);</span>
             }
-<span class="pc bpc" id="L43" title="1 of 2 branches missed.">            if (value != null) {</span>
-<span class="fc" id="L44">                LOG.debug(&quot;Lookup returned {}&quot;, value);</span>
-<span class="fc" id="L45">                String msg = DirectoryXmlContainer.toXmlString(value);</span>
-<span class="fc" id="L46">                return Response.ok().entity(msg).build();</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">            if (value != null) {</span>
+<span class="fc" id="L43">                LOG.debug(&quot;Lookup returned {}&quot;, value);</span>
+<span class="fc" id="L44">                String msg = DirectoryXmlContainer.toXmlString(value);</span>
+<span class="fc" id="L45">                return Response.ok().entity(msg).build();</span>
             } else {
-<span class="nc" id="L48">                return Response.status(404).entity(&quot;Nothing found for &quot; + HtmlEscaper.escapeHtml(cleanDirectoryName)).build();</span>
+<span class="nc" id="L47">                return Response.status(404).entity(&quot;Nothing found for &quot; + HtmlEscaper.escapeHtml(cleanDirectoryName)).build();</span>
             }
-<span class="nc" id="L50">        } catch (EmissaryException e) {</span>
-<span class="nc" id="L51">            LOG.error(&quot;Problem looking up&quot;, e);</span>
-<span class="nc" id="L52">            return Response.status(500).entity(&quot;Directory lookup failed&quot;).build();</span>
+<span class="nc" id="L49">        } catch (EmissaryException e) {</span>
+<span class="nc" id="L50">            LOG.error(&quot;Problem looking up&quot;, e);</span>
+<span class="nc" id="L51">            return Response.status(500).entity(&quot;Directory lookup failed&quot;).build();</span>
 
         }
     }

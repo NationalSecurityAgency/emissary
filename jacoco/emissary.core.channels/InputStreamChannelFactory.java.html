@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InputStreamChannelFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core.channels</a> &gt; <span class="el_source">InputStreamChannelFactory.java</span></div><h1>InputStreamChannelFactory.java</h1><pre class="source lang-java linenums">package emissary.core.channels;
 
-import org.apache.commons.io.input.CountingInputStream;
+import jakarta.annotation.Nullable;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang3.Validate;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
-import javax.annotation.Nullable;
 
 public class InputStreamChannelFactory {
     private InputStreamChannelFactory() {}
@@ -27,18 +27,37 @@ public class InputStreamChannelFactory {
 
     private static class InputStreamChannelFactoryImpl implements SeekableByteChannelFactory {
         private final long size;
+        @Nullable
+        private final IOException ioException;
         private final InputStreamFactory inputStreamFactory;
 
-<span class="fc" id="L32">        public InputStreamChannelFactoryImpl(final long size, final InputStreamFactory inputStreamFactory) {</span>
-<span class="fc" id="L33">            Validate.notNull(inputStreamFactory, &quot;Required: inputStream not null&quot;);</span>
+<span class="fc" id="L34">        public InputStreamChannelFactoryImpl(final long size, final InputStreamFactory inputStreamFactory) {</span>
+<span class="fc" id="L35">            Validate.notNull(inputStreamFactory, &quot;Required: inputStream not null&quot;);</span>
 
-<span class="fc" id="L35">            this.size = size;</span>
-<span class="fc" id="L36">            this.inputStreamFactory = inputStreamFactory;</span>
-<span class="fc" id="L37">        }</span>
+            // If the size is unknown then calculate it and save any IOException that occurs.
+<span class="fc bfc" id="L38" title="All 2 branches covered.">            if (size &lt; 0) {</span>
+<span class="fc" id="L39">                long tempSize = SIZE_IS_UNKNOWN;</span>
+<span class="fc" id="L40">                IOException tempIoException = null;</span>
+
+<span class="fc" id="L42">                try (InputStream is = inputStreamFactory.create()) {</span>
+<span class="fc" id="L43">                    tempSize = SeekableByteChannelHelper.available(is);</span>
+<span class="fc" id="L44">                } catch (IOException e) {</span>
+<span class="fc" id="L45">                    tempIoException = e;</span>
+<span class="fc" id="L46">                }</span>
+
+<span class="fc" id="L48">                this.size = tempSize;</span>
+<span class="fc" id="L49">                ioException = tempIoException;</span>
+<span class="fc" id="L50">            } else {</span>
+<span class="fc" id="L51">                this.size = size;</span>
+<span class="fc" id="L52">                this.ioException = null;</span>
+            }
+
+<span class="fc" id="L55">            this.inputStreamFactory = inputStreamFactory;</span>
+<span class="fc" id="L56">        }</span>
 
         @Override
         public SeekableByteChannel create() {
-<span class="fc" id="L41">            return new InputStreamChannel(size, inputStreamFactory);</span>
+<span class="fc" id="L60">            return new InputStreamChannel(size, inputStreamFactory, ioException);</span>
         }
     }
 
@@ -47,14 +66,14 @@ public class InputStreamChannelFactory {
          * The InputStreamFactory used to get InputStream instances.
          */
         private final InputStreamFactory inputStreamFactory;
+        private final long size;
+        private final IOException ioException;
 
         /**
          * The current InputStream instance.
          */
         @Nullable
-        private CountingInputStream inputStream;
-
-        private long size;
+        private BoundedInputStream inputStream;
 
         /**
          * Create a new InputStreamChannel instance with a fixed size and data source
@@ -62,45 +81,48 @@ public class InputStreamChannelFactory {
          * @param size of the InputStreamChannel
          * @param inputStreamFactory data source
          */
-<span class="fc" id="L65">        public InputStreamChannel(final long size, final InputStreamFactory inputStreamFactory) {</span>
-<span class="fc" id="L66">            Validate.notNull(inputStreamFactory, &quot;Required: inputStreamFactory not null!&quot;);</span>
-<span class="fc" id="L67">            this.size = size;</span>
-<span class="fc" id="L68">            this.inputStreamFactory = inputStreamFactory;</span>
-<span class="fc" id="L69">        }</span>
+<span class="fc" id="L84">        public InputStreamChannel(final long size, final InputStreamFactory inputStreamFactory, final IOException ioException) {</span>
+<span class="fc" id="L85">            Validate.notNull(inputStreamFactory, &quot;Required: inputStreamFactory not null!&quot;);</span>
+
+<span class="fc" id="L87">            this.size = size;</span>
+<span class="fc" id="L88">            this.inputStreamFactory = inputStreamFactory;</span>
+<span class="fc" id="L89">            this.ioException = ioException;</span>
+<span class="fc" id="L90">        }</span>
 
         @Override
         protected final int readImpl(final ByteBuffer byteBuffer) throws IOException {
-<span class="fc bfc" id="L73" title="All 4 branches covered.">            if (inputStream != null &amp;&amp; position() &lt; inputStream.getByteCount()) {</span>
-<span class="fc" id="L74">                inputStream.close();</span>
-<span class="fc" id="L75">                inputStream = null;</span>
+<span class="fc bfc" id="L94" title="All 4 branches covered.">            if (inputStream != null &amp;&amp; position() &lt; inputStream.getCount()) {</span>
+<span class="fc" id="L95">                inputStream.close();</span>
+<span class="fc" id="L96">                inputStream = null;</span>
             }
 
-<span class="fc bfc" id="L78" title="All 2 branches covered.">            if (inputStream == null) {</span>
-<span class="fc" id="L79">                inputStream = new CountingInputStream(inputStreamFactory.create());</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">            if (inputStream == null) {</span>
+<span class="fc" id="L100">                inputStream = BoundedInputStream.builder()</span>
+<span class="fc" id="L101">                        .setInputStream(inputStreamFactory.create())</span>
+<span class="fc" id="L102">                        .get();</span>
             }
 
             // Actually perform the read
-<span class="fc" id="L83">            return SeekableByteChannelHelper.getFromInputStream(inputStream, byteBuffer, position() - inputStream.getByteCount());</span>
+<span class="fc" id="L106">            return SeekableByteChannelHelper.getFromInputStream(inputStream, byteBuffer, position() - inputStream.getCount());</span>
         }
 
 
         @Override
         protected long sizeImpl() throws IOException {
-<span class="fc bfc" id="L89" title="All 2 branches covered.">            if (size &lt; 0) {</span>
-<span class="fc" id="L90">                try (InputStream is = inputStreamFactory.create()) {</span>
-<span class="fc" id="L91">                    size = SeekableByteChannelHelper.available(is);</span>
-                }
+<span class="fc bfc" id="L112" title="All 2 branches covered.">            if (ioException != null) {</span>
+<span class="fc" id="L113">                throw ioException;</span>
             }
-<span class="fc" id="L94">            return size;</span>
+
+<span class="fc" id="L116">            return size;</span>
         }
 
         @Override
         protected final void closeImpl() throws IOException {
-<span class="fc bfc" id="L99" title="All 2 branches covered.">            if (inputStream != null) {</span>
-<span class="fc" id="L100">                inputStream.close();</span>
-<span class="fc" id="L101">                inputStream = null;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">            if (inputStream != null) {</span>
+<span class="fc" id="L122">                inputStream.close();</span>
+<span class="fc" id="L123">                inputStream = null;</span>
             }
-<span class="fc" id="L103">        }</span>
+<span class="fc" id="L125">        }</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

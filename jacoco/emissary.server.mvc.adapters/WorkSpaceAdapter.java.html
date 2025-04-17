@@ -99,7 +99,7 @@ import java.util.List;
 <span class="nc" id="L99">        method.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));</span>
 <span class="nc" id="L100">        final EmissaryResponse status = send(method);</span>
         // TODO Look at putting this method in the EmissaryResponse
-<span class="nc bnc" id="L102" title="All 2 branches missed.">        return (status.getStatus() == HttpStatus.SC_OK);</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        return status.getStatus() == HttpStatus.SC_OK;</span>
     }
 
 }

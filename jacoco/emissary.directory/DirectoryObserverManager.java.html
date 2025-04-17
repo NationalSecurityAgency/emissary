@@ -224,11 +224,11 @@ public class DirectoryObserverManager {
 <span class="fc" id="L224">        int obcount = 0;</span>
 <span class="fc" id="L225">        int matchcount = 0;</span>
 
-<span class="fc bfc" id="L227" title="All 2 branches covered.">        for (final DirectoryObserver d : this.observers) {</span>
-<span class="pc bpc" id="L228" title="1 of 2 branches missed.">            if (d instanceof PlaceObserver) {</span>
-<span class="fc" id="L229">                final PlaceObserver p = (PlaceObserver) d;</span>
-<span class="fc" id="L230">                obcount++;</span>
-<span class="pc bpc" id="L231" title="1 of 2 branches missed.">                if (KeyManipulator.gmatch(placeKey, p.getPattern())) {</span>
+<span class="pc bpc" id="L227" title="1 of 2 branches missed.">        for (final DirectoryObserver d : this.observers) {</span>
+<span class="nc bnc" id="L228" title="All 2 branches missed.">            if (d instanceof PlaceObserver) {</span>
+<span class="nc" id="L229">                final PlaceObserver p = (PlaceObserver) d;</span>
+<span class="nc" id="L230">                obcount++;</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">                if (KeyManipulator.gmatch(placeKey, p.getPattern())) {</span>
 <span class="nc" id="L232">                    matchcount++;</span>
 <span class="nc" id="L233">                    logger.debug(&quot;Match! Doing {} for {}&quot;, action, placeKey);</span>
 <span class="nc bnc" id="L234" title="All 5 branches missed.">                    switch (action) {</span>
@@ -246,10 +246,10 @@ public class DirectoryObserverManager {
 <span class="nc" id="L246">                            break;</span>
                     }
                 } else {
-<span class="fc" id="L249">                    logger.debug(&quot;No match for {} using pattern {}&quot;, placeKey, p.getPattern());</span>
+<span class="nc" id="L249">                    logger.debug(&quot;No match for {} using pattern {}&quot;, placeKey, p.getPattern());</span>
                 }
             }
-<span class="fc" id="L252">        }</span>
+<span class="nc" id="L252">        }</span>
 <span class="pc bpc" id="L253" title="1 of 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
 <span class="nc" id="L254">            logger.debug(&quot;Notified {} of {} place observers of place {} -- {} #all={}&quot;, matchcount, obcount, placeKey, action, this.observers.size());</span>
         }

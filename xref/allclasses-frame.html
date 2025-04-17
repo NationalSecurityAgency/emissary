@@ -20,7 +20,11 @@
                 <li><a href="emissary/client/response/AgentList.html#AgentList" target="classFrame">AgentList</a></li>
                 <li><a href="emissary/pool/AgentPool.html#AgentPool" target="classFrame">AgentPool</a></li>
                 <li><a href="emissary/core/AgentPoolHealthCheck.html#AgentPoolHealthCheck" target="classFrame">AgentPoolHealthCheck</a></li>
+                <li><a href="emissary/core/sentinel/protocols/AgentProtocol.html#AgentProtocol" target="classFrame">AgentProtocol</a></li>
+                <li><a href="emissary/core/sentinel/protocols/AgentProtocol.html#AgentProtocol.PlaceAgentStats" target="classFrame">AgentProtocol.PlaceAgentStats</a></li>
+                <li><a href="emissary/core/sentinel/protocols/rules/AgentRule.html#AgentRule" target="classFrame">AgentRule</a></li>
                 <li><a href="emissary/pool/AgentThreadGroup.html#AgentThreadGroup" target="classFrame">AgentThreadGroup</a></li>
+                <li><a href="emissary/core/sentinel/protocols/trackers/AgentTracker.html#AgentTracker" target="classFrame">AgentTracker</a></li>
                 <li><a href="emissary/server/api/Agents.html#Agents" target="classFrame">Agents</a></li>
                 <li><a href="emissary/metrics/AgentsEmitter.html#AgentsEmitter" target="classFrame">AgentsEmitter</a></li>
                 <li><a href="emissary/client/response/AgentsFormatter.html#AgentsFormatter" target="classFrame">AgentsFormatter</a></li>
@@ -57,7 +61,6 @@
                 <li><a href="emissary/spi/ClassLocationVerificationProvider.html#ClassLocationVerificationProvider" target="classFrame">ClassLocationVerificationProvider</a></li>
                 <li><a href="emissary/util/ClassLookupCache.html#ClassLookupCache" target="classFrame">ClassLookupCache</a></li>
                 <li><a href="emissary/util/ClassLookupCache.html#ClassLookupCache.NamedClass" target="classFrame">ClassLookupCache.NamedClass</a></li>
-                <li><a href="emissary/place/ComparisonPlace.html#ComparisonPlace" target="classFrame">ComparisonPlace</a></li>
                 <li><a href="emissary/core/channels/ConcatenateChannelFactory.html#ConcatenateChannelFactory" target="classFrame">ConcatenateChannelFactory</a></li>
                 <li><a href="emissary/core/channels/ConcatenateChannelFactory.html#ConcatenateChannelFactory.ConcatenateChannelFactoryImpl" target="classFrame">ConcatenateChannelFactory.ConcatenateChannelFactoryImpl</a></li>
                 <li><a href="emissary/core/channels/ConcatenateChannelFactory.html#ConcatenateChannelFactory.ConcatenateSeekableByteChannel" target="classFrame">ConcatenateChannelFactory.ConcatenateSeekableByteChannel</a></li>
@@ -90,9 +93,6 @@
                 <li><a href="emissary/util/DependencyCheck.html#DependencyCheck" target="classFrame">DependencyCheck</a></li>
                 <li><a href="emissary/server/mvc/internal/DeregisterPlaceAction.html#DeregisterPlaceAction" target="classFrame">DeregisterPlaceAction</a></li>
                 <li><a href="emissary/place/sample/DevNullPlace.html#DevNullPlace" target="classFrame">DevNullPlace</a></li>
-                <li><a href="emissary/core/DiffCheckConfiguration.html#DiffCheckConfiguration" target="classFrame">DiffCheckConfiguration</a></li>
-                <li><a href="emissary/core/DiffCheckConfiguration.html#DiffCheckConfiguration.DiffCheckBuilder" target="classFrame">DiffCheckConfiguration.DiffCheckBuilder</a></li>
-                <li><a href="emissary/core/DiffCheckConfiguration.html#DiffCheckConfiguration.DiffCheckOptions" target="classFrame">DiffCheckConfiguration.DiffCheckOptions</a></li>
                 <li><a href="emissary/server/api/Directories.html#Directories" target="classFrame">Directories</a></li>
                 <li><a href="emissary/client/response/Directory.html#Directory" target="classFrame">Directory</a></li>
                 <li><a href="emissary/directory/DirectoryAdapter.html#DirectoryAdapter" target="classFrame">DirectoryAdapter</a></li>
@@ -185,24 +185,8 @@
                 <li><a href="emissary/util/web/HttpPostParameters.html#HttpPostParameters" target="classFrame">HttpPostParameters</a></li>
                 <li><a href="emissary/core/IBaseDataObject.html#IBaseDataObject" target="classFrame">IBaseDataObject</a></li>
                 <li><a href="emissary/core/IBaseDataObject.html#IBaseDataObject.MergePolicy" target="classFrame">IBaseDataObject.MergePolicy</a></li>
-                <li><a href="emissary/core/IBaseDataObjectDiffHelper.html#IBaseDataObjectDiffHelper" target="classFrame">IBaseDataObjectDiffHelper</a></li>
                 <li><a href="emissary/core/IBaseDataObjectHelper.html#IBaseDataObjectHelper" target="classFrame">IBaseDataObjectHelper</a></li>
                 <li><a href="emissary/core/IBaseDataObjectHelper.html#IBaseDataObjectHelper.InternalIdBaseDataObject" target="classFrame">IBaseDataObjectHelper.InternalIdBaseDataObject</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlCodecs.html#IBaseDataObjectXmlCodecs" target="classFrame">IBaseDataObjectXmlCodecs</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlCodecs.html#IBaseDataObjectXmlCodecs.BooleanEncoder" target="classFrame">IBaseDataObjectXmlCodecs.BooleanEncoder</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlCodecs.html#IBaseDataObjectXmlCodecs.ByteArrayEncoder" target="classFrame">IBaseDataObjectXmlCodecs.ByteArrayEncoder</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlCodecs.html#IBaseDataObjectXmlCodecs.ElementDecoder" target="classFrame">IBaseDataObjectXmlCodecs.ElementDecoder</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlCodecs.html#IBaseDataObjectXmlCodecs.ElementDecoders" target="classFrame">IBaseDataObjectXmlCodecs.ElementDecoders</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlCodecs.html#IBaseDataObjectXmlCodecs.ElementEncoder" target="classFrame">IBaseDataObjectXmlCodecs.ElementEncoder</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlCodecs.html#IBaseDataObjectXmlCodecs.ElementEncoders" target="classFrame">IBaseDataObjectXmlCodecs.ElementEncoders</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlCodecs.html#IBaseDataObjectXmlCodecs.IntegerEncoder" target="classFrame">IBaseDataObjectXmlCodecs.IntegerEncoder</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlCodecs.html#IBaseDataObjectXmlCodecs.SeekableByteChannelFactoryEncoder" target="classFrame">IBaseDataObjectXmlCodecs.SeekableByteChannelFactoryEncoder</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlCodecs.html#IBaseDataObjectXmlCodecs.Sha256SeekableByteChannelFactoryEncoder" target="classFrame">IBaseDataObjectXmlCodecs.Sha256SeekableByteChannelFactoryEncoder</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlCodecs.html#IBaseDataObjectXmlCodecs.Sha256StringByteArrayEncoder" target="classFrame">IBaseDataObjectXmlCodecs.Sha256StringByteArrayEncoder</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlCodecs.html#IBaseDataObjectXmlCodecs.StringByteArrayEncoder" target="classFrame">IBaseDataObjectXmlCodecs.StringByteArrayEncoder</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlCodecs.html#IBaseDataObjectXmlCodecs.StringEncoder" target="classFrame">IBaseDataObjectXmlCodecs.StringEncoder</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlCodecs.html#IBaseDataObjectXmlCodecs.StringObjectEncoder" target="classFrame">IBaseDataObjectXmlCodecs.StringObjectEncoder</a></li>
-                <li><a href="emissary/core/IBaseDataObjectXmlHelper.html#IBaseDataObjectXmlHelper" target="classFrame">IBaseDataObjectXmlHelper</a></li>
                 <li><a href="emissary/output/roller/ICoalescer.html#ICoalescer" target="classFrame">ICoalescer</a></li>
                 <li><a href="emissary/directory/IDirectoryPlace.html#IDirectoryPlace" target="classFrame">IDirectoryPlace</a></li>
                 <li><a href="emissary/output/filter/IDropOffFilter.html#IDropOffFilter" target="classFrame">IDropOffFilter</a></li>
@@ -221,8 +205,6 @@
                 <li><a href="emissary/directory/IRemoteDirectory.html#IRemoteDirectory" target="classFrame">IRemoteDirectory</a></li>
                 <li><a href="emissary/directory/IRemoteDirectory.html#IRemoteDirectory.Lookup" target="classFrame">IRemoteDirectory.Lookup</a></li>
                 <li><a href="emissary/place/IServiceProviderPlace.html#IServiceProviderPlace" target="classFrame">IServiceProviderPlace</a></li>
-                <li><a href="emissary/core/constants/IbdoMethodNames.html#IbdoMethodNames" target="classFrame">IbdoMethodNames</a></li>
-                <li><a href="emissary/core/constants/IbdoXmlElementNames.html#IbdoXmlElementNames" target="classFrame">IbdoXmlElementNames</a></li>
                 <li><a href="emissary/id/IdPlace.html#IdPlace" target="classFrame">IdPlace</a></li>
                 <li><a href="emissary/id/Identification.html#Identification" target="classFrame">Identification</a></li>
                 <li><a href="emissary/core/channels/ImmutableChannelFactory.html#ImmutableChannelFactory" target="classFrame">ImmutableChannelFactory</a></li>
@@ -342,7 +324,6 @@
                 <li><a href="emissary/pickup/PickUpSpace.html#PickUpSpace" target="classFrame">PickUpSpace</a></li>
                 <li><a href="emissary/pickup/PickupQueue.html#PickupQueue" target="classFrame">PickupQueue</a></li>
                 <li><a href="emissary/util/PkiUtil.html#PkiUtil" target="classFrame">PkiUtil</a></li>
-                <li><a href="emissary/util/PlaceComparisonHelper.html#PlaceComparisonHelper" target="classFrame">PlaceComparisonHelper</a></li>
                 <li><a href="emissary/client/response/PlaceList.html#PlaceList" target="classFrame">PlaceList</a></li>
                 <li><a href="emissary/directory/PlaceObserver.html#PlaceObserver" target="classFrame">PlaceObserver</a></li>
                 <li><a href="emissary/admin/PlaceStarter.html#PlaceStarter" target="classFrame">PlaceStarter</a></li>
@@ -356,13 +337,15 @@
                 <li><a href="emissary/util/shell/ProcessReader.html#ProcessReader" target="classFrame">ProcessReader</a></li>
                 <li><a href="emissary/command/converter/ProjectBaseConverter.html#ProjectBaseConverter" target="classFrame">ProjectBaseConverter</a></li>
                 <li><a href="emissary/core/sentinel/protocols/Protocol.html#Protocol" target="classFrame">Protocol</a></li>
-                <li><a href="emissary/core/sentinel/protocols/Protocol.html#Protocol.PlaceAgentStats" target="classFrame">Protocol.PlaceAgentStats</a></li>
+                <li><a href="emissary/core/sentinel/protocols/ProtocolFactory.html#ProtocolFactory" target="classFrame">ProtocolFactory</a></li>
                 <li><a href="emissary/pickup/QueServer.html#QueServer" target="classFrame">QueServer</a></li>
                 <li><a href="emissary/util/shell/ReadBinaryOutputBuffer.html#ReadBinaryOutputBuffer" target="classFrame">ReadBinaryOutputBuffer</a></li>
                 <li><a href="emissary/util/io/ReadOutput.html#ReadOutput" target="classFrame">ReadOutput</a></li>
                 <li><a href="emissary/util/shell/ReadOutputBuffer.html#ReadOutputBuffer" target="classFrame">ReadOutputBuffer</a></li>
                 <li><a href="emissary/util/shell/ReadOutputLogger.html#ReadOutputLogger" target="classFrame">ReadOutputLogger</a></li>
                 <li><a href="emissary/core/sentinel/protocols/actions/Recover.html#Recover" target="classFrame">Recover</a></li>
+                <li><a href="emissary/server/api/Refresh.html#Refresh" target="classFrame">Refresh</a></li>
+                <li><a href="emissary/place/sample/RefreshablePlace.html#RefreshablePlace" target="classFrame">RefreshablePlace</a></li>
                 <li><a href="emissary/server/mvc/internal/RegisterPeerAction.html#RegisterPeerAction" target="classFrame">RegisterPeerAction</a></li>
                 <li><a href="emissary/place/RehashingPlace.html#RehashingPlace" target="classFrame">RehashingPlace</a></li>
                 <li><a href="emissary/server/mvc/adapters/RequestUtil.html#RequestUtil" target="classFrame">RequestUtil</a></li>
@@ -388,11 +371,11 @@
                 <li><a href="emissary/core/channels/SegmentChannelFactory.html#SegmentChannelFactory.SegmentChannelFactoryImpl" target="classFrame">SegmentChannelFactory.SegmentChannelFactoryImpl</a></li>
                 <li><a href="emissary/core/channels/SegmentChannelFactory.html#SegmentChannelFactory.SegmentSeekableByteChannel" target="classFrame">SegmentChannelFactory.SegmentSeekableByteChannel</a></li>
                 <li><a href="emissary/core/sentinel/Sentinel.html#Sentinel" target="classFrame">Sentinel</a></li>
-                <li><a href="emissary/core/sentinel/Sentinel.html#Sentinel.Tracker" target="classFrame">Sentinel.Tracker</a></li>
                 <li><a href="emissary/command/ServiceCommand.html#ServiceCommand" target="classFrame">ServiceCommand</a></li>
                 <li><a href="emissary/config/ServiceConfigGuide.html#ServiceConfigGuide" target="classFrame">ServiceConfigGuide</a></li>
                 <li><a href="emissary/place/ServiceProviderPlace.html#ServiceProviderPlace" target="classFrame">ServiceProviderPlace</a></li>
                 <li><a href="emissary/place/ServiceProviderPlaceMBean.html#ServiceProviderPlaceMBean" target="classFrame">ServiceProviderPlaceMBean</a></li>
+                <li><a href="emissary/place/ServiceProviderRefreshablePlace.html#ServiceProviderRefreshablePlace" target="classFrame">ServiceProviderRefreshablePlace</a></li>
                 <li><a href="emissary/parser/SessionParser.html#SessionParser" target="classFrame">SessionParser</a></li>
                 <li><a href="emissary/parser/SessionProducer.html#SessionProducer" target="classFrame">SessionProducer</a></li>
                 <li><a href="emissary/util/ShortNameComparator.html#ShortNameComparator" target="classFrame">ShortNameComparator</a></li>
@@ -418,6 +401,7 @@
                 <li><a href="emissary/core/TimedResource.html#TimedResource" target="classFrame">TimedResource</a></li>
                 <li><a href="emissary/place/sample/ToLowerPlace.html#ToLowerPlace" target="classFrame">ToLowerPlace</a></li>
                 <li><a href="emissary/place/sample/ToUpperPlace.html#ToUpperPlace" target="classFrame">ToUpperPlace</a></li>
+                <li><a href="emissary/core/sentinel/protocols/trackers/Tracker.html#Tracker" target="classFrame">Tracker</a></li>
                 <li><a href="emissary/server/mvc/TransferDirectoryAction.html#TransferDirectoryAction" target="classFrame">TransferDirectoryAction</a></li>
                 <li><a href="emissary/core/TransformHistory.html#TransformHistory" target="classFrame">TransformHistory</a></li>
                 <li><a href="emissary/core/TransformHistory.html#TransformHistory.History" target="classFrame">TransformHistory.History</a></li>

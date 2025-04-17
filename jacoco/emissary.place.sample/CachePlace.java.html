@@ -3,87 +3,88 @@
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 
+import jakarta.annotation.Nullable;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * This place just keeps a reference to the last 10 payload objects it has seen. The number is configurable. It allows
  * processed to look back over a group of payloads.
  */
 public class CachePlace extends ServiceProviderPlace {
-<span class="nc" id="L16">    protected int cacheSize = 10;</span>
+<span class="nc" id="L17">    protected int cacheSize = 10;</span>
     protected List&lt;IBaseDataObject&gt; cache;
 
     /**
      * The remote constructor
      */
     public CachePlace(String cfgInfo, String dir, String placeLoc) throws IOException {
-<span class="nc" id="L23">        super(cfgInfo, dir, placeLoc);</span>
-<span class="nc" id="L24">        configurePlace();</span>
-<span class="nc" id="L25">    }</span>
+<span class="nc" id="L24">        super(cfgInfo, dir, placeLoc);</span>
+<span class="nc" id="L25">        configurePlace();</span>
+<span class="nc" id="L26">    }</span>
 
     /**
      * The static standalone (test) constructor
      */
     public CachePlace(String cfgInfo) throws IOException {
-<span class="nc" id="L31">        super(cfgInfo, &quot;TestCachePlace.foo.com:8003&quot;);</span>
-<span class="nc" id="L32">        configurePlace();</span>
-<span class="nc" id="L33">    }</span>
+<span class="nc" id="L32">        super(cfgInfo, &quot;TestCachePlace.foo.com:8003&quot;);</span>
+<span class="nc" id="L33">        configurePlace();</span>
+<span class="nc" id="L34">    }</span>
 
     /**
      * Set up place specific information from the config file, load JNI, etc.
      */
     private void configurePlace() {
         // Set configuration items from ToLowerPlace.cfg
-<span class="nc" id="L40">        cacheSize = configG.findIntEntry(&quot;CACHE_SIZE&quot;, cacheSize);</span>
-<span class="nc" id="L41">        cache = new ArrayList&lt;&gt;(cacheSize);</span>
-<span class="nc" id="L42">    }</span>
+<span class="nc" id="L41">        cacheSize = configG.findIntEntry(&quot;CACHE_SIZE&quot;, cacheSize);</span>
+<span class="nc" id="L42">        cache = new ArrayList&lt;&gt;(cacheSize);</span>
+<span class="nc" id="L43">    }</span>
 
     /**
      * Consume a DataObject, and return a transformed one.
      */
     @Override
     public synchronized void process(IBaseDataObject d) {
-<span class="nc" id="L49">        cache.add(d);</span>
-<span class="nc" id="L50">        logger.debug(&quot;added payload, size now {}&quot;, cache.size());</span>
+<span class="nc" id="L50">        cache.add(d);</span>
+<span class="nc" id="L51">        logger.debug(&quot;added payload, size now {}&quot;, cache.size());</span>
 
         // Remove oldest if over size limit
-<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (cache.size() &gt; cacheSize) {</span>
-<span class="nc" id="L54">            IBaseDataObject evicted = cache.remove(0);</span>
-<span class="nc" id="L55">            evictedPayload(evicted);</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if (cache.size() &gt; cacheSize) {</span>
+<span class="nc" id="L55">            IBaseDataObject evicted = cache.remove(0);</span>
+<span class="nc" id="L56">            evictedPayload(evicted);</span>
         }
-<span class="nc" id="L57">    }</span>
+<span class="nc" id="L58">    }</span>
 
     protected void evictedPayload(IBaseDataObject d) {
-<span class="nc" id="L60">        logger.debug(&quot;Evicted payload {}&quot;, d);</span>
-<span class="nc" id="L61">    }</span>
+<span class="nc" id="L61">        logger.debug(&quot;Evicted payload {}&quot;, d);</span>
+<span class="nc" id="L62">    }</span>
 
     public int getCacheLimit() {
-<span class="nc" id="L64">        return cacheSize;</span>
+<span class="nc" id="L65">        return cacheSize;</span>
     }
 
     public int getCacheSize() {
-<span class="nc" id="L68">        return cache.size();</span>
+<span class="nc" id="L69">        return cache.size();</span>
     }
 
     @Nullable
     public synchronized IBaseDataObject pop() {
-<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (!cache.isEmpty()) {</span>
-<span class="nc" id="L74">            return cache.remove(0);</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        if (!cache.isEmpty()) {</span>
+<span class="nc" id="L75">            return cache.remove(0);</span>
         }
-<span class="nc" id="L76">        return null;</span>
+<span class="nc" id="L77">        return null;</span>
     }
 
     @Override
     public void shutDown() {
-<span class="nc" id="L81">        logger.debug(&quot;Removing {} items in shutdown&quot;, cache.size());</span>
-<span class="nc bnc" id="L82" title="All 2 branches missed.">        while (!cache.isEmpty()) {</span>
-<span class="nc" id="L83">            cache.remove(0);</span>
+<span class="nc" id="L82">        logger.debug(&quot;Removing {} items in shutdown&quot;, cache.size());</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        while (!cache.isEmpty()) {</span>
+<span class="nc" id="L84">            cache.remove(0);</span>
         }
-<span class="nc" id="L85">        super.shutDown();</span>
-<span class="nc" id="L86">    }</span>
+<span class="nc" id="L86">        super.shutDown();</span>
+<span class="nc" id="L87">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

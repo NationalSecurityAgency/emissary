@@ -71,20 +71,20 @@ public class FilePickUpPlaceHealthCheck extends HealthCheck {
 <span class="nc" id="L71">                return Result.unhealthy(&quot;Large aggregate file size backed up for FilePickUpPlace = &quot; + aggregateFileSize);</span>
             }
 
-<span class="fc" id="L74">        } catch (NamespaceException ne) {</span>
+<span class="fc" id="L74">        } catch (NamespaceException ignored) {</span>
             // This gets throw if can't find FilePickUpPlace, assume it is not configured
             // and things are healthy
-<span class="nc" id="L77">        } catch (NoSuchFieldException nsfe) {</span>
+<span class="nc" id="L77">        } catch (NoSuchFieldException ignored) {</span>
             // Possibly thrown by getDeclaredField, assume FilePickUpPlace implementation has changed
-<span class="nc" id="L79">        } catch (SecurityException se) {</span>
+<span class="nc" id="L79">        } catch (SecurityException ignored) {</span>
             // Possibly thrown by getDeclaredField - would prevent our access to the field
-<span class="nc" id="L81">        } catch (NullPointerException npe) {</span>
+<span class="nc" id="L81">        } catch (NullPointerException ignored) {</span>
             // A variety of methods throw NPEs
-<span class="nc" id="L83">        } catch (IllegalArgumentException iae) {</span>
+<span class="nc" id="L83">        } catch (IllegalArgumentException ignored) {</span>
             // Thrown by get()
-<span class="nc" id="L85">        } catch (IllegalAccessException iae) {</span>
+<span class="nc" id="L85">        } catch (IllegalAccessException ignored) {</span>
             // Also thrown by get()
-<span class="nc" id="L87">        } catch (ExceptionInInitializerError eiie) {</span>
+<span class="nc" id="L87">        } catch (ExceptionInInitializerError ignored) {</span>
             // Also thrown by get()
 <span class="pc" id="L89">        }</span>
 

@@ -3,6 +3,7 @@
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.directory.DirectoryEntry;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.IOException;
@@ -17,7 +18,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 public interface IBaseDataObject {
 
@@ -37,7 +37,7 @@ public interface IBaseDataObject {
      * @deprecated As of emissary 8.18.0, this method performs no operations
      */
     @Deprecated(forRemoval = true)
-<span class="nc" id="L40">    default void checkForUnsafeDataChanges() {};</span>
+<span class="nc" id="L40">    default void checkForUnsafeDataChanges() {}</span>
 
     /**
      * Return the data as a byte array. If using a channel to the data, calling this method will only return up to

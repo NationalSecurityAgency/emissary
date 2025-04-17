@@ -41,7 +41,7 @@
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> byte[] buildArry(<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> size) {
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>          <strong class="jxr_keyword">final</strong> byte[] b = <strong class="jxr_keyword">new</strong> byte[size];
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; b.length;) {
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>              <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> remaining = (b.length - i);
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>              <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> remaining = b.length - i;
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>              <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> letterCount = remaining &gt; 25 ? I_ALPHABET : remaining;
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>              <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = 0; j &lt; letterCount; j++) {
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>                  b[i++] = (byte) (LCA + j);

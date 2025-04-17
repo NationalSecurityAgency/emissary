@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractJDOMUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.util.xml</a> &gt; <span class="el_source">AbstractJDOMUtil.java</span></div><h1>AbstractJDOMUtil.java</h1><pre class="source lang-java linenums">package emissary.util.xml;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.jdom2.CDATA;
@@ -22,7 +23,6 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import javax.annotation.Nullable;
 
 /**
  * Utilities for dealing with JDOM documents
@@ -185,63 +185,64 @@ import javax.annotation.Nullable;
     /**
      * Create a JDOM element, protecting the data with encoding if needed
      */
+    @SuppressWarnings(&quot;PMD.UselessParentheses&quot;)
     public static Element protectedElement(final String name, final String s) {
-<span class="fc" id="L189">        final Element e = new Element(name);</span>
-<span class="fc" id="L190">        int badCount = 0;</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">        for (int i = 0; i &lt; s.length(); i++) {</span>
-<span class="fc" id="L192">            final char c = s.charAt(i);</span>
-<span class="pc bpc" id="L193" title="3 of 4 branches missed.">            if (Character.isISOControl(c) &amp;&amp; !Character.isWhitespace(c)) {</span>
-<span class="nc" id="L194">                badCount++;</span>
+<span class="fc" id="L190">        final Element e = new Element(name);</span>
+<span class="fc" id="L191">        int badCount = 0;</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">        for (int i = 0; i &lt; s.length(); i++) {</span>
+<span class="fc" id="L193">            final char c = s.charAt(i);</span>
+<span class="pc bpc" id="L194" title="3 of 4 branches missed.">            if (Character.isISOControl(c) &amp;&amp; !Character.isWhitespace(c)) {</span>
+<span class="nc" id="L195">                badCount++;</span>
             }
         }
-<span class="pc bpc" id="L197" title="1 of 2 branches missed.">        if ((1.0 * badCount) / (1.0 * s.length()) &gt; 0.1) {</span>
-<span class="nc" id="L198">            e.setAttribute(&quot;encoding&quot;, &quot;base64&quot;);</span>
-<span class="nc" id="L199">            final Base64 b64 = new Base64();</span>
-<span class="nc" id="L200">            e.addContent(new String(b64.encode(s.getBytes())));</span>
-<span class="pc bpc" id="L201" title="1 of 2 branches missed.">        } else if (badCount &gt; 0) {</span>
-<span class="nc" id="L202">            e.setAttribute(&quot;encoding&quot;, &quot;quoted-printable&quot;);</span>
-<span class="nc" id="L203">            final QuotedPrintableCodec qp = new QuotedPrintableCodec();</span>
-<span class="nc" id="L204">            e.addContent(new String(qp.encode(s.getBytes())));</span>
-<span class="nc" id="L205">        } else {</span>
-<span class="fc" id="L206">            e.addContent(s);</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">        if ((1.0 * badCount) / (1.0 * s.length()) &gt; 0.1) {</span>
+<span class="nc" id="L199">            e.setAttribute(&quot;encoding&quot;, &quot;base64&quot;);</span>
+<span class="nc" id="L200">            final Base64 b64 = new Base64();</span>
+<span class="nc" id="L201">            e.addContent(new String(b64.encode(s.getBytes())));</span>
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">        } else if (badCount &gt; 0) {</span>
+<span class="nc" id="L203">            e.setAttribute(&quot;encoding&quot;, &quot;quoted-printable&quot;);</span>
+<span class="nc" id="L204">            final QuotedPrintableCodec qp = new QuotedPrintableCodec();</span>
+<span class="nc" id="L205">            e.addContent(new String(qp.encode(s.getBytes())));</span>
+<span class="nc" id="L206">        } else {</span>
+<span class="fc" id="L207">            e.addContent(s);</span>
         }
-<span class="fc" id="L208">        return e;</span>
+<span class="fc" id="L209">        return e;</span>
     }
 
     /**
      * Like Element.getChildTextTrim but for an int
      */
     public static int getChildIntValue(final Element el, final String childName) {
-<span class="fc" id="L215">        final String val = el.getChildTextTrim(childName);</span>
-<span class="fc" id="L216">        int x = -1;</span>
+<span class="fc" id="L216">        final String val = el.getChildTextTrim(childName);</span>
+<span class="fc" id="L217">        int x = -1;</span>
         try {
-<span class="fc" id="L218">            x = Integer.parseInt(val);</span>
-<span class="fc" id="L219">        } catch (NumberFormatException ex) {</span>
-<span class="fc" id="L220">            logger.debug(&quot;Unable to parse String as an integer&quot;);</span>
-<span class="fc" id="L221">        }</span>
-<span class="fc" id="L222">        return x;</span>
+<span class="fc" id="L219">            x = Integer.parseInt(val);</span>
+<span class="fc" id="L220">        } catch (NumberFormatException ex) {</span>
+<span class="fc" id="L221">            logger.debug(&quot;Unable to parse String as an integer&quot;);</span>
+<span class="fc" id="L222">        }</span>
+<span class="fc" id="L223">        return x;</span>
     }
 
     /**
      * Like Element.getChildTextTrim but for an long
      */
     public static long getChildLongValue(final Element el, final String childName) {
-<span class="fc" id="L229">        final String val = el.getChildTextTrim(childName);</span>
-<span class="fc" id="L230">        long x = -1L;</span>
+<span class="fc" id="L230">        final String val = el.getChildTextTrim(childName);</span>
+<span class="fc" id="L231">        long x = -1L;</span>
         try {
-<span class="fc" id="L232">            x = Long.parseLong(val);</span>
-<span class="nc" id="L233">        } catch (NumberFormatException ex) {</span>
-<span class="nc" id="L234">            logger.debug(&quot;Unable to parse String as an long&quot;);</span>
-<span class="fc" id="L235">        }</span>
-<span class="fc" id="L236">        return x;</span>
+<span class="fc" id="L233">            x = Long.parseLong(val);</span>
+<span class="nc" id="L234">        } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L235">            logger.debug(&quot;Unable to parse String as an long&quot;);</span>
+<span class="fc" id="L236">        }</span>
+<span class="fc" id="L237">        return x;</span>
     }
 
     /**
      * Like Element.getChildTextTrim but for a boolean
      */
     public static boolean getChildBooleanValue(final Element el, final String childName) {
-<span class="fc" id="L243">        final String val = el.getChildTextTrim(childName);</span>
-<span class="fc" id="L244">        return Boolean.parseBoolean(val);</span>
+<span class="fc" id="L244">        final String val = el.getChildTextTrim(childName);</span>
+<span class="fc" id="L245">        return Boolean.parseBoolean(val);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

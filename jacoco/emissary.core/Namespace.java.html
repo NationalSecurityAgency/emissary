@@ -63,7 +63,7 @@ public class Namespace {
      * @return a set of objects that are of the registered class
      */
     public static &lt;T&gt; Set&lt;T&gt; lookup(Class&lt;T&gt; arg) throws NamespaceException {
-<span class="nc" id="L66">        return lookup(arg, false);</span>
+<span class="fc" id="L66">        return lookup(arg, false);</span>
     }
 
     /**
@@ -75,8 +75,8 @@ public class Namespace {
      */
     public static &lt;T&gt; Set&lt;T&gt; lookup(Class&lt;T&gt; arg, boolean silent) throws NamespaceException {
 <span class="fc" id="L77">        Set&lt;T&gt; lookups = Sets.newHashSet();</span>
-<span class="pc" id="L78">        map.values().stream().filter(arg::isInstance).forEach(o -&gt; lookups.add(arg.cast(o)));</span>
-<span class="pc bpc" id="L79" title="3 of 4 branches missed.">        if (!silent &amp;&amp; CollectionUtils.isEmpty(lookups)) {</span>
+<span class="fc" id="L78">        map.values().stream().filter(arg::isInstance).forEach(o -&gt; lookups.add(arg.cast(o)));</span>
+<span class="pc bpc" id="L79" title="1 of 4 branches missed.">        if (!silent &amp;&amp; CollectionUtils.isEmpty(lookups)) {</span>
 <span class="nc" id="L80">            throw new NamespaceException(&quot;Not found: &quot; + arg.getName());</span>
         }
 <span class="fc" id="L82">        return lookups;</span>

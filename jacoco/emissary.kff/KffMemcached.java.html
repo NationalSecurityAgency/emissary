@@ -4,6 +4,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.util.Hexl;
 
+import jakarta.annotation.Nullable;
 import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.ConnectionFactoryBuilder.Protocol;
 import net.spy.memcached.FailureMode;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 
 /**
  * KffMemcached checks Emissary hashes against a set of external memcached servers. If a given Emissary hash does not
@@ -242,42 +242,40 @@ public class KffMemcached implements KffFilter {
 <span class="fc" id="L242">        Object result = future.get(opTimeoutMillis, TimeUnit.MILLISECONDS);</span>
 
 <span class="fc bfc" id="L244" title="All 2 branches covered.">        if (result != null) {</span>
-<span class="fc bfc" id="L245" title="All 2 branches covered.">            if (storeIdDupe) {</span>
-<span class="pc bpc" id="L246" title="1 of 2 branches missed.">                if (!((String) result).equals(id)) {</span>
-                    // As long as the id is not the same as what was already stored, then
-                    // store it on its own
-<span class="fc" id="L249">                    var unused = client.set(id, ageoff, key);</span>
-                    // logger.debug(&quot;Storing duplicate Id: {} with value (hash) {}&quot;, id, key);
-                }
+<span class="pc bpc" id="L245" title="1 of 4 branches missed.">            if (storeIdDupe &amp;&amp; !result.equals(id)) {</span>
+                // As long as the id is not the same as what was already stored, then
+                // store it on its own
+<span class="fc" id="L248">                var unused = client.set(id, ageoff, key);</span>
+                // logger.debug(&quot;Storing duplicate Id: {} with value (hash) {}&quot;, id, key);
             }
             // logger.debug(&quot;Found key: {} with value {}&quot;, key, (String) result);
             // Found the key
-<span class="fc" id="L255">            return true;</span>
+<span class="fc" id="L253">            return true;</span>
         }
         // logger.debug(&quot;Did not find key: {}&quot;, key);
         // Did not find the key...store it and move on
-<span class="fc" id="L259">        var unused = client.set(key, ageoff, id);</span>
-<span class="fc" id="L260">        return false;</span>
+<span class="fc" id="L257">        var unused = client.set(key, ageoff, id);</span>
+<span class="fc" id="L258">        return false;</span>
 
 
     }
 
     public String getPreferredAlgorithm() {
-<span class="fc" id="L266">        return preferredAlgorithm;</span>
+<span class="fc" id="L264">        return preferredAlgorithm;</span>
     }
 
     public void setPreferredAlgorithm(String preferredAlgorithm) {
-<span class="fc" id="L270">        this.preferredAlgorithm = preferredAlgorithm;</span>
-<span class="fc" id="L271">    }</span>
+<span class="fc" id="L268">        this.preferredAlgorithm = preferredAlgorithm;</span>
+<span class="fc" id="L269">    }</span>
 
     @Override
     public String getName() {
-<span class="fc" id="L275">        return filterName;</span>
+<span class="fc" id="L273">        return filterName;</span>
     }
 
     @Override
     public FilterType getFilterType() {
-<span class="fc" id="L280">        return ftype;</span>
+<span class="fc" id="L278">        return ftype;</span>
     }
 
 }

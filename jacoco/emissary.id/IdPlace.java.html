@@ -5,12 +5,13 @@ import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 
+import jakarta.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * Abstract class that is the parent of all places that operate in the ID phase of the workflow.
@@ -29,9 +30,9 @@ public abstract class IdPlace extends ServiceProviderPlace {
      * Create and register an id place with all default config information
      */
     protected IdPlace() throws IOException {
-<span class="fc" id="L32">        super();</span>
-<span class="fc" id="L33">        configureIdPlace();</span>
-<span class="fc" id="L34">    }</span>
+<span class="fc" id="L33">        super();</span>
+<span class="fc" id="L34">        configureIdPlace();</span>
+<span class="fc" id="L35">    }</span>
 
     /**
      * Create an Id Place and register it at the location specified
@@ -39,9 +40,9 @@ public abstract class IdPlace extends ServiceProviderPlace {
      * @param placeLoc the location for registering this place
      */
     protected IdPlace(final String placeLoc) throws IOException {
-<span class="nc" id="L42">        super(placeLoc);</span>
-<span class="nc" id="L43">        configureIdPlace();</span>
-<span class="nc" id="L44">    }</span>
+<span class="nc" id="L43">        super(placeLoc);</span>
+<span class="nc" id="L44">        configureIdPlace();</span>
+<span class="nc" id="L45">    }</span>
 
     /**
      * Create and register constructor, called from the place by super(x,y,z)
@@ -51,9 +52,9 @@ public abstract class IdPlace extends ServiceProviderPlace {
      * @param thePlaceLocation key to use in registration
      */
     protected IdPlace(final String configFile, final String theDir, final String thePlaceLocation) throws IOException {
-<span class="nc" id="L54">        super(configFile, theDir, thePlaceLocation);</span>
-<span class="nc" id="L55">        configureIdPlace();</span>
-<span class="nc" id="L56">    }</span>
+<span class="nc" id="L55">        super(configFile, theDir, thePlaceLocation);</span>
+<span class="nc" id="L56">        configureIdPlace();</span>
+<span class="nc" id="L57">    }</span>
 
     /**
      * Create and register with default directory
@@ -62,9 +63,9 @@ public abstract class IdPlace extends ServiceProviderPlace {
      * @param placeLocation key to use in registration
      */
     protected IdPlace(final String configFile, final String placeLocation) throws IOException {
-<span class="nc" id="L65">        super(configFile, placeLocation);</span>
-<span class="nc" id="L66">        configureIdPlace();</span>
-<span class="nc" id="L67">    }</span>
+<span class="nc" id="L66">        super(configFile, placeLocation);</span>
+<span class="nc" id="L67">        configureIdPlace();</span>
+<span class="nc" id="L68">    }</span>
 
     /**
      * Create an id place with config data from a stream
@@ -74,8 +75,8 @@ public abstract class IdPlace extends ServiceProviderPlace {
      * @param thePlaceLocation string name of our location
      */
     protected IdPlace(final InputStream configStream, final String theDir, final String thePlaceLocation) throws IOException {
-<span class="nc" id="L77">        super(configStream, theDir, thePlaceLocation);</span>
-<span class="nc" id="L78">    }</span>
+<span class="nc" id="L78">        super(configStream, theDir, thePlaceLocation);</span>
+<span class="nc" id="L79">    }</span>
 
     /**
      * Construct with config data from a stream on the local directory
@@ -83,8 +84,8 @@ public abstract class IdPlace extends ServiceProviderPlace {
      * @param configStream stream of config data
      */
     protected IdPlace(final InputStream configStream) throws IOException {
-<span class="nc" id="L86">        super(configStream);</span>
-<span class="nc" id="L87">    }</span>
+<span class="nc" id="L87">        super(configStream);</span>
+<span class="nc" id="L88">    }</span>
 
     /**
      * Save a list of all the forms that this place is a service proxy for and a list of final id determinations that this
@@ -98,10 +99,10 @@ public abstract class IdPlace extends ServiceProviderPlace {
      */
     public void configureIdPlace() {
         // FINAL_ID should be a subset of SERVICE_PROXY
-<span class="fc" id="L101">        this.finalForms = configG.findEntriesAsSet(&quot;FINAL_ID&quot;);</span>
-<span class="fc" id="L102">        this.renames = configG.findStringMatchMap(&quot;ID_RENAME_&quot;, Configurator.PRESERVE_CASE);</span>
-<span class="fc" id="L103">        this.ignores = configG.findEntriesAsSet(&quot;ID_IGNORE&quot;);</span>
-<span class="fc" id="L104">    }</span>
+<span class="fc" id="L102">        this.finalForms = configG.findEntriesAsSet(&quot;FINAL_ID&quot;);</span>
+<span class="fc" id="L103">        this.renames = configG.findStringMatchMap(&quot;ID_RENAME_&quot;, Configurator.PRESERVE_CASE);</span>
+<span class="fc" id="L104">        this.ignores = configG.findEntriesAsSet(&quot;ID_IGNORE&quot;);</span>
+<span class="fc" id="L105">    }</span>
 
     /**
      * Before setting a non-final current form, pop everything this place is s proxy for, then push the new form onto the
@@ -109,26 +110,26 @@ public abstract class IdPlace extends ServiceProviderPlace {
      */
     public int setNonFinalCurrentForm(final IBaseDataObject d, @Nullable final String newForm) {
 
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if (this.ignores.contains(newForm)) {</span>
-<span class="nc" id="L113">            return d.currentFormSize();</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">        if (this.ignores.contains(newForm)) {</span>
+<span class="nc" id="L114">            return d.currentFormSize();</span>
         }
 
-<span class="fc" id="L116">        final Set&lt;String&gt; serviceProxies = getProxies();</span>
-<span class="pc bpc" id="L117" title="1 of 4 branches missed.">        while (serviceProxies.contains(d.currentForm()) || d.currentForm().equals(newForm)) {</span>
-<span class="fc" id="L118">            d.popCurrentForm();</span>
+<span class="fc" id="L117">        final Set&lt;String&gt; serviceProxies = getProxies();</span>
+<span class="pc bpc" id="L118" title="1 of 4 branches missed.">        while (serviceProxies.contains(d.currentForm()) || d.currentForm().equals(newForm)) {</span>
+<span class="fc" id="L119">            d.popCurrentForm();</span>
         }
 
-<span class="fc" id="L121">        int sz = 0;</span>
+<span class="fc" id="L122">        int sz = 0;</span>
 
-<span class="pc bpc" id="L123" title="1 of 2 branches missed.">        if (newForm != null) {</span>
-<span class="fc" id="L124">            sz = d.pushCurrentForm(renamedForm(newForm));</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">        if (newForm != null) {</span>
+<span class="fc" id="L125">            sz = d.pushCurrentForm(renamedForm(newForm));</span>
         }
 
-<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        if (!Form.UNKNOWN.equals(newForm)) {</span>
-<span class="fc" id="L128">            sz = d.pushCurrentForm(Form.UNKNOWN);</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        if (!Form.UNKNOWN.equals(newForm)) {</span>
+<span class="fc" id="L129">            sz = d.pushCurrentForm(Form.UNKNOWN);</span>
         }
 
-<span class="fc" id="L131">        return sz;</span>
+<span class="fc" id="L132">        return sz;</span>
     }
 
     /**
@@ -138,7 +139,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
      * @return the renamed form
      */
     protected String renamedForm(final String form) {
-<span class="fc" id="L141">        return this.renames.getOrDefault(form, form);</span>
+<span class="fc" id="L142">        return this.renames.getOrDefault(form, form);</span>
     }
 
     /**
@@ -147,17 +148,17 @@ public abstract class IdPlace extends ServiceProviderPlace {
      */
     public int setFinalCurrentForm(final IBaseDataObject d, final String newForm) {
 
-<span class="pc bpc" id="L150" title="1 of 2 branches missed.">        if (this.ignores.contains(newForm)) {</span>
-<span class="nc" id="L151">            return d.currentFormSize();</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">        if (this.ignores.contains(newForm)) {</span>
+<span class="nc" id="L152">            return d.currentFormSize();</span>
         }
 
-<span class="fc" id="L154">        final Set&lt;String&gt; serviceProxies = getProxies();</span>
-<span class="fc" id="L155">        final String nf = renamedForm(newForm);</span>
-<span class="pc bpc" id="L156" title="1 of 4 branches missed.">        while (serviceProxies.contains(d.currentForm()) || d.currentForm().equals(nf)) {</span>
-<span class="fc" id="L157">            d.popCurrentForm();</span>
+<span class="fc" id="L155">        final Set&lt;String&gt; serviceProxies = getProxies();</span>
+<span class="fc" id="L156">        final String nf = renamedForm(newForm);</span>
+<span class="pc bpc" id="L157" title="1 of 4 branches missed.">        while (serviceProxies.contains(d.currentForm()) || d.currentForm().equals(nf)) {</span>
+<span class="fc" id="L158">            d.popCurrentForm();</span>
         }
 
-<span class="fc" id="L160">        return d.pushCurrentForm(nf);</span>
+<span class="fc" id="L161">        return d.pushCurrentForm(nf);</span>
     }
 
 
@@ -166,18 +167,18 @@ public abstract class IdPlace extends ServiceProviderPlace {
      */
     public int setCurrentForm(final IBaseDataObject d, @Nullable final String newForm) {
 
-<span class="fc bfc" id="L169" title="All 2 branches covered.">        if (this.ignores.contains(newForm)) {</span>
-<span class="fc" id="L170">            return d.currentFormSize();</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        if (this.ignores.contains(newForm)) {</span>
+<span class="fc" id="L171">            return d.currentFormSize();</span>
         }
 
         final int sz;
-<span class="pc bpc" id="L174" title="2 of 6 branches missed.">        if (newForm != null &amp;&amp; (this.finalForms.contains(newForm) || this.finalForms.contains(&quot;*&quot;))) {</span>
-<span class="fc" id="L175">            sz = setFinalCurrentForm(d, newForm);</span>
+<span class="pc bpc" id="L175" title="2 of 6 branches missed.">        if (newForm != null &amp;&amp; (this.finalForms.contains(newForm) || this.finalForms.contains(&quot;*&quot;))) {</span>
+<span class="fc" id="L176">            sz = setFinalCurrentForm(d, newForm);</span>
         } else {
-<span class="fc" id="L177">            sz = setNonFinalCurrentForm(d, newForm);</span>
+<span class="fc" id="L178">            sz = setNonFinalCurrentForm(d, newForm);</span>
         }
 
-<span class="fc" id="L180">        return sz;</span>
+<span class="fc" id="L181">        return sz;</span>
     }
 
     /**
@@ -187,20 +188,20 @@ public abstract class IdPlace extends ServiceProviderPlace {
     public int setCurrentForm(final IBaseDataObject d, @Nullable final Collection&lt;String&gt; newForms) {
 
         final int sz;
-<span class="nc bnc" id="L190" title="All 4 branches missed.">        if (newForms == null || newForms.isEmpty()) {</span>
-<span class="nc" id="L191">            sz = setNonFinalCurrentForm(d, null);</span>
+<span class="nc bnc" id="L191" title="All 4 branches missed.">        if (newForms == null || newForms.isEmpty()) {</span>
+<span class="nc" id="L192">            sz = setNonFinalCurrentForm(d, null);</span>
         } else {
-<span class="nc" id="L193">            final String[] forms = newForms.toArray(new String[0]);</span>
+<span class="nc" id="L194">            final String[] forms = newForms.toArray(new String[0]);</span>
             // Set all the but top dog as final
-<span class="nc bnc" id="L195" title="All 2 branches missed.">            for (int i = (forms.length - 1); i &gt; 0; i--) {</span>
-<span class="nc" id="L196">                setFinalCurrentForm(d, forms[i]);</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">            for (int i = forms.length - 1; i &gt; 0; i--) {</span>
+<span class="nc" id="L197">                setFinalCurrentForm(d, forms[i]);</span>
             }
 
             // Only decide between final/non-final on the top dog
-<span class="nc" id="L200">            sz = setCurrentForm(d, forms[0]);</span>
+<span class="nc" id="L201">            sz = setCurrentForm(d, forms[0]);</span>
         }
 
-<span class="nc" id="L203">        return sz;</span>
+<span class="nc" id="L204">        return sz;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

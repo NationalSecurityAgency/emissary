@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EditDistance.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.kff</a> &gt; <span class="el_source">EditDistance.java</span></div><h1>EditDistance.java</h1><pre class="source lang-java linenums">package emissary.kff;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * A java port of the ssdeep code for &quot;fuzzy hashing&quot;. http://ssdeep.sourceforge.net There are a number of ports out
@@ -76,14 +76,14 @@ public class EditDistance {
 <span class="fc" id="L76">        int mx = x;</span>
 <span class="fc" id="L77">        int my = y;</span>
 <span class="fc" id="L78">        int mz = z;</span>
-<span class="fc bfc" id="L79" title="All 6 branches covered.">        return (mx &lt; my ? (mx &lt; mz ? mx : mz) : (mz &lt; my) ? mz : my);</span>
+<span class="fc bfc" id="L79" title="All 6 branches covered.">        return mx &lt; my ? (mx &lt; mz ? mx : mz) : (mz &lt; my) ? mz : my;</span>
     }
 
     // #define min2(x,y) (_mx = (x), _my = (y), (_mx &lt; _my ? _mx : _my))
     private static int min2(int x, int y) {
 <span class="fc" id="L84">        int mx = x;</span>
 <span class="fc" id="L85">        int my = y;</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">        return (mx &lt; my ? mx : my);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        return mx &lt; my ? mx : my;</span>
     }
 
 <span class="fc" id="L89">    static int insertCost = 1;</span>
@@ -115,7 +115,7 @@ public class EditDistance {
     static int toLen;
 
     private static int ar(int x, int y, int index) {
-<span class="fc bfc" id="L118" title="All 4 branches covered.">        return ((x == 0) ? y * del : ((y == 0) ? x * ins : buffer[mod(index)]));</span>
+<span class="fc bfc" id="L118" title="All 4 branches covered.">        return (x == 0) ? y * del : (y == 0) ? x * ins : buffer[mod(index)];</span>
     }
 
     private static int nw(int x, int y) {
@@ -135,7 +135,7 @@ public class EditDistance {
     }
 
     private static int mod(int x) {
-<span class="fc" id="L138">        return (x % radix);</span>
+<span class="fc" id="L138">        return x % radix;</span>
     }
 
     /*
@@ -211,7 +211,7 @@ public class EditDistance {
         // /#define mod(x) ((x) % radix)
 
 
-<span class="fc bfc" id="L214" title="All 2 branches covered.">        buffer[index++] = min2(ins + del, (from[0] == to[0] ? 0 : ch));</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">        buffer[index++] = min2(ins + del, from[0] == to[0] ? 0 : ch);</span>
 
 <span class="fc" id="L216">        low = buffer[mod(index + radix - 1)];</span>
 <span class="fc bfc" id="L217" title="All 2 branches covered.">        for (col = 1; col &lt; EditDistance.fromLen; col++) {</span>

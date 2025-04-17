@@ -14,13 +14,11 @@ public class StringUtil {
         // this is stolen from the implementation of Verifier.checkCharacterData(in);
 <span class="nc bnc" id="L15" title="All 2 branches missed.">        for (int i = 0, len = in.length(); i &lt; len; i++) {</span>
 <span class="nc" id="L16">            char c = in.charAt(i);</span>
-<span class="nc bnc" id="L17" title="All 4 branches missed.">            if (!(c &gt; 0x1F &amp;&amp; c &lt; 0xD800)) { // for performance</span>
-<span class="nc bnc" id="L18" title="All 2 branches missed.">                if (!Verifier.isXMLCharacter(c)) {</span>
-<span class="nc" id="L19">                    return in.substring(0, i) + &quot;/0x&quot; + Integer.toHexString(c) + escapeInvalidXml(in.substring(i + 1));</span>
-                }
+<span class="nc bnc" id="L17" title="All 6 branches missed.">            if (!(c &gt; 0x1F &amp;&amp; c &lt; 0xD800) &amp;&amp; !Verifier.isXMLCharacter(c)) {</span>
+<span class="nc" id="L18">                return in.substring(0, i) + &quot;/0x&quot; + Integer.toHexString(c) + escapeInvalidXml(in.substring(i + 1));</span>
             }
         }
-<span class="nc" id="L23">        return in;</span>
+<span class="nc" id="L21">        return in;</span>
     }
 
     /** This class is not meant to be instantiated. */

@@ -1,185 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Protocol.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Emissary</a> &gt; <a href="index.source.html" class="el_package">emissary.core.sentinel.protocols</a> &gt; <span class="el_source">Protocol.java</span></div><h1>Protocol.java</h1><pre class="source lang-java linenums">package emissary.core.sentinel.protocols;
 
-import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.Factory;
-import emissary.core.Namespace;
-import emissary.core.NamespaceException;
-import emissary.core.sentinel.Sentinel;
 import emissary.core.sentinel.protocols.actions.Action;
 import emissary.core.sentinel.protocols.actions.Notify;
-import emissary.core.sentinel.protocols.rules.AllMaxTime;
 import emissary.core.sentinel.protocols.rules.Rule;
-import emissary.directory.DirectoryPlace;
-import emissary.directory.KeyManipulator;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * This protocol buckets places that are running in mobile agents and then looks at max and min time in place and the
- * number of agents that are potentially &quot;stuck.&quot; After places are bucketed, the place stats are run against the
- * configured rules to determine if all conditions are met. Once all rule conditions are met, then the configured action
- * will be triggered, i.e. log/notify.
+ * Protocols are configured with a list of rules that trigger some action if all conditions are met.
  */
-public class Protocol {
+public abstract class Protocol {
 
-<span class="fc" id="L34">    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());</span>
+<span class="fc" id="L23">    protected static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());</span>
 
     protected Configurator config;
-<span class="pc" id="L37">    protected boolean enabled = false;</span>
-<span class="pc" id="L38">    protected final Map&lt;String, Rule&gt; rules = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="pc" id="L26">    protected final Map&lt;String, Rule&gt; rules = new ConcurrentHashMap&lt;&gt;();</span>
     protected Action action;
+<span class="pc" id="L28">    protected boolean enabled = false;</span>
 
-<span class="fc" id="L41">    Protocol() {}</span>
+<span class="fc" id="L30">    protected Protocol() {}</span>
 
-<span class="nc" id="L43">    public Protocol(String conf) {</span>
-<span class="nc" id="L44">        configure(conf);</span>
-<span class="nc" id="L45">    }</span>
+<span class="nc" id="L32">    public Protocol(Configurator config) {</span>
+<span class="nc" id="L33">        configure(config);</span>
+<span class="nc" id="L34">    }</span>
+
+    public abstract void run() throws IOException;
+
+    protected abstract Rule&lt;?&gt; getRule(String ruleId) throws IOException;
 
     public boolean isEnabled() {
-<span class="fc" id="L48">        return enabled;</span>
+<span class="pc bpc" id="L41" title="2 of 4 branches missed.">        return this.enabled &amp;&amp; MapUtils.isNotEmpty(this.rules);</span>
     }
 
-    /**
-     * Run the configured rules over the watched mobile-agents
-     */
-    public void run(Map&lt;String, Sentinel.Tracker&gt; trackers) {
-
-<span class="fc" id="L56">        Map&lt;String, PlaceAgentStats&gt; placeAgentStats = generatePlaceAgentStats(trackers);</span>
-<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if (!placeAgentStats.isEmpty()) {</span>
-<span class="fc" id="L58">            logger.debug(&quot;Running rules on agents {}&quot;, placeAgentStats);</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">            if (rules.values().stream().allMatch(rule -&gt; rule.condition(placeAgentStats.values()))) {</span>
-<span class="fc" id="L60">                logger.warn(&quot;Sentinel rules matched -- {}&quot;, rules.values());</span>
-<span class="fc" id="L61">                action.trigger(trackers);</span>
-            }
-        }
-<span class="fc" id="L64">    }</span>
-
-    /**
-     * Get the Configurator
-     *
-     * @param conf the location of the configuration file
-     */
-    protected void configure(String conf) {
-        try {
-<span class="nc" id="L73">            this.config = ConfigUtil.getConfigInfo(conf);</span>
-<span class="nc" id="L74">            init(this.config);</span>
-<span class="nc" id="L75">        } catch (IOException e) {</span>
-<span class="nc" id="L76">            logger.warn(&quot;Cannot read {}, skipping!!&quot;, conf);</span>
-<span class="nc" id="L77">        }</span>
-<span class="nc" id="L78">    }</span>
+    protected void configure(final Configurator config) {
+<span class="fc" id="L45">        this.config = config;</span>
+<span class="fc" id="L46">        init();</span>
+<span class="fc" id="L47">    }</span>
 
     /**
      * Initialize rule set and action
      */
-    protected void init(Configurator config) {
-<span class="fc" id="L84">        this.enabled = config.findBooleanEntry(&quot;ENABLED&quot;, false);</span>
-<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        if (enabled) {</span>
+    protected void init() {
+<span class="fc" id="L53">        this.enabled = this.config.findBooleanEntry(&quot;ENABLED&quot;, false);</span>
+<span class="fc" id="L54">        this.action = (Action) Factory.create(this.config.findStringEntry(&quot;ACTION&quot;, Notify.class.getName()));</span>
 
-<span class="fc" id="L87">            this.action = (Action) Factory.create(config.findStringEntry(&quot;ACTION&quot;, Notify.class.getName()));</span>
-
-<span class="fc" id="L89">            logger.trace(&quot;Loading rules...&quot;);</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">            for (String ruleId : config.findEntries(&quot;RULE_ID&quot;)) {</span>
-                try {
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">                    if (this.rules.containsKey(ruleId)) {</span>
-<span class="nc" id="L93">                        logger.warn(&quot;Sentinel rule with ID[{}] already exists, this may result in unexpected behavior&quot;, ruleId);</span>
-                    }
-<span class="fc" id="L95">                    Map&lt;String, String&gt; map = config.findStringMatchMap(ruleId + &quot;_&quot;);</span>
-<span class="fc" id="L96">                    String rule = map.getOrDefault(&quot;RULE&quot;, AllMaxTime.class.getName());</span>
-<span class="fc" id="L97">                    Rule ruleImpl = (Rule) Factory.create(rule, ruleId, validate(map.get(&quot;PLACE_MATCHER&quot;)), map.get(&quot;TIME_LIMIT_MINUTES&quot;),</span>
-<span class="fc" id="L98">                            map.get(&quot;PLACE_THRESHOLD&quot;));</span>
-<span class="fc" id="L99">                    logger.debug(&quot;Sentinel loaded rule[{}] - {}&quot;, ruleId, ruleImpl);</span>
-<span class="fc" id="L100">                    this.rules.put(ruleId, ruleImpl);</span>
-<span class="nc" id="L101">                } catch (Exception e) {</span>
-<span class="nc" id="L102">                    logger.warn(&quot;Sentinel rule[{}] is invalid: {}&quot;, ruleId, e.getMessage());</span>
-<span class="fc" id="L103">                }</span>
-<span class="fc" id="L104">            }</span>
-
-            // if no rules then disable protocol
-<span class="pc bpc" id="L107" title="1 of 2 branches missed.">            if (this.rules.isEmpty()) {</span>
-<span class="nc" id="L108">                this.enabled = false;</span>
+<span class="fc" id="L56">        logger.trace(&quot;Loading rules...&quot;);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        for (String ruleId : this.config.findEntries(&quot;RULE_ID&quot;)) {</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">            if (this.rules.containsKey(ruleId)) {</span>
+<span class="nc" id="L59">                logger.warn(&quot;Sentinel rule with ID[{}] already exists, this may result in unexpected behavior&quot;, ruleId);</span>
             }
+            try {
+<span class="fc" id="L62">                final Rule&lt;?&gt; ruleImpl = getRule(ruleId);</span>
+<span class="fc" id="L63">                this.rules.put(ruleId, ruleImpl);</span>
+<span class="fc" id="L64">                logger.debug(&quot;Sentinel loaded rule[{}] - {}&quot;, ruleId, ruleImpl);</span>
+<span class="nc" id="L65">            } catch (Exception e) {</span>
+<span class="nc" id="L66">                logger.warn(&quot;Sentinel rule[{}] is invalid: {}&quot;, ruleId, e.getMessage());</span>
+<span class="fc" id="L67">            }</span>
+<span class="fc" id="L68">        }</span>
+
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (this.rules.isEmpty()) {</span>
+<span class="nc" id="L71">            this.enabled = false;</span>
         }
-<span class="fc" id="L111">    }</span>
-
-    /**
-     * Validate the place exists in the {@link Namespace}
-     *
-     * @param place the name of the place
-     * @throws NamespaceException if the directory place does not exist
-     * @throws IllegalStateException if the place cannot be found
-     */
-    protected String validate(String place) throws NamespaceException {
-        // validate that the place exists
-<span class="fc" id="L122">        DirectoryPlace directoryPlace = Namespace.lookup(DirectoryPlace.class).iterator().next();</span>
-<span class="fc" id="L123">        if (directoryPlace.getEntries().stream()</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">                .noneMatch(entry -&gt; KeyManipulator.getServiceClassname(entry.getFullKey()).matches(place))) {</span>
-<span class="fc" id="L125">            throw new IllegalStateException(&quot;Place not found in the directory&quot;);</span>
-        }
-<span class="fc" id="L127">        return place;</span>
-    }
-
-    protected Map&lt;String, PlaceAgentStats&gt; generatePlaceAgentStats(Map&lt;String, Sentinel.Tracker&gt; trackers) {
-<span class="fc" id="L131">        Map&lt;String, PlaceAgentStats&gt; placeAgentStats = new ConcurrentHashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">        for (Sentinel.Tracker tracker : trackers.values()) {</span>
-<span class="fc" id="L133">            String placeKey = tracker.getPlaceName();</span>
-<span class="pc bpc" id="L134" title="1 of 2 branches missed.">            if (StringUtils.isNotBlank(placeKey)) {</span>
-<span class="fc" id="L135">                placeAgentStats.put(placeKey, placeAgentStats.getOrDefault(placeKey, new PlaceAgentStats(placeKey)).update(tracker.getTimer()));</span>
-            }
-<span class="fc" id="L137">        }</span>
-<span class="fc" id="L138">        return placeAgentStats;</span>
-    }
-
-    @Override
-    public String toString() {
-<span class="fc" id="L143">        return new StringJoiner(&quot;, &quot;, &quot;{&quot;, &quot;}&quot;)</span>
-<span class="fc" id="L144">                .add(&quot;\&quot;rules\&quot;:&quot; + rules.values())</span>
-<span class="fc" id="L145">                .add(&quot;\&quot;action\&quot;:&quot; + action)</span>
-<span class="fc" id="L146">                .toString();</span>
-    }
-
-    public static class PlaceAgentStats {
-
-        private final String place;
-        private int count;
-<span class="fc" id="L153">        private long maxTimeInPlace = -1;</span>
-<span class="fc" id="L154">        private long minTimeInPlace = -1;</span>
-
-<span class="fc" id="L156">        public PlaceAgentStats(String place) {</span>
-<span class="fc" id="L157">            this.place = place;</span>
-<span class="fc" id="L158">        }</span>
-
-        public String getPlace() {
-<span class="fc" id="L161">            return place;</span>
-        }
-
-        public int getCount() {
-<span class="fc" id="L165">            return count;</span>
-        }
-
-        public long getMaxTimeInPlace() {
-<span class="fc" id="L169">            return maxTimeInPlace;</span>
-        }
-
-        public long getMinTimeInPlace() {
-<span class="fc" id="L173">            return minTimeInPlace;</span>
-        }
-
-        public PlaceAgentStats update(long timer) {
-<span class="fc" id="L177">            this.count++;</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">            this.minTimeInPlace = this.minTimeInPlace &lt; 0 ? timer : Math.min(this.minTimeInPlace, timer);</span>
-<span class="fc" id="L179">            this.maxTimeInPlace = Math.max(this.maxTimeInPlace, timer);</span>
-<span class="fc" id="L180">            return this;</span>
-        }
-    }
+<span class="fc" id="L73">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

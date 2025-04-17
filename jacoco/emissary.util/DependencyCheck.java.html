@@ -101,27 +101,27 @@ public class DependencyCheck {
 <span class="fc" id="L101">        Set&lt;String&gt; optFileSet = getDependencies(OPTIONAL_FILE);</span>
 
 <span class="fc bfc" id="L103" title="All 2 branches covered.">        for (String reqExe : reqExeSet) {</span>
-<span class="fc" id="L104">            boolean exists = DependencyCheck.executableExists(reqExe);</span>
+<span class="fc" id="L104">            boolean exists = executableExists(reqExe);</span>
 <span class="fc" id="L105">            logger.info(&quot;RequiredExecutable: {} exists: {}&quot;, reqExe, exists);</span>
 <span class="fc" id="L106">        }</span>
 <span class="fc bfc" id="L107" title="All 2 branches covered.">        for (String reqDir : reqDirSet) {</span>
-<span class="fc" id="L108">            boolean exists = DependencyCheck.directoryExists(reqDir);</span>
+<span class="fc" id="L108">            boolean exists = directoryExists(reqDir);</span>
 <span class="fc" id="L109">            logger.info(&quot;RequiredDirectory {} exists: {}&quot;, reqDir, exists);</span>
 <span class="fc" id="L110">        }</span>
 <span class="fc bfc" id="L111" title="All 2 branches covered.">        for (String reqFile : reqFileSet) {</span>
-<span class="fc" id="L112">            boolean exists = DependencyCheck.fileExists(reqFile);</span>
+<span class="fc" id="L112">            boolean exists = fileExists(reqFile);</span>
 <span class="fc" id="L113">            logger.info(&quot;RequiredFile: {} exists: {}&quot;, reqFile, exists);</span>
 <span class="fc" id="L114">        }</span>
 <span class="fc bfc" id="L115" title="All 2 branches covered.">        for (String optExe : optExeSet) {</span>
-<span class="fc" id="L116">            boolean exists = DependencyCheck.executableExists(optExe);</span>
+<span class="fc" id="L116">            boolean exists = executableExists(optExe);</span>
 <span class="fc" id="L117">            logger.info(&quot;OptionalExecutable: {} exists: {}&quot;, optExe, exists);</span>
 <span class="fc" id="L118">        }</span>
 <span class="fc bfc" id="L119" title="All 2 branches covered.">        for (String optDir : optDirSet) {</span>
-<span class="fc" id="L120">            boolean exists = DependencyCheck.directoryExists(optDir);</span>
+<span class="fc" id="L120">            boolean exists = directoryExists(optDir);</span>
 <span class="fc" id="L121">            logger.info(&quot;OptionalDirectory {} exists: {}&quot;, optDir, exists);</span>
 <span class="fc" id="L122">        }</span>
 <span class="fc bfc" id="L123" title="All 2 branches covered.">        for (String optFile : optFileSet) {</span>
-<span class="fc" id="L124">            boolean exists = DependencyCheck.fileExists(optFile);</span>
+<span class="fc" id="L124">            boolean exists = fileExists(optFile);</span>
 <span class="fc" id="L125">            logger.info(&quot;OptionalFile: {} exists: {}&quot;, optFile, exists);</span>
 <span class="fc" id="L126">        }</span>
 <span class="fc" id="L127">    }</span>
