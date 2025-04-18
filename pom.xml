@@ -990,8 +990,8 @@
           <configuration>
             <excludes />
             <failOnViolation>true</failOnViolation>
-            <failurePriority>2</failurePriority>
-            <maxAllowedViolations>3</maxAllowedViolations>
+            <failurePriority>5</failurePriority>
+            <maxAllowedViolations>0</maxAllowedViolations>
             <format>xml</format>
             <includeTests>true</includeTests>
             <minimumTokens>100</minimumTokens>
