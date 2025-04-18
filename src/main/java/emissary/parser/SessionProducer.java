@@ -19,7 +19,6 @@ public class SessionProducer {
     public static final String PARSER_ERROR = "This session could not be completely parsed. The format was bad.";
 
     protected SessionParser sp;
-    // protected String myKey;
     protected int numSessions = 0;
     protected List<String> initialForms;
 
@@ -31,10 +30,22 @@ public class SessionProducer {
      * @param sp The SessionParser, which has parsed theContent.
      * @param myKey Value to stick into the transform history, obsolete
      * @param initialForms Forms to be preloaded onto the form stack.
+     * @deprecated use {@link #SessionProducer(SessionParser, List)}
      */
+    @Deprecated
     public SessionProducer(SessionParser sp, String myKey, List<String> initialForms) {
         this.sp = sp;
-        // this.myKey = myKey;
+        this.initialForms = initialForms;
+    }
+
+    /**
+     * Creates a SessionProducer
+     *
+     * @param sp The SessionParser, which has parsed theContent.
+     * @param initialForms Forms to be preloaded onto the form stack.
+     */
+    public SessionProducer(SessionParser sp, List<String> initialForms) {
+        this.sp = sp;
         this.initialForms = initialForms;
     }
 
