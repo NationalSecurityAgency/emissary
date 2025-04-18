@@ -123,6 +123,7 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
      * Lookup the requested file in the repository either for delivery or timestamp checking
      */
     @Nullable
+    @SuppressWarnings("PMD.AvoidBranchingStatementAsLastInLoop")
     private File nativeLibraryLookup(final String query) {
 
         String[] fileList = null;
