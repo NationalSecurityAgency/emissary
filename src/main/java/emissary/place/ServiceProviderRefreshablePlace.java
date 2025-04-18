@@ -100,6 +100,7 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
             if (StringUtils.isNotBlank(path)) {
                 final var intervalMinutes = configG.findLongEntry("MONITORING_INTERVAL_MINUTES", 15);
                 this.monitor = new Monitor(this, path, intervalMinutes);
+                logger.info("Monitoring [{}] for changes every {} minutes", path, intervalMinutes);
             }
         } catch (RuntimeException e) {
             logger.warn("Could not create file monitor, skipping!", e);
