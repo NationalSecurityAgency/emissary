@@ -1,6 +1,7 @@
 package emissary.test.util;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -150,7 +151,7 @@ public final class ComplexUnicodeSamples {
      */
     public static int countGraphemesUsingJavaBuiltInBreakIterator(String text) {
 
-        java.text.BreakIterator breakIterator = java.text.BreakIterator.getCharacterInstance();
+        java.text.BreakIterator breakIterator = java.text.BreakIterator.getCharacterInstance(Locale.getDefault());
         breakIterator.setText(text);
 
         int count = 0;
