@@ -157,6 +157,7 @@ public final class Ssdeep {
          * @param start The starting offset in {@code buffer}, inclusive.
          * @param end The ending offset in {@code buffer}, exclusive.
          */
+        @SuppressWarnings("PMD.CollapsibleIfStatements")
         private void applyBytes(final RollingState rollState, final byte[] buffer, final int start, final int end) {
             // At each byte we update the rolling hash and the normal
             // hash. When the rolling hash hits the reset value, we
