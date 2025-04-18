@@ -406,7 +406,8 @@ public abstract class ExtractionTest extends UnitTest {
             for (int attNum = 1; attNum <= extractedChildren.size(); attNum++) {
                 Element extel = getChildAnswers(el, "extract", attNum);
                 if (extel != null) {
-                    checkAnswers(extel, extractedChildren.get(attNum - 1), NO_ATTACHMENTS, String.format(Locale.getDefault(), "%s::extract%d", tname, attNum));
+                    checkAnswers(extel, extractedChildren.get(attNum - 1), NO_ATTACHMENTS,
+                            String.format(Locale.getDefault(), "%s::extract%d", tname, attNum));
                 }
             }
         } else {
