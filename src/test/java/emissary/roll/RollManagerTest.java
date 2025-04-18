@@ -5,7 +5,6 @@ import emissary.core.EmissaryRuntimeException;
 import emissary.test.core.junit5.UnitTest;
 import emissary.test.core.junit5.extensions.EmissaryIsolatedClassLoaderExtension;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -17,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RollManagerTest extends UnitTest {
@@ -38,7 +38,7 @@ class RollManagerTest extends UnitTest {
         r.addPropertyChangeListener(o);
         rm.addRoller(r);
         r.incrementProgress();
-        Assertions.assertNotNull(o.o, "Roller notified");
+        assertNotNull(o.o, "Roller notified");
         rm.exec.shutdown();
     }
 
