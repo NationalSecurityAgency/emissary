@@ -288,7 +288,8 @@ public class EmissaryServer {
      */
     public static void invalidate() throws NamespaceException {
         LOG.info("Invalidating places that need to be reconfigured");
-        Namespace.lookup(ServiceProviderRefreshablePlace.class, true).forEach(ServiceProviderRefreshablePlace::invalidate);
+        Namespace.lookup(ServiceProviderRefreshablePlace.class, true)
+                .forEach(p -> p.invalidate("due to server invalidate"));
     }
 
     /**
@@ -300,7 +301,7 @@ public class EmissaryServer {
             waitForAgentsToDrain();
             Namespace.lookup(ServiceProviderRefreshablePlace.class)
                     .forEach(p -> {
-                        p.invalidate();
+                        p.invalidate("due to server refresh");
                         p.refresh(true);
                     });
             unpause();
