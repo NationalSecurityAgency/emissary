@@ -19,6 +19,8 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Locale;
+
 import static emissary.server.api.ApiUtils.lookupPeers;
 import static emissary.server.api.ApiUtils.stripPeerString;
 
@@ -73,7 +75,7 @@ public class Pool {
             int idle = 0;
             try {
                 for (int i = 0; i < AgentPool.lookup().getMaxTotal(); i++) {
-                    String agentKey = MobileAgentFactory.AGENT_NAME + "-" + String.format("%02d", i);
+                    String agentKey = MobileAgentFactory.AGENT_NAME + "-" + String.format(Locale.getDefault(), "%02d", i);
                     if (Namespace.exists(agentKey)) {
                         if (Namespace.lookup(agentKey).toString().startsWith("Idle")) {
                             idle++;

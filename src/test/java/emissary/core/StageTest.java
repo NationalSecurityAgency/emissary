@@ -20,6 +20,7 @@ class StageTest extends UnitTest {
     }
 
     @Test
+    @SuppressWarnings("EnumOrdinal")
     void testIsParallelStageByInt() {
         int i = Stage.ANALYZE.ordinal();
         assertTrue(Stage.isParallelStage(i), "Analyze must be parallel by int");
