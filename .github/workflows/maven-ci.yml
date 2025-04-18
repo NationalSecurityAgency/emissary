@@ -32,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java-compiler: ['11', '17', '21']
+        java-compiler: ['11', '17']
         java-version: ['21']
     continue-on-error: true
 
@@ -55,6 +55,31 @@ jobs:
           build-args: |
             java_version=${{ matrix.java-version }}
             java_compiler=${{ matrix.java-compiler }}
+            verify_build=false
+          cache-from: type=gha
+          cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max' || '' }}
+
+  centos7-build:
+    name: Centos7 legacy build on Java 11 with compiler target 11
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          file: contrib/docker/Dockerfile
+          build-args: |
+            target_os=centos7
             verify_build=false
           cache-from: type=gha
           cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max' || '' }}
