@@ -33,6 +33,7 @@ public class SessionProducer {
      * @deprecated use {@link #SessionProducer(SessionParser, List)}
      */
     @Deprecated
+    @SuppressWarnings("PMD.UnusedFormalParameter")
     public SessionProducer(SessionParser sp, String myKey, List<String> initialForms) {
         this.sp = sp;
         this.initialForms = initialForms;
