@@ -1171,6 +1171,9 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
           <version>${plugin.versions-maven.version}</version>
+          <configuration>
+            <ignoredVersions>.*.alpha.*,.*-M.*,.*-rc.*</ignoredVersions>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.cyclonedx</groupId>
