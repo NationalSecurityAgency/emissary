@@ -75,11 +75,11 @@
     <dep.jersey.version>3.1.3</dep.jersey.version>
     <dep.jetty-jakarta-servlet-api.version>5.0.2</dep.jetty-jakarta-servlet-api.version>
     <dep.jetty.version>11.0.24</dep.jetty.version>
-    <dep.junit-jupiter.version>5.11.4</dep.junit-jupiter.version>
-    <dep.junit-platform.version>1.11.4</dep.junit-platform.version>
+    <dep.junit-jupiter.version>5.12.2</dep.junit-jupiter.version>
+    <dep.junit-platform.version>1.12.2</dep.junit-platform.version>
     <dep.logback.version>1.5.13</dep.logback.version>
     <dep.logstash-logback-encoder.version>7.2</dep.logstash-logback-encoder.version>
-    <dep.mockito.version>5.5.0</dep.mockito.version>
+    <dep.mockito.version>5.17.0</dep.mockito.version>
     <dep.opentest4j.version>1.3.0</dep.opentest4j.version>
     <dep.picocli.version>4.7.4</dep.picocli.version>
     <dep.slf4j.version>2.0.7</dep.slf4j.version>
