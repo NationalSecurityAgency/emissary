@@ -33,7 +33,7 @@ jobs:
       fail-fast: false
       matrix:
         java-compiler: ['11', '17']
-        java-version: ['17']
+        java-version: ['21']
     continue-on-error: true
 
     steps:
@@ -85,7 +85,7 @@ jobs:
           cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max' || '' }}
 
   macos-build:
-    name: MacOS non-standard build on Java 11 with compiler target 11
+    name: MacOS non-standard build on Java 21 with compiler target 11
     runs-on: macos-14
     steps:
       - name: Checkout repo
@@ -94,7 +94,7 @@ jobs:
       - name: Configure Java
         uses: actions/setup-java@v4
         with:
-          java-version: '11'
+          java-version: '21'
           cache: 'maven'
           distribution: 'corretto'
           overwrite-settings: false
