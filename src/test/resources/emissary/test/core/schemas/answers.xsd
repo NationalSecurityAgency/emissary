@@ -82,7 +82,7 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="name"/>
-                <xs:element ref="value"/>
+                <xs:element ref="value" minOccurs="0"/>
             </xs:sequence>
             <xs:attribute ref="os-release"/>
             <xs:attribute ref="os-version"/>
@@ -94,7 +94,6 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="name"/>
-                <xs:element ref="value"/>
             </xs:sequence>
             <xs:attribute ref="os-release"/>
             <xs:attribute ref="os-version"/>
@@ -104,7 +103,7 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="name"/>
-                <xs:element ref="value"/>
+                <xs:element ref="value" minOccurs="0"/>
             </xs:sequence>
             <xs:attribute ref="os-release"/>
             <xs:attribute ref="os-version"/>
