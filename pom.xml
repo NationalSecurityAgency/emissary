@@ -124,7 +124,7 @@
     <plugin.maven-source.version>3.3.1</plugin.maven-source.version>
     <plugin.maven-surefire.version>3.2.3</plugin.maven-surefire.version>
     <plugin.nexus-staging-maven.version>1.6.7</plugin.nexus-staging-maven.version>
-    <plugin.restrict-imports-enforcer-rule.version>2.3.1</plugin.restrict-imports-enforcer-rule.version>
+    <plugin.restrict-imports-enforcer-rule.version>2.6.1</plugin.restrict-imports-enforcer-rule.version>
     <plugin.sonar-maven.version>3.9.1.2184</plugin.sonar-maven.version>
     <plugin.sortpom-maven.version>2.15.0</plugin.sortpom-maven.version>
     <plugin.takari-lifecycle>2.0.8</plugin.takari-lifecycle>
