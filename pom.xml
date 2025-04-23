@@ -54,7 +54,7 @@
     <dep.commons-codec.version>1.16.0</dep.commons-codec.version>
     <dep.commons-collections.version>4.4</dep.commons-collections.version>
     <dep.commons-compress.version>1.27.1</dep.commons-compress.version>
-    <dep.commons-exec.version>1.3</dep.commons-exec.version>
+    <dep.commons-exec.version>1.4.0</dep.commons-exec.version>
     <dep.commons-io.version>2.17.0</dep.commons-io.version>
     <dep.commons-lang.version>3.17.0</dep.commons-lang.version>
     <dep.commons-pool.version>2.11.1</dep.commons-pool.version>
