@@ -61,7 +61,7 @@ public abstract class GrpcConnectionFactory extends BasePooledObjectFactory<Mana
      * <a href="https://docs.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-5.0">Source</a> for default
      * gRPC settings.
      */
-    static class Default {
+    static final class Default {
         public static final int MIN_IDLE_CONNS = 0;
         public static final int MAX_IDLE_CONNS = 8;
         public static final int MAX_POOL_SIZE = 8;
@@ -73,9 +73,11 @@ public abstract class GrpcConnectionFactory extends BasePooledObjectFactory<Mana
         public static final int GRPC_MAX_INBOUND_METADATA_SIZE = 1 << 13; // grpc-java default: 8 KiB (2^13)
         public static final int GRPC_MAX_INBOUND_MESSAGE_SIZE = 1 << 22; // grpc-java default: 4 MiB (2^22)
         public static final String LOAD_BALANCING_POLICY = ROUND_ROBIN;
+
+        private Default() {}
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(emissary.util.grpcpool.GrpcConnectionFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(GrpcConnectionFactory.class);
 
     private final GenericObjectPoolConfig<ManagedChannel> poolConfig = new GenericObjectPoolConfig<>();
 
