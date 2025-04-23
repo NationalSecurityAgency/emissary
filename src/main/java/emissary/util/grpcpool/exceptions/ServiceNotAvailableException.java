@@ -1,8 +1,8 @@
-package emissary.util.grpcpool;
+package emissary.util.grpcpool.exceptions;
 
 /**
- * ServiceNotAvailableException is the parent exception for failures based on the current state of the service. e.g. the
- * service is down, the service has run out of a hardware resource, the service is misconfigured, etc.
+ * Parent exception for failures based on the current state of the service. E.g. the service is down, the service has
+ * run out of a hardware resource, the service is misconfigured, etc.
  */
 public class ServiceNotAvailableException extends RuntimeException {
 

@@ -1,18 +1,18 @@
-package emissary.util.grpcpool;
+package emissary.util.grpcpool.exceptions;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * ServiceException is used to encapsulate bad data errors related to a external service. These errors should be treated
- * as unrecoverable. These errors should not be made due to temporal server state.
+ * Encapsulates bad data errors related to an external service. These errors should be treated as unrecoverable and
+ * should not be made due to temporal server state.
  */
 public class ServiceException extends RuntimeException {
 
     private static final long serialVersionUID = 1371863576664142288L;
 
-    static final String GRPC_ERROR_MSG_FMT = "Encountered grpc runtime status error %s. %s";
+    static final String GRPC_ERROR_MSG_FMT = "Encountered gRPC runtime status error %s. %s";
 
     public ServiceException(String errorMessage) {
         super(errorMessage);
@@ -39,7 +39,7 @@ public class ServiceException extends RuntimeException {
         switch (code) {
             case DEADLINE_EXCEEDED:
                 throw new ServiceException(String.format(GRPC_ERROR_MSG_FMT, e.getMessage(),
-                        "Grpc client connection has timed out."));
+                        "gRPC client connection has timed out."));
             case UNAVAILABLE: {
                 // Likely server has gone down. Could be a crash or resources were scaled down
                 String desc = status.getDescription();
@@ -64,7 +64,7 @@ public class ServiceException extends RuntimeException {
                         "It's likely a gpu OOM error or other resource error has occurred"));
             default:
                 throw new ServiceException(String.format(GRPC_ERROR_MSG_FMT, e.getMessage(),
-                        "This is an unhandled code type. Please add it to the list of grpc exceptions."));
+                        "This is an unhandled code type. Please add it to the list of gRPC exceptions."));
         }
     }
 }

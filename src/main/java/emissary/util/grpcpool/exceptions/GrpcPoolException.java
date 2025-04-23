@@ -1,7 +1,7 @@
-package emissary.util.grpcpool;
+package emissary.util.grpcpool.exceptions;
 
 /**
- * GrpcPoolException is an exception type for failures with handling the Grpc connection pool such as failed borrows.
+ * Exception type for failures with handling the gRPC connection pool, such as failed borrows.
  */
 public class GrpcPoolException extends RuntimeException {
 

@@ -1,8 +1,8 @@
-package emissary.util.grpcpool;
+package emissary.util.grpcpool.exceptions;
 
 /**
- * ServiceNotReadyYetException is meant to be used when the service doesn't currently have enough resources to perform
- * the request. The connection is good, just try again later.
+ * Used when the service doesn't currently have enough resources to perform the request. The connection is good, just
+ * try again later.
  */
 public class ServiceNotReadyException extends ServiceNotAvailableException {
 

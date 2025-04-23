@@ -1,8 +1,7 @@
-package emissary.util.grpcpool;
+package emissary.util.grpcpool.exceptions;
 
 /**
- * ServiceNotLiveException is meant to be used when the server is down and not responding. The connection is most likely
- * bad and needs to be replaced.
+ * Used when the server is down and not responding. The connection is most likely bad and needs to be replaced.
  */
 public class ServiceNotLiveException extends ServiceNotAvailableException {
 

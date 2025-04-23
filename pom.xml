@@ -472,10 +472,11 @@
       <groupId>io.grpc</groupId>
       <artifactId>grpc-api</artifactId>
     </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>io.grpc</groupId>-->
-    <!--      <artifactId>grpc-netty-shaded</artifactId>-->
-    <!--    </dependency>-->
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty-shaded</artifactId>
+      <scope>runtime</scope>
+    </dependency>
     <!--    <dependency>-->
     <!--      <groupId>io.grpc</groupId>-->
     <!--      <artifactId>grpc-protobuf</artifactId>-->

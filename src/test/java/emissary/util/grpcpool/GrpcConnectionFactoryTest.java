@@ -5,35 +5,25 @@ import emissary.config.ServiceConfigGuide;
 import emissary.test.core.junit5.UnitTest;
 
 import io.grpc.ManagedChannel;
+import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PooledObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class GrpcConnectionFactoryTest extends UnitTest {
-    private static final String host = "localhost";
-    private static final int port = 2222;
-    private static final int minIdleConns = 5;
-    private static final int maxIdleConns = 6;
+    private static final String MIN_IDLE_CONNS = "MIN_IDLE_CONNS";
+    private static final String MAX_IDLE_CONNS = "MAX_IDLE_CONNS";
+    private static final String MAX_POOL_SIZE = "MAX_POOL_SIZE";
+    private static final String HOST = "localhost";
+    private static final int PORT = 2222;
 
-    private static final int keepAlive = 7;
-
-    private static final int keepAliveTimeout = 8;
-    private static final int maxInboundMsgSize = 1000;
-    private static final int maxInboundMetadataSize = 100;
-    private static final int maxPoolSize = 10;
-    private static final float erodingPoolFactor = 1.0f;
-    private static final boolean keepAliveWithoutCalls = false;
-    private static final boolean lifo = false;
-    private static final boolean blockWhenPoolExhausted = true;
-    private static final Long maxWaitPoolBorrow = Duration.parse("PT10M").toMillis();
     private GrpcConnectionFactory factory;
+    private ObjectPool<ManagedChannel> pool;
 
-    public static class TestFactory extends GrpcConnectionFactory {
-        public TestFactory(String host, int port, Configurator configG) {
+    public static class TestGrpcConnectionFactory extends GrpcConnectionFactory {
+        public TestGrpcConnectionFactory(String host, int port, Configurator configG) {
             super(host, port, configG);
         }
 
@@ -44,48 +34,74 @@ class GrpcConnectionFactoryTest extends UnitTest {
     }
 
     @BeforeEach
-    public void init() throws Exception {
-        // This method of creating a configurator for testes requires either all unit tests are run
-        // or the -Demissary.config.dir option enabled.
+    public void init() {
         Configurator configT = new ServiceConfigGuide();
-        // Easily testable parameters
-        configT.addEntry("MIN_IDLE_CONNS", String.valueOf(minIdleConns));
-        configT.addEntry("MAX_IDLE_CONNS", String.valueOf(maxIdleConns));
-        configT.addEntry("MAX_POOL_SIZE", String.valueOf(maxPoolSize));
-        configT.addEntry("BLOCK_WHEN_POOL_EXHAUSTED", String.valueOf(blockWhenPoolExhausted));
-        configT.addEntry("LIFO_POOL", String.valueOf(lifo));
-        configT.addEntry("MAX_WAIT_POOL_BORROW", String.valueOf(maxWaitPoolBorrow));
+        configT.addEntry(MIN_IDLE_CONNS, "1");
+        configT.addEntry(MAX_IDLE_CONNS, "2");
+        configT.addEntry(MAX_POOL_SIZE, "2");
 
-        // Parameters buried somewhere in pool config
-        configT.addEntry("ERODING_POOL_FACTOR", String.valueOf(erodingPoolFactor));
-        configT.addEntry("GRPC_KEEP_ALIVE_MS", String.valueOf(keepAlive));
-        configT.addEntry("GRPC_KEEP_ALIVE_TIMEOUT_MS", String.valueOf(keepAliveTimeout));
-        configT.addEntry("GRPC_KEEP_ALIVE_WITHOUT_CALLS", String.valueOf(keepAliveWithoutCalls));
-        configT.addEntry("GRPC_MAX_INBOUND_MESSAGE_SIZE", String.valueOf(maxInboundMsgSize));
-        configT.addEntry("GRPC_MAX_INBOUND_METADATA_SIZE", String.valueOf(maxInboundMetadataSize));
-
-        factory = new TestFactory(host, port, configT);
+        factory = new TestGrpcConnectionFactory(HOST, PORT, configT);
+        pool = factory.newConnectionPool();
     }
 
     @Test
-    void testCreateModelFromConfig() {
-        assertEquals(minIdleConns, factory.poolConfig.getMinIdle(), "Mismatched minIdleConnections");
-        assertEquals(maxIdleConns, factory.poolConfig.getMaxIdle(), "Mismatched maxIdleConnections");
-        assertEquals(maxPoolSize, factory.poolConfig.getMaxTotal(), "Mismatched total connections");
-        assertEquals(blockWhenPoolExhausted, factory.poolConfig.getBlockWhenExhausted(), "Mismatched blockWhenPoolExhausted");
-        assertEquals(lifo, factory.poolConfig.getLifo(), "Mismatched pool stack order - lifo");
-        assertEquals(maxWaitPoolBorrow, factory.poolConfig.getMaxWaitDuration().toMillis(), "Mismatched maxWaitPoolBorrow");
+    void testAcquireChannel() throws Exception {
+        ManagedChannel channel = GrpcConnectionFactory.acquireChannel(pool);
+        assertNotNull(channel);
+        pool.returnObject(channel);
     }
 
     @Test
-    void testManagedChannelParameters() {
-        assertEquals(host, factory.getHost(), "Mismatched host");
-        assertEquals(port, factory.getPort(), "Mismatched port");
-        assertEquals(keepAlive, factory.getKeepAlive(), "Mismatched keepAlive");
-        assertEquals(keepAliveTimeout, factory.getKeepAliveTimeout(), "Mismatched keepAliveTimeout");
-        assertEquals(keepAliveWithoutCalls, factory.isKeepAliveWithoutCalls(), "Mismatched isKeepAliveWithoutCalls");
-        assertEquals(maxInboundMsgSize, factory.getMaxInboundMessageSize(), "Mismatched maxInboundMessageSize");
-        assertEquals(maxInboundMetadataSize, factory.getMaxInboundMetadataSize(), "Mismatched maxInboundMetadataSize");
-        assertEquals(erodingPoolFactor, factory.getErodingPoolFactor(), "Mismatched erodingPoolFactor");
+    void testInvalidateChannel() throws Exception {
+        ManagedChannel c1 = GrpcConnectionFactory.acquireChannel(pool);
+        GrpcConnectionFactory.invalidateChannel(c1, pool);
+        ManagedChannel c2 = GrpcConnectionFactory.acquireChannel(pool);
+        assertNotSame(c1, c2);
+        pool.returnObject(c2);
+    }
+
+    @Test
+    void testReturnChannel() {
+        ManagedChannel c1 = GrpcConnectionFactory.acquireChannel(pool);
+        GrpcConnectionFactory.returnChannel(c1, pool);
+        ManagedChannel c2 = GrpcConnectionFactory.acquireChannel(pool);
+        assertSame(c1, c2);
+        GrpcConnectionFactory.returnChannel(c2, pool);
+    }
+
+    @Test
+    void testMaxPoolSizeBlocks() {
+        ManagedChannel c1 = GrpcConnectionFactory.acquireChannel(pool);
+        ManagedChannel c2 = GrpcConnectionFactory.acquireChannel(pool);
+        assertThrows(Exception.class, () -> GrpcConnectionFactory.acquireChannel(pool));
+        GrpcConnectionFactory.returnChannel(c1, pool);
+        GrpcConnectionFactory.returnChannel(c2, pool);
+    }
+
+    @Test
+    void testCreate() {
+        ManagedChannel channel = factory.create();
+        assertNotNull(channel);
+        channel.shutdownNow();
+    }
+
+    @Test
+    void testWrap() {
+        ManagedChannel channel = factory.create();
+        PooledObject<ManagedChannel> wrapped = factory.wrap(channel);
+        assertNotNull(wrapped);
+        assertEquals(channel, wrapped.getObject());
+        wrapped.getObject().shutdownNow();
+    }
+
+    @Test
+    void testDestroy() {
+        PooledObject<ManagedChannel> wrapped = factory.wrap(factory.create());
+        ManagedChannel channel = wrapped.getObject();
+        assertNotNull(wrapped);
+        assertFalse(channel.isShutdown());
+        assertFalse(channel.isTerminated());
+        assertDoesNotThrow(() -> factory.destroyObject(wrapped));
+        assertTrue(channel.isShutdown());
     }
 }
