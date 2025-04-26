@@ -110,6 +110,10 @@ public final class IbdoXmlElementNames {
      * The XML element prefix for Extracted Records.
      */
     public static final String EXTRACTED_RECORD_ELEMENT_PREFIX = "extract";
+    /**
+     * The XML attribute index for Attachments and Extracted Records.
+     */
+    public static final String INDEX = "index";
 
     private IbdoXmlElementNames() {}
 }

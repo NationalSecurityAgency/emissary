@@ -30,6 +30,7 @@ import static emissary.core.constants.IbdoXmlElementNames.FOOTER;
 import static emissary.core.constants.IbdoXmlElementNames.HEADER;
 import static emissary.core.constants.IbdoXmlElementNames.HEADER_ENCODING;
 import static emissary.core.constants.IbdoXmlElementNames.ID;
+import static emissary.core.constants.IbdoXmlElementNames.INDEX;
 import static emissary.core.constants.IbdoXmlElementNames.NUM_CHILDREN;
 import static emissary.core.constants.IbdoXmlElementNames.NUM_SIBLINGS;
 import static emissary.core.constants.IbdoXmlElementNames.OUTPUTABLE;
@@ -190,7 +191,8 @@ public final class IBaseDataObjectXmlHelper {
         if (extractedRecords != null) {
             for (int i = 0; i < extractedRecords.size(); i++) {
                 final IBaseDataObject extractedRecord = extractedRecords.get(i);
-                final Element extractElement = new Element(EXTRACTED_RECORD_ELEMENT_PREFIX + (i + 1));
+                final Element extractElement = new Element(EXTRACTED_RECORD_ELEMENT_PREFIX);
+                extractElement.setAttribute(INDEX, String.valueOf(i + 1));
 
                 xmlFromIbdoMainElements(extractedRecord, extractElement, encoders);
 
@@ -200,7 +202,8 @@ public final class IBaseDataObjectXmlHelper {
 
         for (int i = 0; i < children.size(); i++) {
             final IBaseDataObject child = children.get(i);
-            final Element childElement = new Element(ATTACHMENT_ELEMENT_PREFIX + (i + 1));
+            final Element childElement = new Element(ATTACHMENT_ELEMENT_PREFIX);
+            childElement.setAttribute(INDEX, String.valueOf(i + 1));
 
             xmlFromIbdoMainElements(child, childElement, encoders);
 
