@@ -3,6 +3,8 @@ package emissary.parser;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 
+import jakarta.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -20,6 +22,7 @@ public class SessionProducer {
 
     protected SessionParser sp;
     protected int numSessions = 0;
+    @Nullable
     protected List<String> initialForms;
 
     protected boolean firstSession = true;
@@ -37,6 +40,16 @@ public class SessionProducer {
     public SessionProducer(SessionParser sp, String myKey, List<String> initialForms) {
         this.sp = sp;
         this.initialForms = initialForms;
+    }
+
+    /**
+     * Creates a SessionProducer
+     *
+     * @param sp The SessionParser, which has parsed theContent.
+     */
+    public SessionProducer(SessionParser sp) {
+        this.sp = sp;
+        this.initialForms = null;
     }
 
     /**
