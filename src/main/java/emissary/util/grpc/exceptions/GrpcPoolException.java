@@ -1,4 +1,4 @@
-package emissary.util.grpcpool.exceptions;
+package emissary.util.grpc.exceptions;
 
 /**
  * Exception type for failures with handling the gRPC connection pool, such as failed borrows.

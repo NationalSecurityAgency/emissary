@@ -1,4 +1,4 @@
-package emissary.util.grpcpool.exceptions;
+package emissary.util.grpc.exceptions;
 
 import emissary.test.core.junit5.UnitTest;
 

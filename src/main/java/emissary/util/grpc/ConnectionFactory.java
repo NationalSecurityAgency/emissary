@@ -1,7 +1,7 @@
-package emissary.util.grpcpool;
+package emissary.util.grpc;
 
 import emissary.config.Configurator;
-import emissary.util.grpcpool.exceptions.GrpcPoolException;
+import emissary.util.grpc.exceptions.GrpcPoolException;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
  * <li>{@code ERODING_POOL_FACTOR} - Optional shrink rate for idle connections</li>
  * </ul>
  */
-public abstract class GrpcConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
+public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
     private static final String MIN_IDLE_CONNS = "MIN_IDLE_CONNS";
     private static final String MAX_IDLE_CONNS = "MAX_IDLE_CONNS";
     private static final String MAX_POOL_SIZE = "MAX_POOL_SIZE";
@@ -77,7 +77,7 @@ public abstract class GrpcConnectionFactory extends BasePooledObjectFactory<Mana
         private Default() {}
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(GrpcConnectionFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
 
     private final GenericObjectPoolConfig<ManagedChannel> poolConfig = new GenericObjectPoolConfig<>();
 
@@ -100,7 +100,7 @@ public abstract class GrpcConnectionFactory extends BasePooledObjectFactory<Mana
      * @param port gRPC service port
      * @param configG configuration provider for channel and pool parameters
      */
-    protected GrpcConnectionFactory(String host, int port, Configurator configG) {
+    protected ConnectionFactory(String host, int port, Configurator configG) {
         this.host = host;
         this.port = port;
         this.target = host + ":" + port; // target may be a host or dns service

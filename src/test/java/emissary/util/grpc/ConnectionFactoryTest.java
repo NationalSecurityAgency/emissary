@@ -1,4 +1,4 @@
-package emissary.util.grpcpool;
+package emissary.util.grpc;
 
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
@@ -19,18 +19,18 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class GrpcConnectionFactoryTest extends UnitTest {
+class ConnectionFactoryTest extends UnitTest {
     private static final String MIN_IDLE_CONNS = "MIN_IDLE_CONNS";
     private static final String MAX_IDLE_CONNS = "MAX_IDLE_CONNS";
     private static final String MAX_POOL_SIZE = "MAX_POOL_SIZE";
     private static final String HOST = "localhost";
     private static final int PORT = 2222;
 
-    private GrpcConnectionFactory factory;
+    private ConnectionFactory factory;
     private ObjectPool<ManagedChannel> pool;
 
-    public static class TestGrpcConnectionFactory extends GrpcConnectionFactory {
-        public TestGrpcConnectionFactory(String host, int port, Configurator configG) {
+    public static class TestConnectionFactory extends ConnectionFactory {
+        public TestConnectionFactory(String host, int port, Configurator configG) {
             super(host, port, configG);
         }
 
@@ -47,42 +47,42 @@ class GrpcConnectionFactoryTest extends UnitTest {
         configT.addEntry(MAX_IDLE_CONNS, "2");
         configT.addEntry(MAX_POOL_SIZE, "2");
 
-        factory = new TestGrpcConnectionFactory(HOST, PORT, configT);
+        factory = new TestConnectionFactory(HOST, PORT, configT);
         pool = factory.newConnectionPool();
     }
 
     @Test
     void testAcquireChannel() throws Exception {
-        ManagedChannel channel = GrpcConnectionFactory.acquireChannel(pool);
+        ManagedChannel channel = ConnectionFactory.acquireChannel(pool);
         assertNotNull(channel);
         pool.returnObject(channel);
     }
 
     @Test
     void testInvalidateChannel() throws Exception {
-        ManagedChannel c1 = GrpcConnectionFactory.acquireChannel(pool);
-        GrpcConnectionFactory.invalidateChannel(c1, pool);
-        ManagedChannel c2 = GrpcConnectionFactory.acquireChannel(pool);
+        ManagedChannel c1 = ConnectionFactory.acquireChannel(pool);
+        ConnectionFactory.invalidateChannel(c1, pool);
+        ManagedChannel c2 = ConnectionFactory.acquireChannel(pool);
         assertNotSame(c1, c2);
         pool.returnObject(c2);
     }
 
     @Test
     void testReturnChannel() {
-        ManagedChannel c1 = GrpcConnectionFactory.acquireChannel(pool);
-        GrpcConnectionFactory.returnChannel(c1, pool);
-        ManagedChannel c2 = GrpcConnectionFactory.acquireChannel(pool);
+        ManagedChannel c1 = ConnectionFactory.acquireChannel(pool);
+        ConnectionFactory.returnChannel(c1, pool);
+        ManagedChannel c2 = ConnectionFactory.acquireChannel(pool);
         assertSame(c1, c2);
-        GrpcConnectionFactory.returnChannel(c2, pool);
+        ConnectionFactory.returnChannel(c2, pool);
     }
 
     @Test
     void testMaxPoolSizeBlocks() {
-        ManagedChannel c1 = GrpcConnectionFactory.acquireChannel(pool);
-        ManagedChannel c2 = GrpcConnectionFactory.acquireChannel(pool);
-        assertThrows(Exception.class, () -> GrpcConnectionFactory.acquireChannel(pool));
-        GrpcConnectionFactory.returnChannel(c1, pool);
-        GrpcConnectionFactory.returnChannel(c2, pool);
+        ManagedChannel c1 = ConnectionFactory.acquireChannel(pool);
+        ManagedChannel c2 = ConnectionFactory.acquireChannel(pool);
+        assertThrows(Exception.class, () -> ConnectionFactory.acquireChannel(pool));
+        ConnectionFactory.returnChannel(c1, pool);
+        ConnectionFactory.returnChannel(c2, pool);
     }
 
     @Test
