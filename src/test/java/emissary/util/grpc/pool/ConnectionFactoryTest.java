@@ -1,4 +1,4 @@
-package emissary.util.grpc;
+package emissary.util.grpc.pool;
 
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;

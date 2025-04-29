@@ -1,4 +1,4 @@
-package emissary.util.grpc;
+package emissary.util.grpc.pool;
 
 import emissary.config.Configurator;
 import emissary.util.grpc.exceptions.GrpcPoolException;
@@ -55,27 +55,6 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
     private static final String GRPC_MAX_INBOUND_MESSAGE_SIZE = "GRPC_MAX_INBOUND_MESSAGE_SIZE";
     private static final String GRPC_MAX_INBOUND_METADATA_SIZE = "GRPC_MAX_INBOUND_METADATA_SIZE";
     private static final String LOAD_BALANCING_POLICY = "LOAD_BALANCING_POLICY";
-    private static final String ROUND_ROBIN = "round_robin";
-
-    /**
-     * <a href="https://docs.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-5.0">Source</a> for default
-     * gRPC settings.
-     */
-    static final class Default {
-        public static final int MIN_IDLE_CONNS = 0;
-        public static final int MAX_IDLE_CONNS = 8;
-        public static final int MAX_POOL_SIZE = 8;
-        public static final long MAX_WAIT_POOL_BORROW = 10000L;
-        public static final float ERODING_POOL_FACTOR = -1.0f; // disables automatic pool shrinking
-        public static final long GRPC_KEEP_ALIVE_MS = 60000L;
-        public static final long GRPC_KEEP_ALIVE_TIMEOUT_MS = 30000L;
-        public static final boolean GRPC_KEEP_ALIVE_WITHOUT_CALLS = false;
-        public static final int GRPC_MAX_INBOUND_METADATA_SIZE = 1 << 13; // grpc-java default: 8 KiB (2^13)
-        public static final int GRPC_MAX_INBOUND_MESSAGE_SIZE = 1 << 22; // grpc-java default: 4 MiB (2^22)
-        public static final String LOAD_BALANCING_POLICY = ROUND_ROBIN;
-
-        private Default() {}
-    }
 
     private static final Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
 
@@ -106,35 +85,35 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
         this.target = host + ":" + port; // target may be a host or dns service
 
         // How often (in milliseconds) to send pings when the connection is idle
-        this.keepAlive = configG.findLongEntry(GRPC_KEEP_ALIVE_MS, Default.GRPC_KEEP_ALIVE_MS);
+        this.keepAlive = configG.findLongEntry(GRPC_KEEP_ALIVE_MS, ConnectionDefaults.GRPC_KEEP_ALIVE_MS);
 
         // Time to wait (in milliseconds) for a ping ACK before closing the connection
-        this.keepAliveTimeout = configG.findLongEntry(GRPC_KEEP_ALIVE_TIMEOUT_MS, Default.GRPC_KEEP_ALIVE_TIMEOUT_MS);
+        this.keepAliveTimeout = configG.findLongEntry(GRPC_KEEP_ALIVE_TIMEOUT_MS, ConnectionDefaults.GRPC_KEEP_ALIVE_TIMEOUT_MS);
 
         // Whether to send pings when no RPCs are active
         // Note: Seme gRPC services have this set to false and will be noisy if not adjusted
-        this.keepAliveWithoutCalls = configG.findBooleanEntry(GRPC_KEEP_ALIVE_WITHOUT_CALLS, Default.GRPC_KEEP_ALIVE_WITHOUT_CALLS);
+        this.keepAliveWithoutCalls = configG.findBooleanEntry(GRPC_KEEP_ALIVE_WITHOUT_CALLS, ConnectionDefaults.GRPC_KEEP_ALIVE_WITHOUT_CALLS);
 
         // Max size (in bytes) for incoming messages and message metadata from the server
-        this.maxInboundMessageSize = configG.findIntEntry(GRPC_MAX_INBOUND_MESSAGE_SIZE, Default.GRPC_MAX_INBOUND_MESSAGE_SIZE);
-        this.maxInboundMetadataSize = configG.findIntEntry(GRPC_MAX_INBOUND_METADATA_SIZE, Default.GRPC_MAX_INBOUND_METADATA_SIZE);
+        this.maxInboundMessageSize = configG.findIntEntry(GRPC_MAX_INBOUND_MESSAGE_SIZE, ConnectionDefaults.GRPC_MAX_INBOUND_MESSAGE_SIZE);
+        this.maxInboundMetadataSize = configG.findIntEntry(GRPC_MAX_INBOUND_METADATA_SIZE, ConnectionDefaults.GRPC_MAX_INBOUND_METADATA_SIZE);
 
         // Specifies how the client chooses between multiple backend addresses
         // e.g. "pick_first" uses the first address only, while "round_robin" cycles through all of them for client-side
         // balancing
-        this.loadBalancingPolicy = configG.findStringEntry(LOAD_BALANCING_POLICY, Default.LOAD_BALANCING_POLICY);
+        this.loadBalancingPolicy = configG.findStringEntry(LOAD_BALANCING_POLICY, ConnectionDefaults.LOAD_BALANCING_POLICY);
 
         // Controls how aggressively idle connections are phased out over time
         // Set to a float between 0.0 and 1.0 to enable erosion (e.g. 0.2 = mild erosion)
         // Set to -1.0 to disable connection pool erosion entirely
-        this.erodingPoolFactor = (float) configG.findDoubleEntry(ERODING_POOL_FACTOR, Default.ERODING_POOL_FACTOR);
+        this.erodingPoolFactor = (float) configG.findDoubleEntry(ERODING_POOL_FACTOR, ConnectionDefaults.ERODING_POOL_FACTOR);
 
         // Min/max number of idle connections in pool
-        this.poolConfig.setMinIdle(configG.findIntEntry(MIN_IDLE_CONNS, Default.MIN_IDLE_CONNS));
-        this.poolConfig.setMaxIdle(configG.findIntEntry(MAX_IDLE_CONNS, Default.MAX_IDLE_CONNS));
+        this.poolConfig.setMinIdle(configG.findIntEntry(MIN_IDLE_CONNS, ConnectionDefaults.MIN_IDLE_CONNS));
+        this.poolConfig.setMaxIdle(configG.findIntEntry(MAX_IDLE_CONNS, ConnectionDefaults.MAX_IDLE_CONNS));
 
         // Max number of total connections in pool
-        this.poolConfig.setMaxTotal(configG.findIntEntry(MAX_POOL_SIZE, Default.MAX_POOL_SIZE));
+        this.poolConfig.setMaxTotal(configG.findIntEntry(MAX_POOL_SIZE, ConnectionDefaults.MAX_POOL_SIZE));
 
         // Order for pool to borrow connections
         this.poolConfig.setLifo(configG.findBooleanEntry(LIFO_POOL,
@@ -145,7 +124,7 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
                 BaseObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED));
 
         // Max duration to wait until block is released from exhausted pool
-        this.poolConfig.setMaxWait(Duration.ofMillis(configG.findLongEntry(MAX_WAIT_POOL_BORROW, Default.MAX_WAIT_POOL_BORROW)));
+        this.poolConfig.setMaxWait(Duration.ofMillis(configG.findLongEntry(MAX_WAIT_POOL_BORROW, ConnectionDefaults.MAX_WAIT_POOL_BORROW)));
     }
 
     /**
