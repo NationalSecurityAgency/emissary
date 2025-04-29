@@ -22,6 +22,11 @@ public class ObjectTracingService {
     private ObjectTracingService() {}
 
     public static synchronized void emitLifecycleEvent(IBaseDataObject d, String filename, ObjectTracing.Stage stage, boolean useObjectTracing) {
+        emitLifecycleEvent(d, filename, stage, useObjectTracing, null, null);
+    }
+
+    public static synchronized void emitLifecycleEvent(IBaseDataObject d, String filename, ObjectTracing.Stage stage, boolean useObjectTracing,
+            @Nullable String filterName, @Nullable String outputFileName) {
         if (useObjectTracing) {
             if (loader == null) {
                 loader = ServiceLoader.load(ObjectTracing.class);
@@ -30,7 +35,11 @@ public class ObjectTracingService {
             // have the appropriate providers add fields
             Map<String, String> jsonFieldMap = new HashMap<>();
             for (ObjectTracing tracing : loader) {
-                tracing.getObjectTraceFields(d, filename, stage, jsonFieldMap);
+                if (stage.equals(ObjectTracing.Stage.PICK_UP)) {
+                    tracing.getObjectTracePickUpFields(d, filename, stage, jsonFieldMap);
+                } else {
+                    tracing.getObjectTraceDropOffFields(d, filename, stage, filterName, outputFileName, jsonFieldMap);
+                }
             }
             // once we have added fields from all providers, perform remapping of field names as appropriate
             for (ObjectTracing tracing : loader) {
