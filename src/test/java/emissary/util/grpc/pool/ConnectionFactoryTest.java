@@ -4,7 +4,9 @@ import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.test.core.junit5.UnitTest;
 
+import emissary.util.grpc.exceptions.GrpcPoolException;
 import io.grpc.ManagedChannel;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PooledObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,7 +82,8 @@ class ConnectionFactoryTest extends UnitTest {
     void testMaxPoolSizeBlocks() {
         ManagedChannel c1 = ConnectionFactory.acquireChannel(pool);
         ManagedChannel c2 = ConnectionFactory.acquireChannel(pool);
-        assertThrows(Exception.class, () -> ConnectionFactory.acquireChannel(pool));
+        GrpcPoolException exception = assertThrows(GrpcPoolException.class, () -> ConnectionFactory.acquireChannel(pool));
+        assertTrue(StringUtils.startsWith(exception.getMessage(), "Unable to borrow channel from pool: Timeout waiting for idle object"));
         ConnectionFactory.returnChannel(c1, pool);
         ConnectionFactory.returnChannel(c2, pool);
     }
