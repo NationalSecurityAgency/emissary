@@ -52,6 +52,11 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public abstract class RegressionTest extends ExtractionTest {
 
+    @Override
+    public String getAnswerXsd() {
+        return "emissary/test/core/schemas/regression.xsd";
+    }
+
     /**
      * Override this or set the generateAnswers system property to true to generate XML for data files.
      * 

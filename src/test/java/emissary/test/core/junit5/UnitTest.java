@@ -100,6 +100,10 @@ public abstract class UnitTest {
         assertMaxNonSystemThreadCount(1);
     }
 
+    public String getAnswerXsd() {
+        return answerXsd;
+    }
+
     /**
      * Configure the test stuff
      * <p>
@@ -267,6 +271,7 @@ public abstract class UnitTest {
     @Nullable
     protected Document getAnswerDocumentValidated(String aname) {
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        String answerXsd = getAnswerXsd();
         try (InputStream is = new ResourceReader().getResourceAsStream(aname)) {
             Schema schema = schemaFactory.newSchema(new ResourceReader().getResource(answerXsd));
             XMLReaderJDOMFactory factory = new XMLReaderSchemaFactory(schema);
