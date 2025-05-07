@@ -31,7 +31,7 @@ class ConnectionFactoryTest extends UnitTest {
     private ConnectionFactory factory;
     private ObjectPool<ManagedChannel> pool;
 
-    public static class TestConnectionFactory extends ConnectionFactory {
+    static class TestConnectionFactory extends ConnectionFactory {
         public TestConnectionFactory(String host, int port, Configurator configG) {
             super(host, port, configG);
         }
@@ -42,8 +42,9 @@ class ConnectionFactoryTest extends UnitTest {
         }
     }
 
+    @Override
     @BeforeEach
-    public void init() {
+    public void setUp() throws Exception {
         Configurator configT = new ServiceConfigGuide();
         configT.addEntry(MIN_IDLE_CONNS, "1");
         configT.addEntry(MAX_IDLE_CONNS, "2");
