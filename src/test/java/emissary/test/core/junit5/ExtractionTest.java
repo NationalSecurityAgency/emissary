@@ -37,6 +37,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static emissary.core.IBaseDataObjectXmlCodecs.LENGTH_ATTRIBUTE_NAME;
+import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
+import static emissary.core.constants.IbdoXmlElementNames.ATTACHMENT_ELEMENT_PREFIX;
+import static emissary.core.constants.IbdoXmlElementNames.BROKEN;
+import static emissary.core.constants.IbdoXmlElementNames.CLASSIFICATION;
+import static emissary.core.constants.IbdoXmlElementNames.CURRENT_FORM;
+import static emissary.core.constants.IbdoXmlElementNames.DATA;
+import static emissary.core.constants.IbdoXmlElementNames.EXTRACTED_RECORD_ELEMENT_PREFIX;
+import static emissary.core.constants.IbdoXmlElementNames.FONT_ENCODING;
+import static emissary.core.constants.IbdoXmlElementNames.INDEX;
+import static emissary.core.constants.IbdoXmlElementNames.NAME;
+import static emissary.core.constants.IbdoXmlElementNames.PARAMETER;
+import static emissary.core.constants.IbdoXmlElementNames.SETUP;
+import static emissary.core.constants.IbdoXmlElementNames.VALUE;
+import static emissary.core.constants.IbdoXmlElementNames.VIEW;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -209,7 +224,7 @@ public abstract class ExtractionTest extends UnitTest {
     protected void checkAnswers(Document answers, IBaseDataObject payload, List<IBaseDataObject> attachments, String tname)
             throws DataConversionException {
         Element root = answers.getRootElement();
-        Element parent = root.getChild("answers");
+        Element parent = root.getChild(ANSWERS);
         if (parent == null) {
             parent = root;
         }
@@ -220,7 +235,7 @@ public abstract class ExtractionTest extends UnitTest {
         // Check each attachment
         for (int attNum = 1; attNum <= attachments.size(); attNum++) {
             String atname = tname + Family.SEP + attNum;
-            Element el = getChildAnswers(parent, "att", attNum);
+            Element el = getChildAnswers(parent, ATTACHMENT_ELEMENT_PREFIX, attNum);
             if (el != null) {
                 checkAnswersPreHook(el, payload, attachments.get(attNum - 1), atname);
                 checkAnswers(el, attachments.get(attNum - 1), null, atname);
@@ -233,7 +248,7 @@ public abstract class ExtractionTest extends UnitTest {
             throws DataConversionException {
 
         int numAtt = JDOMUtil.getChildIntValue(el, "numAttachments");
-        long numAttElements = el.getChildren().stream().filter(c -> c.getName().startsWith("att")).count();
+        long numAttElements = el.getChildren().stream().filter(c -> c.getName().startsWith(ATTACHMENT_ELEMENT_PREFIX)).count();
         // check attachments answer file count against payload count
         if (numAtt > -1) {
             assertEquals(numAtt, attachments != null ? attachments.size() : 0,
@@ -248,10 +263,10 @@ public abstract class ExtractionTest extends UnitTest {
             }
         }
 
-        for (Element currentForm : el.getChildren("currentForm")) {
+        for (Element currentForm : el.getChildren(CURRENT_FORM)) {
             String cf = currentForm.getTextTrim();
             if (cf != null) {
-                Attribute index = currentForm.getAttribute("index");
+                Attribute index = currentForm.getAttribute(INDEX);
                 if (index != null) {
                     assertEquals(payload.currentFormAt(index.getIntValue()), cf,
                             String.format("Current form '%s' not found at position [%d] in %s, %s", cf, index.getIntValue(), tname,
@@ -263,7 +278,7 @@ public abstract class ExtractionTest extends UnitTest {
             }
         }
 
-        String cf = el.getChildTextTrim("currentForm");
+        String cf = el.getChildTextTrim(CURRENT_FORM);
         if (cf != null) {
             assertTrue(payload.searchCurrentForm(cf) > -1,
                     String.format("Current form '%s' not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
@@ -279,7 +294,7 @@ public abstract class ExtractionTest extends UnitTest {
             assertEquals(cfsize, payload.currentFormSize(), "Current form size in " + tname);
         }
 
-        String classification = el.getChildTextTrim("classification");
+        String classification = el.getChildTextTrim(CLASSIFICATION);
         if (classification != null) {
             assertEquals(classification, payload.getClassification(),
                     String.format("Classification in '%s' is '%s', not expected '%s'", tname, payload.getClassification(), classification));
@@ -304,12 +319,12 @@ public abstract class ExtractionTest extends UnitTest {
             assertEquals(shortName, payload.shortName(), "Shortname does not match expected in " + tname);
         }
 
-        String fontEncoding = el.getChildTextTrim("fontEncoding");
+        String fontEncoding = el.getChildTextTrim(FONT_ENCODING);
         if (StringUtils.isNotBlank(fontEncoding)) {
             assertEquals(fontEncoding, payload.getFontEncoding(), "Font encoding does not match expected in " + tname);
         }
 
-        String broke = el.getChildTextTrim("broken");
+        String broke = el.getChildTextTrim(BROKEN);
         if (broke != null && broke.length() > 0) {
             assertEquals(broke, payload.isBroken() ? "true" : "false", "Broken status in " + tname);
         }
@@ -325,10 +340,10 @@ public abstract class ExtractionTest extends UnitTest {
         }
 
         // Check specified metadata
-        for (Element meta : el.getChildren("meta")) {
+        for (Element meta : el.getChildren(PARAMETER)) {
             if (verifyOs(meta)) {
-                String key = meta.getChildTextTrim("name");
-                checkForMissingNameElement("meta", key, tname);
+                String key = meta.getChildTextTrim(NAME);
+                checkForMissingNameElement(PARAMETER, key, tname);
                 checkStringValue(meta, payload.getStringParameter(key), tname);
             }
         }
@@ -336,7 +351,7 @@ public abstract class ExtractionTest extends UnitTest {
         // Check specified nometa
         for (Element meta : el.getChildren("nometa")) {
             if (verifyOs(meta)) {
-                String key = meta.getChildTextTrim("name");
+                String key = meta.getChildTextTrim(NAME);
                 checkForMissingNameElement("nometa", key, tname);
                 assertFalse(payload.hasParameter(key),
                         String.format("Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
@@ -347,7 +362,7 @@ public abstract class ExtractionTest extends UnitTest {
         // Check the primary view. Even though there is only one
         // primary view there can be multiple elements to test it
         // with differing matchMode operators
-        for (Element dataEl : el.getChildren("data")) {
+        for (Element dataEl : el.getChildren(DATA)) {
             if (verifyOs(dataEl)) {
                 byte[] payloadData = payload.data();
                 checkStringValue(dataEl, new String(payloadData), tname);
@@ -355,10 +370,10 @@ public abstract class ExtractionTest extends UnitTest {
         }
 
         // Check each alternate view
-        for (Element view : el.getChildren("view")) {
+        for (Element view : el.getChildren(VIEW)) {
             if (verifyOs(view)) {
-                String viewName = view.getChildTextTrim("name");
-                String lengthStr = view.getChildTextTrim("length");
+                String viewName = view.getChildTextTrim(NAME);
+                String lengthStr = view.getChildTextTrim(LENGTH_ATTRIBUTE_NAME);
                 byte[] viewData = payload.getAlternateView(viewName);
                 assertNotNull(viewData, String.format("Alternate View '%s' is missing in %s", viewName, tname));
                 if (lengthStr != null) {
@@ -372,7 +387,7 @@ public abstract class ExtractionTest extends UnitTest {
         // Check for noview items
         for (Element view : el.getChildren("noview")) {
             if (verifyOs(view)) {
-                String viewName = view.getChildTextTrim("name");
+                String viewName = view.getChildTextTrim(NAME);
                 byte[] viewData = payload.getAlternateView(viewName);
                 assertNull(viewData, String.format("Alternate View '%s' is present, but should not be, in %s", viewName, tname));
             }
@@ -381,7 +396,8 @@ public abstract class ExtractionTest extends UnitTest {
         // Check each extract
         int extractCount = JDOMUtil.getChildIntValue(el, "extractCount");
         long numExtractElements =
-                el.getChildren().stream().filter(c -> c.getName().startsWith("extract") && !c.getName().startsWith("extractCount")).count();
+                el.getChildren().stream().filter(c -> c.getName().startsWith(EXTRACTED_RECORD_ELEMENT_PREFIX)
+                        && !c.getName().startsWith("extractCount")).count();
         if (payload.hasExtractedRecords()) {
             List<IBaseDataObject> extractedChildren = payload.getExtractedRecords();
             int foundCount = extractedChildren.size();
@@ -399,7 +415,7 @@ public abstract class ExtractionTest extends UnitTest {
 
 
             for (int attNum = 1; attNum <= extractedChildren.size(); attNum++) {
-                Element extel = getChildAnswers(el, "extract", attNum);
+                Element extel = getChildAnswers(el, EXTRACTED_RECORD_ELEMENT_PREFIX, attNum);
                 if (extel != null) {
                     checkAnswers(extel, extractedChildren.get(attNum - 1), NO_ATTACHMENTS, String.format("%s::extract%d", tname, attNum));
                 }
@@ -422,8 +438,8 @@ public abstract class ExtractionTest extends UnitTest {
     }
 
     protected void checkStringValue(Element meta, String data, String tname) {
-        String key = meta.getChildTextTrim("name");
-        String value = meta.getChildText("value");
+        String key = meta.getChildTextTrim(NAME);
+        String value = meta.getChildText(VALUE);
         String matchMode = "equals";
         Attribute mm = meta.getAttribute("matchMode");
 
@@ -438,7 +454,7 @@ public abstract class ExtractionTest extends UnitTest {
         if (matchMode.equals("equals")) {
             assertEquals(value, data,
                     String.format("%s element '%s' problem in %s value '%s' does not equal '%s'", meta.getName(), key, tname, data, value));
-        } else if (matchMode.equals("index") || matchMode.equals("contains")) {
+        } else if (matchMode.equals(INDEX) || matchMode.equals("contains")) {
             assertTrue(data.contains(value),
                     String.format("%s element '%s' problem in %s value '%s' does not index '%s'", meta.getName(), key, tname, data, value));
         } else if (matchMode.equals("!index") || matchMode.equals("!contains")) {
@@ -496,7 +512,7 @@ public abstract class ExtractionTest extends UnitTest {
     protected void setupPayload(IBaseDataObject payload, Document doc) {
         kff.hash(payload);
         Element root = doc.getRootElement();
-        Element setup = root.getChild("setup");
+        Element setup = root.getChild(SETUP);
         boolean didSetFiletype = false;
         if (setup != null) {
             List<Element> cfChildren = setup.getChildren("initialForm");
@@ -507,25 +523,25 @@ public abstract class ExtractionTest extends UnitTest {
                 payload.enqueueCurrentForm(cf.getTextTrim());
             }
 
-            final String classification = setup.getChildTextTrim("classification");
+            final String classification = setup.getChildTextTrim(CLASSIFICATION);
             if (StringUtils.isNotBlank(classification)) {
                 payload.setClassification(classification);
             }
 
-            final String fontEncoding = setup.getChildTextTrim("fontEncoding");
+            final String fontEncoding = setup.getChildTextTrim(FONT_ENCODING);
             if (StringUtils.isNotBlank(fontEncoding)) {
                 payload.setFontEncoding(fontEncoding);
             }
 
-            for (Element meta : setup.getChildren("meta")) {
-                String key = meta.getChildTextTrim("name");
-                String value = meta.getChildTextTrim("value");
+            for (Element meta : setup.getChildren(PARAMETER)) {
+                String key = meta.getChildTextTrim(NAME);
+                String value = meta.getChildTextTrim(VALUE);
                 payload.appendParameter(key, value);
             }
 
             for (Element altView : setup.getChildren("altView")) {
-                String name = altView.getChildTextTrim("name");
-                byte[] value = altView.getChildText("value").getBytes(StandardCharsets.UTF_8);
+                String name = altView.getChildTextTrim(NAME);
+                byte[] value = altView.getChildText(VALUE).getBytes(StandardCharsets.UTF_8);
                 payload.addAlternateView(name, value);
             }
 
@@ -555,7 +571,7 @@ public abstract class ExtractionTest extends UnitTest {
     protected Element getChildAnswers(Element parent, String name, int index) {
         // look up the new way i.e <att index="1">
         Element el = parent.getChildren().stream()
-                .filter(c -> c.getName().equalsIgnoreCase(name) && c.getAttribute("index").getValue().equals(String.valueOf(index)))
+                .filter(c -> c.getName().equalsIgnoreCase(name) && c.getAttribute(INDEX).getValue().equals(String.valueOf(index)))
                 .findFirst()
                 .orElse(null);
         if (el == null) {
