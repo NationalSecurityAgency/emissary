@@ -48,6 +48,7 @@
     <xs:element name="numAttachments" type="baseType"/>
     <xs:element name="name" type="xs:string"/>
     <xs:element name="value" type="xs:string"/>
+    <xs:element name="length" type="xs:integer"/>
     <xs:element name="currentForm">
         <xs:complexType mixed="true">
             <xs:complexContent mixed="true">
@@ -103,6 +104,7 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="name"/>
+                <xs:element ref="length" minOccurs="0"/>
                 <xs:element ref="value" minOccurs="0"/>
             </xs:sequence>
             <xs:attribute ref="os-release"/>
