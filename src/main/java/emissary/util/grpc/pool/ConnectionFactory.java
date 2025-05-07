@@ -25,22 +25,32 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Configuration Keys:
  * <ul>
+ * <li>{@code GRPC_KEEP_ALIVE_MS} - Time to wait before sending a ping on idle</li>
+ * <li>{@code GRPC_KEEP_ALIVE_TIMEOUT_MS} - Timeout for receiving ping ACKs</li>
+ * <li>{@code GRPC_KEEP_ALIVE_WITHOUT_CALLS} - Send pings even when no RPCs are active</li>
+ * <li>{@code GRPC_MAX_INBOUND_MESSAGE_SIZE} - Max inbound gRPC message size (bytes)</li>
+ * <li>{@code GRPC_MAX_INBOUND_METADATA_SIZE} - Max inbound gRPC metadata size (bytes)</li>
+ * <li>{@code GRPC_MAX_INBOUND_METADATA_SIZE} - Max inbound gRPC metadata size (bytes)</li>
+ * <li>{@code GRPC_LOAD_BALANCING_POLICY} - gRPC load balancing policy (e.g. "round_robin")</li>
+ * <li>{@code ERODING_POOL_FACTOR} - Optional shrink rate for idle connections</li>
  * <li>{@code MIN_IDLE_CONNS} - Minimum idle connections in the pool</li>
  * <li>{@code MAX_IDLE_CONNS} - Maximum idle connections in the pool</li>
  * <li>{@code MAX_POOL_SIZE} - Total max connections allowed</li>
  * <li>{@code MAX_WAIT_POOL_BORROW} - Time to wait before failing a borrow attempt (ms)</li>
  * <li>{@code LIFO} / {@code LIFO_POOL} - Whether pool behaves LIFO or FIFO</li>
  * <li>{@code BLOCK_WHEN_POOL_EXHAUSTED} - Whether threads should block when pool is empty</li>
- * <li>{@code GRPC_KEEP_ALIVE_MS} - Time to wait before sending a ping on idle</li>
- * <li>{@code GRPC_KEEP_ALIVE_TIMEOUT_MS} - Timeout for receiving ping ACKs</li>
- * <li>{@code GRPC_KEEP_ALIVE_WITHOUT_CALLS} - Send pings even when no RPCs are active</li>
- * <li>{@code GRPC_MAX_INBOUND_MESSAGE_SIZE} - Max inbound gRPC message size (bytes)</li>
- * <li>{@code GRPC_MAX_INBOUND_METADATA_SIZE} - Max inbound gRPC metadata size (bytes)</li>
- * <li>{@code LOAD_BALANCING_POLICY} - gRPC load balancing policy (e.g. "round_robin")</li>
- * <li>{@code ERODING_POOL_FACTOR} - Optional shrink rate for idle connections</li>
+ * <li>{@code TEST_ON_BORROW} - Whether to validate pooled connections before use. If true, each borrow will trigger
+ * {@code validateObject()}.</li>
  * </ul>
  */
 public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
+    private static final String GRPC_KEEP_ALIVE_MS = "GRPC_KEEP_ALIVE_MS";
+    private static final String GRPC_KEEP_ALIVE_TIMEOUT_MS = "GRPC_KEEP_ALIVE_TIMEOUT_MS";
+    private static final String GRPC_KEEP_ALIVE_WITHOUT_CALLS = "GRPC_KEEP_ALIVE_WITHOUT_CALLS";
+    private static final String GRPC_MAX_INBOUND_MESSAGE_SIZE = "GRPC_MAX_INBOUND_MESSAGE_SIZE";
+    private static final String GRPC_MAX_INBOUND_METADATA_SIZE = "GRPC_MAX_INBOUND_METADATA_SIZE";
+    private static final String LOAD_BALANCING_POLICY = "LOAD_BALANCING_POLICY";
+    private static final String ERODING_POOL_FACTOR = "ERODING_POOL_FACTOR";
     private static final String MIN_IDLE_CONNS = "MIN_IDLE_CONNS";
     private static final String MAX_IDLE_CONNS = "MAX_IDLE_CONNS";
     private static final String MAX_POOL_SIZE = "MAX_POOL_SIZE";
@@ -48,13 +58,7 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
     private static final String LIFO_POOL = "LIFO_POOL";
     private static final String BLOCK_WHEN_POOL_EXHAUSTED = "BLOCK_WHEN_POOL_EXHAUSTED";
     private static final String MAX_WAIT_POOL_BORROW = "MAX_WAIT_POOL_BORROW";
-    private static final String ERODING_POOL_FACTOR = "ERODING_POOL_FACTOR";
-    private static final String GRPC_KEEP_ALIVE_MS = "GRPC_KEEP_ALIVE_MS";
-    private static final String GRPC_KEEP_ALIVE_TIMEOUT_MS = "GRPC_KEEP_ALIVE_TIMEOUT_MS";
-    private static final String GRPC_KEEP_ALIVE_WITHOUT_CALLS = "GRPC_KEEP_ALIVE_WITHOUT_CALLS";
-    private static final String GRPC_MAX_INBOUND_MESSAGE_SIZE = "GRPC_MAX_INBOUND_MESSAGE_SIZE";
-    private static final String GRPC_MAX_INBOUND_METADATA_SIZE = "GRPC_MAX_INBOUND_METADATA_SIZE";
-    private static final String LOAD_BALANCING_POLICY = "LOAD_BALANCING_POLICY";
+    private static final String TEST_ON_BORROW = "TEST_ON_BORROW";
 
     private static final Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
 
@@ -125,6 +129,9 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
 
         // Max duration to wait until block is released from exhausted pool
         this.poolConfig.setMaxWait(Duration.ofMillis(configG.findLongEntry(MAX_WAIT_POOL_BORROW, ConnectionDefaults.MAX_WAIT_POOL_BORROW)));
+
+        // Whether to validate channels when borrowing from the pool
+        this.poolConfig.setTestOnBorrow(configG.findBooleanEntry(TEST_ON_BORROW, ConnectionDefaults.TEST_ON_BORROW));
     }
 
     /**
@@ -201,13 +208,13 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
     @Override
     public ManagedChannel create() {
         return ManagedChannelBuilder.forTarget(this.target)
+                .keepAliveTime(this.keepAlive, TimeUnit.MILLISECONDS)
+                .keepAliveTimeout(this.keepAliveTimeout, TimeUnit.MILLISECONDS)
                 .keepAliveWithoutCalls(this.keepAliveWithoutCalls)
-                .defaultLoadBalancingPolicy(this.loadBalancingPolicy)
-                .usePlaintext()
                 .maxInboundMessageSize(this.maxInboundMessageSize)
                 .maxInboundMetadataSize(this.maxInboundMetadataSize)
-                .keepAliveTime(this.keepAlive, TimeUnit.MILLISECONDS)
-                .keepAliveTimeout(this.keepAliveTimeout, TimeUnit.MILLISECONDS).build();
+                .defaultLoadBalancingPolicy(this.loadBalancingPolicy)
+                .usePlaintext().build();
     }
 
     /**

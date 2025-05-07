@@ -85,6 +85,7 @@
     <dep.picocli.version>4.7.4</dep.picocli.version>
     <dep.proto-google-common-protos.version>2.26.0</dep.proto-google-common-protos.version>
     <dep.protobuf.version>3.25.5</dep.protobuf.version>
+    <dep.resilience4j.version>1.7.0</dep.resilience4j.version>
     <dep.slf4j.version>2.0.7</dep.slf4j.version>
     <dep.spymemcached.version>2.12.3</dep.spymemcached.version>
     <dep.webjars.bootstrap.version>5.1.3</dep.webjars.bootstrap.version>
@@ -212,6 +213,16 @@
         <groupId>info.picocli</groupId>
         <artifactId>picocli</artifactId>
         <version>${dep.picocli.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.github.resilience4j</groupId>
+        <artifactId>resilience4j-core</artifactId>
+        <version>${dep.resilience4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.github.resilience4j</groupId>
+        <artifactId>resilience4j-retry</artifactId>
+        <version>${dep.resilience4j.version}</version>
       </dependency>
       <dependency>
         <groupId>jakarta.annotation</groupId>
@@ -437,6 +448,10 @@
       <artifactId>guava</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
     </dependency>
@@ -469,17 +484,21 @@
       <artifactId>metrics-jvm</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.github.resilience4j</groupId>
+      <artifactId>resilience4j-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.github.resilience4j</groupId>
+      <artifactId>resilience4j-retry</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-api</artifactId>
     </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>io.grpc</groupId>-->
-    <!--      <artifactId>grpc-protobuf</artifactId>-->
-    <!--    </dependency>-->
-    <!--    <dependency>-->
-    <!--      <groupId>io.grpc</groupId>-->
-    <!--      <artifactId>grpc-stub</artifactId>-->
-    <!--    </dependency>-->
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+    </dependency>
     <dependency>
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>
@@ -629,6 +648,18 @@
       <groupId>com.ibm.icu</groupId>
       <artifactId>icu4j</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+      <version>1.3.2</version>
+      <scope>test</scope>
+      <!--Needed for pre-compiled code artifacts that still use javax annotations-->
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.test-framework</groupId>
@@ -1009,6 +1040,9 @@
             <doclint>all,-missing</doclint>
             <failOnWarnings>true</failOnWarnings>
             <failOnError>true</failOnError>
+            <sourceFileExcludes>
+              <exclude>**/generated-test-sources/**</exclude>
+            </sourceFileExcludes>
           </configuration>
           <executions>
             <execution>
@@ -1031,6 +1065,9 @@
           <version>${plugin.maven-pmd.version}</version>
           <configuration>
             <excludes />
+            <excludeRoots>
+              <excludeRoot>${project.build.directory}/generated-test-sources</excludeRoot>
+            </excludeRoots>
             <failOnViolation>true</failOnViolation>
             <failurePriority>5</failurePriority>
             <maxAllowedViolations>0</maxAllowedViolations>
@@ -1208,6 +1245,20 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>${plugin.build-helper-maven.version}</version>
+          <executions>
+            <execution>
+              <id>add-test-source</id>
+              <goals>
+                <goal>add-test-source</goal>
+              </goals>
+              <phase>generate-test-sources</phase>
+              <configuration>
+                <sources>
+                  <source>${project.build.directory}/generated-test-sources</source>
+                </sources>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -1300,6 +1351,14 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>${plugin.maven-dependency.version}</version>
+        <configuration>
+          <ignoredDependencies>
+            <!-- required for generated grpc code -->
+            <ignoredDependency>javax.annotation:javax.annotation-api:*</ignoredDependency>
+            <ignoredDependency>org.apache.arrow:arrow-memory-netty:*</ignoredDependency>
+            <ignoredDependency>org.junit.jupiter:junit-jupiter-params:*</ignoredDependency>
+          </ignoredDependencies>
+        </configuration>
         <executions>
           <execution>
             <id>analyze</id>
@@ -1414,6 +1473,14 @@
       <plugin>
         <groupId>org.basepom.maven</groupId>
         <artifactId>duplicate-finder-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.xolstice.maven.plugins</groupId>
+        <artifactId>protobuf-maven-plugin</artifactId>
       </plugin>
     </plugins>
     <extensions>
@@ -1697,6 +1764,8 @@
                   -XepAllDisabledChecksAsWarnings \
                   -XepAllSuggestionsAsWarnings \
                   -XepDisableWarningsInGeneratedCode \
+                  -XepExcludedPaths:.*/generated-sources/.* \
+                  -XepExcludedPaths:.*/generated-test-sources/.* \
                   -Xep:AndroidJdkLibsChecker:OFF \
                   -Xep:BooleanParameter:OFF \
                   -Xep:CanIgnoreReturnValueSuggester:OFF \

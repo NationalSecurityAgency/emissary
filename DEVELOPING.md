@@ -791,3 +791,12 @@ nslookup somehost
 ```
 
 If you have this situation, then it is recommended to use [Google's DNS servers](https://developers.google.com/speed/public-dns/docs/using).
+
+### Generated Sources
+
+Intellij sometimes doesn't see code generated from other files (e.g. Protobuf). 
+To resolve this, right-click:
+* `/target/generated-sources/${subfolder}` > Mark Directory as > Sources Root
+* `/target/generated-test-sources/${subfolder}` > Mark Directory as > Test Sources Root
+
+*This is an issue specific to IntelliJ. It has no impact on the Maven CLI.*
