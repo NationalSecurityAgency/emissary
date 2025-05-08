@@ -101,7 +101,7 @@ class GrpcConnectionPlaceTest extends UnitTest {
     @Test
     void testValidatePooledObjectIsCalled() {
         assertFalse(place.getIsValidated());
-        ConnectionFactory.acquireChannel(place.pool);
+        ConnectionFactory.acquireChannel(place.channelPool);
         assertTrue(place.getIsValidated());
     }
 
