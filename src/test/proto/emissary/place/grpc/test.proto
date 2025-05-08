@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package emissary.place.grpc;
 
+import "google/protobuf/empty.proto";
 option java_multiple_files = true;
 
 message TestRequest {
@@ -12,6 +13,11 @@ message TestResponse {
   string result = 1;
 }
 
+message HealthStatus {
+  bool ok = 1;
+}
+
 service TestService {
   rpc Uppercase(TestRequest) returns (TestResponse);
+  rpc CheckHealth(google.protobuf.Empty) returns (HealthStatus);
 }

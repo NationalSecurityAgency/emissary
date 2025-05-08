@@ -1,5 +1,6 @@
 package emissary.place;
 
+import emissary.place.grpc.HealthStatus;
 import emissary.place.grpc.TestRequest;
 import emissary.place.grpc.TestResponse;
 import emissary.place.grpc.TestServiceGrpc;
@@ -10,13 +11,13 @@ import emissary.util.grpc.pool.ConnectionFactory;
 import emissary.util.io.ResourceReader;
 
 import com.google.common.base.Ascii;
+import com.google.protobuf.Empty;
 import io.grpc.ManagedChannel;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
-import org.apache.commons.pool2.PooledObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,20 +43,21 @@ class GrpcConnectionPlaceTest extends UnitTest {
     private Server server;
 
     static class TestGrcpConnectionPlace extends GrpcConnectionPlace {
-        private boolean isValidated = false;
+        private boolean isConnectionValidated = false;
 
         protected TestGrcpConnectionPlace(InputStream is) throws IOException {
             super(is);
         }
 
-        public boolean getIsValidated() {
-            return isValidated;
+        public boolean getIsConnectionValidated() {
+            return isConnectionValidated;
         }
 
         @Override
-        boolean validatePooledObject(PooledObject<ManagedChannel> pooledObject) {
-            isValidated = true;
-            return true;
+        boolean validateConnection(ManagedChannel managedChannel) {
+            TestServiceGrpc.TestServiceBlockingStub stub = TestServiceGrpc.newBlockingStub(managedChannel);
+            isConnectionValidated = stub.checkHealth(Empty.getDefaultInstance()).getOk();
+            return isConnectionValidated;
         }
     }
 
@@ -66,6 +68,13 @@ class GrpcConnectionPlaceTest extends UnitTest {
                     .setResult(Ascii.toUpperCase(request.getQuery()))
                     .build();
             responseObserver.onNext(resp);
+            responseObserver.onCompleted();
+        }
+
+        @Override
+        public void checkHealth(Empty request, StreamObserver<HealthStatus> responseObserver) {
+            HealthStatus status = HealthStatus.newBuilder().setOk(true).build();
+            responseObserver.onNext(status);
             responseObserver.onCompleted();
         }
     }
@@ -99,10 +108,10 @@ class GrpcConnectionPlaceTest extends UnitTest {
     }
 
     @Test
-    void testValidatePooledObjectIsCalled() {
-        assertFalse(place.getIsValidated());
+    void testValidateConnectionIsCalled() {
+        assertFalse(place.getIsConnectionValidated());
         ConnectionFactory.acquireChannel(place.channelPool);
-        assertTrue(place.getIsValidated());
+        assertTrue(place.getIsConnectionValidated());
     }
 
     @Test
