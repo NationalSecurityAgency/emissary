@@ -86,7 +86,7 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
         connectionFactory = new ConnectionFactory(host, port, configG) {
             @Override
             public boolean validateObject(PooledObject<ManagedChannel> pooledObject) {
-                return validatePooledObject(pooledObject);
+                return validateConnection(pooledObject.getObject());
             }
         };
         channelPool = connectionFactory.newConnectionPool();
@@ -94,9 +94,13 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
     }
 
     /**
-     * See {@link ConnectionFactory#validateObject(PooledObject)} for usage context.
+     * Validates whether a given {@link ManagedChannel} is capable of successfully communicating with its associated gRPC
+     * server.
+     *
+     * @param managedChannel the gRPC channel to validate
+     * @return {@code true} if the channel is healthy and the server responds successfully, else {@code false}
      */
-    abstract boolean validatePooledObject(PooledObject<ManagedChannel> pooledObject);
+    abstract boolean validateConnection(ManagedChannel managedChannel);
 
     /**
      * Executes a unary gRPC call using a {@code BlockingStub}.
