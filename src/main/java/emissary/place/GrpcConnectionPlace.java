@@ -27,10 +27,9 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
     private static final String GRPC_HOST = "GRPC_HOST";
     private static final String GRPC_PORT = "GRPC_PORT";
 
-    protected ObjectPool<ManagedChannel> pool;
+    private ConnectionFactory connectionFactory;
+    protected ObjectPool<ManagedChannel> channelPool;
     protected RetryPolicy retryPolicy;
-    private String host;
-    private int port;
 
     public GrpcConnectionPlace() throws IOException {
         super();
@@ -78,19 +77,19 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
             throw new IllegalStateException("gRPC configurations not found for " + this.getPlaceName());
         }
 
-        host = configG.findRequiredStringEntry(GRPC_HOST);
-        port = configG.findIntEntry(GRPC_PORT, -1);
+        String host = configG.findRequiredStringEntry(GRPC_HOST);
+        int port = configG.findIntEntry(GRPC_PORT, -1);
         if (port == -1) {
             throw new IllegalArgumentException(String.format("Missing required parameter [%s]", GRPC_PORT));
         }
 
-        pool = new ConnectionFactory(host, port, configG) {
+        connectionFactory = new ConnectionFactory(host, port, configG) {
             @Override
             public boolean validateObject(PooledObject<ManagedChannel> pooledObject) {
                 return validatePooledObject(pooledObject);
             }
-        }.newConnectionPool();
-
+        };
+        channelPool = connectionFactory.newConnectionPool();
         retryPolicy = new RetryPolicy(configG);
     }
 
@@ -114,18 +113,18 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
             Function<ManagedChannel, StubT> stubFactory,
             BiFunction<StubT, ReqT, RespT> callLogic, ReqT payload) {
 
-        ManagedChannel channel = ConnectionFactory.acquireChannel(pool);
+        ManagedChannel channel = ConnectionFactory.acquireChannel(channelPool);
         try {
             StubT stub = stubFactory.apply(channel);
             return callLogic.apply(stub, payload);
         } catch (StatusRuntimeException e) {
-            ConnectionFactory.returnChannel(channel, pool);
+            ConnectionFactory.returnChannel(channel, channelPool);
             ServiceException.handleGrpcStatusRuntimeException(e);
         } catch (RuntimeException e) { // Don't throw an error to avoid triggering a retry
             logger.error("Encountered error while processing data in {}: {}", this.getPlaceName(), e.getMessage());
-            ConnectionFactory.invalidateChannel(channel, pool);
+            ConnectionFactory.invalidateChannel(channel, channelPool);
         } finally {
-            ConnectionFactory.returnChannel(channel, pool);
+            ConnectionFactory.returnChannel(channel, channelPool);
         }
         return null;
     }
@@ -162,7 +161,7 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
      * Executes multiple unary gRPC calls in parallel using a shared {@link AbstractFutureStub}.
      * <p>
      * TODO: Determine channel handling strategy when some calls succeed and others fail <br>
-     * TODO: Clarify expected blocking behavior for response collection (e.g. all vs. partial)
+     * TODO: Clarify expected blocking behavior for response collection
      *
      * @param stubFactory function that creates the appropriate {@code FutureStub} from a {@link ManagedChannel}
      * @param callLogic function that maps a stub and payload to a {@link ListenableFuture}
@@ -201,10 +200,42 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
     }
 
     public String getHost() {
-        return host;
+        return connectionFactory.getHost();
     }
 
     public int getPort() {
-        return port;
+        return connectionFactory.getPort();
+    }
+
+    public String getTarget() {
+        return connectionFactory.getTarget();
+    }
+
+    public long getKeepAlive() {
+        return connectionFactory.getKeepAlive();
+    }
+
+    public long getKeepAliveTimeout() {
+        return connectionFactory.getKeepAliveTimeout();
+    }
+
+    public boolean isKeepAliveWithoutCalls() {
+        return connectionFactory.isKeepAliveWithoutCalls();
+    }
+
+    public int getMaxInboundMessageSize() {
+        return connectionFactory.getMaxInboundMessageSize();
+    }
+
+    public int getMaxInboundMetadataSize() {
+        return connectionFactory.getMaxInboundMetadataSize();
+    }
+
+    public String getLoadBalancingPolicy() {
+        return connectionFactory.getLoadBalancingPolicy();
+    }
+
+    public float getErodingPoolFactor() {
+        return connectionFactory.getErodingPoolFactor();
     }
 }
