@@ -16,6 +16,7 @@ final class ConnectionDefaults {
     static final int MAX_IDLE_CONNS = 8;
     static final int MAX_POOL_SIZE = 8;
     static final long MAX_WAIT_POOL_BORROW = 10000L;
+    static final boolean TEST_ON_BORROW = true;
 
     private ConnectionDefaults() {}
 }
