@@ -1,12 +1,9 @@
 package emissary.place;
 
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
 import emissary.core.Factory;
 
 import com.google.common.base.Preconditions;
 import jakarta.annotation.Nullable;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
@@ -190,20 +187,6 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
                 logger.warn("Error refreshing defunct place");
             }
         }
-    }
-
-    /**
-     * Reload the {@link Configurator}
-     *
-     * @param configLocations the list of configuration files to load
-     * @throws IOException if there is an issue loading the config
-     */
-    private Configurator loadConfigurator(@Nullable final List<String> configLocations, final String placeLocation) throws IOException {
-        slogger.info("Reloading configurator using locations {}", configLocations);
-        if (CollectionUtils.isNotEmpty(configLocations)) {
-            return ConfigUtil.getConfigInfo(configLocations);
-        }
-        return loadConfigurator(placeLocation);
     }
 
     /**
