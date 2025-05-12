@@ -67,8 +67,6 @@ public abstract class UnitTest {
     @Nullable
     protected String origConfigPkg = null;
 
-    protected String answerXsd = "emissary/test/core/schemas/answers.xsd";
-
     /**
      * Create a UnitTest
      */
@@ -101,7 +99,7 @@ public abstract class UnitTest {
     }
 
     public String getAnswerXsd() {
-        return answerXsd;
+        return "emissary/test/core/schemas/answers.xsd";
     }
 
     /**
@@ -271,17 +269,16 @@ public abstract class UnitTest {
     @Nullable
     protected Document getAnswerDocumentValidated(String aname) {
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        String answerXsd = getAnswerXsd();
         try (InputStream is = new ResourceReader().getResourceAsStream(aname)) {
-            Schema schema = schemaFactory.newSchema(new ResourceReader().getResource(answerXsd));
+            Schema schema = schemaFactory.newSchema(new ResourceReader().getResource(getAnswerXsd()));
             XMLReaderJDOMFactory factory = new XMLReaderSchemaFactory(schema);
             SAXBuilder sb2 = new SAXBuilder(factory);
             return sb2.build(is);
         } catch (JDOMException je) {
             if (Boolean.getBoolean("validateAnswerFiles")) {
-                fail("Answer document " + aname + " failed to validate against schema " + answerXsd, je);
+                fail("Answer document " + aname + " failed to validate against schema " + getAnswerXsd(), je);
             }
-            logger.error("Answer document {} failed to validate against schema {}", aname, answerXsd, je);
+            logger.error("Answer document {} failed to validate against schema {}", aname, getAnswerXsd(), je);
             return getAnswerDocumentNonValidated(aname);
         } catch (Exception ex) {
             logger.debug("No answer document provided for {}", aname, ex);
