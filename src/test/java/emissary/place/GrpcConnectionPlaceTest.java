@@ -54,7 +54,7 @@ class GrpcConnectionPlaceTest extends UnitTest {
         }
 
         @Override
-        boolean validateConnection(ManagedChannel managedChannel) {
+        protected boolean validateConnection(ManagedChannel managedChannel) {
             TestServiceGrpc.TestServiceBlockingStub stub = TestServiceGrpc.newBlockingStub(managedChannel);
             isConnectionValidated = stub.checkHealth(Empty.getDefaultInstance()).getOk();
             return isConnectionValidated;

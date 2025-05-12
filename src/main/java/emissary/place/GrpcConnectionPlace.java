@@ -100,7 +100,7 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
      * @param managedChannel the gRPC channel to validate
      * @return {@code true} if the channel is healthy and the server responds successfully, else {@code false}
      */
-    abstract boolean validateConnection(ManagedChannel managedChannel);
+    protected abstract boolean validateConnection(ManagedChannel managedChannel);
 
     /**
      * Executes a unary gRPC call using a {@code BlockingStub}.
