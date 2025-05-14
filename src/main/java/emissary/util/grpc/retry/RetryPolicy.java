@@ -34,6 +34,8 @@ public final class RetryPolicy {
     private static final String RETRY_UNLIMITED = "RETRY_UNLIMITED";
     private static final String RETRY_NUM_FAILS_BEFORE_WARN = "RETRY_NUM_FAILS_BEFORE_WARN";
     private static final String RETRY_REGISTRY_NAME = "RETRY_REGISTRY_NAME";
+    private static final String PLACE_NAME = "PLACE_NAME";
+    private static final String SERVICE_NAME = "SERVICE_NAME";
 
     private static class Defaults {
         private static final int RETRY_MAX_ATTEMPTS = 4;
@@ -66,7 +68,9 @@ public final class RetryPolicy {
             registry.getEventPublisher().onEntryAdded(entryAddedEvent -> entryAddedEvent.getAddedEntry().getEventPublisher()
                     .onRetry(event -> logger.debug("Retrying connection with event error: {}", event)));
         }
-        this.retry = registry.retry(configG.findRequiredStringEntry(RETRY_REGISTRY_NAME));
+
+        String defaultName = String.format("%s:%s", configG.findStringEntry(PLACE_NAME), configG.findStringEntry(SERVICE_NAME));
+        this.retry = registry.retry(configG.findStringEntry(RETRY_REGISTRY_NAME, defaultName));
     }
 
     public boolean getIsUnlimited() {
