@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  * <li>{@code MAX_IDLE_CONNS} - Maximum idle connections in the pool</li>
  * <li>{@code MAX_POOL_SIZE} - Total max connections allowed</li>
  * <li>{@code MAX_WAIT_POOL_BORROW} - Time to wait before failing a borrow attempt (ms)</li>
- * <li>{@code LIFO} / {@code LIFO_POOL} - Whether pool behaves LIFO or FIFO</li>
+ * <li>{@code POOL_ORDERING} - Whether pool behaves LIFO or FIFO</li>
  * <li>{@code BLOCK_WHEN_POOL_EXHAUSTED} - Whether threads should block when pool is empty</li>
  * <li>{@code TEST_ON_BORROW} - Whether to validate pooled connections before use. If true, each borrow will trigger
  * {@code validateObject()}.</li>
@@ -54,8 +54,7 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
     private static final String MIN_IDLE_CONNS = "MIN_IDLE_CONNS";
     private static final String MAX_IDLE_CONNS = "MAX_IDLE_CONNS";
     private static final String MAX_POOL_SIZE = "MAX_POOL_SIZE";
-    private static final String LIFO = "LIFO";
-    private static final String LIFO_POOL = "LIFO_POOL";
+    private static final String POOL_ORDERING = "POOL_ORDERING";
     private static final String BLOCK_WHEN_POOL_EXHAUSTED = "BLOCK_WHEN_POOL_EXHAUSTED";
     private static final String MAX_WAIT_POOL_BORROW = "MAX_WAIT_POOL_BORROW";
     private static final String TEST_ON_BORROW = "TEST_ON_BORROW";
@@ -74,6 +73,17 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
     private final int maxInboundMetadataSize;
     private final String loadBalancingPolicy;
     private final float erodingPoolFactor;
+
+    private enum PoolOrdering {
+        LIFO, FIFO;
+
+        public static boolean getLifoFlag(String order, boolean defaultValue) {
+            if (order != null) {
+                return PoolOrdering.valueOf(order) == LIFO;
+            }
+            return defaultValue;
+        }
+    }
 
     /**
      * Constructs a new gRPC connection factory using the provided host, port, and configuration. Initializes pool settings
@@ -120,8 +130,8 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
         this.poolConfig.setMaxTotal(configG.findIntEntry(MAX_POOL_SIZE, ConnectionDefaults.MAX_POOL_SIZE));
 
         // Order for pool to borrow connections
-        this.poolConfig.setLifo(configG.findBooleanEntry(LIFO_POOL,
-                configG.findBooleanEntry(LIFO, BaseObjectPoolConfig.DEFAULT_LIFO)));
+        this.poolConfig.setLifo(PoolOrdering.getLifoFlag(
+                configG.findStringEntry(POOL_ORDERING), BaseObjectPoolConfig.DEFAULT_LIFO));
 
         // Enable thread blocking when borrowing from exhausted pool
         this.poolConfig.setBlockWhenExhausted(configG.findBooleanEntry(BLOCK_WHEN_POOL_EXHAUSTED,
