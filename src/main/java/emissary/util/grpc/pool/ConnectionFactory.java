@@ -27,37 +27,36 @@ import java.util.concurrent.TimeUnit;
  * <ul>
  * <li>{@code GRPC_KEEP_ALIVE_MS} - Time to wait before sending a ping on idle</li>
  * <li>{@code GRPC_KEEP_ALIVE_TIMEOUT_MS} - Timeout for receiving ping ACKs</li>
- * <li>{@code GRPC_KEEP_ALIVE_WITHOUT_CALLS} - Send pings even when no RPCs are active</li>
- * <li>{@code GRPC_MAX_INBOUND_MESSAGE_SIZE} - Max inbound gRPC message size (bytes)</li>
- * <li>{@code GRPC_MAX_INBOUND_METADATA_SIZE} - Max inbound gRPC metadata size (bytes)</li>
- * <li>{@code GRPC_MAX_INBOUND_METADATA_SIZE} - Max inbound gRPC metadata size (bytes)</li>
+ * <li>{@code GRPC_KEEP_ALIVE_WITHOUT_CALLS} - Send pings even when no RPCs are active if true</li>
+ * <li>{@code GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE} - Max inbound gRPC message size</li>
+ * <li>{@code GRPC_MAX_INBOUND_METADATA_BYTE_SIZE} - Max inbound gRPC metadata size</li>
  * <li>{@code GRPC_LOAD_BALANCING_POLICY} - gRPC load balancing policy (e.g. "round_robin")</li>
- * <li>{@code ERODING_POOL_FACTOR} - Optional shrink rate for idle connections</li>
- * <li>{@code MIN_IDLE_CONNS} - Minimum idle connections in the pool</li>
- * <li>{@code MAX_IDLE_CONNS} - Maximum idle connections in the pool</li>
- * <li>{@code MAX_POOL_SIZE} - Total max connections allowed</li>
- * <li>{@code MAX_WAIT_POOL_BORROW} - Time to wait before failing a borrow attempt (ms)</li>
- * <li>{@code POOL_ORDERING} - Whether pool behaves LIFO or FIFO</li>
- * <li>{@code BLOCK_WHEN_POOL_EXHAUSTED} - Whether threads should block when pool is empty</li>
- * <li>{@code TEST_ON_BORROW} - Whether to validate pooled connections before use. If true, each borrow will trigger
- * {@code validateObject()}.</li>
+ * <li>{@code GRPC_POOL_ERODING_FACTOR} - Optional shrink rate for idle connections</li>
+ * <li>{@code GRPC_POOL_MIN_IDLE_CONNECTIONS} - Minimum idle connections in the pool</li>
+ * <li>{@code GRPC_POOL_MAX_IDLE_CONNECTIONS} - Maximum idle connections in the pool</li>
+ * <li>{@code GRPC_POOL_MAX_SIZE} - Maximum total connections allowed</li>
+ * <li>{@code GRPC_POOL_RETRIEVAL_ORDER} - Whether pool behaves LIFO or FIFO</li>
+ * <li>{@code GRPC_POOL_BLOCK_EXHAUSTED} - If true, threads block when pool is empty, otherwise throws an Exception</li>
+ * <li>{@code GRPC_POOL_MAX_BORROW_WAIT_MS} - Time to wait before failing a borrow attempt</li>
+ * <li>{@code GRPC_POOL_TEST_BEFORE_BORROW} - If true, validates pooled connections before use with
+ * {@code validateObject()}</li>
  * </ul>
  */
 public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
     private static final String GRPC_KEEP_ALIVE_MS = "GRPC_KEEP_ALIVE_MS";
     private static final String GRPC_KEEP_ALIVE_TIMEOUT_MS = "GRPC_KEEP_ALIVE_TIMEOUT_MS";
     private static final String GRPC_KEEP_ALIVE_WITHOUT_CALLS = "GRPC_KEEP_ALIVE_WITHOUT_CALLS";
-    private static final String GRPC_MAX_INBOUND_MESSAGE_SIZE = "GRPC_MAX_INBOUND_MESSAGE_SIZE";
-    private static final String GRPC_MAX_INBOUND_METADATA_SIZE = "GRPC_MAX_INBOUND_METADATA_SIZE";
-    private static final String LOAD_BALANCING_POLICY = "LOAD_BALANCING_POLICY";
-    private static final String ERODING_POOL_FACTOR = "ERODING_POOL_FACTOR";
-    private static final String MIN_IDLE_CONNS = "MIN_IDLE_CONNS";
-    private static final String MAX_IDLE_CONNS = "MAX_IDLE_CONNS";
-    private static final String MAX_POOL_SIZE = "MAX_POOL_SIZE";
-    private static final String POOL_ORDERING = "POOL_ORDERING";
-    private static final String BLOCK_WHEN_POOL_EXHAUSTED = "BLOCK_WHEN_POOL_EXHAUSTED";
-    private static final String MAX_WAIT_POOL_BORROW = "MAX_WAIT_POOL_BORROW";
-    private static final String TEST_ON_BORROW = "TEST_ON_BORROW";
+    private static final String GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE = "GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE";
+    private static final String GRPC_MAX_INBOUND_METADATA_BYTE_SIZE = "GRPC_MAX_INBOUND_METADATA_BYTE_SIZE";
+    private static final String GRPC_LOAD_BALANCING_POLICY = "GRPC_LOAD_BALANCING_POLICY";
+    private static final String GRPC_POOL_ERODING_FACTOR = "GRPC_POOL_ERODING_FACTOR";
+    private static final String GRPC_POOL_MIN_IDLE_CONNECTIONS = "GRPC_POOL_MIN_IDLE_CONNECTIONS";
+    private static final String GRPC_POOL_MAX_IDLE_CONNECTIONS = "GRPC_POOL_MAX_IDLE_CONNECTIONS";
+    private static final String GRPC_POOL_MAX_SIZE = "GRPC_POOL_MAX_SIZE";
+    private static final String GRPC_POOL_RETRIEVAL_ORDER = "GRPC_POOL_RETRIEVAL_ORDER";
+    private static final String GRPC_POOL_BLOCK_EXHAUSTED = "GRPC_POOL_BLOCK_EXHAUSTED";
+    private static final String GRPC_POOL_MAX_BORROW_WAIT_MS = "GRPC_POOL_MAX_BORROW_WAIT_MS";
+    private static final String GRPC_POOL_TEST_BEFORE_BORROW = "GRPC_POOL_TEST_BEFORE_BORROW";
 
     private static final Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
 
@@ -99,49 +98,49 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
         this.target = host + ":" + port; // target may be a host or dns service
 
         // How often (in milliseconds) to send pings when the connection is idle
-        this.keepAlive = configG.findLongEntry(GRPC_KEEP_ALIVE_MS, ConnectionDefaults.GRPC_KEEP_ALIVE_MS);
+        this.keepAlive = configG.findLongEntry(GRPC_KEEP_ALIVE_MS, ConnectionDefaults.KEEP_ALIVE);
 
         // Time to wait (in milliseconds) for a ping ACK before closing the connection
-        this.keepAliveTimeout = configG.findLongEntry(GRPC_KEEP_ALIVE_TIMEOUT_MS, ConnectionDefaults.GRPC_KEEP_ALIVE_TIMEOUT_MS);
+        this.keepAliveTimeout = configG.findLongEntry(GRPC_KEEP_ALIVE_TIMEOUT_MS, ConnectionDefaults.KEEP_ALIVE_TIMEOUT);
 
         // Whether to send pings when no RPCs are active
         // Note: Seme gRPC services have this set to false and will be noisy if not adjusted
-        this.keepAliveWithoutCalls = configG.findBooleanEntry(GRPC_KEEP_ALIVE_WITHOUT_CALLS, ConnectionDefaults.GRPC_KEEP_ALIVE_WITHOUT_CALLS);
+        this.keepAliveWithoutCalls = configG.findBooleanEntry(GRPC_KEEP_ALIVE_WITHOUT_CALLS, ConnectionDefaults.KEEP_ALIVE_WITHOUT_CALLS);
 
         // Max size (in bytes) for incoming messages and message metadata from the server
-        this.maxInboundMessageSize = configG.findIntEntry(GRPC_MAX_INBOUND_MESSAGE_SIZE, ConnectionDefaults.GRPC_MAX_INBOUND_MESSAGE_SIZE);
-        this.maxInboundMetadataSize = configG.findIntEntry(GRPC_MAX_INBOUND_METADATA_SIZE, ConnectionDefaults.GRPC_MAX_INBOUND_METADATA_SIZE);
+        this.maxInboundMessageSize = configG.findIntEntry(GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE, ConnectionDefaults.MAX_MESSAGE_SIZE);
+        this.maxInboundMetadataSize = configG.findIntEntry(GRPC_MAX_INBOUND_METADATA_BYTE_SIZE, ConnectionDefaults.MAX_METADATA_SIZE);
 
         // Specifies how the client chooses between multiple backend addresses
         // e.g. "pick_first" uses the first address only, while "round_robin" cycles through all of them for client-side
         // balancing
-        this.loadBalancingPolicy = configG.findStringEntry(LOAD_BALANCING_POLICY, ConnectionDefaults.LOAD_BALANCING_POLICY);
+        this.loadBalancingPolicy = configG.findStringEntry(GRPC_LOAD_BALANCING_POLICY, ConnectionDefaults.LOAD_BALANCING_POLICY);
 
         // Controls how aggressively idle connections are phased out over time
         // Set to a float between 0.0 and 1.0 to enable erosion (e.g. 0.2 = mild erosion)
         // Set to -1.0 to disable connection pool erosion entirely
-        this.erodingPoolFactor = (float) configG.findDoubleEntry(ERODING_POOL_FACTOR, ConnectionDefaults.ERODING_POOL_FACTOR);
+        this.erodingPoolFactor = (float) configG.findDoubleEntry(GRPC_POOL_ERODING_FACTOR, ConnectionDefaults.ERODING_FACTOR);
 
         // Min/max number of idle connections in pool
-        this.poolConfig.setMinIdle(configG.findIntEntry(MIN_IDLE_CONNS, ConnectionDefaults.MIN_IDLE_CONNS));
-        this.poolConfig.setMaxIdle(configG.findIntEntry(MAX_IDLE_CONNS, ConnectionDefaults.MAX_IDLE_CONNS));
+        this.poolConfig.setMinIdle(configG.findIntEntry(GRPC_POOL_MIN_IDLE_CONNECTIONS, ConnectionDefaults.MIN_IDLE_CONNECTIONS));
+        this.poolConfig.setMaxIdle(configG.findIntEntry(GRPC_POOL_MAX_IDLE_CONNECTIONS, ConnectionDefaults.MAX_IDLE_CONNECTIONS));
 
         // Max number of total connections in pool
-        this.poolConfig.setMaxTotal(configG.findIntEntry(MAX_POOL_SIZE, ConnectionDefaults.MAX_POOL_SIZE));
+        this.poolConfig.setMaxTotal(configG.findIntEntry(GRPC_POOL_MAX_SIZE, ConnectionDefaults.MAX_SIZE));
 
         // Order for pool to borrow connections
         this.poolConfig.setLifo(PoolOrdering.getLifoFlag(
-                configG.findStringEntry(POOL_ORDERING), BaseObjectPoolConfig.DEFAULT_LIFO));
+                configG.findStringEntry(GRPC_POOL_RETRIEVAL_ORDER), BaseObjectPoolConfig.DEFAULT_LIFO));
 
         // Enable thread blocking when borrowing from exhausted pool
-        this.poolConfig.setBlockWhenExhausted(configG.findBooleanEntry(BLOCK_WHEN_POOL_EXHAUSTED,
+        this.poolConfig.setBlockWhenExhausted(configG.findBooleanEntry(GRPC_POOL_BLOCK_EXHAUSTED,
                 BaseObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED));
 
         // Max duration to wait until block is released from exhausted pool
-        this.poolConfig.setMaxWait(Duration.ofMillis(configG.findLongEntry(MAX_WAIT_POOL_BORROW, ConnectionDefaults.MAX_WAIT_POOL_BORROW)));
+        this.poolConfig.setMaxWait(Duration.ofMillis(configG.findLongEntry(GRPC_POOL_MAX_BORROW_WAIT_MS, ConnectionDefaults.MAX_BORROW_WAIT)));
 
         // Whether to validate channels when borrowing from the pool
-        this.poolConfig.setTestOnBorrow(configG.findBooleanEntry(TEST_ON_BORROW, ConnectionDefaults.TEST_ON_BORROW));
+        this.poolConfig.setTestOnBorrow(configG.findBooleanEntry(GRPC_POOL_TEST_BEFORE_BORROW, ConnectionDefaults.TEST_BEFORE_BORROW));
     }
 
     /**
