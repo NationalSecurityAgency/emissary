@@ -90,7 +90,7 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
             }
         };
         channelPool = connectionFactory.newConnectionPool();
-        retryPolicy = new RetryPolicy(configG);
+        retryPolicy = new RetryPolicy(configG, this.getPlaceName());
     }
 
     /**
