@@ -16,9 +16,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class RetryExecutorTest extends UnitTest {
-    private static final String RETRY_MAX_ATTEMPTS = "RETRY_MAX_ATTEMPTS";
-    private static final String RETRY_NUM_FAILS_BEFORE_WARN = "RETRY_NUM_FAILS_BEFORE_WARN";
-    private static final String RETRY_REGISTRY_NAME = "RETRY_REGISTRY_NAME";
+    private static final String DEFAULT_RETRY_REGISTRY_NAME = "TestRetryRegistry";
+    private static final String GRPC_RETRY_MAX_ATTEMPTS = "GRPC_RETRY_MAX_ATTEMPTS";
+    private static final String GRPC_RETRY_NUM_FAILS_BEFORE_WARN = "GRPC_RETRY_NUM_FAILS_BEFORE_WARN";
     private static final int DEFAULT_RETRY_MAX_ATTEMPTS = 5;
     private static final int DEFAULT_RETRY_NUM_FAILS_BEFORE_WARN = 2;
 
@@ -28,10 +28,9 @@ class RetryExecutorTest extends UnitTest {
     @BeforeEach
     public void setUp() throws Exception {
         Configurator configT = new ServiceConfigGuide();
-        configT.addEntry(RETRY_MAX_ATTEMPTS, String.valueOf(DEFAULT_RETRY_MAX_ATTEMPTS));
-        configT.addEntry(RETRY_NUM_FAILS_BEFORE_WARN, String.valueOf(DEFAULT_RETRY_NUM_FAILS_BEFORE_WARN));
-        configT.addEntry(RETRY_REGISTRY_NAME, RETRY_REGISTRY_NAME);
-        retryPolicy = new RetryPolicy(configT);
+        configT.addEntry(GRPC_RETRY_MAX_ATTEMPTS, String.valueOf(DEFAULT_RETRY_MAX_ATTEMPTS));
+        configT.addEntry(GRPC_RETRY_NUM_FAILS_BEFORE_WARN, String.valueOf(DEFAULT_RETRY_NUM_FAILS_BEFORE_WARN));
+        retryPolicy = new RetryPolicy(configT, DEFAULT_RETRY_REGISTRY_NAME);
     }
 
     @Test

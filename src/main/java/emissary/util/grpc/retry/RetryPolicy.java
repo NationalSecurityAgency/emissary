@@ -28,21 +28,18 @@ import org.slf4j.LoggerFactory;
 public final class RetryPolicy {
     private static final Logger logger = LoggerFactory.getLogger(RetryPolicy.class);
 
-    private static final String RETRY_MAX_ATTEMPTS = "RETRY_MAX_ATTEMPTS";
-    private static final String RETRY_INITIAL_WAIT_MS = "RETRY_INITIAL_WAIT_MS";
-    private static final String RETRY_MULTIPLIER = "RETRY_MULTIPLIER";
-    private static final String RETRY_UNLIMITED = "RETRY_UNLIMITED";
-    private static final String RETRY_NUM_FAILS_BEFORE_WARN = "RETRY_NUM_FAILS_BEFORE_WARN";
-    private static final String RETRY_REGISTRY_NAME = "RETRY_REGISTRY_NAME";
-    private static final String PLACE_NAME = "PLACE_NAME";
-    private static final String SERVICE_NAME = "SERVICE_NAME";
+    private static final String GRPC_RETRY_MAX_ATTEMPTS = "GRPC_RETRY_MAX_ATTEMPTS";
+    private static final String GRPC_RETRY_INITIAL_WAIT_MS = "GRPC_RETRY_INITIAL_WAIT_MS";
+    private static final String GRPC_RETRY_MULTIPLIER = "GRPC_RETRY_MULTIPLIER";
+    private static final String GRPC_RETRY_UNLIMITED = "GRPC_RETRY_UNLIMITED";
+    private static final String GRPC_RETRY_NUM_FAILS_BEFORE_WARN = "GRPC_RETRY_NUM_FAILS_BEFORE_WARN";
 
     private static class Defaults {
-        private static final int RETRY_MAX_ATTEMPTS = 4;
-        private static final int RETRY_INITIAL_WAIT_MS = 64;
-        private static final int RETRY_MULTIPLIER = 2;
-        private static final boolean RETRY_UNLIMITED = false;
-        private static final int RETRY_NUM_FAILS_BEFORE_WARN = 20;
+        private static final int MAX_ATTEMPTS = 4;
+        private static final int INITIAL_WAIT = 64;
+        private static final int MULTIPLIER = 2;
+        private static final boolean UNLIMITED = false;
+        private static final int NUM_FAILS_BEFORE_WARN = 20;
     }
 
     private final int maxAttempts;
@@ -50,13 +47,13 @@ public final class RetryPolicy {
     private final int numFailsBeforeWarn;
     private final Retry retry;
 
-    public RetryPolicy(Configurator configG) {
-        this.maxAttempts = configG.findIntEntry(RETRY_MAX_ATTEMPTS, Defaults.RETRY_MAX_ATTEMPTS);
-        this.isUnlimited = configG.findBooleanEntry(RETRY_UNLIMITED, Defaults.RETRY_UNLIMITED);
-        this.numFailsBeforeWarn = configG.findIntEntry(RETRY_NUM_FAILS_BEFORE_WARN, Defaults.RETRY_NUM_FAILS_BEFORE_WARN);
+    public RetryPolicy(Configurator configG, String retryRegistryName) {
+        this.maxAttempts = configG.findIntEntry(GRPC_RETRY_MAX_ATTEMPTS, Defaults.MAX_ATTEMPTS);
+        this.isUnlimited = configG.findBooleanEntry(GRPC_RETRY_UNLIMITED, Defaults.UNLIMITED);
+        this.numFailsBeforeWarn = configG.findIntEntry(GRPC_RETRY_NUM_FAILS_BEFORE_WARN, Defaults.NUM_FAILS_BEFORE_WARN);
 
-        int retryInitialWaitMs = configG.findIntEntry(RETRY_INITIAL_WAIT_MS, Defaults.RETRY_INITIAL_WAIT_MS);
-        int retryMultiplier = configG.findIntEntry(RETRY_MULTIPLIER, Defaults.RETRY_MULTIPLIER);
+        int retryInitialWaitMs = configG.findIntEntry(GRPC_RETRY_INITIAL_WAIT_MS, Defaults.INITIAL_WAIT);
+        int retryMultiplier = configG.findIntEntry(GRPC_RETRY_MULTIPLIER, Defaults.MULTIPLIER);
         final RetryConfig retryConfig = RetryConfig.custom()
                 .maxAttempts(maxAttempts)
                 .intervalFunction(IntervalFunction.ofExponentialBackoff(retryInitialWaitMs, retryMultiplier))
@@ -69,8 +66,7 @@ public final class RetryPolicy {
                     .onRetry(event -> logger.debug("Retrying connection with event error: {}", event)));
         }
 
-        String defaultName = String.format("%s:%s", configG.findStringEntry(PLACE_NAME), configG.findStringEntry(SERVICE_NAME));
-        this.retry = registry.retry(configG.findStringEntry(RETRY_REGISTRY_NAME, defaultName));
+        this.retry = registry.retry(retryRegistryName);
     }
 
     public boolean getIsUnlimited() {
