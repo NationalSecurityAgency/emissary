@@ -124,9 +124,10 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
         } catch (StatusRuntimeException e) {
             ConnectionFactory.returnChannel(channel, channelPool);
             ServiceException.handleGrpcStatusRuntimeException(e);
-        } catch (RuntimeException e) { // Don't throw an error to avoid triggering a retry
-            logger.error("Encountered error while processing data in {}: {}", this.getPlaceName(), e.getMessage());
+        } catch (RuntimeException e) {
+            logger.error("Encountered error while processing data in {}", this.getPlaceName(), e);
             ConnectionFactory.invalidateChannel(channel, channelPool);
+            channel = null;
         } finally {
             ConnectionFactory.returnChannel(channel, channelPool);
         }
