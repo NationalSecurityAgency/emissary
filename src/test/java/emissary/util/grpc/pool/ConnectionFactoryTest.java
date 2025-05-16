@@ -22,35 +22,50 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConnectionFactoryTest extends UnitTest {
-    private static final String MIN_IDLE_CONNS = "MIN_IDLE_CONNS";
-    private static final String MAX_IDLE_CONNS = "MAX_IDLE_CONNS";
-    private static final String MAX_POOL_SIZE = "MAX_POOL_SIZE";
+    private static final String GRPC_POOL_MIN_IDLE_CONNECTIONS = "GRPC_POOL_MIN_IDLE_CONNECTIONS";
+    private static final String GRPC_POOL_MAX_IDLE_CONNECTIONS = "GRPC_POOL_MAX_IDLE_CONNECTIONS";
+    private static final String GRPC_POOL_MAX_SIZE = "GRPC_POOL_MAX_SIZE";
     private static final String HOST = "localhost";
     private static final int PORT = 2222;
 
-    private ConnectionFactory factory;
+    private TestConnectionFactory factory;
     private ObjectPool<ManagedChannel> pool;
 
-    public static class TestConnectionFactory extends ConnectionFactory {
+    static class TestConnectionFactory extends ConnectionFactory {
+        private boolean valid = true;
+
         public TestConnectionFactory(String host, int port, Configurator configG) {
             super(host, port, configG);
         }
 
+        public void invalidate() {
+            valid = false;
+        }
+
         @Override
         public boolean validateObject(PooledObject<ManagedChannel> pooledObject) {
-            return true;
+            return valid;
         }
     }
 
+    @Override
     @BeforeEach
-    public void init() {
+    public void setUp() throws Exception {
         Configurator configT = new ServiceConfigGuide();
-        configT.addEntry(MIN_IDLE_CONNS, "1");
-        configT.addEntry(MAX_IDLE_CONNS, "2");
-        configT.addEntry(MAX_POOL_SIZE, "2");
+        configT.addEntry(GRPC_POOL_MIN_IDLE_CONNECTIONS, "1");
+        configT.addEntry(GRPC_POOL_MAX_IDLE_CONNECTIONS, "2");
+        configT.addEntry(GRPC_POOL_MAX_SIZE, "2");
 
         factory = new TestConnectionFactory(HOST, PORT, configT);
         pool = factory.newConnectionPool();
+    }
+
+    @Test
+    void testAcquireChannelFails() {
+        factory.invalidate();
+        pool = factory.newConnectionPool();
+        GrpcPoolException e = assertThrows(GrpcPoolException.class, () -> ConnectionFactory.acquireChannel(pool));
+        assertEquals("Unable to borrow channel from pool: Unable to validate object", e.getMessage());
     }
 
     @Test
