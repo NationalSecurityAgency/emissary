@@ -6,6 +6,7 @@ import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.place.IServiceProviderPlace;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,11 +31,20 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
         placeName = place.getName();
         try {
             placeConstructor = place.getDeclaredConstructor(Configurator.class);
-            defaultConfigurator = ConfigUtil.getConfigInfo(place);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new IllegalStateException("Failed to create ConfiguredPlaceFactory instance for " + placeName, e);
         }
+
+        defaultConfigurator = generateDefaultConfigurator(place);
         addAndReplaceConfigEntries(defaultConfigurator, defaultConfigs);
+    }
+
+    private Configurator generateDefaultConfigurator(Class<T> place) {
+        try {
+            return ConfigUtil.getConfigInfo(place);
+        } catch (IOException e) {
+            return new ServiceConfigGuide();
+        }
     }
 
     /**
