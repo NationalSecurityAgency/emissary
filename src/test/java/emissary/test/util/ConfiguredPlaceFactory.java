@@ -12,12 +12,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Create instances of a place with custom configurations for testing. Removes need for a separate .cfg file and
- * simplifies process of using multiple configurations in the same test class. Override priority is as follows:
+ * Create instances of a {@link emissary.place.ServiceProviderPlace} with custom configurations for testing. Removes
+ * need for a separate .cfg file and simplifies process of using multiple configurations in the same test class.
+ * Override priority is as follows:
  * <ol>
- * <li>Highest priority configs are passed as params into the buildPlace() method</li>
- * <li>Next priority configs are defaults passed into the ConfiguredPlaceFactory constructor</li>
- * <li>Lowest priority configs are found in the main T class .cfg file</li>
+ * <li>Highest priority configs are passed as params into the {@link #buildPlace(ConfigEntry...)} method</li>
+ * <li>Next priority configs are defaults passed into the {@link #ConfiguredPlaceFactory} constructor</li>
+ * <li>Lowest priority configs are found in the main {@code T} class .cfg file, if it exists</li>
  * </ol>
  *
  * @param <T> The Emissary place to create variations of
@@ -35,11 +36,19 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
             throw new IllegalStateException("Failed to create ConfiguredPlaceFactory instance for " + placeName, e);
         }
 
-        defaultConfigurator = generateDefaultConfigurator(place);
+        defaultConfigurator = loadConfigFile(place);
         addAndReplaceConfigEntries(defaultConfigurator, defaultConfigs);
     }
 
-    private Configurator generateDefaultConfigurator(Class<T> place) {
+    /**
+     * Gets the configurations for a given {@link emissary.place.ServiceProviderPlace} that are used in production from its
+     * .cfg file. Config files are expected to match the names of the place. E.g. {@code foo.BarPlace.java} expects
+     * {@code foo.BarPlace.cfg}. If no such file exists, an empty {@link Configurator} object will be returned.
+     *
+     * @param place The place to get configurations for
+     * @return Configurations based on the place's name if it exists, otherwise an empty {@link Configurator}
+     */
+    private Configurator loadConfigFile(Class<T> place) {
         try {
             return ConfigUtil.getConfigInfo(place);
         } catch (IOException e) {
@@ -48,8 +57,8 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
     }
 
     /**
-     * Create a new instance of a place for testing with optional configurations. Configs override any matching instances
-     * found in the actual .cfg file and/or default test configs.
+     * Create a new instance of a {@link emissary.place.ServiceProviderPlace} for testing with optional configurations.
+     * Configs override any matching instances found in the actual .cfg file and/or default test configs.
      *
      * @param optionalConfigs list of new or overriding place configurations
      * @return new instance of place
