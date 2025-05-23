@@ -31,44 +31,43 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
     protected ObjectPool<ManagedChannel> channelPool;
     protected RetryPolicy retryPolicy;
 
-    public GrpcConnectionPlace() throws IOException {
+    protected GrpcConnectionPlace() throws IOException {
         super();
         configureGrpc();
     }
 
-    public GrpcConnectionPlace(String thePlaceLocation) throws IOException {
+    protected GrpcConnectionPlace(String thePlaceLocation) throws IOException {
         super(thePlaceLocation);
         configureGrpc();
     }
 
-    public GrpcConnectionPlace(InputStream configStream) throws IOException {
+    protected GrpcConnectionPlace(InputStream configStream) throws IOException {
         super(configStream);
         configureGrpc();
     }
 
-    public GrpcConnectionPlace(String configFile, String placeLocation) throws IOException {
+    protected GrpcConnectionPlace(String configFile, String placeLocation) throws IOException {
         super(configFile, placeLocation);
         configureGrpc();
     }
 
-    public GrpcConnectionPlace(InputStream configStream, String placeLocation) throws IOException {
+    protected GrpcConnectionPlace(InputStream configStream, String placeLocation) throws IOException {
         super(configStream, placeLocation);
         configureGrpc();
     }
 
-    public GrpcConnectionPlace(String configFile, @Nullable String theDir, String thePlaceLocation) throws IOException {
+    protected GrpcConnectionPlace(String configFile, @Nullable String theDir, String thePlaceLocation) throws IOException {
         super(configFile, theDir, thePlaceLocation);
         configureGrpc();
     }
 
-    public GrpcConnectionPlace(InputStream configStream, @Nullable String theDir, String thePlaceLocation) throws IOException {
+    protected GrpcConnectionPlace(InputStream configStream, @Nullable String theDir, String thePlaceLocation) throws IOException {
         super(configStream, theDir, thePlaceLocation);
         configureGrpc();
     }
 
-    public GrpcConnectionPlace(@Nullable Configurator config) throws IOException {
-        super();
-        configG = config != null ? config : configG;
+    protected GrpcConnectionPlace(@Nullable Configurator configs) throws IOException {
+        super(configs);
         configureGrpc();
     }
 
