@@ -1,6 +1,8 @@
 package emissary.place;
 
 import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
 import emissary.core.BaseDataObject;
 import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
@@ -263,6 +265,20 @@ class ServiceProviderPlaceTest extends UnitTest {
 
             Files.deleteIfExists(cfg);
         }
+    }
+
+    @Test
+    void testConfiguratorOnlyConstructor() throws Exception {
+        Configurator cfg = new ServiceConfigGuide();
+        cfg.addEntry("SERVICE_KEY", "CFGTEST.ID.CFG_TEST_PLACE.http://myhost.example.com:9999/CfgTestPlace");
+        IServiceProviderPlace cfgTestPlace = new PlaceTest(cfg);
+        assertNotNull(cfgTestPlace, "Place created and configured");
+        assertEquals("CfgTestPlace", cfgTestPlace.getPlaceName(), "Configured place name");
+        assertEquals("CFGTEST", cfgTestPlace.getPrimaryProxy(), "Primary proxy");
+        DirectoryEntry de = cfgTestPlace.getDirectoryEntry();
+        assertNotNull(de, "Directory entry");
+        assertEquals(0, de.getCost(), "Cost in directory entry");
+        assertEquals(100, de.getQuality(), "Quality in directory entry");
     }
 
     @Test
@@ -568,6 +584,10 @@ class ServiceProviderPlaceTest extends UnitTest {
 
         public PlaceTest(InputStream config, @Nullable String dir, @Nullable String loc) throws IOException {
             super(config, dir, loc);
+        }
+
+        public PlaceTest(Configurator configs) throws IOException {
+            super(configs);
         }
 
         @Override
