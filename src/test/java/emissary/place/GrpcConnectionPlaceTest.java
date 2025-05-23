@@ -1,14 +1,16 @@
 package emissary.place;
 
+import emissary.config.ConfigEntry;
+import emissary.config.Configurator;
 import emissary.place.grpc.HealthStatus;
 import emissary.place.grpc.TestRequest;
 import emissary.place.grpc.TestResponse;
 import emissary.place.grpc.TestServiceGrpc;
 import emissary.test.core.junit5.UnitTest;
+import emissary.test.util.ConfiguredPlaceFactory;
 import emissary.util.grpc.exceptions.ServiceException;
 import emissary.util.grpc.exceptions.ServiceNotAvailableException;
 import emissary.util.grpc.pool.ConnectionFactory;
-import emissary.util.io.ResourceReader;
 
 import com.google.common.base.Ascii;
 import com.google.protobuf.Empty;
@@ -25,7 +27,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -39,14 +40,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GrpcConnectionPlaceTest extends UnitTest {
-    private TestGrcpConnectionPlace place;
-    private Server server;
-
-    static class TestGrcpConnectionPlace extends GrpcConnectionPlace {
+    public static class TestGrcpConnectionPlace extends GrpcConnectionPlace {
         private boolean isConnectionValidated = false;
 
-        protected TestGrcpConnectionPlace(InputStream is) throws IOException {
-            super(is);
+        public TestGrcpConnectionPlace(Configurator cfg) throws IOException {
+            super(cfg);
         }
 
         public boolean getIsConnectionValidated() {
@@ -79,6 +77,16 @@ class GrpcConnectionPlaceTest extends UnitTest {
         }
     }
 
+    private TestGrcpConnectionPlace place;
+    private Server server;
+
+    private final ConfiguredPlaceFactory<TestGrcpConnectionPlace> placeFactory = new ConfiguredPlaceFactory<>(
+            TestGrcpConnectionPlace.class,
+            new ConfigEntry("SERVICE_KEY", "*.GRPC.ANALYZE.http://foo.bar:1234/GrpcConnectionPlace$5050"),
+            new ConfigEntry("GRPC_HOST", "localhost"),
+            new ConfigEntry("GRPC_PORT", "2222"),
+            new ConfigEntry("RETRY_MAX_ATTEMPTS", "2"));
+
     static Stream<Integer> serviceExceptionCodes() {
         Set<Integer> exclude = serviceNotAvailableExceptionCodes().collect(Collectors.toSet());
         return IntStream.rangeClosed(0, 16).filter(i -> !exclude.contains(i)).boxed();
@@ -91,9 +99,7 @@ class GrpcConnectionPlaceTest extends UnitTest {
     @Override
     @BeforeEach
     public void setUp() throws Exception {
-        ResourceReader rr = new ResourceReader();
-        InputStream is = rr.getConfigDataAsStream(this.getClass());
-        place = new TestGrcpConnectionPlace(is);
+        place = placeFactory.buildPlace();
         server = ServerBuilder.forPort(place.getPort())
                 .addService(new TestServiceImpl())
                 .build()
