@@ -3,6 +3,7 @@ package emissary.place;
 import emissary.config.ConfigEntry;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
 import emissary.core.EmissaryException;
 import emissary.core.Family;
 import emissary.core.Form;
@@ -220,6 +221,18 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      */
     protected ServiceProviderPlace(InputStream configStream, String placeLocation) throws IOException {
         this(configStream, null, placeLocation);
+    }
+
+    /**
+     * Create the place with an existing {@link Configurator}. Useful for unit testing.
+     *
+     * @param configs config data
+     */
+    protected ServiceProviderPlace(Configurator configs) throws IOException {
+        super();
+        configG = configs != null ? configs : new ServiceConfigGuide();
+        String placeLocation = this.getClass().getSimpleName();
+        setupPlace(null, placeLocation);
     }
 
     /**
