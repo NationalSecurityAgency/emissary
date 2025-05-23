@@ -51,7 +51,6 @@ public class ConfiguredPlaceFactoryTest extends UnitTest {
     }
 
     static class TestConfigExtensionPlace extends TestConfigPlace {
-
         public TestConfigExtensionPlace(Configurator cfgInfo) throws IOException {
             super(cfgInfo);
         }
