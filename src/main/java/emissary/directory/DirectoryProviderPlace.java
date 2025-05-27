@@ -33,9 +33,10 @@ import static emissary.core.constants.Configurations.SERVICE_QUALITY;
 import static emissary.core.constants.Configurations.SERVICE_TYPE;
 
 /**
- * Concrete instances of ServiceProviderPlace can be created by the emissary.admin.PlaceStarter and registered with the
- * emissary.directory.IDirectoryPlace to make their respective services available and a specified cost and quality
- * throughout the system.
+ * DirectoryProviderPlace can be extended to enable registration for service discovery and access. This incorporates key
+ * attributes such as cost, representing the data processing speed of the place, and quality, indicating how effectively
+ * the place performs its function. Together, these attributes determine the total expense of the service and can be
+ * leveraged for processing optimization.
  */
 public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
 

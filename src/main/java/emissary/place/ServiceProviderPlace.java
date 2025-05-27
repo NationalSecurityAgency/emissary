@@ -35,9 +35,9 @@ import java.util.List;
 import static emissary.core.constants.Configurations.PLACE_RESOURCE_LIMIT_MILLIS;
 
 /**
- * Concrete instances of ServiceProviderPlace can be created by the emissary.admin.PlaceStarter and registered with the
- * emissary.directory.IDirectoryPlace to make their respective services available and a specified cost and quality
- * throughout the system.
+ * ServiceProviderPlace can be extended to create custom services to perform work on {@link IBaseDataObject} payloads.
+ * By overriding the method {@link #process(IBaseDataObject)}, an extending class can consume an {@link IBaseDataObject}
+ * and operate on it.
  */
 public abstract class ServiceProviderPlace extends DirectoryProviderPlace implements IServiceProviderPlace, ServiceProviderPlaceMBean {
 
