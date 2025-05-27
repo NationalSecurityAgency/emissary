@@ -22,7 +22,20 @@ public class InputStreamChannelFactory {
      * @return an InputStreamChannelFactory instance of the data
      */
     public static SeekableByteChannelFactory create(final long size, final InputStreamFactory inputStreamFactory) {
-        return new InputStreamChannelFactoryImpl(size, inputStreamFactory);
+        return create(size, inputStreamFactory, false);
+    }
+
+
+    /**
+     * Creates a factory implementation based on an {@link InputStreamFactory}
+     *
+     * @param size if known, else provide a negative value to allow the factory to work out the size upon first create
+     * @param inputStreamFactory for the data
+     * @param checkAvailable indicates whether to try to salvage truncated child entries
+     * @return an InputStreamChannelFactory instance of the data
+     */
+    public static SeekableByteChannelFactory create(final long size, final InputStreamFactory inputStreamFactory, final boolean checkAvailable) {
+        return new InputStreamChannelFactoryImpl(size, inputStreamFactory, checkAvailable);
     }
 
     private static class InputStreamChannelFactoryImpl implements SeekableByteChannelFactory {
@@ -31,11 +44,12 @@ public class InputStreamChannelFactory {
         private final IOException ioException;
         private final InputStreamFactory inputStreamFactory;
 
-        public InputStreamChannelFactoryImpl(final long size, final InputStreamFactory inputStreamFactory) {
+
+        public InputStreamChannelFactoryImpl(final long size, final InputStreamFactory inputStreamFactory, final boolean checkAvailableWhenCreating) {
             Validate.notNull(inputStreamFactory, "Required: inputStream not null");
 
             // If the size is unknown then calculate it and save any IOException that occurs.
-            if (size < 0) {
+            if (size < 0 || checkAvailableWhenCreating) {
                 long tempSize = SIZE_IS_UNKNOWN;
                 IOException tempIoException = null;
 
@@ -45,7 +59,13 @@ public class InputStreamChannelFactory {
                     tempIoException = e;
                 }
 
-                this.size = tempSize;
+                if (size < 0) {
+                    this.size = tempSize;
+                } else {
+                    // use the smaller of the requested size and the available size
+                    // this can salvage the available portion of a truncated entry
+                    this.size = Math.min(size, tempSize);
+                }
                 ioException = tempIoException;
             } else {
                 this.size = size;

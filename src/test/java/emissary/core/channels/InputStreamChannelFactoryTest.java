@@ -146,6 +146,24 @@ class InputStreamChannelFactoryTest extends UnitTest {
     }
 
     @Test
+    void simulateTruncatedDataWithCheckAvailableTrue() throws IOException {
+        boolean checkAvailable = true;
+
+        // Set an SBC that is larger than the data we have
+        final int sbcLength = testBytes.length + 8;
+        ByteBuffer buff = ByteBuffer.allocate(sbcLength);
+        // create a factory and request more bytes than there are available
+        var factory = InputStreamChannelFactory.create(sbcLength, new TestInputStreamFactory(testBytes), checkAvailable);
+        try (var sbc = factory.create()) {
+            // verify that the created channel is only as long as the data we "put in"
+            assertEquals(testBytes.length, sbc.size());
+            int bytesRead = sbc.read(buff);
+            // verify that when we can read the bytes without reading an EOFException
+            assertEquals(bytesRead, buff.position());
+        }
+    }
+
+    @Test
     void testReadWithLargerThanDefinedSize() throws IOException {
         final int sbcLength = testBytes.length / 2;
         // Set an SBC that is smaller than the amount of data we have, ensure that we can't read more than the defined size
