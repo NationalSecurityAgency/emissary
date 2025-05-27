@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 
 /**
@@ -83,7 +84,8 @@ public class DateTimeFormatParser {
         for (final String dateFormatEntry : configG.findEntries(entryType)) {
             try {
                 DateTimeFormatter initialDtf =
-                        new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(dateFormatEntry).toFormatter();
+                        new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(dateFormatEntry)
+                                .toFormatter(Locale.getDefault());
                 if (entryType.equals(DATE_TIME_ZONE_FORMAT)) {
                     initialDtf = initialDtf.withZone(zone);
                 }
