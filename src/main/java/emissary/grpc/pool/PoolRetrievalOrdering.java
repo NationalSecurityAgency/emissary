@@ -1,4 +1,4 @@
-package emissary.util.grpc.pool;
+package emissary.grpc.pool;
 
 public enum PoolRetrievalOrdering {
     LIFO, FIFO;

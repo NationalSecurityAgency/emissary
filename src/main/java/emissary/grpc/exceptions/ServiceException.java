@@ -1,4 +1,4 @@
-package emissary.util.grpc.exceptions;
+package emissary.grpc.exceptions;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;

@@ -1,9 +1,10 @@
-package emissary.util.grpc.pool;
+package emissary.grpc.pool;
 
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
+import emissary.grpc.pool.ConnectionFactory;
 import emissary.test.core.junit5.UnitTest;
-import emissary.util.grpc.exceptions.GrpcPoolException;
+import emissary.grpc.exceptions.GrpcPoolException;
 
 import io.grpc.ManagedChannel;
 import org.apache.commons.lang3.StringUtils;
@@ -72,7 +73,7 @@ class ConnectionFactoryTest extends UnitTest {
         Configurator configT = getDefaultConfigs();
         configT.addEntry(GRPC_POOL_RETRIEVAL_ORDER, "ZIFO");
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new TestConnectionFactory(HOST, PORT, configT));
-        assertEquals("No enum constant emissary.util.grpc.pool.PoolRetrievalOrdering.ZIFO", e.getMessage());
+        assertEquals("No enum constant emissary.grpc.pool.PoolRetrievalOrdering.ZIFO", e.getMessage());
     }
 
     @Test
@@ -80,7 +81,7 @@ class ConnectionFactoryTest extends UnitTest {
         Configurator configT = getDefaultConfigs();
         configT.addEntry(GRPC_LOAD_BALANCING_POLICY, "bad_scheduler");
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new TestConnectionFactory(HOST, PORT, configT));
-        assertEquals("No enum constant emissary.util.grpc.pool.LoadBalancingPolicy.BAD_SCHEDULER", e.getMessage());
+        assertEquals("No enum constant emissary.grpc.pool.LoadBalancingPolicy.BAD_SCHEDULER", e.getMessage());
     }
 
     @Test

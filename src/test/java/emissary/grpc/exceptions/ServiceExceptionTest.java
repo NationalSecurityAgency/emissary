@@ -1,5 +1,8 @@
-package emissary.util.grpc.exceptions;
+package emissary.grpc.exceptions;
 
+import emissary.grpc.exceptions.ServiceException;
+import emissary.grpc.exceptions.ServiceNotLiveException;
+import emissary.grpc.exceptions.ServiceNotReadyException;
 import emissary.test.core.junit5.UnitTest;
 
 import io.grpc.Status;
