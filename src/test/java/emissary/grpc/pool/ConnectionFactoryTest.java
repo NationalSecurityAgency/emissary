@@ -2,9 +2,8 @@ package emissary.grpc.pool;
 
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
-import emissary.grpc.pool.ConnectionFactory;
-import emissary.test.core.junit5.UnitTest;
 import emissary.grpc.exceptions.GrpcPoolException;
+import emissary.test.core.junit5.UnitTest;
 
 import io.grpc.ManagedChannel;
 import org.apache.commons.lang3.StringUtils;

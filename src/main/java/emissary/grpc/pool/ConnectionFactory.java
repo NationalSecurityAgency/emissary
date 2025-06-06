@@ -105,7 +105,7 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
 
         // Specifies how the client chooses between multiple backend addresses
         // e.g. "pick_first" uses the first address only, "round_robin" cycles through all of them for client-side balancing
-        this.loadBalancingPolicy = LoadBalancingPolicy.resolvePolicy(
+        this.loadBalancingPolicy = LoadBalancingPolicy.getPolicyName(
                 configG.findStringEntry(GRPC_LOAD_BALANCING_POLICY), LoadBalancingPolicy.ROUND_ROBIN);
 
         // Controls how aggressively idle connections are phased out over time

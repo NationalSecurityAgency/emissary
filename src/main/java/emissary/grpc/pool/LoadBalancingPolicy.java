@@ -3,18 +3,19 @@ package emissary.grpc.pool;
 import java.util.Locale;
 
 public enum LoadBalancingPolicy {
-    ROUND_ROBIN("round_robin"), PICK_FIRST("pick_first");
+    ROUND_ROBIN, PICK_FIRST;
 
-    private final String policy;
-
-    LoadBalancingPolicy(String policy) {
-        this.policy = policy;
+    public static LoadBalancingPolicy getPolicy(String input, LoadBalancingPolicy defaultPolicy) {
+        if (input == null) {
+            return defaultPolicy;
+        }
+        return LoadBalancingPolicy.valueOf(input.toUpperCase(Locale.ROOT));
     }
 
-    public static String resolvePolicy(String policy, LoadBalancingPolicy defaultPolicy) {
-        if (policy == null) {
-            return defaultPolicy.policy;
-        }
-        return LoadBalancingPolicy.valueOf(policy.toUpperCase(Locale.ROOT)).policy;
+    public static String getPolicyName(String input, LoadBalancingPolicy defaultPolicy) {
+        return LoadBalancingPolicy
+                .getPolicy(input, defaultPolicy)
+                .name()
+                .toLowerCase(Locale.ROOT);
     }
 }
