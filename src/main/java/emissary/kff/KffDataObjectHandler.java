@@ -360,7 +360,7 @@ public class KffDataObjectHandler {
      * @param d the payload
      */
     public static String getMd5Value(IBaseDataObject d) {
-        return d.getStringParameter(KFF_PARAM_MD5);
+        return d.getParameterAsString(KFF_PARAM_MD5);
     }
 
     /**
@@ -379,7 +379,7 @@ public class KffDataObjectHandler {
      * @param d the payload
      */
     public static String getSha1Value(IBaseDataObject d) {
-        return d.getStringParameter(KFF_PARAM_SHA1);
+        return d.getParameterAsString(KFF_PARAM_SHA1);
     }
 
     /**
@@ -398,7 +398,7 @@ public class KffDataObjectHandler {
      * @param d the payload
      */
     public static String getSha256Value(IBaseDataObject d) {
-        return d.getStringParameter(KFF_PARAM_SHA256);
+        return d.getParameterAsString(KFF_PARAM_SHA256);
     }
 
     /**
@@ -417,7 +417,7 @@ public class KffDataObjectHandler {
      * @param d the payload
      */
     public static String getSha384Value(IBaseDataObject d) {
-        return d.getStringParameter(KFF_PARAM_SHA384);
+        return d.getParameterAsString(KFF_PARAM_SHA384);
     }
 
     /**
@@ -436,7 +436,7 @@ public class KffDataObjectHandler {
      * @param d the payload
      */
     public static String getSha512Value(IBaseDataObject d) {
-        return d.getStringParameter(KFF_PARAM_SHA512);
+        return d.getParameterAsString(KFF_PARAM_SHA512);
     }
 
     /**
@@ -455,7 +455,7 @@ public class KffDataObjectHandler {
      * @param d the payload
      */
     public static String getSsdeepValue(IBaseDataObject d) {
-        return d.getStringParameter(KFF_PARAM_SSDEEP);
+        return d.getParameterAsString(KFF_PARAM_SSDEEP);
     }
 
     /**
@@ -476,18 +476,17 @@ public class KffDataObjectHandler {
      */
     public static String getBestAvailableHash(IBaseDataObject d) {
         if (d.getParameter(KFF_PARAM_SHA512) != null) {
-            return d.getStringParameter(KFF_PARAM_SHA512);
+            return d.getParameterAsString(KFF_PARAM_SHA512);
         }
         if (d.getParameter(KFF_PARAM_SHA384) != null) {
-            return d.getStringParameter(KFF_PARAM_SHA384);
+            return d.getParameterAsString(KFF_PARAM_SHA384);
         }
         if (d.getParameter(KFF_PARAM_SHA256) != null) {
-            return d.getStringParameter(KFF_PARAM_SHA256);
+            return d.getParameterAsString(KFF_PARAM_SHA256);
         }
         if (d.getParameter(KFF_PARAM_SHA1) != null) {
-            return d.getStringParameter(KFF_PARAM_SHA1);
+            return d.getParameterAsString(KFF_PARAM_SHA1);
         }
-        return d.getStringParameter(KFF_PARAM_MD5);
+        return d.getParameterAsString(KFF_PARAM_MD5);
     }
-
 }

@@ -56,7 +56,7 @@ public class KffHashPlace extends ServiceProviderPlace {
 
     @Override
     public void process(IBaseDataObject payload) throws ResourceException {
-        if (KffDataObjectHandler.hashPresent(payload) || TRUE.equalsIgnoreCase(payload.getStringParameter(SKIP_KFF_HASH))) {
+        if (KffDataObjectHandler.hashPresent(payload) || TRUE.equalsIgnoreCase(payload.getParameterAsString(SKIP_KFF_HASH))) {
             logger.debug("Skipping KffHash for IBDO {}", payload.getInternalId());
             return;
         }
