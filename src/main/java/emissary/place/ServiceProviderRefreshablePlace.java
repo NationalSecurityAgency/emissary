@@ -216,7 +216,7 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
         private final long intervalMinutes;
         private Instant lastCheck;
 
-        protected Monitor(final ServiceProviderRefreshablePlace place, final String path, final long intervalMinutes) {
+        protected Monitor(final ServiceProviderRefreshablePlace place, final String path, final long intervalMinutes) throws IOException {
             Preconditions.checkNotNull(place, "Refreshable place cannot be null");
             Preconditions.checkArgument(StringUtils.isNotBlank(path), "Path cannot be blank");
             Preconditions.checkArgument(intervalMinutes > 0, "Monitoring interval is not greater than 0");
@@ -227,12 +227,12 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
             final FileAlterationObserver observer;
             if (Files.isDirectory(file)) {
                 logger.debug("Monitoring directory {} for changes", file);
-                observer = new FileAlterationObserver(path);
+                observer = FileAlterationObserver.builder().setFile(file.toFile()).get();
             } else {
                 final Path parent = file.getParent();
                 final String fileName = file.getFileName().toString();
                 logger.debug("Monitoring file {} in directory {} for changes", fileName, parent);
-                observer = new FileAlterationObserver(parent.toFile(), new NameFileFilter(fileName));
+                observer = FileAlterationObserver.builder().setFile(parent.toFile()).setFileFilter(new NameFileFilter(fileName)).get();
             }
 
             final var listener = new RefreshListener(place);
