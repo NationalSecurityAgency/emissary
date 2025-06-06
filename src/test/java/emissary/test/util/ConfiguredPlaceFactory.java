@@ -65,14 +65,14 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
      */
     public T buildPlace(ConfigEntry... optionalConfigs) {
         try {
-            Configurator classConfigs = getClassConfigs(optionalConfigs);
+            Configurator classConfigs = newInstanceConfigurator(optionalConfigs);
             return placeConstructor.newInstance(classConfigs);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to create instance of " + placeName, e);
         }
     }
 
-    public Configurator getClassConfigs(ConfigEntry... optionalConfigs) {
+    private Configurator newInstanceConfigurator(ConfigEntry... optionalConfigs) {
         if (optionalConfigs.length == 0) {
             return defaultConfigurator;
         }
