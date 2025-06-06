@@ -100,8 +100,8 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
         this.keepAliveWithoutCalls = configG.findBooleanEntry(GRPC_KEEP_ALIVE_WITHOUT_CALLS, false);
 
         // Max size (in bytes) for incoming messages and message metadata from the server
-        this.maxInboundMessageSize = configG.findIntEntry(GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE, 1 << 22); // 4 MiB (2^22));
-        this.maxInboundMetadataSize = configG.findIntEntry(GRPC_MAX_INBOUND_METADATA_BYTE_SIZE, 1 << 13); // 8 KiB (2^13)
+        this.maxInboundMessageSize = configG.findIntEntry(GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE, 4 << 20); // 4 MiB
+        this.maxInboundMetadataSize = configG.findIntEntry(GRPC_MAX_INBOUND_METADATA_BYTE_SIZE, 8 << 10); // 8 KiB
 
         // Specifies how the client chooses between multiple backend addresses
         // e.g. "pick_first" uses the first address only, "round_robin" cycles through all of them for client-side balancing
