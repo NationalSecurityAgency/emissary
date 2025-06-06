@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace"
+               schemaLocation="xml.xsd"/>
+    <xs:element name="result">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="setup" minOccurs="0"/>
+                <xs:element ref="answers"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="setup" type="ibdo" />
+    <xs:element name="answers" type="ibdo"/>
+
+    <xs:element name="data">
+        <xs:complexType mixed="true">
+            <xs:attribute ref="xml:space"/>
+            <xs:attribute ref="encoding"/>
+            <xs:attribute ref="length"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="birthOrder" type="baseType"/>
+    <xs:element name="broken" type="baseType"/>
+    <xs:element name="classification" type="baseType"/>
+    <xs:element name="currentForm" type="baseType"/>
+    <xs:element name="filename" type="baseType"/>
+    <xs:element name="fontEncoding" type="baseType"/>
+    <xs:element name="footer" type="baseType"/>
+    <xs:element name="header" type="baseType"/>
+    <xs:element name="headerEncoding" type="baseType"/>
+    <xs:element name="id" type="baseType"/>
+    <xs:element name="numChildren" type="baseType"/>
+    <xs:element name="numSiblings" type="baseType"/>
+    <xs:element name="outputable" type="baseType"/>
+    <xs:element name="priority" type="baseType"/>
+    <xs:element name="processingError" type="baseType"/>
+    <xs:element name="transactionId" type="baseType"/>
+    <xs:element name="workBundleId" type="baseType"/>
+    <xs:element name="meta">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="name"/>
+                <xs:element ref="value" minOccurs="0"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="view">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="name"/>
+                <xs:element ref="value" minOccurs="0"/>
+            </xs:all>
+            <xs:attribute ref="length"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="att" type="ibdo"/>
+    <xs:element name="extract" type="ibdo"/>
+    <xs:element name="name" type="baseType"/>
+    <xs:element name="value">
+        <xs:complexType mixed="true">
+            <xs:complexContent mixed="true">
+                <xs:extension base="baseType">
+                    <xs:attribute ref="length"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:attribute name="encoding" type="xs:string" />
+    <xs:attribute name="length" type="xs:int" />
+    <xs:attribute name="index" type="xs:int" />
+    <xs:complexType name="baseType" mixed="true">
+        <xs:attribute ref="xml:space"/>
+        <xs:attribute ref="encoding"/>
+    </xs:complexType>
+    <xs:complexType name="ibdo">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="data"/>
+            <xs:element ref="birthOrder"/>
+            <xs:element ref="broken"/>
+            <xs:element ref="classification"/>
+            <xs:element ref="currentForm"/>
+            <xs:element ref="filename"/>
+            <xs:element ref="fontEncoding"/>
+            <xs:element ref="footer"/>
+            <xs:element ref="header"/>
+            <xs:element ref="headerEncoding"/>
+            <xs:element ref="id"/>
+            <xs:element ref="numChildren"/>
+            <xs:element ref="numSiblings"/>
+            <xs:element ref="outputable"/>
+            <xs:element ref="priority"/>
+            <xs:element ref="processingError"/>
+            <xs:element ref="transactionId"/>
+            <xs:element ref="workBundleId"/>
+            <xs:element ref="meta"/>
+            <xs:element ref="view"/>
+            <xs:element ref="att"/>
+            <xs:element ref="extract"/>
+        </xs:choice>
+        <xs:attribute ref="index" />
+    </xs:complexType>
+</xs:schema>
