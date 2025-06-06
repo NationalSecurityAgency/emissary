@@ -1,4 +1,4 @@
-package emissary.util.grpc.exceptions;
+package emissary.grpc.exceptions;
 
 /**
  * Used when the service doesn't currently have enough resources to perform the request. The connection is good, just

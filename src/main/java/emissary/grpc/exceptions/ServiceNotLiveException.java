@@ -1,4 +1,4 @@
-package emissary.util.grpc.exceptions;
+package emissary.grpc.exceptions;
 
 /**
  * Used when the server is down and not responding. The connection is most likely bad and needs to be replaced.
