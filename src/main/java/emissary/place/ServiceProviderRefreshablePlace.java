@@ -216,7 +216,7 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
         private final long intervalMinutes;
         private Instant lastCheck;
 
-        protected Monitor(final ServiceProviderRefreshablePlace place, final String path, final long intervalMinutes) {
+        protected Monitor(final ServiceProviderRefreshablePlace place, final String path, final long intervalMinutes) throws IOException {
             Preconditions.checkNotNull(place, "Refreshable place cannot be null");
             Preconditions.checkArgument(StringUtils.isNotBlank(path), "Path cannot be blank");
             Preconditions.checkArgument(intervalMinutes > 0, "Monitoring interval is not greater than 0");
@@ -235,9 +235,14 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
                 observer = new FileAlterationObserver(parent.toFile(), new NameFileFilter(fileName));
             }
 
-            final var listener = new RefreshListener(place);
-            observer.addListener(listener);
-            this.observers.add(observer);
+            try {
+                final var listener = new RefreshListener(place);
+                observer.addListener(listener);
+                observer.initialize();
+                this.observers.add(observer);
+            } catch (Exception e) {
+                throw new IOException("Error initializing observer", e);
+            }
 
             this.intervalMinutes = intervalMinutes;
             this.lastCheck = Instant.now();
@@ -262,16 +267,19 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
 
             @Override
             public void onFileChange(final File file) {
+                logger.trace("File change detected: {} on {}", file, file.lastModified());
                 handleChangeEvent(file);
             }
 
             @Override
             public void onFileCreate(final File file) {
+                logger.trace("File creation detected: {} on {}", file, file.lastModified());
                 handleChangeEvent(file);
             }
 
             @Override
             public void onFileDelete(final File file) {
+                logger.trace("File delete detected: {} on {}", file, file.lastModified());
                 handleChangeEvent(file);
             }
 
@@ -279,6 +287,7 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
             public void onStop(final FileAlterationObserver observer) {
                 if (hasChanges()) {
                     this.place.invalidate("due to a config change");
+                    this.lastModified = -1L;
                 }
             }
 
@@ -288,6 +297,7 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
             }
 
             private boolean hasChanges() {
+                logger.trace("LastModified time {}", this.lastModified);
                 if (this.lastModified > 0L) {
                     final var lastMod = Instant.ofEpochMilli(this.lastModified);
 

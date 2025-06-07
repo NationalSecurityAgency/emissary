@@ -120,6 +120,61 @@ The default PickUpPlace is configured to read files from _target/data/InputData_
 files into that directory, you will see Emissary process them.  Keep in mind, only toUpper and toLower are
 configured, so the output will not be too interesting.
 
+##### Pause
+
+Stop the service from taking work
+
+```
+./emissary server --pause
+```
+
+##### Unpause
+
+Allow a paused service to take work
+
+```
+./emissary server --unpause
+```
+
+##### Invalidate
+
+Invalidate services that are refreshable. This is a "light" refresh that is a no-downtime approach that invalidates a
+ServiceProviderRefreshablePlace. When the place is then pulled from DirectoryPlace, the place is recreated using the
+same keys for DirectoryPlace and Namespace, but the configurator is reloaded and the place is able to reload a subset
+of its configs.
+
+```
+./emissary server --invalidate
+```
+
+##### Refresh
+
+Force refresh of services. This is a "hard" refresh, the server is paused and there is a wait for the MoblieAgents to
+drain. Once the server is fully idle, all ServiceProviderRefreshablePlace existing keys are removed from DirectoyPlace
+and Namespace, and the places are fully recreated. This allows for changes to service names, proxies, deny lists, etc.
+The server is then unpaused to resume processing. Any failure in refresh would put the server in a bad state, so the
+server is shutdown.
+
+```
+./emissary server --refresh
+```
+
+##### Stop
+
+Shutdown the service
+
+```
+./emissary server --stop
+```
+
+##### Kill
+
+Force the shutdown of the service
+
+```
+./emissary server --kill
+```
+
 #### Agents (Standalone)
 
 The agents command shows the number of MobileAgents for the configured host and what those
