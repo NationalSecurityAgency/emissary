@@ -25,8 +25,8 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Configuration Keys:
  * <ul>
- * <li>{@code GRPC_KEEP_ALIVE_MS} - Time to wait before sending a ping on idle, default={@code 60000L}</li>
- * <li>{@code GRPC_KEEP_ALIVE_TIMEOUT_MS} - Timeout for receiving ping ACKs, default={@code 30000L}</li>
+ * <li>{@code GRPC_KEEP_ALIVE_MILLIS} - Time to wait before sending a ping on idle, default={@code 60000L}</li>
+ * <li>{@code GRPC_KEEP_ALIVE_TIMEOUT_MILLIS} - Timeout for receiving ping ACKs, default={@code 30000L}</li>
  * <li>{@code GRPC_KEEP_ALIVE_WITHOUT_CALLS} - Send pings even when no RPCs are active if {@code true},
  * default={@code false}</li>
  * <li>{@code GRPC_LOAD_BALANCING_POLICY} - gRPC load balancing policy, default={@code "round_robin"}</li>
@@ -35,7 +35,8 @@ import java.util.concurrent.TimeUnit;
  * <li>{@code GRPC_POOL_BLOCK_EXHAUSTED} - If {@code true}, threads block when pool is empty, otherwise throws an
  * Exception, default={@code true}</li>
  * <li>{@code GRPC_POOL_ERODING_FACTOR} - Optional shrink rate for idle connections, default={@code -1.0f}</li>
- * <li>{@code GRPC_POOL_MAX_BORROW_WAIT_MS} - Time to wait before failing a borrow attempt, default={@code 10000L}</li>
+ * <li>{@code GRPC_POOL_MAX_BORROW_WAIT_MILLIS} - Time to wait before failing a borrow attempt,
+ * default={@code 10000L}</li>
  * <li>{@code GRPC_POOL_MAX_IDLE_CONNECTIONS} - Maximum idle connections in the pool, default={@code 8}</li>
  * <li>{@code GRPC_POOL_MAX_SIZE} - Maximum total connections allowed, default={@code 8}</li>
  * <li>{@code GRPC_POOL_MIN_IDLE_CONNECTIONS} - Minimum idle connections in the pool, default={@code 0}</li>
@@ -43,17 +44,19 @@ import java.util.concurrent.TimeUnit;
  * <li>{@code GRPC_POOL_TEST_BEFORE_BORROW} - If {@code true}, validates pooled connections before use with
  * {@link #validateObject(PooledObject)}, default={@code true}</li>
  * </ul>
+ * <a href="https://docs.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-5.0">Source</a> for default
+ * gRPC configurations.
  */
 public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
-    protected static final String GRPC_KEEP_ALIVE_MS = "GRPC_KEEP_ALIVE_MS";
-    protected static final String GRPC_KEEP_ALIVE_TIMEOUT_MS = "GRPC_KEEP_ALIVE_TIMEOUT_MS";
+    protected static final String GRPC_KEEP_ALIVE_MILLIS = "GRPC_KEEP_ALIVE_MILLIS";
+    protected static final String GRPC_KEEP_ALIVE_TIMEOUT_MILLIS = "GRPC_KEEP_ALIVE_TIMEOUT_MILLIS";
     protected static final String GRPC_KEEP_ALIVE_WITHOUT_CALLS = "GRPC_KEEP_ALIVE_WITHOUT_CALLS";
     protected static final String GRPC_LOAD_BALANCING_POLICY = "GRPC_LOAD_BALANCING_POLICY";
     protected static final String GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE = "GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE";
     protected static final String GRPC_MAX_INBOUND_METADATA_BYTE_SIZE = "GRPC_MAX_INBOUND_METADATA_BYTE_SIZE";
     protected static final String GRPC_POOL_BLOCK_EXHAUSTED = "GRPC_POOL_BLOCK_EXHAUSTED";
     protected static final String GRPC_POOL_ERODING_FACTOR = "GRPC_POOL_ERODING_FACTOR";
-    protected static final String GRPC_POOL_MAX_BORROW_WAIT_MS = "GRPC_POOL_MAX_BORROW_WAIT_MS";
+    protected static final String GRPC_POOL_MAX_BORROW_WAIT_MILLIS = "GRPC_POOL_MAX_BORROW_WAIT_MILLIS";
     protected static final String GRPC_POOL_MAX_IDLE_CONNECTIONS = "GRPC_POOL_MAX_IDLE_CONNECTIONS";
     protected static final String GRPC_POOL_MAX_SIZE = "GRPC_POOL_MAX_SIZE";
     protected static final String GRPC_POOL_MIN_IDLE_CONNECTIONS = "GRPC_POOL_MIN_IDLE_CONNECTIONS";
@@ -67,11 +70,11 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
     private final String host;
     private final int port;
     private final String target;
-    private final long keepAlive;
-    private final long keepAliveTimeout;
+    private final long keepAliveMillis;
+    private final long keepAliveTimeoutMillis;
     private final boolean keepAliveWithoutCalls;
-    private final int maxInboundMessageSize;
-    private final int maxInboundMetadataSize;
+    private final int maxInboundMessageByteSize;
+    private final int maxInboundMetadataByteSize;
     private final String loadBalancingPolicy;
     private final float erodingPoolFactor;
 
@@ -79,8 +82,7 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
      * Constructs a new gRPC connection factory using the provided host, port, and configuration. Initializes pool settings
      * and gRPC channel properties from the given configuration source.
      * <p>
-     * <a href="https://docs.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-5.0">Source</a> for default
-     * gRPC settings.
+     * See {@link ConnectionFactory} for supported configuration keys and defaults.
      * 
      * @param host gRPC service hostname or DNS target
      * @param port gRPC service port
@@ -92,10 +94,10 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
         this.target = host + ":" + port; // target may be a host or dns service
 
         // How often (in milliseconds) to send pings when the connection is idle
-        this.keepAlive = configG.findLongEntry(GRPC_KEEP_ALIVE_MS, 60000L);
+        this.keepAliveMillis = configG.findLongEntry(GRPC_KEEP_ALIVE_MILLIS, 60000L);
 
         // Time to wait (in milliseconds) for a ping ACK before closing the connection
-        this.keepAliveTimeout = configG.findLongEntry(GRPC_KEEP_ALIVE_TIMEOUT_MS, 30000L);
+        this.keepAliveTimeoutMillis = configG.findLongEntry(GRPC_KEEP_ALIVE_TIMEOUT_MILLIS, 30000L);
 
         // Whether to send pings when no RPCs are active
         // Note: Seme gRPC services have this set to false and will be noisy if not adjusted
@@ -107,8 +109,8 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
                 configG.findStringEntry(GRPC_LOAD_BALANCING_POLICY), LoadBalancingPolicy.ROUND_ROBIN);
 
         // Max size (in bytes) for incoming messages and message metadata from the server
-        this.maxInboundMessageSize = configG.findIntEntry(GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE, 4 << 20); // 4 MiB
-        this.maxInboundMetadataSize = configG.findIntEntry(GRPC_MAX_INBOUND_METADATA_BYTE_SIZE, 8 << 10); // 8 KiB
+        this.maxInboundMessageByteSize = configG.findIntEntry(GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE, 4 << 20); // 4 MiB
+        this.maxInboundMetadataByteSize = configG.findIntEntry(GRPC_MAX_INBOUND_METADATA_BYTE_SIZE, 8 << 10); // 8 KiB
 
         // Controls how aggressively idle connections are phased out over time
         // Set to a float between 0.0 and 1.0 to enable erosion (e.g. 0.2 = mild erosion)
@@ -120,7 +122,7 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
                 BaseObjectPoolConfig.DEFAULT_BLOCK_WHEN_EXHAUSTED));
 
         // Max duration to wait until block is released from exhausted pool
-        this.poolConfig.setMaxWait(Duration.ofMillis(configG.findLongEntry(GRPC_POOL_MAX_BORROW_WAIT_MS, 10000L)));
+        this.poolConfig.setMaxWait(Duration.ofMillis(configG.findLongEntry(GRPC_POOL_MAX_BORROW_WAIT_MILLIS, 10000L)));
 
         // Min/max number of idle connections in pool
         this.poolConfig.setMinIdle(configG.findIntEntry(GRPC_POOL_MIN_IDLE_CONNECTIONS, 0));
@@ -211,12 +213,12 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
     @Override
     public ManagedChannel create() {
         return ManagedChannelBuilder.forTarget(this.target)
-                .keepAliveTime(this.keepAlive, TimeUnit.MILLISECONDS)
-                .keepAliveTimeout(this.keepAliveTimeout, TimeUnit.MILLISECONDS)
+                .keepAliveTime(this.keepAliveMillis, TimeUnit.MILLISECONDS)
+                .keepAliveTimeout(this.keepAliveTimeoutMillis, TimeUnit.MILLISECONDS)
                 .keepAliveWithoutCalls(this.keepAliveWithoutCalls)
                 .defaultLoadBalancingPolicy(this.loadBalancingPolicy)
-                .maxInboundMessageSize(this.maxInboundMessageSize)
-                .maxInboundMetadataSize(this.maxInboundMetadataSize)
+                .maxInboundMessageSize(this.maxInboundMessageByteSize)
+                .maxInboundMetadataSize(this.maxInboundMetadataByteSize)
                 .usePlaintext().build();
     }
 
@@ -275,15 +277,15 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
         return target;
     }
 
-    public long getKeepAlive() {
-        return keepAlive;
+    public long getKeepAliveMillis() {
+        return keepAliveMillis;
     }
 
-    public long getKeepAliveTimeout() {
-        return keepAliveTimeout;
+    public long getKeepAliveTimeoutMillis() {
+        return keepAliveTimeoutMillis;
     }
 
-    public boolean isKeepAliveWithoutCalls() {
+    public boolean getKeepAliveWithoutCalls() {
         return keepAliveWithoutCalls;
     }
 
@@ -291,12 +293,12 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
         return loadBalancingPolicy;
     }
 
-    public int getMaxInboundMessageSize() {
-        return maxInboundMessageSize;
+    public int getMaxInboundMessageByteSize() {
+        return maxInboundMessageByteSize;
     }
 
-    public int getMaxInboundMetadataSize() {
-        return maxInboundMetadataSize;
+    public int getMaxInboundMetadataByteSize() {
+        return maxInboundMetadataByteSize;
     }
 
     public float getErodingPoolFactor() {
@@ -307,7 +309,7 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
         return this.poolConfig.getBlockWhenExhausted();
     }
 
-    public long getPoolMaxWaitMs() {
+    public long getPoolMaxWaitMillis() {
         return this.poolConfig.getMaxWaitDuration().toMillis();
     }
 
@@ -325,5 +327,9 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
 
     public boolean getPoolIsLifo() {
         return this.poolConfig.getLifo();
+    }
+
+    public boolean getPoolIsFifo() {
+        return !this.poolConfig.getLifo();
     }
 }

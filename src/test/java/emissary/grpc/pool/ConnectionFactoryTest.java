@@ -26,9 +26,6 @@ class ConnectionFactoryTest extends UnitTest {
     private static final String HOST = "localhost";
     private static final int PORT = 2222;
 
-    private TestConnectionFactory factory;
-    private ObjectPool<ManagedChannel> pool;
-
     static class TestConnectionFactory extends ConnectionFactory {
         private boolean valid = true;
 
@@ -58,7 +55,8 @@ class ConnectionFactoryTest extends UnitTest {
     void testBadPoolRetrievalOrderConfig() {
         Configurator configT = getDefaultConfigs();
         configT.addEntry(ConnectionFactory.GRPC_POOL_RETRIEVAL_ORDER, "ZIFO");
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new TestConnectionFactory(HOST, PORT, configT));
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> new TestConnectionFactory(HOST, PORT, configT));
         assertEquals("No enum constant emissary.grpc.pool.PoolRetrievalOrdering.ZIFO", e.getMessage());
     }
 
@@ -66,23 +64,26 @@ class ConnectionFactoryTest extends UnitTest {
     void testLifoPoolRetrievalOrderConfig() {
         Configurator configT = getDefaultConfigs();
         configT.addEntry(ConnectionFactory.GRPC_POOL_RETRIEVAL_ORDER, PoolRetrievalOrdering.LIFO.name());
-        ConnectionFactory cf = new TestConnectionFactory(HOST, PORT, configT);
-        assertTrue(cf.getPoolIsLifo());
+        ConnectionFactory factory = new TestConnectionFactory(HOST, PORT, configT);
+        assertTrue(factory.getPoolIsLifo());
+        assertFalse(factory.getPoolIsFifo());
     }
 
     @Test
     void testFifoPoolRetrievalOrderConfig() {
         Configurator configT = getDefaultConfigs();
         configT.addEntry(ConnectionFactory.GRPC_POOL_RETRIEVAL_ORDER, PoolRetrievalOrdering.FIFO.name());
-        ConnectionFactory cf = new TestConnectionFactory(HOST, PORT, configT);
-        assertFalse(cf.getPoolIsLifo());
+        ConnectionFactory factory = new TestConnectionFactory(HOST, PORT, configT);
+        assertFalse(factory.getPoolIsLifo());
+        assertTrue(factory.getPoolIsFifo());
     }
 
     @Test
     void testBadLoadBalancingConfig() {
         Configurator configT = getDefaultConfigs();
         configT.addEntry(ConnectionFactory.GRPC_LOAD_BALANCING_POLICY, "bad_scheduler");
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new TestConnectionFactory(HOST, PORT, configT));
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> new TestConnectionFactory(HOST, PORT, configT));
         assertEquals("No enum constant emissary.grpc.pool.LoadBalancingPolicy.BAD_SCHEDULER", e.getMessage());
     }
 
@@ -90,20 +91,23 @@ class ConnectionFactoryTest extends UnitTest {
     void testRoundRobinLoadBalancingConfig() {
         Configurator configT = getDefaultConfigs();
         configT.addEntry(ConnectionFactory.GRPC_LOAD_BALANCING_POLICY, LoadBalancingPolicy.ROUND_ROBIN.name());
-        ConnectionFactory cf = new TestConnectionFactory(HOST, PORT, configT);
-        assertEquals("round_robin", cf.getLoadBalancingPolicy());
+        ConnectionFactory factory = new TestConnectionFactory(HOST, PORT, configT);
+        assertEquals("round_robin", factory.getLoadBalancingPolicy());
     }
 
     @Test
     void testPickFirstLoadBalancingConfig() {
         Configurator configT = getDefaultConfigs();
         configT.addEntry(ConnectionFactory.GRPC_LOAD_BALANCING_POLICY, LoadBalancingPolicy.PICK_FIRST.name());
-        ConnectionFactory cf = new TestConnectionFactory(HOST, PORT, configT);
-        assertEquals("pick_first", cf.getLoadBalancingPolicy());
+        ConnectionFactory factory = new TestConnectionFactory(HOST, PORT, configT);
+        assertEquals("pick_first", factory.getLoadBalancingPolicy());
     }
 
     @Nested
     class PooledChannelTests {
+        private TestConnectionFactory factory;
+        private ObjectPool<ManagedChannel> pool;
+
         @BeforeEach
         public void setUp() throws Exception {
             Configurator configT = getDefaultConfigs();
@@ -149,7 +153,8 @@ class ConnectionFactoryTest extends UnitTest {
             ManagedChannel c1 = ConnectionFactory.acquireChannel(pool);
             ManagedChannel c2 = ConnectionFactory.acquireChannel(pool);
             PoolException exception = assertThrows(PoolException.class, () -> ConnectionFactory.acquireChannel(pool));
-            assertTrue(StringUtils.startsWith(exception.getMessage(), "Unable to borrow channel from pool: Timeout waiting for idle object"));
+            assertTrue(StringUtils.startsWith(exception.getMessage(),
+                    "Unable to borrow channel from pool: Timeout waiting for idle object"));
             ConnectionFactory.returnChannel(c1, pool);
             ConnectionFactory.returnChannel(c2, pool);
         }
