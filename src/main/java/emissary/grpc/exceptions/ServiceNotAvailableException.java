@@ -1,4 +1,4 @@
-package emissary.util.grpc.exceptions;
+package emissary.grpc.exceptions;
 
 /**
  * Parent exception for failures based on the current state of the service. E.g. the service is down, the service has

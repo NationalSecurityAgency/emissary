@@ -1,4 +1,4 @@
-package emissary.util.grpc.exceptions;
+package emissary.grpc.exceptions;
 
 import emissary.test.core.junit5.UnitTest;
 
@@ -59,7 +59,7 @@ class ServiceExceptionTest extends UnitTest {
         StatusRuntimeException exception = new StatusRuntimeException(Status.RESOURCE_EXHAUSTED.withDescription("test"));
         ServiceNotReadyException serviceNotReadyException =
                 assertThrows(ServiceNotReadyException.class, () -> ServiceException.handleGrpcStatusRuntimeException(exception));
-        assertEquals("Encountered gRPC runtime status error RESOURCE_EXHAUSTED: test. It's likely we've exceeded the maximum number of requests",
+        assertEquals("Encountered gRPC runtime status error RESOURCE_EXHAUSTED: test. It's likely we've exceeded the maximum number of requests.",
                 serviceNotReadyException.getMessage());
     }
 
@@ -67,7 +67,7 @@ class ServiceExceptionTest extends UnitTest {
     void testHandleGrpcStatusRuntimeExceptionWithInternal() {
         StatusRuntimeException exception = new StatusRuntimeException(Status.INTERNAL.withDescription("test"));
         ServiceException se = assertThrows(ServiceException.class, () -> ServiceException.handleGrpcStatusRuntimeException(exception));
-        assertEquals("Encountered gRPC runtime status error INTERNAL: test. It's likely a gpu OOM error or other resource error has occurred",
+        assertEquals("Encountered gRPC runtime status error INTERNAL: test. It's likely a gpu OOM error or other resource error has occurred.",
                 se.getMessage());
     }
 
