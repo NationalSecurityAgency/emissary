@@ -1,4 +1,4 @@
-package emissary.util.grpc.exceptions;
+package emissary.grpc.exceptions;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -12,7 +12,7 @@ public class ServiceException extends RuntimeException {
 
     private static final long serialVersionUID = 1371863576664142288L;
 
-    static final String GRPC_ERROR_MSG_FMT = "Encountered gRPC runtime status error %s. %s";
+    static final String GRPC_ERROR_MSG_FMT = "Encountered gRPC runtime status error %s. %s.";
 
     public ServiceException(String errorMessage) {
         super(errorMessage);
@@ -39,7 +39,7 @@ public class ServiceException extends RuntimeException {
         switch (code) {
             case DEADLINE_EXCEEDED:
                 throw new ServiceException(String.format(GRPC_ERROR_MSG_FMT, e.getMessage(),
-                        "gRPC client connection has timed out."));
+                        "gRPC client connection has timed out"));
             case UNAVAILABLE: {
                 // Likely server has gone down. Could be a crash or resources were scaled down
                 String desc = status.getDescription();
@@ -47,13 +47,13 @@ public class ServiceException extends RuntimeException {
                     // So-called "poison pill" files have resulted in crashes for unknown reasons.
                     // Out of an abundance of caution, we consider these files as failures.
                     throw new ServiceException(String.format(GRPC_ERROR_MSG_FMT, e.getMessage(),
-                            "It's possible service crashed due to a misbehaving file."));
+                            "It's possible service crashed due to a misbehaving file"));
                 }
                 // Otherwise, we indicate the server is not live
-                throw new ServiceNotLiveException(String.format(GRPC_ERROR_MSG_FMT, e.getMessage(), "It's likely service crashed."));
+                throw new ServiceNotLiveException(String.format(GRPC_ERROR_MSG_FMT, e.getMessage(), "It's likely service crashed"));
             }
             case CANCELLED:
-                throw new ServiceException(String.format(GRPC_ERROR_MSG_FMT, e.getMessage(), "It's likely a client side interrupt occurred."));
+                throw new ServiceException(String.format(GRPC_ERROR_MSG_FMT, e.getMessage(), "It's likely a client side interrupt occurred"));
             case RESOURCE_EXHAUSTED:
                 // Likely we've exceeded the maximum number of concurrent requests
                 throw new ServiceNotReadyException(String.format(GRPC_ERROR_MSG_FMT, e.getMessage(),
@@ -64,7 +64,7 @@ public class ServiceException extends RuntimeException {
                         "It's likely a gpu OOM error or other resource error has occurred"));
             default:
                 throw new ServiceException(String.format(GRPC_ERROR_MSG_FMT, e.getMessage(),
-                        "This is an unhandled code type. Please add it to the list of gRPC exceptions."));
+                        "This is an unhandled code type. Please add it to the list of gRPC exceptions"));
         }
     }
 }
