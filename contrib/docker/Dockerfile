@@ -2,7 +2,7 @@ ARG target_os=ubi8
 
 
 
-FROM redhat/ubi8:8.9 AS base_ubi8
+FROM redhat/ubi8 AS base_ubi8
 
 ENV JAVA_TOOL_OPTIONS -Dfile.encoding=UTF8
 ENV PROJECT_BASE=/opt/emissary
@@ -12,9 +12,7 @@ ARG user=emissary
 ARG group=emissary
 ARG uid=1000
 ARG gid=1000
-RUN dnf update -y \
-     && dnf upgrade -y \
-     && rpm --import https://yum.corretto.aws/corretto.key \
+RUN rpm --import https://yum.corretto.aws/corretto.key \
      && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
      && dnf install -y java-${java_version}-amazon-corretto-devel \
      && dnf install -y glibc-langpack-en lsof git \
