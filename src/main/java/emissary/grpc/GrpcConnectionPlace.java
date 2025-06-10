@@ -25,6 +25,17 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * Place for processing data using gRPC connections to external services.
+ * <p>
+ * Configuration Keys:
+ * <ul>
+ * <li>{@code GRPC_HOST} - gRPC service hostname or DNS target, <i>required</i></li>
+ * <li>{@code GRPC_PORT} - gRPC service port, <i>required</i></li>
+ * <li>See {@link ConnectionFactory} for supported pooling and gRPC channel configuration keys and defaults.</li>
+ * <li>See {@link Policy} for supported retry configuration keys and defaults.</li>
+ * </ul>
+ */
 public abstract class GrpcConnectionPlace extends ServiceProviderPlace implements IGrpcConnectionPlace {
     protected static final String GRPC_HOST = "GRPC_HOST";
     protected static final String GRPC_PORT = "GRPC_PORT";
