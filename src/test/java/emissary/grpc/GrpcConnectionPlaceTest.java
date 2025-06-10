@@ -6,7 +6,6 @@ import emissary.core.constants.Configurations;
 import emissary.grpc.exceptions.ServiceException;
 import emissary.grpc.exceptions.ServiceNotAvailableException;
 import emissary.grpc.pool.ConnectionFactory;
-import emissary.grpc.retry.Policy;
 import emissary.test.core.junit5.UnitTest;
 import emissary.test.util.ConfiguredPlaceFactory;
 
@@ -43,7 +42,7 @@ class GrpcConnectionPlaceTest extends UnitTest {
             new ConfigEntry(Configurations.SERVICE_KEY, "*.GRPC.ANALYZE.http://foo.bar:1234/GrpcConnectionPlace$5050"),
             new ConfigEntry(GrpcConnectionPlace.GRPC_HOST, "localhost"),
             new ConfigEntry(GrpcConnectionPlace.GRPC_PORT, "2222"),
-            new ConfigEntry(Policy.GRPC_RETRY_MAX_ATTEMPTS, "2"));
+            new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_ATTEMPTS, "2"));
 
     private TestGrpcConnectionPlace place;
     private Server server;

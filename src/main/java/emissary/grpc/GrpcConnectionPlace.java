@@ -1,12 +1,8 @@
 package emissary.grpc;
 
 import emissary.config.Configurator;
-import emissary.grpc.exceptions.PoolException;
 import emissary.grpc.exceptions.ServiceException;
-import emissary.grpc.exceptions.ServiceNotAvailableException;
 import emissary.grpc.pool.ConnectionFactory;
-import emissary.grpc.retry.Executor;
-import emissary.grpc.retry.Policy;
 import emissary.place.ServiceProviderPlace;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -33,7 +29,7 @@ import java.util.function.Function;
  * <li>{@code GRPC_HOST} - gRPC service hostname or DNS target, <i>required</i></li>
  * <li>{@code GRPC_PORT} - gRPC service port, <i>required</i></li>
  * <li>See {@link ConnectionFactory} for supported pooling and gRPC channel configuration keys and defaults.</li>
- * <li>See {@link Policy} for supported retry configuration keys and defaults.</li>
+ * <li>See {@link RetryHandler} for supported retry configuration keys and defaults.</li>
  * </ul>
  */
 public abstract class GrpcConnectionPlace extends ServiceProviderPlace implements IGrpcConnectionPlace {
@@ -42,7 +38,7 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
 
     private ConnectionFactory connectionFactory;
     protected ObjectPool<ManagedChannel> channelPool;
-    protected Policy retryPolicy;
+    protected RetryHandler retryHandler;
 
     protected GrpcConnectionPlace() throws IOException {
         super();
@@ -107,7 +103,7 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
             }
         };
         channelPool = connectionFactory.newConnectionPool();
-        retryPolicy = new Policy(configG, this.getPlaceName());
+        retryHandler = new RetryHandler(configG, this.getPlaceName());
     }
 
     /**
@@ -160,7 +156,7 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
 
     /**
      * Wraps {@link GrpcConnectionPlace#invokeGrpc(Function, BiFunction, GeneratedMessageV3)} with retry logic. If the gRPC
-     * connection fails, the call will be tried again per the configurations set using {@link Policy}.
+     * connection fails, the call will be tried again per the configurations set using {@link RetryHandler}.
      *
      * @param stubFactory a function that creates the appropriate gRPC stub from a {@link ManagedChannel}
      * @param callLogic a function that invokes the desired RPC method on the stub
@@ -174,16 +170,7 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
             Function<ManagedChannel, StubT> stubFactory,
             BiFunction<StubT, ReqT, RespT> callLogic, ReqT payload) {
 
-        Executor<RespT> retryExecutor = retryPolicy.generateExecutor(() -> invokeGrpc(stubFactory, callLogic, payload));
-        while (retryExecutor.canContinue()) {
-            try {
-                return retryExecutor.execute();
-            } catch (PoolException | ServiceNotAvailableException e) {
-                logger.atLevel(retryExecutor.getLogLevel()).log("Failed gRPC connection attempt #{} from {}",
-                        retryExecutor.getAttemptNumber(), this.getPlaceName());
-            }
-        }
-        return null;
+        return retryHandler.execute(() -> invokeGrpc(stubFactory, callLogic, payload));
     }
 
     /**
@@ -209,7 +196,7 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
 
     /**
      * Executes multiple unary gRPC calls in parallel using a shared {@link AbstractFutureStub}. Failed requests will be
-     * retried according to the configured {@link Policy}.
+     * retried according to the configured {@link RetryHandler}.
      * <p>
      * TODO: Decide when to call retries - Requires blocking
      *
