@@ -15,66 +15,74 @@ import io.grpc.ManagedChannel;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.Status;
+import io.grpc.Status.Code;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GrpcConnectionPlaceTest extends UnitTest {
+    private static final String DEFAULT_SERVICE_KEY = "*.GRPC.ANALYZE.http://foo.bar:1234/GrpcTestPlace$1234";
+    private static final String DEFAULT_GRPC_HOST = "localhost";
+    private static final int DEFAULT_GRPC_PORT = 2222;
+    private static final String ARBITRARY_RUNTIME_EXCEPTION_MESSAGE = "fail";
+
+    private static final Server server = ServerBuilder.forPort(DEFAULT_GRPC_PORT)
+            .addService(new TestServiceImpl())
+            .build();
+
     private final ConfiguredPlaceFactory<TestGrpcConnectionPlace> placeFactory = new ConfiguredPlaceFactory<>(
             TestGrpcConnectionPlace.class,
-            new ConfigEntry(Configurations.SERVICE_KEY, "*.GRPC.ANALYZE.http://foo.bar:1234/GrpcConnectionPlace$5050"),
-            new ConfigEntry(GrpcConnectionPlace.GRPC_HOST, "localhost"),
-            new ConfigEntry(GrpcConnectionPlace.GRPC_PORT, "2222"),
-            new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_ATTEMPTS, "2"));
+            new ConfigEntry(Configurations.SERVICE_KEY, DEFAULT_SERVICE_KEY),
+            new ConfigEntry(GrpcConnectionPlace.GRPC_HOST, DEFAULT_GRPC_HOST),
+            new ConfigEntry(GrpcConnectionPlace.GRPC_PORT, String.valueOf(DEFAULT_GRPC_PORT)));
 
     private TestGrpcConnectionPlace place;
-    private Server server;
 
-    static Stream<Integer> serviceExceptionCodes() {
-        Set<Integer> exclude = serviceNotAvailableExceptionCodes().collect(Collectors.toSet());
-        return IntStream.rangeClosed(0, 16).filter(i -> !exclude.contains(i)).boxed();
+    static Stream<Integer> grpcCodes() {
+        return Arrays.stream(Code.values()).map(Code::value);
     }
 
-    static Stream<Integer> serviceNotAvailableExceptionCodes() {
-        return IntStream.of(8, 14).boxed();
+    static Stream<Integer> recoverableGrpcCodes() {
+        return IntStream.of(Code.RESOURCE_EXHAUSTED.value(), Code.UNAVAILABLE.value()).boxed();
     }
 
-    @Override
-    @BeforeEach
-    public void setUp() throws Exception {
-        place = placeFactory.buildPlace();
-        server = ServerBuilder.forPort(place.getPort())
-                .addService(new TestServiceImpl())
-                .build()
-                .start();
+    static Stream<Integer> nonRecoverableGrpcCodes() {
+        Set<Integer> exclude = recoverableGrpcCodes().collect(Collectors.toSet());
+        return grpcCodes().filter(i -> !exclude.contains(i));
     }
 
-    @AfterEach
-    void stopServer() {
-        if (server != null) {
-            server.shutdownNow();
-        }
+    @BeforeAll
+    static void startServer() throws Exception {
+        server.start();
+    }
+
+    @AfterAll
+    static void stopServer() {
+        server.shutdownNow();
     }
 
     @Test
     void testValidateConnectionIsCalled() {
+        place = placeFactory.buildPlace();
         assertFalse(place.getIsConnectionValidated());
         ConnectionFactory.acquireChannel(place.channelPool);
         assertTrue(place.getIsConnectionValidated());
@@ -82,159 +90,197 @@ class GrpcConnectionPlaceTest extends UnitTest {
 
     @Test
     void testPassivateConnectionIsCalled() {
+        place = placeFactory.buildPlace();
         ManagedChannel channel = ConnectionFactory.acquireChannel(place.channelPool);
         assertFalse(place.getIsConnectionPassivated());
         ConnectionFactory.returnChannel(channel, place.channelPool);
         assertTrue(place.getIsConnectionPassivated());
     }
 
-    @Test
-    void testGrpcSuccess() {
-        TestRequest payload = TestRequest.newBuilder()
-                .setQuery("hello world")
-                .build();
+    @Nested
+    class RetryDisabledTests extends UnitTest {
+        @BeforeEach
+        public void setUpPlace() {
+            place = placeFactory.buildPlace(new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_ATTEMPTS, "1"));
+        }
 
-        TestResponse response = place.invokeGrpc(
-                TestServiceGrpc::newBlockingStub,
-                TestServiceGrpc.TestServiceBlockingStub::uppercase,
-                payload);
+        @Test
+        void testGrpcSuccess() {
+            TestRequest request = TestRequest.newBuilder()
+                    .setQuery("hello world")
+                    .build();
 
-        assertEquals("HELLO WORLD", response.getResult());
-    }
+            TestResponse response = place.invokeGrpc(
+                    TestServiceGrpc::newBlockingStub,
+                    TestServiceGrpc.TestServiceBlockingStub::uppercase,
+                    request);
 
-    @ParameterizedTest
-    @MethodSource("serviceExceptionCodes")
-    void testGrpcServiceException(int code) {
-        Status status = Status.fromCodeValue(code);
+            assertEquals("HELLO WORLD", response.getResult());
+        }
 
-        TestRequest payload = TestRequest.newBuilder()
-                .setQuery("hello world")
-                .build();
+        @ParameterizedTest
+        @MethodSource("emissary.grpc.GrpcConnectionPlaceTest#recoverableGrpcCodes")
+        void testGrpcRecoverableCodes(int code) {
+            Status status = Status.fromCodeValue(code);
 
-        ServiceException e = assertThrows(
-                ServiceException.class, () -> place.invokeGrpc(
-                        TestServiceGrpc::newBlockingStub,
-                        (stub, request) -> {
-                            throw new StatusRuntimeException(status);
-                        },
-                        payload));
+            TestRequest request = TestRequest.newBuilder()
+                    .setQuery("hello world")
+                    .build();
 
-        assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
-    }
-
-    @ParameterizedTest
-    @MethodSource("serviceNotAvailableExceptionCodes")
-    void testGrpcServiceNotAvailableException(int code) {
-        Status status = Status.fromCodeValue(code);
-
-        TestRequest payload = TestRequest.newBuilder()
-                .setQuery("hello world")
-                .build();
-
-        ServiceNotAvailableException e = assertThrows(
-                ServiceNotAvailableException.class, () -> place.invokeGrpc(
-                        TestServiceGrpc::newBlockingStub,
-                        (stub, request) -> {
-                            throw new StatusRuntimeException(status);
-                        },
-                        payload));
-
-        assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
-    }
-
-    @Test
-    void testGrpcRuntimeException() {
-        TestRequest payload = TestRequest.newBuilder()
-                .setQuery("hello")
-                .build();
-
-        TestResponse response = place.invokeGrpc(
-                TestServiceGrpc::newBlockingStub,
-                (stub, request) -> {
-                    throw new IllegalStateException("Random error");
-                },
-                payload);
-
-        assertNull(response);
-    }
-
-    @Test
-    void testGrpcSuccessFirstTry() {
-        TestRequest payload = TestRequest.newBuilder()
-                .setQuery("hello world")
-                .build();
-
-        TestResponse response = place.invokeGrpcWithRetry(
-                TestServiceGrpc::newBlockingStub,
-                TestServiceGrpc.TestServiceBlockingStub::uppercase,
-                payload);
-
-        assertEquals("HELLO WORLD", response.getResult());
-    }
-
-    @ParameterizedTest
-    @MethodSource("serviceNotAvailableExceptionCodes")
-    void testGrpcSuccessMultipleTries(int code) {
-        Status status = Status.fromCodeValue(code);
-
-        TestRequest payload = TestRequest.newBuilder()
-                .setQuery("hello world")
-                .build();
-
-        AtomicBoolean hasAttempted = new AtomicBoolean(false);
-        TestResponse response = place.invokeGrpcWithRetry(
-                TestServiceGrpc::newBlockingStub,
-                (stub, request) -> {
-                    if (!hasAttempted.getAndSet(true)) {
+            ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class, () -> place.invokeGrpc(
+                    TestServiceGrpc::newBlockingStub,
+                    (stub, payload) -> {
                         throw new StatusRuntimeException(status);
-                    }
-                    return stub.uppercase(request);
-                },
-                payload);
+                    },
+                    request));
 
-        assertEquals("HELLO WORLD", response.getResult());
-    }
+            assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+        }
 
-    @ParameterizedTest
-    @MethodSource("serviceExceptionCodes")
-    void testGrpcFailureNoRetries(int code) {
-        Status status = Status.fromCodeValue(code);
+        @ParameterizedTest
+        @MethodSource("emissary.grpc.GrpcConnectionPlaceTest#nonRecoverableGrpcCodes")
+        void testGrpcNonRecoverableCodes(int code) {
+            Status status = Status.fromCodeValue(code);
 
-        TestRequest payload = TestRequest.newBuilder()
-                .setQuery("hello world")
-                .build();
+            TestRequest request = TestRequest.newBuilder()
+                    .setQuery("hello world")
+                    .build();
 
-        AtomicBoolean hasAttempted = new AtomicBoolean(false);
-        ServiceException e = assertThrows(ServiceException.class, () -> place.invokeGrpcWithRetry(
-                TestServiceGrpc::newBlockingStub,
-                (stub, request) -> {
-                    if (!hasAttempted.getAndSet(true)) {
+            ServiceException e = assertThrows(ServiceException.class, () -> place.invokeGrpc(
+                    TestServiceGrpc::newBlockingStub,
+                    (stub, payload) -> {
                         throw new StatusRuntimeException(status);
-                    }
-                    return stub.uppercase(request);
-                },
-                payload));
+                    },
+                    request));
 
-        assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+            assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+        }
+
+        @Test
+        void testGrpcRuntimeException() {
+            TestRequest request = TestRequest.newBuilder()
+                    .setQuery("hello")
+                    .build();
+
+            IllegalStateException e = assertThrows(IllegalStateException.class, () -> place.invokeGrpc(
+                    TestServiceGrpc::newBlockingStub,
+                    (stub, payload) -> {
+                        throw new IllegalStateException(ARBITRARY_RUNTIME_EXCEPTION_MESSAGE);
+                    },
+                    request));
+
+            assertEquals(ARBITRARY_RUNTIME_EXCEPTION_MESSAGE, e.getMessage());
+        }
     }
 
-    @ParameterizedTest
-    @MethodSource("serviceNotAvailableExceptionCodes")
-    void testGrpcFailureMaxRetries(int code) {
-        Status status = Status.fromCodeValue(code);
+    @Nested
+    class RetryEnabledTests extends UnitTest {
+        private static final int DEFAULT_GRPC_RETRY_MAX_ATTEMPTS = 5;
 
-        TestRequest payload = TestRequest.newBuilder()
-                .setQuery("hello world")
-                .build();
+        @BeforeEach
+        public void setUpPlace() {
+            place = placeFactory.buildPlace(
+                    new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_ATTEMPTS, String.valueOf(DEFAULT_GRPC_RETRY_MAX_ATTEMPTS)));
+        }
 
-        TestResponse response = place.invokeGrpcWithRetry(
-                TestServiceGrpc::newBlockingStub,
-                (stub, request) -> {
-                    throw new StatusRuntimeException(status);
-                },
-                payload);
+        @Test
+        void testGrpcSuccessFirstTry() {
+            TestRequest request = TestRequest.newBuilder()
+                    .setQuery("hello world")
+                    .build();
 
-        assertNull(response);
+            TestResponse response = place.invokeGrpc(
+                    TestServiceGrpc::newBlockingStub,
+                    TestServiceGrpc.TestServiceBlockingStub::uppercase,
+                    request);
+
+            assertEquals("HELLO WORLD", response.getResult());
+        }
+
+        @ParameterizedTest
+        @MethodSource("emissary.grpc.GrpcConnectionPlaceTest#recoverableGrpcCodes")
+        void testGrpcSuccessAfterRecoverableCodes(int code) {
+            Status status = Status.fromCodeValue(code);
+
+            TestRequest request = TestRequest.newBuilder()
+                    .setQuery("hello world")
+                    .build();
+
+            AtomicInteger attemptNumber = new AtomicInteger(0);
+            TestResponse response = place.invokeGrpc(
+                    TestServiceGrpc::newBlockingStub,
+                    (stub, payload) -> {
+                        if (attemptNumber.incrementAndGet() < DEFAULT_GRPC_RETRY_MAX_ATTEMPTS) {
+                            throw new StatusRuntimeException(status);
+                        }
+                        return stub.uppercase(request);
+                    },
+                    request);
+
+            assertEquals("HELLO WORLD", response.getResult());
+        }
+
+        @ParameterizedTest
+        @MethodSource("emissary.grpc.GrpcConnectionPlaceTest#recoverableGrpcCodes")
+        void testGrpcFailureAfterMaxRecoverableCodes(int code) {
+            Status status = Status.fromCodeValue(code);
+
+            TestRequest request = TestRequest.newBuilder()
+                    .setQuery("hello world")
+                    .build();
+
+            ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class, () -> place.invokeGrpc(
+                    TestServiceGrpc::newBlockingStub,
+                    (stub, payload) -> {
+                        throw new StatusRuntimeException(status);
+                    },
+                    request));
+
+            assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+        }
+
+        @ParameterizedTest
+        @MethodSource("emissary.grpc.GrpcConnectionPlaceTest#nonRecoverableGrpcCodes")
+        void testGrpcFailureAfterNonRecoverableCodes(int code) {
+            Status status = Status.fromCodeValue(code);
+
+            TestRequest request = TestRequest.newBuilder()
+                    .setQuery("hello world")
+                    .build();
+
+            AtomicInteger attemptNumber = new AtomicInteger(0);
+            ServiceException e = assertThrows(ServiceException.class, () -> place.invokeGrpc(
+                    TestServiceGrpc::newBlockingStub,
+                    (stub, payload) -> {
+                        if (attemptNumber.incrementAndGet() < DEFAULT_GRPC_RETRY_MAX_ATTEMPTS) {
+                            throw new StatusRuntimeException(status);
+                        }
+                        return stub.uppercase(request);
+                    },
+                    request));
+
+            assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+        }
+
+        @Test
+        void testGrpcFailureAfterRuntimeExceptions() {
+            TestRequest request = TestRequest.newBuilder()
+                    .setQuery("hello world")
+                    .build();
+
+            AtomicInteger attemptNumber = new AtomicInteger(0);
+            IllegalStateException e = assertThrows(IllegalStateException.class, () -> place.invokeGrpc(
+                    TestServiceGrpc::newBlockingStub,
+                    (stub, payload) -> {
+                        if (attemptNumber.incrementAndGet() < DEFAULT_GRPC_RETRY_MAX_ATTEMPTS) {
+                            throw new IllegalStateException(ARBITRARY_RUNTIME_EXCEPTION_MESSAGE);
+                        }
+                        return stub.uppercase(request);
+                    },
+                    request));
+
+            assertEquals(ARBITRARY_RUNTIME_EXCEPTION_MESSAGE, e.getMessage());
+        }
     }
 
     public static class TestGrpcConnectionPlace extends GrpcConnectionPlace {
