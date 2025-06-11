@@ -71,7 +71,7 @@ class GrpcConnectionPlaceTest extends UnitTest {
     }
 
     @BeforeAll
-    static void startServer() throws Exception {
+    static void startServer() throws IOException {
         server.start();
     }
 
