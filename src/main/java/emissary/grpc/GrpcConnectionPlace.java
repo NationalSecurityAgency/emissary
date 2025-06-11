@@ -1,7 +1,9 @@
 package emissary.grpc;
 
 import emissary.config.Configurator;
+import emissary.grpc.exceptions.PoolException;
 import emissary.grpc.exceptions.ServiceException;
+import emissary.grpc.exceptions.ServiceNotAvailableException;
 import emissary.grpc.pool.ConnectionFactory;
 import emissary.place.ServiceProviderPlace;
 
@@ -124,12 +126,15 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
     protected void passivateConnection(ManagedChannel managedChannel) { /* No-op */ }
 
     /**
-     * Executes a unary gRPC call using a {@code BlockingStub}.
+     * Executes a unary gRPC call using a {@code BlockingStub}. If the gRPC connection fails due to a {@link PoolException}
+     * or a {@link ServiceNotAvailableException}, the call will be tried again per the configurations set using
+     * {@link RetryHandler}. All other Exceptions are thrown on the spot. Will also throw an Exception once max attempts
+     * have been reached.
      *
      * @param stubFactory function that creates the appropriate gRPC stub from a {@link ManagedChannel}
      * @param callLogic function that performs the actual gRPC call using the stub and request
      * @param payload the protobuf request message to send
-     * @return the response returned by the gRPC call, or {@code null} if a non-retryable error
+     * @return the response returned by the gRPC call
      * @param <StubT> the gRPC stub type
      * @param <ReqT> the protobuf request type
      * @param <RespT> the protobuf response type
@@ -138,39 +143,22 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
             Function<ManagedChannel, StubT> stubFactory,
             BiFunction<StubT, ReqT, RespT> callLogic, ReqT payload) {
 
-        ManagedChannel channel = ConnectionFactory.acquireChannel(channelPool);
-        RespT response = null;
-        try {
-            StubT stub = stubFactory.apply(channel);
-            response = callLogic.apply(stub, payload);
-            ConnectionFactory.returnChannel(channel, channelPool);
-        } catch (StatusRuntimeException e) {
-            ConnectionFactory.returnChannel(channel, channelPool);
-            ServiceException.handleGrpcStatusRuntimeException(e);
-        } catch (RuntimeException e) {
-            logger.error("Encountered error while processing data in {}", this.getPlaceName(), e);
-            ConnectionFactory.invalidateChannel(channel, channelPool);
-        }
-        return response;
-    }
-
-    /**
-     * Wraps {@link GrpcConnectionPlace#invokeGrpc(Function, BiFunction, GeneratedMessageV3)} with retry logic. If the gRPC
-     * connection fails, the call will be tried again per the configurations set using {@link RetryHandler}.
-     *
-     * @param stubFactory a function that creates the appropriate gRPC stub from a {@link ManagedChannel}
-     * @param callLogic a function that invokes the desired RPC method on the stub
-     * @param payload the protobuf message to send
-     * @return the gRPC response message, or {@code null} if all retries fail
-     * @param <StubT> the type of gRPC stub
-     * @param <ReqT> the type of protobuf request
-     * @param <RespT> the type of protobuf response
-     */
-    protected <StubT extends AbstractBlockingStub<StubT>, ReqT extends GeneratedMessageV3, RespT extends GeneratedMessageV3> RespT invokeGrpcWithRetry(
-            Function<ManagedChannel, StubT> stubFactory,
-            BiFunction<StubT, ReqT, RespT> callLogic, ReqT payload) {
-
-        return retryHandler.execute(() -> invokeGrpc(stubFactory, callLogic, payload));
+        return retryHandler.execute(() -> {
+            ManagedChannel channel = ConnectionFactory.acquireChannel(channelPool);
+            RespT response = null;
+            try {
+                StubT stub = stubFactory.apply(channel);
+                response = callLogic.apply(stub, payload);
+                ConnectionFactory.returnChannel(channel, channelPool);
+            } catch (StatusRuntimeException e) {
+                ConnectionFactory.invalidateChannel(channel, channelPool);
+                ServiceException.handleGrpcStatusRuntimeException(e);
+            } catch (RuntimeException e) {
+                ConnectionFactory.invalidateChannel(channel, channelPool);
+                throw e;
+            }
+            return response;
+        });
     }
 
     /**
@@ -188,27 +176,6 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
      * @param <RespT> the protobuf response type
      */
     protected <StubT extends AbstractFutureStub<StubT>, ReqT extends GeneratedMessageV3, RespT extends GeneratedMessageV3> List<RespT> invokeBatchedGrpc(
-            Function<ManagedChannel, StubT> stubFactory,
-            BiFunction<StubT, ReqT, ListenableFuture<RespT>> callLogic, List<ReqT> payloadList) {
-
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    /**
-     * Executes multiple unary gRPC calls in parallel using a shared {@link AbstractFutureStub}. Failed requests will be
-     * retried according to the configured {@link RetryHandler}.
-     * <p>
-     * TODO: Decide when to call retries - Requires blocking
-     *
-     * @param stubFactory function that creates the appropriate {@code FutureStub} from a {@link ManagedChannel}
-     * @param callLogic function that maps a stub and payload to a {@link ListenableFuture}
-     * @param payloadList list of protobuf request messages to be sent
-     * @return list of gRPC responses in the same order as {@code payloadList}
-     * @param <StubT> the gRPC stub type
-     * @param <ReqT> the protobuf request type
-     * @param <RespT> the protobuf response type
-     */
-    protected <StubT extends AbstractFutureStub<StubT>, ReqT extends GeneratedMessageV3, RespT extends GeneratedMessageV3> List<RespT> invokeBatchedGrpcWithRetry(
             Function<ManagedChannel, StubT> stubFactory,
             BiFunction<StubT, ReqT, ListenableFuture<RespT>> callLogic, List<ReqT> payloadList) {
 
