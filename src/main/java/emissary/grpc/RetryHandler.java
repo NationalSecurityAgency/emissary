@@ -66,7 +66,7 @@ public final class RetryHandler {
         maxAttempts = configG.findIntEntry(GRPC_RETRY_MAX_ATTEMPTS, 4);
         numFailsBeforeWarn = configG.findIntEntry(GRPC_RETRY_NUM_FAILS_BEFORE_WARN, 20);
 
-        this.retry = Retry.of(registryName, RetryConfig.custom()
+        retry = Retry.of(registryName, RetryConfig.custom()
                 .maxAttempts(maxAttempts)
                 .intervalFunction(IntervalFunction.ofExponentialBackoff(
                         configG.findIntEntry(GRPC_RETRY_INITIAL_WAIT_MILLIS, 64),
