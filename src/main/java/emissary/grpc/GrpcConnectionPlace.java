@@ -38,7 +38,7 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
     protected static final String GRPC_HOST = "GRPC_HOST";
     protected static final String GRPC_PORT = "GRPC_PORT";
 
-    private ConnectionFactory connectionFactory;
+    protected ConnectionFactory connectionFactory;
     protected ObjectPool<ManagedChannel> channelPool;
     protected RetryHandler retryHandler;
 
@@ -88,10 +88,7 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
         }
 
         String host = configG.findRequiredStringEntry(GRPC_HOST);
-        int port = configG.findIntEntry(GRPC_PORT, -1);
-        if (port == -1) {
-            throw new IllegalArgumentException(String.format("Missing required parameter [%s]", GRPC_PORT));
-        }
+        int port = Integer.parseInt(configG.findRequiredStringEntry(GRPC_PORT));
 
         connectionFactory = new ConnectionFactory(host, port, configG) {
             @Override
@@ -104,6 +101,7 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
                 passivateConnection(pooledObject.getObject());
             }
         };
+
         channelPool = connectionFactory.newConnectionPool();
         retryHandler = new RetryHandler(configG, this.getPlaceName());
     }
