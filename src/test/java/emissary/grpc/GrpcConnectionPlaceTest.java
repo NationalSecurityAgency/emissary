@@ -2,7 +2,10 @@ package emissary.grpc;
 
 import emissary.config.ConfigEntry;
 import emissary.config.Configurator;
+import emissary.core.BaseDataObject;
+import emissary.core.IBaseDataObject;
 import emissary.core.constants.Configurations;
+import emissary.grpc.TestServiceGrpc.TestServiceBlockingStub;
 import emissary.grpc.exceptions.ServiceException;
 import emissary.grpc.exceptions.ServiceNotAvailableException;
 import emissary.grpc.pool.ConnectionFactory;
@@ -30,6 +33,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -40,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GrpcConnectionPlaceTest extends UnitTest {
-    private static final String DEFAULT_SERVICE_KEY = "*.GRPC.ANALYZE.http://foo.bar:1234/GrpcTestPlace$1234";
+    private static final String DEFAULT_SERVICE_KEY = "*.GRPC.ANALYZE.http://foo.bar:1234/LetterCapitalizationPlace$1234";
     private static final String DEFAULT_GRPC_HOST = "localhost";
     private static final int DEFAULT_GRPC_PORT = 2222;
     private static final String ARBITRARY_RUNTIME_EXCEPTION_MESSAGE = "fail";
@@ -49,13 +53,14 @@ class GrpcConnectionPlaceTest extends UnitTest {
             .addService(new TestServiceImpl())
             .build();
 
-    private final ConfiguredPlaceFactory<TestGrpcConnectionPlace> placeFactory = new ConfiguredPlaceFactory<>(
-            TestGrpcConnectionPlace.class,
+    private final ConfiguredPlaceFactory<LetterCapitalizationPlace> placeFactory = new ConfiguredPlaceFactory<>(
+            LetterCapitalizationPlace.class,
             new ConfigEntry(Configurations.SERVICE_KEY, DEFAULT_SERVICE_KEY),
             new ConfigEntry(GrpcConnectionPlace.GRPC_HOST, DEFAULT_GRPC_HOST),
             new ConfigEntry(GrpcConnectionPlace.GRPC_PORT, String.valueOf(DEFAULT_GRPC_PORT)));
 
-    private TestGrpcConnectionPlace place;
+    private LetterCapitalizationPlace place;
+    private IBaseDataObject dataObject;
 
     static Stream<Integer> grpcCodes() {
         return Arrays.stream(Code.values()).map(Code::value);
@@ -102,74 +107,51 @@ class GrpcConnectionPlaceTest extends UnitTest {
         @BeforeEach
         public void setUpPlace() {
             place = placeFactory.buildPlace(new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_ATTEMPTS, "1"));
+            dataObject = new BaseDataObject("hello world".getBytes(), "");
         }
 
         @Test
         void testGrpcSuccess() {
-            TestRequest request = TestRequest.newBuilder()
-                    .setQuery("hello world")
-                    .build();
-
-            TestResponse response = place.invokeGrpc(
-                    TestServiceGrpc::newBlockingStub,
-                    TestServiceGrpc.TestServiceBlockingStub::uppercase,
-                    request);
-
-            assertEquals("HELLO WORLD", response.getResult());
+            place.setGrpcClientMethod(TestServiceBlockingStub::uppercase);
+            place.process(dataObject);
+            assertEquals("HELLO WORLD", dataObject.getParameterAsString(LetterCapitalizationPlace.CAPITALIZED_DATA));
         }
 
         @ParameterizedTest
         @MethodSource("emissary.grpc.GrpcConnectionPlaceTest#recoverableGrpcCodes")
         void testGrpcRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
+            place.setGrpcClientMethod((stub, payload) -> {
+                throw new StatusRuntimeException(status);
+            });
 
-            TestRequest request = TestRequest.newBuilder()
-                    .setQuery("hello world")
-                    .build();
-
-            ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class, () -> place.invokeGrpc(
-                    TestServiceGrpc::newBlockingStub,
-                    (stub, payload) -> {
-                        throw new StatusRuntimeException(status);
-                    },
-                    request));
-
+            ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class, () -> place.process(dataObject));
             assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+            assertFalse(dataObject.hasParameter(LetterCapitalizationPlace.CAPITALIZED_DATA));
         }
 
         @ParameterizedTest
         @MethodSource("emissary.grpc.GrpcConnectionPlaceTest#nonRecoverableGrpcCodes")
         void testGrpcNonRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
+            place.setGrpcClientMethod((stub, payload) -> {
+                throw new StatusRuntimeException(status);
+            });
 
-            TestRequest request = TestRequest.newBuilder()
-                    .setQuery("hello world")
-                    .build();
-
-            ServiceException e = assertThrows(ServiceException.class, () -> place.invokeGrpc(
-                    TestServiceGrpc::newBlockingStub,
-                    (stub, payload) -> {
-                        throw new StatusRuntimeException(status);
-                    },
-                    request));
-
+            ServiceException e = assertThrows(ServiceException.class, () -> place.process(dataObject));
             assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+            assertFalse(dataObject.hasParameter(LetterCapitalizationPlace.CAPITALIZED_DATA));
         }
 
         @Test
         void testGrpcRuntimeException() {
-            TestRequest request = TestRequest.newBuilder()
-                    .setQuery("hello")
-                    .build();
+            place.setGrpcClientMethod((stub, payload) -> {
+                throw new IllegalStateException(ARBITRARY_RUNTIME_EXCEPTION_MESSAGE);
+            });
 
-            IllegalStateException e = assertThrows(IllegalStateException.class, () -> place.invokeGrpc(
-                    TestServiceGrpc::newBlockingStub,
-                    (stub, payload) -> {
-                        throw new IllegalStateException(ARBITRARY_RUNTIME_EXCEPTION_MESSAGE);
-                    },
-                    request));
-
+            IllegalStateException e = assertThrows(IllegalStateException.class, () -> place.process(dataObject));
             assertEquals(ARBITRARY_RUNTIME_EXCEPTION_MESSAGE, e.getMessage());
+            assertFalse(dataObject.hasParameter(LetterCapitalizationPlace.CAPITALIZED_DATA));
         }
     }
 
@@ -181,114 +163,101 @@ class GrpcConnectionPlaceTest extends UnitTest {
         public void setUpPlace() {
             place = placeFactory.buildPlace(
                     new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_ATTEMPTS, String.valueOf(DEFAULT_GRPC_RETRY_MAX_ATTEMPTS)));
+            dataObject = new BaseDataObject("hello world".getBytes(), "");
         }
 
         @Test
         void testGrpcSuccessFirstTry() {
-            TestRequest request = TestRequest.newBuilder()
-                    .setQuery("hello world")
-                    .build();
-
-            TestResponse response = place.invokeGrpc(
-                    TestServiceGrpc::newBlockingStub,
-                    TestServiceGrpc.TestServiceBlockingStub::uppercase,
-                    request);
-
-            assertEquals("HELLO WORLD", response.getResult());
+            place.setGrpcClientMethod(TestServiceBlockingStub::uppercase);
+            place.process(dataObject);
+            assertEquals("HELLO WORLD", dataObject.getParameterAsString(LetterCapitalizationPlace.CAPITALIZED_DATA));
         }
 
         @ParameterizedTest
         @MethodSource("emissary.grpc.GrpcConnectionPlaceTest#recoverableGrpcCodes")
         void testGrpcSuccessAfterRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
-
-            TestRequest request = TestRequest.newBuilder()
-                    .setQuery("hello world")
-                    .build();
-
             AtomicInteger attemptNumber = new AtomicInteger(0);
-            TestResponse response = place.invokeGrpc(
-                    TestServiceGrpc::newBlockingStub,
-                    (stub, payload) -> {
-                        if (attemptNumber.incrementAndGet() < DEFAULT_GRPC_RETRY_MAX_ATTEMPTS) {
-                            throw new StatusRuntimeException(status);
-                        }
-                        return stub.uppercase(request);
-                    },
-                    request);
+            place.setGrpcClientMethod((stub, payload) -> {
+                if (attemptNumber.incrementAndGet() < DEFAULT_GRPC_RETRY_MAX_ATTEMPTS) {
+                    throw new StatusRuntimeException(status);
+                }
+                return stub.uppercase(payload);
+            });
 
-            assertEquals("HELLO WORLD", response.getResult());
+            place.process(dataObject);
+            assertEquals("HELLO WORLD", dataObject.getParameterAsString(LetterCapitalizationPlace.CAPITALIZED_DATA));
         }
 
         @ParameterizedTest
         @MethodSource("emissary.grpc.GrpcConnectionPlaceTest#recoverableGrpcCodes")
         void testGrpcFailureAfterMaxRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
+            place.setGrpcClientMethod((stub, payload) -> {
+                throw new StatusRuntimeException(status);
+            });
 
-            TestRequest request = TestRequest.newBuilder()
-                    .setQuery("hello world")
-                    .build();
-
-            ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class, () -> place.invokeGrpc(
-                    TestServiceGrpc::newBlockingStub,
-                    (stub, payload) -> {
-                        throw new StatusRuntimeException(status);
-                    },
-                    request));
-
+            ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class, () -> place.process(dataObject));
             assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+            assertFalse(dataObject.hasParameter(LetterCapitalizationPlace.CAPITALIZED_DATA));
         }
 
         @ParameterizedTest
         @MethodSource("emissary.grpc.GrpcConnectionPlaceTest#nonRecoverableGrpcCodes")
         void testGrpcFailureAfterNonRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
-
-            TestRequest request = TestRequest.newBuilder()
-                    .setQuery("hello world")
-                    .build();
-
             AtomicInteger attemptNumber = new AtomicInteger(0);
-            ServiceException e = assertThrows(ServiceException.class, () -> place.invokeGrpc(
-                    TestServiceGrpc::newBlockingStub,
-                    (stub, payload) -> {
-                        if (attemptNumber.incrementAndGet() < DEFAULT_GRPC_RETRY_MAX_ATTEMPTS) {
-                            throw new StatusRuntimeException(status);
-                        }
-                        return stub.uppercase(request);
-                    },
-                    request));
+            place.setGrpcClientMethod((stub, payload) -> {
+                if (attemptNumber.incrementAndGet() < DEFAULT_GRPC_RETRY_MAX_ATTEMPTS) {
+                    throw new StatusRuntimeException(status);
+                }
+                return stub.uppercase(payload);
+            });
 
+            ServiceException e = assertThrows(ServiceException.class, () -> place.process(dataObject));
             assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+            assertFalse(dataObject.hasParameter(LetterCapitalizationPlace.CAPITALIZED_DATA));
         }
 
         @Test
         void testGrpcFailureAfterRuntimeExceptions() {
-            TestRequest request = TestRequest.newBuilder()
-                    .setQuery("hello world")
-                    .build();
-
             AtomicInteger attemptNumber = new AtomicInteger(0);
-            IllegalStateException e = assertThrows(IllegalStateException.class, () -> place.invokeGrpc(
-                    TestServiceGrpc::newBlockingStub,
-                    (stub, payload) -> {
-                        if (attemptNumber.incrementAndGet() < DEFAULT_GRPC_RETRY_MAX_ATTEMPTS) {
-                            throw new IllegalStateException(ARBITRARY_RUNTIME_EXCEPTION_MESSAGE);
-                        }
-                        return stub.uppercase(request);
-                    },
-                    request));
+            place.setGrpcClientMethod((stub, payload) -> {
+                if (attemptNumber.incrementAndGet() < DEFAULT_GRPC_RETRY_MAX_ATTEMPTS) {
+                    throw new IllegalStateException(ARBITRARY_RUNTIME_EXCEPTION_MESSAGE);
+                }
+                return stub.uppercase(payload);
+            });
 
+            IllegalStateException e = assertThrows(IllegalStateException.class, () -> place.process(dataObject));
             assertEquals(ARBITRARY_RUNTIME_EXCEPTION_MESSAGE, e.getMessage());
+            assertFalse(dataObject.hasParameter(LetterCapitalizationPlace.CAPITALIZED_DATA));
         }
     }
 
-    public static class TestGrpcConnectionPlace extends GrpcConnectionPlace {
+    public static class LetterCapitalizationPlace extends GrpcConnectionPlace {
+        public static final String CAPITALIZED_DATA = "CAPITALIZED_DATA";
+
+        private BiFunction<TestServiceBlockingStub, TestRequest, TestResponse> grpcClientMethod;
         private boolean isConnectionValidated = false;
         private boolean isConnectionPassivated = false;
 
-        public TestGrpcConnectionPlace(Configurator cfg) throws IOException {
+        public LetterCapitalizationPlace(Configurator cfg) throws IOException {
             super(cfg);
+        }
+
+        @Override
+        public void process(IBaseDataObject o) {
+            TestRequest request = TestRequest.newBuilder()
+                    .setQuery(new String(o.data()))
+                    .build();
+
+            TestResponse response = invokeGrpc(TestServiceGrpc::newBlockingStub, grpcClientMethod, request);
+            o.setParameter(CAPITALIZED_DATA, response.getResult());
+        }
+
+        public void setGrpcClientMethod(BiFunction<TestServiceBlockingStub, TestRequest, TestResponse> method) {
+            grpcClientMethod = method;
         }
 
         public boolean getIsConnectionValidated() {
@@ -301,7 +270,7 @@ class GrpcConnectionPlaceTest extends UnitTest {
 
         @Override
         protected boolean validateConnection(ManagedChannel managedChannel) {
-            TestServiceGrpc.TestServiceBlockingStub stub = TestServiceGrpc.newBlockingStub(managedChannel);
+            TestServiceBlockingStub stub = TestServiceGrpc.newBlockingStub(managedChannel);
             isConnectionValidated = stub.checkHealth(Empty.getDefaultInstance()).getOk();
             return isConnectionValidated;
         }
