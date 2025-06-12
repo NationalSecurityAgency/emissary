@@ -121,7 +121,7 @@ class GrpcConnectionPlaceTest extends UnitTest {
         @MethodSource("emissary.grpc.GrpcConnectionPlaceTest#recoverableGrpcCodes")
         void testGrpcRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
-            place.setGrpcClientMethod((stub, payload) -> {
+            place.setGrpcClientMethod((stub, request) -> {
                 throw new StatusRuntimeException(status);
             });
 
@@ -134,7 +134,7 @@ class GrpcConnectionPlaceTest extends UnitTest {
         @MethodSource("emissary.grpc.GrpcConnectionPlaceTest#nonRecoverableGrpcCodes")
         void testGrpcNonRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
-            place.setGrpcClientMethod((stub, payload) -> {
+            place.setGrpcClientMethod((stub, request) -> {
                 throw new StatusRuntimeException(status);
             });
 
@@ -145,7 +145,7 @@ class GrpcConnectionPlaceTest extends UnitTest {
 
         @Test
         void testGrpcRuntimeException() {
-            place.setGrpcClientMethod((stub, payload) -> {
+            place.setGrpcClientMethod((stub, request) -> {
                 throw new IllegalStateException(ARBITRARY_RUNTIME_EXCEPTION_MESSAGE);
             });
 
@@ -178,11 +178,11 @@ class GrpcConnectionPlaceTest extends UnitTest {
         void testGrpcSuccessAfterRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
             AtomicInteger attemptNumber = new AtomicInteger(0);
-            place.setGrpcClientMethod((stub, payload) -> {
+            place.setGrpcClientMethod((stub, request) -> {
                 if (attemptNumber.incrementAndGet() < DEFAULT_GRPC_RETRY_MAX_ATTEMPTS) {
                     throw new StatusRuntimeException(status);
                 }
-                return stub.uppercase(payload);
+                return stub.uppercase(request);
             });
 
             place.process(dataObject);
@@ -193,7 +193,7 @@ class GrpcConnectionPlaceTest extends UnitTest {
         @MethodSource("emissary.grpc.GrpcConnectionPlaceTest#recoverableGrpcCodes")
         void testGrpcFailureAfterMaxRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
-            place.setGrpcClientMethod((stub, payload) -> {
+            place.setGrpcClientMethod((stub, request) -> {
                 throw new StatusRuntimeException(status);
             });
 
@@ -207,11 +207,11 @@ class GrpcConnectionPlaceTest extends UnitTest {
         void testGrpcFailureAfterNonRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
             AtomicInteger attemptNumber = new AtomicInteger(0);
-            place.setGrpcClientMethod((stub, payload) -> {
+            place.setGrpcClientMethod((stub, request) -> {
                 if (attemptNumber.incrementAndGet() < DEFAULT_GRPC_RETRY_MAX_ATTEMPTS) {
                     throw new StatusRuntimeException(status);
                 }
-                return stub.uppercase(payload);
+                return stub.uppercase(request);
             });
 
             ServiceException e = assertThrows(ServiceException.class, () -> place.process(dataObject));
@@ -222,11 +222,11 @@ class GrpcConnectionPlaceTest extends UnitTest {
         @Test
         void testGrpcFailureAfterRuntimeExceptions() {
             AtomicInteger attemptNumber = new AtomicInteger(0);
-            place.setGrpcClientMethod((stub, payload) -> {
+            place.setGrpcClientMethod((stub, request) -> {
                 if (attemptNumber.incrementAndGet() < DEFAULT_GRPC_RETRY_MAX_ATTEMPTS) {
                     throw new IllegalStateException(ARBITRARY_RUNTIME_EXCEPTION_MESSAGE);
                 }
-                return stub.uppercase(payload);
+                return stub.uppercase(request);
             });
 
             IllegalStateException e = assertThrows(IllegalStateException.class, () -> place.process(dataObject));
