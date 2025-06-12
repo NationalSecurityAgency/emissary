@@ -23,8 +23,8 @@ import java.util.function.Supplier;
  * <ul>
  * <li>{@code GRPC_RETRY_INITIAL_WAIT_MILLIS} - The amount of time to wait after the first failure before applying
  * exponential backoff, default={@code 64}</li>
- * <li>{@code GRPC_RETRY_MAX_ATTEMPTS} - Maximum number of times to attempt execution, including initial attempt,
- * default={@code 4}</li>
+ * <li>{@code GRPC_RETRY_MAX_ATTEMPTS} - Maximum number of times to attempt execution, <b>including initial attempt
+ * before retries</b>, default={@code 4}</li>
  * <li>{@code GRPC_RETRY_MULTIPLIER} - Multiplier used to determine wait-time for successive retries,
  * default={@code 2}</li>
  * <li>{@code GRPC_RETRY_NUM_FAILS_BEFORE_WARN} - Determines the number of execution failures before logger should start
