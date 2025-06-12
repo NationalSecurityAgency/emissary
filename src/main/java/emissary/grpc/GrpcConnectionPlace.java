@@ -131,7 +131,7 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
      *
      * @param stubFactory function that creates the appropriate gRPC stub from a {@link ManagedChannel}
      * @param callLogic function that performs the actual gRPC call using the stub and request
-     * @param payload the protobuf request message to send
+     * @param request the protobuf request message to send
      * @return the response returned by the gRPC call
      * @param <StubT> the gRPC stub type
      * @param <ReqT> the protobuf request type
@@ -139,14 +139,14 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
      */
     protected <StubT extends AbstractBlockingStub<StubT>, ReqT extends GeneratedMessageV3, RespT extends GeneratedMessageV3> RespT invokeGrpc(
             Function<ManagedChannel, StubT> stubFactory,
-            BiFunction<StubT, ReqT, RespT> callLogic, ReqT payload) {
+            BiFunction<StubT, ReqT, RespT> callLogic, ReqT request) {
 
         return retryHandler.execute(() -> {
             ManagedChannel channel = ConnectionFactory.acquireChannel(channelPool);
             RespT response = null;
             try {
                 StubT stub = stubFactory.apply(channel);
-                response = callLogic.apply(stub, payload);
+                response = callLogic.apply(stub, request);
                 ConnectionFactory.returnChannel(channel, channelPool);
             } catch (StatusRuntimeException e) {
                 ConnectionFactory.invalidateChannel(channel, channelPool);
@@ -166,16 +166,16 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
      * TODO: Clarify expected blocking behavior for response collection
      *
      * @param stubFactory function that creates the appropriate {@code FutureStub} from a {@link ManagedChannel}
-     * @param callLogic function that maps a stub and payload to a {@link ListenableFuture}
-     * @param payloadList list of protobuf request messages to be sent
-     * @return list of gRPC responses in the same order as {@code payloadList}
+     * @param callLogic function that maps a stub and request to a {@link ListenableFuture}
+     * @param requestList list of protobuf request messages to be sent
+     * @return list of gRPC responses in the same order as {@code requestList}
      * @param <StubT> the gRPC stub type
      * @param <ReqT> the protobuf request type
      * @param <RespT> the protobuf response type
      */
     protected <StubT extends AbstractFutureStub<StubT>, ReqT extends GeneratedMessageV3, RespT extends GeneratedMessageV3> List<RespT> invokeBatchedGrpc(
             Function<ManagedChannel, StubT> stubFactory,
-            BiFunction<StubT, ReqT, ListenableFuture<RespT>> callLogic, List<ReqT> payloadList) {
+            BiFunction<StubT, ReqT, ListenableFuture<RespT>> callLogic, List<ReqT> requestList) {
 
         throw new UnsupportedOperationException("Not yet implemented");
     }
