@@ -1,0 +1,231 @@
+package emissary.grpc.sample;
+
+import emissary.config.ConfigEntry;
+import emissary.core.BaseDataObject;
+import emissary.core.IBaseDataObject;
+import emissary.grpc.GrpcConnectionPlace;
+import emissary.grpc.RetryHandler;
+import emissary.grpc.exceptions.ServiceException;
+import emissary.grpc.exceptions.ServiceNotAvailableException;
+import emissary.grpc.pool.ConnectionFactory;
+import emissary.test.core.junit5.UnitTest;
+import emissary.test.util.ConfiguredPlaceFactory;
+
+import io.grpc.ManagedChannel;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class DataReversePlaceTest extends UnitTest {
+    private static final String MESSAGE = "hello world";
+    private static final String EXCEPTION_MESSAGE = "fail";
+    private static final byte[] DATA = MESSAGE.getBytes();
+    private static final byte[] REVERSED_DATA = new StringBuilder(MESSAGE).reverse().toString().getBytes();
+    private static final String TRUE = "true";
+    private static final String FALSE = "false";
+    private static final String DEFAULT_GRPC_HOST = "localhost";
+    private static final int DEFAULT_GRPC_PORT = 2222;
+
+    private static final Server server = ServerBuilder.forPort(DEFAULT_GRPC_PORT)
+            .addService(new DataReverseServiceImpl())
+            .build();
+
+    private final ConfiguredPlaceFactory<DataReversePlace> factory = new ConfiguredPlaceFactory<>(DataReversePlace.class,
+            new ConfigEntry(GrpcConnectionPlace.GRPC_HOST, DEFAULT_GRPC_HOST),
+            new ConfigEntry(GrpcConnectionPlace.GRPC_PORT, String.valueOf(DEFAULT_GRPC_PORT)));
+
+    private DataReversePlace place;
+    private IBaseDataObject dataObject;
+
+    static Stream<Integer> grpcCodes() {
+        return Arrays.stream(Status.Code.values()).map(Status.Code::value);
+    }
+
+    static Stream<Integer> recoverableGrpcCodes() {
+        return IntStream.of(Status.Code.RESOURCE_EXHAUSTED.value(), Status.Code.UNAVAILABLE.value()).boxed();
+    }
+
+    static Stream<Integer> nonRecoverableGrpcCodes() {
+        Set<Integer> exclude = recoverableGrpcCodes().collect(Collectors.toSet());
+        return grpcCodes().filter(i -> !exclude.contains(i));
+    }
+
+    @BeforeAll
+    static void startServer() throws IOException {
+        server.start();
+    }
+
+    @AfterAll
+    static void stopServer() {
+        server.shutdownNow();
+    }
+
+    @Test
+    void testConnectionIsNotValidated() {
+        place = factory.buildPlace(new ConfigEntry(ConnectionFactory.GRPC_POOL_TEST_BEFORE_BORROW, FALSE));
+        assertFalse(place.getIsConnectionValidated());
+        ManagedChannel channel = place.acquireChannel();
+        assertFalse(place.getIsConnectionValidated());
+        place.returnChannel(channel);
+    }
+
+    @Test
+    void testConnectionIsValidated() {
+        place = factory.buildPlace(new ConfigEntry(ConnectionFactory.GRPC_POOL_TEST_BEFORE_BORROW, TRUE));
+        assertFalse(place.getIsConnectionValidated());
+        ManagedChannel channel = place.acquireChannel();
+        assertTrue(place.getIsConnectionValidated());
+        place.returnChannel(channel);
+    }
+
+    @Test
+    void testConnectionIsNotPassivated() {
+        place = factory.buildPlace(new ConfigEntry(DataReversePlace.GRPC_POOL_PASSIVATE_CONNECTION, FALSE));
+        ManagedChannel channel = place.acquireChannel();
+        assertFalse(place.getIsConnectionPassivated());
+        place.returnChannel(channel);
+        assertFalse(place.getIsConnectionPassivated());
+    }
+
+    @Test
+    void testConnectionIsPassivated() {
+        place = factory.buildPlace(new ConfigEntry(DataReversePlace.GRPC_POOL_PASSIVATE_CONNECTION, TRUE));
+        ManagedChannel channel = place.acquireChannel();
+        assertFalse(place.getIsConnectionPassivated());
+        place.returnChannel(channel);
+        assertTrue(place.getIsConnectionPassivated());
+    }
+
+    @Nested
+    class RetryDisabledTests extends UnitTest {
+        @BeforeEach
+        public void setUpPlace() {
+            place = factory.buildPlace();
+            dataObject = new BaseDataObject(DATA, MESSAGE);
+        }
+
+        @Test
+        void testGrpcSuccess() {
+            place.process(dataObject);
+            assertArrayEquals(REVERSED_DATA, dataObject.getAlternateView(DataReversePlace.REVERSED_DATA));
+        }
+
+        @ParameterizedTest
+        @MethodSource("emissary.grpc.sample.DataReversePlaceTest#recoverableGrpcCodes")
+        void testGrpcRecoverableCodes(int code) {
+            Status status = Status.fromCodeValue(code);
+            ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class,
+                    () -> place.throwExceptionsDuringProcess(dataObject, new StatusRuntimeException(status)));
+            assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+            assertTrue(dataObject.getAlternateViewNames().isEmpty());
+        }
+
+        @ParameterizedTest
+        @MethodSource("emissary.grpc.sample.DataReversePlaceTest#nonRecoverableGrpcCodes")
+        void testGrpcNonRecoverableCodes(int code) {
+            Status status = Status.fromCodeValue(code);
+            ServiceException e = assertThrows(ServiceException.class,
+                    () -> place.throwExceptionsDuringProcess(dataObject, new StatusRuntimeException(status)));
+            assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+            assertTrue(dataObject.getAlternateViewNames().isEmpty());
+        }
+
+        @Test
+        void testGrpcRuntimeException() {
+            IllegalStateException e = assertThrows(IllegalStateException.class,
+                    () -> place.throwExceptionsDuringProcess(dataObject, new IllegalStateException(EXCEPTION_MESSAGE)));
+            assertEquals(EXCEPTION_MESSAGE, e.getMessage());
+            assertTrue(dataObject.getAlternateViewNames().isEmpty());
+        }
+    }
+
+    @Nested
+    class RetryEnabledTests extends UnitTest {
+        private static final int RETRY_ATTEMPTS = 5;
+
+        @BeforeEach
+        public void setUpPlace() {
+            place = factory.buildPlace(new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_ATTEMPTS, String.valueOf(RETRY_ATTEMPTS)));
+            dataObject = new BaseDataObject(DATA, MESSAGE);
+        }
+
+        @Test
+        void testGrpcSuccessFirstTry() {
+            place.process(dataObject);
+            assertArrayEquals(REVERSED_DATA, dataObject.getAlternateView(DataReversePlace.REVERSED_DATA));
+        }
+
+        @ParameterizedTest
+        @MethodSource("emissary.grpc.sample.DataReversePlaceTest#recoverableGrpcCodes")
+        void testGrpcSuccessAfterRecoverableCodes(int code) {
+            Status status = Status.fromCodeValue(code);
+            AtomicInteger attemptNumber = new AtomicInteger(0);
+
+            place.throwExceptionsDuringProcessWithSuccessfulRetry(
+                    dataObject, new StatusRuntimeException(status), RETRY_ATTEMPTS, attemptNumber);
+
+            assertArrayEquals(REVERSED_DATA, dataObject.getAlternateView(DataReversePlace.REVERSED_DATA));
+        }
+
+        @ParameterizedTest
+        @MethodSource("emissary.grpc.sample.DataReversePlaceTest#recoverableGrpcCodes")
+        void testGrpcFailureAfterMaxRecoverableCodes(int code) {
+            Status status = Status.fromCodeValue(code);
+            AtomicInteger attemptNumber = new AtomicInteger(0);
+            int retryAttempts = RETRY_ATTEMPTS + 1;
+
+            ServiceNotAvailableException e =
+                    assertThrows(ServiceNotAvailableException.class, () -> place.throwExceptionsDuringProcessWithSuccessfulRetry(
+                            dataObject, new StatusRuntimeException(status), retryAttempts, attemptNumber));
+
+            assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+            assertTrue(dataObject.getAlternateViewNames().isEmpty());
+        }
+
+        @ParameterizedTest
+        @MethodSource("emissary.grpc.sample.DataReversePlaceTest#nonRecoverableGrpcCodes")
+        void testGrpcFailureAfterNonRecoverableCodes(int code) {
+            Status status = Status.fromCodeValue(code);
+            AtomicInteger attemptNumber = new AtomicInteger(0);
+
+            ServiceException e = assertThrows(ServiceException.class, () -> place.throwExceptionsDuringProcessWithSuccessfulRetry(
+                    dataObject, new StatusRuntimeException(status), RETRY_ATTEMPTS, attemptNumber));
+
+            assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+            assertTrue(dataObject.getAlternateViewNames().isEmpty());
+        }
+
+        @Test
+        void testGrpcFailureAfterRuntimeExceptions() {
+            AtomicInteger attemptNumber = new AtomicInteger(0);
+
+            IllegalStateException e = assertThrows(IllegalStateException.class, () -> place.throwExceptionsDuringProcessWithSuccessfulRetry(
+                    dataObject, new IllegalStateException(EXCEPTION_MESSAGE), RETRY_ATTEMPTS, attemptNumber));
+
+            assertEquals(EXCEPTION_MESSAGE, e.getMessage());
+            assertTrue(dataObject.getAlternateViewNames().isEmpty());
+        }
+    }
+}

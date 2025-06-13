@@ -35,8 +35,8 @@ import java.util.function.Function;
  * </ul>
  */
 public abstract class GrpcConnectionPlace extends ServiceProviderPlace implements IGrpcConnectionPlace {
-    protected static final String GRPC_HOST = "GRPC_HOST";
-    protected static final String GRPC_PORT = "GRPC_PORT";
+    public static final String GRPC_HOST = "GRPC_HOST";
+    public static final String GRPC_PORT = "GRPC_PORT";
 
     protected ConnectionFactory connectionFactory;
     protected ObjectPool<ManagedChannel> channelPool;
