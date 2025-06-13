@@ -48,20 +48,20 @@ import java.util.concurrent.TimeUnit;
  * gRPC configurations.
  */
 public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
-    protected static final String GRPC_KEEP_ALIVE_MILLIS = "GRPC_KEEP_ALIVE_MILLIS";
-    protected static final String GRPC_KEEP_ALIVE_TIMEOUT_MILLIS = "GRPC_KEEP_ALIVE_TIMEOUT_MILLIS";
-    protected static final String GRPC_KEEP_ALIVE_WITHOUT_CALLS = "GRPC_KEEP_ALIVE_WITHOUT_CALLS";
-    protected static final String GRPC_LOAD_BALANCING_POLICY = "GRPC_LOAD_BALANCING_POLICY";
-    protected static final String GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE = "GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE";
-    protected static final String GRPC_MAX_INBOUND_METADATA_BYTE_SIZE = "GRPC_MAX_INBOUND_METADATA_BYTE_SIZE";
-    protected static final String GRPC_POOL_BLOCK_EXHAUSTED = "GRPC_POOL_BLOCK_EXHAUSTED";
-    protected static final String GRPC_POOL_ERODING_FACTOR = "GRPC_POOL_ERODING_FACTOR";
-    protected static final String GRPC_POOL_MAX_BORROW_WAIT_MILLIS = "GRPC_POOL_MAX_BORROW_WAIT_MILLIS";
-    protected static final String GRPC_POOL_MAX_IDLE_CONNECTIONS = "GRPC_POOL_MAX_IDLE_CONNECTIONS";
-    protected static final String GRPC_POOL_MAX_SIZE = "GRPC_POOL_MAX_SIZE";
-    protected static final String GRPC_POOL_MIN_IDLE_CONNECTIONS = "GRPC_POOL_MIN_IDLE_CONNECTIONS";
-    protected static final String GRPC_POOL_RETRIEVAL_ORDER = "GRPC_POOL_RETRIEVAL_ORDER";
-    protected static final String GRPC_POOL_TEST_BEFORE_BORROW = "GRPC_POOL_TEST_BEFORE_BORROW";
+    public static final String GRPC_KEEP_ALIVE_MILLIS = "GRPC_KEEP_ALIVE_MILLIS";
+    public static final String GRPC_KEEP_ALIVE_TIMEOUT_MILLIS = "GRPC_KEEP_ALIVE_TIMEOUT_MILLIS";
+    public static final String GRPC_KEEP_ALIVE_WITHOUT_CALLS = "GRPC_KEEP_ALIVE_WITHOUT_CALLS";
+    public static final String GRPC_LOAD_BALANCING_POLICY = "GRPC_LOAD_BALANCING_POLICY";
+    public static final String GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE = "GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE";
+    public static final String GRPC_MAX_INBOUND_METADATA_BYTE_SIZE = "GRPC_MAX_INBOUND_METADATA_BYTE_SIZE";
+    public static final String GRPC_POOL_BLOCK_EXHAUSTED = "GRPC_POOL_BLOCK_EXHAUSTED";
+    public static final String GRPC_POOL_ERODING_FACTOR = "GRPC_POOL_ERODING_FACTOR";
+    public static final String GRPC_POOL_MAX_BORROW_WAIT_MILLIS = "GRPC_POOL_MAX_BORROW_WAIT_MILLIS";
+    public static final String GRPC_POOL_MAX_IDLE_CONNECTIONS = "GRPC_POOL_MAX_IDLE_CONNECTIONS";
+    public static final String GRPC_POOL_MAX_SIZE = "GRPC_POOL_MAX_SIZE";
+    public static final String GRPC_POOL_MIN_IDLE_CONNECTIONS = "GRPC_POOL_MIN_IDLE_CONNECTIONS";
+    public static final String GRPC_POOL_RETRIEVAL_ORDER = "GRPC_POOL_RETRIEVAL_ORDER";
+    public static final String GRPC_POOL_TEST_BEFORE_BORROW = "GRPC_POOL_TEST_BEFORE_BORROW";
 
     protected static final Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
 
