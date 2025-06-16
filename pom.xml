@@ -1249,7 +1249,7 @@
               <phase>generate-sources</phase>
               <configuration>
                 <sources>
-                  <source>${basedir}/target/generated-sources/protobuf</source>
+                  <source>${project.build.directory}/target/generated-sources/protobuf</source>
                 </sources>
               </configuration>
             </execution>
@@ -1321,8 +1321,6 @@
           <version>${plugin.protobuf-maven.version}</version>
           <configuration>
             <protocArtifact>com.google.protobuf:protoc:${dep.protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
-            <pluginId>grpc-java</pluginId>
-            <pluginArtifact>io.grpc:protoc-gen-grpc-java:${dep.grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
           </configuration>
           <executions>
             <execution>
@@ -1341,6 +1339,8 @@
               </goals>
               <configuration>
                 <outputDirectory>${project.build.directory}/generated-sources/protobuf/grpc_java</outputDirectory>
+                <pluginId>grpc-java</pluginId>
+                <pluginArtifact>io.grpc:protoc-gen-grpc-java:${dep.grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
               </configuration>
             </execution>
           </executions>
