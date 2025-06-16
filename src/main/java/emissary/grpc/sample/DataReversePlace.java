@@ -3,8 +3,12 @@ package emissary.grpc.sample;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.grpc.GrpcConnectionPlace;
+import emissary.grpc.RetryHandler;
 import emissary.grpc.pool.ConnectionFactory;
-import emissary.grpc.sample.DataReverseServiceGrpc.DataReverseServiceBlockingStub;
+import emissary.grpc.sample.v1.proto.DataReverseRequest;
+import emissary.grpc.sample.v1.proto.DataReverseResponse;
+import emissary.grpc.sample.v1.proto.DataReverseServiceGrpc;
+import emissary.grpc.sample.v1.proto.DataReverseServiceGrpc.DataReverseServiceBlockingStub;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
@@ -50,8 +54,8 @@ public class DataReversePlace extends GrpcConnectionPlace {
     }
 
     /**
-     * Performs Emissary processing while simulating server errors. Assumes {@link emissary.grpc.RetryHandler} is configured
-     * to retry the remote procedural call.
+     * Performs Emissary processing while simulating server errors. Assumes {@link RetryHandler} is configured to retry the
+     * remote procedural call.
      *
      * @param o the data object to process
      * @param e the Exception to throw

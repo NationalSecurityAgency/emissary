@@ -1,5 +1,10 @@
 package emissary.grpc.sample;
 
+import emissary.grpc.sample.v1.proto.DataReverseHealthStatus;
+import emissary.grpc.sample.v1.proto.DataReverseRequest;
+import emissary.grpc.sample.v1.proto.DataReverseResponse;
+import emissary.grpc.sample.v1.proto.DataReverseServiceGrpc;
+
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
