@@ -24,7 +24,7 @@ import java.util.function.BiFunction;
  */
 public class DataReversePlace extends GrpcConnectionPlace {
     public static final String REVERSED_DATA = "REVERSED_DATA";
-    public static final String GRPC_POOL_PASSIVATE_CONNECTION = "GRPC_POOL_PASSIVATE_CONNECTION";
+    public static final String GRPC_POOL_KILL_AFTER_RETURN = "GRPC_POOL_KILL_AFTER_RETURN";
 
     private final boolean passivateConnectionAfterReturn;
 
@@ -33,7 +33,7 @@ public class DataReversePlace extends GrpcConnectionPlace {
 
     public DataReversePlace(Configurator cfg) throws IOException {
         super(cfg);
-        passivateConnectionAfterReturn = cfg.findBooleanEntry(GRPC_POOL_PASSIVATE_CONNECTION, false);
+        passivateConnectionAfterReturn = cfg.findBooleanEntry(GRPC_POOL_KILL_AFTER_RETURN, false);
     }
 
     @Override

@@ -102,7 +102,7 @@ public class DataReversePlaceTest extends UnitTest {
 
     @Test
     void testConnectionIsNotPassivated() {
-        place = factory.buildPlace(new ConfigEntry(DataReversePlace.GRPC_POOL_PASSIVATE_CONNECTION, FALSE));
+        place = factory.buildPlace(new ConfigEntry(DataReversePlace.GRPC_POOL_KILL_AFTER_RETURN, FALSE));
         ManagedChannel channel = place.acquireChannel();
         assertFalse(place.getIsConnectionPassivated());
         place.returnChannel(channel);
@@ -111,7 +111,7 @@ public class DataReversePlaceTest extends UnitTest {
 
     @Test
     void testConnectionIsPassivated() {
-        place = factory.buildPlace(new ConfigEntry(DataReversePlace.GRPC_POOL_PASSIVATE_CONNECTION, TRUE));
+        place = factory.buildPlace(new ConfigEntry(DataReversePlace.GRPC_POOL_KILL_AFTER_RETURN, TRUE));
         ManagedChannel channel = place.acquireChannel();
         assertFalse(place.getIsConnectionPassivated());
         place.returnChannel(channel);
@@ -187,6 +187,7 @@ public class DataReversePlaceTest extends UnitTest {
                     dataObject, new StatusRuntimeException(status), RETRY_ATTEMPTS, attemptNumber);
 
             assertArrayEquals(REVERSED_DATA, dataObject.getAlternateView(DataReversePlace.REVERSED_DATA));
+            assertEquals(RETRY_ATTEMPTS, attemptNumber.get());
         }
 
         @ParameterizedTest
@@ -202,6 +203,7 @@ public class DataReversePlaceTest extends UnitTest {
 
             assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
+            assertEquals(RETRY_ATTEMPTS, attemptNumber.get());
         }
 
         @ParameterizedTest
@@ -215,6 +217,7 @@ public class DataReversePlaceTest extends UnitTest {
 
             assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
+            assertEquals(1, attemptNumber.get());
         }
 
         @Test
@@ -226,6 +229,7 @@ public class DataReversePlaceTest extends UnitTest {
 
             assertEquals(EXCEPTION_MESSAGE, e.getMessage());
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
+            assertEquals(1, attemptNumber.get());
         }
     }
 }
