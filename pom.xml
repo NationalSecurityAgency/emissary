@@ -1326,12 +1326,22 @@
           </configuration>
           <executions>
             <execution>
+              <id>compile-protobuf</id>
               <goals>
                 <goal>compile</goal>
-                <goal>compile-custom</goal>
-                <goal>test-compile</goal>
-                <goal>test-compile-custom</goal>
               </goals>
+              <configuration>
+                <outputDirectory>${project.build.directory}/generated-sources/protobuf/java</outputDirectory>
+              </configuration>
+            </execution>
+            <execution>
+              <id>compile-grpc</id>
+              <goals>
+                <goal>compile-custom</goal>
+              </goals>
+              <configuration>
+                <outputDirectory>${project.build.directory}/generated-sources/protobuf/grpc_java</outputDirectory>
+              </configuration>
             </execution>
           </executions>
         </plugin>
@@ -1452,9 +1462,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <excludePackageNames>grpc-java.emissary.grpc.sample.v1.proto</excludePackageNames>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
