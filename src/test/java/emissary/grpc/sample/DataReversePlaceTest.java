@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DataReversePlaceTest extends UnitTest {
+class DataReversePlaceTest extends UnitTest {
     private static final String MESSAGE = "hello world";
     private static final String EXCEPTION_MESSAGE = "fail";
     private static final byte[] DATA = MESSAGE.getBytes();
@@ -136,8 +136,8 @@ public class DataReversePlaceTest extends UnitTest {
         @MethodSource("emissary.grpc.sample.DataReversePlaceTest#recoverableGrpcCodes")
         void testGrpcRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
-            ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class,
-                    () -> place.throwExceptionsDuringProcess(dataObject, new StatusRuntimeException(status)));
+            Runnable invocation = () -> place.throwExceptionsDuringProcess(dataObject, new StatusRuntimeException(status));
+            ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class, invocation::run);
             assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
         }
@@ -146,16 +146,16 @@ public class DataReversePlaceTest extends UnitTest {
         @MethodSource("emissary.grpc.sample.DataReversePlaceTest#nonRecoverableGrpcCodes")
         void testGrpcNonRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
-            ServiceException e = assertThrows(ServiceException.class,
-                    () -> place.throwExceptionsDuringProcess(dataObject, new StatusRuntimeException(status)));
+            Runnable invocation = () -> place.throwExceptionsDuringProcess(dataObject, new StatusRuntimeException(status));
+            ServiceException e = assertThrows(ServiceException.class, invocation::run);
             assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
         }
 
         @Test
         void testGrpcRuntimeException() {
-            IllegalStateException e = assertThrows(IllegalStateException.class,
-                    () -> place.throwExceptionsDuringProcess(dataObject, new IllegalStateException(EXCEPTION_MESSAGE)));
+            Runnable invocation = () -> place.throwExceptionsDuringProcess(dataObject, new IllegalStateException(EXCEPTION_MESSAGE));
+            IllegalStateException e = assertThrows(IllegalStateException.class, invocation::run);
             assertEquals(EXCEPTION_MESSAGE, e.getMessage());
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
         }
@@ -183,8 +183,9 @@ public class DataReversePlaceTest extends UnitTest {
             Status status = Status.fromCodeValue(code);
             AtomicInteger attemptNumber = new AtomicInteger(0);
 
-            place.throwExceptionsDuringProcessWithSuccessfulRetry(
+            Runnable invocation = () -> place.throwExceptionsDuringProcessWithSuccessfulRetry(
                     dataObject, new StatusRuntimeException(status), RETRY_ATTEMPTS, attemptNumber);
+            invocation.run();
 
             assertArrayEquals(REVERSED_DATA, dataObject.getAlternateView(DataReversePlace.REVERSED_DATA));
             assertEquals(RETRY_ATTEMPTS, attemptNumber.get());
@@ -197,9 +198,9 @@ public class DataReversePlaceTest extends UnitTest {
             AtomicInteger attemptNumber = new AtomicInteger(0);
             int retryAttempts = RETRY_ATTEMPTS + 1;
 
-            ServiceNotAvailableException e =
-                    assertThrows(ServiceNotAvailableException.class, () -> place.throwExceptionsDuringProcessWithSuccessfulRetry(
-                            dataObject, new StatusRuntimeException(status), retryAttempts, attemptNumber));
+            Runnable invocation = () -> place.throwExceptionsDuringProcessWithSuccessfulRetry(
+                    dataObject, new StatusRuntimeException(status), retryAttempts, attemptNumber);
+            ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class, invocation::run);
 
             assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
@@ -212,8 +213,9 @@ public class DataReversePlaceTest extends UnitTest {
             Status status = Status.fromCodeValue(code);
             AtomicInteger attemptNumber = new AtomicInteger(0);
 
-            ServiceException e = assertThrows(ServiceException.class, () -> place.throwExceptionsDuringProcessWithSuccessfulRetry(
-                    dataObject, new StatusRuntimeException(status), RETRY_ATTEMPTS, attemptNumber));
+            Runnable invocation = () -> place.throwExceptionsDuringProcessWithSuccessfulRetry(
+                    dataObject, new StatusRuntimeException(status), RETRY_ATTEMPTS, attemptNumber);
+            ServiceException e = assertThrows(ServiceException.class, invocation::run);
 
             assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
@@ -224,8 +226,9 @@ public class DataReversePlaceTest extends UnitTest {
         void testGrpcFailureAfterRuntimeExceptions() {
             AtomicInteger attemptNumber = new AtomicInteger(0);
 
-            IllegalStateException e = assertThrows(IllegalStateException.class, () -> place.throwExceptionsDuringProcessWithSuccessfulRetry(
-                    dataObject, new IllegalStateException(EXCEPTION_MESSAGE), RETRY_ATTEMPTS, attemptNumber));
+            Runnable invocation = () -> place.throwExceptionsDuringProcessWithSuccessfulRetry(
+                    dataObject, new IllegalStateException(EXCEPTION_MESSAGE), RETRY_ATTEMPTS, attemptNumber);
+            IllegalStateException e = assertThrows(IllegalStateException.class, invocation::run);
 
             assertEquals(EXCEPTION_MESSAGE, e.getMessage());
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
