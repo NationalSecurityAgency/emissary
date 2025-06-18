@@ -2,7 +2,6 @@ package emissary.test.core.junit5;
 
 import emissary.core.DiffCheckConfiguration;
 import emissary.core.IBaseDataObject;
-import emissary.core.IBaseDataObjectXmlCodecs;
 import emissary.core.IBaseDataObjectXmlCodecs.ElementDecoders;
 import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
 import emissary.core.IBaseDataObjectXmlHelper;
@@ -13,7 +12,6 @@ import emissary.test.core.junit5.LogbackTester.SimplifiedLogEvent;
 import emissary.util.PlaceComparisonHelper;
 import emissary.util.io.ResourceReader;
 
-import ch.qos.logback.classic.Level;
 import jakarta.annotation.Nullable;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.jdom2.Document;
@@ -52,29 +50,6 @@ import static org.junit.jupiter.api.Assertions.fail;
  * This class contains utility methods used by RegressionTest.
  */
 public final class RegressionTestUtil {
-    /**
-     * The XML Element name for the log events.
-     */
-    public static final String LOG_NAME = "log";
-    /**
-     * The XML Element name for the SimplifiedLogEvent level attribute.
-     */
-    public static final String LEVEL_NAME = "level";
-    /**
-     * the XML Element name for the SimplifiedLogEvent message attribute.
-     */
-    public static final String MESSAGE_NAME = "message";
-    /**
-     * The XML Element name for the SimplifiedLogEvent throwableClassName attribute.
-     */
-    public static final String THROWABLE_CLASS_NAME = "throwableClassName";
-    /**
-     * The XML Element name for the SimplifiedLogEvent throwableMessage attribute.
-     */
-    public static final String THROWABLE_MESSAGE_NAME = "throwableMessage";
-
-    public static final String NON_DETERMINISTIC_ERROR_MESSAGE =
-            "\nNOTE: Since 'generateAnswers' is true, these differences could indicate non-deterministic processing in the tested code path\n";
 
     /**
      * XML builder to read XML answer file in
@@ -136,45 +111,16 @@ public final class RegressionTestUtil {
         final String differences = PlaceComparisonHelper.checkDifferences(expectedIbdo, payload, expectedAttachments,
                 attachments, placeName, DIFF_CHECK);
 
-        assertNull(differences, generateAnswers ? differences + NON_DETERMINISTIC_ERROR_MESSAGE : differences);
+        assertNull(differences, generateAnswers ? differences
+                + "\nNOTE: Since 'generateAnswers' is true, these differences could indicate non-deterministic processing in the tested code path\n"
+                : differences);
 
-        final List<SimplifiedLogEvent> expectedSimplifiedLogEvents = getSimplifiedLogEvents(parent);
-
-        assertIterableEquals(expectedSimplifiedLogEvents, actualSimplifiedLogEvents);
-    }
-
-    /**
-     * This method returns any log events from the given XML element.
-     * 
-     * @param answersElement the "answers" XML element that should contain any log events.
-     * @return the list of log events.
-     */
-    public static List<SimplifiedLogEvent> getSimplifiedLogEvents(final Element answersElement) {
-        final List<SimplifiedLogEvent> simplifiedLogEvents = new ArrayList<>();
-
-        final List<Element> answerChildren = answersElement.getChildren();
-
-        for (final Element answerChild : answerChildren) {
-            final String childName = answerChild.getName();
-
-            if (childName.equals(LOG_NAME)) {
-                final Level level = Level.valueOf(answerChild.getChild(LEVEL_NAME).getValue());
-                final String message = answerChild.getChild(MESSAGE_NAME).getValue();
-                final Element throwableClassNameElement = answerChild.getChild(THROWABLE_CLASS_NAME);
-                final Element throwableMessageElement = answerChild.getChild(THROWABLE_MESSAGE_NAME);
-                final String throwableClassName = throwableClassNameElement == null ? null : throwableClassNameElement.getValue();
-                final String throwableMessage = throwableMessageElement == null ? null : throwableMessageElement.getValue();
-
-                simplifiedLogEvents.add(new SimplifiedLogEvent(level, message, throwableClassName, throwableMessage));
-            }
-        }
-
-        return simplifiedLogEvents;
+        assertIterableEquals(SimplifiedLogEvent.fromXml(parent), actualSimplifiedLogEvents);
     }
 
     /**
      * When generating XML answer files, we need to use the src version rather than target.
-     * 
+     *
      * This method returns the XML file from that location.
      * 
      * @param resource to get the answer file for
@@ -236,21 +182,7 @@ public final class RegressionTestUtil {
         final Element rootElement = IBaseDataObjectXmlHelper.xmlElementFromIbdo(finalIbdo, results, initialIbdo, encoders);
         final Element answerElement = rootElement.getChild(ANSWERS);
 
-        for (SimplifiedLogEvent e : logEvents) {
-            final Element logElement = new Element(LOG_NAME);
-
-            answerElement.addContent(logElement);
-            logElement.addContent(IBaseDataObjectXmlCodecs.preserve(IBaseDataObjectXmlCodecs.protectedElement(LEVEL_NAME, e.level.toString())));
-            logElement.addContent(IBaseDataObjectXmlCodecs.preserve(IBaseDataObjectXmlCodecs.protectedElement(MESSAGE_NAME, e.message)));
-            if (e.throwableClassName != null) {
-                logElement.addContent(
-                        IBaseDataObjectXmlCodecs.preserve(IBaseDataObjectXmlCodecs.protectedElement(THROWABLE_CLASS_NAME, e.throwableClassName)));
-            }
-            if (e.throwableMessage != null) {
-                logElement.addContent(
-                        IBaseDataObjectXmlCodecs.preserve(IBaseDataObjectXmlCodecs.protectedElement(THROWABLE_MESSAGE_NAME, e.throwableMessage)));
-            }
-        }
+        SimplifiedLogEvent.toXml(logEvents).forEach(answerElement::addContent);
 
         // Generate the full XML (setup & answers from before & after)
         final byte[] xmlContent = bytesFromDocument(new Document(rootElement));
