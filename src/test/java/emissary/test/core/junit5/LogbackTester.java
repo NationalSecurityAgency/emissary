@@ -1,5 +1,7 @@
 package emissary.test.core.junit5;
 
+import emissary.core.IBaseDataObjectXmlCodecs;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -7,6 +9,7 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.core.read.ListAppender;
 import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.Validate;
+import org.jdom2.Element;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
@@ -82,6 +85,29 @@ public class LogbackTester implements Closeable {
     }
 
     public static class SimplifiedLogEvent {
+
+
+        /**
+         * The XML Element name for the log events.
+         */
+        public static final String LOG_NAME = "log";
+        /**
+         * The XML Element name for the SimplifiedLogEvent level attribute.
+         */
+        public static final String LEVEL_NAME = "level";
+        /**
+         * the XML Element name for the SimplifiedLogEvent message attribute.
+         */
+        public static final String MESSAGE_NAME = "message";
+        /**
+         * The XML Element name for the SimplifiedLogEvent throwableClassName attribute.
+         */
+        public static final String THROWABLE_CLASS_NAME = "throwableClassName";
+        /**
+         * The XML Element name for the SimplifiedLogEvent throwableMessage attribute.
+         */
+        public static final String THROWABLE_MESSAGE_NAME = "throwableMessage";
+
         public final Level level;
         public final String message;
         @Nullable
@@ -132,5 +158,57 @@ public class LogbackTester implements Closeable {
             return super.toString() + " [level=" + level + ", message=" + message + ", throwableClassName="
                     + throwableClassName + ", throwableMessage=" + throwableMessage + "]";
         }
+
+        /**
+         * This method returns any log events from the given XML element.
+         *
+         * @param answersElement the "answers" XML element that should contain any log events.
+         * @return the list of log events.
+         */
+        public static List<SimplifiedLogEvent> fromXml(final Element answersElement) {
+            final List<SimplifiedLogEvent> simplifiedLogEvents = new ArrayList<>();
+
+            final List<Element> answerChildren = answersElement.getChildren();
+
+            for (final Element answerChild : answerChildren) {
+                final String childName = answerChild.getName();
+
+                if (childName.equals(LOG_NAME)) {
+                    final Level level = Level.valueOf(answerChild.getChild(LEVEL_NAME).getValue());
+                    final String message = answerChild.getChild(MESSAGE_NAME).getValue();
+                    final Element throwableClassNameElement = answerChild.getChild(THROWABLE_CLASS_NAME);
+                    final Element throwableMessageElement = answerChild.getChild(THROWABLE_MESSAGE_NAME);
+                    final String throwableClassName = throwableClassNameElement == null ? null : throwableClassNameElement.getValue();
+                    final String throwableMessage = throwableMessageElement == null ? null : throwableMessageElement.getValue();
+
+                    simplifiedLogEvents.add(new SimplifiedLogEvent(level, message, throwableClassName, throwableMessage));
+                }
+            }
+
+            return simplifiedLogEvents;
+        }
+
+        public static List<Element> toXml(final List<SimplifiedLogEvent> logEvents) {
+            final List<Element> logElements = new ArrayList<>();
+
+            for (SimplifiedLogEvent e : logEvents) {
+                final Element logElement = new Element(LOG_NAME);
+
+                logElement.addContent(IBaseDataObjectXmlCodecs.preserve(IBaseDataObjectXmlCodecs.protectedElement(LEVEL_NAME, e.level.toString())));
+                logElement.addContent(IBaseDataObjectXmlCodecs.preserve(IBaseDataObjectXmlCodecs.protectedElement(MESSAGE_NAME, e.message)));
+                if (e.throwableClassName != null) {
+                    logElement.addContent(
+                            IBaseDataObjectXmlCodecs.preserve(IBaseDataObjectXmlCodecs.protectedElement(THROWABLE_CLASS_NAME, e.throwableClassName)));
+                }
+                if (e.throwableMessage != null) {
+                    logElement.addContent(
+                            IBaseDataObjectXmlCodecs.preserve(IBaseDataObjectXmlCodecs.protectedElement(THROWABLE_MESSAGE_NAME, e.throwableMessage)));
+                }
+                logElements.add(logElement);
+            }
+
+            return logElements;
+        }
+
     }
 }
