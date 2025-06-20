@@ -1,22 +1,30 @@
 package emissary.test.core.junit5;
 
-import emissary.core.BaseDataObject;
+import emissary.core.DiffCheckConfiguration;
 import emissary.core.IBaseDataObject;
-import emissary.core.IBaseDataObjectHelper;
 import emissary.core.IBaseDataObjectXmlCodecs.ElementDecoders;
 import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
+import emissary.core.IBaseDataObjectXmlHelper;
+import emissary.core.channels.FileChannelFactory;
+import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.junit5.LogbackTester.SimplifiedLogEvent;
 import emissary.util.ByteUtil;
-import emissary.util.DisposeHelper;
+import emissary.util.PlaceComparisonHelper;
+import emissary.util.io.ResourceReader;
 
 import com.google.errorprone.annotations.ForOverride;
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jdom2.Document;
+import org.jdom2.Element;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -26,6 +34,12 @@ import java.util.TreeMap;
 import static emissary.core.IBaseDataObjectXmlCodecs.ALWAYS_SHA256_ELEMENT_ENCODERS;
 import static emissary.core.IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_DECODERS;
 import static emissary.core.IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS;
+import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
+import static emissary.core.constants.IbdoXmlElementNames.SETUP;
+import static emissary.test.core.junit5.RegressionTestAnswerGenerator.fixDisposeRunnables;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -52,6 +66,11 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public abstract class RegressionTest extends ExtractionTest {
 
+    /* Difference configuration to use when comparing IBDO's. */
+    private static final DiffCheckConfiguration DIFF_CHECK = DiffCheckConfiguration.configure().enableData().enableKeyValueParameterDiff().build();
+
+    private RegressionTestAnswerGenerator answerGenerator;
+
     @Override
     public String getAnswerXsd() {
         return "emissary/test/core/schemas/regression.xsd";
@@ -59,7 +78,7 @@ public abstract class RegressionTest extends ExtractionTest {
 
     /**
      * Override this or set the generateAnswers system property to true to generate XML for data files.
-     * 
+     *
      * @return defaults to false if no XML should be generated (i.e. normal case of executing tests) or true to generate
      *         automatically
      */
@@ -68,84 +87,59 @@ public abstract class RegressionTest extends ExtractionTest {
         return Boolean.getBoolean("generateAnswers");
     }
 
+    @ForOverride
+    protected RegressionTestAnswerGenerator createAnswerGenerator() {
+        return new RegressionTestAnswerGenerator();
+    }
+
+    protected RegressionTestAnswerGenerator getAnswerGenerator() {
+        if (answerGenerator == null) {
+            answerGenerator = createAnswerGenerator();
+        }
+        return answerGenerator;
+    }
+
     /**
      * Allow the initial IBDO to be overridden - for example, adding additional previous forms
-     * 
+     *
      * This is used in the simple case to generate an IBDO from the file on disk and override the filename
-     * 
+     *
      * @param resource path to the dat file
      * @return the initial IBDO
      */
     @ForOverride
+    @Nullable
     protected IBaseDataObject getInitialIbdo(final String resource) {
-        return RegressionTestUtil.getInitialIbdoWithFormInFilename(new ClearDataBaseDataObject(), resource, kff);
-    }
+        IBaseDataObject ibdo = new ClearDataBaseDataObject();
+        try {
+            final Path datFileUrl = Paths.get(new ResourceReader().getResource(resource).toURI());
+            final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
+            final SeekableByteChannelFactory sbcf = FileChannelFactory.create(datFile.getPath());
+            // Create a BDO for the data, and set the filename correctly
+            final IBaseDataObject initialIbdo = IBaseDataObjectXmlHelper.createStandardInitialIbdo(ibdo, sbcf, "Classification",
+                    datFile.getInitialForm(), kff);
+            initialIbdo.setChannelFactory(sbcf);
+            initialIbdo.setFilename(datFile.getOriginalFileName());
 
-    /**
-     * Allow the initial IBDO to be overridden before serialising to XML.
-     * 
-     * In the default case, we null out the data in the BDO which will force the data to be loaded from the .dat file
-     * instead.
-     * 
-     * @param resource path to the dat file
-     * @param initialIbdo to tweak
-     */
-    @ForOverride
-    protected void tweakInitialIbdoBeforeSerialisation(final String resource, final IBaseDataObject initialIbdo) {
-        if (initialIbdo instanceof ClearDataBaseDataObject) {
-            ((ClearDataBaseDataObject) initialIbdo).clearData();
-        } else {
-            fail("Didn't get an expected type of IBaseDataObject");
+            return initialIbdo;
+        } catch (final URISyntaxException e) {
+            fail("Couldn't get path for resource: " + resource, e);
+            return null;
         }
-    }
-
-    /**
-     * Allow the generated IBDO to be overridden - for example, adding certain field values. Will modify the provided IBDO.
-     * 
-     * This is used in the simple case to set the current form for the final object to be taken from the file name. If the
-     * test worked correctly no change will be made, but if there is a discrepancy this will be highlighted afterwards when
-     * the diff takes place.
-     * 
-     * @param resource path to the dat file
-     * @param finalIbdo the existing final BDO after it's been processed by a place
-     */
-    @ForOverride
-    protected void tweakFinalIbdoBeforeSerialisation(final String resource, final IBaseDataObject finalIbdo) {
-        RegressionTestUtil.tweakFinalIbdoWithFormInFilename(resource, finalIbdo);
-
-        fixDisposeRunnables(finalIbdo);
-    }
-
-    /**
-     * Allow the children generated by the place to be overridden before serialising to XML.
-     * 
-     * In the default case, do nothing.
-     * 
-     * @param resource path to the dat file
-     * @param children to tweak
-     */
-    @ForOverride
-    protected void tweakFinalResultsBeforeSerialisation(final String resource, final List<IBaseDataObject> children) {
-        // No-op unless overridden
-    }
-
-    /**
-     * Allows the log events generated by the place to be modified before serialising to XML.
-     * 
-     * In the default case, do nothing.
-     * 
-     * @param resource path to the dat file
-     * @param simplifiedLogEvents to tweak
-     */
-    @ForOverride
-    protected void tweakFinalLogEventsBeforeSerialisation(final String resource, final List<SimplifiedLogEvent> simplifiedLogEvents) {
-        // No-op unless overridden
     }
 
     @Override
     @ForOverride
+    @Nullable
     protected String getInitialForm(final String resource) {
-        return RegressionTestUtil.getInitialFormFromFilename(resource);
+        try {
+            final Path datFileUrl = Paths.get(new ResourceReader().getResource(resource).toURI());
+            final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
+            return datFile.getInitialForm();
+        } catch (final URISyntaxException e) {
+            fail("Unable to get initial form from filename", e);
+            return null;
+        }
     }
 
     /**
@@ -257,15 +251,6 @@ public abstract class RegressionTest extends ExtractionTest {
         return Optional.empty();
     }
 
-    protected static class ClearDataBaseDataObject extends BaseDataObject {
-        private static final long serialVersionUID = -8728006876784881020L;
-
-        protected void clearData() {
-            theData = null;
-            seekableByteChannelFactory = null;
-        }
-    }
-
     @ParameterizedTest
     @MethodSource("data")
     @Override
@@ -273,53 +258,14 @@ public abstract class RegressionTest extends ExtractionTest {
         logger.debug("Running {} test on resource {}", place.getClass().getName(), resource);
 
         if (generateAnswers()) {
-            try {
-                generateAnswerFiles(resource);
-            } catch (final Exception e) {
-                logger.error("Error running test {}", resource, e);
-                fail("Unable to generate answer file", e);
-            }
+            // Get the data and create a channel factory to it
+            final IBaseDataObject initialIbdo = getInitialIbdo(resource);
+            getAnswerGenerator().generateAnswerFiles(resource, place, initialIbdo, getEncoders(resource), super.answerFileClassRef,
+                    getLogbackLoggerName());
         }
 
         // Run the normal extraction/regression tests
         super.testExtractionPlace(resource);
-    }
-
-    /**
-     * Actually generate the answer file for a given resource
-     * 
-     * Takes initial form and final forms from the filename
-     * 
-     * @param resource to generate against
-     * @throws Exception if an error occurs during processing
-     */
-    protected void generateAnswerFiles(final String resource) throws Exception {
-        // Get the data and create a channel factory to it
-        final IBaseDataObject initialIbdo = getInitialIbdo(resource);
-        // Clone the BDO to create an 'after' copy
-        final IBaseDataObject finalIbdo = IBaseDataObjectHelper.clone(initialIbdo);
-        // Actually process the BDO and keep the children
-        final List<IBaseDataObject> finalResults;
-        final List<SimplifiedLogEvent> finalLogEvents;
-        if (getLogbackLoggerName() == null) {
-            finalResults = place.agentProcessHeavyDuty(finalIbdo);
-            finalLogEvents = new ArrayList<>();
-        } else {
-            try (LogbackTester logbackTester = new LogbackTester(getLogbackLoggerName())) {
-                finalResults = place.agentProcessHeavyDuty(finalIbdo);
-                finalLogEvents = logbackTester.getSimplifiedLogEvents();
-            }
-        }
-
-        // Allow overriding things before serialising to XML
-        tweakInitialIbdoBeforeSerialisation(resource, initialIbdo);
-        tweakFinalIbdoBeforeSerialisation(resource, finalIbdo);
-        tweakFinalResultsBeforeSerialisation(resource, finalResults);
-        tweakFinalLogEventsBeforeSerialisation(resource, finalLogEvents);
-
-        // Generate the full XML (setup & answers from before & after)
-        RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders(resource),
-                super.answerFileClassRef);
     }
 
     @Override
@@ -327,7 +273,6 @@ public abstract class RegressionTest extends ExtractionTest {
             throws Exception {
         if (getLogbackLoggerName() == null) {
             actualSimplifiedLogEvents = new ArrayList<>();
-
             return super.processHeavyDutyHook(place, payload);
         } else {
             try (LogbackTester logbackTester = new LogbackTester(getLogbackLoggerName())) {
@@ -343,36 +288,47 @@ public abstract class RegressionTest extends ExtractionTest {
     @Override
     protected Document getAnswerDocumentFor(final String resource) {
         // If generating answers, get the src version, otherwise get the normal XML file
-        return generateAnswers() ? RegressionTestUtil.getAnswerDocumentFor(resource, super.answerFileClassRef) : super.getAnswerDocumentFor(resource);
+        if (generateAnswers()) {
+            return getAnswerGenerator().getAnswerDocumentFor(resource, answerFileClassRef);
+        }
+        return super.getAnswerDocumentFor(resource);
     }
 
     @Override
     protected void setupPayload(final IBaseDataObject payload, final Document answers) {
-        RegressionTestUtil.setupPayload(payload, answers, getDecoders(payload.getFilename()));
+        final Element root = answers.getRootElement();
+
+        if (root != null) {
+            final Element parent = root.getChild(SETUP);
+
+            if (parent != null) {
+                payload.popCurrentForm(); // Remove default form put on by ExtractionTest.
+                payload.setFileType(null); // Remove default filetype put on by ExtractionTest.
+                // The only other fields set are data and filename.
+
+                IBaseDataObjectXmlHelper.ibdoFromXmlMainElements(parent, payload, getDecoders(payload.getFilename()));
+            }
+        }
     }
 
     @Override
     protected void checkAnswers(final Document answers, final IBaseDataObject payload,
             final List<IBaseDataObject> attachments, final String tname) {
-        RegressionTestUtil.checkAnswers(answers, payload, actualSimplifiedLogEvents, attachments, place.getClass().getName(), getDecoders(tname),
-                generateAnswers());
-    }
 
-    /**
-     * Default behavior to fix dispose runnables to change "variant" to "invariant"
-     *
-     * @param ibdo the base data object containing dispose runnables
-     */
-    protected void fixDisposeRunnables(final IBaseDataObject ibdo) {
-        if (ibdo.hasParameter(DisposeHelper.KEY)) {
-            final List<Object> values = ibdo.getParameter(DisposeHelper.KEY);
-            final List<String> newValues = new ArrayList<>();
+        final Element root = answers.getRootElement();
+        final Element parent = root.getChild(ANSWERS);
 
-            for (Object o : values) {
-                newValues.add(o.getClass().getName());
-            }
+        assertNotNull(parent, "No 'answers' section found!");
 
-            ibdo.putParameter(DisposeHelper.KEY, newValues);
-        }
+        final List<IBaseDataObject> expectedAttachments = new ArrayList<>();
+        final IBaseDataObject expectedIbdo = IBaseDataObjectXmlHelper.ibdoFromXml(answers, expectedAttachments, getDecoders(tname));
+        final String differences = PlaceComparisonHelper.checkDifferences(expectedIbdo, payload, expectedAttachments,
+                attachments, place.getClass().getName(), DIFF_CHECK);
+
+        assertNull(differences, generateAnswers() ? differences
+                + "\nNOTE: Since 'generateAnswers' is true, these differences could indicate non-deterministic processing in the tested code path\n"
+                : differences);
+
+        assertIterableEquals(SimplifiedLogEvent.fromXml(parent), actualSimplifiedLogEvents);
     }
 }
