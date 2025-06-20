@@ -121,7 +121,7 @@ class DataReversePlaceTest extends UnitTest {
     @Nested
     class RetryDisabledTests extends UnitTest {
         @BeforeEach
-        public void setUpPlace() {
+        void setUpPlace() {
             place = factory.buildPlace();
             dataObject = new BaseDataObject(DATA, MESSAGE);
         }
@@ -166,7 +166,7 @@ class DataReversePlaceTest extends UnitTest {
         private static final int RETRY_ATTEMPTS = 5;
 
         @BeforeEach
-        public void setUpPlace() {
+        void setUpPlace() {
             place = factory.buildPlace(new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_ATTEMPTS, String.valueOf(RETRY_ATTEMPTS)));
             dataObject = new BaseDataObject(DATA, MESSAGE);
         }

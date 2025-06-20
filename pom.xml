@@ -1254,7 +1254,7 @@
               <phase>generate-sources</phase>
               <configuration>
                 <sources>
-                  <source>${project.build.directory}/target/generated-sources/protobuf</source>
+                  <source>${project.build.directory}/generated-sources/protobuf</source>
                 </sources>
               </configuration>
             </execution>
