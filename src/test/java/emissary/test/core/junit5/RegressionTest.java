@@ -101,7 +101,7 @@ public abstract class RegressionTest extends ExtractionTest {
 
     /**
      * Allow the initial IBDO to be overridden - for example, adding additional previous forms
-     *
+     * <p>
      * This is used in the simple case to generate an IBDO from the file on disk and override the filename
      *
      * @param resource path to the dat file
