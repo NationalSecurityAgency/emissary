@@ -1,10 +1,10 @@
-package emissary.grpc.sample;
+package emissary.grpc.sample.connection;
 
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
-import emissary.grpc.GrpcConnectionPlace;
-import emissary.grpc.RetryHandler;
+import emissary.grpc.place.GrpcConnectionPlace;
 import emissary.grpc.pool.ConnectionFactory;
+import emissary.grpc.retry.RetryHandler;
 import emissary.grpc.sample.v1.proto.DataReverseRequest;
 import emissary.grpc.sample.v1.proto.DataReverseResponse;
 import emissary.grpc.sample.v1.proto.DataReverseServiceGrpc;
@@ -126,7 +126,7 @@ public class DataReversePlace extends GrpcConnectionPlace {
      * @return a channel from the pool
      */
     public ManagedChannel acquireChannel() {
-        return ConnectionFactory.acquireChannel(channelPool);
+        return ConnectionFactory.acquireChannel(channelPoolTable.get(CONNECTION_ID));
     }
 
     /**
@@ -136,7 +136,7 @@ public class DataReversePlace extends GrpcConnectionPlace {
      * @param channel the channel to return
      */
     public void returnChannel(ManagedChannel channel) {
-        ConnectionFactory.returnChannel(channel, channelPool);
+        ConnectionFactory.returnChannel(channel, channelPoolTable.get(CONNECTION_ID));
     }
 
     public boolean getIsConnectionValidated() {

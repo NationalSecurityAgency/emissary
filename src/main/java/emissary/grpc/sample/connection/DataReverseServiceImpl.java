@@ -1,4 +1,4 @@
-package emissary.grpc.sample;
+package emissary.grpc.sample.connection;
 
 import emissary.grpc.sample.v1.proto.DataReverseHealthStatus;
 import emissary.grpc.sample.v1.proto.DataReverseRequest;

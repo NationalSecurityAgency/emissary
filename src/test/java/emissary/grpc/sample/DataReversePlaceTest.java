@@ -3,11 +3,13 @@ package emissary.grpc.sample;
 import emissary.config.ConfigEntry;
 import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
-import emissary.grpc.GrpcConnectionPlace;
-import emissary.grpc.RetryHandler;
 import emissary.grpc.exceptions.ServiceException;
 import emissary.grpc.exceptions.ServiceNotAvailableException;
+import emissary.grpc.place.GrpcConnectionPlace;
 import emissary.grpc.pool.ConnectionFactory;
+import emissary.grpc.retry.RetryHandler;
+import emissary.grpc.sample.connection.DataReversePlace;
+import emissary.grpc.sample.connection.DataReverseServiceImpl;
 import emissary.test.core.junit5.UnitTest;
 import emissary.test.util.ConfiguredPlaceFactory;
 

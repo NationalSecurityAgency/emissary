@@ -1,25 +1,23 @@
-package emissary.grpc;
+package emissary.grpc.place;
 
 import emissary.config.Configurator;
 import emissary.grpc.exceptions.PoolException;
-import emissary.grpc.exceptions.ServiceException;
 import emissary.grpc.exceptions.ServiceNotAvailableException;
 import emissary.grpc.pool.ConnectionFactory;
-import emissary.place.ServiceProviderPlace;
+import emissary.grpc.retry.RetryHandler;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.GeneratedMessageV3;
 import io.grpc.ManagedChannel;
-import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractBlockingStub;
 import io.grpc.stub.AbstractFutureStub;
 import jakarta.annotation.Nullable;
-import org.apache.commons.pool2.ObjectPool;
-import org.apache.commons.pool2.PooledObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -34,94 +32,52 @@ import java.util.function.Function;
  * <li>See {@link RetryHandler} for supported retry configuration keys and defaults.</li>
  * </ul>
  */
-public abstract class GrpcConnectionPlace extends ServiceProviderPlace implements IGrpcConnectionPlace {
+public abstract class GrpcConnectionPlace extends GrpcRouterPlace implements IGrpcConnectionPlace {
     public static final String GRPC_HOST = "GRPC_HOST";
     public static final String GRPC_PORT = "GRPC_PORT";
-
-    protected ConnectionFactory connectionFactory;
-    protected ObjectPool<ManagedChannel> channelPool;
-    protected RetryHandler retryHandler;
+    protected static final String CONNECTION_ID = "#gRPC-service";
 
     protected GrpcConnectionPlace() throws IOException {
         super();
-        configureGrpc();
     }
 
     protected GrpcConnectionPlace(String thePlaceLocation) throws IOException {
         super(thePlaceLocation);
-        configureGrpc();
     }
 
     protected GrpcConnectionPlace(InputStream configStream) throws IOException {
         super(configStream);
-        configureGrpc();
     }
 
     protected GrpcConnectionPlace(String configFile, String placeLocation) throws IOException {
         super(configFile, placeLocation);
-        configureGrpc();
     }
 
     protected GrpcConnectionPlace(InputStream configStream, String placeLocation) throws IOException {
         super(configStream, placeLocation);
-        configureGrpc();
     }
 
     protected GrpcConnectionPlace(String configFile, @Nullable String theDir, String thePlaceLocation) throws IOException {
         super(configFile, theDir, thePlaceLocation);
-        configureGrpc();
     }
 
     protected GrpcConnectionPlace(InputStream configStream, @Nullable String theDir, String thePlaceLocation) throws IOException {
         super(configStream, theDir, thePlaceLocation);
-        configureGrpc();
     }
 
     protected GrpcConnectionPlace(@Nullable Configurator configs) throws IOException {
         super(configs);
-        configureGrpc();
     }
 
-    protected void configureGrpc() {
-        if (configG == null) {
-            throw new IllegalStateException("gRPC configurations not found for " + this.getPlaceName());
-        }
-
-        String host = configG.findRequiredStringEntry(GRPC_HOST);
-        int port = Integer.parseInt(configG.findRequiredStringEntry(GRPC_PORT));
-
-        connectionFactory = new ConnectionFactory(host, port, configG) {
-            @Override
-            public boolean validateObject(PooledObject<ManagedChannel> pooledObject) {
-                return validateConnection(pooledObject.getObject());
-            }
-
-            @Override
-            public void passivateObject(PooledObject<ManagedChannel> pooledObject) {
-                passivateConnection(pooledObject.getObject());
-            }
-        };
-
-        channelPool = connectionFactory.newConnectionPool();
-        retryHandler = new RetryHandler(configG, this.getPlaceName());
+    @Override
+    protected Map<String, String> getHostNames() {
+        return Map.of(CONNECTION_ID, Objects.requireNonNull(configG).findRequiredStringEntry(GRPC_HOST));
     }
 
-    /**
-     * Validates whether a given {@link ManagedChannel} is capable of successfully communicating with its associated gRPC
-     * server.
-     *
-     * @param managedChannel the gRPC channel to validate
-     * @return {@code true} if the channel is healthy and the server responds successfully, else {@code false}
-     */
-    protected abstract boolean validateConnection(ManagedChannel managedChannel);
-
-    /**
-     * Called after a gRPC call to clean up the channel. No-op by default, since gRPC channels are designed to remain ready
-     * for reuse. Override this if using a stub that requires channels be reset or cleared between uses.
-     *
-     * @param managedChannel the gRPC channel to clean up
-     */
-    protected void passivateConnection(ManagedChannel managedChannel) { /* No-op */ }
+    @Override
+    protected Map<String, Integer> getPortNumbers() {
+        return Map.of(CONNECTION_ID, Integer.parseInt(Objects.requireNonNull(configG).findRequiredStringEntry(GRPC_PORT)));
+    }
 
     /**
      * Executes a unary gRPC call using a {@code BlockingStub}. If the gRPC connection fails due to a {@link PoolException}
@@ -140,29 +96,11 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
     protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractBlockingStub<S>> R invokeGrpc(
             Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, R> callLogic, Q request) {
 
-        return retryHandler.execute(() -> {
-            ManagedChannel channel = ConnectionFactory.acquireChannel(channelPool);
-            R response = null;
-            try {
-                S stub = stubFactory.apply(channel);
-                response = callLogic.apply(stub, request);
-                ConnectionFactory.returnChannel(channel, channelPool);
-            } catch (StatusRuntimeException e) {
-                ConnectionFactory.invalidateChannel(channel, channelPool);
-                ServiceException.handleGrpcStatusRuntimeException(e);
-            } catch (RuntimeException e) {
-                ConnectionFactory.invalidateChannel(channel, channelPool);
-                throw e;
-            }
-            return response;
-        });
+        return invokeGrpc(CONNECTION_ID, stubFactory, callLogic, request);
     }
 
     /**
      * Executes multiple unary gRPC calls in parallel using a shared {@link AbstractFutureStub}.
-     * <p>
-     * TODO: Determine channel handling strategy when some calls succeed and others fail <br>
-     * TODO: Clarify expected blocking behavior for response collection
      *
      * @param stubFactory function that creates the appropriate {@code FutureStub} from a {@link ManagedChannel}
      * @param callLogic function that maps a stub and request to a {@link ListenableFuture}
@@ -175,74 +113,74 @@ public abstract class GrpcConnectionPlace extends ServiceProviderPlace implement
     protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> List<R> invokeBatchedGrpc(
             Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, ListenableFuture<R>> callLogic, List<Q> requestList) {
 
-        throw new UnsupportedOperationException("Not yet implemented");
+        return invokeBatchedGrpc(CONNECTION_ID, stubFactory, callLogic, requestList);
     }
 
     public String getHost() {
-        return connectionFactory.getHost();
+        return getHost(CONNECTION_ID);
     }
 
     public int getPort() {
-        return connectionFactory.getPort();
+        return getPort(CONNECTION_ID);
     }
 
     public String getTarget() {
-        return connectionFactory.getTarget();
+        return getTarget(CONNECTION_ID);
     }
 
     public long getKeepAliveMillis() {
-        return connectionFactory.getKeepAliveMillis();
+        return getKeepAliveMillis(CONNECTION_ID);
     }
 
     public long getKeepAliveTimeoutMillis() {
-        return connectionFactory.getKeepAliveTimeoutMillis();
+        return getKeepAliveTimeoutMillis(CONNECTION_ID);
     }
 
     public boolean getKeepAliveWithoutCalls() {
-        return connectionFactory.getKeepAliveWithoutCalls();
+        return getKeepAliveWithoutCalls(CONNECTION_ID);
     }
 
     public String getLoadBalancingPolicy() {
-        return connectionFactory.getLoadBalancingPolicy();
+        return getLoadBalancingPolicy(CONNECTION_ID);
     }
 
     public int getMaxInboundMessageByteSize() {
-        return connectionFactory.getMaxInboundMessageByteSize();
+        return getMaxInboundMessageByteSize(CONNECTION_ID);
     }
 
     public int getMaxInboundMetadataByteSize() {
-        return connectionFactory.getMaxInboundMetadataByteSize();
+        return getMaxInboundMetadataByteSize(CONNECTION_ID);
     }
 
     public float getErodingPoolFactor() {
-        return connectionFactory.getErodingPoolFactor();
+        return getErodingPoolFactor(CONNECTION_ID);
     }
 
     public boolean getPoolBlockedWhenExhausted() {
-        return connectionFactory.getPoolBlockedWhenExhausted();
+        return getPoolBlockedWhenExhausted(CONNECTION_ID);
     }
 
     public long getPoolMaxWaitMillis() {
-        return connectionFactory.getPoolMaxWaitMillis();
+        return getPoolMaxWaitMillis(CONNECTION_ID);
     }
 
     public int getPoolMinIdleConnections() {
-        return connectionFactory.getPoolMinIdleConnections();
+        return getPoolMinIdleConnections(CONNECTION_ID);
     }
 
     public int getPoolMaxIdleConnections() {
-        return connectionFactory.getPoolMaxIdleConnections();
+        return getPoolMaxIdleConnections(CONNECTION_ID);
     }
 
     public int getPoolMaxTotalConnections() {
-        return connectionFactory.getPoolMaxTotalConnections();
+        return getPoolMaxTotalConnections(CONNECTION_ID);
     }
 
     public boolean getPoolIsLifo() {
-        return connectionFactory.getPoolIsLifo();
+        return getPoolIsLifo(CONNECTION_ID);
     }
 
     public boolean getPoolIsFifo() {
-        return connectionFactory.getPoolIsFifo();
+        return getPoolIsFifo(CONNECTION_ID);
     }
 }
