@@ -1,11 +1,11 @@
-package emissary.grpc.sample;
+package emissary.grpc.place.sample;
 
 import emissary.config.ConfigEntry;
 import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
 import emissary.grpc.place.GrpcRouterPlace;
-import emissary.grpc.sample.router.LetterCasePlace;
-import emissary.grpc.sample.router.LetterCaseServiceImpl;
+import emissary.grpc.place.sample.router.LetterCasePlace;
+import emissary.grpc.place.sample.router.LetterCaseServiceImpl;
 import emissary.test.core.junit5.UnitTest;
 import emissary.test.util.ConfiguredPlaceFactory;
 

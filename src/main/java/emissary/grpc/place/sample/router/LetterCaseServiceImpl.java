@@ -1,4 +1,4 @@
-package emissary.grpc.sample.router;
+package emissary.grpc.place.sample.router;
 
 import emissary.grpc.sample.v1.proto.LetterCaseHealthStatus;
 import emissary.grpc.sample.v1.proto.LetterCaseRequest;

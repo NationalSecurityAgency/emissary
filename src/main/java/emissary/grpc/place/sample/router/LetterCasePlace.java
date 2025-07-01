@@ -1,10 +1,10 @@
-package emissary.grpc.sample.router;
+package emissary.grpc.place.sample.router;
 
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.grpc.place.GrpcRouterPlace;
-import emissary.grpc.sample.router.LetterCaseServiceImpl.LowerCaseServiceImpl;
-import emissary.grpc.sample.router.LetterCaseServiceImpl.UpperCaseServiceImpl;
+import emissary.grpc.place.sample.router.LetterCaseServiceImpl.LowerCaseServiceImpl;
+import emissary.grpc.place.sample.router.LetterCaseServiceImpl.UpperCaseServiceImpl;
 import emissary.grpc.sample.v1.proto.LetterCaseRequest;
 import emissary.grpc.sample.v1.proto.LetterCaseResponse;
 import emissary.grpc.sample.v1.proto.LetterCaseServiceGrpc;
@@ -19,8 +19,8 @@ import java.util.regex.Pattern;
 
 /**
  * Connects to mock services {@link UpperCaseServiceImpl} and {@link LowerCaseServiceImpl}, which both implement the
- * same {@link LetterCaseServiceImplBase}. Both services take String data and pass them through a gRPC connection to
- * change their case, and then writes the results to an alternate view.
+ * same {@link LetterCaseServiceImplBase}. Both services use a gRPC connection to change the case of a String, which is
+ * then written to an alternate view.
  */
 public class LetterCasePlace extends GrpcRouterPlace {
     public static final String FORM_PREFIX = "SERVICE_PROXY_FORM-";
