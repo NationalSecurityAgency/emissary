@@ -8,6 +8,7 @@ import emissary.place.IServiceProviderPlace;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,7 +38,7 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
         }
 
         defaultConfigurator = loadConfigFile(place);
-        addAndReplaceConfigEntries(defaultConfigurator, defaultConfigs);
+        addAndReplaceConfigEntries(defaultConfigurator, Collections.emptySet(), defaultConfigs);
     }
 
     /**
@@ -64,39 +65,53 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
      * @return new instance of place
      */
     public T buildPlace(ConfigEntry... optionalConfigs) {
+        return buildPlace(Collections.emptySet(), optionalConfigs);
+    }
+
+    /**
+     * Create a new instance of a {@link emissary.place.ServiceProviderPlace} for testing with optional configurations.
+     * Configs override any matching instances found in the actual .cfg file and/or default test configs.
+     *
+     * @param keysToRemove list of existing configuration keys to remove from the place build
+     * @param optionalConfigs list of new or overriding place configurations
+     * @return new instance of place
+     */
+    public T buildPlace(Set<String> keysToRemove, ConfigEntry... optionalConfigs) {
         try {
-            Configurator classConfigs = newInstanceConfigurator(optionalConfigs);
+            Configurator classConfigs = newInstanceConfigurator(keysToRemove, optionalConfigs);
             return placeConstructor.newInstance(classConfigs);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to create instance of " + placeName, e);
         }
     }
 
-    private Configurator newInstanceConfigurator(ConfigEntry... optionalConfigs) {
-        if (optionalConfigs.length == 0) {
+    private Configurator newInstanceConfigurator(Set<String> keysToRemove, ConfigEntry... optionalConfigs) {
+        if (keysToRemove.isEmpty() && optionalConfigs.length == 0) {
             return defaultConfigurator;
         }
         Configurator configurator = copyConfigurator(defaultConfigurator);
-        addAndReplaceConfigEntries(configurator, optionalConfigs);
+        addAndReplaceConfigEntries(configurator, keysToRemove, optionalConfigs);
         return configurator;
     }
 
-    private static void addAndReplaceConfigEntries(Configurator configurator, ConfigEntry... configEntries) {
+    private static void addAndReplaceConfigEntries(Configurator cfg, Set<String> keysToRemove, ConfigEntry... optionalConfigs) {
         Set<String> encounteredKeys = new HashSet<>();
-        for (ConfigEntry entry : configEntries) {
+        for (ConfigEntry entry : optionalConfigs) {
             String key = entry.getKey();
-            // Keep track of keys we've removed, so we don't accidentally remove them more than once
-            if (!encounteredKeys.contains(key)) {
-                removeAllConfigEntriesForKey(configurator, key);
+            if (!encounteredKeys.contains(key)) { // Keep track of removed keys to not accidentally remove them more than once
+                removeAllConfigEntriesForKey(cfg, key);
                 encounteredKeys.add(key);
             }
-            configurator.addEntry(key, entry.getValue());
+            cfg.addEntry(key, entry.getValue());
+        }
+        for (String key : keysToRemove) {
+            removeAllConfigEntriesForKey(cfg, key);
         }
     }
 
-    private static void removeAllConfigEntriesForKey(Configurator configurator, String key) {
-        for (String value : configurator.findEntries(key)) {
-            configurator.removeEntry(key, value);
+    private static void removeAllConfigEntriesForKey(Configurator cfg, String key) {
+        for (String value : cfg.findEntries(key)) {
+            cfg.removeEntry(key, value);
         }
     }
 

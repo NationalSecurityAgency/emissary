@@ -70,12 +70,12 @@ public abstract class GrpcConnectionPlace extends GrpcRouterPlace implements IGr
     }
 
     @Override
-    protected Map<String, String> getHostNames() {
+    protected Map<String, String> configureHostnames() {
         return Map.of(CONNECTION_ID, Objects.requireNonNull(configG).findRequiredStringEntry(GRPC_HOST));
     }
 
     @Override
-    protected Map<String, Integer> getPortNumbers() {
+    protected Map<String, Integer> configurePortNumbers() {
         return Map.of(CONNECTION_ID, Integer.parseInt(Objects.requireNonNull(configG).findRequiredStringEntry(GRPC_PORT)));
     }
 
@@ -117,70 +117,10 @@ public abstract class GrpcConnectionPlace extends GrpcRouterPlace implements IGr
     }
 
     public String getHost() {
-        return getHost(CONNECTION_ID);
+        return getHostname(CONNECTION_ID);
     }
 
     public int getPort() {
-        return getPort(CONNECTION_ID);
-    }
-
-    public String getTarget() {
-        return getTarget(CONNECTION_ID);
-    }
-
-    public long getKeepAliveMillis() {
-        return getKeepAliveMillis(CONNECTION_ID);
-    }
-
-    public long getKeepAliveTimeoutMillis() {
-        return getKeepAliveTimeoutMillis(CONNECTION_ID);
-    }
-
-    public boolean getKeepAliveWithoutCalls() {
-        return getKeepAliveWithoutCalls(CONNECTION_ID);
-    }
-
-    public String getLoadBalancingPolicy() {
-        return getLoadBalancingPolicy(CONNECTION_ID);
-    }
-
-    public int getMaxInboundMessageByteSize() {
-        return getMaxInboundMessageByteSize(CONNECTION_ID);
-    }
-
-    public int getMaxInboundMetadataByteSize() {
-        return getMaxInboundMetadataByteSize(CONNECTION_ID);
-    }
-
-    public float getErodingPoolFactor() {
-        return getErodingPoolFactor(CONNECTION_ID);
-    }
-
-    public boolean getPoolBlockedWhenExhausted() {
-        return getPoolBlockedWhenExhausted(CONNECTION_ID);
-    }
-
-    public long getPoolMaxWaitMillis() {
-        return getPoolMaxWaitMillis(CONNECTION_ID);
-    }
-
-    public int getPoolMinIdleConnections() {
-        return getPoolMinIdleConnections(CONNECTION_ID);
-    }
-
-    public int getPoolMaxIdleConnections() {
-        return getPoolMaxIdleConnections(CONNECTION_ID);
-    }
-
-    public int getPoolMaxTotalConnections() {
-        return getPoolMaxTotalConnections(CONNECTION_ID);
-    }
-
-    public boolean getPoolIsLifo() {
-        return getPoolIsLifo(CONNECTION_ID);
-    }
-
-    public boolean getPoolIsFifo() {
-        return getPoolIsFifo(CONNECTION_ID);
+        return getPortNumber(CONNECTION_ID);
     }
 }

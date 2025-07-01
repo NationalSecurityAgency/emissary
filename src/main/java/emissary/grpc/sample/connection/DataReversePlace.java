@@ -26,14 +26,13 @@ public class DataReversePlace extends GrpcConnectionPlace {
     public static final String REVERSED_DATA = "REVERSED_DATA";
     public static final String GRPC_POOL_KILL_AFTER_RETURN = "GRPC_POOL_KILL_AFTER_RETURN";
 
-    private final boolean passivateConnectionAfterReturn;
-
-    private boolean isConnectionValidated = false;
-    private boolean isConnectionPassivated = false;
+    private boolean wasValidateConnectionCalled;
+    private final boolean passivateConnection;
 
     public DataReversePlace(Configurator cfg) throws IOException {
         super(cfg);
-        passivateConnectionAfterReturn = cfg.findBooleanEntry(GRPC_POOL_KILL_AFTER_RETURN, false);
+        wasValidateConnectionCalled = false;
+        passivateConnection = cfg.findBooleanEntry(GRPC_POOL_KILL_AFTER_RETURN, false);
     }
 
     @Override
@@ -100,9 +99,9 @@ public class DataReversePlace extends GrpcConnectionPlace {
      */
     @Override
     protected boolean validateConnection(ManagedChannel managedChannel) {
+        wasValidateConnectionCalled = true;
         DataReverseServiceBlockingStub stub = DataReverseServiceGrpc.newBlockingStub(managedChannel);
-        isConnectionValidated = stub.checkHealth(Empty.getDefaultInstance()).getOk();
-        return isConnectionValidated;
+        return stub.checkHealth(Empty.getDefaultInstance()).getOk();
     }
 
     /**
@@ -112,10 +111,9 @@ public class DataReversePlace extends GrpcConnectionPlace {
      */
     @Override
     protected void passivateConnection(ManagedChannel managedChannel) {
-        if (passivateConnectionAfterReturn) {
+        if (passivateConnection) {
             managedChannel.shutdownNow();
         }
-        isConnectionPassivated = managedChannel.isShutdown();
     }
 
     /**
@@ -139,11 +137,7 @@ public class DataReversePlace extends GrpcConnectionPlace {
         ConnectionFactory.returnChannel(channel, channelPoolTable.get(CONNECTION_ID));
     }
 
-    public boolean getIsConnectionValidated() {
-        return isConnectionValidated;
-    }
-
-    public boolean getIsConnectionPassivated() {
-        return isConnectionPassivated;
+    public boolean getWasValidateConnectionCalled() {
+        return wasValidateConnectionCalled;
     }
 }

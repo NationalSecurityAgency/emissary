@@ -16,12 +16,10 @@ import io.grpc.stub.AbstractBlockingStub;
 import io.grpc.stub.AbstractFutureStub;
 import jakarta.annotation.Nullable;
 import org.apache.commons.pool2.ObjectPool;
-import org.apache.commons.pool2.PooledObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -49,10 +47,10 @@ public abstract class GrpcRouterPlace extends ServiceProviderPlace implements IG
     public static final String GRPC_PORT = "GRPC_PORT_";
     private static final String TARGET_ID = "{Target-ID}";
 
-    protected Set<String> targetIds = new HashSet<>();
-    protected Map<String, ConnectionFactory> connectionFactoryTable = new HashMap<>();
-    protected Map<String, ObjectPool<ManagedChannel>> channelPoolTable = new HashMap<>();
     protected RetryHandler retryHandler;
+    protected Map<String, String> hostnameTable = new HashMap<>();
+    protected Map<String, Integer> portNumberTable = new HashMap<>();
+    protected Map<String, ObjectPool<ManagedChannel>> channelPoolTable = new HashMap<>();
 
     protected GrpcRouterPlace() throws IOException {
         super();
@@ -94,11 +92,11 @@ public abstract class GrpcRouterPlace extends ServiceProviderPlace implements IG
         configureGrpc();
     }
 
-    protected Map<String, String> getHostNames() {
+    protected Map<String, String> configureHostnames() {
         return Objects.requireNonNull(configG).findStringMatchMap(GRPC_HOST, true);
     }
 
-    protected Map<String, Integer> getPortNumbers() {
+    protected Map<String, Integer> configurePortNumbers() {
         return Objects.requireNonNull(configG).findStringMatchMap(GRPC_PORT).entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> Integer.parseInt(entry.getValue())));
     }
@@ -108,45 +106,33 @@ public abstract class GrpcRouterPlace extends ServiceProviderPlace implements IG
             throw new IllegalStateException("gRPC configurations not found for " + this.getPlaceName());
         }
 
-        Map<String, String> hosts = getHostNames();
-        Map<String, Integer> ports = getPortNumbers();
+        hostnameTable = configureHostnames();
+        portNumberTable = configurePortNumbers();
 
-        if (!hosts.keySet().equals(ports.keySet())) {
-            throw new IllegalArgumentException(String.format("Unequal number of configured gRPC hosts (%d) and gRPC ports (%d)",
-                    hosts.size(), ports.size()));
+        if (!hostnameTable.keySet().equals(portNumberTable.keySet())) {
+            throw new IllegalArgumentException("gRPC hostname target-IDs do not match gRPC port number target-IDs");
         }
 
-        if (hosts.isEmpty()) {
+        if (hostnameTable.isEmpty()) {
             throw new NullPointerException(String.format("Missing required arguments: %s and %s",
                     GRPC_HOST + TARGET_ID, GRPC_PORT + TARGET_ID));
         }
 
-        targetIds = hosts.keySet();
+        Set<String> targetIds = hostnameTable.keySet();
         for (String id : targetIds) {
-            addToConnectionTables(id, hosts.get(id), ports.get(id));
+            channelPoolTable.put(id, newConnectionPool(id));
         }
 
         retryHandler = new RetryHandler(configG, this.getPlaceName());
     }
 
-    private void addToConnectionTables(String targetId, String host, int port) {
-        if (configG == null) {
-            throw new IllegalStateException("gRPC configurations not found for " + this.getPlaceName());
-        }
-
-        connectionFactoryTable.put(targetId, new ConnectionFactory(host, port, configG) {
-            @Override
-            public boolean validateObject(PooledObject<ManagedChannel> pooledObject) {
-                return validateConnection(pooledObject.getObject());
-            }
-
-            @Override
-            public void passivateObject(PooledObject<ManagedChannel> pooledObject) {
-                passivateConnection(pooledObject.getObject());
-            }
-        });
-
-        channelPoolTable.put(targetId, connectionFactoryLookup(targetId).newConnectionPool());
+    private ObjectPool<ManagedChannel> newConnectionPool(String targetId) {
+        return new ConnectionFactory(
+                hostnameTable.get(targetId),
+                portNumberTable.get(targetId),
+                Objects.requireNonNull(configG),
+                this::validateConnection,
+                this::passivateConnection).newConnectionPool();
     }
 
     /**
@@ -225,87 +211,18 @@ public abstract class GrpcRouterPlace extends ServiceProviderPlace implements IG
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public Set<String> getTargetIds() { return targetIds; }
-
-    public String getHost(String targetId) {
-        return connectionFactoryLookup(targetId).getHost();
-    }
-
-    public int getPort(String targetId) {
-        return connectionFactoryLookup(targetId).getPort();
-    }
-
-    public String getTarget(String targetId) {
-        return connectionFactoryLookup(targetId).getTarget();
-    }
-
-    public long getKeepAliveMillis(String targetId) {
-        return connectionFactoryLookup(targetId).getKeepAliveMillis();
-    }
-
-    public long getKeepAliveTimeoutMillis(String targetId) {
-        return connectionFactoryLookup(targetId).getKeepAliveTimeoutMillis();
-    }
-
-    public boolean getKeepAliveWithoutCalls(String targetId) {
-        return connectionFactoryLookup(targetId).getKeepAliveWithoutCalls();
-    }
-
-    public String getLoadBalancingPolicy(String targetId) {
-        return connectionFactoryLookup(targetId).getLoadBalancingPolicy();
-    }
-
-    public int getMaxInboundMessageByteSize(String targetId) {
-        return connectionFactoryLookup(targetId).getMaxInboundMessageByteSize();
-    }
-
-    public int getMaxInboundMetadataByteSize(String targetId) {
-        return connectionFactoryLookup(targetId).getMaxInboundMetadataByteSize();
-    }
-
-    public float getErodingPoolFactor(String targetId) {
-        return connectionFactoryLookup(targetId).getErodingPoolFactor();
-    }
-
-    public boolean getPoolBlockedWhenExhausted(String targetId) {
-        return connectionFactoryLookup(targetId).getPoolBlockedWhenExhausted();
-    }
-
-    public long getPoolMaxWaitMillis(String targetId) {
-        return connectionFactoryLookup(targetId).getPoolMaxWaitMillis();
-    }
-
-    public int getPoolMinIdleConnections(String targetId) {
-        return connectionFactoryLookup(targetId).getPoolMinIdleConnections();
-    }
-
-    public int getPoolMaxIdleConnections(String targetId) {
-        return connectionFactoryLookup(targetId).getPoolMaxIdleConnections();
-    }
-
-    public int getPoolMaxTotalConnections(String targetId) {
-        return connectionFactoryLookup(targetId).getPoolMaxTotalConnections();
-    }
-
-    public boolean getPoolIsLifo(String targetId) {
-        return connectionFactoryLookup(targetId).getPoolIsLifo();
-    }
-
-    public boolean getPoolIsFifo(String targetId) {
-        return connectionFactoryLookup(targetId).getPoolIsFifo();
-    }
-
-    private ConnectionFactory connectionFactoryLookup(String targetId) {
-        if (connectionFactoryTable.containsKey(targetId)) {
-            return connectionFactoryTable.get(targetId);
-        }
-        throw new IllegalArgumentException(String.format("Target-ID %s was never configured", targetId));
-    }
-
     private ObjectPool<ManagedChannel> channelPoolLookup(String targetId) {
         if (channelPoolTable.containsKey(targetId)) {
             return channelPoolTable.get(targetId);
         }
         throw new IllegalArgumentException(String.format("Target-ID %s was never configured", targetId));
+    }
+
+    public String getHostname(String targetId) {
+        return hostnameTable.get(targetId);
+    }
+
+    public int getPortNumber(String targetId) {
+        return portNumberTable.get(targetId);
     }
 }

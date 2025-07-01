@@ -11,9 +11,9 @@ import io.grpc.stub.StreamObserver;
 import java.util.Locale;
 
 /**
- * Mocks an external service that lowercases a String.
+ * Mocks an external service that changes the case of a String.
  */
-public class LowerCaseServiceImpl extends LetterCaseServiceGrpc.LetterCaseServiceImplBase {
+public abstract class LetterCaseServiceImpl extends LetterCaseServiceGrpc.LetterCaseServiceImplBase {
     @Override
     public void checkHealth(Empty request, StreamObserver<LetterCaseHealthStatus> responseObserver) {
         LetterCaseHealthStatus status = LetterCaseHealthStatus.newBuilder().setOk(true).build();
@@ -24,10 +24,31 @@ public class LowerCaseServiceImpl extends LetterCaseServiceGrpc.LetterCaseServic
     @Override
     public void toLetterCase(LetterCaseRequest request, StreamObserver<LetterCaseResponse> responseObserver) {
         LetterCaseResponse resp = LetterCaseResponse.newBuilder()
-                .setResult(request.getQuery().toLowerCase(Locale.ROOT))
+                .setResult(changeCase(request.getQuery()))
                 .build();
         responseObserver.onNext(resp);
         responseObserver.onCompleted();
     }
 
+    protected abstract String changeCase(String input);
+
+    /**
+     * Mocks an external service that capitalizes a String.
+     */
+    public static class UpperCaseServiceImpl extends LetterCaseServiceImpl {
+        @Override
+        protected String changeCase(String input) {
+            return input.toUpperCase(Locale.ROOT);
+        }
+    }
+
+    /**
+     * Mocks an external service that lowercases a String.
+     */
+    public static class LowerCaseServiceImpl extends LetterCaseServiceImpl {
+        @Override
+        protected String changeCase(String input) {
+            return input.toLowerCase(Locale.ROOT);
+        }
+    }
 }

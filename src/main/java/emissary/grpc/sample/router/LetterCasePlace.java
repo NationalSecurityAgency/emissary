@@ -1,7 +1,10 @@
 package emissary.grpc.sample.router;
 
+import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.grpc.place.GrpcRouterPlace;
+import emissary.grpc.sample.router.LetterCaseServiceImpl.LowerCaseServiceImpl;
+import emissary.grpc.sample.router.LetterCaseServiceImpl.UpperCaseServiceImpl;
 import emissary.grpc.sample.v1.proto.LetterCaseRequest;
 import emissary.grpc.sample.v1.proto.LetterCaseResponse;
 import emissary.grpc.sample.v1.proto.LetterCaseServiceGrpc;
@@ -25,8 +28,8 @@ public class LetterCasePlace extends GrpcRouterPlace {
 
     private static final Pattern FORM_TO_PARSE = Pattern.compile(FORM_PREFIX + "(\\w+)");
 
-    public LetterCasePlace() throws IOException {
-        super();
+    public LetterCasePlace(Configurator cfg) throws IOException {
+        super(cfg);
     }
 
     @Override

@@ -45,6 +45,7 @@ class DataReversePlaceTest extends UnitTest {
     private static final String EXCEPTION_MESSAGE = "fail";
     private static final byte[] DATA = MESSAGE.getBytes();
     private static final byte[] REVERSED_DATA = new StringBuilder(MESSAGE).reverse().toString().getBytes();
+    private static final String FILENAME = "123.dat";
     private static final String TRUE = "true";
     private static final String FALSE = "false";
     private static final String DEFAULT_GRPC_HOST = "localhost";
@@ -87,18 +88,18 @@ class DataReversePlaceTest extends UnitTest {
     @Test
     void testConnectionIsNotValidated() {
         place = factory.buildPlace(new ConfigEntry(ConnectionFactory.GRPC_POOL_TEST_BEFORE_BORROW, FALSE));
-        assertFalse(place.getIsConnectionValidated());
+        assertFalse(place.getWasValidateConnectionCalled());
         ManagedChannel channel = place.acquireChannel();
-        assertFalse(place.getIsConnectionValidated());
+        assertFalse(place.getWasValidateConnectionCalled());
         place.returnChannel(channel);
     }
 
     @Test
     void testConnectionIsValidated() {
         place = factory.buildPlace(new ConfigEntry(ConnectionFactory.GRPC_POOL_TEST_BEFORE_BORROW, TRUE));
-        assertFalse(place.getIsConnectionValidated());
+        assertFalse(place.getWasValidateConnectionCalled());
         ManagedChannel channel = place.acquireChannel();
-        assertTrue(place.getIsConnectionValidated());
+        assertTrue(place.getWasValidateConnectionCalled());
         place.returnChannel(channel);
     }
 
@@ -106,18 +107,18 @@ class DataReversePlaceTest extends UnitTest {
     void testConnectionIsNotPassivated() {
         place = factory.buildPlace(new ConfigEntry(DataReversePlace.GRPC_POOL_KILL_AFTER_RETURN, FALSE));
         ManagedChannel channel = place.acquireChannel();
-        assertFalse(place.getIsConnectionPassivated());
+        assertFalse(channel.isShutdown());
         place.returnChannel(channel);
-        assertFalse(place.getIsConnectionPassivated());
+        assertFalse(channel.isShutdown());
     }
 
     @Test
     void testConnectionIsPassivated() {
         place = factory.buildPlace(new ConfigEntry(DataReversePlace.GRPC_POOL_KILL_AFTER_RETURN, TRUE));
         ManagedChannel channel = place.acquireChannel();
-        assertFalse(place.getIsConnectionPassivated());
+        assertFalse(channel.isShutdown());
         place.returnChannel(channel);
-        assertTrue(place.getIsConnectionPassivated());
+        assertTrue(channel.isShutdown());
     }
 
     @Nested
@@ -125,7 +126,7 @@ class DataReversePlaceTest extends UnitTest {
         @BeforeEach
         void setUpPlace() {
             place = factory.buildPlace();
-            dataObject = new BaseDataObject(DATA, MESSAGE);
+            dataObject = new BaseDataObject(DATA, FILENAME);
         }
 
         @Test
@@ -170,7 +171,7 @@ class DataReversePlaceTest extends UnitTest {
         @BeforeEach
         void setUpPlace() {
             place = factory.buildPlace(new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_ATTEMPTS, String.valueOf(RETRY_ATTEMPTS)));
-            dataObject = new BaseDataObject(DATA, MESSAGE);
+            dataObject = new BaseDataObject(DATA, FILENAME);
         }
 
         @Test

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -143,5 +144,18 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
         assertTrue(place.getConstantTestConfigs().isEmpty());
         assertIterableEquals(List.of(BUILD_PARAMETER_VALUE_1, BUILD_PARAMETER_VALUE_2), place.getVariableTestConfigs());
+    }
+
+    @Test
+    void testRemoveConfigurations() {
+        ConfiguredPlaceFactory<TestConfigPlace> factory = new ConfiguredPlaceFactory<>(TestConfigPlace.class,
+                new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_1),
+                new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_2));
+        TestConfigPlace place = factory.buildPlace(Set.of(VARIABLE_KEY),
+                new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_1),
+                new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_2));
+
+        assertIterableEquals(List.of(CONSTANT_VALUE_1, CONSTANT_VALUE_2), place.getConstantTestConfigs());
+        assertTrue(place.getVariableTestConfigs().isEmpty());
     }
 }
