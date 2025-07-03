@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Locale;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -75,11 +74,11 @@ class LetterCasePlaceTest extends UnitTest {
 
     @Test
     void testNoHostPortConfigs() {
-        Runnable invocation = () -> factory.buildPlace(Set.of(
-                GrpcRouterPlace.GRPC_HOST + UPPER_ID,
-                GrpcRouterPlace.GRPC_HOST + LOWER_ID,
-                GrpcRouterPlace.GRPC_PORT + UPPER_ID,
-                GrpcRouterPlace.GRPC_PORT + LOWER_ID));
+        Runnable invocation = () -> factory.buildPlace(
+                new ConfigEntry(GrpcRouterPlace.GRPC_HOST + UPPER_ID, null),
+                new ConfigEntry(GrpcRouterPlace.GRPC_HOST + LOWER_ID, null),
+                new ConfigEntry(GrpcRouterPlace.GRPC_PORT + UPPER_ID, null),
+                new ConfigEntry(GrpcRouterPlace.GRPC_PORT + LOWER_ID, null));
         IllegalStateException e = assertThrows(IllegalStateException.class, invocation::run);
         String nestedErrorMessage = e.getCause().getCause().getMessage();
         assertEquals("Missing required arguments: GRPC_HOST_{Target-ID} and GRPC_PORT_{Target-ID}", nestedErrorMessage);

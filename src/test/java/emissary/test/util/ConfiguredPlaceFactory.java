@@ -8,7 +8,6 @@ import emissary.place.IServiceProviderPlace;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,6 +20,8 @@ import java.util.Set;
  * <li>Next priority configs are defaults passed into the {@link #ConfiguredPlaceFactory} constructor</li>
  * <li>Lowest priority configs are found in the main {@code T} class .cfg file, if it exists</li>
  * </ol>
+ * <i>Note</i>: setting the value of a {@link ConfigEntry} to {@code null} will remove existing instances of the
+ * configuration.
  *
  * @param <T> The Emissary place to create variations of
  */
@@ -38,7 +39,7 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
         }
 
         defaultConfigurator = loadConfigFile(place);
-        addAndReplaceConfigEntries(defaultConfigurator, Collections.emptySet(), defaultConfigs);
+        addAndReplaceConfigEntries(defaultConfigurator, defaultConfigs);
     }
 
     /**
@@ -60,58 +61,49 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
     /**
      * Create a new instance of a {@link emissary.place.ServiceProviderPlace} for testing with optional configurations.
      * Configs override any matching instances found in the actual .cfg file and/or default test configs.
+     * <p>
+     * <i>Note</i>: setting the value of a {@link ConfigEntry} to {@code null} will remove existing instances of the
+     * configuration.
      *
      * @param optionalConfigs list of new or overriding place configurations
      * @return new instance of place
      */
     public T buildPlace(ConfigEntry... optionalConfigs) {
-        return buildPlace(Collections.emptySet(), optionalConfigs);
-    }
-
-    /**
-     * Create a new instance of a {@link emissary.place.ServiceProviderPlace} for testing with optional configurations.
-     * Configs override any matching instances found in the actual .cfg file and/or default test configs.
-     *
-     * @param keysToRemove list of existing configuration keys to remove from the place build
-     * @param optionalConfigs list of new or overriding place configurations
-     * @return new instance of place
-     */
-    public T buildPlace(Set<String> keysToRemove, ConfigEntry... optionalConfigs) {
         try {
-            Configurator classConfigs = newInstanceConfigurator(keysToRemove, optionalConfigs);
+            Configurator classConfigs = newInstanceConfigurator(optionalConfigs);
             return placeConstructor.newInstance(classConfigs);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to create instance of " + placeName, e);
         }
     }
 
-    private Configurator newInstanceConfigurator(Set<String> keysToRemove, ConfigEntry... optionalConfigs) {
-        if (keysToRemove.isEmpty() && optionalConfigs.length == 0) {
+    private Configurator newInstanceConfigurator(ConfigEntry... optionalConfigs) {
+        if (optionalConfigs.length == 0) {
             return defaultConfigurator;
         }
         Configurator configurator = copyConfigurator(defaultConfigurator);
-        addAndReplaceConfigEntries(configurator, keysToRemove, optionalConfigs);
+        addAndReplaceConfigEntries(configurator, optionalConfigs);
         return configurator;
     }
 
-    private static void addAndReplaceConfigEntries(Configurator cfg, Set<String> keysToRemove, ConfigEntry... optionalConfigs) {
+    private static void addAndReplaceConfigEntries(Configurator configurator, ConfigEntry... configEntries) {
         Set<String> encounteredKeys = new HashSet<>();
-        for (ConfigEntry entry : optionalConfigs) {
+        for (ConfigEntry entry : configEntries) {
             String key = entry.getKey();
-            if (!encounteredKeys.contains(key)) { // Keep track of removed keys to not accidentally remove them more than once
-                removeAllConfigEntriesForKey(cfg, key);
+            // Keep track of keys we've removed, so we don't accidentally remove them more than once
+            if (!encounteredKeys.contains(key)) {
+                removeAllConfigEntriesForKey(configurator, key);
                 encounteredKeys.add(key);
             }
-            cfg.addEntry(key, entry.getValue());
-        }
-        for (String key : keysToRemove) {
-            removeAllConfigEntriesForKey(cfg, key);
+            if (entry.getValue() != null) {
+                configurator.addEntry(key, entry.getValue());
+            }
         }
     }
 
-    private static void removeAllConfigEntriesForKey(Configurator cfg, String key) {
-        for (String value : cfg.findEntries(key)) {
-            cfg.removeEntry(key, value);
+    private static void removeAllConfigEntriesForKey(Configurator configurator, String key) {
+        for (String value : configurator.findEntries(key)) {
+            configurator.removeEntry(key, value);
         }
     }
 

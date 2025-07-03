@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -99,6 +98,16 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
     }
 
     @Test
+    void testRemoveConfigurationsWithNullFactoryConstructorParameter() {
+        ConfiguredPlaceFactory<TestConfigPlace> factory = new ConfiguredPlaceFactory<>(TestConfigPlace.class,
+                new ConfigEntry(VARIABLE_KEY, null));
+        TestConfigPlace place = factory.buildPlace();
+
+        assertIterableEquals(List.of(CONSTANT_VALUE_1, CONSTANT_VALUE_2), place.getConstantTestConfigs());
+        assertTrue(place.getVariableTestConfigs().isEmpty());
+    }
+
+    @Test
     void testBuildParametersOverrideCfgFile() {
         ConfiguredPlaceFactory<TestConfigPlace> factory = new ConfiguredPlaceFactory<>(TestConfigPlace.class);
         TestConfigPlace place = factory.buildPlace(
@@ -147,13 +156,11 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
     }
 
     @Test
-    void testRemoveConfigurations() {
+    void testRemoveConfigurationsWithNullBuildParameter() {
         ConfiguredPlaceFactory<TestConfigPlace> factory = new ConfiguredPlaceFactory<>(TestConfigPlace.class,
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_2));
-        TestConfigPlace place = factory.buildPlace(Set.of(VARIABLE_KEY),
-                new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_1),
-                new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_2));
+        TestConfigPlace place = factory.buildPlace(new ConfigEntry(VARIABLE_KEY, null));
 
         assertIterableEquals(List.of(CONSTANT_VALUE_1, CONSTANT_VALUE_2), place.getConstantTestConfigs());
         assertTrue(place.getVariableTestConfigs().isEmpty());
