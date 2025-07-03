@@ -14,6 +14,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractBlockingStub;
 import io.grpc.stub.AbstractFutureStub;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.apache.commons.pool2.ObjectPool;
 
@@ -126,13 +127,16 @@ public abstract class GrpcRouterPlace extends ServiceProviderPlace implements IG
         retryHandler = new RetryHandler(configG, this.getPlaceName());
     }
 
-    private ObjectPool<ManagedChannel> newConnectionPool(String targetId) {
-        return new ConnectionFactory(
-                hostnameTable.get(targetId),
-                portNumberTable.get(targetId),
-                Objects.requireNonNull(configG),
-                this::validateConnection,
-                this::passivateConnection).newConnectionPool();
+    private ObjectPool<ManagedChannel> newConnectionPool(String id) {
+        return newConnectionFactory(id).newConnectionPool();
+    }
+
+    private ConnectionFactory newConnectionFactory(String id) {
+        return newConnectionFactory(hostnameTable.get(id), portNumberTable.get(id), Objects.requireNonNull(configG));
+    }
+
+    private ConnectionFactory newConnectionFactory(String host, int port, @Nonnull Configurator cfg) {
+        return new ConnectionFactory(host, port, cfg, this::validateConnection, this::passivateConnection);
     }
 
     /**
