@@ -1,13 +1,15 @@
-package emissary.grpc.sample;
+package emissary.grpc.place.sample;
 
 import emissary.config.ConfigEntry;
 import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
-import emissary.grpc.GrpcConnectionPlace;
-import emissary.grpc.RetryHandler;
 import emissary.grpc.exceptions.ServiceException;
 import emissary.grpc.exceptions.ServiceNotAvailableException;
+import emissary.grpc.place.GrpcConnectionPlace;
+import emissary.grpc.place.sample.connection.DataReversePlace;
+import emissary.grpc.place.sample.connection.DataReverseServiceImpl;
 import emissary.grpc.pool.ConnectionFactory;
+import emissary.grpc.retry.RetryHandler;
 import emissary.test.core.junit5.UnitTest;
 import emissary.test.util.ConfiguredPlaceFactory;
 
@@ -43,6 +45,7 @@ class DataReversePlaceTest extends UnitTest {
     private static final String EXCEPTION_MESSAGE = "fail";
     private static final byte[] DATA = MESSAGE.getBytes();
     private static final byte[] REVERSED_DATA = new StringBuilder(MESSAGE).reverse().toString().getBytes();
+    private static final String FILENAME = "123.dat";
     private static final String TRUE = "true";
     private static final String FALSE = "false";
     private static final String DEFAULT_GRPC_HOST = "localhost";
@@ -85,18 +88,18 @@ class DataReversePlaceTest extends UnitTest {
     @Test
     void testConnectionIsNotValidated() {
         place = factory.buildPlace(new ConfigEntry(ConnectionFactory.GRPC_POOL_TEST_BEFORE_BORROW, FALSE));
-        assertFalse(place.getIsConnectionValidated());
+        assertFalse(place.getWasValidateConnectionCalled());
         ManagedChannel channel = place.acquireChannel();
-        assertFalse(place.getIsConnectionValidated());
+        assertFalse(place.getWasValidateConnectionCalled());
         place.returnChannel(channel);
     }
 
     @Test
     void testConnectionIsValidated() {
         place = factory.buildPlace(new ConfigEntry(ConnectionFactory.GRPC_POOL_TEST_BEFORE_BORROW, TRUE));
-        assertFalse(place.getIsConnectionValidated());
+        assertFalse(place.getWasValidateConnectionCalled());
         ManagedChannel channel = place.acquireChannel();
-        assertTrue(place.getIsConnectionValidated());
+        assertTrue(place.getWasValidateConnectionCalled());
         place.returnChannel(channel);
     }
 
@@ -104,18 +107,18 @@ class DataReversePlaceTest extends UnitTest {
     void testConnectionIsNotPassivated() {
         place = factory.buildPlace(new ConfigEntry(DataReversePlace.GRPC_POOL_KILL_AFTER_RETURN, FALSE));
         ManagedChannel channel = place.acquireChannel();
-        assertFalse(place.getIsConnectionPassivated());
+        assertFalse(channel.isShutdown());
         place.returnChannel(channel);
-        assertFalse(place.getIsConnectionPassivated());
+        assertFalse(channel.isShutdown());
     }
 
     @Test
     void testConnectionIsPassivated() {
         place = factory.buildPlace(new ConfigEntry(DataReversePlace.GRPC_POOL_KILL_AFTER_RETURN, TRUE));
         ManagedChannel channel = place.acquireChannel();
-        assertFalse(place.getIsConnectionPassivated());
+        assertFalse(channel.isShutdown());
         place.returnChannel(channel);
-        assertTrue(place.getIsConnectionPassivated());
+        assertTrue(channel.isShutdown());
     }
 
     @Nested
@@ -123,7 +126,7 @@ class DataReversePlaceTest extends UnitTest {
         @BeforeEach
         void setUpPlace() {
             place = factory.buildPlace();
-            dataObject = new BaseDataObject(DATA, MESSAGE);
+            dataObject = new BaseDataObject(DATA, FILENAME);
         }
 
         @Test
@@ -133,7 +136,7 @@ class DataReversePlaceTest extends UnitTest {
         }
 
         @ParameterizedTest
-        @MethodSource("emissary.grpc.sample.DataReversePlaceTest#recoverableGrpcCodes")
+        @MethodSource("emissary.grpc.place.sample.DataReversePlaceTest#recoverableGrpcCodes")
         void testGrpcRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
             Runnable invocation = () -> place.throwExceptionsDuringProcess(dataObject, new StatusRuntimeException(status));
@@ -143,7 +146,7 @@ class DataReversePlaceTest extends UnitTest {
         }
 
         @ParameterizedTest
-        @MethodSource("emissary.grpc.sample.DataReversePlaceTest#nonRecoverableGrpcCodes")
+        @MethodSource("emissary.grpc.place.sample.DataReversePlaceTest#nonRecoverableGrpcCodes")
         void testGrpcNonRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
             Runnable invocation = () -> place.throwExceptionsDuringProcess(dataObject, new StatusRuntimeException(status));
@@ -168,7 +171,7 @@ class DataReversePlaceTest extends UnitTest {
         @BeforeEach
         void setUpPlace() {
             place = factory.buildPlace(new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_ATTEMPTS, String.valueOf(RETRY_ATTEMPTS)));
-            dataObject = new BaseDataObject(DATA, MESSAGE);
+            dataObject = new BaseDataObject(DATA, FILENAME);
         }
 
         @Test
@@ -178,7 +181,7 @@ class DataReversePlaceTest extends UnitTest {
         }
 
         @ParameterizedTest
-        @MethodSource("emissary.grpc.sample.DataReversePlaceTest#recoverableGrpcCodes")
+        @MethodSource("emissary.grpc.place.sample.DataReversePlaceTest#recoverableGrpcCodes")
         void testGrpcSuccessAfterRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
             AtomicInteger attemptNumber = new AtomicInteger(0);
@@ -192,7 +195,7 @@ class DataReversePlaceTest extends UnitTest {
         }
 
         @ParameterizedTest
-        @MethodSource("emissary.grpc.sample.DataReversePlaceTest#recoverableGrpcCodes")
+        @MethodSource("emissary.grpc.place.sample.DataReversePlaceTest#recoverableGrpcCodes")
         void testGrpcFailureAfterMaxRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
             AtomicInteger attemptNumber = new AtomicInteger(0);
@@ -208,7 +211,7 @@ class DataReversePlaceTest extends UnitTest {
         }
 
         @ParameterizedTest
-        @MethodSource("emissary.grpc.sample.DataReversePlaceTest#nonRecoverableGrpcCodes")
+        @MethodSource("emissary.grpc.place.sample.DataReversePlaceTest#nonRecoverableGrpcCodes")
         void testGrpcFailureAfterNonRecoverableCodes(int code) {
             Status status = Status.fromCodeValue(code);
             AtomicInteger attemptNumber = new AtomicInteger(0);

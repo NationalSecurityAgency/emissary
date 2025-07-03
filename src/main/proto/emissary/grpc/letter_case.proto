@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package emissary.grpc.sample.v1;
+
+import "google/protobuf/empty.proto";
+option java_multiple_files = true;
+option java_package = "emissary.grpc.sample.v1.proto";
+
+message LetterCaseRequest {
+  string query = 1;
+}
+
+message LetterCaseResponse {
+  string result = 1;
+}
+
+message LetterCaseHealthStatus {
+  bool ok = 1;
+}
+
+service LetterCaseService {
+  rpc ToLetterCase(LetterCaseRequest) returns (LetterCaseResponse);
+  rpc CheckHealth(google.protobuf.Empty) returns (LetterCaseHealthStatus);
+}
