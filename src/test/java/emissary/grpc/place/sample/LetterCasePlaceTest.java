@@ -81,7 +81,7 @@ class LetterCasePlaceTest extends UnitTest {
                 new ConfigEntry(GrpcRouterPlace.GRPC_PORT + LOWER_ID, null));
         IllegalStateException e = assertThrows(IllegalStateException.class, invocation::run);
         String nestedErrorMessage = e.getCause().getCause().getMessage();
-        assertEquals("Missing required arguments: GRPC_HOST_{Target-ID} and GRPC_PORT_{Target-ID}", nestedErrorMessage);
+        assertEquals("Missing required arguments: GRPC_HOST_${Target-ID} and GRPC_PORT_${Target-ID}", nestedErrorMessage);
     }
 
     @Test
