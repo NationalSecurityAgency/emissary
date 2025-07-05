@@ -23,6 +23,9 @@ public class KffHashPlace extends ServiceProviderPlace {
 
     private boolean useSbc = false;
 
+    private boolean createMurmurHash = false;
+    private String murmurHashParamName = "HASH_ID";
+
     public KffHashPlace(String thePlaceLocation) throws IOException {
         super(thePlaceLocation);
     }
@@ -51,6 +54,8 @@ public class KffHashPlace extends ServiceProviderPlace {
     protected void setupPlace(String theDir, String placeLocation) throws IOException {
         super.setupPlace(theDir, placeLocation);
         useSbc = configG.findBooleanEntry("USE_SBC", useSbc);
+        createMurmurHash = configG.findBooleanEntry("CREATE_MURMUR_HASH", createMurmurHash);
+        murmurHashParamName = configG.findStringEntry("MURMUR_HASH_PARAM_NAME", murmurHashParamName);
         initKff();
     }
 
@@ -61,7 +66,7 @@ public class KffHashPlace extends ServiceProviderPlace {
             return;
         }
 
-        kff.hash(payload, useSbc);
+        kff.hash(payload, useSbc, createMurmurHash, murmurHashParamName);
     }
 
 }
