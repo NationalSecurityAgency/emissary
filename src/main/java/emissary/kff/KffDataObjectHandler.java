@@ -199,10 +199,10 @@ public class KffDataObjectHandler {
      * 
      * @param d the data object
      * @param useSbc use the {@link SeekableByteChannel} interface
-     * @param createMurmurHash whether to create a Murmer hash of hashes or not
-     * @param murmerHashIdParamName the name of the parameter to store the Murmer hash
+     * @param createMurmurHash whether to create a murmur hash of hashes or not
+     * @param murmurHashIdParamName the name of the parameter to store the murmur hash
      */
-    public void hash(@Nullable final IBaseDataObject d, final boolean useSbc, boolean createMurmurHash, final String murmerHashIdParamName) {
+    public void hash(@Nullable final IBaseDataObject d, final boolean useSbc, boolean createMurmurHash, final String murmurHashIdParamName) {
 
         if (d == null) {
             return;
@@ -221,7 +221,7 @@ public class KffDataObjectHandler {
                 return; // NOSONAR
             }
             if (createMurmurHash) {
-                d.putParameter(murmerHashIdParamName, createMurmerHash(d));
+                d.putParameter(murmurHashIdParamName, createmurmurHash(d));
             }
         } catch (IOException e) {
             logger.error("Couldn't hash data {}", d.shortName());
@@ -509,9 +509,9 @@ public class KffDataObjectHandler {
     }
 
     @Nullable
-    public static String createMurmerHash(IBaseDataObject d) {
+    public static String createmurmurHash(IBaseDataObject d) {
         if (!d.hasParameter(KFF_PARAM_MD5) || !d.hasParameter(KFF_PARAM_SHA1) || !d.hasParameter(KFF_PARAM_SHA256)) {
-            logger.warn("Cannot compute Murmer hash for {} because not all hashes are set", d.shortName());
+            logger.warn("Cannot compute murmur hash for {} because not all hashes are set", d.shortName());
             return null;
         }
 

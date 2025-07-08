@@ -456,11 +456,11 @@ class KffDataObjectHandlerTest extends UnitTest {
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_SHA1, DATA_SHA1);
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_SHA256, DATA_SHA256);
 
-        String murmerHash = KffDataObjectHandler.createMurmerHash(payload);
+        String murmurHash = KffDataObjectHandler.createmurmurHash(payload);
 
-        assertNotNull(murmerHash, "Murmer hash should not be null when all hashes are set");
-        assertFalse(murmerHash.isEmpty(), "Murmer hash should not be empty");
-        assertEquals(DATA_HASH_ID, murmerHash);
+        assertNotNull(murmurHash, "murmur hash should not be null when all hashes are set");
+        assertFalse(murmurHash.isEmpty(), "murmur hash should not be empty");
+        assertEquals(DATA_HASH_ID, murmurHash);
     }
 
     @Test
@@ -469,9 +469,9 @@ class KffDataObjectHandlerTest extends UnitTest {
         payload.deleteParameter(KffDataObjectHandler.KFF_PARAM_SHA1);
         payload.deleteParameter(KffDataObjectHandler.KFF_PARAM_SHA256);
 
-        String murmerHash = KffDataObjectHandler.createMurmerHash(payload);
+        String murmurHash = KffDataObjectHandler.createmurmurHash(payload);
 
-        assertNull(murmerHash, "Murmer hash should be null when no hashes are set");
+        assertNull(murmurHash, "murmur hash should be null when no hashes are set");
     }
 
     @Test
@@ -480,9 +480,9 @@ class KffDataObjectHandlerTest extends UnitTest {
         payload.deleteParameter(KffDataObjectHandler.KFF_PARAM_SHA1);
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_SHA256, DATA_SHA256);
 
-        String murmerHash = KffDataObjectHandler.createMurmerHash(payload);
+        String murmurHash = KffDataObjectHandler.createmurmurHash(payload);
 
-        assertNull(murmerHash, "Murmer hash should be null when when one of the input hashes is missing");
+        assertNull(murmurHash, "murmur hash should be null when when one of the input hashes is missing");
     }
 
 }
