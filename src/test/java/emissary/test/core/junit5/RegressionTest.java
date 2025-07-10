@@ -3,16 +3,12 @@ package emissary.test.core.junit5;
 import emissary.core.DiffCheckConfiguration;
 import emissary.core.IBaseDataObject;
 import emissary.core.IBaseDataObjectXmlHelper;
-import emissary.core.channels.FileChannelFactory;
-import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.test.core.junit5.LogbackTester.SimplifiedLogEvent;
 import emissary.util.ByteUtil;
 import emissary.util.PlaceComparisonHelper;
 import emissary.util.io.ResourceReader;
 
-import com.google.errorprone.annotations.ForOverride;
 import jakarta.annotation.Nullable;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,7 +28,7 @@ import static emissary.core.IBaseDataObjectXmlCodecs.ALWAYS_SHA256_ELEMENT_ENCOD
 import static emissary.core.IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS;
 import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
 import static emissary.core.constants.IbdoXmlElementNames.SETUP;
-import static emissary.test.core.junit5.RegressionTestAnswerGenerator.fixDisposeRunnables;
+import static emissary.test.core.junit5.AnswerGenerator.fixDisposeRunnables;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -65,67 +61,17 @@ public abstract class RegressionTest extends ExtractionTest {
     /* Difference configuration to use when comparing IBDO's. */
     private static final DiffCheckConfiguration DIFF_CHECK = DiffCheckConfiguration.configure().enableData().enableKeyValueParameterDiff().build();
 
-    private RegressionTestAnswerGenerator answerGenerator;
-
     @Override
     public String getAnswerXsd() {
         return "emissary/test/core/schemas/regression.xsd";
     }
 
-    /**
-     * Override this or set the generateAnswers system property to true to generate XML for data files.
-     *
-     * @return defaults to false if no XML should be generated (i.e. normal case of executing tests) or true to generate
-     *         automatically
-     */
-    @ForOverride
-    protected boolean generateAnswers() {
-        return Boolean.getBoolean("generateAnswers");
-    }
-
-    @ForOverride
-    protected RegressionTestAnswerGenerator createAnswerGenerator() {
+    @Override
+    protected AnswerGenerator createAnswerGenerator() {
         return new RegressionTestAnswerGenerator();
     }
 
-    protected RegressionTestAnswerGenerator getAnswerGenerator() {
-        if (answerGenerator == null) {
-            answerGenerator = createAnswerGenerator();
-        }
-        return answerGenerator;
-    }
-
-    /**
-     * Allow the initial IBDO to be overridden - for example, adding additional previous forms
-     * <p>
-     * This is used in the simple case to generate an IBDO from the file on disk and override the filename
-     *
-     * @param resource path to the dat file
-     * @return the initial IBDO
-     */
-    @ForOverride
-    @Nullable
-    protected IBaseDataObject getInitialIbdo(final String resource) {
-        IBaseDataObject ibdo = new ClearDataBaseDataObject();
-        try {
-            final Path datFileUrl = Paths.get(new ResourceReader().getResource(resource).toURI());
-            final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
-            final SeekableByteChannelFactory sbcf = FileChannelFactory.create(datFile.getPath());
-            // Create a BDO for the data, and set the filename correctly
-            final IBaseDataObject initialIbdo = IBaseDataObjectXmlHelper.createStandardInitialIbdo(ibdo, sbcf, "Classification",
-                    datFile.getInitialForm(), kff);
-            initialIbdo.setChannelFactory(sbcf);
-            initialIbdo.setFilename(datFile.getOriginalFileName());
-
-            return initialIbdo;
-        } catch (final URISyntaxException e) {
-            fail("Couldn't get path for resource: " + resource, e);
-            return null;
-        }
-    }
-
     @Override
-    @ForOverride
     @Nullable
     protected String getInitialForm(final String resource) {
         try {
@@ -190,21 +136,6 @@ public abstract class RegressionTest extends ExtractionTest {
         }
 
         fixDisposeRunnables(payload);
-    }
-
-    /**
-     * Generates a SHA 256 hash of the provided bytes if they contain any non-printable characters
-     * 
-     * @param bytes the bytes to evaluate
-     * @param alwaysHash overrides the non-printable check and always hashes the bytes.
-     * @return a value optionally containing the generated hash
-     */
-    protected Optional<String> hashBytesIfNonPrintable(byte[] bytes, final boolean alwaysHash) {
-        if (ArrayUtils.isNotEmpty(bytes) && (alwaysHash || ByteUtil.containsNonIndexableBytes(bytes))) {
-            return Optional.ofNullable(ByteUtil.sha256Bytes(bytes));
-        }
-
-        return Optional.empty();
     }
 
     @ParameterizedTest
