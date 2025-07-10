@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import static emissary.core.constants.IbdoXmlElementNames.ALT_VIEW;
 import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
 import static emissary.core.constants.IbdoXmlElementNames.ATTACHMENT_ELEMENT_PREFIX;
 import static emissary.core.constants.IbdoXmlElementNames.BIRTH_ORDER;
@@ -31,6 +32,7 @@ import static emissary.core.constants.IbdoXmlElementNames.HEADER;
 import static emissary.core.constants.IbdoXmlElementNames.HEADER_ENCODING;
 import static emissary.core.constants.IbdoXmlElementNames.ID;
 import static emissary.core.constants.IbdoXmlElementNames.INDEX;
+import static emissary.core.constants.IbdoXmlElementNames.INITIAL_FORM;
 import static emissary.core.constants.IbdoXmlElementNames.NUM_CHILDREN;
 import static emissary.core.constants.IbdoXmlElementNames.NUM_SIBLINGS;
 import static emissary.core.constants.IbdoXmlElementNames.OUTPUTABLE;
@@ -151,6 +153,10 @@ public final class IBaseDataObjectXmlHelper {
             decoders.decodeString(element, ibdo, TRANSACTION_ID);
             decoders.decodeStringByteArray(element, ibdo, VIEW);
             decoders.decodeString(element, ibdo, WORK_BUNDLE_ID);
+
+            // legacy fields
+            decoders.decodeString(element, ibdo, INITIAL_FORM);
+            decoders.decodeStringByteArray(element, ibdo, ALT_VIEW);
         } catch (IOException e) {
             LOGGER.error("Failed to parse XML!", e);
         }
