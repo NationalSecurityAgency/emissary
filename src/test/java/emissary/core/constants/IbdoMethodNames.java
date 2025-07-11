@@ -89,6 +89,10 @@ public final class IbdoMethodNames {
      * The IBaseDataObject set method name for Work Bundle Id.
      */
     public static final BiConsumer<IBaseDataObject, String> SET_WORK_BUNDLE_ID = IBaseDataObject::setWorkBundleId;
+    /**
+     * The IBaseDataObject method name to enqueue current form.
+     */
+    public static final BiConsumer<IBaseDataObject, String> ENQUEUE_CURRENT_FORM = IBaseDataObject::enqueueCurrentForm;
 
     private IbdoMethodNames() {}
 }
