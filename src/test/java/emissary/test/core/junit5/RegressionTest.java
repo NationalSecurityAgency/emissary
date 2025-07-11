@@ -2,12 +2,9 @@ package emissary.test.core.junit5;
 
 import emissary.core.DiffCheckConfiguration;
 import emissary.core.IBaseDataObject;
-import emissary.core.IBaseDataObjectXmlCodecs.ElementDecoders;
-import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
 import emissary.core.IBaseDataObjectXmlHelper;
 import emissary.core.channels.FileChannelFactory;
 import emissary.core.channels.SeekableByteChannelFactory;
-import emissary.place.IServiceProviderPlace;
 import emissary.test.core.junit5.LogbackTester.SimplifiedLogEvent;
 import emissary.util.ByteUtil;
 import emissary.util.PlaceComparisonHelper;
@@ -32,7 +29,6 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import static emissary.core.IBaseDataObjectXmlCodecs.ALWAYS_SHA256_ELEMENT_ENCODERS;
-import static emissary.core.IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_DECODERS;
 import static emissary.core.IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS;
 import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
 import static emissary.core.constants.IbdoXmlElementNames.SETUP;
@@ -143,46 +139,6 @@ public abstract class RegressionTest extends ExtractionTest {
     }
 
     /**
-     * This method returns the XML element decoders.
-     * 
-     * @return the XML element decoders.
-     */
-    @Deprecated
-    protected ElementDecoders getDecoders() {
-        return DEFAULT_ELEMENT_DECODERS;
-    }
-
-    /**
-     * This method returns the XML element decoders.
-     * 
-     * @param resource the "resource" currently be tested.
-     * @return the XML element decoders.
-     */
-    protected ElementDecoders getDecoders(final String resource) {
-        return getDecoders();
-    }
-
-    /**
-     * This method returns the XML element encoders.
-     * 
-     * @return the XML element encoders.
-     */
-    @Deprecated
-    protected ElementEncoders getEncoders() {
-        return SHA256_ELEMENT_ENCODERS;
-    }
-
-    /**
-     * This method returns the XML element encoders.
-     * 
-     * @param resource the "resource" currently be tested.
-     * @return the XML element encoders.
-     */
-    protected ElementEncoders getEncoders(final String resource) {
-        return getEncoders();
-    }
-
-    /**
      * When the data is able to be retrieved from the XML (e.g. when getEncoders() returns the default encoders), then this
      * method should be empty. However, in this case getEncoders() is returning the sha256 encoders which means the original
      * data cannot be retrieved from the XML. Therefore, in order to test equivalence, all of the non-printable data in the
@@ -266,23 +222,6 @@ public abstract class RegressionTest extends ExtractionTest {
 
         // Run the normal extraction/regression tests
         super.testExtractionPlace(resource);
-    }
-
-    @Override
-    protected List<IBaseDataObject> processHeavyDutyHook(IServiceProviderPlace place, IBaseDataObject payload)
-            throws Exception {
-        if (getLogbackLoggerName() == null) {
-            actualSimplifiedLogEvents = new ArrayList<>();
-            return super.processHeavyDutyHook(place, payload);
-        } else {
-            try (LogbackTester logbackTester = new LogbackTester(getLogbackLoggerName())) {
-                final List<IBaseDataObject> attachments = super.processHeavyDutyHook(place, payload);
-
-                actualSimplifiedLogEvents = logbackTester.getSimplifiedLogEvents();
-
-                return attachments;
-            }
-        }
     }
 
     @Override
