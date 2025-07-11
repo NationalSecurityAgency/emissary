@@ -1,4 +1,4 @@
-package emissary.grpc;
+package emissary.grpc.retry;
 
 import emissary.config.Configurator;
 import emissary.grpc.exceptions.PoolException;

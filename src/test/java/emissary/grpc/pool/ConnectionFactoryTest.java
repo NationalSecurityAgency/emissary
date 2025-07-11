@@ -21,26 +21,15 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 class ConnectionFactoryTest extends UnitTest {
-    private static final String HOST = "localhost";
-    private static final int PORT = 2222;
-
-    static class TestConnectionFactory extends ConnectionFactory {
-        private boolean valid = true;
-
-        public TestConnectionFactory(String host, int port, Configurator configG) {
-            super(host, port, configG);
-        }
-
-        public void invalidate() {
-            valid = false;
-        }
-
-        @Override
-        public boolean validateObject(PooledObject<ManagedChannel> pooledObject) {
-            return valid;
-        }
+    private static ConnectionFactory buildConnectionFactory(Configurator configG) {
+        return new ConnectionFactory("localhost", 2222, configG, channel -> true, channel -> {
+        });
     }
 
     private static Configurator getDefaultConfigs() {
@@ -56,7 +45,7 @@ class ConnectionFactoryTest extends UnitTest {
         Configurator configT = getDefaultConfigs();
         configT.addEntry(ConnectionFactory.GRPC_POOL_RETRIEVAL_ORDER, "ZIFO");
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> new TestConnectionFactory(HOST, PORT, configT));
+                () -> buildConnectionFactory(configT));
         assertEquals("No enum constant emissary.grpc.pool.PoolRetrievalOrdering.ZIFO", e.getMessage());
     }
 
@@ -64,7 +53,7 @@ class ConnectionFactoryTest extends UnitTest {
     void testLifoPoolRetrievalOrderConfig() {
         Configurator configT = getDefaultConfigs();
         configT.addEntry(ConnectionFactory.GRPC_POOL_RETRIEVAL_ORDER, PoolRetrievalOrdering.LIFO.name());
-        ConnectionFactory factory = new TestConnectionFactory(HOST, PORT, configT);
+        ConnectionFactory factory = buildConnectionFactory(configT);
         assertTrue(factory.getPoolIsLifo());
         assertFalse(factory.getPoolIsFifo());
     }
@@ -73,7 +62,7 @@ class ConnectionFactoryTest extends UnitTest {
     void testFifoPoolRetrievalOrderConfig() {
         Configurator configT = getDefaultConfigs();
         configT.addEntry(ConnectionFactory.GRPC_POOL_RETRIEVAL_ORDER, PoolRetrievalOrdering.FIFO.name());
-        ConnectionFactory factory = new TestConnectionFactory(HOST, PORT, configT);
+        ConnectionFactory factory = buildConnectionFactory(configT);
         assertFalse(factory.getPoolIsLifo());
         assertTrue(factory.getPoolIsFifo());
     }
@@ -83,7 +72,7 @@ class ConnectionFactoryTest extends UnitTest {
         Configurator configT = getDefaultConfigs();
         configT.addEntry(ConnectionFactory.GRPC_LOAD_BALANCING_POLICY, "bad_scheduler");
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> new TestConnectionFactory(HOST, PORT, configT));
+                () -> buildConnectionFactory(configT));
         assertEquals("No enum constant emissary.grpc.pool.LoadBalancingPolicy.BAD_SCHEDULER", e.getMessage());
     }
 
@@ -91,7 +80,7 @@ class ConnectionFactoryTest extends UnitTest {
     void testRoundRobinLoadBalancingConfig() {
         Configurator configT = getDefaultConfigs();
         configT.addEntry(ConnectionFactory.GRPC_LOAD_BALANCING_POLICY, LoadBalancingPolicy.ROUND_ROBIN.name());
-        ConnectionFactory factory = new TestConnectionFactory(HOST, PORT, configT);
+        ConnectionFactory factory = buildConnectionFactory(configT);
         assertEquals("round_robin", factory.getLoadBalancingPolicy());
     }
 
@@ -99,26 +88,25 @@ class ConnectionFactoryTest extends UnitTest {
     void testPickFirstLoadBalancingConfig() {
         Configurator configT = getDefaultConfigs();
         configT.addEntry(ConnectionFactory.GRPC_LOAD_BALANCING_POLICY, LoadBalancingPolicy.PICK_FIRST.name());
-        ConnectionFactory factory = new TestConnectionFactory(HOST, PORT, configT);
+        ConnectionFactory factory = buildConnectionFactory(configT);
         assertEquals("pick_first", factory.getLoadBalancingPolicy());
     }
 
     @Nested
     class PooledChannelTests {
-        private TestConnectionFactory factory;
+        private ConnectionFactory factory;
         private ObjectPool<ManagedChannel> pool;
 
         @BeforeEach
-        public void setUp() throws Exception {
+        void setUp() {
             Configurator configT = getDefaultConfigs();
-            factory = new TestConnectionFactory(HOST, PORT, configT);
+            factory = spy(buildConnectionFactory(configT));
             pool = factory.newConnectionPool();
         }
 
         @Test
         void testAcquireChannelFails() {
-            factory.invalidate();
-            pool = factory.newConnectionPool();
+            doReturn(false).when(factory).validateObject(any());
             PoolException e = assertThrows(PoolException.class, () -> ConnectionFactory.acquireChannel(pool));
             assertEquals("Unable to borrow channel from pool: Unable to validate object", e.getMessage());
         }
@@ -146,6 +134,23 @@ class ConnectionFactoryTest extends UnitTest {
             ManagedChannel c2 = ConnectionFactory.acquireChannel(pool);
             assertSame(c1, c2);
             ConnectionFactory.returnChannel(c2, pool);
+        }
+
+        @Test
+        void testPassivateChannel() {
+            ManagedChannel c1 = ConnectionFactory.acquireChannel(pool);
+            ConnectionFactory.returnChannel(c1, pool);
+            assertFalse(c1.isShutdown());
+
+            doAnswer(invocation -> {
+                PooledObject<ManagedChannel> pooledObject = invocation.getArgument(0);
+                pooledObject.getObject().shutdownNow();
+                return null;
+            }).when(factory).passivateObject(any());
+
+            ManagedChannel c2 = ConnectionFactory.acquireChannel(pool);
+            ConnectionFactory.returnChannel(c2, pool);
+            assertTrue(c2.isShutdown());
         }
 
         @Test
