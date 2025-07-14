@@ -1,4 +1,4 @@
-package emissary.grpc.place;
+package emissary.grpc;
 
 import emissary.place.IServiceProviderPlace;
 

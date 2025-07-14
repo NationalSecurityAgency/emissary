@@ -1,4 +1,4 @@
-package emissary.grpc.place;
+package emissary.grpc;
 
 import emissary.config.Configurator;
 import emissary.grpc.exceptions.PoolException;
@@ -22,7 +22,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * Place for processing data using gRPC connections to external services.
+ * Convenience place for processing data using gRPC connections to external services that only require one single
+ * endpoint.
  * <p>
  * Configuration Keys:
  * <ul>
@@ -32,7 +33,7 @@ import java.util.function.Function;
  * <li>See {@link RetryHandler} for supported retry configuration keys and defaults.</li>
  * </ul>
  */
-public abstract class GrpcConnectionPlace extends GrpcRoutingPlace implements IGrpcConnectionPlace {
+public abstract class GrpcConnectionPlace extends GrpcRoutingPlace {
     public static final String GRPC_HOST = "GRPC_HOST";
     public static final String GRPC_PORT = "GRPC_PORT";
     protected static final String CONNECTION_ID = "#gRPC-service";

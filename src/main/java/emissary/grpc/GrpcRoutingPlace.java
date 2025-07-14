@@ -1,4 +1,4 @@
-package emissary.grpc.place;
+package emissary.grpc;
 
 import emissary.config.Configurator;
 import emissary.grpc.exceptions.PoolException;
@@ -48,9 +48,9 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
     public static final String GRPC_PORT = "GRPC_PORT_";
 
     protected RetryHandler retryHandler;
-    protected Map<String, String> hostnameTable = new HashMap<>();
-    protected Map<String, Integer> portNumberTable = new HashMap<>();
-    protected Map<String, ObjectPool<ManagedChannel>> channelPoolTable = new HashMap<>();
+    protected final Map<String, String> hostnameTable = new HashMap<>();
+    protected final Map<String, Integer> portNumberTable = new HashMap<>();
+    protected final Map<String, ObjectPool<ManagedChannel>> channelPoolTable = new HashMap<>();
 
     protected GrpcRoutingPlace() throws IOException {
         super();
@@ -106,8 +106,8 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
             throw new IllegalStateException("gRPC configurations not found for " + this.getPlaceName());
         }
 
-        hostnameTable = configureHostnames();
-        portNumberTable = configurePortNumbers();
+        hostnameTable.putAll(configureHostnames());
+        portNumberTable.putAll(configurePortNumbers());
 
         if (!hostnameTable.keySet().equals(portNumberTable.keySet())) {
             throw new IllegalArgumentException("gRPC hostname target-IDs do not match gRPC port number target-IDs");
