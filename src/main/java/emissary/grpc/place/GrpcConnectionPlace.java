@@ -32,7 +32,7 @@ import java.util.function.Function;
  * <li>See {@link RetryHandler} for supported retry configuration keys and defaults.</li>
  * </ul>
  */
-public abstract class GrpcConnectionPlace extends GrpcRouterPlace implements IGrpcConnectionPlace {
+public abstract class GrpcConnectionPlace extends GrpcRoutingPlace implements IGrpcConnectionPlace {
     public static final String GRPC_HOST = "GRPC_HOST";
     public static final String GRPC_PORT = "GRPC_PORT";
     protected static final String CONNECTION_ID = "#gRPC-service";

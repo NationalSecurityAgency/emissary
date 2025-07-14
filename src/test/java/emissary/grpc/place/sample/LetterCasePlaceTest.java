@@ -3,7 +3,7 @@ package emissary.grpc.place.sample;
 import emissary.config.ConfigEntry;
 import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
-import emissary.grpc.place.GrpcRouterPlace;
+import emissary.grpc.place.GrpcRoutingPlace;
 import emissary.grpc.place.sample.router.LetterCasePlace;
 import emissary.grpc.place.sample.router.LetterCaseServiceImpl;
 import emissary.test.core.junit5.UnitTest;
@@ -66,7 +66,7 @@ class LetterCasePlaceTest extends UnitTest {
 
     @Test
     void testMismatchedHostPortConfigs() {
-        Runnable invocation = () -> factory.buildPlace(new ConfigEntry(GrpcRouterPlace.GRPC_HOST + CAMEL_ID, LOCALHOST));
+        Runnable invocation = () -> factory.buildPlace(new ConfigEntry(GrpcRoutingPlace.GRPC_HOST + CAMEL_ID, LOCALHOST));
         IllegalStateException e = assertThrows(IllegalStateException.class, invocation::run);
         String nestedErrorMessage = e.getCause().getCause().getMessage();
         assertEquals("gRPC hostname target-IDs do not match gRPC port number target-IDs", nestedErrorMessage);
@@ -75,10 +75,10 @@ class LetterCasePlaceTest extends UnitTest {
     @Test
     void testNoHostPortConfigs() {
         Runnable invocation = () -> factory.buildPlace(
-                new ConfigEntry(GrpcRouterPlace.GRPC_HOST + UPPER_ID, null),
-                new ConfigEntry(GrpcRouterPlace.GRPC_HOST + LOWER_ID, null),
-                new ConfigEntry(GrpcRouterPlace.GRPC_PORT + UPPER_ID, null),
-                new ConfigEntry(GrpcRouterPlace.GRPC_PORT + LOWER_ID, null));
+                new ConfigEntry(GrpcRoutingPlace.GRPC_HOST + UPPER_ID, null),
+                new ConfigEntry(GrpcRoutingPlace.GRPC_HOST + LOWER_ID, null),
+                new ConfigEntry(GrpcRoutingPlace.GRPC_PORT + UPPER_ID, null),
+                new ConfigEntry(GrpcRoutingPlace.GRPC_PORT + LOWER_ID, null));
         IllegalStateException e = assertThrows(IllegalStateException.class, invocation::run);
         String nestedErrorMessage = e.getCause().getCause().getMessage();
         assertEquals("Missing required arguments: GRPC_HOST_${Target-ID} and GRPC_PORT_${Target-ID}", nestedErrorMessage);

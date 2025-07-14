@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  * <li>See {@link RetryHandler} for supported retry configuration keys and defaults.</li>
  * </ul>
  */
-public abstract class GrpcRouterPlace extends ServiceProviderPlace implements IGrpcRouterPlace {
+public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements IGrpcRoutingPlace {
     public static final String GRPC_HOST = "GRPC_HOST_";
     public static final String GRPC_PORT = "GRPC_PORT_";
 
@@ -52,42 +52,42 @@ public abstract class GrpcRouterPlace extends ServiceProviderPlace implements IG
     protected Map<String, Integer> portNumberTable = new HashMap<>();
     protected Map<String, ObjectPool<ManagedChannel>> channelPoolTable = new HashMap<>();
 
-    protected GrpcRouterPlace() throws IOException {
+    protected GrpcRoutingPlace() throws IOException {
         super();
         configureGrpc();
     }
 
-    protected GrpcRouterPlace(String thePlaceLocation) throws IOException {
+    protected GrpcRoutingPlace(String thePlaceLocation) throws IOException {
         super(thePlaceLocation);
         configureGrpc();
     }
 
-    protected GrpcRouterPlace(InputStream configStream) throws IOException {
+    protected GrpcRoutingPlace(InputStream configStream) throws IOException {
         super(configStream);
         configureGrpc();
     }
 
-    protected GrpcRouterPlace(String configFile, String placeLocation) throws IOException {
+    protected GrpcRoutingPlace(String configFile, String placeLocation) throws IOException {
         super(configFile, placeLocation);
         configureGrpc();
     }
 
-    protected GrpcRouterPlace(InputStream configStream, String placeLocation) throws IOException {
+    protected GrpcRoutingPlace(InputStream configStream, String placeLocation) throws IOException {
         super(configStream, placeLocation);
         configureGrpc();
     }
 
-    protected GrpcRouterPlace(String configFile, @Nullable String theDir, String thePlaceLocation) throws IOException {
+    protected GrpcRoutingPlace(String configFile, @Nullable String theDir, String thePlaceLocation) throws IOException {
         super(configFile, theDir, thePlaceLocation);
         configureGrpc();
     }
 
-    protected GrpcRouterPlace(InputStream configStream, @Nullable String theDir, String thePlaceLocation) throws IOException {
+    protected GrpcRoutingPlace(InputStream configStream, @Nullable String theDir, String thePlaceLocation) throws IOException {
         super(configStream, theDir, thePlaceLocation);
         configureGrpc();
     }
 
-    protected GrpcRouterPlace(@Nullable Configurator configs) throws IOException {
+    protected GrpcRoutingPlace(@Nullable Configurator configs) throws IOException {
         super(configs);
         configureGrpc();
     }

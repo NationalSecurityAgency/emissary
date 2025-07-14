@@ -2,7 +2,7 @@ package emissary.grpc.place.sample.router;
 
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
-import emissary.grpc.place.GrpcRouterPlace;
+import emissary.grpc.place.GrpcRoutingPlace;
 import emissary.grpc.place.sample.router.LetterCaseServiceImpl.LowerCaseServiceImpl;
 import emissary.grpc.place.sample.router.LetterCaseServiceImpl.UpperCaseServiceImpl;
 import emissary.grpc.sample.v1.proto.LetterCaseRequest;
@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  * same {@link LetterCaseServiceImplBase}. Both services use a gRPC connection to change the case of a String, which is
  * then written to an alternate view.
  */
-public class LetterCasePlace extends GrpcRouterPlace {
+public class LetterCasePlace extends GrpcRoutingPlace {
     public static final String FORM_PREFIX = "SERVICE_PROXY_FORM-";
     public static final String ALTERNATE_VIEW_NAME = "ALT_LETTER_CASE_VIEW";
 
