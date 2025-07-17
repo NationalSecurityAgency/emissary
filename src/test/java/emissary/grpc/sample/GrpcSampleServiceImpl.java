@@ -9,6 +9,8 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 
+import java.io.ByteArrayOutputStream;
+
 /**
  * Class for overriding behavior of an arbitrary external service.
  */
@@ -39,14 +41,17 @@ public abstract class GrpcSampleServiceImpl extends SampleServiceGrpc.SampleServ
      * Service that repeats each byte in the input array once. E.g. {@code abc} becomes {@code aabbcc}
      */
     public static class RepeatEachCharServiceImpl extends GrpcSampleServiceImpl {
+        private static final int REPEAT_COUNT = 2;
+
         @Override
         public byte[] process(byte[] query) {
-            byte[] result = new byte[query.length * 2];
-            for (int i = 0; i < query.length; i++) {
-                result[2 * i] = query[i];
-                result[(2 * i) + 1] = query[i];
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            for (byte b : query) {
+                for (int i = 0; i < REPEAT_COUNT; i++) {
+                    outputStream.write(b);
+                }
             }
-            return result;
+            return outputStream.toByteArray();
         }
     }
 
