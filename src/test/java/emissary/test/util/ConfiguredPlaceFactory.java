@@ -20,6 +20,8 @@ import java.util.Set;
  * <li>Next priority configs are defaults passed into the {@link #ConfiguredPlaceFactory} constructor</li>
  * <li>Lowest priority configs are found in the main {@code T} class .cfg file, if it exists</li>
  * </ol>
+ * <i>Note</i>: setting the value of a {@link ConfigEntry} to {@code null} will remove existing instances of the
+ * configuration.
  *
  * @param <T> The Emissary place to create variations of
  */
@@ -59,6 +61,9 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
     /**
      * Create a new instance of a {@link emissary.place.ServiceProviderPlace} for testing with optional configurations.
      * Configs override any matching instances found in the actual .cfg file and/or default test configs.
+     * <p>
+     * <i>Note</i>: setting the value of a {@link ConfigEntry} to {@code null} will remove existing instances of the
+     * configuration.
      *
      * @param optionalConfigs list of new or overriding place configurations
      * @return new instance of place
@@ -90,7 +95,9 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
                 removeAllConfigEntriesForKey(configurator, key);
                 encounteredKeys.add(key);
             }
-            configurator.addEntry(key, entry.getValue());
+            if (entry.getValue() != null) {
+                configurator.addEntry(key, entry.getValue());
+            }
         }
     }
 

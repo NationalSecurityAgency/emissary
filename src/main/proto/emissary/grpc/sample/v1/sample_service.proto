@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package emissary.grpc.sample.v1;
+
+import "google/protobuf/empty.proto";
+option java_multiple_files = true;
+option java_package = "emissary.grpc.sample.v1";
+
+
+message SampleRequest {
+  bytes query = 1;
+}
+
+message SampleResponse {
+  bytes result = 1;
+}
+
+message SampleHealthStatus {
+  bool ok = 1;
+}
+
+service SampleService {
+  rpc CallSampleService(SampleRequest) returns (SampleResponse);
+  rpc CallSampleHealthCheck(google.protobuf.Empty) returns (SampleHealthStatus);
+}
