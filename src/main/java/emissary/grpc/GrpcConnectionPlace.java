@@ -71,12 +71,12 @@ public abstract class GrpcConnectionPlace extends GrpcRoutingPlace {
     }
 
     @Override
-    protected Map<String, String> configureHostnames() {
+    protected Map<String, String> getHostnameConfigs() {
         return Map.of(CONNECTION_ID, Objects.requireNonNull(configG).findRequiredStringEntry(GRPC_HOST));
     }
 
     @Override
-    protected Map<String, Integer> configurePortNumbers() {
+    protected Map<String, Integer> getPortNumberConfigs() {
         return Map.of(CONNECTION_ID, Integer.parseInt(Objects.requireNonNull(configG).findRequiredStringEntry(GRPC_PORT)));
     }
 

@@ -92,11 +92,11 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
         configureGrpc();
     }
 
-    protected Map<String, String> configureHostnames() {
+    protected Map<String, String> getHostnameConfigs() {
         return Objects.requireNonNull(configG).findStringMatchMap(GRPC_HOST, true);
     }
 
-    protected Map<String, Integer> configurePortNumbers() {
+    protected Map<String, Integer> getPortNumberConfigs() {
         return Objects.requireNonNull(configG).findStringMatchMap(GRPC_PORT).entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> Integer.parseInt(entry.getValue())));
     }
@@ -106,8 +106,8 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
             throw new IllegalStateException("gRPC configurations not found for " + this.getPlaceName());
         }
 
-        hostnameTable.putAll(configureHostnames());
-        portNumberTable.putAll(configurePortNumbers());
+        hostnameTable.putAll(getHostnameConfigs());
+        portNumberTable.putAll(getPortNumberConfigs());
 
         if (!hostnameTable.keySet().equals(portNumberTable.keySet())) {
             throw new IllegalArgumentException("gRPC hostname target-IDs do not match gRPC port number target-IDs");
