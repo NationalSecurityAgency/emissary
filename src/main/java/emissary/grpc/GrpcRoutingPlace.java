@@ -215,17 +215,21 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
     }
 
     private ObjectPool<ManagedChannel> channelPoolLookup(String targetId) {
-        if (channelPoolTable.containsKey(targetId)) {
-            return channelPoolTable.get(targetId);
-        }
-        throw new IllegalArgumentException(String.format("Target-ID %s was never configured", targetId));
+        return tableLookup(channelPoolTable, targetId);
     }
 
     public String getHostname(String targetId) {
-        return hostnameTable.get(targetId);
+        return tableLookup(hostnameTable, targetId);
     }
 
     public int getPortNumber(String targetId) {
-        return portNumberTable.get(targetId);
+        return tableLookup(portNumberTable, targetId);
+    }
+
+    protected <T> T tableLookup(Map<String, T> table, String targetId) {
+        if (table.containsKey(targetId)) {
+            return table.get(targetId);
+        }
+        throw new IllegalArgumentException(String.format("Target-ID %s was never configured", targetId));
     }
 }
