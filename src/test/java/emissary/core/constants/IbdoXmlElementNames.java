@@ -115,5 +115,29 @@ public final class IbdoXmlElementNames {
      */
     public static final String INDEX = "index";
 
+    // legacy fields
+
+    /**
+     * The XML attribute for initial form
+     */
+    public static final String INITIAL_FORM = "initialForm";
+    /**
+     * The XML attribute index for file type
+     */
+    public static final String FILE_TYPE = "fileType";
+    /**
+     * The XML attribute index for alternate view
+     */
+    public static final String ALT_VIEW = "altView";
+    /**
+     * The XML attribute index for input alternate view
+     */
+    public static final String INPUT_ALT_VIEW = "inputAlternateView";
+    /**
+     * The XML attribute index for bad alternate view
+     */
+    public static final String BAD_ALT_VIEW = "badAlternateView";
+
+
     private IbdoXmlElementNames() {}
 }
