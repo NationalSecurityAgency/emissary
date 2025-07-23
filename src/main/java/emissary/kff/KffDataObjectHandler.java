@@ -5,6 +5,8 @@ import emissary.core.IBaseDataObject.MergePolicy;
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.core.channels.SeekableByteChannelHelper;
 
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
@@ -178,7 +181,17 @@ public class KffDataObjectHandler {
      * @param d the data object
      */
     public void hash(@Nullable final IBaseDataObject d) {
-        hash(d, false);
+        hash(d, false, false, "HASH_ID");
+    }
+
+    /**
+     * Compute the hash of a data object's data
+     *
+     * @param d the data object
+     * @param useSbc use the {@link SeekableByteChannel} interface
+     */
+    public void hash(@Nullable final IBaseDataObject d, final boolean useSbc) {
+        hash(d, useSbc, false, "HASH_ID");
     }
 
     /**
@@ -186,8 +199,10 @@ public class KffDataObjectHandler {
      * 
      * @param d the data object
      * @param useSbc use the {@link SeekableByteChannel} interface
+     * @param createMurmurHash whether to create a murmur hash of hashes or not
+     * @param murmurHashIdParamName the name of the parameter to store the murmur hash
      */
-    public void hash(@Nullable final IBaseDataObject d, final boolean useSbc) {
+    public void hash(@Nullable final IBaseDataObject d, final boolean useSbc, boolean createMurmurHash, final String murmurHashIdParamName) {
 
         if (d == null) {
             return;
@@ -204,6 +219,9 @@ public class KffDataObjectHandler {
                 d.putParameters(hashData(d.data(), d.shortName()), MergePolicy.DROP_EXISTING);
             } else {
                 return; // NOSONAR
+            }
+            if (createMurmurHash) {
+                d.putParameter(murmurHashIdParamName, createMurmurHash(d));
             }
         } catch (IOException e) {
             logger.error("Couldn't hash data {}", d.shortName());
@@ -488,5 +506,34 @@ public class KffDataObjectHandler {
             return d.getParameterAsString(KFF_PARAM_SHA1);
         }
         return d.getParameterAsString(KFF_PARAM_MD5);
+    }
+
+    @Nullable
+    public static String createMurmurHash(IBaseDataObject d) {
+        if (!d.hasParameter(KFF_PARAM_MD5) || !d.hasParameter(KFF_PARAM_SHA1) || !d.hasParameter(KFF_PARAM_SHA256)) {
+            logger.warn("Cannot compute murmur hash for {} because not all hashes are set", d.shortName());
+            return null;
+        }
+
+        final String md5 = d.getParameterAsString(KFF_PARAM_MD5);
+        final String sha1 = d.getParameterAsString(KFF_PARAM_SHA1);
+        final String sha256 = d.getParameterAsString(KFF_PARAM_SHA256);
+
+        return createMurmurHash(md5, sha1, sha256);
+    }
+
+    protected static String createMurmurHash(String md5, String sha1, String sha256) {
+        HashCode hashCode = Hashing.murmur3_128().newHasher()
+                .putString(md5, StandardCharsets.UTF_8)
+                .putString(sha1, StandardCharsets.UTF_8)
+                .putString(sha256, StandardCharsets.UTF_8)
+                .hash();
+
+        return new StringBuilder(hashCode.toString())
+                .insert(20, "-")
+                .insert(16, "-")
+                .insert(12, "-")
+                .insert(8, "-")
+                .toString();
     }
 }
