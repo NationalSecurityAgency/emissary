@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Abstract base class for managing a pool of gRPC {@link ManagedChannel} connections.
@@ -47,7 +49,7 @@ import java.util.concurrent.TimeUnit;
  * <a href="https://docs.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-5.0">Source</a> for default
  * gRPC configurations.
  */
-public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
+public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
     public static final String GRPC_KEEP_ALIVE_MILLIS = "GRPC_KEEP_ALIVE_MILLIS";
     public static final String GRPC_KEEP_ALIVE_TIMEOUT_MILLIS = "GRPC_KEEP_ALIVE_TIMEOUT_MILLIS";
     public static final String GRPC_KEEP_ALIVE_WITHOUT_CALLS = "GRPC_KEEP_ALIVE_WITHOUT_CALLS";
@@ -66,6 +68,8 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
     protected static final Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
 
     private final GenericObjectPoolConfig<ManagedChannel> poolConfig = new GenericObjectPoolConfig<>();
+    private final Predicate<ManagedChannel> channelValidator;
+    private final Consumer<ManagedChannel> channelPassivator;
 
     private final String host;
     private final int port;
@@ -87,11 +91,17 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
      * @param host gRPC service hostname or DNS target
      * @param port gRPC service port
      * @param configG configuration provider for channel and pool parameters
+     * @param channelValidator method to determine if channel can successfully communicate with its associated server
+     * @param channelPassivator method that cleans up a channel after a gRPC call
      */
-    protected ConnectionFactory(String host, int port, Configurator configG) {
+    public ConnectionFactory(String host, int port, Configurator configG,
+            Predicate<ManagedChannel> channelValidator, Consumer<ManagedChannel> channelPassivator) {
         this.host = host;
         this.port = port;
         this.target = host + ":" + port; // target may be a host or dns service
+
+        this.channelValidator = channelValidator;
+        this.channelPassivator = channelPassivator;
 
         // How often (in milliseconds) to send pings when the connection is idle
         this.keepAliveMillis = configG.findLongEntry(GRPC_KEEP_ALIVE_MILLIS, 60000L);
@@ -234,14 +244,16 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
     }
 
     /**
-     * Called when a {@link ManagedChannel} is returned to the pool. No-op by default, since gRPC channels are designed to
-     * remain ready for reuse without needing to be reset or cleared. Override this if using a stub or channel wrapper that
-     * requires cleanup between uses.
+     * Called when a {@link ManagedChannel} is returned to the pool. Since gRPC channels are designed to remain ready for
+     * reuse without needing to be reset or cleared, a no-op passivator is fine for most use cases. Custom behavior may
+     * become necessary if using a stub or channel wrapper that requires cleanup between uses.
      *
      * @param pooledObject the pooled channel being passivated
      */
     @Override
-    public void passivateObject(PooledObject<ManagedChannel> pooledObject) { /* No-op */ }
+    public void passivateObject(PooledObject<ManagedChannel> pooledObject) {
+        channelPassivator.accept(pooledObject.getObject());
+    }
 
     /**
      * Validates whether the {@link ManagedChannel} is healthy and can be reused. Called by the pool before returning a
@@ -252,7 +264,9 @@ public abstract class ConnectionFactory extends BasePooledObjectFactory<ManagedC
      * @return true if the channel is valid and safe to reuse, false otherwise
      */
     @Override
-    public abstract boolean validateObject(PooledObject<ManagedChannel> pooledObject);
+    public boolean validateObject(PooledObject<ManagedChannel> pooledObject) {
+        return channelValidator.test(pooledObject.getObject());
+    }
 
     /**
      * Cleans up a pooled {@link ManagedChannel} when it is removed from the pool. Immediately shuts down the channel to
