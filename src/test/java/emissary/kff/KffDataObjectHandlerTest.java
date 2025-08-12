@@ -55,6 +55,15 @@ class KffDataObjectHandlerTest extends UnitTest {
 
     static final String DATA_CRC32 = "33323239323631363138";
 
+    /**
+     * HashCode hashCode = Hashing.murmur3_128().newHasher() .putString(DATA_MD5, StandardCharsets.UTF_8)
+     * .putString(DATA_SHA1, StandardCharsets.UTF_8) .putString(DATA_SHA256, StandardCharsets.UTF_8) .hash();
+     *
+     * return new StringBuilder(hashCode.toString()) .insert(20, "-") .insert(16, "-") .insert(12, "-") .insert(8, "-")
+     * .toString();
+     */
+    static final String DATA_HASH_ID = "b0cf6000-dbd3-3df6-eead-e7b144bdcc48";
+
     @Nullable
     protected KffDataObjectHandler kff;
     @Nullable
@@ -444,6 +453,41 @@ class KffDataObjectHandlerTest extends UnitTest {
     @Test
     void testEmptySbcf() {
         assertEquals(new HashMap<>(), kff.hashData(SeekableByteChannelHelper.EMPTY_CHANNEL_FACTORY, null));
+    }
+
+    @Test
+    void testMurmurHashCreation() {
+        payload.setParameter(KffDataObjectHandler.KFF_PARAM_MD5, DATA_MD5);
+        payload.setParameter(KffDataObjectHandler.KFF_PARAM_SHA1, DATA_SHA1);
+        payload.setParameter(KffDataObjectHandler.KFF_PARAM_SHA256, DATA_SHA256);
+
+        String murmurHash = KffDataObjectHandler.createMurmurHash(payload);
+
+        assertNotNull(murmurHash, "murmur hash should not be null when all hashes are set");
+        assertFalse(murmurHash.isEmpty(), "murmur hash should not be empty");
+        assertEquals(DATA_HASH_ID, murmurHash);
+    }
+
+    @Test
+    void testMurmurHashWithoutInputHashes() {
+        payload.deleteParameter(KffDataObjectHandler.KFF_PARAM_MD5);
+        payload.deleteParameter(KffDataObjectHandler.KFF_PARAM_SHA1);
+        payload.deleteParameter(KffDataObjectHandler.KFF_PARAM_SHA256);
+
+        String murmurHash = KffDataObjectHandler.createMurmurHash(payload);
+
+        assertNull(murmurHash, "murmur hash should be null when no hashes are set");
+    }
+
+    @Test
+    void testMurmurHashNotCreatedWhenMissingAnInputHash() {
+        payload.setParameter(KffDataObjectHandler.KFF_PARAM_MD5, DATA_MD5);
+        payload.deleteParameter(KffDataObjectHandler.KFF_PARAM_SHA1);
+        payload.setParameter(KffDataObjectHandler.KFF_PARAM_SHA256, DATA_SHA256);
+
+        String murmurHash = KffDataObjectHandler.createMurmurHash(payload);
+
+        assertNull(murmurHash, "murmur hash should be null when when one of the input hashes is missing");
     }
 
 }
