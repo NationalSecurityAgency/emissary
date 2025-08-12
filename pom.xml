@@ -150,7 +150,7 @@
          when using the CLDR locale provider, which is the default in JDK11.
          https://www.oracle.com/technetwork/java/javase/documentation/java11locales-5069639.html
       -->
-    <surefire.argline>@{argLine} -Xmx1024m -Xms256m -Djava.locale.providers=COMPAT -Djava.net.preferIPv4Stack=true -Duser.timezone=GMT -Djava.awt.headless=true</surefire.argline>
+    <surefire.argline>@{argLine} -Xmx1024m -Xms256m -Djava.io.tmpdir=${java.io.tmpdir} -Djava.locale.providers=COMPAT -Djava.net.preferIPv4Stack=true -Duser.timezone=GMT -Djava.awt.headless=true</surefire.argline>
     <surefire.forkCount>.5C</surefire.forkCount>
   </properties>
   <dependencyManagement>
