@@ -993,6 +993,10 @@
                     <reason>Use static imports for assertions</reason>
                     <bannedImport>org.junit.jupiter.api.Assertions</bannedImport>
                   </RestrictImports>
+                  <RestrictImports>
+                    <reason>Do not use wildcards</reason>
+                    <bannedImport>**.'*'</bannedImport>
+                  </RestrictImports>
                 </rules>
               </configuration>
             </execution>
