@@ -127,6 +127,11 @@ public final class IBaseDataObjectXmlCodecs {
         METHOD_MAP.put(IbdoXmlElementNames.TRANSACTION_ID, IbdoMethodNames.SET_TRANSACTION_ID);
         METHOD_MAP.put(IbdoXmlElementNames.VIEW, IbdoMethodNames.ADD_ALTERNATE_VIEW);
         METHOD_MAP.put(IbdoXmlElementNames.WORK_BUNDLE_ID, IbdoMethodNames.SET_WORK_BUNDLE_ID);
+
+        // legacy fields
+
+        METHOD_MAP.put(IbdoXmlElementNames.INITIAL_FORM, IbdoMethodNames.ENQUEUE_CURRENT_FORM);
+        METHOD_MAP.put(IbdoXmlElementNames.ALT_VIEW, IbdoMethodNames.ADD_ALTERNATE_VIEW);
     }
     private static final String NO_IBDO_METHOD_MATCH_ELEMENT_NAME = "Could not find the IBDO method for element name ";
 

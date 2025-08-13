@@ -3,6 +3,8 @@ package emissary.test.core.junit5;
 import emissary.core.DataObjectFactory;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
+import emissary.core.IBaseDataObjectXmlCodecs;
+import emissary.core.IBaseDataObjectXmlHelper;
 import emissary.kff.KffDataObjectHandler;
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.junit5.LogbackTester.SimplifiedLogEvent;
@@ -30,23 +32,28 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static emissary.core.IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_DECODERS;
 import static emissary.core.IBaseDataObjectXmlCodecs.LENGTH_ATTRIBUTE_NAME;
+import static emissary.core.IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS;
 import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
 import static emissary.core.constants.IbdoXmlElementNames.ATTACHMENT_ELEMENT_PREFIX;
+import static emissary.core.constants.IbdoXmlElementNames.BAD_ALT_VIEW;
 import static emissary.core.constants.IbdoXmlElementNames.BROKEN;
 import static emissary.core.constants.IbdoXmlElementNames.CLASSIFICATION;
 import static emissary.core.constants.IbdoXmlElementNames.CURRENT_FORM;
 import static emissary.core.constants.IbdoXmlElementNames.DATA;
 import static emissary.core.constants.IbdoXmlElementNames.EXTRACTED_RECORD_ELEMENT_PREFIX;
+import static emissary.core.constants.IbdoXmlElementNames.FILE_TYPE;
 import static emissary.core.constants.IbdoXmlElementNames.FONT_ENCODING;
 import static emissary.core.constants.IbdoXmlElementNames.INDEX;
+import static emissary.core.constants.IbdoXmlElementNames.INITIAL_FORM;
+import static emissary.core.constants.IbdoXmlElementNames.INPUT_ALT_VIEW;
 import static emissary.core.constants.IbdoXmlElementNames.NAME;
 import static emissary.core.constants.IbdoXmlElementNames.PARAMETER;
 import static emissary.core.constants.IbdoXmlElementNames.SETUP;
@@ -98,6 +105,47 @@ public abstract class ExtractionTest extends UnitTest {
             SYSTEM_OS_RELEASE = null;
             MAJOR_OS_VERSION = null;
         }
+    }
+
+
+    /**
+     * This method returns the XML element decoders.
+     *
+     * @return the XML element decoders.
+     */
+    @Deprecated
+    protected IBaseDataObjectXmlCodecs.ElementDecoders getDecoders() {
+        return DEFAULT_ELEMENT_DECODERS;
+    }
+
+    /**
+     * This method returns the XML element decoders.
+     *
+     * @param resource the "resource" currently be tested.
+     * @return the XML element decoders.
+     */
+    protected IBaseDataObjectXmlCodecs.ElementDecoders getDecoders(final String resource) {
+        return getDecoders();
+    }
+
+    /**
+     * This method returns the XML element encoders.
+     *
+     * @return the XML element encoders.
+     */
+    @Deprecated
+    protected IBaseDataObjectXmlCodecs.ElementEncoders getEncoders() {
+        return SHA256_ELEMENT_ENCODERS;
+    }
+
+    /**
+     * This method returns the XML element encoders.
+     *
+     * @param resource the "resource" currently be tested.
+     * @return the XML element encoders.
+     */
+    protected IBaseDataObjectXmlCodecs.ElementEncoders getEncoders(final String resource) {
+        return getEncoders();
     }
 
     @BeforeEach
@@ -515,50 +563,27 @@ public abstract class ExtractionTest extends UnitTest {
         Element setup = root.getChild(SETUP);
         boolean didSetFiletype = false;
         if (setup != null) {
-            List<Element> cfChildren = setup.getChildren("initialForm");
+            List<Element> cfChildren = setup.getChildren(INITIAL_FORM);
             if (!cfChildren.isEmpty()) {
                 payload.popCurrentForm(); // remove default
             }
-            for (Element cf : cfChildren) {
-                payload.enqueueCurrentForm(cf.getTextTrim());
-            }
 
-            final String classification = setup.getChildTextTrim(CLASSIFICATION);
-            if (StringUtils.isNotBlank(classification)) {
-                payload.setClassification(classification);
-            }
+            IBaseDataObjectXmlHelper.ibdoFromXmlMainElements(setup, payload, getDecoders(payload.getFilename()));
 
-            final String fontEncoding = setup.getChildTextTrim(FONT_ENCODING);
-            if (StringUtils.isNotBlank(fontEncoding)) {
-                payload.setFontEncoding(fontEncoding);
-            }
-
-            for (Element meta : setup.getChildren(PARAMETER)) {
-                String key = meta.getChildTextTrim(NAME);
-                String value = meta.getChildTextTrim(VALUE);
-                payload.appendParameter(key, value);
-            }
-
-            for (Element altView : setup.getChildren("altView")) {
-                String name = altView.getChildTextTrim(NAME);
-                byte[] value = altView.getChildText(VALUE).getBytes(StandardCharsets.UTF_8);
-                payload.addAlternateView(name, value);
-            }
-
-            final String fileType = setup.getChildTextTrim("fileType");
+            final String fileType = setup.getChildTextTrim(FILE_TYPE);
             if (StringUtils.isNotBlank(fileType)) {
                 payload.setFileType(fileType);
                 didSetFiletype = true;
             }
 
-            final String inputAlternateView = setup.getChildTextTrim("inputAlternateView");
+            final String inputAlternateView = setup.getChildTextTrim(INPUT_ALT_VIEW);
             if (StringUtils.isNotBlank(inputAlternateView)) {
                 final byte[] data = payload.data();
                 payload.addAlternateView(inputAlternateView, data);
                 payload.setData(INCORRECT_VIEW_MESSAGE);
             }
 
-            final String badAlternateView = setup.getChildTextTrim("badAlternateView");
+            final String badAlternateView = setup.getChildTextTrim(BAD_ALT_VIEW);
             if (StringUtils.isNotBlank(badAlternateView)) {
                 payload.addAlternateView(badAlternateView, INCORRECT_VIEW_MESSAGE);
             }
