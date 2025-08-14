@@ -61,7 +61,7 @@ public abstract class UnitTest {
     @SuppressWarnings("NonFinalStaticField")
     public static File temporaryDirectory;
     @SuppressWarnings({"ConstantField", "NonFinalStaticField"})
-    protected static String TMPDIR = "/tmp";
+    protected static String TMPDIR = System.getProperty("java.io.tmpdir", "/tmp");
     @Nullable
     protected Package thisPackage = null;
     @Nullable

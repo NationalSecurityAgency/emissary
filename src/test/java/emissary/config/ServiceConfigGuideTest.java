@@ -400,7 +400,7 @@ class ServiceConfigGuideTest extends UnitTest {
 
         assertEquals(-1, sc.findStringEntry("MYPROJ").indexOf("PRJ_BASE"), "Replacement of  PRJ_BASE with value failed");
 
-        assertEquals(System.getProperty("java.io.tmpdir"), sc.findStringEntry("MYTMP"), "TMP_DIR magic replacement failed");
+        assertEquals(System.getProperty("java.io.tmpdir"), sc.findStringEntry("MYTMP"), "TMPDIR magic replacement failed");
 
         assertFalse(sc.findStringEntry("MYHOST").contains("@"), "Replacement of magic HOST failed");
 
