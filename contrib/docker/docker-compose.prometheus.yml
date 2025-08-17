@@ -1,13 +1,4 @@
 services:
-#  emissary:
-#    build: .
-#    environment:
-#      - PROMETHEUS_METRICS_ENABLED=true
-#      - PROMETHEUS_METRICS_PORT=9464
-#    ports:
-#      - "8080:8080"   # app port
-#      - "9464:9464"   # prometheus metrics port
-
   prometheus:
     image: prom/prometheus:latest
     volumes:
