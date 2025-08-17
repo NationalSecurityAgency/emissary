@@ -3,6 +3,7 @@ package emissary.server.api;
 import emissary.core.MetricsManager;
 import emissary.core.NamespaceException;
 
+import com.codahale.metrics.health.HealthCheck;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -26,7 +27,7 @@ public class HealthCheckAction {
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
     public Response healthCheck(@QueryParam("format") String format) {
         try {
-            Map<String, com.codahale.metrics.health.HealthCheck.Result> results = MetricsManager.lookup().getHealthCheckRegistry().runHealthChecks();
+            Map<String, HealthCheck.Result> results = MetricsManager.lookup().getHealthCheckRegistry().runHealthChecks();
 
             if ("prometheus".equals(format)) {
                 return generatePrometheusResponse(results);
@@ -45,7 +46,7 @@ public class HealthCheckAction {
         }
     }
 
-    protected Response generateJsonResponse(Map<String, com.codahale.metrics.health.HealthCheck.Result> results) {
+    protected Response generateJsonResponse(Map<String, HealthCheck.Result> results) {
         return Response.ok().entity(results).build();
     }
 
@@ -53,8 +54,8 @@ public class HealthCheckAction {
         return Response.serverError().entity("Could not lookup MetricsManager").build();
     }
 
-    private Response generatePrometheusResponse(Map<String, com.codahale.metrics.health.HealthCheck.Result> results) {
-        boolean allHealthy = results.values().stream().allMatch(com.codahale.metrics.health.HealthCheck.Result::isHealthy);
+    private static Response generatePrometheusResponse(Map<String, HealthCheck.Result> results) {
+        boolean allHealthy = results.values().stream().allMatch(HealthCheck.Result::isHealthy);
 
         StringBuilder metricsOutput = new StringBuilder();
         metricsOutput.append("# HELP emissary_health_status Health status of emissary service (1=healthy, 0=unhealthy)\n");
@@ -68,7 +69,7 @@ public class HealthCheckAction {
         }
     }
 
-    private Response generatePrometheusErrorResponse() {
+    private static Response generatePrometheusErrorResponse() {
         StringBuilder errorMetrics = new StringBuilder();
         errorMetrics.append("# HELP emissary_health_status Health status of emissary service (1=healthy, 0=unhealthy)\n");
         errorMetrics.append("# TYPE emissary_health_status gauge\n");

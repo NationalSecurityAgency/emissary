@@ -44,7 +44,7 @@ public class MetricsAction {
                 .build();
     }
 
-    private Response prometheusMetrics() throws NamespaceException, IOException {
+    private static Response prometheusMetrics() throws NamespaceException, IOException {
         CollectorRegistry registry = new CollectorRegistry();
         registry.register(new DropwizardExports(MetricsManager.lookup().getMetricRegistry()));
         StringWriter writer = new StringWriter();
