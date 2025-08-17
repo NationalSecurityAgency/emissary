@@ -627,7 +627,18 @@ public class EmissaryServer {
         health.setPathSpec("/api/health");
         health.setConstraint(noAuthConstraint);
 
-        handler.setConstraintMappings(new ConstraintMapping[] {mapping, health});
+        // TODO: figure out how to allow Digest Authenticator to work with Prometheus
+
+        ConstraintMapping metrics = new ConstraintMapping();
+        metrics.setPathSpec("/api/metrics");
+        metrics.setConstraint(noAuthConstraint);
+
+        ConstraintMapping metricsPrometheus = new ConstraintMapping();
+        metricsPrometheus.setPathSpec("/api/metrics?format=prometheus");
+        metricsPrometheus.setConstraint(noAuthConstraint);
+
+        handler.setConstraintMappings(
+                new ConstraintMapping[] {mapping, health, metrics, metricsPrometheus});
         handler.setAuthenticator(new DigestAuthenticator());
         return handler;
     }

@@ -293,7 +293,7 @@ class EmissaryApiTest extends EndpointTestBase {
         when(manager.getMetricRegistry()).thenReturn(registry);
 
         Namespace.bind("MetricsManager", manager);
-        try (Response response = metrics.clusterAgents()) {
+        try (Response response = metrics.metrics(null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             Map<String, Metric> metricsMap = ((MetricRegistry) response.getEntity()).getMetrics();
             assertEquals(100, ((Counter) metricsMap.get("testing")).getCount());
@@ -314,7 +314,7 @@ class EmissaryApiTest extends EndpointTestBase {
         when(registry.runHealthChecks()).thenReturn(results);
 
         Namespace.bind("MetricsManager", manager);
-        try (Response response = health.clusterAgents()) {
+        try (Response response = health.generateJsonResponse(results)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             assertTrue(response.getEntity().toString().contains("isHealthy=true"));
             assertTrue(response.getEntity().toString().contains("message=Okay"));

@@ -1,0 +1,20 @@
+services:
+#  emissary:
+#    build: .
+#    environment:
+#      - PROMETHEUS_METRICS_ENABLED=true
+#      - PROMETHEUS_METRICS_PORT=9464
+#    ports:
+#      - "8080:8080"   # app port
+#      - "9464:9464"   # prometheus metrics port
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    network_mode: host

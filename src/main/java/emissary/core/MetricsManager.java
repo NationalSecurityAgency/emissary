@@ -16,6 +16,8 @@ import com.codahale.metrics.graphite.GraphiteReporter;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.codahale.metrics.health.jvm.ThreadDeadlockHealthCheck;
 import com.codahale.metrics.jmx.JmxReporter;
+import com.codahale.metrics.jvm.BufferPoolMetricSet;
+import com.codahale.metrics.jvm.ClassLoadingGaugeSet;
 import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
@@ -24,11 +26,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+
+import static java.lang.management.ManagementFactory.getPlatformMBeanServer;
 
 /**
  * Manages the interactions with CodaHale's Metrics package, including configuration
@@ -127,6 +132,32 @@ public class MetricsManager {
             this.metrics.registerAll(new GarbageCollectorMetricSet());
             this.metrics.registerAll(new ThreadStatesGaugeSet());
             this.metrics.register("file.descriptor.info", new FileDescriptorRatioGauge());
+
+            // Add additional JVM metrics for comprehensive monitoring if enabled
+            if (this.conf.findBooleanEntry("JVM_ADDITIONAL_METRICS_ENABLED", false)) {
+                logger.debug("Additional JVM Metrics are enabled");
+                this.metrics.registerAll(new ClassLoadingGaugeSet());
+                this.metrics.registerAll(new BufferPoolMetricSet(getPlatformMBeanServer()));
+
+                // Add JVM uptime metric
+                this.metrics.register("jvm.uptime", new Gauge<Long>() {
+                    @Override
+                    public Long getValue() {
+                        return ManagementFactory.getRuntimeMXBean().getUptime();
+                    }
+                });
+
+                // Add available processors metric
+                this.metrics.register("jvm.processors", new Gauge<Integer>() {
+                    @Override
+                    public Integer getValue() {
+                        return Runtime.getRuntime().availableProcessors();
+                    }
+                });
+            } else {
+                logger.debug("Additional JVM Metrics are disabled");
+            }
+
         } else {
             logger.debug("JVM Metrics are disabled");
         }
