@@ -108,6 +108,8 @@ public class CoordinationPlace extends ServiceProviderPlace {
         updateTransformHistory = configG.findBooleanEntry("UPDATE_TRANSFORM_HISTORY", false);
 
         placeKeys = configG.findEntries("SERVICE_COORDINATION");
+        placeKeys.addAll(configG.findEntries("APPEND_SERVICE_COORDINATION"));
+        placeKeys.removeAll(configG.findEntries("DENY_SERVICE_COORDINATION"));
         logger.debug("We got {} entries to coordinate", placeKeys.size());
 
         placeRefs = new ArrayList<>();
