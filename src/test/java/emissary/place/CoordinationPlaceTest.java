@@ -1,16 +1,13 @@
 package emissary.place;
 
+import emissary.config.ConfigUtil;
 import emissary.core.DataObjectFactory;
+import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
 import emissary.core.MobileAgent;
 import emissary.core.Namespace;
 import emissary.core.ResourceWatcher;
-import emissary.place.sample.CachePlace;
-import emissary.place.sample.RefreshablePlace;
-import emissary.place.sample.ToLowerPlace;
-import emissary.place.sample.ToUpperPlace;
 import emissary.test.core.junit5.UnitTest;
-import emissary.util.io.ResourceReader;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -18,7 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,8 +35,7 @@ class CoordinationPlaceTest extends UnitTest {
     public void setUp() throws Exception {
         super.setUp();
 
-        InputStream configStream = new ResourceReader().getConfigDataAsStream(this);
-        place = new CoordinationPlace(configStream);
+        place = new CoordinationPlace("emissary.place.CoordinationPlace.cfg");
 
         mockCoordPlace = mock(IServiceProviderPlace.class);
         place.placeRefs = Collections.singletonList(mockCoordPlace);
@@ -87,13 +83,23 @@ class CoordinationPlaceTest extends UnitTest {
     }
 
     @Test
-    void testPlaceReferenceOrder() {
-        place.configG.addEntry("APPEND_SERVICE_COORDINATION", RefreshablePlace.class.getName());
-        place.configG.addEntry("DENY_SERVICE_COORDINATION", CachePlace.class.getName());
+    void testPlaceReferenceOrder() throws IOException {
+        place.configG = ConfigUtil.getConfigInfo(CoordinationPlaceTest.class);
+        place.configurePlace();
 
-        place.configG.addEntry("SERVICE_COORDINATION", CachePlace.class.getName());
-        place.configG.addEntry("SERVICE_COORDINATION", ToLowerPlace.class.getName());
-        place.configG.addEntry("SERVICE_COORDINATION", ToUpperPlace.class.getName());
+        assertEquals(3, place.placeRefs.size());
+        assertEquals("emissary.place.sample.CachePlace", place.placeRefs.get(0).getPlaceName());
+        assertEquals("emissary.place.sample.ToLowerPlace", place.placeRefs.get(1).getPlaceName());
+        assertEquals("emissary.place.sample.ToUpperPlace", place.placeRefs.get(2).getPlaceName());
+    }
+
+    @Test
+    void testPlaceReferenceOrderWithFlavor() throws EmissaryException, IOException {
+        String originalFlavor = System.getProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
+        System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, String.join(",", originalFlavor, "FLAVORTEST"));
+        ConfigUtil.initialize();
+
+        place.configG = ConfigUtil.getConfigInfo(CoordinationPlaceTest.class);
         place.configurePlace();
 
         assertEquals(3, place.placeRefs.size());
@@ -101,9 +107,8 @@ class CoordinationPlaceTest extends UnitTest {
         assertEquals("emissary.place.sample.ToUpperPlace", place.placeRefs.get(1).getPlaceName());
         assertEquals("emissary.place.sample.RefreshablePlace", place.placeRefs.get(2).getPlaceName());
 
-        place.configG.removeEntry("APPEND_SERVICE_COORDINATION", RefreshablePlace.class.getName());
-        place.configG.removeEntry("SERVICE_COORDINATION", ToUpperPlace.class.getName());
-        place.configG.removeEntry("SERVICE_COORDINATION", ToLowerPlace.class.getName());
+        System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, originalFlavor);
+        ConfigUtil.initialize();
     }
 
     @Test
