@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -87,10 +88,16 @@ class CoordinationPlaceTest extends UnitTest {
         place.configG = ConfigUtil.getConfigInfo(CoordinationPlaceTest.class);
         place.configurePlace();
 
-        assertEquals(3, place.placeRefs.size());
-        assertEquals("emissary.place.sample.CachePlace", place.placeRefs.get(0).getPlaceName());
-        assertEquals("emissary.place.sample.ToLowerPlace", place.placeRefs.get(1).getPlaceName());
-        assertEquals("emissary.place.sample.ToUpperPlace", place.placeRefs.get(2).getPlaceName());
+        List<String> expectedRefs = List.of(
+                "emissary.place.sample.CachePlace",
+                "emissary.place.sample.ToLowerPlace",
+                "emissary.place.sample.ToUpperPlace");
+
+        List<String> actualRefs = place.placeRefs.stream()
+                .map(IServiceProviderPlace::getPlaceName)
+                .collect(Collectors.toList());
+
+        assertEquals(expectedRefs, actualRefs);
     }
 
     @Test
@@ -102,10 +109,16 @@ class CoordinationPlaceTest extends UnitTest {
         place.configG = ConfigUtil.getConfigInfo(CoordinationPlaceTest.class);
         place.configurePlace();
 
-        assertEquals(3, place.placeRefs.size());
-        assertEquals("emissary.place.sample.ToLowerPlace", place.placeRefs.get(0).getPlaceName());
-        assertEquals("emissary.place.sample.ToUpperPlace", place.placeRefs.get(1).getPlaceName());
-        assertEquals("emissary.place.sample.RefreshablePlace", place.placeRefs.get(2).getPlaceName());
+        List<String> expectedRefs = List.of(
+                "emissary.place.sample.ToLowerPlace",
+                "emissary.place.sample.ToUpperPlace",
+                "emissary.place.sample.RefreshablePlace");
+
+        List<String> actualRefs = place.placeRefs.stream()
+                .map(IServiceProviderPlace::getPlaceName)
+                .collect(Collectors.toList());
+
+        assertEquals(expectedRefs, actualRefs);
 
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, originalFlavor);
         ConfigUtil.initialize();
