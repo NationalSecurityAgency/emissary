@@ -368,19 +368,35 @@ public abstract class ExtractionTest extends UnitTest {
     protected void checkAnswers(Element el, IBaseDataObject payload, @Nullable List<IBaseDataObject> attachments, String tname)
             throws DataConversionException {
 
-        int numAtt = JDOMUtil.getChildIntValue(el, "numAttachments");
-        long numAttElements = el.getChildren().stream().filter(c -> c.getName().startsWith(ATTACHMENT_ELEMENT_PREFIX)).count();
+        int numAtt = -1;
+        long numAttElements = 0;
+        boolean osSpecificNumAtt = false;
+        for (Element numAttEl : el.getChildren("numAttachments")) {
+            if (verifyOs(numAttEl) && numAttEl.getAttribute("os-release") != null) {
+                String osRelease = numAttEl.getAttribute("os-release").getValue();
+                numAtt = JDOMUtil.getChildIntValue(numAttEl, "numAttachments");
+                numAttElements = el.getChildren().stream().filter(
+                        c -> c.getName().startsWith(ATTACHMENT_ELEMENT_PREFIX) && numAttEl.getAttribute("os-release").getValue().equals(osRelease))
+                        .count();
+                osSpecificNumAtt = true;
+            } else {
+                numAtt = JDOMUtil.getChildIntValue(el, "numAttachments");
+                numAttElements = el.getChildren().stream().filter(c -> c.getName().startsWith(ATTACHMENT_ELEMENT_PREFIX)).count();
+            }
+        }
         // check attachments answer file count against payload count
-        if (numAtt > -1) {
-            assertEquals(numAtt, attachments != null ? attachments.size() : 0,
-                    String.format("Expected <numAttachments> in %s not equal to number of att in payload.", tname));
-        } else if (numAtt == -1 && numAttElements > 0) {
-            assertEquals(numAttElements, attachments != null ? attachments.size() : 0,
-                    String.format("Expected <att#> in %s not equal to number of att in payload.", tname));
-        } else {
-            if (attachments != null && !attachments.isEmpty()) {
-                fail(String.format("%d attachments in payload with no count in answer xml, add matching <numAttachments> count for %s",
-                        attachments.size(), tname));
+        if (!osSpecificNumAtt) {
+            if (numAtt > -1) {
+                assertEquals(numAtt, attachments != null ? attachments.size() : 0,
+                        String.format("Expected <numAttachments> in %s not equal to number of att in payload.", tname));
+            } else if (numAtt == -1 && numAttElements > 0) {
+                assertEquals(numAttElements, attachments != null ? attachments.size() : 0,
+                        String.format("Expected <att#> in %s not equal to number of att in payload.", tname));
+            } else {
+                if (attachments != null && !attachments.isEmpty()) {
+                    fail(String.format("%d attachments in payload with no count in answer xml, add matching <numAttachments> count for %s",
+                            attachments.size(), tname));
+                }
             }
         }
 
