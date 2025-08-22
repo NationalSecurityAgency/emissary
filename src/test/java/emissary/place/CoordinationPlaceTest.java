@@ -103,25 +103,29 @@ class CoordinationPlaceTest extends UnitTest {
     @Test
     void testPlaceReferenceOrderWithFlavor() throws EmissaryException, IOException {
         String originalFlavor = System.getProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
-        System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, String.join(",", originalFlavor, "FLAVORTEST"));
-        ConfigUtil.initialize();
 
-        place.configG = ConfigUtil.getConfigInfo(CoordinationPlaceTest.class);
-        place.configurePlace();
+        try {
+            System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, String.join(",", originalFlavor, "FLAVORTEST"));
+            ConfigUtil.initialize();
 
-        List<String> expectedRefs = List.of(
-                "emissary.place.sample.ToLowerPlace",
-                "emissary.place.sample.ToUpperPlace",
-                "emissary.place.sample.RefreshablePlace");
+            place.configG = ConfigUtil.getConfigInfo(CoordinationPlaceTest.class);
+            place.configurePlace();
 
-        List<String> actualRefs = place.placeRefs.stream()
-                .map(IServiceProviderPlace::getPlaceName)
-                .collect(Collectors.toList());
+            List<String> expectedRefs = List.of(
+                    "emissary.place.sample.ToLowerPlace",
+                    "emissary.place.sample.ToUpperPlace",
+                    "emissary.place.sample.RefreshablePlace");
 
-        assertEquals(expectedRefs, actualRefs);
+            List<String> actualRefs = place.placeRefs.stream()
+                    .map(IServiceProviderPlace::getPlaceName)
+                    .collect(Collectors.toList());
 
-        System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, originalFlavor);
-        ConfigUtil.initialize();
+            assertEquals(expectedRefs, actualRefs);
+
+        } finally {
+            System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, originalFlavor);
+            ConfigUtil.initialize();
+        }
     }
 
     @Test
