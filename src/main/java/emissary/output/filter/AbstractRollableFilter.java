@@ -158,7 +158,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
      * @return the roller object
      */
     protected Roller createRoller() {
-        return new Roller(this.maxRollFileSize, this.rollIntervalUnits, this.rollInterval, this.rollable);
+        return new Roller(this.rollIntervalUnits, this.rollInterval, this.rollable, this.maxRollFileSize);
     }
 
     /**

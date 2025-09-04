@@ -68,7 +68,7 @@ public class JDOMUtil extends AbstractJDOMUtil {
      */
     public static Document createDocument(final byte[] xml, final XMLFilter filter, final boolean validate, @Nullable final String charset)
             throws JDOMException {
-        return createDocument(xml, filter, charset, createSAXBuilder(validate));
+        return createDocument(xml, filter, createSAXBuilder(validate), charset);
     }
 
     /**
