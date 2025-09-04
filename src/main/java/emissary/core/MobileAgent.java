@@ -584,6 +584,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     /**
      * Get index in typeSet for specified string, 0 if not found
      */
+    @SuppressWarnings("EnumOrdinal")
     public static int typeLookup(final String s) {
         Stage stage = Stage.getByName(s);
         int idx = (stage == null) ? 0 : stage.ordinal();

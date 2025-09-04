@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /**
  * Create a filename generator that uses a datestamp as the name
@@ -44,7 +45,7 @@ public class DateStampFilenameGenerator implements FileNameGenerator {
     public DateStampFilenameGenerator(String fileSuffix, String identifier, String datePattern) {
         this.fileSuffix = fileSuffix;
         this.identifier = identifier;
-        this.formatter = DateTimeFormatter.ofPattern(datePattern).withZone(TimeUtil.getTimezone());
+        this.formatter = DateTimeFormatter.ofPattern(datePattern, Locale.getDefault()).withZone(TimeUtil.getTimezone());
     }
 
     @Override
@@ -52,6 +53,6 @@ public class DateStampFilenameGenerator implements FileNameGenerator {
         String dateFileName = formatter.format(Instant.now());
         seq = StringUtils.startsWith(lastFileName, dateFileName) ? seq + 1 : 0;
         lastFileName = dateFileName;
-        return dateFileName + String.format("%03d", seq) + identifier + fileSuffix;
+        return dateFileName + String.format(Locale.getDefault(), "%03d", seq) + identifier + fileSuffix;
     }
 }

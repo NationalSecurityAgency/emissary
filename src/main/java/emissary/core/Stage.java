@@ -100,6 +100,7 @@ enum Stage {
      * @param current current stage
      * @return the Stage following the current stage or null there is no next value
      */
+    @SuppressWarnings("EnumOrdinal")
     public static Stage nextStageAfter(final Stage current) {
         final int nextIndex = current.ordinal() + 1;
         return getByOrdinal(nextIndex);
@@ -112,6 +113,7 @@ enum Stage {
      * @return the Stage following the name stage or null there is no next value
      */
     @Nullable
+    @SuppressWarnings("EnumOrdinal")
     public static Stage nextStageAfter(final String name) {
         Stage current = Stage.getByName(name);
         if (current == null) {

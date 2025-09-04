@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -379,7 +380,8 @@ public abstract class ExtractionTest extends UnitTest {
                     String.format("Expected <att#> in %s not equal to number of att in payload.", tname));
         } else {
             if (attachments != null && !attachments.isEmpty()) {
-                fail(String.format("%d attachments in payload with no count in answer xml, add matching <numAttachments> count for %s",
+                fail(String.format(Locale.getDefault(),
+                        "%d attachments in payload with no count in answer xml, add matching <numAttachments> count for %s",
                         attachments.size(), tname));
             }
         }
@@ -390,11 +392,12 @@ public abstract class ExtractionTest extends UnitTest {
                 Attribute index = currentForm.getAttribute(INDEX);
                 if (index != null) {
                     assertEquals(payload.currentFormAt(index.getIntValue()), cf,
-                            String.format("Current form '%s' not found at position [%d] in %s, %s", cf, index.getIntValue(), tname,
+                            String.format(Locale.getDefault(), "Current form '%s' not found at position [%d] in %s, %s", cf, index.getIntValue(),
+                                    tname,
                                     payload.getAllCurrentForms()));
                 } else {
                     assertTrue(payload.searchCurrentForm(cf) > -1,
-                            String.format("Current form %s not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
+                            String.format(Locale.getDefault(), "Current form %s not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
                 }
             }
         }
@@ -402,12 +405,12 @@ public abstract class ExtractionTest extends UnitTest {
         String cf = el.getChildTextTrim(CURRENT_FORM);
         if (cf != null) {
             assertTrue(payload.searchCurrentForm(cf) > -1,
-                    String.format("Current form '%s' not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
+                    String.format(Locale.getDefault(), "Current form '%s' not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
         }
 
         String ft = el.getChildTextTrim("fileType");
         if (ft != null) {
-            assertEquals(ft, payload.getFileType(), String.format("Expected File Type '%s' in %s", ft, tname));
+            assertEquals(ft, payload.getFileType(), String.format(Locale.getDefault(), "Expected File Type '%s' in %s", ft, tname));
         }
 
         int cfsize = JDOMUtil.getChildIntValue(el, "currentFormSize");
@@ -418,7 +421,8 @@ public abstract class ExtractionTest extends UnitTest {
         String classification = el.getChildTextTrim(CLASSIFICATION);
         if (classification != null) {
             assertEquals(classification, payload.getClassification(),
-                    String.format("Classification in '%s' is '%s', not expected '%s'", tname, payload.getClassification(), classification));
+                    String.format(Locale.getDefault(), "Classification in '%s' is '%s', not expected '%s'", tname, payload.getClassification(),
+                            classification));
         }
 
         for (Element dataLength : el.getChildren("dataLength")) {
@@ -475,7 +479,7 @@ public abstract class ExtractionTest extends UnitTest {
                 String key = meta.getChildTextTrim(NAME);
                 checkForMissingNameElement("nometa", key, tname);
                 assertFalse(payload.hasParameter(key),
-                        String.format("Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
+                        String.format(Locale.getDefault(), "Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
                                 payload.getStringParameter(key)));
             }
         }
@@ -496,10 +500,10 @@ public abstract class ExtractionTest extends UnitTest {
                 String viewName = view.getChildTextTrim(NAME);
                 String lengthStr = view.getChildTextTrim(LENGTH_ATTRIBUTE_NAME);
                 byte[] viewData = payload.getAlternateView(viewName);
-                assertNotNull(viewData, String.format("Alternate View '%s' is missing in %s", viewName, tname));
+                assertNotNull(viewData, String.format(Locale.getDefault(), "Alternate View '%s' is missing in %s", viewName, tname));
                 if (lengthStr != null) {
                     assertEquals(Integer.parseInt(lengthStr), viewData.length,
-                            String.format("Length of Alternate View '%s' is wrong in %s", viewName, tname));
+                            String.format(Locale.getDefault(), "Length of Alternate View '%s' is wrong in %s", viewName, tname));
                 }
                 checkStringValue(view, new String(viewData), tname);
             }
@@ -510,7 +514,7 @@ public abstract class ExtractionTest extends UnitTest {
             if (verifyOs(view)) {
                 String viewName = view.getChildTextTrim(NAME);
                 byte[] viewData = payload.getAlternateView(viewName);
-                assertNull(viewData, String.format("Alternate View '%s' is present, but should not be, in %s", viewName, tname));
+                assertNull(viewData, String.format(Locale.getDefault(), "Alternate View '%s' is present, but should not be, in %s", viewName, tname));
             }
         }
 
@@ -525,12 +529,13 @@ public abstract class ExtractionTest extends UnitTest {
             // check extracted records answer file count against payload count
             if (extractCount > -1) {
                 assertEquals(extractCount, foundCount,
-                        String.format("Expected <extractCount> in %s not equal to number of extracts in payload.", tname));
+                        String.format(Locale.getDefault(), "Expected <extractCount> in %s not equal to number of extracts in payload.", tname));
             } else if (extractCount == -1 && numExtractElements > 0) {
                 assertEquals(numExtractElements, foundCount,
-                        String.format("Expected <extract#> in %s not equal to number of extracts in payload.", tname));
+                        String.format(Locale.getDefault(), "Expected <extract#> in %s not equal to number of extracts in payload.", tname));
             } else {
-                fail(String.format("%d extracts in payload with no count in answer xml, add matching <extractCount> count for %s",
+                fail(String.format(Locale.getDefault(),
+                        "%d extracts in payload with no count in answer xml, add matching <extractCount> count for %s",
                         foundCount, tname));
             }
 
@@ -538,23 +543,24 @@ public abstract class ExtractionTest extends UnitTest {
             for (int attNum = 1; attNum <= extractedChildren.size(); attNum++) {
                 Element extel = getChildAnswers(el, EXTRACTED_RECORD_ELEMENT_PREFIX, attNum);
                 if (extel != null) {
-                    checkAnswers(extel, extractedChildren.get(attNum - 1), NO_ATTACHMENTS, String.format("%s::extract%d", tname, attNum));
+                    checkAnswers(extel, extractedChildren.get(attNum - 1), NO_ATTACHMENTS,
+                            String.format(Locale.getDefault(), "%s::extract%d", tname, attNum));
                 }
             }
         } else {
             if (extractCount > -1) {
                 assertEquals(0, extractCount,
-                        String.format("No extracted children in '%s' when <extractCount> is %d", tname, extractCount));
+                        String.format(Locale.getDefault(), "No extracted children in '%s' when <extractCount> is %d", tname, extractCount));
             } else if (numExtractElements > 0) {
                 assertEquals(0, numExtractElements,
-                        String.format("No extracted children in '%s' when <extract#> is %d", tname, numExtractElements));
+                        String.format(Locale.getDefault(), "No extracted children in '%s' when <extract#> is %d", tname, numExtractElements));
             }
         }
     }
 
     private static void checkForMissingNameElement(String parentTag, String key, String tname) {
         if (key == null) {
-            fail(String.format("The element %s has a problem in %s: does not have a child name element", parentTag, tname));
+            fail(String.format(Locale.getDefault(), "The element %s has a problem in %s: does not have a child name element", parentTag, tname));
         }
     }
 
@@ -574,22 +580,27 @@ public abstract class ExtractionTest extends UnitTest {
 
         if (matchMode.equals("equals")) {
             assertEquals(value, data,
-                    String.format("%s element '%s' problem in %s value '%s' does not equal '%s'", meta.getName(), key, tname, data, value));
+                    String.format(Locale.getDefault(), "%s element '%s' problem in %s value '%s' does not equal '%s'", meta.getName(), key, tname,
+                            data, value));
         } else if (matchMode.equals(INDEX) || matchMode.equals("contains")) {
             assertTrue(data.contains(value),
-                    String.format("%s element '%s' problem in %s value '%s' does not index '%s'", meta.getName(), key, tname, data, value));
+                    String.format(Locale.getDefault(), "%s element '%s' problem in %s value '%s' does not index '%s'", meta.getName(), key, tname,
+                            data, value));
         } else if (matchMode.equals("!index") || matchMode.equals("!contains")) {
             assertFalse(data.contains(value),
-                    String.format("%s element '%s' problem in %s value '%s' should not be indexed in '%s'", meta.getName(), key, tname, value, data));
+                    String.format(Locale.getDefault(), "%s element '%s' problem in %s value '%s' should not be indexed in '%s'", meta.getName(), key,
+                            tname, value, data));
         } else if (matchMode.equals("match")) {
             assertTrue(data.matches(value),
-                    String.format("%s element '%s' problem in %s value '%s' does not match '%s'", meta.getName(), key, tname, data, value));
+                    String.format(Locale.getDefault(), "%s element '%s' problem in %s value '%s' does not match '%s'", meta.getName(), key, tname,
+                            data, value));
         } else if (matchMode.equals("base64")) {
             // decode value as a base64 encoded byte[] array and use the string
             // representation of the byte array for comparison to the incoming value
             value = new String(DatatypeConverter.parseBase64Binary(value));
             assertEquals(value, data,
-                    String.format("%s element '%s' problem in %s value '%s' does not match '%s'", meta.getName(), key, tname, data, value));
+                    String.format(Locale.getDefault(), "%s element '%s' problem in %s value '%s' does not match '%s'", meta.getName(), key, tname,
+                            data, value));
         } else if ("collection".equalsIgnoreCase(matchMode)) {
             Attribute separatorAttribute = meta.getAttribute("collectionSeparator");
             String separator = null != separatorAttribute ? separatorAttribute.getValue() : ","; // comma is default
@@ -597,12 +608,13 @@ public abstract class ExtractionTest extends UnitTest {
             List<String> expectedValues = Arrays.asList(value.split(separator));
             List<String> actualValues = Arrays.asList(data.split(separator));
             assertTrue(CollectionUtils.isEqualCollection(expectedValues, actualValues),
-                    String.format(
+                    String.format(Locale.getDefault(),
                             "%s element '%s' problem in %s did not have equal collection, value '%s' does not equal '%s' split by separator '%s'",
                             meta.getName(), key, tname, data, value, separator));
 
         } else {
-            fail(String.format("Problematic matchMode specified for test '%s' on %s in element %s", matchMode, key, meta.getName()));
+            fail(String.format(Locale.getDefault(), "Problematic matchMode specified for test '%s' on %s in element %s", matchMode, key,
+                    meta.getName()));
         }
     }
 

@@ -59,7 +59,8 @@
     <dep.commons-lang.version>3.18.0</dep.commons-lang.version>
     <dep.commons-pool.version>2.11.1</dep.commons-pool.version>
     <dep.dropwizard.metrics.version>4.2.30</dep.dropwizard.metrics.version>
-    <dep.errorprone.version>2.23.0</dep.errorprone.version>
+    <dep.errorprone.version>2.31.0</dep.errorprone.version>
+    <!-- Error Prone 2.32+ requires JDK17-->
     <dep.grpc.version>1.65.0</dep.grpc.version>
     <dep.gson.version>2.10.1</dep.gson.version>
     <dep.guava.version>32.1.2-jre</dep.guava.version>
