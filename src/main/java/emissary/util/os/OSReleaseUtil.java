@@ -2,6 +2,7 @@ package emissary.util.os;
 
 import org.apache.commons.exec.OS;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,7 +30,7 @@ public class OSReleaseUtil {
 
         if (Files.exists(osReleasePath)) {
             try (Stream<String> lines = Files.lines(osReleasePath)) {
-                Optional<String> versionIdOptional = lines.filter(line -> StringUtils.startsWith(line, "VERSION_ID")).findFirst();
+                Optional<String> versionIdOptional = lines.filter(line -> Strings.CS.startsWith(line, "VERSION_ID")).findFirst();
                 if (versionIdOptional.isPresent()) {
                     String versionIdLine = versionIdOptional.get().replace("\"", "");
                     versionId = versionIdLine.substring(versionIdLine.indexOf("=") + 1);
@@ -114,7 +115,7 @@ public class OSReleaseUtil {
     private static boolean isOsName(Path osReleasePath, String osName) {
         if (Files.exists(osReleasePath)) {
             try (Stream<String> lines = Files.lines(osReleasePath)) {
-                return lines.filter(line -> line.startsWith("ID=")).anyMatch(entry -> StringUtils.containsIgnoreCase(entry, osName));
+                return lines.filter(line -> line.startsWith("ID=")).anyMatch(entry -> Strings.CI.contains(entry, osName));
             } catch (IOException ignored) {
                 // ignore
             }
@@ -126,7 +127,7 @@ public class OSReleaseUtil {
     private static boolean isOsLike(Path osReleasePath, String osName) {
         if (Files.exists(osReleasePath)) {
             try (Stream<String> lines = Files.lines(osReleasePath)) {
-                return lines.filter(line -> line.startsWith("ID_LIKE=")).anyMatch(entry -> StringUtils.containsIgnoreCase(entry, osName));
+                return lines.filter(line -> line.startsWith("ID_LIKE=")).anyMatch(entry -> Strings.CI.contains(entry, osName));
             } catch (IOException ignored) {
                 // ignore
             }

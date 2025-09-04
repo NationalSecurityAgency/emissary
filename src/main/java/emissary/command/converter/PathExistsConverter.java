@@ -1,7 +1,7 @@
 package emissary.command.converter;
 
 import jakarta.annotation.Nullable;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.ITypeConverter;
@@ -29,7 +29,7 @@ public class PathExistsConverter implements ITypeConverter<Path> {
     }
 
     public Path convert(String option, String value) {
-        Path p = Paths.get(StringUtils.removeEnd(value, "/"));
+        Path p = Paths.get(Strings.CS.removeEnd(value, "/"));
         // ensure the value exists
         if (!Files.exists(p)) {
             String msg = String.format("The option '%s' was configured with path '%s' which does not exist", option, p);
