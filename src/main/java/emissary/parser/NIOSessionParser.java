@@ -113,7 +113,7 @@ public abstract class NIOSessionParser extends SessionParser {
             while (b.hasRemaining()) {
                 if (channel.read(b) == -1) {
                     channel.close();
-                    logger.warn("Closing channel. End of channel reached at {} instead of expected {}", data.length - b.remaining(), data.length);
+                    logger.debug("Closing channel. End of channel reached at {} instead of expected {}", data.length - b.remaining(), data.length);
                     break;
                 }
             }
