@@ -55,7 +55,7 @@ public class OSReleaseUtil {
 
     static String getMajorReleaseVersion(Path osReleasePath) {
         try {
-            return String.format("%.0f", Float.parseFloat(getVersionId(osReleasePath)));
+            return String.format("%d", (int) Float.parseFloat(getVersionId(osReleasePath)));
         } catch (NumberFormatException e) {
             // support x.y.z format
             return StringUtils.substringBefore(getVersionId(osReleasePath), ".");
