@@ -73,7 +73,7 @@ public class SaferJDOMUtil extends AbstractJDOMUtil {
      */
     public static Document createDocument(final byte[] xml, final XMLFilter filter, @Nullable final String charset)
             throws JDOMException {
-        return createDocument(xml, filter, charset, createSAXBuilder());
+        return createDocument(xml, filter, createSAXBuilder(), charset);
     }
 
     /**

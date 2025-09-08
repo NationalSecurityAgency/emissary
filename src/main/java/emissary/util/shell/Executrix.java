@@ -28,6 +28,7 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -866,7 +867,7 @@ public class Executrix {
             // kill process if it's not done after 5 minutes - would prefer to
             // pass in a timeout value
             if (this.processMaxMillis >= 1) {
-                dog = new ExecuteWatchdog(this.processMaxMillis);
+                dog = ExecuteWatchdog.builder().setTimeout(Duration.ofMillis(this.processMaxMillis)).get();
                 dog.start(p);
             }
             p.waitFor();

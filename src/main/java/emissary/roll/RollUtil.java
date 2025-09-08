@@ -48,7 +48,7 @@ public class RollUtil {
         TimeUnit t = getUnit(config.get("TIME_UNIT"));
         long period = getLong(config.get("TIME_PERIOD"));
         long max = getLong(config.get("PROGRESS_MAX"));
-        return new Roller(max, t, period, r);
+        return new Roller(t, period, r, max);
     }
 
     // convert a long from a string or return 0
