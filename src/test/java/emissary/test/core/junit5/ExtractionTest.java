@@ -373,21 +373,20 @@ public abstract class ExtractionTest extends UnitTest {
         boolean osSpecificNumAtt = false;
         List<Element> numAttachments = el.getChildren("numAttachments");
         for (Element numAttEl : numAttachments) {
-            if (verifyOs(numAttEl) && numAttEl.getAttribute("os-release") != null) {
-                String osRelease = numAttEl.getAttribute("os-release").getValue();
+            if (verifyOs(numAttEl)) {
                 numAtt = Integer.parseInt(numAttEl.getValue());
                 numAttElements = el.getChildren().stream().filter(
-                        c -> c.getName().startsWith(ATTACHMENT_ELEMENT_PREFIX) && c.getAttribute("os-release").getValue().equals(osRelease))
-                        .count();
-                osSpecificNumAtt = true;
+                        c -> c.getName().startsWith(ATTACHMENT_ELEMENT_PREFIX) && verifyOs(c)).count();
+                // see if os specific numAttachments for check against payload
+                if (numAttEl.getAttribute("os-release") != null) {
+                    osSpecificNumAtt = true;
+                }
+                break;
             }
         }
 
         // check attachments answer file count against payload count
         if (!osSpecificNumAtt) {
-            numAtt = JDOMUtil.getChildIntValue(el, "numAttachments");
-            numAttElements = el.getChildren().stream().filter(c -> c.getName().startsWith(ATTACHMENT_ELEMENT_PREFIX)).count();
-
             if (numAtt > -1) {
                 assertEquals(numAtt, attachments != null ? attachments.size() : 0,
                         String.format("Expected <numAttachments> in %s not equal to number of att in payload.", tname));
@@ -410,8 +409,8 @@ public abstract class ExtractionTest extends UnitTest {
                     tname, numAttElements, attInPayload));
             if (numAtt == -1) {
                 assertEquals(0, numAttElements,
-                        String.format("OS Specific <numAttachments> & <att#> in %s are not equal. ==> <numAttachments>:<%d> <att#>:<%d>", tname,
-                                0, numAttElements));
+                        String.format("OS Specific <numAttachments> & <att#> in %s are not equal. ==> <numAttachments>:<%d> <att#>:<%d>", tname, 0,
+                                numAttElements));
             } else {
                 assertEquals(numAtt, numAttElements,
                         String.format("OS Specific <numAttachments> & <att#> in %s are not equal. ==> <numAttachments>:<%d> <att#>:<%d>", tname,
