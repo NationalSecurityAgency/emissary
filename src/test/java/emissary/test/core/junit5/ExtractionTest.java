@@ -124,7 +124,7 @@ public abstract class ExtractionTest extends UnitTest {
      *         automatically
      */
     protected boolean generateAnswers() {
-        return Boolean.getBoolean("generateAnswers");
+        return Boolean.getBoolean("generateAnswers") && createAnswerGenerator() != null;
     }
 
     protected AnswerGenerator createAnswerGenerator() {
@@ -256,6 +256,13 @@ public abstract class ExtractionTest extends UnitTest {
     public void testExtractionPlace(String resource) {
         logger.debug("Running {} test on resource {}", place.getClass().getName(), resource);
 
+        if (generateAnswers()) {
+            // Get the data and create a channel factory to it
+            final IBaseDataObject initialIbdo = getInitialIbdo(resource);
+            getAnswerGenerator().generateAnswerFiles(resource, place, initialIbdo, getEncoders(resource), super.answerFileClassRef,
+                    getLogbackLoggerName());
+        }
+
         // Need a pair consisting of a .dat file and a .xml file (answers)
         Document controlDoc = getAnswerDocumentFor(resource);
         if (controlDoc == null) {
@@ -277,6 +284,15 @@ public abstract class ExtractionTest extends UnitTest {
             logger.error("Error running test {}", resource, ex);
             fail("Cannot run test " + resource, ex);
         }
+    }
+
+    @Override
+    protected Document getAnswerDocumentFor(final String resource) {
+        // If generating answers, get the src version, otherwise get the normal XML file
+        if (generateAnswers()) {
+            return getAnswerGenerator().getAnswerDocumentFor(resource, answerFileClassRef);
+        }
+        return super.getAnswerDocumentFor(resource);
     }
 
     protected void processPreHook(IBaseDataObject payload, Document controlDoc) {

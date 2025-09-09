@@ -11,8 +11,6 @@ import emissary.util.io.ResourceReader;
 import jakarta.annotation.Nullable;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -136,32 +134,6 @@ public abstract class RegressionTest extends ExtractionTest {
         }
 
         fixDisposeRunnables(payload);
-    }
-
-    @ParameterizedTest
-    @MethodSource("data")
-    @Override
-    public void testExtractionPlace(final String resource) {
-        logger.debug("Running {} test on resource {}", place.getClass().getName(), resource);
-
-        if (generateAnswers()) {
-            // Get the data and create a channel factory to it
-            final IBaseDataObject initialIbdo = getInitialIbdo(resource);
-            getAnswerGenerator().generateAnswerFiles(resource, place, initialIbdo, getEncoders(resource), super.answerFileClassRef,
-                    getLogbackLoggerName());
-        }
-
-        // Run the normal extraction/regression tests
-        super.testExtractionPlace(resource);
-    }
-
-    @Override
-    protected Document getAnswerDocumentFor(final String resource) {
-        // If generating answers, get the src version, otherwise get the normal XML file
-        if (generateAnswers()) {
-            return getAnswerGenerator().getAnswerDocumentFor(resource, answerFileClassRef);
-        }
-        return super.getAnswerDocumentFor(resource);
     }
 
     @Override
