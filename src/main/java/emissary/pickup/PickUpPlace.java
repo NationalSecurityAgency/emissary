@@ -1,5 +1,6 @@
 package emissary.pickup;
 
+import emissary.config.Configurator;
 import emissary.core.DataObjectFactory;
 import emissary.core.EmissaryException;
 import emissary.core.Form;
@@ -140,6 +141,18 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         super(configStream, placeLoc);
         configurePickUpPlace();
     }
+
+    /**
+     * Create a pick up place
+     *
+     * @param configs config data
+     * @throws IOException If there is some I/O problem.
+     */
+    public PickUpPlace(Configurator configs) throws IOException {
+        super(configs);
+        configurePickUpPlace();
+    }
+
 
     /**
      * Configure the place specific items

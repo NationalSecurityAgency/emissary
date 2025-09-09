@@ -1,5 +1,6 @@
 package emissary.place;
 
+import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.core.IBaseDataObjectHelper;
 import emissary.pickup.PickUpPlace;
@@ -48,6 +49,11 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
 
     public MultiFileServerPlace(InputStream configStream, String thePlaceLocation) throws IOException {
         super(configStream, thePlaceLocation);
+        configureAbstractPlace();
+    }
+
+    public MultiFileServerPlace(Configurator configs) throws IOException {
+        super(configs);
         configureAbstractPlace();
     }
 
