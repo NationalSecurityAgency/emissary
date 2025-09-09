@@ -14,6 +14,8 @@ import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.LineSeparator;
 import org.jdom2.output.XMLOutputter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +34,8 @@ import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AnswerGenerator {
+
+    protected static final Logger logger = LoggerFactory.getLogger(AnswerGenerator.class);
 
     /** Open options for (over-)writing answers XML */
     private static final Set<StandardOpenOption> CREATE_WRITE_TRUNCATE = new HashSet<>(Arrays.asList(StandardOpenOption.CREATE,
@@ -169,7 +173,7 @@ public abstract class AnswerGenerator {
         if (path == null) {
             fail(String.format("Could not get path for resource = %s", resource));
         }
-        RegressionTestAnswerGenerator.logger.info("Writing answers file to path: {}", path);
+        logger.info("Writing answers file to path: {}", path);
         try (FileChannel fc = FileChannel.open(path, CREATE_WRITE_TRUNCATE);
                 SeekableInMemoryByteChannel simbc = new SeekableInMemoryByteChannel(xmlContent)) {
             fc.transferFrom(simbc, 0, simbc.size());
@@ -189,7 +193,7 @@ public abstract class AnswerGenerator {
     public static Path getXmlPath(String resource, @Nullable AtomicReference<Class<?>> answerFileClassRef) {
         final int datPos = resource.lastIndexOf(ResourceReader.DATA_SUFFIX);
         if (datPos == -1) {
-            RegressionTestAnswerGenerator.logger.debug("Resource is not a DATA file {}", resource);
+            logger.debug("Resource is not a DATA file {}", resource);
             return null;
         }
 
