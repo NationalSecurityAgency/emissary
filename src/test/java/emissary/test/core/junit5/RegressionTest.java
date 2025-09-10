@@ -2,9 +2,9 @@ package emissary.test.core.junit5;
 
 import emissary.core.DiffCheckConfiguration;
 import emissary.core.IBaseDataObject;
+import emissary.core.IBaseDataObjectXmlCodecs;
 import emissary.core.IBaseDataObjectXmlHelper;
 import emissary.test.core.junit5.LogbackTester.SimplifiedLogEvent;
-import emissary.util.ByteUtil;
 import emissary.util.PlaceComparisonHelper;
 import emissary.util.io.ResourceReader;
 
@@ -13,20 +13,14 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.TreeMap;
 
-import static emissary.core.IBaseDataObjectXmlCodecs.ALWAYS_SHA256_ELEMENT_ENCODERS;
 import static emissary.core.IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS;
 import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
 import static emissary.core.constants.IbdoXmlElementNames.SETUP;
-import static emissary.test.core.junit5.AnswerGenerator.fixDisposeRunnables;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -69,6 +63,16 @@ public abstract class RegressionTest extends ExtractionTest {
         return new RegressionTestAnswerGenerator();
     }
 
+    /**
+     * This method returns the XML element encoders.
+     *
+     * @return the XML element encoders.
+     */
+    @Override
+    protected IBaseDataObjectXmlCodecs.ElementEncoders getEncoders() {
+        return SHA256_ELEMENT_ENCODERS;
+    }
+
     @Override
     @Nullable
     protected String getInitialForm(final String resource) {
@@ -80,60 +84,6 @@ public abstract class RegressionTest extends ExtractionTest {
             fail("Unable to get initial form from filename", e);
             return null;
         }
-    }
-
-    /**
-     * When the data is able to be retrieved from the XML (e.g. when getEncoders() returns the default encoders), then this
-     * method should be empty. However, in this case getEncoders() is returning the sha256 encoders which means the original
-     * data cannot be retrieved from the XML. Therefore, in order to test equivalence, all of the non-printable data in the
-     * IBaseDataObjects needs to be converted to a sha256 hash. The full encoders can be used by overriding the
-     * checkAnswersPreHook(...) to be empty and overriding getEncoders() to return the DEFAULT_ELEMENT_ENCODERS.
-     */
-    @Override
-    protected void checkAnswersPreHook(final Document answers, final IBaseDataObject payload, final List<IBaseDataObject> attachments,
-            final String tname) {
-
-        if (getLogbackLoggerName() != null) {
-            checkAnswersPreHookLogEvents(actualSimplifiedLogEvents);
-        }
-
-        final boolean alwaysHash;
-
-        if (SHA256_ELEMENT_ENCODERS.equals(getEncoders(tname))) {
-            alwaysHash = false;
-        } else if (ALWAYS_SHA256_ELEMENT_ENCODERS.equals(getEncoders(tname))) {
-            alwaysHash = true;
-        } else {
-            return;
-        }
-
-        // touch up alternate views to match how their bytes would have encoded into the answer file
-        for (Entry<String, byte[]> entry : new TreeMap<>(payload.getAlternateViews()).entrySet()) {
-            Optional<String> viewSha256 = hashBytesIfNonPrintable(entry.getValue(), alwaysHash);
-            viewSha256.ifPresent(s -> payload.addAlternateView(entry.getKey(), s.getBytes(StandardCharsets.UTF_8)));
-        }
-
-        // touch up primary view if necessary
-        Optional<String> payloadSha256 = hashBytesIfNonPrintable(payload.data(), alwaysHash);
-        payloadSha256.ifPresent(s -> payload.setData(s.getBytes(StandardCharsets.UTF_8)));
-
-        if (payload.getExtractedRecords() != null) {
-            for (final IBaseDataObject extractedRecord : payload.getExtractedRecords()) {
-                Optional<String> recordSha256 = hashBytesIfNonPrintable(extractedRecord.data(), alwaysHash);
-                recordSha256.ifPresent(s -> extractedRecord.setData(s.getBytes(StandardCharsets.UTF_8)));
-            }
-        }
-
-        if (attachments != null) {
-            for (final IBaseDataObject attachment : attachments) {
-                if (ByteUtil.hasNonPrintableValues(attachment.data())) {
-                    Optional<String> attachmentSha256 = hashBytesIfNonPrintable(attachment.data(), alwaysHash);
-                    attachmentSha256.ifPresent(s -> attachment.setData(s.getBytes(StandardCharsets.UTF_8)));
-                }
-            }
-        }
-
-        fixDisposeRunnables(payload);
     }
 
     @Override
