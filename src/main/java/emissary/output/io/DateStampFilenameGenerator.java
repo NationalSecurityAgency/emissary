@@ -4,7 +4,7 @@ import emissary.directory.EmissaryNode;
 import emissary.util.TimeUtil;
 import emissary.util.io.FileNameGenerator;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -50,7 +50,7 @@ public class DateStampFilenameGenerator implements FileNameGenerator {
     @Override
     public String nextFileName() {
         String dateFileName = formatter.format(Instant.now());
-        seq = StringUtils.startsWith(lastFileName, dateFileName) ? seq + 1 : 0;
+        seq = Strings.CS.startsWith(lastFileName, dateFileName) ? seq + 1 : 0;
         lastFileName = dateFileName;
         return dateFileName + String.format("%03d", seq) + identifier + fileSuffix;
     }

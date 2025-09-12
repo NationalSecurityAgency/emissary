@@ -15,6 +15,7 @@ import emissary.util.DataUtil;
 import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -137,7 +138,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
     protected void unescapeSummary(IBaseDataObject d) {
         // Unescape the Summary if present
         String summary = d.getStringParameter(SUMMARY);
-        if (StringUtils.contains(summary, "&#")) {
+        if (Strings.CS.contains(summary, "&#")) {
             logger.debug("Working on summary "/* + summary */);
             String s = makeString(HtmlEscape.unescapeHtml(summary.getBytes()));
             if (StringUtils.isNotBlank(s)) {
@@ -151,7 +152,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
     protected void unescapeDocTitle(IBaseDataObject d) {
         // Unescape the Document Title
         String title = d.getStringParameter(DOCUMENT_TITLE);
-        if (StringUtils.contains(title, "&#")) {
+        if (Strings.CS.contains(title, "&#")) {
             logger.debug("Working on title "/* + title */);
             String s = makeString(HtmlEscape.unescapeHtml(title.getBytes()));
             if (StringUtils.isNotBlank(s)) {
@@ -166,7 +167,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
     protected void processEncoding(IBaseDataObject d) {
         // If the encoding or the LANG- form has -HTMLESC remove it
         String enc = d.getFontEncoding();
-        if (StringUtils.contains(enc, SUFFIXES_HTMLESC)) {
+        if (Strings.CS.contains(enc, SUFFIXES_HTMLESC)) {
             d.setFontEncoding(enc.replaceFirst(SUFFIXES_HTMLESC, ""));
         }
     }

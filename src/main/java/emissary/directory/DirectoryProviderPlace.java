@@ -9,7 +9,7 @@ import emissary.server.EmissaryServer;
 import emissary.server.mvc.adapters.DirectoryAdapter;
 
 import jakarta.annotation.Nullable;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +170,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
             try {
                 String myUrl = KeyManipulator.getServiceHostUrl(keys.get(0));
                 String dirUrl = KeyManipulator.getServiceHostUrl(dirPlace);
-                if (StringUtils.equals(dirUrl, myUrl)) {
+                if (Strings.CS.equals(dirUrl, myUrl)) {
                     localDirPlace = (IDirectoryPlace) Namespace.lookup(KeyManipulator.getServiceLocation(theDir));
                 } else {
                     logger.debug("Not localizing directory since dirPlace {} is not equal to myUrl {}", dirPlace, myUrl);

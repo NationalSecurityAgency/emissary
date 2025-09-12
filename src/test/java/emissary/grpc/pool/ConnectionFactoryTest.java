@@ -6,7 +6,7 @@ import emissary.grpc.exceptions.PoolException;
 import emissary.test.core.junit5.UnitTest;
 
 import io.grpc.ManagedChannel;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PooledObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -158,7 +158,7 @@ class ConnectionFactoryTest extends UnitTest {
             ManagedChannel c1 = ConnectionFactory.acquireChannel(pool);
             ManagedChannel c2 = ConnectionFactory.acquireChannel(pool);
             PoolException exception = assertThrows(PoolException.class, () -> ConnectionFactory.acquireChannel(pool));
-            assertTrue(StringUtils.startsWith(exception.getMessage(),
+            assertTrue(Strings.CS.startsWith(exception.getMessage(),
                     "Unable to borrow channel from pool: Timeout waiting for idle object"));
             ConnectionFactory.returnChannel(c1, pool);
             ConnectionFactory.returnChannel(c2, pool);

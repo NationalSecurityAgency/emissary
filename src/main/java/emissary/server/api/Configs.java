@@ -16,6 +16,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -125,7 +126,7 @@ public class Configs {
         if (StringUtils.isBlank(config) || config.contains("\\") || config.contains("/") || config.contains("..") || config.endsWith(".")) {
             throw new IllegalArgumentException("Invalid config name: " + config);
         }
-        return StringUtils.appendIfMissing(StringUtils.trim(config), CONFIG_FILE_ENDING);
+        return Strings.CS.appendIfMissing(config.trim(), CONFIG_FILE_ENDING);
     }
 
     /**

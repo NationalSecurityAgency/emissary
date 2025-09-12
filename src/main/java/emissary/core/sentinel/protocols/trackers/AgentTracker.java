@@ -1,6 +1,7 @@
 package emissary.core.sentinel.protocols.trackers;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -27,11 +28,11 @@ public class AgentTracker implements Tracker, Comparable<AgentTracker> {
     }
 
     public void setAgentId(String agentId) {
-        if (StringUtils.contains(agentId, "No_AgentID_Set")) {
+        if (Strings.CS.contains(agentId, "No_AgentID_Set")) {
             clear();
         } else {
             this.agentId = agentId;
-            if (StringUtils.contains(agentId, "Agent-")) {
+            if (Strings.CS.contains(agentId, "Agent-")) {
                 this.shortName = getShortName(agentId);
             }
         }
