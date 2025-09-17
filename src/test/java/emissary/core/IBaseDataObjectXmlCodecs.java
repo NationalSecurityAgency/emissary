@@ -608,7 +608,7 @@ public final class IBaseDataObjectXmlCodecs {
 
                         parentElement.addContent(metaElement);
                         metaElement.addContent(preserve(protectedElement(NAME, parameter.getKey())));
-                        metaElement.addContent(preserve(protectedElement(VALUE, item.toString())));
+                        metaElement.addContent(preserve(protectedElement(VALUE, String.valueOf(item))));
                     }
                 }
             }
