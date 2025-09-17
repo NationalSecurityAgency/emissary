@@ -86,6 +86,8 @@ public abstract class AbstractFilter implements IDropOffFilter {
     protected Set<String> denylist = new HashSet<>();
     protected Set<String> wildCardDenylist = new HashSet<>();
 
+    protected Set<String> viewNamePrefixCheckTypes = new HashSet<>();
+
     @Nullable
     protected DropOffUtil dropOffUtil = null;
 
@@ -177,6 +179,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     protected void initializeOutputTypes(@Nullable final Configurator config) {
         if (config != null) {
             this.loadNameValidationPatterns(config);
+            viewNamePrefixCheckTypes = config.findEntriesAsSet("VIEW_NAME_PREFIX_CHECK_TYPES");
             this.outputTypes = config.findEntriesAsSet("OUTPUT_TYPE");
             this.logger.debug("Loaded {} output types for filter {}", this.outputTypes.size(), this.outputTypes);
             this.initializeDenylist(config);
@@ -519,6 +522,8 @@ public abstract class AbstractFilter implements IDropOffFilter {
             return checkTypes;
         }
 
+        addViewNamePrefixCheckTypes(viewName, fileType, checkTypes);
+
         checkTypes.add(fileType);
         checkTypes.add(fileType + "." + viewName);
         checkTypes.add("*." + viewName);
@@ -548,6 +553,20 @@ public abstract class AbstractFilter implements IDropOffFilter {
             return true;
         }
         return this.wildCardDenylist.stream().anyMatch(i -> viewName.startsWith(i) || fullName.startsWith(i));
+    }
+
+    /**
+     * If the view name starts with the view name prefix, add the view name prefix to checkTypes
+     * 
+     * @param viewName view name
+     * @param fileType the file type
+     * @param checkTypes compare types with the configured output types
+     */
+    protected void addViewNamePrefixCheckTypes(final String viewName, String fileType, Set<String> checkTypes) {
+        this.viewNamePrefixCheckTypes.stream().filter(viewName::startsWith).forEach(viewNamePrefix -> {
+            checkTypes.add(fileType + "." + viewNamePrefix);
+            checkTypes.add("*." + viewNamePrefix);
+        });
     }
 
     /**
