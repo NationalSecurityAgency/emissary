@@ -312,7 +312,7 @@ public class IBaseDataObjectDiffHelper {
             final List<String> list = new ArrayList<>();
 
             for (Object o : e.getValue()) {
-                list.add(o.toString());
+                list.add(String.valueOf(o));
             }
 
             newMap.put(e.getKey(), list);

@@ -219,7 +219,9 @@ public abstract class AnswerGenerator {
             final List<String> newValues = new ArrayList<>();
 
             for (Object o : values) {
-                newValues.add(o.getClass().getName());
+                if (null != o) {
+                    newValues.add(o.getClass().getName());
+                }
             }
 
             ibdo.putParameter(DisposeHelper.KEY, newValues);
