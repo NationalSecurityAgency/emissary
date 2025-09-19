@@ -46,9 +46,6 @@ public abstract class IdentificationTest extends UnitTest {
         }
     }
 
-    /**
-     * Derived classes must implement this
-     */
     public abstract IServiceProviderPlace createPlace() throws IOException;
 
     public static Stream<? extends Arguments> data() {

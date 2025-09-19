@@ -50,6 +50,11 @@ public abstract class AnswerGenerator {
      * Takes initial form and final forms from the filename
      *
      * @param resource to generate against
+     * @param place the place under test
+     * @param initialIbdo for 'setup' section
+     * @param encoders for encoding ibdo into XML
+     * @param answerFileClassRef answer file class (if different from data class)
+     * @param logbackLoggerName name of logger to use
      */
     public abstract void generateAnswerFiles(String resource, IServiceProviderPlace place, IBaseDataObject initialIbdo,
             IBaseDataObjectXmlCodecs.ElementEncoders encoders, AtomicReference<Class<?>> answerFileClassRef, String logbackLoggerName);
@@ -110,6 +115,8 @@ public abstract class AnswerGenerator {
      * Running locally in an IDE, PROJECT_BASE will likely point to {@code src/main/}
      *
      * Running in Maven/Docker it will most likely point to {@code target/}
+     *
+     * @return a path to write XML output to
      */
     public static Path getTestResx() {
         // Gets us the parent folder to PROJECT_BASE
@@ -130,8 +137,9 @@ public abstract class AnswerGenerator {
      * @param resource referencing the DAT file
      * @param initialIbdo for 'setup' section
      * @param finalIbdo for 'answers' section
-     * @param encoders for encoding ibdo into XML
      * @param results for 'answers' section
+     * @param logEvents events to send to the LogbackTester
+     * @param encoders for encoding ibdo into XML
      * @param answerFileClassRef answer file class (if different from data class)
      */
     public static void writeAnswerXml(String resource, IBaseDataObject initialIbdo, IBaseDataObject finalIbdo,
