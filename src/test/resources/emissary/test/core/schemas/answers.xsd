@@ -178,6 +178,8 @@
             <xs:group ref="children"/>
         </xs:choice>
         <xs:attribute name="index" type="xs:int" />
+        <xs:attribute ref="os-release"/>
+        <xs:attribute ref="os-version"/>
     </xs:complexType>
     <xs:group name="children">
         <xs:sequence>
