@@ -126,7 +126,7 @@
     <plugin.maven-replacer.version>1.5.3</plugin.maven-replacer.version>
     <plugin.maven-resources.version>3.3.1</plugin.maven-resources.version>
     <plugin.maven-scm-publish.version>3.3.0</plugin.maven-scm-publish.version>
-    <plugin.maven-site.version>3.12.1</plugin.maven-site.version>
+    <plugin.maven-site.version>3.21.0</plugin.maven-site.version>
     <plugin.maven-source.version>3.3.1</plugin.maven-source.version>
     <plugin.maven-surefire.version>3.2.3</plugin.maven-surefire.version>
     <plugin.nexus-staging-maven.version>1.6.7</plugin.nexus-staging-maven.version>
