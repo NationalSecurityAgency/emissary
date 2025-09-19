@@ -5,6 +5,7 @@ import emissary.config.Configurator;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,11 +49,11 @@ public class ClassLocationVerificationProvider implements InitializationProvider
     }
 
     private static boolean ifWorkingDirDoesNotContainExpectedLocation(String expectedLocation, String locationName) {
-        return StringUtils.isNotBlank(locationName) && !StringUtils.startsWith(locationName, expectedLocation);
+        return StringUtils.isNotBlank(locationName) && !Strings.CS.startsWith(locationName, expectedLocation);
     }
 
     private static boolean ifArchivedFileNameDoesNotStartsWithExpectedLocation(String expectedLocation, String location, String locationName) {
-        return StringUtils.isBlank(locationName) && !StringUtils.contains(location, expectedLocation);
+        return StringUtils.isBlank(locationName) && !Strings.CS.contains(location, expectedLocation);
     }
 
     private static void logError(String className, String expectedLocation, String location) {

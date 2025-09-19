@@ -12,7 +12,7 @@ import emissary.directory.KeyManipulator;
 
 import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -437,7 +437,7 @@ public class JNI implements Serializable {
 
         String repositoryAddrString = KeyManipulator.getServiceLocation(repositoryKey);
 
-        if (StringUtils.contains(repositoryAddrString, "//")) {
+        if (Strings.CS.contains(repositoryAddrString, "//")) {
             repositoryAddrString = repositoryAddrString.substring(repositoryAddrString.indexOf("//"));
         }
 

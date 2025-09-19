@@ -4,6 +4,7 @@ import emissary.pickup.Priority;
 import emissary.pickup.PriorityDirectory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import picocli.CommandLine.ITypeConverter;
 
 import java.util.regex.Matcher;
@@ -30,6 +31,6 @@ public class PriorityDirectoryConverter implements ITypeConverter<PriorityDirect
             dirName = value;
             priority = Priority.DEFAULT;
         }
-        return new PriorityDirectory(StringUtils.appendIfMissing(dirName, "/"), priority);
+        return new PriorityDirectory(Strings.CS.appendIfMissing(dirName, "/"), priority);
     }
 }
