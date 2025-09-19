@@ -76,6 +76,8 @@ public abstract class UnitTest {
 
     /**
      * Create a named unit test
+     *
+     * @param name the name to use
      */
     @SuppressWarnings("PMD.UnusedFormalParameter")
     public UnitTest(String name) {
@@ -144,6 +146,8 @@ public abstract class UnitTest {
 
     /**
      * Get all test resources (*.dat) for this class
+     *
+     * @return sorted list of resources found or an empty list if none
      */
     protected List<String> getMyTestResources() {
         ResourceReader rr = new ResourceReader();
@@ -152,6 +156,9 @@ public abstract class UnitTest {
 
     /**
      * Get all test resources (*.dat) for this class in a format suitable for Junit Parameterized Tests
+     *
+     * @param clz the class to test
+     * @return a stream of test files
      */
     public static Stream<? extends Arguments> getMyTestParameterFiles(Class<?> clz) {
         ResourceReader rr = new ResourceReader();
@@ -181,7 +188,10 @@ public abstract class UnitTest {
 
     /**
      * Get all xml resources (*.xml) for this class
+     *
+     * @return sorted list of resources found or an empty list if none
      */
+    @Deprecated
     protected List<String> getMyXmlResources() {
         ResourceReader rr = new ResourceReader();
         return rr.findXmlResourcesFor(this.getClass());
@@ -211,6 +221,7 @@ public abstract class UnitTest {
      *
      * @param configPath The path to use for config.dir, or null if the value should not be changed.
      * @param pkg use this.pkg for config.pkg
+     * @throws EmissaryException if there is a problem initializing
      */
     protected void setConfig(final String configPath, boolean pkg) throws EmissaryException {
         // TODO: refactor this. Changing the pkg affected toResourceName, which could have the
@@ -229,6 +240,8 @@ public abstract class UnitTest {
 
     /**
      * Restore config pkg to original values
+     *
+     * @throws EmissaryException if there is a problem initializing
      */
     protected void restoreConfig() throws EmissaryException {
         if (origConfigPkg != null) {
@@ -241,6 +254,9 @@ public abstract class UnitTest {
 
     /**
      * Get an JDOM XML document corresponding to a test resource
+     *
+     * @param resource the resource under test
+     * @return the answer document
      */
     @Nullable
     protected Document getAnswerDocumentFor(String resource) {
