@@ -14,7 +14,7 @@
   <property name="fileExtensions" value="java, properties, xml"/>
   <module name="LineLength">
     <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
-    <property name="max" value="170"/>
+    <property name="max" value="150"/>
     <property name="tabWidth" value="4"/>
   </module>
   <module name="TreeWalker">
