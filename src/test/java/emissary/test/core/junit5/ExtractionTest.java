@@ -368,8 +368,18 @@ public abstract class ExtractionTest extends UnitTest {
     protected void checkAnswers(Element el, IBaseDataObject payload, @Nullable List<IBaseDataObject> attachments, String tname)
             throws DataConversionException {
 
-        int numAtt = JDOMUtil.getChildIntValue(el, "numAttachments");
-        long numAttElements = el.getChildren().stream().filter(c -> c.getName().startsWith(ATTACHMENT_ELEMENT_PREFIX)).count();
+        int numAtt = -1;
+        long numAttElements = 0;
+        List<Element> numAttachments = el.getChildren("numAttachments");
+        for (Element numAttEl : numAttachments) {
+            if (verifyOs(numAttEl)) {
+                numAtt = Integer.parseInt(numAttEl.getValue());
+                numAttElements = el.getChildren().stream().filter(
+                        c -> c.getName().startsWith(ATTACHMENT_ELEMENT_PREFIX) && verifyOs(c)).count();
+                break;
+            }
+        }
+
         // check attachments answer file count against payload count
         if (numAtt > -1) {
             assertEquals(numAtt, attachments != null ? attachments.size() : 0,
@@ -669,12 +679,14 @@ public abstract class ExtractionTest extends UnitTest {
     protected Element getChildAnswers(Element parent, String name, int index) {
         // look up the new way i.e <att index="1">
         Element el = parent.getChildren().stream()
-                .filter(c -> c.getName().equalsIgnoreCase(name) && c.getAttribute(INDEX).getValue().equals(String.valueOf(index)))
+                .filter(c -> c.getName().equalsIgnoreCase(name) && c.getAttribute(INDEX).getValue().equals(String.valueOf(index)) && verifyOs(c))
                 .findFirst()
                 .orElse(null);
         if (el == null) {
             // fallback to the old way i.e. <att1>
-            el = parent.getChild(name + index);
+            el = parent.getChildren().stream().filter(c -> c.getName().equalsIgnoreCase(name + index) && verifyOs(c))
+                    .findFirst()
+                    .orElse(null);
         }
         return el;
     }

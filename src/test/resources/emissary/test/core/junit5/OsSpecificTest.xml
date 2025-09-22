@@ -1,5 +1,10 @@
 <result>
     <answers>
+    	<numAttachments os-release="mac">0</numAttachments>
+        <numAttachments os-release="rhel">0</numAttachments>
+        <numAttachments os-release="centos">0</numAttachments>
+        <numAttachments os-release="ubuntu">0</numAttachments>
+    
         <dataLength os-release="ubuntu">22</dataLength>
         <dataLength os-release="centos">51</dataLength>
         <dataLength os-release="rhel">20</dataLength>
