@@ -48,6 +48,9 @@ public abstract class FunctionalTest extends UnitTest {
 
     /**
      * Start a directory on the specified port of localhost for testing.
+     *
+     * @param port the port to start the directory on
+     * @return the IDirectoryPlace that was created
      */
     protected IDirectoryPlace startDirectory(int port) {
         String url = "http://localhost:" + port + "/DirectoryPlace";
@@ -69,6 +72,9 @@ public abstract class FunctionalTest extends UnitTest {
 
     /**
      * Start a localhost jetty on the specified port. Create a emissary/test123 user in a /tmp/jetty-users.properties
+     *
+     * @param port the port to start jetty on
+     * @throws Exception if there is an error starting jetty
      */
     protected void startJetty(int port) throws Exception {
         String PROJECT_BASE = System.getenv(ConfigUtil.PROJECT_BASE_ENV);
@@ -100,8 +106,11 @@ public abstract class FunctionalTest extends UnitTest {
 
     /**
      * Collect local references to the emissary services
+     *
+     * @param port the port in use for emissary
+     * @throws NamespaceException if there is a problem performing a namespace lookup
      */
-    protected void referenceServices(int port) throws Exception {
+    protected void referenceServices(int port) throws NamespaceException {
         // The configuration should cause peer1 to be created.
         // Check node.cfg, node-localhost.cfg or node-localhost-8005.cfg if not
         directory = (IDirectoryPlace) Namespace.lookup("http://localhost:" + port + "/DirectoryPlace");

@@ -118,7 +118,7 @@
     <plugin.maven-gpg.version>3.2.7</plugin.maven-gpg.version>
     <plugin.maven-install.version>3.1.3</plugin.maven-install.version>
     <plugin.maven-jar.version>3.4.2</plugin.maven-jar.version>
-    <plugin.maven-javadoc.version>3.11.1</plugin.maven-javadoc.version>
+    <plugin.maven-javadoc.version>3.11.2</plugin.maven-javadoc.version>
     <plugin.maven-jxr.version>3.6.0</plugin.maven-jxr.version>
     <plugin.maven-pmd.version>3.24.0</plugin.maven-pmd.version>
     <plugin.maven-project-info-reports.version>3.4.2</plugin.maven-project-info-reports.version>
@@ -1051,10 +1051,10 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>${plugin.maven-javadoc.version}</version>
           <configuration>
-            <quiet>true</quiet>
             <doclint>all,-missing</doclint>
-            <failOnWarnings>true</failOnWarnings>
             <failOnError>true</failOnError>
+            <failOnWarnings>true</failOnWarnings>
+            <quiet>true</quiet>
           </configuration>
           <executions>
             <execution>
