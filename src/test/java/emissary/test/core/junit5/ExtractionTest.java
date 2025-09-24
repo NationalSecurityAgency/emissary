@@ -221,13 +221,12 @@ public abstract class ExtractionTest extends UnitTest {
      */
     @Nullable
     protected IBaseDataObject getInitialIbdo(final String resource) {
-        IBaseDataObject ibdo = new ClearDataBaseDataObject();
         try {
             final Path datFileUrl = Paths.get(new ResourceReader().getResource(resource).toURI());
             final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
             final SeekableByteChannelFactory sbcf = FileChannelFactory.create(datFile.getPath());
             // Create a BDO for the data, and set the filename correctly
-            final IBaseDataObject initialIbdo = IBaseDataObjectXmlHelper.createStandardInitialIbdo(ibdo, sbcf, "Classification",
+            final IBaseDataObject initialIbdo = IBaseDataObjectXmlHelper.createStandardInitialIbdo(sbcf, "Classification",
                     datFile.getInitialForm(), kff);
             initialIbdo.setChannelFactory(sbcf);
             initialIbdo.setFilename(datFile.getOriginalFileName());

@@ -65,6 +65,11 @@ public interface IBaseDataObject {
     void setData(final byte[] newData, int offset, int length);
 
     /**
+     * Clear any data elements
+     */
+    void clearData();
+
+    /**
      * Checks if the data is defined with a non-zero length.
      * 
      * @return if data is undefined or zero length.
