@@ -1057,7 +1057,6 @@
             <doclint>${maven.javadoc.doclint}</doclint>
             <failOnError>${maven.javadoc.failOnError}</failOnError>
             <failOnWarnings>${maven.javadoc.failOnWarnings}</failOnWarnings>
-            <source>${maven.compiler.source}</source>
             <quiet>true</quiet>
           </configuration>
           <executions>
