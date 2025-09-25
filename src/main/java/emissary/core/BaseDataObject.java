@@ -298,6 +298,15 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
+     * Clears out both possible data elements
+     */
+    @Override
+    public void clearData() {
+        theData = null;
+        seekableByteChannelFactory = null;
+    }
+
+    /**
      * Set the header byte array WARNING: this implementation uses the passed in array directly, no copy is made so the
      * caller should not reuse the array.
      *
