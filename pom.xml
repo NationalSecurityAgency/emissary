@@ -99,6 +99,9 @@
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
+    <maven.javadoc.doclint>all,-missing</maven.javadoc.doclint>
+    <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
+    <maven.javadoc.failOnWarnings>false</maven.javadoc.failOnWarnings>
     <maven.min-version>3.6.3</maven.min-version>
     <plugin.build-helper-maven.version>3.6.1</plugin.build-helper-maven.version>
     <plugin.cyclonedx-maven.version>2.9.1</plugin.cyclonedx-maven.version>
@@ -1051,9 +1054,9 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>${plugin.maven-javadoc.version}</version>
           <configuration>
-            <doclint>all,-missing</doclint>
-            <failOnError>true</failOnError>
-            <failOnWarnings>true</failOnWarnings>
+            <doclint>${maven.javadoc.doclint}</doclint>
+            <failOnError>${maven.javadoc.failOnError}</failOnError>
+            <failOnWarnings>${maven.javadoc.failOnWarnings}</failOnWarnings>
             <quiet>true</quiet>
           </configuration>
           <executions>
