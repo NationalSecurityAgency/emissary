@@ -1020,7 +1020,7 @@ public class DropOffUtil {
                     final String key = entry.getKey();
                     if (key != null && key.endsWith("_FILETYPE")) {
                         for (final Object value : entry.getValue()) {
-                            final String vs = value.toString();
+                            final String vs = String.valueOf(value);
                             if (!extendedFileTypes.contains(vs)) {
                                 extendedFileTypes.add(vs);
                             }
@@ -1053,9 +1053,9 @@ public class DropOffUtil {
 
                 final int parentLevel = level - 1;
                 final String pType = parentTypes.get("" + parentLevel);
-                if (StringUtils.isNotEmpty(pType)) {
+                if (StringUtils.isNotBlank(pType)) {
                     p.setParameter(PARENT_FILETYPE, pType);
-                } else {
+                } else if (StringUtils.isNotBlank(parentTypes.get("1"))) {
                     p.setParameter(PARENT_FILETYPE, parentTypes.get("1"));
                 }
                 for (int j = 0; j < parentParams.size(); j++) {
@@ -1076,7 +1076,7 @@ public class DropOffUtil {
                 for (final IBaseDataObject child : childObjList) {
                     final int parentLevel = StringUtils.countMatches(child.shortName(), Family.SEP);
                     final String parentFileType = parentTypes.get("" + parentLevel);
-                    if (parentFileType != null) {
+                    if (StringUtils.isNotBlank(parentFileType)) {
                         child.setParameter(PARENT_FILETYPE, parentFileType);
                     }
                     for (int k = 0; k < parentParams.size(); k++) {
