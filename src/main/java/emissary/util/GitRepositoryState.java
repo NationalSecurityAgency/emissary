@@ -4,7 +4,6 @@ import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,28 +44,28 @@ public class GitRepositoryState {
 
     private GitRepositoryState(Properties properties) {
 
-        this.tags = properties.get("git.tags").toString();
-        this.branch = properties.get("git.branch").toString();
-        this.dirty = properties.get("git.dirty").toString();
-        this.remoteOriginUrl = properties.get("git.remote.origin.url").toString();
+        this.tags = properties.getOrDefault("git.tags", UNKNOWN).toString();
+        this.branch = properties.getOrDefault("git.branch", UNKNOWN).toString();
+        this.dirty = properties.getOrDefault("git.dirty", UNKNOWN).toString();
+        this.remoteOriginUrl = properties.getOrDefault("git.remote.origin.url", UNKNOWN).toString();
 
-        this.commitIdAbbrev = properties.get("git.commit.id.abbrev").toString();
-        this.commitId = properties.get("git.commit.id.full").toString();
-        this.describe = properties.get("git.commit.id.describe").toString();
-        this.describeShort = properties.get("git.commit.id.describe-short").toString();
-        this.commitUserName = properties.get("git.commit.user.name").toString();
-        this.commitUserEmail = properties.get("git.commit.user.email").toString();
-        this.commitMessageFull = properties.get("git.commit.message.full").toString();
-        this.commitMessageShort = properties.get("git.commit.message.short").toString();
-        this.commitTime = properties.get("git.commit.time").toString();
-        this.closestTagName = properties.get("git.closest.tag.name").toString();
-        this.closestTagCommitCount = properties.get("git.closest.tag.commit.count").toString();
+        this.commitIdAbbrev = properties.getOrDefault("git.commit.id.abbrev", UNKNOWN).toString();
+        this.commitId = properties.getOrDefault("git.commit.id.full", UNKNOWN).toString();
+        this.describe = properties.getOrDefault("git.commit.id.describe", UNKNOWN).toString();
+        this.describeShort = properties.getOrDefault("git.commit.id.describe-short", UNKNOWN).toString();
+        this.commitUserName = properties.getOrDefault("git.commit.user.name", UNKNOWN).toString();
+        this.commitUserEmail = properties.getOrDefault("git.commit.user.email", UNKNOWN).toString();
+        this.commitMessageFull = properties.getOrDefault("git.commit.message.full", UNKNOWN).toString();
+        this.commitMessageShort = properties.getOrDefault("git.commit.message.short", UNKNOWN).toString();
+        this.commitTime = properties.getOrDefault("git.commit.time", UNKNOWN).toString();
+        this.closestTagName = properties.getOrDefault("git.closest.tag.name", UNKNOWN).toString();
+        this.closestTagCommitCount = properties.getOrDefault("git.closest.tag.commit.count", UNKNOWN).toString();
 
-        this.buildUserName = properties.get("git.build.user.name").toString();
-        this.buildUserEmail = properties.get("git.build.user.email").toString();
-        this.buildTime = properties.get("git.build.time").toString();
-        this.buildHost = properties.get("git.build.host").toString();
-        this.buildVersion = properties.get("git.build.version").toString();
+        this.buildUserName = properties.getOrDefault("git.build.user.name", UNKNOWN).toString();
+        this.buildUserEmail = properties.getOrDefault("git.build.user.email", UNKNOWN).toString();
+        this.buildTime = properties.getOrDefault("git.build.time", UNKNOWN).toString();
+        this.buildHost = properties.getOrDefault("git.build.host", UNKNOWN).toString();
+        this.buildVersion = properties.getOrDefault("git.build.version", UNKNOWN).toString();
     }
 
     public static GitRepositoryState getRepositoryState() {
@@ -75,10 +74,14 @@ public class GitRepositoryState {
 
     public static GitRepositoryState getRepositoryState(String gitProperties) {
         Properties properties = new Properties();
-        try {
-            properties.load(GitRepositoryState.class.getClassLoader().getResourceAsStream(gitProperties));
-        } catch (IOException ie) {
-            LOG.error("Failed to get repository state", ie);
+        try (InputStream inStream = GitRepositoryState.class.getClassLoader().getResourceAsStream(gitProperties)) {
+            if (inStream != null) {
+                properties.load(inStream);
+            } else {
+                LOG.error("Failed to get repository state. {} not found.", gitProperties);
+            }
+        } catch (Exception e) {
+            LOG.error("Failed to get repository state", e);
         }
         return new GitRepositoryState(properties);
     }
@@ -87,8 +90,8 @@ public class GitRepositoryState {
         Properties properties = new Properties();
         try (InputStream propertiesStream = Files.newInputStream(gitProperties)) {
             properties.load(propertiesStream);
-        } catch (IOException ie) {
-            LOG.error("Failed to get repository state", ie);
+        } catch (Exception e) {
+            LOG.error("Failed to get repository state", e);
         }
         return new GitRepositoryState(properties);
     }
@@ -98,12 +101,12 @@ public class GitRepositoryState {
         String buildTime = UNKNOWN;
         String commitIdAbbrev = UNKNOWN;
 
-        if(null!=gitRepositoryState) {
+        if (null != gitRepositoryState) {
             buildVersion = gitRepositoryState.getBuildVersion();
             buildTime = gitRepositoryState.getBuildTime();
             commitIdAbbrev = gitRepositoryState.getCommitIdAbbrev();
         }
-        return String.format("%s Version: %s - built on %s - git hash: %s", applicationName, buildVersion, buildTime, commitIdAbbrev);
+        return String.format("%s Version: %s - built on: %s - git hash: %s", applicationName, buildVersion, buildTime, commitIdAbbrev);
     }
 
     public String getTags() {
