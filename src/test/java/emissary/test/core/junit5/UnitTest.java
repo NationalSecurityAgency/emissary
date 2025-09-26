@@ -9,6 +9,7 @@ import emissary.util.io.ResourceReader;
 
 import jakarta.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -18,6 +19,7 @@ import org.jdom2.input.sax.XMLReaders;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestWatcher;
@@ -163,7 +165,9 @@ public abstract class UnitTest {
     public static Stream<? extends Arguments> getMyTestParameterFiles(Class<?> clz) {
         ResourceReader rr = new ResourceReader();
         List<String> rs = rr.findDataResourcesFor(clz);
-        return rs.stream().map(Arguments::of);
+        return rs.stream()
+                .map(resource -> Named.of(StringUtils.substringAfterLast(resource, File.separator), resource))
+                .map(Arguments::of);
     }
 
     /**
