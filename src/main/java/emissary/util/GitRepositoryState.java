@@ -1,5 +1,6 @@
 package emissary.util;
 
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,10 @@ import java.util.Properties;
  * build process by the git-commit-id-maven-plugin
  *
  */
+@SuppressWarnings("unused")
 public class GitRepositoryState {
+
+    private static final String UNKNOWN = "UNKNOWN";
 
     private static final Logger LOG = LoggerFactory.getLogger(GitRepositoryState.class);
 
@@ -89,9 +93,17 @@ public class GitRepositoryState {
         return new GitRepositoryState(properties);
     }
 
-    public static String dumpVersionInfo(GitRepositoryState gitRepositoryState, String applicationName) {
-        return String.format("%s Version: %s - built on %s - git hash: %s", applicationName, gitRepositoryState.buildVersion,
-                gitRepositoryState.buildTime, gitRepositoryState.getCommitIdAbbrev());
+    public static String dumpVersionInfo(@Nullable GitRepositoryState gitRepositoryState, String applicationName) {
+        String buildVersion = UNKNOWN;
+        String buildTime = UNKNOWN;
+        String commitIdAbbrev = UNKNOWN;
+
+        if(null!=gitRepositoryState) {
+            buildVersion = gitRepositoryState.getBuildVersion();
+            buildTime = gitRepositoryState.getBuildTime();
+            commitIdAbbrev = gitRepositoryState.getCommitIdAbbrev();
+        }
+        return String.format("%s Version: %s - built on %s - git hash: %s", applicationName, buildVersion, buildTime, commitIdAbbrev);
     }
 
     public String getTags() {
