@@ -446,17 +446,14 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
                 KffDataObjectHandler.SET_FORM_WHEN_KNOWN, KffDataObjectHandler.SET_FILE_TYPE);
         final List<String> differences = new ArrayList<>();
         final IBaseDataObject expectedIbdo = new BaseDataObject();
-        final IBaseDataObject tempIbdo = new BaseDataObject();
 
-        tempIbdo.setChannelFactory(sbcf);
-        kff.hash(tempIbdo);
-        expectedIbdo.setParameters(tempIbdo.getParameters());
-
+        expectedIbdo.setChannelFactory(sbcf);
+        kff.hash(expectedIbdo);
         expectedIbdo.setCurrentForm(formAndFileType);
         expectedIbdo.setFileType(formAndFileType);
         expectedIbdo.setClassification(classification);
 
-        final IBaseDataObject actualIbdo = IBaseDataObjectXmlHelper.createStandardInitialIbdo(new BaseDataObject(), sbcf, classification,
+        final IBaseDataObject actualIbdo = IBaseDataObjectXmlHelper.createStandardInitialIbdo(sbcf, classification,
                 formAndFileType, kff);
 
         IBaseDataObjectDiffHelper.diff(expectedIbdo, actualIbdo, differences, DiffCheckConfiguration.onlyCheckData());

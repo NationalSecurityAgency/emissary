@@ -65,17 +65,11 @@ public final class IBaseDataObjectXmlHelper {
      * @param kff an existing Kff handler
      * @return a typical BDO with the specified data
      */
-    public static IBaseDataObject createStandardInitialIbdo(final IBaseDataObject ibdo, final SeekableByteChannelFactory sbcf,
+    public static IBaseDataObject createStandardInitialIbdo(final SeekableByteChannelFactory sbcf,
             final String classification, final String formAndFileType, final KffDataObjectHandler kff) {
-        final IBaseDataObject tempIbdo = DataObjectFactory.getInstance();
-
-        // We want to return the ibdo with the data field equal to null. This can only
-        // be accomplished if the data is never set. Therefore, we have to set the data
-        // on a separate ibdo, hash the ibdo and then transfer just the parameters back
-        // to the original ibdo.
-        tempIbdo.setChannelFactory(sbcf);
-        kff.hash(tempIbdo);
-        ibdo.setParameters(tempIbdo.getParameters());
+        final IBaseDataObject ibdo = DataObjectFactory.getInstance();
+        ibdo.setChannelFactory(sbcf);
+        kff.hash(ibdo);
 
         ibdo.setCurrentForm(formAndFileType);
         ibdo.setFileType(formAndFileType);

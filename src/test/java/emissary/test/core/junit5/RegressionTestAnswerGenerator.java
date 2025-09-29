@@ -80,11 +80,7 @@ public class RegressionTestAnswerGenerator extends AnswerGenerator {
     @ForOverride
     @Override
     protected void tweakInitialIbdoBeforeSerialization(final String resource, final IBaseDataObject initialIbdo) {
-        if (initialIbdo instanceof ClearDataBaseDataObject) {
-            ((ClearDataBaseDataObject) initialIbdo).clearData();
-        } else {
-            fail("Didn't get an expected type of IBaseDataObject");
-        }
+        initialIbdo.clearData();
     }
 
     @Override
