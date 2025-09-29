@@ -253,7 +253,7 @@ public abstract class ExtractionTest extends UnitTest {
         return null;
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{arguments}")
     @MethodSource("data")
     public void testExtractionPlace(String resource) {
         logger.debug("Running {} test on resource {}", place.getClass().getName(), resource);
