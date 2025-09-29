@@ -7,6 +7,7 @@ import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
+import emissary.util.GitRepositoryState;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -31,7 +32,8 @@ import static emissary.server.api.ApiUtils.stripPeerString;
 public class Version {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static final emissary.util.Version version = new emissary.util.Version();
+    private static final emissary.util.Version emissaryVersion = new emissary.util.Version();
+    private static final GitRepositoryState gitDetails = GitRepositoryState.getRepositoryState();
 
     @GET
     @Path("/version")
@@ -72,7 +74,11 @@ public class Version {
             EmissaryNode localNode = emissaryServer.getNode();
             int localPort = localNode.getNodePort();
             String localName = localNode.getNodeName();
-            entity.addKeyValue(localName + ":" + localPort, version.getVersion());
+            final String versionKey = String.format("%s:%s", localName, localPort);
+            entity.addKeyValue(versionKey, emissaryVersion.getVersion());
+            entity.addKeyValue("buildVersion", gitDetails.getBuildVersion());
+            entity.addKeyValue("buildTime", gitDetails.getBuildTime());
+            entity.addKeyValue("commitIdAbbrev", gitDetails.getCommitIdAbbrev());
         } catch (NamespaceException e) {
             // should never happen
             logger.error("Problem finding the emissary server in the namespace, something is majorly wrong", e);

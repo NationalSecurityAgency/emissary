@@ -1,6 +1,6 @@
 package emissary.command;
 
-import emissary.util.Version;
+import emissary.util.GitRepositoryState;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class VersionCommand implements EmissaryCommand {
 
     @Override
     public String getCommandName() {
-        return "version";
+        return COMMAND_NAME;
     }
 
     @Override
@@ -34,7 +34,9 @@ public class VersionCommand implements EmissaryCommand {
     @Override
     public void run(CommandLine c) {
         setup();
-        LOG.info("Emissary Version: {}", new Version());
+        if (LOG.isInfoEnabled()) {
+            LOG.info(GitRepositoryState.dumpVersionInfo(GitRepositoryState.getRepositoryState(), "Emissary"));
+        }
     }
 
     @Override
