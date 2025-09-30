@@ -112,7 +112,7 @@
     <plugin.impsort-maven.version>1.8.0</plugin.impsort-maven.version>
     <plugin.jacoco-maven.version>0.8.12</plugin.jacoco-maven.version>
     <plugin.maven-assembly.version>3.7.1</plugin.maven-assembly.version>
-    <plugin.maven-checkstyle.version>3.3.0</plugin.maven-checkstyle.version>
+    <plugin.maven-checkstyle.version>3.6.0</plugin.maven-checkstyle.version>
     <plugin.maven-clean.version>3.4.0</plugin.maven-clean.version>
     <plugin.maven-compiler.version>3.13.0</plugin.maven-compiler.version>
     <plugin.maven-dependency.version>3.8.1</plugin.maven-dependency.version>
