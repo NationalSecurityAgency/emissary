@@ -13,7 +13,6 @@ import emissary.test.core.junit5.LogbackTester.SimplifiedLogEvent;
 import emissary.util.ByteUtil;
 import emissary.util.io.ResourceReader;
 import emissary.util.os.OSReleaseUtil;
-import emissary.util.xml.JDOMUtil;
 
 import com.google.errorprone.annotations.ForOverride;
 import jakarta.annotation.Nullable;
@@ -461,40 +460,58 @@ public abstract class ExtractionTest extends UnitTest {
         }
 
         for (Element currentForm : el.getChildren(CURRENT_FORM)) {
-            String cf = currentForm.getTextTrim();
-            if (cf != null) {
-                Attribute index = currentForm.getAttribute(INDEX);
-                if (index != null) {
-                    assertEquals(payload.currentFormAt(index.getIntValue()), cf,
-                            String.format("Current form '%s' not found at position [%d] in %s, %s", cf, index.getIntValue(), tname,
-                                    payload.getAllCurrentForms()));
-                } else {
-                    assertTrue(payload.searchCurrentForm(cf) > -1,
-                            String.format("Current form %s not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
+            if (verifyOs(currentForm)) {
+                String cf = currentForm.getTextTrim();
+                if (cf != null) {
+                    Attribute index = currentForm.getAttribute(INDEX);
+                    if (index != null) {
+                        assertEquals(payload.currentFormAt(index.getIntValue()), cf,
+                                String.format("Current form '%s' not found at position [%d] in %s, %s", cf, index.getIntValue(), tname,
+                                        payload.getAllCurrentForms()));
+                    } else {
+                        assertTrue(payload.searchCurrentForm(cf) > -1,
+                                String.format("Current form %s not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
+                    }
                 }
             }
         }
 
-        String cf = el.getChildTextTrim(CURRENT_FORM);
-        if (cf != null) {
-            assertTrue(payload.searchCurrentForm(cf) > -1,
-                    String.format("Current form '%s' not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
+        for (Element currentFormEl : el.getChildren(CURRENT_FORM)) {
+            if (verifyOs(currentFormEl)) {
+                String cf = currentFormEl.getTextTrim();
+                if (cf != null) {
+                    assertTrue(payload.searchCurrentForm(cf) > -1,
+                            String.format("Current form '%s' not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
+                }
+            }
         }
 
-        String ft = el.getChildTextTrim("fileType");
-        if (ft != null) {
-            assertEquals(ft, payload.getFileType(), String.format("Expected File Type '%s' in %s", ft, tname));
+        for (Element fileTypeEl : el.getChildren("fileType")) {
+            if (verifyOs(fileTypeEl)) {
+                String ft = fileTypeEl.getTextTrim();
+                if (ft != null) {
+                    assertEquals(ft, payload.getFileType(), String.format("Expected File Type '%s' in %s", ft, tname));
+                }
+            }
         }
 
-        int cfsize = JDOMUtil.getChildIntValue(el, "currentFormSize");
-        if (cfsize > -1) {
-            assertEquals(cfsize, payload.currentFormSize(), "Current form size in " + tname);
+        for (Element currentFormSizeEl : el.getChildren("currentFormSize")) {
+            if (verifyOs(currentFormSizeEl)) {
+                int cfsize = Integer.parseInt(currentFormSizeEl.getValue());
+                if (cfsize > -1) {
+                    assertEquals(cfsize, payload.currentFormSize(), "Current form size in " + tname);
+                }
+            }
         }
 
-        String classification = el.getChildTextTrim(CLASSIFICATION);
-        if (classification != null) {
-            assertEquals(classification, payload.getClassification(),
-                    String.format("Classification in '%s' is '%s', not expected '%s'", tname, payload.getClassification(), classification));
+        for (Element classificationEl : el.getChildren(CLASSIFICATION)) {
+            if (verifyOs(classificationEl)) {
+                String classification = classificationEl.getTextTrim();
+                if (classification != null) {
+                    assertEquals(classification, payload.getClassification(),
+                            String.format("Classification in '%s' is '%s', not expected '%s'", tname, payload.getClassification(), classification));
+                }
+            }
         }
 
         for (Element dataLength : el.getChildren("dataLength")) {
@@ -511,29 +528,44 @@ public abstract class ExtractionTest extends UnitTest {
             }
         }
 
-        String shortName = el.getChildTextTrim("shortName");
-        if (shortName != null && shortName.length() > 0) {
-            assertEquals(shortName, payload.shortName(), "Shortname does not match expected in " + tname);
+        for (Element shortNameEl : el.getChildren("shortName")) {
+            if (verifyOs(shortNameEl)) {
+                String shortName = shortNameEl.getTextTrim();
+                if (shortName != null && shortName.length() > 0) {
+                    assertEquals(shortName, payload.shortName(), "Shortname does not match expected in " + tname);
+                }
+            }
         }
 
-        String fontEncoding = el.getChildTextTrim(FONT_ENCODING);
-        if (StringUtils.isNotBlank(fontEncoding)) {
-            assertEquals(fontEncoding, payload.getFontEncoding(), "Font encoding does not match expected in " + tname);
+        for (Element encodeEl : el.getChildren(FONT_ENCODING)) {
+            if (verifyOs(encodeEl)) {
+                String fontEncoding = encodeEl.getTextTrim();
+                if (StringUtils.isNotBlank(fontEncoding)) {
+                    assertEquals(fontEncoding, payload.getFontEncoding(), "Font encoding does not match expected in " + tname);
+                }
+            }
         }
 
-        String broke = el.getChildTextTrim(BROKEN);
-        if (broke != null && broke.length() > 0) {
-            assertEquals(broke, payload.isBroken() ? "true" : "false", "Broken status in " + tname);
+        for (Element brokeEl : el.getChildren(BROKEN)) {
+            if (verifyOs(brokeEl)) {
+                String broke = brokeEl.getTextTrim();
+                if (broke != null && !broke.isEmpty()) {
+                    assertEquals(broke, payload.isBroken() ? "true" : "false", "Broken status in " + tname);
+                }
+            }
         }
 
-        String procError = el.getChildTextTrim("procError");
-        if (procError != null && !procError.isEmpty()) {
-            assertNotNull(payload.getProcessingError(),
-                    String.format("Expected processing error '%s' in %s", procError, tname));
-            // simple work around for answer files, so we can see multiple errors w/o dealing with line breaks added on by
-            // StringBuilder in BDO
-            String shortProcErrMessage = payload.getProcessingError().replaceAll("\n", ";");
-            assertEquals(procError, shortProcErrMessage, "Processing Error does not match expected in " + tname);
+        for (Element procErrEl : el.getChildren("procError")) {
+            if (verifyOs(procErrEl)) {
+                String procError = procErrEl.getTextTrim();
+                if (procError != null && !procError.isEmpty()) {
+                    assertNotNull(payload.getProcessingError(), String.format("Expected processing error '%s' in %s", procError, tname));
+                    // simple work around for answer files, so we can see multiple errors w/o dealing with line breaks added on by
+                    // StringBuilder in BDO
+                    String shortProcErrMessage = payload.getProcessingError().replaceAll("\n", ";");
+                    assertEquals(procError, shortProcErrMessage, "Processing Error does not match expected in " + tname);
+                }
+            }
         }
 
         // Check specified metadata
@@ -591,10 +623,18 @@ public abstract class ExtractionTest extends UnitTest {
         }
 
         // Check each extract
-        int extractCount = JDOMUtil.getChildIntValue(el, "extractCount");
-        long numExtractElements =
-                el.getChildren().stream().filter(c -> c.getName().startsWith(EXTRACTED_RECORD_ELEMENT_PREFIX)
-                        && !c.getName().startsWith("extractCount")).count();
+        int extractCount = -1;
+        long numExtractElements = -1;
+        for (Element numAttEl : el.getChildren("extractCount")) {
+            if (verifyOs(numAttEl)) {
+                extractCount = Integer.parseInt(numAttEl.getValue());
+                numExtractElements = el.getChildren().stream().filter(
+                        c -> c.getName().startsWith(EXTRACTED_RECORD_ELEMENT_PREFIX) && !c.getName().startsWith("extractCount") && verifyOs(c))
+                        .count();
+                break;
+            }
+        }
+
         if (payload.hasExtractedRecords()) {
             List<IBaseDataObject> extractedChildren = payload.getExtractedRecords();
             int foundCount = extractedChildren.size();
