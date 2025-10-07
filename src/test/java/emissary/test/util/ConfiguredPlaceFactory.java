@@ -26,20 +26,35 @@ import java.util.Set;
  * @param <T> The Emissary place to create variations of
  */
 public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
-    private final String placeName;
-    private final Constructor<T> placeConstructor;
-    private final Configurator defaultConfigurator;
+    private String placeName;
+    private Constructor<T> placeConstructor;
+    private Configurator defaultConfigurator;
 
     public ConfiguredPlaceFactory(Class<T> place, ConfigEntry... defaultConfigs) {
-        placeName = place.getName();
-        try {
-            placeConstructor = place.getDeclaredConstructor(Configurator.class);
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException("Failed to create ConfiguredPlaceFactory instance for " + placeName, e);
-        }
+        this(place, true, defaultConfigs);
+    }
 
-        defaultConfigurator = loadConfigFile(place);
+    public ConfiguredPlaceFactory(Class<T> place, boolean useCfgFile, ConfigEntry... defaultConfigs) {
+        initializeFactory(place, useCfgFile ? loadConfigFile(place) : new ServiceConfigGuide(), defaultConfigs);
+    }
+
+    public ConfiguredPlaceFactory(Class<T> place, Configurator baseConfigurator, ConfigEntry... defaultConfigs) {
+        initializeFactory(place, baseConfigurator, defaultConfigs);
+    }
+
+    private void initializeFactory(Class<T> place, Configurator baseConfigurator, ConfigEntry... defaultConfigs) {
+        placeName = place.getName();
+        placeConstructor = getPlaceConstructor(place);
+        defaultConfigurator = baseConfigurator;
         addAndReplaceConfigEntries(defaultConfigurator, defaultConfigs);
+    }
+
+    private Constructor<T> getPlaceConstructor(Class<T> place) {
+        try {
+            return place.getDeclaredConstructor(Configurator.class);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to create ConfiguredPlaceFactory instance for " + place.getName(), e);
+        }
     }
 
     /**

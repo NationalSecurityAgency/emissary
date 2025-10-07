@@ -2,6 +2,7 @@ package emissary.test.util;
 
 import emissary.config.ConfigEntry;
 import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
 import emissary.place.ServiceProviderPlace;
 import emissary.test.core.junit5.UnitTest;
 
@@ -25,12 +26,12 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
     private static final String BUILD_PARAMETER_VALUE_1 = "BUILD_PARAMETER_VALUE_1";
     private static final String BUILD_PARAMETER_VALUE_2 = "BUILD_PARAMETER_VALUE_2";
 
-    static class TestConfigPlace extends ServiceProviderPlace {
+    static class ConfigFilePlace extends ServiceProviderPlace {
         private final List<String> constantTestConfigs;
         private final List<String> variableTestConfigs;
 
-        public TestConfigPlace(Configurator cfgInfo) throws IOException {
-            super(TestConfigPlace.class.getName());
+        public ConfigFilePlace(Configurator cfgInfo) throws IOException {
+            super(ConfigFilePlace.class.getName());
             configG = cfgInfo != null ? cfgInfo : configG;
             if (configG == null) {
                 throw new IllegalStateException("No configurations found for " + getPlaceName());
@@ -49,27 +50,50 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
     }
 
     /**
-     * Same functionality as {@link TestConfigPlace} but without a .cfg file
+     * Same functionality as {@link ConfigFilePlace} but without a .cfg file
      */
-    static class TestConfigExtensionPlace extends TestConfigPlace {
-        public TestConfigExtensionPlace(Configurator cfgInfo) throws IOException {
+    static class NoConfigFilePlace extends ConfigFilePlace {
+        public NoConfigFilePlace(Configurator cfgInfo) throws IOException {
             super(cfgInfo);
         }
     }
 
     @Test
     void testCfgFile() {
-        ConfiguredPlaceFactory<TestConfigPlace> factory = new ConfiguredPlaceFactory<>(TestConfigPlace.class);
-        TestConfigPlace place = factory.buildPlace();
+        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class);
+        ConfigFilePlace place = factory.buildPlace();
 
         assertIterableEquals(List.of(CONSTANT_VALUE_1, CONSTANT_VALUE_2), place.getConstantTestConfigs());
         assertIterableEquals(List.of(CFG_FILE_VALUE_1, CFG_FILE_VALUE_2), place.getVariableTestConfigs());
     }
 
     @Test
-    void testNoCfgFile() {
-        ConfiguredPlaceFactory<TestConfigExtensionPlace> factory = new ConfiguredPlaceFactory<>(TestConfigExtensionPlace.class);
-        TestConfigPlace place = factory.buildPlace();
+    void testDoNotExpectCfgFile() {
+        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class, false);
+        ConfigFilePlace place = factory.buildPlace();
+
+        assertTrue(place.getConstantTestConfigs().isEmpty());
+        assertTrue(place.getVariableTestConfigs().isEmpty());
+    }
+
+    @Test
+    void testCustomBaseConfigurator() {
+        List<String> values = List.of("SOME_VALUE_1", "SOME_VALUE_2");
+        Configurator baseConfigurator = new ServiceConfigGuide();
+        baseConfigurator.addEntry(CONSTANT_KEY, values.get(0));
+        baseConfigurator.addEntry(CONSTANT_KEY, values.get(1));
+
+        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class, baseConfigurator);
+        ConfigFilePlace place = factory.buildPlace();
+
+        assertIterableEquals(values, place.getConstantTestConfigs());
+        assertTrue(place.getVariableTestConfigs().isEmpty());
+    }
+
+    @Test
+    void testExpectedCfgFileNotFound() {
+        ConfiguredPlaceFactory<NoConfigFilePlace> factory = new ConfiguredPlaceFactory<>(NoConfigFilePlace.class);
+        ConfigFilePlace place = factory.buildPlace();
 
         assertTrue(place.getConstantTestConfigs().isEmpty());
         assertTrue(place.getVariableTestConfigs().isEmpty());
@@ -77,10 +101,10 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testFactoryConstructorOverridesCfgFile() {
-        ConfiguredPlaceFactory<TestConfigPlace> factory = new ConfiguredPlaceFactory<>(TestConfigPlace.class,
+        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class,
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_2));
-        TestConfigPlace place = factory.buildPlace();
+        ConfigFilePlace place = factory.buildPlace();
 
         assertIterableEquals(List.of(CONSTANT_VALUE_1, CONSTANT_VALUE_2), place.getConstantTestConfigs());
         assertIterableEquals(List.of(FACTORY_CONSTRUCTOR_VALUE_1, FACTORY_CONSTRUCTOR_VALUE_2), place.getVariableTestConfigs());
@@ -88,10 +112,10 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testFactoryConstructorWithoutCfgFile() {
-        ConfiguredPlaceFactory<TestConfigExtensionPlace> factory = new ConfiguredPlaceFactory<>(TestConfigExtensionPlace.class,
+        ConfiguredPlaceFactory<NoConfigFilePlace> factory = new ConfiguredPlaceFactory<>(NoConfigFilePlace.class,
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_2));
-        TestConfigExtensionPlace place = factory.buildPlace();
+        NoConfigFilePlace place = factory.buildPlace();
 
         assertTrue(place.getConstantTestConfigs().isEmpty());
         assertIterableEquals(List.of(FACTORY_CONSTRUCTOR_VALUE_1, FACTORY_CONSTRUCTOR_VALUE_2), place.getVariableTestConfigs());
@@ -99,9 +123,9 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testRemoveConfigurationsWithNullFactoryConstructorParameter() {
-        ConfiguredPlaceFactory<TestConfigPlace> factory = new ConfiguredPlaceFactory<>(TestConfigPlace.class,
+        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class,
                 new ConfigEntry(VARIABLE_KEY, null));
-        TestConfigPlace place = factory.buildPlace();
+        ConfigFilePlace place = factory.buildPlace();
 
         assertIterableEquals(List.of(CONSTANT_VALUE_1, CONSTANT_VALUE_2), place.getConstantTestConfigs());
         assertTrue(place.getVariableTestConfigs().isEmpty());
@@ -109,8 +133,8 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testBuildParametersOverrideCfgFile() {
-        ConfiguredPlaceFactory<TestConfigPlace> factory = new ConfiguredPlaceFactory<>(TestConfigPlace.class);
-        TestConfigPlace place = factory.buildPlace(
+        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class);
+        ConfigFilePlace place = factory.buildPlace(
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_2));
 
@@ -120,8 +144,8 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testBuildParametersWithoutCfgFile() {
-        ConfiguredPlaceFactory<TestConfigExtensionPlace> factory = new ConfiguredPlaceFactory<>(TestConfigExtensionPlace.class);
-        TestConfigExtensionPlace place = factory.buildPlace(
+        ConfiguredPlaceFactory<NoConfigFilePlace> factory = new ConfiguredPlaceFactory<>(NoConfigFilePlace.class);
+        NoConfigFilePlace place = factory.buildPlace(
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_2));
 
@@ -131,10 +155,10 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testBuildParametersOverrideFactoryConstructor() {
-        ConfiguredPlaceFactory<TestConfigPlace> factory = new ConfiguredPlaceFactory<>(TestConfigPlace.class,
+        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class,
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_2));
-        TestConfigPlace place = factory.buildPlace(
+        ConfigFilePlace place = factory.buildPlace(
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_2));
 
@@ -144,10 +168,10 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testBuildParametersOverrideFactoryConstructorWithoutCfgFile() {
-        ConfiguredPlaceFactory<TestConfigExtensionPlace> factory = new ConfiguredPlaceFactory<>(TestConfigExtensionPlace.class,
+        ConfiguredPlaceFactory<NoConfigFilePlace> factory = new ConfiguredPlaceFactory<>(NoConfigFilePlace.class,
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_2));
-        TestConfigExtensionPlace place = factory.buildPlace(
+        NoConfigFilePlace place = factory.buildPlace(
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_2));
 
@@ -157,10 +181,10 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testRemoveConfigurationsWithNullBuildParameter() {
-        ConfiguredPlaceFactory<TestConfigPlace> factory = new ConfiguredPlaceFactory<>(TestConfigPlace.class,
+        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class,
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_2));
-        TestConfigPlace place = factory.buildPlace(new ConfigEntry(VARIABLE_KEY, null));
+        ConfigFilePlace place = factory.buildPlace(new ConfigEntry(VARIABLE_KEY, null));
 
         assertIterableEquals(List.of(CONSTANT_VALUE_1, CONSTANT_VALUE_2), place.getConstantTestConfigs());
         assertTrue(place.getVariableTestConfigs().isEmpty());
