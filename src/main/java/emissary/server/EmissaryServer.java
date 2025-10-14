@@ -23,6 +23,9 @@ import emissary.place.ServiceProviderRefreshablePlace;
 import emissary.pool.AgentPool;
 import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
+import emissary.server.auth.PkiAuthenticationConfig;
+import emissary.server.auth.PkiAuthenticator;
+import emissary.server.auth.PkiLoginService;
 import emissary.server.mvc.ThreadDumpAction;
 import emissary.server.mvc.ThreadDumpAction.ThreadDumpInfo;
 import emissary.spi.SPILoader;
@@ -165,7 +168,7 @@ public class EmissaryServer {
             staticHandler.setContextPath("/");
 
             LoginService loginService = buildLoginService();
-            ConstraintSecurityHandler security = buildSecurityHandler();
+            ConstraintSecurityHandler security = buildSecurityHandler(loginService);
             security.setLoginService(loginService);
 
             // secure some of the contexts
@@ -607,7 +610,7 @@ public class EmissaryServer {
         return (EmissaryServer) Namespace.lookup(name);
     }
 
-    private static ConstraintSecurityHandler buildSecurityHandler() {
+    private static ConstraintSecurityHandler buildSecurityHandler(LoginService loginService) {
         ConstraintSecurityHandler handler = new ConstraintSecurityHandler();
 
         Constraint authConstraint = new Constraint();
@@ -628,11 +631,37 @@ public class EmissaryServer {
         health.setConstraint(noAuthConstraint);
 
         handler.setConstraintMappings(new ConstraintMapping[] {mapping, health});
-        handler.setAuthenticator(new DigestAuthenticator());
+
+        // Use PKI authenticator if login service is PKI-based, otherwise use Digest
+        if (loginService instanceof PkiLoginService) {
+            handler.setAuthenticator(new PkiAuthenticator());
+            LOG.info("Using PKI authentication for Emissary server");
+        } else {
+            handler.setAuthenticator(new DigestAuthenticator());
+            LOG.info("Using Digest authentication for Emissary server");
+        }
+
         return handler;
     }
 
     private static LoginService buildLoginService() {
+        // Check if PKI authentication is configured
+        try {
+            Configurator config = ConfigUtil.getConfigInfo(HTTPConnectionFactory.class);
+            PkiAuthenticationConfig pkiConfig = new PkiAuthenticationConfig(config);
+
+            if (pkiConfig.isEnabled()) {
+                LOG.info("PKI authentication is enabled");
+                PkiLoginService pkiLoginService = new PkiLoginService("EmissaryPkiRealm");
+                pkiConfig.configure(pkiLoginService);
+                return pkiLoginService;
+            }
+        } catch (IOException e) {
+            LOG.warn("Error loading PKI authentication configuration, falling back to username/password authentication", e);
+        }
+
+        // Fall back to traditional username/password authentication
+        LOG.info("Using traditional username/password authentication");
         String jettyUsersFile = ConfigUtil.getConfigFile("jetty-users.properties");
         System.setProperty("emissary.jetty.users.file", jettyUsersFile); // for EmissaryClient
         return new HashLoginService("EmissaryRealm", jettyUsersFile);
@@ -852,6 +881,21 @@ public class EmissaryServer {
         }
 
         sslContextFactory.setTrustStore(trustStoreInstance);
+
+        // Configure client certificate authentication if PKI is enabled
+        PkiAuthenticationConfig pkiConfig = new PkiAuthenticationConfig(httpConnFactCfg);
+        if (pkiConfig.isEnabled()) {
+            if (pkiConfig.isClientCertRequired()) {
+                // NEED: Client certificates are required for all SSL connections
+                sslContextFactory.setNeedClientAuth(true);
+                LOG.info("Client certificate authentication is REQUIRED");
+            } else {
+                // WANT: Client certificates are requested but not required (allows fallback)
+                sslContextFactory.setWantClientAuth(true);
+                LOG.info("Client certificate authentication is OPTIONAL");
+            }
+        }
+
         return sslContextFactory;
     }
 

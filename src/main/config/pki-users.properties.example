@@ -1,0 +1,16 @@
+# PKI Users Configuration File
+# This file maps client certificate Distinguished Names (DNs) to Emissary roles.
+#
+# Format: certificate_dn = role1,role2,role3
+#
+# The certificate DN must match exactly what's in the client certificate's Subject field.
+# You can use the following command to extract the DN from a certificate:
+#   openssl x509 -in certificate.pem -noout -subject
+#
+# Example mappings:
+# CN=John Doe,OU=Engineering,O=Emissary,C=US = emissary,admin
+# CN=Jane Smith,OU=Operations,O=Emissary,C=US = emissary,support
+# CN=Bob Manager,OU=Management,O=Emissary,C=US = emissary,manager,admin
+# CN=Support User,OU=Support,O=Emissary,C=US = support
+
+# Add your PKI user mappings below:
