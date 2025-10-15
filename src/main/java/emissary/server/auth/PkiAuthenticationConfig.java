@@ -154,14 +154,16 @@ public class PkiAuthenticationConfig {
                 }
 
                 // Parse line: dn = role1,role2,role3
-                int equalsIndex = line.indexOf('=');
+                // DNs contain '=' signs (e.g., CN=John Doe), so we need to find the separator '='
+                // that comes after the DN. We look for " = " pattern (space-equals-space).
+                int equalsIndex = line.indexOf(" = ");
                 if (equalsIndex <= 0) {
                     LOG.warn("Invalid format in PKI users file at line {}: {}", lineNumber, line);
                     continue;
                 }
 
                 String dn = line.substring(0, equalsIndex).trim();
-                String rolesStr = line.substring(equalsIndex + 1).trim();
+                String rolesStr = line.substring(equalsIndex + 3).trim(); // +3 to skip " = "
 
                 if (dn.isEmpty() || rolesStr.isEmpty()) {
                     LOG.warn("Empty DN or roles in PKI users file at line {}: {}", lineNumber, line);

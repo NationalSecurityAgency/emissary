@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -148,10 +149,15 @@ class PkiAuthenticatorTest {
         field.setAccessible(true);
         field.set(authenticator, loginService);
 
-        Authentication result = authenticator.validateRequest(mockHttpRequest, mockHttpResponse, true);
+        // Mock the static Request.getBaseRequest() method
+        try (var mockedRequest = mockStatic(Request.class)) {
+            mockedRequest.when(() -> Request.getBaseRequest(mockHttpRequest)).thenReturn(mockBaseRequest);
 
-        assertNotNull(result);
-        // We expect either UserAuthentication or SEND_FAILURE depending on the full setup
+            Authentication result = authenticator.validateRequest(mockHttpRequest, mockHttpResponse, true);
+
+            assertNotNull(result);
+            // We expect either UserAuthentication or SEND_FAILURE depending on the full setup
+        }
     }
 
     @Test
@@ -176,9 +182,14 @@ class PkiAuthenticatorTest {
         field.setAccessible(true);
         field.set(authenticator, loginService);
 
-        Authentication result = authenticator.validateRequest(mockHttpRequest, mockHttpResponse, true);
+        // Mock the static Request.getBaseRequest() method
+        try (var mockedRequest = mockStatic(Request.class)) {
+            mockedRequest.when(() -> Request.getBaseRequest(mockHttpRequest)).thenReturn(mockBaseRequest);
 
-        assertEquals(Authentication.SEND_FAILURE, result);
+            Authentication result = authenticator.validateRequest(mockHttpRequest, mockHttpResponse, true);
+
+            assertEquals(Authentication.SEND_FAILURE, result);
+        }
     }
 
     @Test

@@ -69,6 +69,11 @@ public class PkiAuthenticator extends LoginAuthenticator {
             PkiLoginService pkiLoginService = (PkiLoginService) _loginService;
             Request baseRequest = Request.getBaseRequest(request);
 
+            if (baseRequest == null) {
+                LOG.warn("Unable to extract base request for PKI authentication");
+                return sendChallenge(response);
+            }
+
             UserPrincipal userPrincipal = pkiLoginService.getUserPrincipalFromCertificate(baseRequest);
 
             if (userPrincipal != null) {

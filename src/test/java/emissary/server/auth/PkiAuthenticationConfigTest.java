@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -117,7 +118,7 @@ class PkiAuthenticationConfigTest {
                 "CN=Bob Manager,OU=Management,O=Test,C=US = manager,admin\n";
         Files.writeString(usersFile, fileContent);
 
-        when(mockConfigurator.findStringEntry(eq("PKI_USERS_FILE"), eq(null))).thenReturn(usersFile.toString());
+        when(mockConfigurator.findStringEntry(eq("PKI_USERS_FILE"), isNull())).thenReturn(usersFile.toString());
 
         PkiAuthenticationConfig config = new PkiAuthenticationConfig(mockConfigurator);
         PkiLoginService loginService = new PkiLoginService("TestRealm");
@@ -157,7 +158,7 @@ class PkiAuthenticationConfigTest {
                 "CN=Another User,OU=Test,O=Test,C=US = admin\n";
         Files.writeString(usersFile, fileContent);
 
-        when(mockConfigurator.findStringEntry(eq("PKI_USERS_FILE"), eq(null))).thenReturn(usersFile.toString());
+        when(mockConfigurator.findStringEntry(eq("PKI_USERS_FILE"), isNull())).thenReturn(usersFile.toString());
 
         PkiAuthenticationConfig config = new PkiAuthenticationConfig(mockConfigurator);
         PkiLoginService loginService = new PkiLoginService("TestRealm");
