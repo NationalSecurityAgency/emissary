@@ -673,6 +673,20 @@ public class ConfigUtil {
         }
     }
 
+    /**
+     * Returns a {@link Configurator} containing only entries with a given key prefix.
+     *
+     * @param cfg The {@link Configurator} to extract entries from
+     * @param keyPrefix The key prefix that filters config entries
+     * @return A new {@link Configurator} object
+     */
+    public static Configurator getSubConfig(Configurator cfg, String keyPrefix) {
+        Configurator subConfigs = new ServiceConfigGuide();
+        cfg.findStringMatchMultiMap(keyPrefix, true)
+                .forEach((key, value) -> subConfigs.addEntries(key, new ArrayList<>(value)));
+        return subConfigs;
+    }
+
     /** This class is not meant to be instantiated. */
     private ConfigUtil() {}
 

@@ -29,6 +29,7 @@ import java.util.Properties;
 import static emissary.config.ConfigUtil.CONFIG_DIR_PROPERTY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -664,6 +665,26 @@ class ConfigUtilTest extends UnitTest {
             throw new EmissaryRuntimeException(ex);
         }
         return file;
+    }
+
+    @Test
+    void testGetSubConfig() {
+        String expectedOne = "EXPECTED_ONE";
+        String expectedTwo = "EXPECTED_TWO";
+        String unexpected = "UNEXPECTED";
+        String prefix = "SOME_PREFIX_";
+
+        Configurator base = new ServiceConfigGuide();
+        base.addEntries(prefix + expectedOne, List.of("A", "B", "C"));
+        base.addEntries(prefix + expectedTwo, List.of("D", "E", "F"));
+        base.addEntries(unexpected, List.of("G", "H", "I"));
+        Configurator sub = ConfigUtil.getSubConfig(base, prefix);
+
+        assertEquals(6, sub.getEntries().size());
+        assertEquals(base.findEntries(prefix + expectedOne), sub.findEntries(expectedOne));
+        assertEquals(base.findEntries(prefix + expectedTwo), sub.findEntries(expectedTwo));
+        assertNotEquals(base.findEntries(unexpected), sub.findEntries(unexpected));
+        assertTrue(sub.findEntries(unexpected).isEmpty());
     }
 
     @Test
