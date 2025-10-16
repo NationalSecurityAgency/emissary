@@ -31,11 +31,7 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
     private Configurator defaultConfigurator;
 
     public ConfiguredPlaceFactory(Class<T> place, ConfigEntry... defaultConfigs) {
-        this(place, true, defaultConfigs);
-    }
-
-    public ConfiguredPlaceFactory(Class<T> place, boolean useCfgFile, ConfigEntry... defaultConfigs) {
-        initializeFactory(place, useCfgFile ? loadConfigFile(place) : new ServiceConfigGuide(), defaultConfigs);
+        initializeFactory(place, loadConfigFile(place), defaultConfigs);
     }
 
     public ConfiguredPlaceFactory(Class<T> place, Configurator baseConfigurator, ConfigEntry... defaultConfigs) {

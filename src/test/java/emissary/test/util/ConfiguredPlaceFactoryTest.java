@@ -68,8 +68,9 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
     }
 
     @Test
-    void testDoNotExpectCfgFile() {
-        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class, false);
+    void testDoNotUseCfgFile() {
+        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class,
+                new ServiceConfigGuide());
         ConfigFilePlace place = factory.buildPlace();
 
         assertTrue(place.getConstantTestConfigs().isEmpty());
