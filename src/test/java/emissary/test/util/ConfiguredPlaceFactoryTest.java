@@ -21,6 +21,8 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
     private static final String CONSTANT_VALUE_2 = "CONSTANT_VALUE_2";
     private static final String CFG_FILE_VALUE_1 = "CFG_FILE_VALUE_1";
     private static final String CFG_FILE_VALUE_2 = "CFG_FILE_VALUE_2";
+    private static final String NEW_CONFIGURATOR_VALUE_1 = "NEW_CONFIGURATOR_VALUE_1";
+    private static final String NEW_CONFIGURATOR_VALUE_2 = "NEW_CONFIGURATOR_VALUE_2";
     private static final String FACTORY_CONSTRUCTOR_VALUE_1 = "FACTORY_CONSTRUCTOR_VALUE_1";
     private static final String FACTORY_CONSTRUCTOR_VALUE_2 = "FACTORY_CONSTRUCTOR_VALUE_2";
     private static final String BUILD_PARAMETER_VALUE_1 = "BUILD_PARAMETER_VALUE_1";
@@ -79,15 +81,14 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testCustomBaseConfigurator() {
-        List<String> values = List.of("SOME_VALUE_1", "SOME_VALUE_2");
         Configurator baseConfigurator = new ServiceConfigGuide();
-        baseConfigurator.addEntry(CONSTANT_KEY, values.get(0));
-        baseConfigurator.addEntry(CONSTANT_KEY, values.get(1));
+        baseConfigurator.addEntry(CONSTANT_KEY, NEW_CONFIGURATOR_VALUE_1);
+        baseConfigurator.addEntry(CONSTANT_KEY, NEW_CONFIGURATOR_VALUE_2);
 
         ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class, baseConfigurator);
         ConfigFilePlace place = factory.buildPlace();
 
-        assertIterableEquals(values, place.getConstantTestConfigs());
+        assertIterableEquals(List.of(NEW_CONFIGURATOR_VALUE_1, NEW_CONFIGURATOR_VALUE_2), place.getConstantTestConfigs());
         assertTrue(place.getVariableTestConfigs().isEmpty());
     }
 
