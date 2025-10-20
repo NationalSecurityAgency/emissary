@@ -111,7 +111,8 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
         } catch (Exception e) {
             return exceptionType.cast(e.getCause());
         }
-        throw new IllegalStateException(String.format("Succeeded building %s but expected failure", placeName));
+        throw new IllegalStateException(
+                String.format("Succeeded building %s but expected to throw %s", placeName, exceptionType.getName()));
     }
 
     private Configurator newInstanceConfigurator(ConfigEntry... optionalConfigs) {

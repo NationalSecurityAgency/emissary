@@ -245,10 +245,11 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
     @Test
     void testBuildSucceedsDespiteExpectedFailure() {
         String placeName = "emissary.test.util.ConfiguredPlaceFactoryTest$ConfigFilePlace";
+        String exceptionName = "emissary.test.util.ConfiguredPlaceFactoryTest$StartupFailurePlace$SomeException";
         ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class);
 
         IllegalStateException e = assertThrows(IllegalStateException.class,
                 () -> factory.getBuildPlaceException(StartupFailurePlace.SomeException.class));
-        assertEquals(String.format("Succeeded building %s but expected failure", placeName), e.getMessage());
+        assertEquals(String.format("Succeeded building %s but expected to throw %s", placeName, exceptionName), e.getMessage());
     }
 }
