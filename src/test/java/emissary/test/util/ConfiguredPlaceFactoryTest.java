@@ -11,7 +11,10 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConfiguredPlaceFactoryTest extends UnitTest {
@@ -57,6 +60,24 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
     static class NoConfigFilePlace extends ConfigFilePlace {
         public NoConfigFilePlace(Configurator cfgInfo) throws IOException {
             super(cfgInfo);
+        }
+    }
+
+    /**
+     * A place that always fails on startup
+     */
+    static class StartupFailurePlace extends ConfigFilePlace {
+        static class SomeException extends RuntimeException {
+            private static final long serialVersionUID = 123L;
+
+            public SomeException(final String message) {
+                super(message);
+            }
+        }
+
+        public StartupFailurePlace(Configurator cfgInfo) throws IOException {
+            super(cfgInfo);
+            throw new SomeException("Some Exception message from Place instantiation");
         }
     }
 
@@ -190,5 +211,44 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
         assertIterableEquals(List.of(CONSTANT_VALUE_1, CONSTANT_VALUE_2), place.getConstantTestConfigs());
         assertTrue(place.getVariableTestConfigs().isEmpty());
+    }
+
+
+    @Test
+    void testExpectedExceptionForBuildFailure() {
+        ConfiguredPlaceFactory<StartupFailurePlace> factory = new ConfiguredPlaceFactory<>(StartupFailurePlace.class);
+        Exception e = factory.getBuildPlaceException();
+
+        assertInstanceOf(StartupFailurePlace.SomeException.class, e);
+        assertEquals("Some Exception message from Place instantiation", e.getMessage());
+    }
+
+    @Test
+    void testExpectedExceptionForBuildFailureWithProvidedType() {
+        ConfiguredPlaceFactory<StartupFailurePlace> factory = new ConfiguredPlaceFactory<>(StartupFailurePlace.class);
+        StartupFailurePlace.SomeException e = factory.getBuildPlaceException(StartupFailurePlace.SomeException.class);
+
+        assertEquals("Some Exception message from Place instantiation", e.getMessage());
+    }
+
+    @Test
+    void testUnexpectedExceptionTypeForBuildFailure() {
+        String expectedExceptionName = "java.lang.NullPointerException";
+        String actualExceptionName = "emissary.test.util.ConfiguredPlaceFactoryTest$StartupFailurePlace$SomeException";
+        ConfiguredPlaceFactory<StartupFailurePlace> factory = new ConfiguredPlaceFactory<>(StartupFailurePlace.class);
+
+        ClassCastException e = assertThrows(ClassCastException.class,
+                () -> factory.getBuildPlaceException(NullPointerException.class));
+        assertEquals(String.format("Cannot cast %s to %s", actualExceptionName, expectedExceptionName), e.getMessage());
+    }
+
+    @Test
+    void testBuildSucceedsDespiteExpectedFailure() {
+        String placeName = "emissary.test.util.ConfiguredPlaceFactoryTest$ConfigFilePlace";
+        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class);
+
+        IllegalStateException e = assertThrows(IllegalStateException.class,
+                () -> factory.getBuildPlaceException(StartupFailurePlace.SomeException.class));
+        assertEquals(String.format("Succeeded building %s but expected failure", placeName), e.getMessage());
     }
 }

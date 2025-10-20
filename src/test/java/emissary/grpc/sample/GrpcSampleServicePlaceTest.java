@@ -284,23 +284,21 @@ class GrpcSampleServicePlaceTest extends UnitTest {
 
         @Test
         void testMismatchedHostPortConfigs() {
-            Runnable invocation = () -> placeFactory.buildPlace(
+            IllegalArgumentException e = placeFactory.getBuildPlaceException(IllegalArgumentException.class,
                     new ConfigEntry(GrpcRoutingPlace.GRPC_HOST + ENDPOINT_3_ID, ENDPOINT_HOST));
-            IllegalStateException e = assertThrows(IllegalStateException.class, invocation::run);
-            String nestedErrorMessage = e.getCause().getCause().getMessage();
-            assertEquals("gRPC hostname target-IDs do not match gRPC port number target-IDs", nestedErrorMessage);
+
+            assertEquals("gRPC hostname target-IDs do not match gRPC port number target-IDs", e.getMessage());
         }
 
         @Test
         void testNoHostPortConfigs() {
-            Runnable invocation = () -> placeFactory.buildPlace(
+            NullPointerException e = placeFactory.getBuildPlaceException(NullPointerException.class,
                     new ConfigEntry(GrpcRoutingPlace.GRPC_HOST + ENDPOINT_1_ID, null),
                     new ConfigEntry(GrpcRoutingPlace.GRPC_HOST + ENDPOINT_2_ID, null),
                     new ConfigEntry(GrpcRoutingPlace.GRPC_PORT + ENDPOINT_1_ID, null),
                     new ConfigEntry(GrpcRoutingPlace.GRPC_PORT + ENDPOINT_2_ID, null));
-            IllegalStateException e = assertThrows(IllegalStateException.class, invocation::run);
-            String nestedErrorMessage = e.getCause().getCause().getMessage();
-            assertEquals("Missing required arguments: GRPC_HOST_${Target-ID} and GRPC_PORT_${Target-ID}", nestedErrorMessage);
+
+            assertEquals("Missing required arguments: GRPC_HOST_${Target-ID} and GRPC_PORT_${Target-ID}", e.getMessage());
         }
 
         @Test
