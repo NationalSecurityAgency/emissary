@@ -76,6 +76,8 @@ public class ConfigUtil {
 
     public static final String PROJECT_BASE_ENV = "PROJECT_BASE";
 
+    public static final String CLASS_NAME = "CLASS_NAME";
+
     /** The package name where config stuff may be found */
     @Nullable
     private static String configPkg = null;
@@ -632,6 +634,57 @@ public class ConfigUtil {
             logger.warn("Filename {} had multiple - characters, using the last to determine the flavor", filename);
         }
         return parts[parts.length - 1].replaceAll(".cfg", "");
+    }
+
+    /**
+     * Instantiates an object from the class defined under the {@code "CLASS_NAME"} configuration of the given name. The
+     * created instance must be assignable to the specified type.
+     *
+     * @param expectedType the base type the instantiated class must extend or implement
+     * @param name the object name to get Configurator info for
+     * @return a new instance of the specified class, cast to the expected type
+     * @param <T> the expected superclass or interface type
+     */
+    public static <T> T instantiateFromConfig(Class<T> expectedType, final String name) {
+        try {
+            return instantiateFromConfig(expectedType, getConfigInfo(name));
+        } catch (IOException e) {
+            throw new IllegalStateException("Import file not found: " + name, e);
+        }
+    }
+
+    /**
+     * Instantiates an object from the class defined under the {@code "CLASS_NAME"} configuration of the given
+     * {@link Configurator}. The created instance must be assignable to the specified type.
+     *
+     * @param expectedType the base type the instantiated class must extend or implement
+     * @param cfg the Configurator object
+     * @return a new instance of the specified class, cast to the expected type
+     * @param <T> the expected superclass or interface type
+     */
+    public static <T> T instantiateFromConfig(Class<T> expectedType, Configurator cfg) {
+        String className = cfg.findRequiredStringEntry(CLASS_NAME);
+        try {
+            Class<?> clz = Class.forName(className);
+            Object instance = clz.getDeclaredConstructor(Configurator.class).newInstance(cfg);
+            return expectedType.cast(instance);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Unable to instantiate " + className, e);
+        }
+    }
+
+    /**
+     * Returns a {@link Configurator} containing only entries with a given key prefix.
+     *
+     * @param cfg The {@link Configurator} to extract entries from
+     * @param keyPrefix The key prefix that filters config entries
+     * @return A new {@link Configurator} object
+     */
+    public static Configurator getSubConfig(Configurator cfg, String keyPrefix) {
+        Configurator subConfigs = new ServiceConfigGuide();
+        cfg.findStringMatchMultiMap(keyPrefix, true)
+                .forEach((key, value) -> subConfigs.addEntries(key, new ArrayList<>(value)));
+        return subConfigs;
     }
 
     /** This class is not meant to be instantiated. */
