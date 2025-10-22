@@ -31,15 +31,22 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
     private final Configurator defaultConfigurator;
 
     public ConfiguredPlaceFactory(Class<T> place, ConfigEntry... defaultConfigs) {
-        placeName = place.getName();
-        try {
-            placeConstructor = place.getDeclaredConstructor(Configurator.class);
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException("Failed to create ConfiguredPlaceFactory instance for " + placeName, e);
-        }
+        this(place, null, defaultConfigs);
+    }
 
-        defaultConfigurator = loadConfigFile(place);
+    public ConfiguredPlaceFactory(Class<T> place, Configurator baseConfigurator, ConfigEntry... defaultConfigs) {
+        placeName = place.getName();
+        placeConstructor = getPlaceConstructor(place);
+        defaultConfigurator = baseConfigurator != null ? baseConfigurator : loadConfigFile(place);
         addAndReplaceConfigEntries(defaultConfigurator, defaultConfigs);
+    }
+
+    private Constructor<T> getPlaceConstructor(Class<T> place) {
+        try {
+            return place.getDeclaredConstructor(Configurator.class);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to create ConfiguredPlaceFactory instance for " + place.getName(), e);
+        }
     }
 
     /**
@@ -75,6 +82,37 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
         } catch (Exception e) {
             throw new IllegalStateException("Failed to create instance of " + placeName, e);
         }
+    }
+
+    /**
+     * Returns the Exception that would be thrown if the place is built with the given configurations. Actually throws an
+     * Exception if the build doesn't throw anything.
+     *
+     * @param optionalConfigs list of new or overriding place configurations
+     * @return an Exception object
+     */
+    public Exception getBuildPlaceException(ConfigEntry... optionalConfigs) {
+        return getBuildPlaceException(Exception.class, optionalConfigs);
+    }
+
+    /**
+     * Returns the Exception that would be thrown if the place is built with the given configurations. Actually throws an
+     * Exception if the provided type doesn't match, or if the build doesn't throw anything.
+     *
+     * @param exceptionType Exception base class
+     * @param optionalConfigs list of new or overriding place configurations
+     * @return an Exception object
+     * @param <E> The Exception type that is expected to be thrown
+     */
+    public <E extends Exception> E getBuildPlaceException(Class<E> exceptionType, ConfigEntry... optionalConfigs) {
+        try {
+            Configurator classConfigs = newInstanceConfigurator(optionalConfigs);
+            placeConstructor.newInstance(classConfigs);
+        } catch (Exception e) {
+            return exceptionType.cast(e.getCause());
+        }
+        throw new IllegalStateException(
+                String.format("Succeeded building %s but expected to throw %s", placeName, exceptionType.getName()));
     }
 
     private Configurator newInstanceConfigurator(ConfigEntry... optionalConfigs) {
