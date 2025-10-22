@@ -31,12 +31,12 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
     private static final String BUILD_PARAMETER_VALUE_1 = "BUILD_PARAMETER_VALUE_1";
     private static final String BUILD_PARAMETER_VALUE_2 = "BUILD_PARAMETER_VALUE_2";
 
-    static class ConfigFilePlace extends ServiceProviderPlace {
+    static class ConfigFileTestPlace extends ServiceProviderPlace {
         private final List<String> constantTestConfigs;
         private final List<String> variableTestConfigs;
 
-        public ConfigFilePlace(Configurator cfgInfo) throws IOException {
-            super(ConfigFilePlace.class.getName());
+        public ConfigFileTestPlace(Configurator cfgInfo) throws IOException {
+            super(ConfigFileTestPlace.class.getName());
             configG = cfgInfo != null ? cfgInfo : configG;
             if (configG == null) {
                 throw new IllegalStateException("No configurations found for " + getPlaceName());
@@ -55,10 +55,10 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
     }
 
     /**
-     * Same functionality as {@link ConfigFilePlace} but without a .cfg file
+     * Same functionality as {@link ConfigFileTestPlace} but without a .cfg file
      */
-    static class NoConfigFilePlace extends ConfigFilePlace {
-        public NoConfigFilePlace(Configurator cfgInfo) throws IOException {
+    static class NoConfigFileTestPlace extends ConfigFileTestPlace {
+        public NoConfigFileTestPlace(Configurator cfgInfo) throws IOException {
             super(cfgInfo);
         }
     }
@@ -66,7 +66,7 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
     /**
      * A place that always fails on startup
      */
-    static class StartupFailurePlace extends ConfigFilePlace {
+    static class StartupFailureTestPlace extends ConfigFileTestPlace {
         static class SomeException extends RuntimeException {
             private static final long serialVersionUID = 123L;
 
@@ -75,7 +75,7 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
             }
         }
 
-        public StartupFailurePlace(Configurator cfgInfo) throws IOException {
+        public StartupFailureTestPlace(Configurator cfgInfo) throws IOException {
             super(cfgInfo);
             throw new SomeException("Some Exception message from Place instantiation");
         }
@@ -83,8 +83,8 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testCfgFile() {
-        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class);
-        ConfigFilePlace place = factory.buildPlace();
+        ConfiguredPlaceFactory<ConfigFileTestPlace> factory = new ConfiguredPlaceFactory<>(ConfigFileTestPlace.class);
+        ConfigFileTestPlace place = factory.buildPlace();
 
         assertIterableEquals(List.of(CONSTANT_VALUE_1, CONSTANT_VALUE_2), place.getConstantTestConfigs());
         assertIterableEquals(List.of(CFG_FILE_VALUE_1, CFG_FILE_VALUE_2), place.getVariableTestConfigs());
@@ -92,9 +92,9 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testDoNotUseCfgFile() {
-        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class,
+        ConfiguredPlaceFactory<ConfigFileTestPlace> factory = new ConfiguredPlaceFactory<>(ConfigFileTestPlace.class,
                 new ServiceConfigGuide());
-        ConfigFilePlace place = factory.buildPlace();
+        ConfigFileTestPlace place = factory.buildPlace();
 
         assertTrue(place.getConstantTestConfigs().isEmpty());
         assertTrue(place.getVariableTestConfigs().isEmpty());
@@ -106,8 +106,8 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
         baseConfigurator.addEntry(CONSTANT_KEY, NEW_CONFIGURATOR_VALUE_1);
         baseConfigurator.addEntry(CONSTANT_KEY, NEW_CONFIGURATOR_VALUE_2);
 
-        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class, baseConfigurator);
-        ConfigFilePlace place = factory.buildPlace();
+        ConfiguredPlaceFactory<ConfigFileTestPlace> factory = new ConfiguredPlaceFactory<>(ConfigFileTestPlace.class, baseConfigurator);
+        ConfigFileTestPlace place = factory.buildPlace();
 
         assertIterableEquals(List.of(NEW_CONFIGURATOR_VALUE_1, NEW_CONFIGURATOR_VALUE_2), place.getConstantTestConfigs());
         assertTrue(place.getVariableTestConfigs().isEmpty());
@@ -115,8 +115,8 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testExpectedCfgFileNotFound() {
-        ConfiguredPlaceFactory<NoConfigFilePlace> factory = new ConfiguredPlaceFactory<>(NoConfigFilePlace.class);
-        ConfigFilePlace place = factory.buildPlace();
+        ConfiguredPlaceFactory<NoConfigFileTestPlace> factory = new ConfiguredPlaceFactory<>(NoConfigFileTestPlace.class);
+        ConfigFileTestPlace place = factory.buildPlace();
 
         assertTrue(place.getConstantTestConfigs().isEmpty());
         assertTrue(place.getVariableTestConfigs().isEmpty());
@@ -124,10 +124,10 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testFactoryConstructorOverridesCfgFile() {
-        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class,
+        ConfiguredPlaceFactory<ConfigFileTestPlace> factory = new ConfiguredPlaceFactory<>(ConfigFileTestPlace.class,
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_2));
-        ConfigFilePlace place = factory.buildPlace();
+        ConfigFileTestPlace place = factory.buildPlace();
 
         assertIterableEquals(List.of(CONSTANT_VALUE_1, CONSTANT_VALUE_2), place.getConstantTestConfigs());
         assertIterableEquals(List.of(FACTORY_CONSTRUCTOR_VALUE_1, FACTORY_CONSTRUCTOR_VALUE_2), place.getVariableTestConfigs());
@@ -135,10 +135,10 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testFactoryConstructorWithoutCfgFile() {
-        ConfiguredPlaceFactory<NoConfigFilePlace> factory = new ConfiguredPlaceFactory<>(NoConfigFilePlace.class,
+        ConfiguredPlaceFactory<NoConfigFileTestPlace> factory = new ConfiguredPlaceFactory<>(NoConfigFileTestPlace.class,
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_2));
-        NoConfigFilePlace place = factory.buildPlace();
+        NoConfigFileTestPlace place = factory.buildPlace();
 
         assertTrue(place.getConstantTestConfigs().isEmpty());
         assertIterableEquals(List.of(FACTORY_CONSTRUCTOR_VALUE_1, FACTORY_CONSTRUCTOR_VALUE_2), place.getVariableTestConfigs());
@@ -146,9 +146,9 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testRemoveConfigurationsWithNullFactoryConstructorParameter() {
-        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class,
+        ConfiguredPlaceFactory<ConfigFileTestPlace> factory = new ConfiguredPlaceFactory<>(ConfigFileTestPlace.class,
                 new ConfigEntry(VARIABLE_KEY, null));
-        ConfigFilePlace place = factory.buildPlace();
+        ConfigFileTestPlace place = factory.buildPlace();
 
         assertIterableEquals(List.of(CONSTANT_VALUE_1, CONSTANT_VALUE_2), place.getConstantTestConfigs());
         assertTrue(place.getVariableTestConfigs().isEmpty());
@@ -156,8 +156,8 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testBuildParametersOverrideCfgFile() {
-        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class);
-        ConfigFilePlace place = factory.buildPlace(
+        ConfiguredPlaceFactory<ConfigFileTestPlace> factory = new ConfiguredPlaceFactory<>(ConfigFileTestPlace.class);
+        ConfigFileTestPlace place = factory.buildPlace(
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_2));
 
@@ -167,8 +167,8 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testBuildParametersWithoutCfgFile() {
-        ConfiguredPlaceFactory<NoConfigFilePlace> factory = new ConfiguredPlaceFactory<>(NoConfigFilePlace.class);
-        NoConfigFilePlace place = factory.buildPlace(
+        ConfiguredPlaceFactory<NoConfigFileTestPlace> factory = new ConfiguredPlaceFactory<>(NoConfigFileTestPlace.class);
+        NoConfigFileTestPlace place = factory.buildPlace(
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_2));
 
@@ -178,10 +178,10 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testBuildParametersOverrideFactoryConstructor() {
-        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class,
+        ConfiguredPlaceFactory<ConfigFileTestPlace> factory = new ConfiguredPlaceFactory<>(ConfigFileTestPlace.class,
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_2));
-        ConfigFilePlace place = factory.buildPlace(
+        ConfigFileTestPlace place = factory.buildPlace(
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_2));
 
@@ -191,10 +191,10 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testBuildParametersOverrideFactoryConstructorWithoutCfgFile() {
-        ConfiguredPlaceFactory<NoConfigFilePlace> factory = new ConfiguredPlaceFactory<>(NoConfigFilePlace.class,
+        ConfiguredPlaceFactory<NoConfigFileTestPlace> factory = new ConfiguredPlaceFactory<>(NoConfigFileTestPlace.class,
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_2));
-        NoConfigFilePlace place = factory.buildPlace(
+        NoConfigFileTestPlace place = factory.buildPlace(
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, BUILD_PARAMETER_VALUE_2));
 
@@ -204,10 +204,10 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testRemoveConfigurationsWithNullBuildParameter() {
-        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class,
+        ConfiguredPlaceFactory<ConfigFileTestPlace> factory = new ConfiguredPlaceFactory<>(ConfigFileTestPlace.class,
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_1),
                 new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_2));
-        ConfigFilePlace place = factory.buildPlace(new ConfigEntry(VARIABLE_KEY, null));
+        ConfigFileTestPlace place = factory.buildPlace(new ConfigEntry(VARIABLE_KEY, null));
 
         assertIterableEquals(List.of(CONSTANT_VALUE_1, CONSTANT_VALUE_2), place.getConstantTestConfigs());
         assertTrue(place.getVariableTestConfigs().isEmpty());
@@ -216,17 +216,17 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testExpectedExceptionForBuildFailure() {
-        ConfiguredPlaceFactory<StartupFailurePlace> factory = new ConfiguredPlaceFactory<>(StartupFailurePlace.class);
+        ConfiguredPlaceFactory<StartupFailureTestPlace> factory = new ConfiguredPlaceFactory<>(StartupFailureTestPlace.class);
         Exception e = factory.getBuildPlaceException();
 
-        assertInstanceOf(StartupFailurePlace.SomeException.class, e);
+        assertInstanceOf(StartupFailureTestPlace.SomeException.class, e);
         assertEquals("Some Exception message from Place instantiation", e.getMessage());
     }
 
     @Test
     void testExpectedExceptionForBuildFailureWithProvidedType() {
-        ConfiguredPlaceFactory<StartupFailurePlace> factory = new ConfiguredPlaceFactory<>(StartupFailurePlace.class);
-        StartupFailurePlace.SomeException e = factory.getBuildPlaceException(StartupFailurePlace.SomeException.class);
+        ConfiguredPlaceFactory<StartupFailureTestPlace> factory = new ConfiguredPlaceFactory<>(StartupFailureTestPlace.class);
+        StartupFailureTestPlace.SomeException e = factory.getBuildPlaceException(StartupFailureTestPlace.SomeException.class);
 
         assertEquals("Some Exception message from Place instantiation", e.getMessage());
     }
@@ -234,8 +234,8 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
     @Test
     void testUnexpectedExceptionTypeForBuildFailure() {
         String expectedExceptionName = "java.lang.NullPointerException";
-        String actualExceptionName = "emissary.test.util.ConfiguredPlaceFactoryTest$StartupFailurePlace$SomeException";
-        ConfiguredPlaceFactory<StartupFailurePlace> factory = new ConfiguredPlaceFactory<>(StartupFailurePlace.class);
+        String actualExceptionName = "emissary.test.util.ConfiguredPlaceFactoryTest$StartupFailureTestPlace$SomeException";
+        ConfiguredPlaceFactory<StartupFailureTestPlace> factory = new ConfiguredPlaceFactory<>(StartupFailureTestPlace.class);
 
         ClassCastException e = assertThrows(ClassCastException.class,
                 () -> factory.getBuildPlaceException(NullPointerException.class));
@@ -244,12 +244,12 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
     @Test
     void testBuildSucceedsDespiteExpectedFailure() {
-        String placeName = "emissary.test.util.ConfiguredPlaceFactoryTest$ConfigFilePlace";
-        String exceptionName = "emissary.test.util.ConfiguredPlaceFactoryTest$StartupFailurePlace$SomeException";
-        ConfiguredPlaceFactory<ConfigFilePlace> factory = new ConfiguredPlaceFactory<>(ConfigFilePlace.class);
+        String placeName = "emissary.test.util.ConfiguredPlaceFactoryTest$ConfigFileTestPlace";
+        String exceptionName = "emissary.test.util.ConfiguredPlaceFactoryTest$StartupFailureTestPlace$SomeException";
+        ConfiguredPlaceFactory<ConfigFileTestPlace> factory = new ConfiguredPlaceFactory<>(ConfigFileTestPlace.class);
 
         IllegalStateException e = assertThrows(IllegalStateException.class,
-                () -> factory.getBuildPlaceException(StartupFailurePlace.SomeException.class));
+                () -> factory.getBuildPlaceException(StartupFailureTestPlace.SomeException.class));
         assertEquals(String.format("Succeeded building %s but expected to throw %s", placeName, exceptionName), e.getMessage());
     }
 }
