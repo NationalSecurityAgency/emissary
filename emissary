@@ -24,6 +24,20 @@ if [ "${DEBUG}" == "true" ]; then
   DEBUG_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=${DEBUG_PORT}"
 fi
 
+# Turn on metrics by prepending either of the
+# following to the command line before ./emissary:
+# METRICS_PORT=someport
+# or
+# METRICS=true
+if [ "${METRICS_PORT}x" != "x" ]; then
+  METRICS=true
+else
+  METRICS_PORT=9100
+fi
+if [ "${METRICS}" == "true" ]; then
+  export JAVA_TOOL_OPTIONS="-javaagent:src/main/resources/metrics/jmx_prometheus_javaagent-1.5.0.jar=${METRICS_PORT}:src/main/resources/metrics/exporter.yaml"
+fi
+
 # Turn on picocli argument parsing debugging and an echo of the command line
 # CMD_DEBUG=true ./emissary <command> <args>
 # see Emissary.java for where it is used
