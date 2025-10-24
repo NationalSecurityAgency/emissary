@@ -5,9 +5,6 @@ updates:
     directory: "/"
     schedule:
       interval: daily
-    allow:
-      - dependency-name: "gov.nsa.emissary:emissary"
-      - dependency-name: "gov.nsa.raft:*"
     open-pull-requests-limit: 5
     commit-message:
       prefix: dependencies
