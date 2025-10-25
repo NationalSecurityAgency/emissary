@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'emissary-health'
+    metrics_path: /api/health
+    params:
+      format: [ "prometheus" ]
+    static_configs:
+      - targets: [ 'localhost:8001' ]
+  - job_name: 'emissary-metrics'
+    metrics_path: /api/metrics
+    params:
+      format: ["prometheus"]
+    static_configs:
+      - targets: ['localhost:8001']

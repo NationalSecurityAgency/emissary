@@ -1,9 +1,13 @@
 package emissary.grpc.retry;
 
 import emissary.config.Configurator;
+import emissary.core.MetricsManager;
+import emissary.core.NamespaceException;
 import emissary.grpc.exceptions.PoolException;
 import emissary.grpc.exceptions.ServiceNotAvailableException;
 
+import com.codahale.metrics.Counter;
+import com.google.common.base.VerifyException;
 import io.github.resilience4j.core.IntervalFunction;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
@@ -13,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 
+import java.util.Locale;
 import java.util.function.Supplier;
 
 /**
@@ -52,6 +57,7 @@ public final class RetryHandler {
     private final int maxAttempts;
     private final int numFailsBeforeWarn;
     private final Retry retry;
+    private final Counter grpcRetryCounter;
 
     /**
      * Constructs the retry policy for a given gRPC service.
@@ -66,6 +72,14 @@ public final class RetryHandler {
         maxAttempts = configG.findIntEntry(GRPC_RETRY_MAX_ATTEMPTS, 4);
         numFailsBeforeWarn = configG.findIntEntry(GRPC_RETRY_NUM_FAILS_BEFORE_WARN, 3);
 
+        // Initialize Dropwizard counter for gRPC retries
+        try {
+            grpcRetryCounter = MetricsManager.lookup().getMetricRegistry()
+                    .counter("grpc.retries." + sanitizeMetricName(retryName));
+        } catch (NamespaceException e) {
+            throw new VerifyException("Failed to initialize gRPC retry counter", e);
+        }
+
         retry = Retry.of(internalName, RetryConfig.custom()
                 .maxAttempts(maxAttempts)
                 .intervalFunction(IntervalFunction.ofExponentialBackoff(
@@ -79,7 +93,17 @@ public final class RetryHandler {
                 .onError(this::logMessageOnError);
     }
 
+    /**
+     * Sanitizes metric names to be compatible with Prometheus naming conventions
+     */
+    private static String sanitizeMetricName(String name) {
+        return name.replaceAll("[^a-zA-Z0-9_]", "_").toLowerCase(Locale.ROOT);
+    }
+
     private void logMessageOnRetry(RetryOnRetryEvent event) {
+        // Increment the Dropwizard counter for each retry attempt
+        grpcRetryCounter.inc();
+
         int attemptNumber = event.getNumberOfRetryAttempts();
         Level level = attemptNumber <= numFailsBeforeWarn ? Level.INFO : Level.WARN;
         logger.atLevel(level).log("{} failed gRPC connection attempt #{} with event error: {}", internalName, attemptNumber, event);
