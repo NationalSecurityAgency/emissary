@@ -90,7 +90,7 @@
     <dep.resilience4j.version>1.7.0</dep.resilience4j.version>
     <dep.slf4j.version>2.0.7</dep.slf4j.version>
     <dep.spymemcached.version>2.12.3</dep.spymemcached.version>
-    <dep.webjars.bootstrap.version>5.1.3</dep.webjars.bootstrap.version>
+    <dep.webjars.bootstrap.version>5.3.8</dep.webjars.bootstrap.version>
     <dep.webjars.jquery.version>3.6.0</dep.webjars.jquery.version>
     <dep.webjars.popper.version>2.9.3</dep.webjars.popper.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
