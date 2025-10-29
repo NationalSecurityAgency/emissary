@@ -67,7 +67,7 @@
     <dep.httpcore.version>5.2.1</dep.httpcore.version>
     <dep.icu4j.version>73.2</dep.icu4j.version>
     <dep.jackson.version>2.18.3</dep.jackson.version>
-    <dep.jakarta.annotation-api.version>2.1.1</dep.jakarta.annotation-api.version>
+    <dep.jakarta.annotation-api.version>3.0.0</dep.jakarta.annotation-api.version>
     <dep.jakarta.ws.rs-api.version>3.1.0</dep.jakarta.ws.rs-api.version>
     <dep.jakarta.xml.bind-api.version>4.0.2</dep.jakarta.xml.bind-api.version>
     <dep.janino.version>3.1.12</dep.janino.version>
