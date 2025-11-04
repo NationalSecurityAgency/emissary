@@ -29,7 +29,7 @@
       <timezone>America/New_York</timezone>
     </developer>
   </developers>
-  <mailingLists />
+  <mailingLists/>
   <scm>
     <connection>scm:git:https://github.com/NationalSecurityAgency/emissary.git</connection>
     <developerConnection>scm:git:git@github.com:NationalSecurityAgency/emissary.git</developerConnection>
@@ -39,7 +39,7 @@
     <system>GitHub</system>
     <url>https://github.com/NationalSecurityAgency/emissary/issues</url>
   </issueManagement>
-  <ciManagement />
+  <ciManagement/>
   <distributionManagement>
     <site>
       <id>github</id>
@@ -49,7 +49,7 @@
   <properties>
     <BUILD_TIMESTAMP>${maven.build.timestamp}</BUILD_TIMESTAMP>
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
-    <argLine />
+    <argLine/>
     <checkstyleFormatter>${project.basedir}/contrib/checkstyle.xml</checkstyleFormatter>
     <dep.commons-codec.version>1.18.0</dep.commons-codec.version>
     <dep.commons-collections.version>4.4</dep.commons-collections.version>
@@ -158,6 +158,61 @@
   </properties>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>${dep.jackson.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-bom</artifactId>
+        <version>${dep.dropwizard.metrics.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-bom</artifactId>
+        <version>${dep.grpc.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-bom</artifactId>
+        <version>${dep.netty.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-bom</artifactId>
+        <version>${dep.jetty.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jersey</groupId>
+        <artifactId>jersey-bom</artifactId>
+        <version>${dep.jersey.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${dep.junit-jupiter.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
@@ -374,61 +429,6 @@
         <groupId>org.webjars</groupId>
         <artifactId>popper.js</artifactId>
         <version>${dep.webjars.popper.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson</groupId>
-        <artifactId>jackson-bom</artifactId>
-        <version>${dep.jackson.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-bom</artifactId>
-        <version>${dep.dropwizard.metrics.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-bom</artifactId>
-        <version>${dep.grpc.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-bom</artifactId>
-        <version>${dep.netty.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-bom</artifactId>
-        <version>${dep.jetty.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.jersey</groupId>
-        <artifactId>jersey-bom</artifactId>
-        <version>${dep.jersey.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.junit</groupId>
-        <artifactId>junit-bom</artifactId>
-        <version>${dep.junit-jupiter.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -903,7 +903,7 @@
             <failOnViolation>true</failOnViolation>
             <violationSeverity>error</violationSeverity>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
-            <excludes />
+            <excludes/>
           </configuration>
           <dependencies>
             <dependency>
@@ -976,7 +976,7 @@
                   <requireJavaVersion>
                     <version>[11,)</version>
                   </requireJavaVersion>
-                  <dependencyConvergence />
+                  <dependencyConvergence/>
                 </rules>
               </configuration>
             </execution>
@@ -1079,7 +1079,7 @@
           <artifactId>maven-pmd-plugin</artifactId>
           <version>${plugin.maven-pmd.version}</version>
           <configuration>
-            <excludes />
+            <excludes/>
             <excludeRoots>
               <excludeRoot>${project.build.directory}/generated-sources</excludeRoot>
             </excludeRoots>
@@ -1407,7 +1407,7 @@
                   <outputDirectory>${project.build.outputDirectory}/public/js/lib</outputDirectory>
                   <includes>**/js/bootstrap.min.*</includes>
                   <fileMappers>
-                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper />
+                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
                   </fileMappers>
                 </artifactItem>
                 <artifactItem>
@@ -1417,7 +1417,7 @@
                   <outputDirectory>${project.build.outputDirectory}/public/css/lib</outputDirectory>
                   <includes>**/css/bootstrap.min.*</includes>
                   <fileMappers>
-                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper />
+                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
                   </fileMappers>
                 </artifactItem>
                 <artifactItem>
@@ -1427,7 +1427,7 @@
                   <outputDirectory>${project.build.outputDirectory}/public/js/lib</outputDirectory>
                   <includes>**/jquery.min.*</includes>
                   <fileMappers>
-                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper />
+                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
                   </fileMappers>
                 </artifactItem>
                 <artifactItem>
@@ -1437,7 +1437,7 @@
                   <outputDirectory>${project.build.outputDirectory}/public/js/lib</outputDirectory>
                   <includes>**/umd/popper.min.*</includes>
                   <fileMappers>
-                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper />
+                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
                   </fileMappers>
                 </artifactItem>
               </artifactItems>
@@ -1850,7 +1850,7 @@
                         </goals>
                       </pluginExecutionFilter>
                       <action>
-                        <ignore />
+                        <ignore/>
                       </action>
                     </pluginExecution>
                     <pluginExecution>
@@ -1863,7 +1863,7 @@
                         </goals>
                       </pluginExecutionFilter>
                       <action>
-                        <ignore />
+                        <ignore/>
                       </action>
                     </pluginExecution>
                     <pluginExecution>
@@ -1876,7 +1876,7 @@
                         </goals>
                       </pluginExecutionFilter>
                       <action>
-                        <ignore />
+                        <ignore/>
                       </action>
                     </pluginExecution>
                     <pluginExecution>
@@ -1889,7 +1889,7 @@
                         </goals>
                       </pluginExecutionFilter>
                       <action>
-                        <ignore />
+                        <ignore/>
                       </action>
                     </pluginExecution>
                   </pluginExecutions>
