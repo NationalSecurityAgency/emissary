@@ -123,7 +123,7 @@
     <plugin.maven-jar.version>3.4.2</plugin.maven-jar.version>
     <plugin.maven-javadoc.version>3.11.2</plugin.maven-javadoc.version>
     <plugin.maven-jxr.version>3.6.0</plugin.maven-jxr.version>
-    <plugin.maven-pmd.version>3.24.0</plugin.maven-pmd.version>
+    <plugin.maven-pmd.version>3.27.0</plugin.maven-pmd.version>
     <plugin.maven-project-info-reports.version>3.4.2</plugin.maven-project-info-reports.version>
     <plugin.maven-release.version>3.1.1</plugin.maven-release.version>
     <plugin.maven-replacer.version>1.5.3</plugin.maven-replacer.version>
