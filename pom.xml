@@ -74,7 +74,7 @@
     <dep.javax.annotation-api.version>1.3.2</dep.javax.annotation-api.version>
     <dep.jaxb.runtime.version>4.0.5</dep.jaxb.runtime.version>
     <dep.jdom.version>2.0.6.1</dep.jdom.version>
-    <dep.jersey.version>3.1.3</dep.jersey.version>
+    <dep.jersey.version>4.0.0</dep.jersey.version>
     <dep.jetty-jakarta-servlet-api.version>5.0.2</dep.jetty-jakarta-servlet-api.version>
     <dep.jetty.version>11.0.24</dep.jetty.version>
     <dep.junit-jupiter.version>5.12.2</dep.junit-jupiter.version>
