@@ -4,7 +4,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.Message;
 import jakarta.annotation.Nonnull;
 
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +19,7 @@ public class CompletableFutureAdaptors {
      * @return completable future
      * @param <R> result type
      */
-    public static <R extends GeneratedMessageV3> CompletableFuture<R> fromListenableFuture(ListenableFuture<R> future) {
+    public static <R extends Message> CompletableFuture<R> fromListenableFuture(ListenableFuture<R> future) {
         CompletableFuture<R> completableFuture = new CompletableFuture<>();
         Futures.addCallback(future, new FutureCallback<>() {
             @Override
