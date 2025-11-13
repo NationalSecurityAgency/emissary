@@ -61,7 +61,7 @@
     <dep.dropwizard.metrics.version>4.2.30</dep.dropwizard.metrics.version>
     <dep.errorprone.version>2.23.0</dep.errorprone.version>
     <dep.grpc.version>1.65.0</dep.grpc.version>
-    <dep.gson.version>2.10.1</dep.gson.version>
+    <dep.gson.version>2.13.2</dep.gson.version>
     <dep.guava.version>32.1.2-jre</dep.guava.version>
     <dep.httpclient.version>5.2.1</dep.httpclient.version>
     <dep.httpcore.version>5.3.6</dep.httpcore.version>
@@ -88,7 +88,7 @@
     <dep.proto-google-common-protos.version>2.63.1</dep.proto-google-common-protos.version>
     <dep.protobuf.version>3.25.5</dep.protobuf.version>
     <dep.resilience4j.version>1.7.0</dep.resilience4j.version>
-    <dep.slf4j.version>2.0.7</dep.slf4j.version>
+    <dep.slf4j.version>2.0.17</dep.slf4j.version>
     <dep.spymemcached.version>2.12.3</dep.spymemcached.version>
     <dep.webjars.bootstrap.version>5.3.8</dep.webjars.bootstrap.version>
     <dep.webjars.jquery.version>3.6.0</dep.webjars.jquery.version>
@@ -110,7 +110,7 @@
     <plugin.formatter-maven.version>2.23.0</plugin.formatter-maven.version>
     <plugin.git-commit-id-maven.version>9.0.1</plugin.git-commit-id-maven.version>
     <plugin.impsort-maven.version>1.8.0</plugin.impsort-maven.version>
-    <plugin.jacoco-maven.version>0.8.12</plugin.jacoco-maven.version>
+    <plugin.jacoco-maven.version>0.8.14</plugin.jacoco-maven.version>
     <plugin.maven-assembly.version>3.7.1</plugin.maven-assembly.version>
     <plugin.maven-checkstyle.version>3.6.0</plugin.maven-checkstyle.version>
     <plugin.maven-clean.version>3.4.0</plugin.maven-clean.version>
@@ -124,20 +124,20 @@
     <plugin.maven-javadoc.version>3.11.2</plugin.maven-javadoc.version>
     <plugin.maven-jxr.version>3.6.0</plugin.maven-jxr.version>
     <plugin.maven-pmd.version>3.27.0</plugin.maven-pmd.version>
-    <plugin.maven-project-info-reports.version>3.4.2</plugin.maven-project-info-reports.version>
+    <plugin.maven-project-info-reports.version>3.9.0</plugin.maven-project-info-reports.version>
     <plugin.maven-release.version>3.1.1</plugin.maven-release.version>
     <plugin.maven-replacer.version>1.5.3</plugin.maven-replacer.version>
     <plugin.maven-resources.version>3.3.1</plugin.maven-resources.version>
     <plugin.maven-scm-publish.version>3.3.0</plugin.maven-scm-publish.version>
     <plugin.maven-site.version>3.21.0</plugin.maven-site.version>
     <plugin.maven-source.version>3.3.1</plugin.maven-source.version>
-    <plugin.maven-surefire.version>3.2.3</plugin.maven-surefire.version>
+    <plugin.maven-surefire.version>3.5.4</plugin.maven-surefire.version>
     <plugin.nexus-staging-maven.version>1.6.7</plugin.nexus-staging-maven.version>
     <plugin.protobuf-maven.version>0.6.1</plugin.protobuf-maven.version>
     <plugin.restrict-imports-enforcer-rule.version>2.6.1</plugin.restrict-imports-enforcer-rule.version>
     <plugin.sonar-maven.version>3.9.1.2184</plugin.sonar-maven.version>
     <plugin.sortpom-maven.version>4.0.0</plugin.sortpom-maven.version>
-    <plugin.takari-lifecycle>2.0.8</plugin.takari-lifecycle>
+    <plugin.takari-lifecycle>2.3.2</plugin.takari-lifecycle>
     <plugin.versions-maven.version>2.19.0</plugin.versions-maven.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
