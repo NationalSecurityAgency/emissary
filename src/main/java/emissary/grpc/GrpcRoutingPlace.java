@@ -9,7 +9,7 @@ import emissary.grpc.retry.RetryHandler;
 import emissary.place.ServiceProviderPlace;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.Message;
 import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractBlockingStub;
@@ -170,8 +170,8 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
      * @param <R> the protobuf response type
      * @param <S> the gRPC stub type
      */
-    protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractBlockingStub<S>> R invokeGrpc(
-            String targetId, Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, R> callLogic, Q request) {
+    protected <Q extends Message, R extends Message, S extends AbstractBlockingStub<S>> R invokeGrpc(String targetId,
+            Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, R> callLogic, Q request) {
 
         return retryHandler.execute(() -> {
             ObjectPool<ManagedChannel> channelPool = channelPoolLookup(targetId);
@@ -207,9 +207,8 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
      * @param <R> the protobuf response type
      * @param <S> the gRPC stub type
      */
-    protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> List<R> invokeBatchedGrpc(
-            String targetId, Function<ManagedChannel, S> stubFactory,
-            BiFunction<S, Q, ListenableFuture<R>> callLogic, List<Q> requestList) {
+    protected <Q extends Message, R extends Message, S extends AbstractFutureStub<S>> List<R> invokeBatchedGrpc(String targetId,
+            Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, ListenableFuture<R>> callLogic, List<Q> requestList) {
 
         throw new UnsupportedOperationException("Not yet implemented");
     }
