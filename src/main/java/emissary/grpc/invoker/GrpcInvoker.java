@@ -6,7 +6,7 @@ import emissary.grpc.pool.ConnectionFactory;
 import emissary.grpc.retry.RetryHandler;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.Message;
 import io.grpc.ManagedChannel;
 import io.grpc.stub.AbstractBlockingStub;
 import io.grpc.stub.AbstractFutureStub;
@@ -40,7 +40,7 @@ public class GrpcInvoker {
      * @param <R> the protobuf response type
      * @param <S> the gRPC stub type
      */
-    public <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractBlockingStub<S>> R invoke(
+    public <Q extends Message, R extends Message, S extends AbstractBlockingStub<S>> R invoke(
             ObjectPool<ManagedChannel> channelPool, Function<ManagedChannel, S> stubFactory,
             BiFunction<S, Q, R> callLogic, Q request) {
         return retryHandler.execute(() -> {
@@ -71,7 +71,7 @@ public class GrpcInvoker {
      * @param <R> the protobuf response type
      * @param <S> the gRPC stub type
      */
-    public <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeAsync(
+    public <Q extends Message, R extends Message, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeAsync(
             ObjectPool<ManagedChannel> channelPool, Function<ManagedChannel, S> stubFactory,
             BiFunction<S, Q, ListenableFuture<R>> callLogic, Q request) {
         AtomicReference<ListenableFuture<R>> listenableRef = new AtomicReference<>();
@@ -101,7 +101,7 @@ public class GrpcInvoker {
      * @param <R> response type
      * @return a future with explicit handling logic
      */
-    private static <R extends GeneratedMessageV3> CompletableFuture<R> attachHandlingHook(
+    private static <R extends Message> CompletableFuture<R> attachHandlingHook(
             CompletableFuture<R> future, ManagedChannel channel, ObjectPool<ManagedChannel> channelPool) {
         return future.handle((response, throwable) -> {
             if (throwable == null) {
@@ -135,7 +135,7 @@ public class GrpcInvoker {
      * @return the root future
      */
     @SuppressWarnings({"FutureReturnValueIgnored", "Interruption"})
-    private static <R extends GeneratedMessageV3> CompletableFuture<R> attachCancellationHook(
+    private static <R extends Message> CompletableFuture<R> attachCancellationHook(
             CompletableFuture<R> future, AtomicReference<ListenableFuture<R>> currentRpc) {
         future.whenComplete((response, throwable) -> {
             if (future.isCancelled()) {

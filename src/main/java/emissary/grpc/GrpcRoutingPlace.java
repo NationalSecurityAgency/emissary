@@ -8,7 +8,7 @@ import emissary.grpc.retry.RetryHandler;
 import emissary.place.ServiceProviderPlace;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.Message;
 import io.grpc.ManagedChannel;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -178,8 +178,8 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
     protected void passivateConnection(ManagedChannel managedChannel) { /* No-op */ }
 
     /**
-     * Wrapper method for {@link GrpcInvoker#invoke(ObjectPool, Function, BiFunction, GeneratedMessageV3)} that executes a
-     * unary gRPC call to a given endpoint.
+     * Wrapper method for {@link GrpcInvoker#invoke(ObjectPool, Function, BiFunction, Message)} that executes a unary gRPC
+     * call to a given endpoint.
      *
      * @param targetId the identifier used in the configs for the given gRPC endpoint
      * @param stubFactory function that creates the appropriate gRPC stub from a {@link ManagedChannel}
@@ -190,14 +190,14 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
      * @param <R> the protobuf response type
      * @param <S> the gRPC stub type
      */
-    protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractBlockingStub<S>> R invokeGrpc(
+    protected <Q extends Message, R extends Message, S extends AbstractBlockingStub<S>> R invokeGrpc(
             String targetId, Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, R> callLogic, Q request) {
         return grpcInvoker.invoke(channelPoolLookup(targetId), stubFactory, callLogic, request);
     }
 
     /**
-     * Wrapper method for {@link GrpcInvoker#invokeAsync(ObjectPool, Function, BiFunction, GeneratedMessageV3)} that
-     * executes a unary gRPC call to a given endpoint and returns a {@link CompletableFuture future}.
+     * Wrapper method for {@link GrpcInvoker#invokeAsync(ObjectPool, Function, BiFunction, Message)} that executes a unary
+     * gRPC call to a given endpoint and returns a {@link CompletableFuture future}.
      *
      * @param targetId the identifier used in the configs for the given gRPC endpoint
      * @param stubFactory function that creates the appropriate gRPC stub from a {@link ManagedChannel}
@@ -208,7 +208,7 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
      * @param <R> the protobuf response type
      * @param <S> the gRPC stub type
      */
-    protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeGrpcAsync(
+    protected <Q extends Message, R extends Message, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeGrpcAsync(
             String targetId, Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, ListenableFuture<R>> callLogic, Q request) {
         return grpcInvoker.invokeAsync(channelPoolLookup(targetId), stubFactory, callLogic, request);
     }
