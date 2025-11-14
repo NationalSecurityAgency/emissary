@@ -10,3 +10,8 @@ updates:
       prefix: dependencies
     labels:
       - "dependencies"
+    # Ignore major updates, only allow patch and minor updates
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
