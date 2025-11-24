@@ -51,7 +51,7 @@
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
     <argLine/>
     <checkstyleFormatter>${project.basedir}/contrib/checkstyle.xml</checkstyleFormatter>
-    <dep.commons-codec.version>1.18.0</dep.commons-codec.version>
+    <dep.commons-codec.version>1.20.0</dep.commons-codec.version>
     <dep.commons-collections.version>4.4</dep.commons-collections.version>
     <dep.commons-compress.version>1.27.1</dep.commons-compress.version>
     <dep.commons-exec.version>1.4.0</dep.commons-exec.version>
