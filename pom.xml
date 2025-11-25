@@ -92,7 +92,7 @@
     <dep.spymemcached.version>2.12.3</dep.spymemcached.version>
     <dep.webjars.bootstrap.version>5.3.8</dep.webjars.bootstrap.version>
     <dep.webjars.jquery.version>3.6.0</dep.webjars.jquery.version>
-    <dep.webjars.popper.version>2.9.3</dep.webjars.popper.version>
+    <dep.webjars.popper.version>2.11.7</dep.webjars.popper.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
     <git.useNative>false</git.useNative>
     <maven.compiler.release>11</maven.compiler.release>
