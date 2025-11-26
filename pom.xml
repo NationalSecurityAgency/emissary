@@ -63,7 +63,7 @@
     <dep.grpc.version>1.65.0</dep.grpc.version>
     <dep.gson.version>2.13.2</dep.gson.version>
     <dep.guava.version>32.1.2-jre</dep.guava.version>
-    <dep.httpclient.version>5.2.1</dep.httpclient.version>
+    <dep.httpclient.version>5.5.1</dep.httpclient.version>
     <dep.httpcore.version>5.3.6</dep.httpcore.version>
     <dep.icu4j.version>73.2</dep.icu4j.version>
     <dep.jackson.version>2.18.3</dep.jackson.version>
