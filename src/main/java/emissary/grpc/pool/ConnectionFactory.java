@@ -160,7 +160,7 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
         try {
             return pool.borrowObject();
         } catch (Exception e) {
-            throw new PoolException(String.format("Unable to borrow channel from pool: %s", e.getMessage()));
+            throw new PoolException(String.format("Unable to borrow channel from pool: %s", e.getMessage()), e);
         }
     }
 
