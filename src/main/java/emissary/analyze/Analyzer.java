@@ -1,5 +1,6 @@
 package emissary.analyze;
 
+import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.core.IBaseDataObjectHelper;
 import emissary.place.ServiceProviderPlace;
@@ -48,6 +49,11 @@ public abstract class Analyzer extends ServiceProviderPlace {
 
     protected Analyzer(final InputStream configInfo) throws IOException {
         super(configInfo);
+        configureAnalyzer();
+    }
+
+    protected Analyzer(final Configurator configs) throws IOException {
+        super(configs);
         configureAnalyzer();
     }
 
