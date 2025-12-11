@@ -111,17 +111,17 @@
     <plugin.git-commit-id-maven.version>9.0.1</plugin.git-commit-id-maven.version>
     <plugin.impsort-maven.version>1.8.0</plugin.impsort-maven.version>
     <plugin.jacoco-maven.version>0.8.14</plugin.jacoco-maven.version>
-    <plugin.maven-assembly.version>3.7.1</plugin.maven-assembly.version>
+    <plugin.maven-assembly.version>3.8.0</plugin.maven-assembly.version>
     <plugin.maven-checkstyle.version>3.6.0</plugin.maven-checkstyle.version>
-    <plugin.maven-clean.version>3.4.0</plugin.maven-clean.version>
-    <plugin.maven-compiler.version>3.13.0</plugin.maven-compiler.version>
-    <plugin.maven-dependency.version>3.8.1</plugin.maven-dependency.version>
+    <plugin.maven-clean.version>3.5.0</plugin.maven-clean.version>
+    <plugin.maven-compiler.version>3.14.1</plugin.maven-compiler.version>
+    <plugin.maven-dependency.version>3.9.0</plugin.maven-dependency.version>
     <plugin.maven-deploy.version>3.1.4</plugin.maven-deploy.version>
     <plugin.maven-enforcer.version>3.5.0</plugin.maven-enforcer.version>
     <plugin.maven-gpg.version>3.2.7</plugin.maven-gpg.version>
     <plugin.maven-install.version>3.1.4</plugin.maven-install.version>
     <plugin.maven-jar.version>3.5.0</plugin.maven-jar.version>
-    <plugin.maven-javadoc.version>3.11.2</plugin.maven-javadoc.version>
+    <plugin.maven-javadoc.version>3.12.0</plugin.maven-javadoc.version>
     <plugin.maven-jxr.version>3.6.0</plugin.maven-jxr.version>
     <plugin.maven-pmd.version>3.27.0</plugin.maven-pmd.version>
     <plugin.maven-project-info-reports.version>3.9.0</plugin.maven-project-info-reports.version>
@@ -130,7 +130,7 @@
     <plugin.maven-resources.version>3.4.0</plugin.maven-resources.version>
     <plugin.maven-scm-publish.version>3.3.0</plugin.maven-scm-publish.version>
     <plugin.maven-site.version>3.21.0</plugin.maven-site.version>
-    <plugin.maven-source.version>3.3.1</plugin.maven-source.version>
+    <plugin.maven-source.version>3.4.0</plugin.maven-source.version>
     <plugin.maven-surefire.version>3.5.4</plugin.maven-surefire.version>
     <plugin.nexus-staging-maven.version>1.7.0</plugin.nexus-staging-maven.version>
     <plugin.protobuf-maven.version>0.6.1</plugin.protobuf-maven.version>
