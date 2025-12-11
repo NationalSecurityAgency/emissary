@@ -71,7 +71,7 @@ public class PkiUtil {
         int matcherPosition = 0;
         Matcher matcher = CERT_PATTERN.matcher(pemData);
         while (matcher.find(matcherPosition)) {
-            byte[] derBytes = DatatypeConverter.parseBase64Binary(matcher.group(BASE_64_ENCODED_DATA).trim());
+            byte[] derBytes = DatatypeConverter.parseBase64Binary(matcher.group(BASE_64_ENCODED_DATA).trim().replaceAll("(\\r|\\n)", ""));
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             X509Certificate x509Certificate = (X509Certificate) certificateFactory.generateCertificate(new ByteArrayInputStream(derBytes));
             keyStore.setCertificateEntry("cert_" + certCount++, x509Certificate);
