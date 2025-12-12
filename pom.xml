@@ -66,7 +66,7 @@
     <dep.httpclient.version>5.5.1</dep.httpclient.version>
     <dep.httpcore.version>5.3.6</dep.httpcore.version>
     <dep.icu4j.version>73.2</dep.icu4j.version>
-    <dep.jackson.version>2.18.3</dep.jackson.version>
+    <dep.jackson.version>2.20.1</dep.jackson.version>
     <dep.jakarta.activation-api.version>2.1.4</dep.jakarta.activation-api.version>
     <dep.jakarta.annotation-api.version>3.0.0</dep.jakarta.annotation-api.version>
     <dep.jakarta.ws.rs-api.version>3.1.0</dep.jakarta.ws.rs-api.version>
