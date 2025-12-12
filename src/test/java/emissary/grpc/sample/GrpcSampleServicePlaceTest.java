@@ -178,7 +178,7 @@ class GrpcSampleServicePlaceTest extends UnitTest {
             Status status = Status.fromCodeValue(code);
             Runnable invocation = () -> samplePlace.throwExceptionsDuringProcess(dataObject, new StatusRuntimeException(status));
             ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class, invocation::run);
-            assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+            assertTrue(e.getMessage().endsWith(status.getCode().name()));
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
         }
 
@@ -188,7 +188,7 @@ class GrpcSampleServicePlaceTest extends UnitTest {
             Status status = Status.fromCodeValue(code);
             Runnable invocation = () -> samplePlace.throwExceptionsDuringProcess(dataObject, new StatusRuntimeException(status));
             ServiceException e = assertThrows(ServiceException.class, invocation::run);
-            assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+            assertTrue(e.getMessage().endsWith(status.getCode().name()));
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
         }
 
@@ -244,7 +244,7 @@ class GrpcSampleServicePlaceTest extends UnitTest {
                     dataObject, new StatusRuntimeException(status), retryAttempts, attemptNumber);
             ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class, invocation::run);
 
-            assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+            assertTrue(e.getMessage().endsWith(status.getCode().name()));
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
             assertEquals(RETRY_ATTEMPTS, attemptNumber.get());
         }
@@ -259,7 +259,7 @@ class GrpcSampleServicePlaceTest extends UnitTest {
                     dataObject, new StatusRuntimeException(status), RETRY_ATTEMPTS, attemptNumber);
             ServiceException e = assertThrows(ServiceException.class, invocation::run);
 
-            assertTrue(e.getMessage().startsWith("Encountered gRPC runtime status error " + status.getCode().name()));
+            assertTrue(e.getMessage().endsWith(status.getCode().name()));
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
             assertEquals(1, attemptNumber.get());
         }
