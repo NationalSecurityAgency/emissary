@@ -30,6 +30,7 @@ public class PkiUtil {
 
     private static final String FILE_PRE = "file://";
     private static final Pattern ENV_VARIABLE_PATTERN = Pattern.compile("\\$\\{(\\w+)}");
+    private static final Pattern NEWLINE_PATTERN = Pattern.compile("([\\r\\n])");
 
     private static final String BASE_64_ENCODED_DATA = "base64EncodedData";
     // get between 64 and 4096 characters of Base64-encoded cert data
@@ -71,7 +72,7 @@ public class PkiUtil {
         int matcherPosition = 0;
         Matcher matcher = CERT_PATTERN.matcher(pemData);
         while (matcher.find(matcherPosition)) {
-            byte[] derBytes = DatatypeConverter.parseBase64Binary(matcher.group(BASE_64_ENCODED_DATA).trim().replaceAll("(\\r|\\n)", ""));
+            byte[] derBytes = DatatypeConverter.parseBase64Binary(NEWLINE_PATTERN.matcher(matcher.group(BASE_64_ENCODED_DATA).trim()).replaceAll(""));
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             X509Certificate x509Certificate = (X509Certificate) certificateFactory.generateCertificate(new ByteArrayInputStream(derBytes));
             keyStore.setCertificateEntry("cert_" + certCount++, x509Certificate);
