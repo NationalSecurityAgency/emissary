@@ -17,7 +17,7 @@ class ServiceExceptionTest extends UnitTest {
         StatusRuntimeException finalException = exception;
         ServiceException se =
                 assertThrows(ServiceException.class, () -> ServiceException.handleGrpcStatusRuntimeException(finalException));
-        assertEquals("Encountered gRPC runtime status error UNKNOWN. This is an unhandled code type. Please add it to the list of gRPC exceptions.",
+        assertEquals(ServiceException.GRPC_ERROR_PREFIX + "This is an unhandled code type. Please add it to the list of gRPC exceptions: UNKNOWN",
                 se.getMessage());
     }
 
@@ -25,7 +25,7 @@ class ServiceExceptionTest extends UnitTest {
     void testHandleGrpcStatusRuntimeExceptionWithDeadlineExceeded() {
         StatusRuntimeException exception = new StatusRuntimeException(Status.DEADLINE_EXCEEDED.withDescription("test"));
         ServiceException se = assertThrows(ServiceException.class, () -> ServiceException.handleGrpcStatusRuntimeException(exception));
-        assertEquals("Encountered gRPC runtime status error DEADLINE_EXCEEDED: test. gRPC client connection has timed out.",
+        assertEquals(ServiceException.GRPC_ERROR_PREFIX + "gRPC client connection has timed out: DEADLINE_EXCEEDED: test",
                 se.getMessage());
     }
 
@@ -35,7 +35,8 @@ class ServiceExceptionTest extends UnitTest {
                 new StatusRuntimeException(Status.UNAVAILABLE.withDescription("Network closed for unknown reason"));
         ServiceException se = assertThrows(ServiceException.class, () -> ServiceException.handleGrpcStatusRuntimeException(exception));
         assertEquals(
-                "Encountered gRPC runtime status error UNAVAILABLE: Network closed for unknown reason. It's possible service crashed due to a misbehaving file.",
+                ServiceException.GRPC_ERROR_PREFIX
+                        + "It's possible service crashed due to a misbehaving file: UNAVAILABLE: Network closed for unknown reason",
                 se.getMessage());
     }
 
@@ -44,14 +45,14 @@ class ServiceExceptionTest extends UnitTest {
         StatusRuntimeException exception = new StatusRuntimeException(Status.UNAVAILABLE.withDescription("test"));
         ServiceNotLiveException serviceNotLiveException =
                 assertThrows(ServiceNotLiveException.class, () -> ServiceException.handleGrpcStatusRuntimeException(exception));
-        assertEquals("Encountered gRPC runtime status error UNAVAILABLE: test. It's likely service crashed.", serviceNotLiveException.getMessage());
+        assertEquals(ServiceException.GRPC_ERROR_PREFIX + "It's likely service crashed: UNAVAILABLE: test", serviceNotLiveException.getMessage());
     }
 
     @Test
     void testHandleGrpcStatusRuntimeExceptionWithCancelled() {
         StatusRuntimeException exception = new StatusRuntimeException(Status.CANCELLED.withDescription("test"));
         ServiceException se = assertThrows(ServiceException.class, () -> ServiceException.handleGrpcStatusRuntimeException(exception));
-        assertEquals("Encountered gRPC runtime status error CANCELLED: test. It's likely a client side interrupt occurred.", se.getMessage());
+        assertEquals(ServiceException.GRPC_ERROR_PREFIX + "It's likely a client side interrupt occurred: CANCELLED: test", se.getMessage());
     }
 
     @Test
@@ -59,7 +60,7 @@ class ServiceExceptionTest extends UnitTest {
         StatusRuntimeException exception = new StatusRuntimeException(Status.RESOURCE_EXHAUSTED.withDescription("test"));
         ServiceNotReadyException serviceNotReadyException =
                 assertThrows(ServiceNotReadyException.class, () -> ServiceException.handleGrpcStatusRuntimeException(exception));
-        assertEquals("Encountered gRPC runtime status error RESOURCE_EXHAUSTED: test. It's likely we've exceeded the maximum number of requests.",
+        assertEquals(ServiceException.GRPC_ERROR_PREFIX + "It's likely we've exceeded the maximum number of requests: RESOURCE_EXHAUSTED: test",
                 serviceNotReadyException.getMessage());
     }
 
@@ -67,7 +68,7 @@ class ServiceExceptionTest extends UnitTest {
     void testHandleGrpcStatusRuntimeExceptionWithInternal() {
         StatusRuntimeException exception = new StatusRuntimeException(Status.INTERNAL.withDescription("test"));
         ServiceException se = assertThrows(ServiceException.class, () -> ServiceException.handleGrpcStatusRuntimeException(exception));
-        assertEquals("Encountered gRPC runtime status error INTERNAL: test. It's likely a gpu OOM error or other resource error has occurred.",
+        assertEquals(ServiceException.GRPC_ERROR_PREFIX + "It's likely a gpu OOM error or other resource error has occurred: INTERNAL: test",
                 se.getMessage());
     }
 
@@ -76,7 +77,7 @@ class ServiceExceptionTest extends UnitTest {
         StatusRuntimeException exception = new StatusRuntimeException(Status.UNKNOWN.withDescription("test"));
         ServiceException se = assertThrows(ServiceException.class, () -> ServiceException.handleGrpcStatusRuntimeException(exception));
         assertEquals(
-                "Encountered gRPC runtime status error UNKNOWN: test. This is an unhandled code type. Please add it to the list of gRPC exceptions.",
+                ServiceException.GRPC_ERROR_PREFIX + "This is an unhandled code type. Please add it to the list of gRPC exceptions: UNKNOWN: test",
                 se.getMessage());
     }
 
