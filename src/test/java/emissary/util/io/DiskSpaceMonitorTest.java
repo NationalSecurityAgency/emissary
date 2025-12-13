@@ -208,7 +208,7 @@ class DiskSpaceMonitorTest {
         monitor.addListener(new DiskSpaceListener() {
             @Override
             public void onDiskSpaceExceeded(Path path, double usedPercent, long freeBytes) {
-                throw new RuntimeException("Test exception");
+                throw new IllegalStateException("Test exception");
             }
 
             @Override

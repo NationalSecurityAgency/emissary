@@ -4,6 +4,7 @@ import emissary.pickup.IPickUp;
 import emissary.pickup.PickUpPlace;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +65,7 @@ public class FilePickUpPlace extends PickUpPlace implements IPickUp {
      */
     @Override
     public void shutDown() {
+        stopDiskSpaceMonitoring();
         for (FileDataServer fileDataServer : theDataServer) {
             logger.info("*** Stopping FilePickUpPlace ");
             fileDataServer.shutdown();
@@ -129,6 +131,35 @@ public class FilePickUpPlace extends PickUpPlace implements IPickUp {
             // Add it to our list
             theDataServer.add(fds);
         }
+
+        // Start disk space monitoring after data servers are running
+        startDiskSpaceMonitoring();
+    }
+
+    /**
+     * Called when disk space threshold is exceeded. Pauses all data servers to stop processing new files.
+     *
+     * @param path the filesystem path being monitored
+     * @param usedPercent the current disk usage as a percentage (0-100)
+     * @param freeBytes the current number of free bytes available
+     */
+    @Override
+    protected void onDiskSpaceExceeded(Path path, double usedPercent, long freeBytes) {
+        logger.warn("Disk space threshold exceeded - pausing pickup");
+        pause();
+    }
+
+    /**
+     * Called when disk space has recovered below the resume threshold. Resumes all data servers.
+     *
+     * @param path the filesystem path being monitored
+     * @param usedPercent the current disk usage as a percentage (0-100)
+     * @param freeBytes the current number of free bytes available
+     */
+    @Override
+    protected void onDiskSpaceRecovered(Path path, double usedPercent, long freeBytes) {
+        logger.info("Disk space recovered - resuming pickup");
+        unpause();
     }
 
 }

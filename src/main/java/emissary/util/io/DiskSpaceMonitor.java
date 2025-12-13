@@ -245,7 +245,7 @@ public class DiskSpaceMonitor {
         long usedBytes = totalBytes - freeBytes;
         double usedPercent = totalBytes > 0 ? (usedBytes * 100.0 / totalBytes) : 0.0;
 
-        return new DiskSpaceInfo(totalBytes, freeBytes, usedBytes, usedPercent);
+        return new DiskSpaceInfo(freeBytes, usedPercent);
     }
 
     /**
@@ -270,15 +270,11 @@ public class DiskSpaceMonitor {
      * Container for disk space information.
      */
     private static class DiskSpaceInfo {
-        final long totalBytes;
         final long freeBytes;
-        final long usedBytes;
         final double usedPercent;
 
-        DiskSpaceInfo(long totalBytes, long freeBytes, long usedBytes, double usedPercent) {
-            this.totalBytes = totalBytes;
+        DiskSpaceInfo(long freeBytes, double usedPercent) {
             this.freeBytes = freeBytes;
-            this.usedBytes = usedBytes;
             this.usedPercent = usedPercent;
         }
     }
@@ -313,7 +309,7 @@ public class DiskSpaceMonitor {
         /**
          * Sets the check interval in seconds.
          *
-         * @param seconds the interval between disk space checks (must be > 0)
+         * @param seconds the interval between disk space checks (must be &gt; 0)
          * @return this builder
          */
         public Builder checkInterval(long seconds) {
