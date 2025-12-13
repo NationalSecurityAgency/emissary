@@ -119,7 +119,7 @@
     <plugin.maven-dependency.version>3.9.0</plugin.maven-dependency.version>
     <plugin.maven-deploy.version>3.1.4</plugin.maven-deploy.version>
     <plugin.maven-enforcer.version>3.5.0</plugin.maven-enforcer.version>
-    <plugin.maven-gpg.version>3.2.7</plugin.maven-gpg.version>
+    <plugin.maven-gpg.version>3.2.8</plugin.maven-gpg.version>
     <plugin.maven-install.version>3.1.4</plugin.maven-install.version>
     <plugin.maven-jar.version>3.5.0</plugin.maven-jar.version>
     <plugin.maven-javadoc.version>3.12.0</plugin.maven-javadoc.version>
