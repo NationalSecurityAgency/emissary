@@ -682,7 +682,7 @@ public class ConfigUtil {
      */
     public static Configurator getSubConfig(Configurator cfg, String keyPrefix) {
         Configurator subConfigs = new ServiceConfigGuide();
-        cfg.findStringMatchMultiMap(keyPrefix, true)
+        cfg.findStringMatchMultiMap(keyPrefix, true, true)
                 .forEach((key, value) -> subConfigs.addEntries(key, new ArrayList<>(value)));
         return subConfigs;
     }
