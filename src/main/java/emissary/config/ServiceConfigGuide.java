@@ -845,7 +845,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * <pre>
      * {@code
      * Example config entries
-     *    FOO_ONE: AAA
+     *    FOO_one: AAA
      *    FOO_TWO: BBB
      *    FOO_TWO: CCC
      * Calling findStringMatchMap("FOO_",true)
@@ -877,12 +877,12 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * <pre>
      * {@code
      * Example config entries
-     *    FOO_ONE: AAA
+     *    FOO_one: AAA
      *    FOO_TWO: BBB
      *    FOO_TWO: CCC
-     * Calling findStringMatchMap("FOO_",true)
+     * Calling findStringMatchMap("FOO_", true, true)
      * will yield a map with Sets
-     *     ONE -> {AAA}
+     *     one -> {AAA}
      *     TWO -> {BBB,CCC}
      * }
      * </pre>
