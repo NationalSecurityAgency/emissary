@@ -132,7 +132,6 @@
     <plugin.maven-site.version>3.21.0</plugin.maven-site.version>
     <plugin.maven-source.version>3.4.0</plugin.maven-source.version>
     <plugin.maven-surefire.version>3.5.4</plugin.maven-surefire.version>
-    <plugin.nexus-staging-maven.version>1.7.0</plugin.nexus-staging-maven.version>
     <plugin.protobuf-maven.version>0.6.1</plugin.protobuf-maven.version>
     <plugin.restrict-imports-enforcer-rule.version>2.6.1</plugin.restrict-imports-enforcer-rule.version>
     <plugin.sonar-maven.version>3.11.0.3922</plugin.sonar-maven.version>
