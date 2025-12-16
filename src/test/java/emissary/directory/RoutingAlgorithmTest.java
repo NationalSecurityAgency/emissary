@@ -138,7 +138,7 @@ class RoutingAlgorithmTest extends UnitTest {
     @Test
     void testHighestIdWithAllEntriesLoaded() {
         loadAllTestEntries();
-        this.unknowns.get(this.unknowns.size() - 1);
+        assertNotNull(this.unknowns.get(this.unknowns.size() - 1));
         this.payload.pushCurrentForm("UNKNOWN");
         this.payload.appendTransformHistory(this.unknowns.get(this.unknowns.size() - 1).getFullKey());
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
