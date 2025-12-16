@@ -109,7 +109,7 @@
     <plugin.duplicate-finder-maven.version>1.5.1</plugin.duplicate-finder-maven.version>
     <plugin.exec-maven.version>3.6.2</plugin.exec-maven.version>
     <plugin.formatter-maven.version>2.23.0</plugin.formatter-maven.version>
-    <plugin.git-commit-id-maven.version>9.0.1</plugin.git-commit-id-maven.version>
+    <plugin.git-commit-id-maven.version>9.0.2</plugin.git-commit-id-maven.version>
     <plugin.impsort-maven.version>1.8.0</plugin.impsort-maven.version>
     <plugin.jacoco-maven.version>0.8.14</plugin.jacoco-maven.version>
     <plugin.maven-assembly.version>3.8.0</plugin.maven-assembly.version>
