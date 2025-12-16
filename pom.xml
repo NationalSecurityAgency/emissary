@@ -126,7 +126,7 @@
     <plugin.maven-jxr.version>3.6.0</plugin.maven-jxr.version>
     <plugin.maven-pmd.version>3.27.0</plugin.maven-pmd.version>
     <plugin.maven-project-info-reports.version>3.9.0</plugin.maven-project-info-reports.version>
-    <plugin.maven-release.version>3.2.0</plugin.maven-release.version>
+    <plugin.maven-release.version>3.3.1</plugin.maven-release.version>
     <plugin.maven-replacer.version>1.5.3</plugin.maven-replacer.version>
     <plugin.maven-resources.version>3.4.0</plugin.maven-resources.version>
     <plugin.maven-scm-publish.version>3.3.0</plugin.maven-scm-publish.version>
