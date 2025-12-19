@@ -119,7 +119,7 @@
     <plugin.maven-compiler.version>3.14.1</plugin.maven-compiler.version>
     <plugin.maven-dependency.version>3.9.0</plugin.maven-dependency.version>
     <plugin.maven-deploy.version>3.1.4</plugin.maven-deploy.version>
-    <plugin.maven-enforcer.version>3.5.0</plugin.maven-enforcer.version>
+    <plugin.maven-enforcer.version>3.6.2</plugin.maven-enforcer.version>
     <plugin.maven-gpg.version>3.2.8</plugin.maven-gpg.version>
     <plugin.maven-install.version>3.1.4</plugin.maven-install.version>
     <plugin.maven-jar.version>3.5.0</plugin.maven-jar.version>
@@ -136,7 +136,7 @@
     <plugin.maven-surefire.version>3.5.4</plugin.maven-surefire.version>
     <plugin.nexus-staging-maven.version>1.7.0</plugin.nexus-staging-maven.version>
     <plugin.protobuf-maven.version>0.6.1</plugin.protobuf-maven.version>
-    <plugin.restrict-imports-enforcer-rule.version>2.6.1</plugin.restrict-imports-enforcer-rule.version>
+    <plugin.restrict-imports-enforcer-rule.version>3.0.0</plugin.restrict-imports-enforcer-rule.version>
     <plugin.sonar-maven.version>3.11.0.3922</plugin.sonar-maven.version>
     <plugin.sortpom-maven.version>4.0.0</plugin.sortpom-maven.version>
     <plugin.takari-lifecycle>2.3.2</plugin.takari-lifecycle>
