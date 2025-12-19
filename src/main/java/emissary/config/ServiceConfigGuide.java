@@ -808,8 +808,9 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
     /**
      * Find entries beginning with the specified string and return a hash keyed on the remainder of the string with the
-     * value of the config line as the value of the hash Multiple values for the same hash are allowed and returned as a
-     * Set.
+     * value of the config line as the value of the hash.
+     * <p>
+     * Multiple values for the same hash are allowed and returned as a Set.
      *
      * <pre>
      * {@code
@@ -839,8 +840,9 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
     /**
      * Find entries beginning with the specified string and return a hash keyed on the remainder of the string with the
-     * value of the config line as the value of the hash Multiple values for the same hash are allowed and returned as a
-     * Set.
+     * value of the config line as the value of the hash.
+     * <p>
+     * Multiple values for the same hash are allowed and returned as a Set.
      *
      * <pre>
      * {@code
@@ -871,8 +873,9 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
     /**
      * Find entries beginning with the specified string and return a hash keyed on the remainder of the string with the
-     * value of the config line as the value of the hash Multiple values for the same hash are allowed and returned as a
-     * Set.
+     * value of the config line as the value of the hash.
+     * <p>
+     * Multiple values for the same hash are allowed and returned as a Set.
      *
      * <pre>
      * {@code
