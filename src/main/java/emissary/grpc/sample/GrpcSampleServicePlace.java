@@ -103,11 +103,7 @@ public class GrpcSampleServicePlace extends GrpcRoutingPlace {
             SampleRequest request = SampleRequest.newBuilder()
                     .setQuery(ByteString.copyFrom(o.data()))
                     .build();
-            SampleResponse response = invokeGrpc(
-                    targetId,
-                    SampleServiceGrpc::newBlockingStub, // or: (ManagedChannel c) -> SampleServiceGrpc.newBlockingStub(c)
-                    callLogic,
-                    request);
+            SampleResponse response = invokeGrpc(targetId, SampleServiceGrpc::newBlockingStub, callLogic, request);
             o.addAlternateView(ALTERNATE_VIEW_NAME, response.getResult().toByteArray());
         }
     }
