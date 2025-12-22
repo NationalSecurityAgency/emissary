@@ -669,7 +669,7 @@ class ConfigUtilTest extends UnitTest {
 
     @Test
     void testGetSubConfig() {
-        String expectedOne = "EXPECTED_ONE";
+        String expectedOne = "Expected_One";
         String expectedTwo = "EXPECTED_TWO";
         String unexpected = "UNEXPECTED";
         String prefix = "SOME_PREFIX_";

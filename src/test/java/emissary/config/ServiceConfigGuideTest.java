@@ -9,6 +9,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -649,8 +650,9 @@ class ServiceConfigGuideTest extends UnitTest {
         assertTrue(ex.getMessage().contains(missingProp), "Exception message should name the missing config entry");
     }
 
-    @Test
-    void testFindStringMatchMultiMapOrdered() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void testFindStringMatchMultiMapOrdered(boolean preserveCase) {
         // this test fails if ORDERED is set to false due to results ordering
         final boolean ORDERED = true;
 
@@ -676,10 +678,10 @@ class ServiceConfigGuideTest extends UnitTest {
                 config.addEntry(key, value);
                 // add non-prefixed entry to expected map (prefix gets stripped during findStringMatchMultiMap call)
                 // UPPERCASE the key to match findStringMatchMultiMap retrieval behavior
-                expected.computeIfAbsent(k.toUpperCase(Locale.getDefault()), v -> new LinkedHashSet<>()).add(value);
+                expected.computeIfAbsent(preserveCase ? k : k.toUpperCase(Locale.getDefault()), v -> new LinkedHashSet<>()).add(value);
             }
         }
-        Map<String, Set<String>> actual = config.findStringMatchMultiMap(prefix, ORDERED);
+        Map<String, Set<String>> actual = config.findStringMatchMultiMap(prefix, preserveCase, ORDERED);
         assertFalse(actual.isEmpty(), "did not find any multi-map entries");
         assertEquals(expected.size(), actual.size(), "should have the same number of keys");
         var actualsIterator = actual.entrySet().iterator();
