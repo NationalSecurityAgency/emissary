@@ -1,6 +1,7 @@
 package emissary.place;
 
 import emissary.core.DataObjectFactory;
+import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
@@ -183,6 +184,27 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
         assertTrue(att.stream().anyMatch(d -> d.dataLength() == 0), "There should be a 0-length attachment");
     }
 
+    @Test
+    void testMultiFileUnixCommandPlaceWithNoChildrenCreated() throws Exception {
+        assertNotNull(place, "Place must be created");
+        place.setFileOutputCommand();
+        createScript(Executrix.OUTPUT_TYPE.FILE, 0);
+        List<IBaseDataObject> att;
+
+        // Default form (newErrorForm) for when there are no children
+        att = place.processHeavyDuty(payload);
+        assertEquals(0, att.size(), "No attachments should be created");
+        assertEquals(Form.ERROR, payload.currentForm(), "Form should be ERROR");
+
+        // Setting form to unknown when there are no children
+        payload.setCurrentForm(FORM, true);
+        place.noResultsForm = Form.UNKNOWN;
+
+        att = place.processHeavyDuty(payload);
+        assertEquals(0, att.size(), "No attachments should be created");
+        assertEquals(Form.UNKNOWN, payload.currentForm(), "Form should be UNKNOWN");
+    }
+
     private static final String[] LOG_MSGS = {"ERROR script error message", "WARN script warn message", "INFO script info message",
             "DEBUG script debug message"};
 
@@ -210,11 +232,13 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
     private void createScript(Executrix.OUTPUT_TYPE ot, int outputCount) throws IOException {
         try (OutputStream fos = startScript()) {
             // Write a line to either stdout or outfile.one
-            fos.write(("echo '" + W + "'").getBytes());
-            if (ot == Executrix.OUTPUT_TYPE.FILE) {
-                fos.write(" > outfile.one".getBytes());
+            if (outputCount >= 1) {
+                fos.write(("echo '" + W + "'").getBytes());
+                if (ot == Executrix.OUTPUT_TYPE.FILE) {
+                    fos.write(" > outfile.one".getBytes());
+                }
+                fos.write('\n');
             }
-            fos.write('\n');
 
             // Write a line to outfile.two
             if (outputCount >= 2) {

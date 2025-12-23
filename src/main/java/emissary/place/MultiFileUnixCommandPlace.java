@@ -60,6 +60,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     protected boolean singleOutputAsChild = false;
     protected boolean preserveParentData = false;
     protected boolean ignoreEmptyFile;
+    protected String noResultsForm;
 
     String placeDisplayName = "Some Place";
 
@@ -118,6 +119,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * <li>SINGLE_OUTPUT_AS_CHILD: If only one output file keep it as a child and do not replace the parent.</li>
      * <li>PRESERVE_PARENT_DATA: Stops the parent from getting replaced by output data</li>
      * <li>IGNORE_EMPTY_FILE: gives the option to save 0 length files, default true</li>
+     * <li>NO_RESULTS_FORM: form for file that produced no results, default newErrorForm</li>
      * </ul>
      */
     @Override
@@ -151,6 +153,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         singleOutputAsChild = configG.findBooleanEntry("SINGLE_OUTPUT_AS_CHILD", singleOutputAsChild);
         preserveParentData = configG.findBooleanEntry("PRESERVE_PARENT_DATA", preserveParentData);
         ignoreEmptyFile = configG.findBooleanEntry("IGNORE_EMPTY_FILE", true);
+        noResultsForm = configG.findStringEntry("NO_RESULTS_FORM", newErrorForm);
 
         for (String name : configG.findEntries("CUSTOM_FILE_TYPES")) {
             String tmp = configG.findStringEntry(name + "_EXT", null);
@@ -685,7 +688,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         if (sprouts.isEmpty()) {
             logger.debug("Command failed. nothing to sprout for file: result={}", result);
             tData.addProcessingError("ERROR in " + placeName + ". Exec returned errno " + result);
-            tData.pushCurrentForm(newErrorForm);
+            tData.pushCurrentForm(noResultsForm);
         }
         return sprouts;
     }
