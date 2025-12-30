@@ -47,7 +47,7 @@ setup_metrics() {
     METRICS_PORT=9100
   fi
   if [ "${METRICS}" == "true" ]; then
-    export JAVA_TOOL_OPTIONS="-javaagent:${TGT_DIR}/agents/jmx_prometheus_javaagent-1.5.0.jar=${METRICS_PORT}:${TGT_DIR}/agents/jmx_prometheus_javaagent.yaml"
+    export JAVA_TOOL_OPTIONS="-javaagent:${PROJECT_BASE}/agents/jmx_prometheus_javaagent-1.5.0.jar=${METRICS_PORT}:${PROJECT_BASE}/agents/jmx_prometheus_javaagent.yaml"
   fi
 }
 
