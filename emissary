@@ -24,20 +24,6 @@ if [ "${DEBUG}" == "true" ]; then
   DEBUG_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=${DEBUG_PORT}"
 fi
 
-# Turn on metrics by prepending either of the
-# following to the command line before ./emissary:
-# METRICS_PORT=someport
-# or
-# METRICS=true
-if [ "${METRICS_PORT}x" != "x" ]; then
-  METRICS=true
-else
-  METRICS_PORT=9100
-fi
-if [ "${METRICS}" == "true" ]; then
-  export JAVA_TOOL_OPTIONS="-javaagent:agents/jmx_prometheus_javaagent-1.5.0.jar=${METRICS_PORT}:agents/jmx_prometheus_javaagent.yaml"
-fi
-
 # Turn on picocli argument parsing debugging and an echo of the command line
 # CMD_DEBUG=true ./emissary <command> <args>
 # see Emissary.java for where it is used
@@ -48,6 +34,22 @@ fi
 # just some defaults
 CP=""
 JAVA_OPTS=""
+
+setup_metrics() {
+  # Turn on metrics by prepending either of the
+  # following to the command line before ./emissary:
+  # METRICS_PORT=someport
+  # or
+  # METRICS=true
+  if [ "${METRICS_PORT}x" != "x" ]; then
+    METRICS=true
+  else
+    METRICS_PORT=9100
+  fi
+  if [ "${METRICS}" == "true" ]; then
+    export JAVA_TOOL_OPTIONS="-javaagent:${TGT_DIR}/agents/jmx_prometheus_javaagent-1.5.0.jar=${METRICS_PORT}:${TGT_DIR}/agents/jmx_prometheus_javaagent.yaml"
+  fi
+}
 
 enter_script_dir() {
   # Change to the directory of this script
@@ -162,5 +164,6 @@ if test -e "${SCRIPT_DIR}/pom.xml"; then
 else
   setup_from_distribution
 fi
+setup_metrics
 MAIN_CLASS=emissary.Emissary run $@
 cleanup
