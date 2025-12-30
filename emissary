@@ -35,7 +35,7 @@ else
   METRICS_PORT=9100
 fi
 if [ "${METRICS}" == "true" ]; then
-  export JAVA_TOOL_OPTIONS="-javaagent:src/main/agents/jmx_prometheus_javaagent-1.5.0.jar=${METRICS_PORT}:src/main/agents/jmx_prometheus_javaagent.yaml"
+  export JAVA_TOOL_OPTIONS="-javaagent:agents/jmx_prometheus_javaagent-1.5.0.jar=${METRICS_PORT}:agents/jmx_prometheus_javaagent.yaml"
 fi
 
 # Turn on picocli argument parsing debugging and an echo of the command line

@@ -26,6 +26,7 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>config/**</include>
+        <include>agents/**</include>
       </includes>
     </fileSet>
     <fileSet>
@@ -35,14 +36,6 @@
         <include>emissary</include>
         <include>README.md</include>
         <include>emissary-knight.png</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}</directory>
-      <outputDirectory></outputDirectory>
-      <includes>
-        <include>src/main/agents/jmx_prometheus_javaagent.yaml</include>
-        <include>src/main/agents/jmx_prometheus_javaagent-1.5.0.jar</include>
       </includes>
     </fileSet>
   </fileSets>

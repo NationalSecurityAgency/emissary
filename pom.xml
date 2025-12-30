@@ -749,6 +749,11 @@
           <exclude>**/*.cfg</exclude>
         </excludes>
       </resource>
+      <resource>
+        <targetPath>${project.build.directory}/agents</targetPath>
+        <filtering>false</filtering>
+        <directory>src/main/agents</directory>
+      </resource>
     </resources>
     <testResources>
       <testResource>
