@@ -79,7 +79,7 @@
     <dep.jersey.version>3.1.3</dep.jersey.version>
     <dep.jetty-jakarta-servlet-api.version>5.0.2</dep.jetty-jakarta-servlet-api.version>
     <dep.jetty.version>11.0.26</dep.jetty.version>
-    <dep.junit-jupiter.version>5.14.1</dep.junit-jupiter.version>
+    <dep.junit-jupiter.version>5.14.2</dep.junit-jupiter.version>
     <dep.junit-platform.version>1.12.2</dep.junit-platform.version>
     <dep.logback.version>1.5.23</dep.logback.version>
     <dep.logstash-logback-encoder.version>7.4</dep.logstash-logback-encoder.version>
