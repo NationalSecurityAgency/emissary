@@ -808,8 +808,9 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
     /**
      * Find entries beginning with the specified string and return a hash keyed on the remainder of the string with the
-     * value of the config line as the value of the hash Multiple values for the same hash are allowed and returned as a
-     * Set.
+     * value of the config line as the value of the hash.
+     * <p>
+     * Multiple values for the same hash are allowed and returned as a Set.
      *
      * <pre>
      * {@code
@@ -839,13 +840,14 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
     /**
      * Find entries beginning with the specified string and return a hash keyed on the remainder of the string with the
-     * value of the config line as the value of the hash Multiple values for the same hash are allowed and returned as a
-     * Set.
+     * value of the config line as the value of the hash.
+     * <p>
+     * Multiple values for the same hash are allowed and returned as a Set.
      *
      * <pre>
      * {@code
      * Example config entries
-     *    FOO_ONE: AAA
+     *    FOO_one: AAA
      *    FOO_TWO: BBB
      *    FOO_TWO: CCC
      * Calling findStringMatchMap("FOO_",true)
@@ -862,7 +864,40 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public Map<String, Set<String>> findStringMatchMultiMap(@Nullable final String param, final boolean preserveOrder) {
+        if (param == null) {
+            return Map.of();
+        }
 
+        return findStringMatchMultiMap(param, false, preserveOrder);
+    }
+
+    /**
+     * Find entries beginning with the specified string and return a hash keyed on the remainder of the string with the
+     * value of the config line as the value of the hash.
+     * <p>
+     * Multiple values for the same hash are allowed and returned as a Set.
+     *
+     * <pre>
+     * {@code
+     * Example config entries
+     *    FOO_one: AAA
+     *    FOO_TWO: BBB
+     *    FOO_TWO: CCC
+     * Calling findStringMatchMap("FOO_", true, true)
+     * will yield a map with Sets
+     *     one -> {AAA}
+     *     TWO -> {BBB,CCC}
+     * }
+     * </pre>
+     *
+     * @param param the key to look for in the config file
+     * @param preserveCase if false all keys will be uppercased
+     * @param preserveOrder ordering of keys is preserved
+     * @return map where key is remainder after match and value is a Set of all found config values, or an empty map if none
+     *         found
+     */
+    @Override
+    public Map<String, Set<String>> findStringMatchMultiMap(@Nullable final String param, final boolean preserveCase, final boolean preserveOrder) {
         if (param == null) {
             return Map.of();
         }
@@ -871,7 +906,8 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         final List<ConfigEntry> parameters = this.findStringMatchEntries(param);
 
         for (final ConfigEntry el : parameters) {
-            final String key = el.getKey().substring(param.length()).toUpperCase(Locale.getDefault());
+            String keyBase = el.getKey().substring(param.length());
+            final String key = preserveCase ? keyBase : keyBase.toUpperCase(Locale.getDefault());
 
             if (theHash.containsKey(key)) {
                 theHash.get(key).add(el.getValue());

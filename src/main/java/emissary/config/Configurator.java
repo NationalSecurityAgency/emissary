@@ -97,6 +97,16 @@ public interface Configurator {
      */
     Map<String, Set<String>> findStringMatchMultiMap(final String theParameter, boolean preserveOrder);
 
+    /**
+     * Find all entry keys that begin with the specified string with keys maintaining their original case.
+     *
+     * @param theParameter the parameter the leading key startsWith
+     * @param preserveCase case of key is preserved when true
+     * @param preserveOrder ordering of keys is preserved
+     * @return map with remaining key portion as key, value as a set of multiple values
+     */
+    Map<String, Set<String>> findStringMatchMultiMap(final String theParameter, boolean preserveCase, boolean preserveOrder);
+
 
     String findRequiredStringEntry(String theParameter);
 
