@@ -22,8 +22,10 @@ jobs:
       - name: Check release ends with snapshot
         if: ${{ !endsWith(github.event.inputs.next_version, '-SNAPSHOT') }}
         run: |
-          echo "Invalid input: next development version ${{ github.event.inputs.next_version }} does not end with '-SNAPSHOT'"
+          echo "Invalid input: next development version $IN_NEXT_VERSION does not end with '-SNAPSHOT'"
           exit 1
+        env:
+          IN_NEXT_VERSION: ${{ github.event.inputs.next_version }}
   snapshot-bump:
     needs: verify
     runs-on: ubuntu-latest
@@ -47,20 +49,25 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
 
       - name: Set the name of the branch
-        run: echo "PR_BRANCH=action/${{ github.event.inputs.next_version }}" >> "$GITHUB_ENV"
+        run: echo "PR_BRANCH=action/$IN_NEXT_VERSION" >> "$GITHUB_ENV"
+        env:
+          IN_NEXT_VERSION: ${{ github.event.inputs.next_version }}
 
       - name: Create a branch
         run: git switch -c ${{ env.PR_BRANCH }}
 
       - name: Set the next snapshot version
         run: |
-          mvn -B -V -e -ntp versions:set -DnewVersion=${{ github.event.inputs.next_version }} -DgenerateBackupPoms=false
+          mvn -B -V -e -ntp versions:set -DnewVersion="$IN_NEXT_VERSION" -DgenerateBackupPoms=false
           mvn -B -V -e -ntp versions:commit
           git add .
           git commit -m "[github-actions](${{ github.actor }}) next development iteration"
           git push -u origin ${{ env.PR_BRANCH }}
+        env:
+          IN_NEXT_VERSION: ${{ github.event.inputs.next_version }}
 
       - name: Create pull request
-        run: gh pr create -B main -H ${{ env.PR_BRANCH }} --title 'next development iteration ${{ github.event.inputs.next_version }}' --body 'Created by GitHub Action'
+        run: gh pr create -B main -H ${{ env.PR_BRANCH }} --title "next development iteration $IN_NEXT_VERSION" --body 'Created by GitHub Action'
         env:
+          IN_NEXT_VERSION: ${{ github.event.inputs.next_version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
