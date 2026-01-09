@@ -26,6 +26,7 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>config/**</include>
+        <include>agents/**</include>
       </includes>
     </fileSet>
     <fileSet>
