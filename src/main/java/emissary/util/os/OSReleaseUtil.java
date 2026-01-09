@@ -7,6 +7,7 @@ import org.apache.commons.lang3.Strings;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -56,7 +57,7 @@ public class OSReleaseUtil {
 
     static String getMajorReleaseVersion(Path osReleasePath) {
         try {
-            return String.format("%d", (int) Float.parseFloat(getVersionId(osReleasePath)));
+            return String.format(Locale.getDefault(), "%d", (int) Float.parseFloat(getVersionId(osReleasePath)));
         } catch (NumberFormatException e) {
             // support x.y.z format
             return StringUtils.substringBefore(getVersionId(osReleasePath), ".");

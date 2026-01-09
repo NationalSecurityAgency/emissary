@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -16,7 +17,7 @@ import java.util.UUID;
  */
 public class DateFilterFilenameGenerator implements FileNameGenerator {
 
-    protected static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("yyyyDDDHHmm");
+    protected static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("yyyyDDDHHmm", Locale.getDefault());
     public static final char DELIMITER = '_';
     public static final char DASH = '-';
     private final String filterNamePart;

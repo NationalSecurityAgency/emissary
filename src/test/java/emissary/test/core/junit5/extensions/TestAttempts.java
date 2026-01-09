@@ -15,6 +15,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -89,10 +90,14 @@ public @interface TestAttempts {
             if (testAttempt.hasNext()) {
                 // trick junit into not failing the test by aborting the attempt
                 throw new TestAbortedException(
-                        String.format("Test attempt %d of %d failed, retrying...", testAttempt.exceptions, testAttempt.maxAttempts), throwable);
+                        String.format(Locale.getDefault(), "Test attempt %d of %d failed, retrying...", testAttempt.exceptions,
+                                testAttempt.maxAttempts),
+                        throwable);
             } else {
                 // all attempts failed, so fail the test
-                throw new AssertionError(String.format("Test attempt %d of %d failed", testAttempt.exceptions, testAttempt.maxAttempts), throwable);
+                throw new AssertionError(
+                        String.format(Locale.getDefault(), "Test attempt %d of %d failed", testAttempt.exceptions, testAttempt.maxAttempts),
+                        throwable);
             }
         }
 
