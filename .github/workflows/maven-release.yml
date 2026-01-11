@@ -44,6 +44,15 @@ jobs:
         run: |
           echo "Milestone release is missing a release suffix, i.e. -M1"
           exit 1
+      - name: Check milestone has valid release suffix
+        if: ${{ github.event.inputs.release_type == 'milestone' && github.event.inputs.release_suffix != '' }}
+        run: |
+          if [[ ! "$IN_RELEASE_SUFFIX" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+            echo "Invalid release-suffix format: must contain only alphanumeric characters, underscores, dashes, and periods."
+            exit 1
+          fi
+        env:
+          IN_RELEASE_SUFFIX: ${{ github.event.inputs.release_suffix }}
       - name: Check suffix is not specified for a release or patch
         if: ${{ github.event.inputs.release_type != 'milestone' && github.event.inputs.release_suffix != '' }}
         run: |
