@@ -26,6 +26,14 @@ jobs:
           exit 1
         env:
           IN_NEXT_VERSION: ${{ github.event.inputs.next_version }}
+      - name: Check valid next version
+        run: |
+          if [[ ! "$IN_NEXT_VERSION" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+            echo "Invalid next-version format: must contain only alphanumeric characters, underscores, dashes, and periods."
+            exit 1
+          fi
+        env:
+          IN_NEXT_VERSION: ${{ github.event.inputs.next_version }}
   snapshot-bump:
     needs: verify
     runs-on: ubuntu-latest
