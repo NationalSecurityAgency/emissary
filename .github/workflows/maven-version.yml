@@ -18,6 +18,9 @@ env:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Check release ends with snapshot
         if: ${{ !endsWith(github.event.inputs.next_version, '-SNAPSHOT') }}
@@ -40,6 +43,9 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
