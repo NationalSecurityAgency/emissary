@@ -113,8 +113,20 @@ is an example run.
 ```
 
 Without further configuration, it will start on http://localhost:8001.  If you browse to that 
-url, you will need to enter the username and password defined in target/config/jetty-users.properties,
-which is emissary and emissary123.
+url, you will need to enter the username and password defined in target/config/jetty-users.properties.
+
+> [!CAUTION]
+> Security Notice: Default Credentials
+> 
+> ***Change Default Credentials Immediately*** The usernames and passwords listed below are for demonstration
+> purposes only. Using default credentials in a production environment poses a significant security risk. 
+> 
+> **Action Required**: Update your `jetty-users.properties` file with strong, unique passwords before deploying.
+>
+>| Default Username | Default Password |
+>|------------------|------------------|
+>| emissary         | emissary123      |
+>| console          | console123       |
 
 The default PickUpPlace is configured to read files from _target/data/InputData_.  If you copy
 files into that directory, you will see Emissary process them.  Keep in mind, only toUpper and toLower are
@@ -315,6 +327,15 @@ Run it with
 ```
 
 #### Running server with SSL
+
+> [!CAUTION]
+> Security Notice: SSL/TLS Configuration 
+>
+>The **demo/dev** profile disables SSL verification by default to reduce setup complexity for local evaluation.
+>
+> **For multi-host or production deployments:**
+> * **Enable TLS:** Operators are responsible for ensuring all traffic is encrypted.
+> * **mTLS:** Implement Mutual TLS where appropriate to verify the identity of both clients and servers.
 
 The keystore and keystore password are in the [emissary.client.EmissaryClient-SSL.cfg](src/main/config/emissary.client.EmissaryClient-SSL.cfg) 
 file.  Included and configured by default is a sample keystore you can use for testing this functionality. We do not 
