@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static emissary.config.ConfigUtil.CONFIG_FILE_ENDING;
@@ -31,6 +32,8 @@ import static emissary.core.constants.Configurations.RESERVED_SERVICE_CONFIG_KEY
 @Path("")
 // context is /api
 public class Configs {
+
+    protected static final Pattern VALID_CONFIG_NAME = Pattern.compile("^[a-zA-Z0-9._-]+$");
 
     @GET
     @Path("/configuration/{name}")
@@ -123,7 +126,7 @@ public class Configs {
      * @return the default configuration file for the class
      */
     protected static String validate(String config) {
-        if (StringUtils.isBlank(config) || config.contains("\\") || config.contains("/") || config.contains("..") || config.endsWith(".")) {
+        if (!VALID_CONFIG_NAME.matcher(config).matches() || config.contains("..") || config.endsWith(".")) {
             throw new IllegalArgumentException("Invalid config name: " + config);
         }
         return Strings.CS.appendIfMissing(config.trim(), CONFIG_FILE_ENDING);
