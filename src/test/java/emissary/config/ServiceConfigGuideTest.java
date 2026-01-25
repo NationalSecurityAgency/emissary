@@ -451,14 +451,14 @@ class ServiceConfigGuideTest extends UnitTest {
         final Configurator c2 = ConfigUtil.getConfigInfo(str2);
 
         c1.merge(c2);
-        assertEquals("BAZ2", c1.findStringEntry("FOO"), "Newly merged entry is first");
-        // #997 -- Would expect the ordering to be [BAR2,CAT2,BAZ2,BAR,CAT,BAZ]
-        assertEquals("BAZ2", c1.findEntries("FOO").get(0), "Merge contains union of values");
-        assertEquals("CAT2", c1.findEntries("FOO").get(1), "Merge contains union of values");
-        assertEquals("BAR2", c1.findEntries("FOO").get(2), "Merge contains union of values");
-        assertEquals("BAR", c1.findEntries("FOO").get(3), "Merge contains union of values");
-        assertEquals("CAT", c1.findEntries("FOO").get(4), "Merge contains union of values");
-        assertEquals("BAZ", c1.findEntries("FOO").get(5), "Merge contains union of values");
+        assertEquals("BAR2", c1.findStringEntry("FOO"), "Newly merged entry is first");
+        // #997 FIX -- Ordering is now correctly [BAR2,CAT2,BAZ2,BAR,CAT,BAZ]
+        assertEquals("BAR2", c1.findEntries("FOO").get(0), "Merge contains union of values - first merged");
+        assertEquals("CAT2", c1.findEntries("FOO").get(1), "Merge contains union of values - second merged");
+        assertEquals("BAZ2", c1.findEntries("FOO").get(2), "Merge contains union of values - third merged");
+        assertEquals("BAR", c1.findEntries("FOO").get(3), "Merge contains union of values - first original");
+        assertEquals("CAT", c1.findEntries("FOO").get(4), "Merge contains union of values - second original");
+        assertEquals("BAZ", c1.findEntries("FOO").get(5), "Merge contains union of values - third original");
         assertEquals("VAL1", c1.findStringEntry("KEY1"), "Old value present after merge");
         assertEquals("VAL2", c1.findStringEntry("KEY2"), "New value present after merge");
     }
