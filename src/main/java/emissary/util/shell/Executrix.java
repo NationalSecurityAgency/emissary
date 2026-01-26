@@ -132,11 +132,21 @@ public class Executrix {
             final String key = configG.findStringEntry(SERVICE_KEY, null);
             this.placeName = key == null ? "UNKNOWN" : KeyManipulator.getServiceName(key);
         }
-        this.placeName = INVALID_PLACE_NAME_CHARS.matcher(this.placeName).replaceAll("_");
+        this.placeName = cleanPlaceName(this.placeName);
         this.vmSizeLimit = configG.findIntEntry("VM_SIZE_LIMIT", DEFAULT_VM_SIZE_LIMIT);
         this.cpuTimeLimit = configG.findIntEntry("CPU_TIME_LIMIT", DEFAULT_CPU_TIME_LIMIT);
         // Set to 0 to disable watchdog monitoring
         this.processMaxMillis = configG.findLongEntry("PROCESS_MAX_MILLIS", DEFAULT_PROCESS_MAX_MILLIS);
+    }
+
+    /**
+     * Remove invalid characters from the place name, see {@link Executrix#INVALID_PLACE_NAME_CHARS}
+     *
+     * @param placeName the name of the place
+     * @return a cleaned string without invalid characters
+     */
+    protected static String cleanPlaceName(final String placeName) {
+        return INVALID_PLACE_NAME_CHARS.matcher(placeName).replaceAll("_");
     }
 
     /**
