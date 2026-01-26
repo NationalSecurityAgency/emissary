@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>ConfiguredPlaceFactory xref</title>
+<link type="text/css" rel="stylesheet" href="../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../testapidocs/emissary/test/util/ConfiguredPlaceFactory.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> emissary.test.util;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> emissary.config.ConfigEntry;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> emissary.config.ConfigUtil;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> emissary.config.Configurator;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> emissary.config.ServiceConfigGuide;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> emissary.place.IServiceProviderPlace;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> java.lang.reflect.Constructor;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> java.util.HashSet;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_javadoccomment"> * Create instances of a {@link emissary.place.ServiceProviderPlace} with custom configurations for testing. Removes</em>
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_javadoccomment"> * need for a separate .cfg file and simplifies process of using multiple configurations in the same test class.</em>
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_javadoccomment"> * Override priority is as follows:</em>
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_javadoccomment"> * &lt;ol&gt;</em>
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_javadoccomment"> * &lt;li&gt;Highest priority configs are passed as params into the {@link #buildPlace(ConfigEntry...)} method&lt;/li&gt;</em>
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment"> * &lt;li&gt;Next priority configs are defaults passed into the {@link #ConfiguredPlaceFactory} constructor&lt;/li&gt;</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment"> * &lt;li&gt;Lowest priority configs are found in the main {@code T} class .cfg file, if it exists&lt;/li&gt;</em>
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_javadoccomment"> * &lt;/ol&gt;</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment"> * &lt;i&gt;Note&lt;/i&gt;: setting the value of a {@link ConfigEntry} to {@code null} will remove existing instances of the</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment"> * configuration.</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment"> * @param &lt;T&gt; The Emissary place to create variations of</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> ConfiguredPlaceFactory&lt;T <strong class="jxr_keyword">extends</strong> IServiceProviderPlace&gt; {
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String placeName;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Constructor&lt;T&gt; placeConstructor;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Configurator defaultConfigurator;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">public</strong> <a name="ConfiguredPlaceFactory" href="../../../emissary/test/util/ConfiguredPlaceFactory.html#ConfiguredPlaceFactory">ConfiguredPlaceFactory</a>(Class&lt;T&gt; place, ConfigEntry... defaultConfigs) {
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>          <strong class="jxr_keyword">this</strong>(place, <strong class="jxr_keyword">null</strong>, defaultConfigs);
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>      }
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>      <strong class="jxr_keyword">public</strong> <a name="ConfiguredPlaceFactory" href="../../../emissary/test/util/ConfiguredPlaceFactory.html#ConfiguredPlaceFactory">ConfiguredPlaceFactory</a>(Class&lt;T&gt; place, Configurator baseConfigurator, ConfigEntry... defaultConfigs) {
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>          placeName = place.getName();
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>          placeConstructor = getPlaceConstructor(place);
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>          defaultConfigurator = baseConfigurator != <strong class="jxr_keyword">null</strong> ? baseConfigurator : loadConfigFile(place);
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>          addAndReplaceConfigEntries(defaultConfigurator, defaultConfigs);
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>      }
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>      <strong class="jxr_keyword">private</strong> Constructor&lt;T&gt; getPlaceConstructor(Class&lt;T&gt; place) {
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>              <strong class="jxr_keyword">return</strong> place.getDeclaredConstructor(Configurator.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>          } <strong class="jxr_keyword">catch</strong> (ReflectiveOperationException e) {
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"Failed to create ConfiguredPlaceFactory instance for "</span> + place.getName(), e);
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>          }
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>      }
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment">     * Gets the configurations for a given {@link emissary.place.ServiceProviderPlace} that are used in production from its</em>
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">     * .cfg file. Config files are expected to match the names of the place. E.g. {@code foo.BarPlace.java} expects</em>
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">     * {@code foo.BarPlace.cfg}. If no such file exists, an empty {@link Configurator} object will be returned.</em>
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">     * @param place The place to get configurations for</em>
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">     * @return Configurations based on the place's name if it exists, otherwise an empty {@link Configurator}</em>
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> Configurator loadConfigFile(Class&lt;T&gt; place) {
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>              <strong class="jxr_keyword">return</strong> ConfigUtil.getConfigInfo(place);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>              <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ServiceConfigGuide();
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          }
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>      }
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment">     * Create a new instance of a {@link emissary.place.ServiceProviderPlace} for testing with optional configurations.</em>
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">     * Configs override any matching instances found in the actual .cfg file and/or default test configs.</em>
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">     * &lt;i&gt;Note&lt;/i&gt;: setting the value of a {@link ConfigEntry} to {@code null} will remove existing instances of the</em>
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment">     * configuration.</em>
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     * @param optionalConfigs list of new or overriding place configurations</em>
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment">     * @return new instance of place</em>
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>      <strong class="jxr_keyword">public</strong> T buildPlace(ConfigEntry... optionalConfigs) {
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>              Configurator classConfigs = newInstanceConfigurator(optionalConfigs);
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>              <strong class="jxr_keyword">return</strong> placeConstructor.newInstance(classConfigs);
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>          } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"Failed to create instance of "</span> + placeName, e);
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>          }
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>      }
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment">     * Returns the Exception that would be thrown if the place is built with the given configurations. Actually throws an</em>
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     * Exception if the build doesn't throw anything.</em>
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  <em class="jxr_javadoccomment">     * @param optionalConfigs list of new or overriding place configurations</em>
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  <em class="jxr_javadoccomment">     * @return an Exception object</em>
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>      <strong class="jxr_keyword">public</strong> Exception getBuildPlaceException(ConfigEntry... optionalConfigs) {
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>          <strong class="jxr_keyword">return</strong> getBuildPlaceException(Exception.<strong class="jxr_keyword">class</strong>, optionalConfigs);
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>      }
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  <em class="jxr_javadoccomment">     * Returns the Exception that would be thrown if the place is built with the given configurations. Actually throws an</em>
+<a class="jxr_linenumber" name="L100" href="#L100">100</a> <em class="jxr_javadoccomment">     * Exception if the provided type doesn't match, or if the build doesn't throw anything.</em>
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">     * @param exceptionType Exception base class</em>
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">     * @param optionalConfigs list of new or overriding place configurations</em>
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> <em class="jxr_javadoccomment">     * @return an Exception object</em>
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     * @param &lt;E&gt; The Exception type that is expected to be thrown</em>
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>     <strong class="jxr_keyword">public</strong> &lt;E <strong class="jxr_keyword">extends</strong> Exception&gt; E getBuildPlaceException(Class&lt;E&gt; exceptionType, ConfigEntry... optionalConfigs) {
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>             Configurator classConfigs = newInstanceConfigurator(optionalConfigs);
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>             placeConstructor.newInstance(classConfigs);
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>             <strong class="jxr_keyword">return</strong> exceptionType.<strong class="jxr_keyword">cast</strong>(e.getCause());
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>         }
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>                 String.format(<span class="jxr_string">"Succeeded building %s but expected to throw %s"</span>, placeName, exceptionType.getName()));
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>     }
+<a class="jxr_linenumber" name="L117" href="#L117">117</a> 
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>     <strong class="jxr_keyword">private</strong> Configurator newInstanceConfigurator(ConfigEntry... optionalConfigs) {
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>         <strong class="jxr_keyword">if</strong> (optionalConfigs.length == 0) {
+<a class="jxr_linenumber" name="L120" href="#L120">120</a>             <strong class="jxr_keyword">return</strong> defaultConfigurator;
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>         }
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>         Configurator configurator = copyConfigurator(defaultConfigurator);
+<a class="jxr_linenumber" name="L123" href="#L123">123</a>         addAndReplaceConfigEntries(configurator, optionalConfigs);
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>         <strong class="jxr_keyword">return</strong> configurator;
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>     }
+<a class="jxr_linenumber" name="L126" href="#L126">126</a> 
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> addAndReplaceConfigEntries(Configurator configurator, ConfigEntry... configEntries) {
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>         Set&lt;String&gt; encounteredKeys = <strong class="jxr_keyword">new</strong> HashSet&lt;&gt;();
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>         <strong class="jxr_keyword">for</strong> (ConfigEntry entry : configEntries) {
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>             String key = entry.getKey();
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>             <em class="jxr_comment">// Keep track of keys we've removed, so we don't accidentally remove them more than once</em>
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>             <strong class="jxr_keyword">if</strong> (!encounteredKeys.contains(key)) {
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>                 removeAllConfigEntriesForKey(configurator, key);
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>                 encounteredKeys.add(key);
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>             }
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>             <strong class="jxr_keyword">if</strong> (entry.getValue() != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>                 configurator.addEntry(key, entry.getValue());
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>             }
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>         }
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>     }
+<a class="jxr_linenumber" name="L141" href="#L141">141</a> 
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> removeAllConfigEntriesForKey(Configurator configurator, String key) {
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>         <strong class="jxr_keyword">for</strong> (String value : configurator.findEntries(key)) {
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>             configurator.removeEntry(key, value);
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>         }
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>     }
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> 
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Configurator copyConfigurator(Configurator source) {
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>         Configurator target = <strong class="jxr_keyword">new</strong> ServiceConfigGuide();
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>         source.getEntries().forEach(entry -&gt; target.addEntry(entry.getKey(), entry.getValue()));
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>         <strong class="jxr_keyword">return</strong> target;
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>     }
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> }
+</pre>
+<hr/>
+<div id="footer">© 2026 <a href="https://code.nsa.gov">National Security Agency</a></div>
+</body>
+</html>

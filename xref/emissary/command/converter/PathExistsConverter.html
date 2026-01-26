@@ -9,7 +9,7 @@
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> emissary.command.converter;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> jakarta.annotation.Nullable;
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.apache.commons.lang3.StringUtils;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.apache.commons.lang3.Strings;
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> picocli.CommandLine.ITypeConverter;
@@ -37,7 +37,7 @@
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>      }
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">public</strong> Path convert(String option, String value) {
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>          Path p = Paths.get(StringUtils.removeEnd(value, <span class="jxr_string">"/"</span>));
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>          Path p = Paths.get(Strings.CS.removeEnd(value, <span class="jxr_string">"/"</span>));
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>          <em class="jxr_comment">// ensure the value exists</em>
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>          <strong class="jxr_keyword">if</strong> (!Files.exists(p)) {
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>              String msg = String.format(<span class="jxr_string">"The option '%s' was configured with path '%s' which does not exist"</span>, option, p);
@@ -54,6 +54,6 @@
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  }
 </pre>
 <hr/>
-<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
+<div id="footer">© 2026 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

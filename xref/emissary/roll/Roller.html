@@ -157,23 +157,27 @@
 <a class="jxr_linenumber" name="L149" href="#L149">149</a> 
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>     <em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_comment">     * There are a couple of conditions where we would not want to execute when both a progress value and time schedule are</em>
-<a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_comment">     * configured: - Time based roll happened and a progress run is scheduled - Progress roll happened between schduled runs</em>
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_comment">     */</em>
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> shouldRoll(<strong class="jxr_keyword">long</strong> start) {
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>         <em class="jxr_comment">// verify both time and progress are set</em>
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>         <em class="jxr_comment">// if we're below max we'll check the interval</em>
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>         <strong class="jxr_keyword">if</strong> (period &gt; 0 &amp;&amp; max &gt; 0 &amp;&amp; progress.get() &lt; max) {
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>             <em class="jxr_comment">// we fired a progress run or delayed start due to starvation. add 100 for clock skew</em>
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>             <strong class="jxr_keyword">if</strong> ((start - lastRun + 100) &lt; getIntervalInMillis()) {
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>                 <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>             }
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>         }
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>     }
-<a class="jxr_linenumber" name="L165" href="#L165">165</a> 
-<a class="jxr_linenumber" name="L166" href="#L166">166</a> }
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_comment">     * configured: - Time based roll happened and a progress run is scheduled - Progress roll happened between scheduled</em>
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_comment">     * runs</em>
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> <em class="jxr_comment">     */</em>
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> shouldRoll(<strong class="jxr_keyword">long</strong> start) {
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>         <em class="jxr_comment">// verify both time and progress are set</em>
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>         <em class="jxr_comment">// if we're below max we'll check the interval</em>
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>         <strong class="jxr_keyword">return</strong> ifProgressComplete() || isProgressCompleteWithClockSkew(start);
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>     }
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> 
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> ifProgressComplete() {
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>         <strong class="jxr_keyword">return</strong> period &lt;= 0 || max &lt;= 0 || progress.get() &gt;= max;
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>     }
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> 
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isProgressCompleteWithClockSkew(<strong class="jxr_keyword">long</strong> start) {
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>         <em class="jxr_comment">// we fired a progress run or delayed start due to starvation. add 100 for clock skew</em>
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>         <strong class="jxr_keyword">return</strong> (start - lastRun + 100) &gt;= getIntervalInMillis();
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>     }
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> 
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> }
 </pre>
 <hr/>
-<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
+<div id="footer">© 2026 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

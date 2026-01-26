@@ -146,7 +146,7 @@
 <a class="jxr_linenumber" name="L138" href="#L138">138</a>     @Test
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>     <strong class="jxr_keyword">void</strong> testHighestIdWithAllEntriesLoaded() {
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>         loadAllTestEntries();
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>         <strong class="jxr_keyword">this</strong>.unknowns.get(<strong class="jxr_keyword">this</strong>.unknowns.size() - 1);
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>         assertNotNull(<strong class="jxr_keyword">this</strong>.unknowns.get(<strong class="jxr_keyword">this</strong>.unknowns.size() - 1));
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>         <strong class="jxr_keyword">this</strong>.payload.pushCurrentForm(<span class="jxr_string">"UNKNOWN"</span>);
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>         <strong class="jxr_keyword">this</strong>.payload.appendTransformHistory(<strong class="jxr_keyword">this</strong>.unknowns.get(<strong class="jxr_keyword">this</strong>.unknowns.size() - 1).getFullKey());
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>         <strong class="jxr_keyword">final</strong> DirectoryEntry result = <strong class="jxr_keyword">this</strong>.agent.getNextKeyAccess(<strong class="jxr_keyword">this</strong>.dir, <strong class="jxr_keyword">this</strong>.payload);
@@ -458,6 +458,6 @@
 <a class="jxr_linenumber" name="L450" href="#L450">450</a> }
 </pre>
 <hr/>
-<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
+<div id="footer">© 2026 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

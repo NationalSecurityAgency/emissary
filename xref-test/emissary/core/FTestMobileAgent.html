@@ -96,32 +96,34 @@
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> FakePlace <strong class="jxr_keyword">extends</strong> ServiceProviderPlace {
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>          <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> forcedException = false;
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>          <strong class="jxr_keyword">public</strong> FakePlace(<strong class="jxr_keyword">final</strong> String a, <strong class="jxr_keyword">final</strong> String b, <strong class="jxr_keyword">final</strong> String c) <strong class="jxr_keyword">throws</strong> IOException {}
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> throwExceptionDuringProcessing(<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> value) {
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>              <strong class="jxr_keyword">this</strong>.forcedException = value;
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>          }
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>          @Override
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>          <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> process(<strong class="jxr_keyword">final</strong> IBaseDataObject d) <strong class="jxr_keyword">throws</strong> ResourceException {
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>              d.replaceCurrentForm(<strong class="jxr_keyword">null</strong>); <em class="jxr_comment">// clear it</em>
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>             <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.forcedException) {
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> ResourceException(<span class="jxr_string">"This is a forced exception"</span>);
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>             }
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>         }
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>     }
-<a class="jxr_linenumber" name="L105" href="#L105">105</a> 
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> FakeEmptyPlace <strong class="jxr_keyword">extends</strong> ServiceProviderPlace <strong class="jxr_keyword">implements</strong> EmptyFormPlace {
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>         <strong class="jxr_keyword">public</strong> FakeEmptyPlace(<strong class="jxr_keyword">final</strong> String a, <strong class="jxr_keyword">final</strong> String b, <strong class="jxr_keyword">final</strong> String c) <strong class="jxr_keyword">throws</strong> IOException {}
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> 
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>         @Override
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> process(<strong class="jxr_keyword">final</strong> IBaseDataObject d) {
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>             d.replaceCurrentForm(<strong class="jxr_keyword">null</strong>); <em class="jxr_comment">// clear it</em>
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>         }
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>     }
-<a class="jxr_linenumber" name="L114" href="#L114">114</a> }
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>          @SuppressWarnings(<span class="jxr_string">"PMD.UnusedFormalParameter"</span>)
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          <strong class="jxr_keyword">public</strong> FakePlace(<strong class="jxr_keyword">final</strong> String a, <strong class="jxr_keyword">final</strong> String b, <strong class="jxr_keyword">final</strong> String c) <strong class="jxr_keyword">throws</strong> IOException {}
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>          <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> throwExceptionDuringProcessing(<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> value) {
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>              <strong class="jxr_keyword">this</strong>.forcedException = value;
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>          }
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>          @Override
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>          <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> process(<strong class="jxr_keyword">final</strong> IBaseDataObject d) <strong class="jxr_keyword">throws</strong> ResourceException {
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>             d.replaceCurrentForm(<strong class="jxr_keyword">null</strong>); <em class="jxr_comment">// clear it</em>
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>             <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.forcedException) {
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> ResourceException(<span class="jxr_string">"This is a forced exception"</span>);
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>             }
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>         }
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>     }
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> 
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> FakeEmptyPlace <strong class="jxr_keyword">extends</strong> ServiceProviderPlace <strong class="jxr_keyword">implements</strong> EmptyFormPlace {
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>         @SuppressWarnings(<span class="jxr_string">"PMD.UnusedFormalParameter"</span>)
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>         <strong class="jxr_keyword">public</strong> FakeEmptyPlace(<strong class="jxr_keyword">final</strong> String a, <strong class="jxr_keyword">final</strong> String b, <strong class="jxr_keyword">final</strong> String c) <strong class="jxr_keyword">throws</strong> IOException {}
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> 
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>         @Override
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> process(<strong class="jxr_keyword">final</strong> IBaseDataObject d) {
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>             d.replaceCurrentForm(<strong class="jxr_keyword">null</strong>); <em class="jxr_comment">// clear it</em>
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>         }
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>     }
+<a class="jxr_linenumber" name="L116" href="#L116">116</a> }
 </pre>
 <hr/>
-<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
+<div id="footer">© 2026 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

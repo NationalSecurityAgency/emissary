@@ -15,6 +15,12 @@ emissary.core.sentinel.protocols.actions
 emissary.core.sentinel.protocols.rules
 emissary.core.sentinel.protocols.trackers
 emissary.directory
+emissary.grpc
+emissary.grpc.exceptions
+emissary.grpc.pool
+emissary.grpc.retry
+emissary.grpc.sample
+emissary.grpc.sample.v1
 emissary.id
 emissary.jni
 emissary.kff
@@ -49,3 +55,5 @@ emissary.util.search
 emissary.util.shell
 emissary.util.web
 emissary.util.xml
+grpc_java.emissary.grpc.sample.v1
+java.emissary.grpc.sample.v1

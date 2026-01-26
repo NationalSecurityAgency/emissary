@@ -12,6 +12,9 @@ emissary.core.sentinel
 emissary.core.sentinel.protocols
 emissary.core.sentinel.protocols.rules
 emissary.directory
+emissary.grpc.exceptions
+emissary.grpc.pool
+emissary.grpc.sample
 emissary.id
 emissary.kff
 emissary.output

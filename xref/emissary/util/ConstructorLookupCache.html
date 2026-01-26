@@ -143,140 +143,141 @@
 <a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_javadoccomment">     *         matching constructor; otherwise {@code null}.</em>
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>     @Nullable
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Constructor&lt;?&gt; directConstructorLookup(<strong class="jxr_keyword">final</strong> Class&lt;?&gt; clazz, <strong class="jxr_keyword">final</strong> Class&lt;?&gt;[] argTypes) {
-<a class="jxr_linenumber" name="L139" href="#L139">139</a>         <em class="jxr_comment">// Look for an exact match.</em>
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>             <strong class="jxr_keyword">return</strong> clazz.getConstructor(argTypes);
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>         } <strong class="jxr_keyword">catch</strong> (NoSuchMethodException e) {
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>             logger.debug(<span class="jxr_string">"No constructor for [{}] in Factory.create())"</span>, clazz.getName());
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>         }
-<a class="jxr_linenumber" name="L145" href="#L145">145</a> 
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>         <em class="jxr_comment">// There was no exact match, so look through the existing</em>
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>         <em class="jxr_comment">// constructors for an assignable match.</em>
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>         NEXT_CANDIDATE_CONSTRUCTOR: <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Constructor&lt;?&gt; candidate : clazz.getConstructors()) {
-<a class="jxr_linenumber" name="L149" href="#L149">149</a>             <strong class="jxr_keyword">final</strong> Class&lt;?&gt;[] ctypes = candidate.getParameterTypes();
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> 
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>             <strong class="jxr_keyword">if</strong> (logger.isDebugEnabled()) {
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>                 logger.debug(<span class="jxr_string">"Checking:{}, {}"</span>, clazz.getName(), clazz);
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>                 logger.debug(<span class="jxr_string">"   types   :{}"</span>, Arrays.toString(ctypes));
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>                 logger.debug(<span class="jxr_string">"   numParms:{} =? {}"</span>, ctypes.length, argTypes.length);
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>             }
-<a class="jxr_linenumber" name="L156" href="#L156">156</a> 
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>             <em class="jxr_comment">// If the candidate constructor doesn't have the same</em>
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>             <em class="jxr_comment">// number of arguments, it definitely isn't compatible</em>
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>             <em class="jxr_comment">// with the desired argument types.</em>
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>             <strong class="jxr_keyword">if</strong> (ctypes.length != argTypes.length) {
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>                 <strong class="jxr_keyword">continue</strong> NEXT_CANDIDATE_CONSTRUCTOR;
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>             }
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> 
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>             <em class="jxr_comment">// The candidate takes the right number of arguments, so</em>
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>             <em class="jxr_comment">// compare its expected types to the types that will be</em>
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>             <em class="jxr_comment">// passed. If the given type is not assignable to the</em>
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>             <em class="jxr_comment">// expected type, then this constructor is not compatible.</em>
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = 0; j &lt; argTypes.length; j++) {
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>                 <strong class="jxr_keyword">final</strong> Class&lt;?&gt; a = ctypes[j];
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>                 <strong class="jxr_keyword">final</strong> Class&lt;?&gt; b = argTypes[j];
-<a class="jxr_linenumber" name="L171" href="#L171">171</a> 
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>                 <strong class="jxr_keyword">if</strong> ((a != <strong class="jxr_keyword">null</strong>) &amp;&amp; (b != <strong class="jxr_keyword">null</strong>)) {
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>                     <strong class="jxr_keyword">if</strong> (a.isAssignableFrom(b)) {
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>                         logger.debug(<span class="jxr_string">"   param={}  assignable {}"</span>, a, b);
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>                     } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>                         <strong class="jxr_keyword">final</strong> Class&lt;?&gt; bPrim = getPrim(b);
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>                         <strong class="jxr_keyword">if</strong> (a.isAssignableFrom(bPrim)) {
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>                             logger.debug(<span class="jxr_string">"   param={}  assignable {}"</span>, a, b);
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>                         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>                             logger.debug(<span class="jxr_string">"   param={}  !assignable {}"</span>, a, b);
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>                             <strong class="jxr_keyword">continue</strong> NEXT_CANDIDATE_CONSTRUCTOR;
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>                         }
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>                     }
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>                 }
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>             }
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> 
-<a class="jxr_linenumber" name="L187" href="#L187">187</a>             <em class="jxr_comment">// If we reach here, the current candidate constructor is</em>
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>             <em class="jxr_comment">// a compatible match.</em>
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>             <strong class="jxr_keyword">return</strong> candidate;
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>         }
-<a class="jxr_linenumber" name="L191" href="#L191">191</a> 
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>         <em class="jxr_comment">// None of the class's available constructors are compatible</em>
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>         <em class="jxr_comment">// with the given argument types.</em>
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>     }
-<a class="jxr_linenumber" name="L196" href="#L196">196</a> 
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> <em class="jxr_javadoccomment">     * Look for a constructor in the cache.</em>
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">     * @param clazz The class to be constructed.</em>
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">     * @param argTypes The argument types that the caller intends to pass to the constructor.</em>
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> <em class="jxr_javadoccomment">     * @return If a matching constructor is in the cache, return it. Otherwise {@code null}.</em>
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>     @Nullable
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Constructor&lt;?&gt; get(<strong class="jxr_keyword">final</strong> Class&lt;?&gt; clazz, <strong class="jxr_keyword">final</strong> Class&lt;?&gt;[] argTypes) {
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>         <em class="jxr_comment">// Currently there is at most one cached lookup per thread, so</em>
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>         <em class="jxr_comment">// we can just check if the current thread knows about the</em>
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>         <em class="jxr_comment">// given class and constructor arguments.</em>
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>         <strong class="jxr_keyword">final</strong> SoftReference&lt;KnownConstructor&gt; softResult = cachedConstructorLookup.get();
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>         <strong class="jxr_keyword">if</strong> (softResult == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>; <em class="jxr_comment">// Nothing is currently cached in this thread.</em>
-<a class="jxr_linenumber" name="L212" href="#L212">212</a>         }
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> 
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>         <strong class="jxr_keyword">final</strong> KnownConstructor knownResult = softResult.get();
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>         <strong class="jxr_keyword">if</strong> (knownResult == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L216" href="#L216">216</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>; <em class="jxr_comment">// There was something cached but it's been lost.</em>
-<a class="jxr_linenumber" name="L217" href="#L217">217</a>         }
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> 
-<a class="jxr_linenumber" name="L219" href="#L219">219</a>         <em class="jxr_comment">// We do have a cached lookup. It can be used iff it matches the</em>
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>         <em class="jxr_comment">// given class and constructor arguments.</em>
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>         <strong class="jxr_keyword">return</strong> knownResult.getConstructor(clazz, argTypes);
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>     }
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> 
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     * Store a constructor lookup in the cache.</em>
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L227" href="#L227">227</a> <em class="jxr_javadoccomment">     * @param clazz The class to be constructed.</em>
-<a class="jxr_linenumber" name="L228" href="#L228">228</a> <em class="jxr_javadoccomment">     * @param argTypes The argument types that the caller intends to pass to the constructor.</em>
-<a class="jxr_linenumber" name="L229" href="#L229">229</a> <em class="jxr_javadoccomment">     * @param constructor A constructor for {@code clazz} that can accept the argument types specified in {@code argTypes}.</em>
-<a class="jxr_linenumber" name="L230" href="#L230">230</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> put(<strong class="jxr_keyword">final</strong> Class&lt;?&gt; clazz, <strong class="jxr_keyword">final</strong> Class&lt;?&gt;[] argTypes, <strong class="jxr_keyword">final</strong> Constructor&lt;?&gt; constructor) {
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>         cachedConstructorLookup.set(<strong class="jxr_keyword">new</strong> SoftReference&lt;&gt;(<strong class="jxr_keyword">new</strong> KnownConstructor(clazz, argTypes, constructor)));
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>     }
-<a class="jxr_linenumber" name="L234" href="#L234">234</a> 
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">     * Look for a constructor for the given class type which can accept the given argument types.</em>
-<a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     * @param clazz The class to be constructed.</em>
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     * @param argTypes The argument types that the caller intends to pass to the constructor.</em>
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     * @return A matching constructor for the specified class, or {@code null} if no such constructor was found.</em>
-<a class="jxr_linenumber" name="L241" href="#L241">241</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Constructor&lt;?&gt; lookup(<strong class="jxr_keyword">final</strong> Class&lt;?&gt; clazz, <strong class="jxr_keyword">final</strong> Class&lt;?&gt;[] argTypes) {
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>         <strong class="jxr_keyword">final</strong> Constructor&lt;?&gt; cachedConstructor = get(clazz, argTypes);
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>         <strong class="jxr_keyword">if</strong> (cachedConstructor != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>             <em class="jxr_comment">// We found the constructor in the cache.</em>
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>             <strong class="jxr_keyword">return</strong> cachedConstructor;
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>             <em class="jxr_comment">// The desired constructor is not currently cached, so</em>
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>             <em class="jxr_comment">// look it up directly.</em>
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>             <strong class="jxr_keyword">final</strong> Constructor&lt;?&gt; uncachedConstructor = directConstructorLookup(clazz, argTypes);
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> 
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>             <em class="jxr_comment">// If we got a result, cache it before returning.</em>
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>             <strong class="jxr_keyword">if</strong> (uncachedConstructor != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>                 put(clazz, argTypes, uncachedConstructor);
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>             }
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>             <strong class="jxr_keyword">return</strong> uncachedConstructor;
-<a class="jxr_linenumber" name="L257" href="#L257">257</a>         }
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>     }
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> 
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L261" href="#L261">261</a> <em class="jxr_javadoccomment">     * Destroy the ThreadLocal cache object</em>
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> unload() {
-<a class="jxr_linenumber" name="L264" href="#L264">264</a>         cachedConstructorLookup.remove();
-<a class="jxr_linenumber" name="L265" href="#L265">265</a>     }
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> 
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>     <em class="jxr_javadoccomment">/** This is a static utility class, so prevent instantiation. */</em>
-<a class="jxr_linenumber" name="L268" href="#L268">268</a>     <strong class="jxr_keyword">private</strong> <a name="ConstructorLookupCache" href="../../emissary/util/ConstructorLookupCache.html#ConstructorLookupCache">ConstructorLookupCache</a>() {}
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> }
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>     @SuppressWarnings(<span class="jxr_string">"PMD.AvoidBranchingStatementAsLastInLoop"</span>)
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Constructor&lt;?&gt; directConstructorLookup(<strong class="jxr_keyword">final</strong> Class&lt;?&gt; clazz, <strong class="jxr_keyword">final</strong> Class&lt;?&gt;[] argTypes) {
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>         <em class="jxr_comment">// Look for an exact match.</em>
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>             <strong class="jxr_keyword">return</strong> clazz.getConstructor(argTypes);
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>         } <strong class="jxr_keyword">catch</strong> (NoSuchMethodException e) {
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>             logger.debug(<span class="jxr_string">"No constructor for [{}] in Factory.create())"</span>, clazz.getName());
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>         }
+<a class="jxr_linenumber" name="L146" href="#L146">146</a> 
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>         <em class="jxr_comment">// There was no exact match, so look through the existing</em>
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>         <em class="jxr_comment">// constructors for an assignable match.</em>
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>         NEXT_CANDIDATE_CONSTRUCTOR: <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Constructor&lt;?&gt; candidate : clazz.getConstructors()) {
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>             <strong class="jxr_keyword">final</strong> Class&lt;?&gt;[] ctypes = candidate.getParameterTypes();
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> 
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>             <strong class="jxr_keyword">if</strong> (logger.isDebugEnabled()) {
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>                 logger.debug(<span class="jxr_string">"Checking:{}, {}"</span>, clazz.getName(), clazz);
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>                 logger.debug(<span class="jxr_string">"   types   :{}"</span>, Arrays.toString(ctypes));
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>                 logger.debug(<span class="jxr_string">"   numParms:{} =? {}"</span>, ctypes.length, argTypes.length);
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>             }
+<a class="jxr_linenumber" name="L157" href="#L157">157</a> 
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>             <em class="jxr_comment">// If the candidate constructor doesn't have the same</em>
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>             <em class="jxr_comment">// number of arguments, it definitely isn't compatible</em>
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>             <em class="jxr_comment">// with the desired argument types.</em>
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>             <strong class="jxr_keyword">if</strong> (ctypes.length != argTypes.length) {
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>                 <strong class="jxr_keyword">continue</strong> NEXT_CANDIDATE_CONSTRUCTOR;
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>             }
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> 
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>             <em class="jxr_comment">// The candidate takes the right number of arguments, so</em>
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>             <em class="jxr_comment">// compare its expected types to the types that will be</em>
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>             <em class="jxr_comment">// passed. If the given type is not assignable to the</em>
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>             <em class="jxr_comment">// expected type, then this constructor is not compatible.</em>
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = 0; j &lt; argTypes.length; j++) {
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>                 <strong class="jxr_keyword">final</strong> Class&lt;?&gt; a = ctypes[j];
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>                 <strong class="jxr_keyword">final</strong> Class&lt;?&gt; b = argTypes[j];
+<a class="jxr_linenumber" name="L172" href="#L172">172</a> 
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>                 <strong class="jxr_keyword">if</strong> ((a != <strong class="jxr_keyword">null</strong>) &amp;&amp; (b != <strong class="jxr_keyword">null</strong>)) {
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>                     <strong class="jxr_keyword">if</strong> (a.isAssignableFrom(b)) {
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>                         logger.debug(<span class="jxr_string">"   param={}  assignable {}"</span>, a, b);
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>                     } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>                         <strong class="jxr_keyword">final</strong> Class&lt;?&gt; bPrim = getPrim(b);
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>                         <strong class="jxr_keyword">if</strong> (a.isAssignableFrom(bPrim)) {
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>                             logger.debug(<span class="jxr_string">"   param={}  assignable {}"</span>, a, b);
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>                         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>                             logger.debug(<span class="jxr_string">"   param={}  !assignable {}"</span>, a, b);
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>                             <strong class="jxr_keyword">continue</strong> NEXT_CANDIDATE_CONSTRUCTOR;
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>                         }
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>                     }
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>                 }
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>             }
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> 
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>             <em class="jxr_comment">// If we reach here, the current candidate constructor is</em>
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>             <em class="jxr_comment">// a compatible match.</em>
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>             <strong class="jxr_keyword">return</strong> candidate;
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>         }
+<a class="jxr_linenumber" name="L192" href="#L192">192</a> 
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>         <em class="jxr_comment">// None of the class's available constructors are compatible</em>
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>         <em class="jxr_comment">// with the given argument types.</em>
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>     }
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> 
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_javadoccomment">     * Look for a constructor in the cache.</em>
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">     * @param clazz The class to be constructed.</em>
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> <em class="jxr_javadoccomment">     * @param argTypes The argument types that the caller intends to pass to the constructor.</em>
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_javadoccomment">     * @return If a matching constructor is in the cache, return it. Otherwise {@code null}.</em>
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>     @Nullable
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Constructor&lt;?&gt; get(<strong class="jxr_keyword">final</strong> Class&lt;?&gt; clazz, <strong class="jxr_keyword">final</strong> Class&lt;?&gt;[] argTypes) {
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>         <em class="jxr_comment">// Currently there is at most one cached lookup per thread, so</em>
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>         <em class="jxr_comment">// we can just check if the current thread knows about the</em>
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>         <em class="jxr_comment">// given class and constructor arguments.</em>
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>         <strong class="jxr_keyword">final</strong> SoftReference&lt;KnownConstructor&gt; softResult = cachedConstructorLookup.get();
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>         <strong class="jxr_keyword">if</strong> (softResult == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>; <em class="jxr_comment">// Nothing is currently cached in this thread.</em>
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>         }
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> 
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>         <strong class="jxr_keyword">final</strong> KnownConstructor knownResult = softResult.get();
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>         <strong class="jxr_keyword">if</strong> (knownResult == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>; <em class="jxr_comment">// There was something cached but it's been lost.</em>
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>         }
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> 
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>         <em class="jxr_comment">// We do have a cached lookup. It can be used iff it matches the</em>
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>         <em class="jxr_comment">// given class and constructor arguments.</em>
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>         <strong class="jxr_keyword">return</strong> knownResult.getConstructor(clazz, argTypes);
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>     }
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> 
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">     * Store a constructor lookup in the cache.</em>
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L228" href="#L228">228</a> <em class="jxr_javadoccomment">     * @param clazz The class to be constructed.</em>
+<a class="jxr_linenumber" name="L229" href="#L229">229</a> <em class="jxr_javadoccomment">     * @param argTypes The argument types that the caller intends to pass to the constructor.</em>
+<a class="jxr_linenumber" name="L230" href="#L230">230</a> <em class="jxr_javadoccomment">     * @param constructor A constructor for {@code clazz} that can accept the argument types specified in {@code argTypes}.</em>
+<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> put(<strong class="jxr_keyword">final</strong> Class&lt;?&gt; clazz, <strong class="jxr_keyword">final</strong> Class&lt;?&gt;[] argTypes, <strong class="jxr_keyword">final</strong> Constructor&lt;?&gt; constructor) {
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>         cachedConstructorLookup.set(<strong class="jxr_keyword">new</strong> SoftReference&lt;&gt;(<strong class="jxr_keyword">new</strong> KnownConstructor(clazz, argTypes, constructor)));
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>     }
+<a class="jxr_linenumber" name="L235" href="#L235">235</a> 
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">     * Look for a constructor for the given class type which can accept the given argument types.</em>
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     * @param clazz The class to be constructed.</em>
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     * @param argTypes The argument types that the caller intends to pass to the constructor.</em>
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> <em class="jxr_javadoccomment">     * @return A matching constructor for the specified class, or {@code null} if no such constructor was found.</em>
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Constructor&lt;?&gt; lookup(<strong class="jxr_keyword">final</strong> Class&lt;?&gt; clazz, <strong class="jxr_keyword">final</strong> Class&lt;?&gt;[] argTypes) {
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>         <strong class="jxr_keyword">final</strong> Constructor&lt;?&gt; cachedConstructor = get(clazz, argTypes);
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>         <strong class="jxr_keyword">if</strong> (cachedConstructor != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>             <em class="jxr_comment">// We found the constructor in the cache.</em>
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>             <strong class="jxr_keyword">return</strong> cachedConstructor;
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>             <em class="jxr_comment">// The desired constructor is not currently cached, so</em>
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>             <em class="jxr_comment">// look it up directly.</em>
+<a class="jxr_linenumber" name="L251" href="#L251">251</a>             <strong class="jxr_keyword">final</strong> Constructor&lt;?&gt; uncachedConstructor = directConstructorLookup(clazz, argTypes);
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> 
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>             <em class="jxr_comment">// If we got a result, cache it before returning.</em>
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>             <strong class="jxr_keyword">if</strong> (uncachedConstructor != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>                 put(clazz, argTypes, uncachedConstructor);
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>             }
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>             <strong class="jxr_keyword">return</strong> uncachedConstructor;
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>         }
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>     }
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> 
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> <em class="jxr_javadoccomment">     * Destroy the ThreadLocal cache object</em>
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> unload() {
+<a class="jxr_linenumber" name="L265" href="#L265">265</a>         cachedConstructorLookup.remove();
+<a class="jxr_linenumber" name="L266" href="#L266">266</a>     }
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> 
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>     <em class="jxr_javadoccomment">/** This is a static utility class, so prevent instantiation. */</em>
+<a class="jxr_linenumber" name="L269" href="#L269">269</a>     <strong class="jxr_keyword">private</strong> <a name="ConstructorLookupCache" href="../../emissary/util/ConstructorLookupCache.html#ConstructorLookupCache">ConstructorLookupCache</a>() {}
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> }
 </pre>
 <hr/>
-<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
+<div id="footer">© 2026 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

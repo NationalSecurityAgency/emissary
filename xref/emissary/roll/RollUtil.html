@@ -56,7 +56,7 @@
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>          TimeUnit t = getUnit(config.get(<span class="jxr_string">"TIME_UNIT"</span>));
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>          <strong class="jxr_keyword">long</strong> period = getLong(config.get(<span class="jxr_string">"TIME_PERIOD"</span>));
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>          <strong class="jxr_keyword">long</strong> max = getLong(config.get(<span class="jxr_string">"PROGRESS_MAX"</span>));
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="Roller" href="../../emissary/roll/Roller.html#Roller">Roller</a>(max, t, period, r);
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="Roller" href="../../emissary/roll/Roller.html#Roller">Roller</a>(t, period, r, max);
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>      }
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>      <em class="jxr_comment">// convert a long from a string or return 0</em>
@@ -75,6 +75,6 @@
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  }
 </pre>
 <hr/>
-<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
+<div id="footer">© 2026 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>

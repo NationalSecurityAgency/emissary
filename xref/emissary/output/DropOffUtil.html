@@ -1028,7 +1028,7 @@
 <a class="jxr_linenumber" name="L1020" href="#L1020">1020</a>                     <strong class="jxr_keyword">final</strong> String key = entry.getKey();
 <a class="jxr_linenumber" name="L1021" href="#L1021">1021</a>                     <strong class="jxr_keyword">if</strong> (key != <strong class="jxr_keyword">null</strong> &amp;&amp; key.endsWith(<span class="jxr_string">"_FILETYPE"</span>)) {
 <a class="jxr_linenumber" name="L1022" href="#L1022">1022</a>                         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Object value : entry.getValue()) {
-<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a>                             <strong class="jxr_keyword">final</strong> String vs = value.toString();
+<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a>                             <strong class="jxr_keyword">final</strong> String vs = String.valueOf(value);
 <a class="jxr_linenumber" name="L1024" href="#L1024">1024</a>                             <strong class="jxr_keyword">if</strong> (!extendedFileTypes.contains(vs)) {
 <a class="jxr_linenumber" name="L1025" href="#L1025">1025</a>                                 extendedFileTypes.add(vs);
 <a class="jxr_linenumber" name="L1026" href="#L1026">1026</a>                             }
@@ -1061,9 +1061,9 @@
 <a class="jxr_linenumber" name="L1053" href="#L1053">1053</a> 
 <a class="jxr_linenumber" name="L1054" href="#L1054">1054</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> parentLevel = level - 1;
 <a class="jxr_linenumber" name="L1055" href="#L1055">1055</a>                 <strong class="jxr_keyword">final</strong> String pType = parentTypes.get(<span class="jxr_string">""</span> + parentLevel);
-<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a>                 <strong class="jxr_keyword">if</strong> (StringUtils.isNotEmpty(pType)) {
+<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a>                 <strong class="jxr_keyword">if</strong> (StringUtils.isNotBlank(pType)) {
 <a class="jxr_linenumber" name="L1057" href="#L1057">1057</a>                     p.setParameter(PARENT_FILETYPE, pType);
-<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (StringUtils.isNotBlank(parentTypes.get(<span class="jxr_string">"1"</span>))) {
 <a class="jxr_linenumber" name="L1059" href="#L1059">1059</a>                     p.setParameter(PARENT_FILETYPE, parentTypes.get(<span class="jxr_string">"1"</span>));
 <a class="jxr_linenumber" name="L1060" href="#L1060">1060</a>                 }
 <a class="jxr_linenumber" name="L1061" href="#L1061">1061</a>                 <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = 0; j &lt; parentParams.size(); j++) {
@@ -1084,7 +1084,7 @@
 <a class="jxr_linenumber" name="L1076" href="#L1076">1076</a>                 <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> child : childObjList) {
 <a class="jxr_linenumber" name="L1077" href="#L1077">1077</a>                     <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> parentLevel = StringUtils.countMatches(child.shortName(), Family.SEP);
 <a class="jxr_linenumber" name="L1078" href="#L1078">1078</a>                     <strong class="jxr_keyword">final</strong> String parentFileType = parentTypes.get(<span class="jxr_string">""</span> + parentLevel);
-<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a>                     <strong class="jxr_keyword">if</strong> (parentFileType != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a>                     <strong class="jxr_keyword">if</strong> (StringUtils.isNotBlank(parentFileType)) {
 <a class="jxr_linenumber" name="L1080" href="#L1080">1080</a>                         child.setParameter(PARENT_FILETYPE, parentFileType);
 <a class="jxr_linenumber" name="L1081" href="#L1081">1081</a>                     }
 <a class="jxr_linenumber" name="L1082" href="#L1082">1082</a>                     <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> k = 0; k &lt; parentParams.size(); k++) {
@@ -1104,6 +1104,6 @@
 <a class="jxr_linenumber" name="L1096" href="#L1096">1096</a> }
 </pre>
 <hr/>
-<div id="footer">© 2025 <a href="https://code.nsa.gov">National Security Agency</a></div>
+<div id="footer">© 2026 <a href="https://code.nsa.gov">National Security Agency</a></div>
 </body>
 </html>
