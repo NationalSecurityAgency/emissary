@@ -86,14 +86,17 @@ public class NavAction {
         protected static List<NavItem> convert(Map<String, String> map) {
             return map.entrySet().stream()
                     .filter(e -> {
-                        if (!VALID_LINK.matcher(e.getValue()).matches()) {
-                            logger.warn("Skipping invalid navigation link '{}'", e.getValue());
-                            return false;
-                        }
-                        return true;
-                    })
+                    .filter(e -> isValidLink(e.getValue()))
                     .map(e -> new NavItem(e.getKey(), e.getValue()))
                     .collect(Collectors.toList());
+        }
+
+        private static boolean isValidLink(String link) {
+            if (!VALID_LINK.matcher(link).matches()) {
+                logger.warn("Skipping invalid navigation link '{}'", link);
+                return false;
+            }
+            return true;
         }
 
         public static class NavItem {
