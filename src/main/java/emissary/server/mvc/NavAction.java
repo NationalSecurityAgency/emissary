@@ -85,7 +85,6 @@ public class NavAction {
 
         protected static List<NavItem> convert(Map<String, String> map) {
             return map.entrySet().stream()
-                    .filter(e -> {
                     .filter(e -> isValidLink(e.getValue()))
                     .map(e -> new NavItem(e.getKey(), e.getValue()))
                     .collect(Collectors.toList());
