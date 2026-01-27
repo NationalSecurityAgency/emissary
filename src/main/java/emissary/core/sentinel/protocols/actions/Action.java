@@ -31,10 +31,10 @@ public abstract class Action {
         return "\"" + getClass().getSimpleName() + "\"";
     }
 
-    protected List<String> getAgentNames(Map<String, Tracker> trackers) {
+    protected List<AgentTracker> toAgentTrackers(final Map<String, Tracker> trackers) {
         return trackers.values().stream()
                 .filter(AgentTracker.class::isInstance)
-                .map(t -> ((AgentTracker) t).getAgentName())
+                .map(t -> (AgentTracker) t)
                 .sorted()
                 .collect(Collectors.toList());
     }
