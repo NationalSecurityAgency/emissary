@@ -107,6 +107,7 @@
     <maven.javadoc.failOnWarnings>false</maven.javadoc.failOnWarnings>
     <maven.min-version>3.6.3</maven.min-version>
     <plugin.build-helper-maven.version>3.6.1</plugin.build-helper-maven.version>
+    <plugin.central-publishing-maven.version>0.10.0</plugin.central-publishing-maven.version>
     <plugin.cyclonedx-maven.version>2.9.1</plugin.cyclonedx-maven.version>
     <plugin.duplicate-finder-maven.version>1.5.1</plugin.duplicate-finder-maven.version>
     <plugin.exec-maven.version>3.6.3</plugin.exec-maven.version>
@@ -135,7 +136,6 @@
     <plugin.maven-site.version>3.21.0</plugin.maven-site.version>
     <plugin.maven-source.version>3.4.0</plugin.maven-source.version>
     <plugin.maven-surefire.version>3.5.4</plugin.maven-surefire.version>
-    <plugin.nexus-staging-maven.version>1.7.0</plugin.nexus-staging-maven.version>
     <plugin.protobuf-maven.version>0.6.1</plugin.protobuf-maven.version>
     <plugin.restrict-imports-enforcer-rule.version>3.0.0</plugin.restrict-imports-enforcer-rule.version>
     <plugin.sonar-maven.version>3.11.0.3922</plugin.sonar-maven.version>
@@ -1699,6 +1699,16 @@
     </profile>
     <profile>
       <id>oss</id>
+      <distributionManagement>
+        <repository>
+          <id>central</id>
+          <url>https://central.sonatype.com/api/v1/publish</url>
+        </repository>
+        <snapshotRepository>
+          <id>central</id>
+          <url>https://central.sonatype.com/api/v1/publish</url>
+        </snapshotRepository>
+      </distributionManagement>
       <build>
         <plugins>
           <plugin>
@@ -1716,14 +1726,13 @@
             </executions>
           </plugin>
           <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>${plugin.nexus-staging-maven.version}</version>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>${plugin.central-publishing-maven.version}</version>
             <extensions>true</extensions>
             <configuration>
-              <serverId>ossrh</serverId>
-              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+              <serverId>central</serverId>
+              <autoPublish>true</autoPublish>
             </configuration>
           </plugin>
         </plugins>
