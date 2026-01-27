@@ -82,7 +82,7 @@
     <dep.jetty.version>11.0.26</dep.jetty.version>
     <dep.junit-jupiter.version>5.14.1</dep.junit-jupiter.version>
     <dep.junit-platform.version>1.12.2</dep.junit-platform.version>
-    <dep.logback.version>1.5.24</dep.logback.version>
+    <dep.logback.version>1.5.26</dep.logback.version>
     <dep.logstash-logback-encoder.version>7.4</dep.logstash-logback-encoder.version>
     <dep.mockito.version>5.21.0</dep.mockito.version>
     <dep.netty.version>4.2.9.Final</dep.netty.version>
