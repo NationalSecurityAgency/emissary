@@ -72,6 +72,13 @@ public interface IMobileAgent extends Serializable, Runnable {
     String getName();
 
     /**
+     * Get the mobile agent thread
+     */
+    default long getThreadId() {
+        return -1L;
+    }
+
+    /**
      * get the name of the last place processed.
      */
     String getLastPlaceProcessed();
