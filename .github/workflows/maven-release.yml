@@ -63,7 +63,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Get the version
-        run: echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' | awk -F- '{print ""$1"${{ github.event.inputs.release_suffix }}"}')" >> "$GITHUB_ENV"
+        run: echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' | awk -v release_suffix="$IN_RELEASE_SUFFIX" -F- '{print ""$1""release_suffix}')" >> "$GITHUB_ENV"
+        env:
+          IN_RELEASE_SUFFIX: ${{ github.event.inputs.release_suffix }}
     outputs:
       RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
 
