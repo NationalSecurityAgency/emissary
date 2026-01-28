@@ -1097,7 +1097,6 @@
             <format>xml</format>
             <includeTests>true</includeTests>
             <minimumTokens>100</minimumTokens>
-            <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
             <targetJdk>${maven.compiler.target}</targetJdk>
             <rulesets>
               <ruleset>contrib/pmd/maven-pmd-plugin-default.xml</ruleset>
