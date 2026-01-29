@@ -1,7 +1,7 @@
 package emissary.core.sentinel.protocols.rules;
 
 import emissary.core.NamespaceException;
-import emissary.core.sentinel.protocols.AgentProtocol.PlaceAgentStats;
+import emissary.core.sentinel.protocols.trackers.AgentTracker;
 import emissary.pool.AgentPool;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +15,7 @@ import java.util.StringJoiner;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public abstract class AgentRule extends Rule<PlaceAgentStats> {
+public abstract class AgentRule extends Rule<AgentTracker> {
 
     protected static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -59,24 +59,24 @@ public abstract class AgentRule extends Rule<PlaceAgentStats> {
     /**
      * Check the rule conditions
      *
-     * @param placeAgentStats collection of the stats of a place that is currently processing
+     * @param agentTrackers collection of the trackers of a place that is currently processing
      * @return true if conditions are met, false otherwise
      */
     @Override
-    public boolean condition(Collection<PlaceAgentStats> placeAgentStats) {
-        List<PlaceAgentStats> filtered =
-                placeAgentStats.stream().filter(p -> place.matcher(p.getPlace()).matches()).collect(Collectors.toList());
+    public boolean condition(Collection<AgentTracker> agentTrackers) {
+        List<AgentTracker> filtered =
+                agentTrackers.stream().filter(p -> place.matcher(p.getPlaceName()).matches()).collect(Collectors.toList());
         return overThreshold(filtered) && overTimeLimit(filtered);
     }
 
     /**
      * Check to see if the number of places in mobile agents are over the configured threshold
      *
-     * @param placeAgentStats the stats of a place that is currently processing
+     * @param agentTrackers the stats of a place that is currently processing
      * @return true if the number of mobile agents stuck on the place is over the threshold, false otherwise
      */
-    protected boolean overThreshold(Collection<PlaceAgentStats> placeAgentStats) {
-        int count = placeAgentStats.stream().mapToInt(PlaceAgentStats::getCount).sum();
+    protected boolean overThreshold(final Collection<AgentTracker> agentTrackers) {
+        int count = agentTrackers.size();
         int poolSize = getAgentCount();
         logger.debug("Testing threshold for place={}, counter={}, poolSize={}, threshold={}", place, count, poolSize, threshold);
         return (double) count / poolSize >= this.threshold;
@@ -84,7 +84,7 @@ public abstract class AgentRule extends Rule<PlaceAgentStats> {
 
     /**
      * Get the total number of agents, idle and active. Override this method to
-     * 
+     *
      * @return the total number of agents
      */
     protected int getAgentCount() {
@@ -101,7 +101,7 @@ public abstract class AgentRule extends Rule<PlaceAgentStats> {
      * @param placeAgentStats the stats of a place that is currently processing
      * @return true if the places in mobile agents are over the configured time limit, false otherwise
      */
-    protected abstract boolean overTimeLimit(Collection<PlaceAgentStats> placeAgentStats);
+    protected abstract boolean overTimeLimit(Collection<AgentTracker> placeAgentStats);
 
     @Override
     public String toString() {
@@ -115,3 +115,4 @@ public abstract class AgentRule extends Rule<PlaceAgentStats> {
     }
 
 }
+

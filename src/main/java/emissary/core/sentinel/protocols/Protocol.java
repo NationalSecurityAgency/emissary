@@ -18,24 +18,24 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Protocols are configured with a list of rules that trigger some action if all conditions are met.
  */
-public abstract class Protocol {
+public abstract class Protocol<T> {
 
     protected static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     protected Configurator config;
-    protected final Map<String, Rule> rules = new ConcurrentHashMap<>();
+    protected final Map<String, Rule<T>> rules = new ConcurrentHashMap<>();
     protected Action action;
     protected boolean enabled = false;
 
     protected Protocol() {}
 
-    public Protocol(Configurator config) {
+    public Protocol(final Configurator config) {
         configure(config);
     }
 
     public abstract void run() throws IOException;
 
-    protected abstract Rule<?> getRule(String ruleId) throws IOException;
+    protected abstract Rule<T> getRule(String ruleId) throws IOException;
 
     public boolean isEnabled() {
         return this.enabled && MapUtils.isNotEmpty(this.rules);
@@ -59,7 +59,7 @@ public abstract class Protocol {
                 logger.warn("Sentinel rule with ID[{}] already exists, this may result in unexpected behavior", ruleId);
             }
             try {
-                final Rule<?> ruleImpl = getRule(ruleId);
+                final Rule<T> ruleImpl = getRule(ruleId);
                 this.rules.put(ruleId, ruleImpl);
                 logger.debug("Sentinel loaded rule[{}] - {}", ruleId, ruleImpl);
             } catch (Exception e) {

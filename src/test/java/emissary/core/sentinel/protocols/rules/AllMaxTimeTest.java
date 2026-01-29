@@ -1,6 +1,6 @@
 package emissary.core.sentinel.protocols.rules;
 
-import emissary.core.sentinel.protocols.AgentProtocol;
+import emissary.core.sentinel.protocols.trackers.AgentTracker;
 import emissary.pool.AgentPool;
 import emissary.test.core.junit5.UnitTest;
 
@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,16 +22,18 @@ import static org.mockito.Mockito.when;
 
 class AllMaxTimeTest extends UnitTest {
 
-    Collection<AgentProtocol.PlaceAgentStats> placeAgentStats;
+    Collection<AgentTracker> agentTrackers = new ArrayList<>();
 
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-        AgentProtocol.PlaceAgentStats stats = new AgentProtocol.PlaceAgentStats("TestPlace");
-        placeAgentStats = List.of(stats);
         for (int i = 1; i < 6; ++i) {
-            stats.update(i);
+            AgentTracker tracker = new AgentTracker("MB1");
+            tracker.setDirectoryEntryKey("/TestPlace");
+            tracker.initTimer();
+            tracker.incrementTimer(i);
+            agentTrackers.add(tracker);
         }
     }
 
@@ -54,13 +57,13 @@ class AllMaxTimeTest extends UnitTest {
     @Test
     void overTimeLimit() {
         AgentRule rule = new AllMaxTime("rule1", "TestPlace", 1, 0.75);
-        assertTrue(rule.overTimeLimit(placeAgentStats));
+        assertTrue(rule.overTimeLimit(agentTrackers));
     }
 
     @Test
     void notOverTimeLimit() {
         AgentRule rule = new AllMaxTime("rule1", "TestPlace", 2, 0.75);
-        assertFalse(rule.overTimeLimit(placeAgentStats));
+        assertFalse(rule.overTimeLimit(agentTrackers));
     }
 
     @Nested
@@ -73,7 +76,7 @@ class AllMaxTimeTest extends UnitTest {
         final int defaultTimeLimit = 5;
 
         AgentPool pool;
-        List<AgentProtocol.PlaceAgentStats> stats;
+        List<AgentTracker> stats;
 
         @Override
         @BeforeEach
@@ -132,17 +135,33 @@ class AllMaxTimeTest extends UnitTest {
             }
         }
 
-        List<AgentProtocol.PlaceAgentStats> stats() {
-            AgentProtocol.PlaceAgentStats lowerStats = new AgentProtocol.PlaceAgentStats("ToLowerPlace");
-            lowerStats.update(defaultTimeLimit); // MobileAgent-01
-            lowerStats.update(defaultTimeLimit + 1); // MobileAgent-02
-            lowerStats.update(defaultTimeLimit + 4); // MobileAgent-03
+        List<AgentTracker> stats() {
+            AgentTracker mobileAgent01 = new AgentTracker("MobileAgent-01");
+            mobileAgent01.setDirectoryEntryKey("/ToLowerPlace");
+            mobileAgent01.initTimer();
+            mobileAgent01.incrementTimer(defaultTimeLimit);
 
-            AgentProtocol.PlaceAgentStats upperStats = new AgentProtocol.PlaceAgentStats("ToUpperPlace");
-            upperStats.update(defaultTimeLimit); // MobileAgent-04
-            upperStats.update(defaultTimeLimit + 3); // MobileAgent-05
+            AgentTracker mobileAgent02 = new AgentTracker("MobileAgent-02");
+            mobileAgent02.setDirectoryEntryKey("/ToLowerPlace");
+            mobileAgent02.initTimer();
+            mobileAgent02.incrementTimer(defaultTimeLimit + 1);
 
-            return List.of(lowerStats, upperStats);
+            AgentTracker mobileAgent03 = new AgentTracker("MobileAgent-03");
+            mobileAgent03.setDirectoryEntryKey("/ToLowerPlace");
+            mobileAgent03.initTimer();
+            mobileAgent03.incrementTimer(defaultTimeLimit + 4);
+
+            AgentTracker mobileAgent04 = new AgentTracker("MobileAgent-04");
+            mobileAgent04.setDirectoryEntryKey("/ToUpperPlace");
+            mobileAgent04.initTimer();
+            mobileAgent04.incrementTimer(defaultTimeLimit);
+
+            AgentTracker mobileAgent05 = new AgentTracker("MobileAgent-05");
+            mobileAgent05.setDirectoryEntryKey("/ToUpperPlace");
+            mobileAgent05.initTimer();
+            mobileAgent05.incrementTimer(defaultTimeLimit + 3);
+
+            return List.of(mobileAgent01, mobileAgent02, mobileAgent03, mobileAgent04, mobileAgent05);
         }
     }
 }

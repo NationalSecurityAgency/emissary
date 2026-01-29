@@ -1,6 +1,6 @@
 package emissary.core.sentinel.protocols.rules;
 
-import emissary.core.sentinel.protocols.AgentProtocol.PlaceAgentStats;
+import emissary.core.sentinel.protocols.trackers.AgentTracker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +26,21 @@ public class AllMaxTime extends AgentRule {
     /**
      * Check to see if ALL places in mobile agents are over the configured time limit.
      *
-     * @param placeAgentStats the stats of a place that is currently processing
+     * @param agentTrackers the stats of a place that is currently processing
      * @return true if any places in mobile agents are over the configured time limit, false otherwise
      */
     @Override
-    protected boolean overTimeLimit(Collection<PlaceAgentStats> placeAgentStats) {
-        long minTimeInPlace = placeAgentStats.stream().mapToLong(PlaceAgentStats::getMinTimeInPlace).min().orElse(0);
-        logger.debug("Testing timeLimit for place={}, minTime={}, timeLimit={}", place, minTimeInPlace, timeLimit);
-        return minTimeInPlace >= this.timeLimit;
+    protected boolean overTimeLimit(Collection<AgentTracker> agentTrackers) {
+        logger.debug("Testing timeLimit for place={}, timeLimit={}", place, timeLimit);
+        boolean over = true;
+        for (AgentTracker agentTracker : agentTrackers) {
+            if (agentTracker.getTimer() >= timeLimit) {
+                agentTracker.flag();
+            } else {
+                over = false;
+            }
+        }
+        return over;
     }
 
 }
