@@ -13,8 +13,6 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.pool.MobileAgentFactory;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -29,23 +27,23 @@ import java.util.stream.Collectors;
  * configured rules to determine if all conditions are met. Once all rule conditions are met, then the configured action
  * will be triggered, i.e. log/notify.
  */
-public class AgentProtocol extends Protocol {
+public class AgentProtocol extends Protocol<AgentTracker> {
 
     // key: agent name, value: how long Sentinel has observed the mobile agent
     protected final Map<String, AgentTracker> trackers = new ConcurrentHashMap<>();
 
     public AgentProtocol() {}
 
-    public AgentProtocol(Configurator config) {
+    public AgentProtocol(final Configurator config) {
         super(config);
     }
 
     @Override
-    protected Rule<PlaceAgentStats> getRule(final String ruleId) throws IOException {
+    protected Rule<AgentTracker> getRule(final String ruleId) throws IOException {
         try {
             Map<String, String> map = config.findStringMatchMap(ruleId + "_");
             String rule = map.getOrDefault("RULE", AllMaxTime.class.getName());
-            return (Rule) Factory.create(rule, ruleId, validate(map.get("PLACE_MATCHER")), map.get("TIME_LIMIT_MINUTES"),
+            return (Rule<AgentTracker>) Factory.create(rule, ruleId, validate(map.get("PLACE_MATCHER")), map.get("TIME_LIMIT_MINUTES"),
                     map.get("PLACE_THRESHOLD"));
         } catch (NamespaceException e) {
             throw new IOException(e);
@@ -118,27 +116,19 @@ public class AgentProtocol extends Protocol {
     /**
      * Run the configured rules over the watched mobile-agents
      */
-    public void runRules(Map<String, AgentTracker> trackers) {
-
-        Map<String, PlaceAgentStats> placeAgentStats = generatePlaceAgentStats(trackers);
-        if (!placeAgentStats.isEmpty()) {
-            logger.debug("Running rules on agents {}", placeAgentStats);
-            if (rules.values().stream().allMatch(rule -> rule.condition(placeAgentStats.values()))) {
+    public void runRules(final Map<String, AgentTracker> agentTrackers) {
+        if (!agentTrackers.isEmpty()) {
+            logger.debug("Running rules on agents {}", agentTrackers);
+            if (rules.values().stream().allMatch(rule -> rule.condition(agentTrackers.values()))) {
                 logger.warn("Sentinel rules matched -- {}", rules.values());
-                action.trigger((Map) trackers);
+                action.trigger(agentTrackers.entrySet()
+                        .stream()
+                        .filter(e -> e.getValue().isFlagged())
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue)));
             }
         }
-    }
-
-    protected Map<String, PlaceAgentStats> generatePlaceAgentStats(Map<String, AgentTracker> trackers) {
-        Map<String, PlaceAgentStats> placeAgentStats = new ConcurrentHashMap<>();
-        for (AgentTracker tracker : trackers.values()) {
-            String placeKey = tracker.getPlaceName();
-            if (StringUtils.isNotBlank(placeKey)) {
-                placeAgentStats.put(placeKey, placeAgentStats.getOrDefault(placeKey, new PlaceAgentStats(placeKey)).update(tracker.getTimer()));
-            }
-        }
-        return placeAgentStats;
     }
 
     @Override
@@ -147,41 +137,6 @@ public class AgentProtocol extends Protocol {
                 .add("\"rules\":" + rules.values())
                 .add("\"action\":" + action)
                 .toString();
-    }
-
-    public static class PlaceAgentStats {
-
-        private final String place;
-        private int count;
-        private long maxTimeInPlace = -1;
-        private long minTimeInPlace = -1;
-
-        public PlaceAgentStats(String place) {
-            this.place = place;
-        }
-
-        public String getPlace() {
-            return place;
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-        public long getMaxTimeInPlace() {
-            return maxTimeInPlace;
-        }
-
-        public long getMinTimeInPlace() {
-            return minTimeInPlace;
-        }
-
-        public PlaceAgentStats update(long timer) {
-            this.count++;
-            this.minTimeInPlace = this.minTimeInPlace < 0 ? timer : Math.min(this.minTimeInPlace, timer);
-            this.maxTimeInPlace = Math.max(this.maxTimeInPlace, timer);
-            return this;
-        }
     }
 
 }

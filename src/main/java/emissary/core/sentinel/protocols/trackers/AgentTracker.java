@@ -14,6 +14,7 @@ public class AgentTracker implements Tracker, Comparable<AgentTracker> {
     private String shortName;
     private String directoryEntryKey;
     private long timer = -1;
+    private boolean flagged = false;
 
     public AgentTracker(String agentName) {
         this.agentName = agentName;
@@ -70,18 +71,31 @@ public class AgentTracker implements Tracker, Comparable<AgentTracker> {
         this.timer = -1;
     }
 
+    public void initTimer() {
+        this.timer = 0;
+    }
+
     public void incrementTimer(long time) {
         if (this.timer == -1) {
-            this.timer = 0;
+            initTimer();
         } else {
             this.timer += time;
         }
+    }
+
+    public boolean isFlagged() {
+        return flagged;
+    }
+
+    public void flag() {
+        this.flagged = true;
     }
 
     public void clear() {
         this.agentId = "";
         this.shortName = "";
         this.directoryEntryKey = "";
+        this.flagged = false;
         resetTimer();
     }
 
