@@ -118,7 +118,7 @@
     <plugin.maven-assembly.version>3.8.0</plugin.maven-assembly.version>
     <plugin.maven-checkstyle.version>3.6.0</plugin.maven-checkstyle.version>
     <plugin.maven-clean.version>3.5.0</plugin.maven-clean.version>
-    <plugin.maven-compiler.version>3.14.1</plugin.maven-compiler.version>
+    <plugin.maven-compiler.version>3.15.0</plugin.maven-compiler.version>
     <plugin.maven-dependency.version>3.9.0</plugin.maven-dependency.version>
     <plugin.maven-deploy.version>3.1.4</plugin.maven-deploy.version>
     <plugin.maven-enforcer.version>3.6.2</plugin.maven-enforcer.version>
