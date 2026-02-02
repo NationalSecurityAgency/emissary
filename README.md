@@ -1,6 +1,6 @@
 ![Emissary Dark Knight - some code just wants to watch the core burn](emissary-knight.png) 
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/gov.nsa.emissary/emissary/badge.svg)](https://maven-badges.herokuapp.com/maven-central/gov.nsa.emissary/emissary) [![Java CI with Maven](https://github.com/NationalSecurityAgency/emissary/actions/workflows/maven-ci.yml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/maven-ci.yml) [![CodeQL](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml) [![Lint Codebase](https://github.com/NationalSecurityAgency/emissary/actions/workflows/linter.yaml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/linter.yaml)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Sonatype Central](https://maven-badges.sml.io/sonatype-central/gov.nsa.emissary/emissary/badge.svg)](https://maven-badges.sml.io/sonatype-central/gov.nsa.emissary/emissary) [![Java CI with Maven](https://github.com/NationalSecurityAgency/emissary/actions/workflows/maven-ci.yml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/maven-ci.yml) [![CodeQL](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml) [![Lint Codebase](https://github.com/NationalSecurityAgency/emissary/actions/workflows/linter.yaml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/linter.yaml)
 
 Table of Contents
 =================
@@ -113,8 +113,20 @@ is an example run.
 ```
 
 Without further configuration, it will start on http://localhost:8001.  If you browse to that 
-url, you will need to enter the username and password defined in target/config/jetty-users.properties,
-which is emissary and emissary123.
+url, you will need to enter the username and password defined in target/config/jetty-users.properties.
+
+> [!CAUTION]
+> Security Notice: Default Credentials
+> 
+> ***Change Default Credentials Immediately*** The usernames and passwords listed below are for demonstration
+> purposes only. Using default credentials in a production environment poses a significant security risk. 
+> 
+> **Action Required**: Update your `jetty-users.properties` file with strong, unique passwords before deploying.
+>
+>| Default Username | Default Password |
+>|------------------|------------------|
+>| emissary         | emissary123      |
+>| console          | console123       |
 
 The default PickUpPlace is configured to read files from _target/data/InputData_.  If you copy
 files into that directory, you will see Emissary process them.  Keep in mind, only toUpper and toLower are
@@ -315,6 +327,15 @@ Run it with
 ```
 
 #### Running server with SSL
+
+> [!CAUTION]
+> Security Notice: SSL/TLS Configuration 
+>
+>The **demo/dev** profile disables SSL verification by default to reduce setup complexity for local evaluation.
+>
+> **For multi-host or production deployments:**
+> * **Enable TLS:** Operators are responsible for ensuring all traffic is encrypted.
+> * **mTLS:** Implement Mutual TLS where appropriate to verify the identity of both clients and servers.
 
 The keystore and keystore password are in the [emissary.client.EmissaryClient-SSL.cfg](src/main/config/emissary.client.EmissaryClient-SSL.cfg) 
 file.  Included and configured by default is a sample keystore you can use for testing this functionality. We do not 

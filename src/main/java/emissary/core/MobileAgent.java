@@ -123,6 +123,14 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     }
 
     /**
+     * Get the mobile agent thread id
+     */
+    @Override
+    public long getThreadId() {
+        return this.thread.getId();
+    }
+
+    /**
      * Runnable interface, starts this agent running on its own thread. It will wait unless it has a payload and a place to
      * start with. You can set both of these items at once using the <em>go</em> method, which will then notify us to come
      * out of the wait state and process the payload
@@ -584,6 +592,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     /**
      * Get index in typeSet for specified string, 0 if not found
      */
+    @SuppressWarnings("EnumOrdinal")
     public static int typeLookup(final String s) {
         Stage stage = Stage.getByName(s);
         int idx = (stage == null) ? 0 : stage.ordinal();

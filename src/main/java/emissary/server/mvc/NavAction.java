@@ -8,15 +8,20 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.glassfish.jersey.server.mvc.Template;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Path("")
 // context is emissary
 public class NavAction {
+
+    private static final Logger logger = LoggerFactory.getLogger(NavAction.class);
 
     EmissaryNav nav;
 
@@ -38,6 +43,8 @@ public class NavAction {
     }
 
     public static class EmissaryNav {
+
+        private static final Pattern VALID_LINK = Pattern.compile("^(https?:/)?/.*");
 
         String appName;
         String appVersion;
@@ -77,7 +84,18 @@ public class NavAction {
         }
 
         protected static List<NavItem> convert(Map<String, String> map) {
-            return map.entrySet().stream().map(e -> new NavItem(e.getKey(), e.getValue())).collect(Collectors.toList());
+            return map.entrySet().stream()
+                    .filter(e -> isValidLink(e.getValue()))
+                    .map(e -> new NavItem(e.getKey(), e.getValue()))
+                    .collect(Collectors.toList());
+        }
+
+        private static boolean isValidLink(String link) {
+            if (!VALID_LINK.matcher(link).matches()) {
+                logger.warn("Skipping invalid navigation link '{}'", link);
+                return false;
+            }
+            return true;
         }
 
         public static class NavItem {

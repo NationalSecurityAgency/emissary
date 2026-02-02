@@ -586,6 +586,23 @@ class ExecutrixTest extends UnitTest {
         baosOut.reset();
     }
 
+    @Test
+    void testCleanPlaceName() {
+        String expected = "PLACE_NAME_1";
+        assertEquals(expected, Executrix.cleanPlaceName(expected));
+        assertEquals(expected, Executrix.cleanPlaceName("PLACE NAME 1"));
+        assertEquals(expected, Executrix.cleanPlaceName("PLACE(NAME)1"));
+        assertEquals(expected, Executrix.cleanPlaceName("PLACE/NAME/1"));
+        assertEquals(expected, Executrix.cleanPlaceName("PLACE.NAME.1"));
+        assertEquals(expected, Executrix.cleanPlaceName("PLACE#NAME$1"));
+        assertEquals(expected, Executrix.cleanPlaceName("PLACE\\NAME\\1"));
+        assertEquals(expected, Executrix.cleanPlaceName("PLACE\"NAME\"1"));
+        assertEquals(expected, Executrix.cleanPlaceName("PLACE;NAME'1"));
+        assertEquals(expected, Executrix.cleanPlaceName("PLACE^NAME@1"));
+
+        assertEquals("PLACE-NAME-1", Executrix.cleanPlaceName("PLACE-NAME-1"));
+    }
+
     private static void readAndNuke(final String name) throws IOException {
         final File f = new File(name);
         assertTrue(f.exists(), "File " + name + " must exist");

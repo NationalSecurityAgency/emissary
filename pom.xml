@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>gov.nsa.emissary</groupId>
   <artifactId>emissary</artifactId>
-  <version>8.38.0-SNAPSHOT</version>
+  <version>8.40.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Emissary</name>
   <description>Distributed P2P Data-driven Workflow Framework</description>
@@ -58,8 +58,9 @@
     <dep.commons-exec.version>1.6.0</dep.commons-exec.version>
     <dep.commons-io.version>2.21.0</dep.commons-io.version>
     <dep.commons-lang.version>3.20.0</dep.commons-lang.version>
-    <dep.commons-pool.version>2.13.0</dep.commons-pool.version>
-    <dep.dropwizard.metrics.version>4.2.37</dep.dropwizard.metrics.version>
+    <dep.commons-pool.version>2.13.1</dep.commons-pool.version>
+    <dep.dropwizard.metrics.version>4.2.38</dep.dropwizard.metrics.version>
+    <!-- Error Prone 2.32+ requires JDK17-->
     <dep.errorprone.version>2.23.0</dep.errorprone.version>
     <dep.grpc.version>1.65.0</dep.grpc.version>
     <dep.gson.version>2.13.2</dep.gson.version>
@@ -79,15 +80,15 @@
     <dep.jersey.version>3.1.3</dep.jersey.version>
     <dep.jetty-jakarta-servlet-api.version>5.0.2</dep.jetty-jakarta-servlet-api.version>
     <dep.jetty.version>11.0.26</dep.jetty.version>
-    <dep.junit-jupiter.version>5.14.1</dep.junit-jupiter.version>
+    <dep.junit-jupiter.version>5.14.2</dep.junit-jupiter.version>
     <dep.junit-platform.version>1.12.2</dep.junit-platform.version>
-    <dep.logback.version>1.5.23</dep.logback.version>
+    <dep.logback.version>1.5.26</dep.logback.version>
     <dep.logstash-logback-encoder.version>7.4</dep.logstash-logback-encoder.version>
     <dep.mockito.version>5.21.0</dep.mockito.version>
     <dep.netty.version>4.2.9.Final</dep.netty.version>
     <dep.opentest4j.version>1.3.0</dep.opentest4j.version>
     <dep.picocli.version>4.7.7</dep.picocli.version>
-    <dep.proto-google-common-protos.version>2.63.2</dep.proto-google-common-protos.version>
+    <dep.proto-google-common-protos.version>2.65.0</dep.proto-google-common-protos.version>
     <dep.protobuf.version>3.25.5</dep.protobuf.version>
     <dep.resilience4j.version>1.7.1</dep.resilience4j.version>
     <dep.slf4j.version>2.0.17</dep.slf4j.version>
@@ -106,6 +107,7 @@
     <maven.javadoc.failOnWarnings>false</maven.javadoc.failOnWarnings>
     <maven.min-version>3.6.3</maven.min-version>
     <plugin.build-helper-maven.version>3.6.1</plugin.build-helper-maven.version>
+    <plugin.central-publishing-maven.version>0.10.0</plugin.central-publishing-maven.version>
     <plugin.cyclonedx-maven.version>2.9.1</plugin.cyclonedx-maven.version>
     <plugin.duplicate-finder-maven.version>1.5.1</plugin.duplicate-finder-maven.version>
     <plugin.exec-maven.version>3.6.3</plugin.exec-maven.version>
@@ -134,13 +136,12 @@
     <plugin.maven-site.version>3.21.0</plugin.maven-site.version>
     <plugin.maven-source.version>3.4.0</plugin.maven-source.version>
     <plugin.maven-surefire.version>3.5.4</plugin.maven-surefire.version>
-    <plugin.nexus-staging-maven.version>1.7.0</plugin.nexus-staging-maven.version>
     <plugin.protobuf-maven.version>0.6.1</plugin.protobuf-maven.version>
     <plugin.restrict-imports-enforcer-rule.version>3.0.0</plugin.restrict-imports-enforcer-rule.version>
     <plugin.sonar-maven.version>3.11.0.3922</plugin.sonar-maven.version>
     <plugin.sortpom-maven.version>4.0.0</plugin.sortpom-maven.version>
     <plugin.takari-lifecycle>2.3.2</plugin.takari-lifecycle>
-    <plugin.versions-maven.version>2.20.1</plugin.versions-maven.version>
+    <plugin.versions-maven.version>2.21.0</plugin.versions-maven.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- The following properties are used to ignore certain SonarQube rules. -->
@@ -1096,7 +1097,6 @@
             <format>xml</format>
             <includeTests>true</includeTests>
             <minimumTokens>100</minimumTokens>
-            <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
             <targetJdk>${maven.compiler.target}</targetJdk>
             <rulesets>
               <ruleset>contrib/pmd/maven-pmd-plugin-default.xml</ruleset>
@@ -1698,6 +1698,16 @@
     </profile>
     <profile>
       <id>oss</id>
+      <distributionManagement>
+        <repository>
+          <id>central</id>
+          <url>https://central.sonatype.com/api/v1/publish</url>
+        </repository>
+        <snapshotRepository>
+          <id>central</id>
+          <url>https://central.sonatype.com/api/v1/publish</url>
+        </snapshotRepository>
+      </distributionManagement>
       <build>
         <plugins>
           <plugin>
@@ -1715,14 +1725,13 @@
             </executions>
           </plugin>
           <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>${plugin.nexus-staging-maven.version}</version>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>${plugin.central-publishing-maven.version}</version>
             <extensions>true</extensions>
             <configuration>
-              <serverId>ossrh</serverId>
-              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+              <serverId>central</serverId>
+              <autoPublish>true</autoPublish>
             </configuration>
           </plugin>
         </plugins>

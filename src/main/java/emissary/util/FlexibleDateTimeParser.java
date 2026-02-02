@@ -23,6 +23,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -297,7 +298,8 @@ public final class FlexibleDateTimeParser {
     @Nullable
     private static DateTimeFormatter getFormatter(ConfigEntry entry) {
         try {
-            return new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(entry.getValue()).toFormatter();
+            return new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(entry.getValue())
+                    .toFormatter(Locale.getDefault());
         } catch (IllegalArgumentException e) {
             // log the bad one and move on because there could be other possible patterns
             logger.error("Error parsing pattern [{}]: {}", entry.getValue(), e.getLocalizedMessage());

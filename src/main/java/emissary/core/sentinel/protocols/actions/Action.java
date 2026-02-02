@@ -1,5 +1,6 @@
 package emissary.core.sentinel.protocols.actions;
 
+import emissary.core.sentinel.protocols.trackers.AgentTracker;
 import emissary.core.sentinel.protocols.trackers.Tracker;
 
 import org.slf4j.Logger;
@@ -30,4 +31,11 @@ public abstract class Action {
         return "\"" + getClass().getSimpleName() + "\"";
     }
 
+    protected List<AgentTracker> toAgentTrackers(final Map<String, Tracker> trackers) {
+        return trackers.values().stream()
+                .filter(AgentTracker.class::isInstance)
+                .map(t -> (AgentTracker) t)
+                .sorted()
+                .collect(Collectors.toList());
+    }
 }

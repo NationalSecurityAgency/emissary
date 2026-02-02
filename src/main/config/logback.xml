@@ -21,6 +21,26 @@
     </encoder>
   </appender>
 
+  <!-- Enable sentinel stack trace logging by creating an environment variable of "LOG_SENTINEL=true" -->
+  <if condition="&quot;${LOG_SENTINEL}&quot;.equals(&quot;true&quot;)">
+    <then>
+      <appender name="SENTINEL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder class="ch.qos.logback.classic.encoder.JsonEncoder"/>
+        <file>${PROJECT_BASE}/logs/sentinel-${emissary.node.name}-${emissary.node.port}.json</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+          <fileNamePattern>${PROJECT_BASE}/logs/sentinel-${emissary.node.name}-${emissary.node.port}.%d{yyyy-MM-dd-HH}.json</fileNamePattern>
+        </rollingPolicy>
+      </appender>
+
+      <logger name="sentinel" level="INFO" additivity="false">
+        <appender-ref ref="SENTINEL_FILE" />
+      </logger>
+    </then>
+    <else>
+      <logger name="sentinel" level="INFO" />
+    </else>
+  </if>
+
   <!-- Enable output metrics logging by creating an environment variable of "LOG_OBJECT_TRACE=true" -->
   <if condition="&quot;${LOG_OBJECT_TRACE}&quot;.equals(&quot;true&quot;)">
     <then>

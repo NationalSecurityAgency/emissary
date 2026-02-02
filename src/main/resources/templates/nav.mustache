@@ -8,12 +8,12 @@
             <ul class="navbar-nav me-auto">
                 {{#navItems}}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{link}}">{{display}}</a>
+                        <a class="nav-link" href="{{link}}" rel="noopener noreferrer">{{display}}</a>
                     </li>
                 {{/navItems}}
                 {{#navButtons}}
                     <li class="nav-item">
-                        <a href="{{link}}" class="btn btn-danger navbar-btn" style="margin: 2px 2px 0px 0px;" onclick="return confirm('Are you sure?')">{{display}}</a>
+                        <a href="{{link}}" rel="noopener noreferrer" class="btn btn-danger navbar-btn" style="margin: 2px 2px 0px 0px;" onclick="return confirm('Are you sure?')">{{display}}</a>
                     </li>
                 {{/navButtons}}
             </ul>
