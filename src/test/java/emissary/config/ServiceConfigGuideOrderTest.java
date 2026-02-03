@@ -142,30 +142,31 @@ class ServiceConfigGuideOrderTest extends UnitTest {
     class MultipleMergeTests {
 
         @Test
-        @DisplayName("Sequential merges each preserve their internal order")
+        @DisplayName("Sequential merges preserve order with override semantics")
         void testSequentialMergesPreserveOrder() throws IOException {
             String baseConfig = "BASE_KEY = baseValue\n";
-            String merge1Config = "TEST_KEY = first1\n" +
-                    "TEST_KEY = first2\n";
-            String merge2Config = "TEST_KEY = second1\n" +
-                    "TEST_KEY = second2\n";
+            String earlierMerge = "TEST_KEY = earlier1\n" +
+                    "TEST_KEY = earlier2\n";
+            String laterMerge = "TEST_KEY = later1\n" +
+                    "TEST_KEY = later2\n";
 
             ServiceConfigGuide baseGuide = new ServiceConfigGuide(toStream(baseConfig));
-            ServiceConfigGuide merge1Guide = new ServiceConfigGuide(toStream(merge1Config));
-            ServiceConfigGuide merge2Guide = new ServiceConfigGuide(toStream(merge2Config));
+            ServiceConfigGuide earlierGuide = new ServiceConfigGuide(toStream(earlierMerge));
+            ServiceConfigGuide laterGuide = new ServiceConfigGuide(toStream(laterMerge));
 
-            baseGuide.merge(merge1Guide);
-            baseGuide.merge(merge2Guide);
+            baseGuide.merge(earlierGuide);
+            baseGuide.merge(laterGuide);
 
             List<String> entries = baseGuide.findEntries(KEY);
 
             assertEquals(4, entries.size(), "Should have 4 entries total");
 
-            // Second merge goes to front but maintains internal order
-            assertEquals("second1", entries.get(0), "Latest merge first: second1");
-            assertEquals("second2", entries.get(1), "Latest merge order: second2");
-            assertEquals("first1", entries.get(2), "Earlier merge next: first1");
-            assertEquals("first2", entries.get(3), "Earlier merge order: first2");
+            // Later merges prepend for override semantics (findStringEntry returns first match)
+            // This is INTENTIONAL: later config should override earlier config
+            assertEquals("later1", entries.get(0), "Most recent merge has priority: later1");
+            assertEquals("later2", entries.get(1), "Recent merge maintains order: later2");
+            assertEquals("earlier1", entries.get(2), "Earlier merge follows: earlier1");
+            assertEquals("earlier2", entries.get(3), "Earlier merge maintains order: earlier2");
         }
     }
 
