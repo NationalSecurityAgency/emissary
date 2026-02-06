@@ -22,6 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Set env
         run: |
@@ -43,6 +46,14 @@ jobs:
         run: |
           echo "No commits specified to cherry pick"
           exit 1
+
+      - name: Check for valid commit(s)
+        if: ${{ env.CHERRYPICK_COMMITS != '' }}
+        run: |
+          if [[ ! "${{ env.CHERRYPICK_COMMITS }}" =~ ^([0-9a-f]{7,40})(\s+[0-9a-f]{7,40})*$ ]]; then
+            echo "Invalid commits to cherry-pick: must contain 7- to 40-character hexadecimal SHA separated by a single space."
+            exit 1
+          fi
 
       - name: Checkout repo
         uses: actions/checkout@v4
