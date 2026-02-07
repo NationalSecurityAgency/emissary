@@ -1192,19 +1192,43 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public void merge(final Configurator other) throws IOException {
-        int i = 1;
-
         // First handle the remove entries from "other"
         if (other instanceof ServiceConfigGuide) {
             for (final ConfigEntry entry : ((ServiceConfigGuide) other).getRemoveEntries()) {
-                handleNewEntry(entry.getKey(), entry.getValue(), "!=", "<merge>", i++, true);
+                // Process remove entries with the != operator
+                final String parmName = handleReplacements(entry.getKey(), "<merge>", 0);
+                final String sval = handleReplacements(entry.getValue(), "<merge>", 0);
+                final ConfigEntry anEntry = new ConfigEntry(parmName, sval);
+
+                if ("*".equals(sval)) {
+                    removeAllEntries(parmName);
+                    this.values.remove(parmName);
+                } else {
+                    removeEntry(anEntry);
+                    if (sval.equals(this.values.get(parmName))) {
+                        this.values.remove(parmName);
+                    }
+                }
+                this.removeParameters.add(anEntry);
             }
         }
 
-        // Add in new entries from "other" at the top of the list
+        // Collect all entries to merge first, then insert in batch
+        // This preserves the order of entries from the source configuration
+        // Using addAll(0, collection) inserts all elements at position 0 in iteration order
+        final List<ConfigEntry> entriesToMerge = new ArrayList<>();
         for (final ConfigEntry entry : other.getEntries()) {
-            handleNewEntry(entry.getKey(), entry.getValue(), "=", "<merge>", i++, true);
+            final String parmName = handleReplacements(entry.getKey(), "<merge>", 0);
+            final String sval = handleReplacements(entry.getValue(), "<merge>", 0);
+            final ConfigEntry anEntry = new ConfigEntry(parmName, sval);
+            entriesToMerge.add(anEntry);
+
+            // Update the values map with the last value for substitution
+            this.values.put(parmName, sval);
         }
+
+        // Insert all merged entries at position 0, preserving their relative order
+        this.serviceParameters.addAll(0, entriesToMerge);
     }
 
     /**
