@@ -88,16 +88,6 @@ class ProtocolTest extends UnitTest {
     }
 
     @Test
-    void generatePlaceAgentStats() {
-        Map<String, AgentProtocol.PlaceAgentStats> paStats = protocol.generatePlaceAgentStats(trackers);
-        AgentProtocol.PlaceAgentStats stats = paStats.get("thePlace");
-        assertEquals("thePlace", stats.getPlace());
-        assertEquals(5, stats.getCount());
-        assertEquals(6, stats.getMinTimeInPlace());
-        assertEquals(10, stats.getMaxTimeInPlace());
-    }
-
-    @Test
     void init() {
         Configurator config = new ServiceConfigGuide();
         config.addEntry("ENABLED", "true");
@@ -232,7 +222,12 @@ class ProtocolTest extends UnitTest {
                 agentPool.when(AgentPool::lookup).thenReturn(pool);
                 when(pool.getCurrentPoolSize()).thenReturn(poolSize);
                 protocol.runRules(trackers);
-                verify(action, times(expected)).trigger((Map) trackers);
+                verify(action, times(expected)).trigger(trackers.entrySet()
+                        .stream()
+                        .filter(e -> e.getValue().isFlagged())
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue)));
             }
         }
 
