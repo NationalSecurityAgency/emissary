@@ -22,6 +22,8 @@ import emissary.spi.ObjectTracing;
 import emissary.spi.ObjectTracingService;
 import emissary.util.ClassComparator;
 import emissary.util.TimeUtil;
+import emissary.util.io.DiskSpaceListener;
+import emissary.util.io.DiskSpaceMonitor;
 import emissary.util.shell.Executrix;
 
 import jakarta.annotation.Nullable;
@@ -31,6 +33,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -81,6 +86,10 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
     protected Set<String> alwaysCopyMetadataVals = new HashSet<>();
 
     protected boolean useObjectTraceLogger = false;
+
+    // Disk space monitoring (optional)
+    @Nullable
+    protected DiskSpaceMonitor diskSpaceMonitor = null;
 
     public PickUpPlace() throws IOException {
         super();
@@ -200,6 +209,172 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
         // Whether or not to use the objectTrace logger
         useObjectTraceLogger = configG.findBooleanEntry("USE_OBJECT_TRACE_LOGGER", useObjectTraceLogger);
+
+        // Configure disk space monitoring if enabled
+        configureDiskSpaceMonitoring();
+    }
+
+    /**
+     * Configures disk space monitoring if enabled in the configuration. When disk space exceeds the configured threshold,
+     * {@link #onDiskSpaceExceeded(Path, double, long)} will be called. When disk space returns below the resume threshold,
+     * {@link #onDiskSpaceRecovered(Path, double, long)} will be called.
+     * <p>
+     * Configuration parameters:
+     * <ul>
+     * <li>DISK_SPACE_MONITORING_ENABLED: Enable disk space monitoring (default: false)</li>
+     * <li>DISK_SPACE_CHECK_INTERVAL_SECONDS: Check interval in seconds (default: 30)</li>
+     * <li>DISK_SPACE_PAUSE_THRESHOLD_PERCENT: Pause when disk usage exceeds this percentage (0-100)</li>
+     * <li>DISK_SPACE_RESUME_THRESHOLD_PERCENT: Resume when disk usage falls below this percentage (0-100)</li>
+     * <li>DISK_SPACE_PAUSE_THRESHOLD_BYTES: Pause when free space falls below this byte count (alternative to percent)</li>
+     * <li>DISK_SPACE_RESUME_THRESHOLD_BYTES: Resume when free space exceeds this byte count (alternative to percent)</li>
+     * <li>DISK_SPACE_MONITORED_PATH: Path to monitor (default: OUTPUT_DATA or DONE_DATA)</li>
+     * </ul>
+     */
+    protected void configureDiskSpaceMonitoring() {
+        boolean enabled = configG.findBooleanEntry("DISK_SPACE_MONITORING_ENABLED", false);
+
+        if (!enabled) {
+            logger.debug("Disk space monitoring is disabled");
+            return;
+        }
+
+        // Determine path to monitor - try configured path first, then OUTPUT_DATA, then DONE_DATA
+        String monitoredPathStr = configG.findStringEntry("DISK_SPACE_MONITORED_PATH", null);
+        if (monitoredPathStr == null) {
+            monitoredPathStr = configG.findStringEntry("OUTPUT_DATA", null);
+        }
+        if (monitoredPathStr == null) {
+            monitoredPathStr = doneArea;
+        }
+
+        if (monitoredPathStr == null) {
+            logger.warn("No path configured for disk space monitoring (tried DISK_SPACE_MONITORED_PATH, OUTPUT_DATA, DONE_DATA)");
+            return;
+        }
+
+        Path monitoredPath = Paths.get(monitoredPathStr);
+        if (!Files.exists(monitoredPath)) {
+            logger.warn("Monitored path {} does not exist, disk space monitoring disabled", monitoredPath);
+            return;
+        }
+
+        long checkInterval = configG.findLongEntry("DISK_SPACE_CHECK_INTERVAL_SECONDS", 30L);
+
+        // Get thresholds - percentage takes precedence over bytes
+        // Use -1 as sentinel value to detect if not configured
+        double pausePercent = configG.findDoubleEntry("DISK_SPACE_PAUSE_THRESHOLD_PERCENT", -1.0);
+        double resumePercent = configG.findDoubleEntry("DISK_SPACE_RESUME_THRESHOLD_PERCENT", -1.0);
+        long pauseBytes = configG.findSizeEntry("DISK_SPACE_PAUSE_THRESHOLD_BYTES", -1L);
+        long resumeBytes = configG.findSizeEntry("DISK_SPACE_RESUME_THRESHOLD_BYTES", -1L);
+
+        // Validate configuration
+        boolean hasPercentConfig = pausePercent >= 0;
+        boolean hasBytesConfig = pauseBytes >= 0;
+
+        if (!hasPercentConfig && !hasBytesConfig) {
+            logger.warn("No disk space thresholds configured, monitoring disabled");
+            return;
+        }
+
+        if (hasPercentConfig && hasBytesConfig) {
+            logger.warn("Both percentage and byte thresholds configured, using percentage");
+        }
+
+        try {
+            DiskSpaceMonitor.Builder builder = new DiskSpaceMonitor.Builder(monitoredPath)
+                    .checkInterval(checkInterval);
+
+            if (hasPercentConfig) {
+                builder.pauseThresholdPercent(pausePercent);
+                if (resumePercent >= 0) {
+                    builder.resumeThresholdPercent(resumePercent);
+                } else {
+                    // Set a sensible default: 5% lower than pause threshold to avoid oscillation
+                    double defaultResumePercent = Math.max(0, pausePercent - 5.0);
+                    logger.warn("DISK_SPACE_RESUME_THRESHOLD_PERCENT not set, using {}% (pause threshold - 5%)", defaultResumePercent);
+                    builder.resumeThresholdPercent(defaultResumePercent);
+                }
+            } else {
+                builder.pauseThresholdBytes(pauseBytes);
+                if (resumeBytes >= 0) {
+                    builder.resumeThresholdBytes(resumeBytes);
+                } else {
+                    // Set a sensible default: 50% more than pause threshold to allow recovery
+                    long defaultResumeBytes = (long) (pauseBytes * 1.5);
+                    logger.warn("DISK_SPACE_RESUME_THRESHOLD_BYTES not set, using {} bytes (pause threshold * 1.5)", defaultResumeBytes);
+                    builder.resumeThresholdBytes(defaultResumeBytes);
+                }
+            }
+
+            diskSpaceMonitor = builder.build();
+            diskSpaceMonitor.addListener(new DiskSpaceListener() {
+                @Override
+                public void onDiskSpaceExceeded(Path path, double usedPercent, long freeBytes) {
+                    logger.warn("Disk space threshold exceeded for {}: {}% used, {} bytes free",
+                            path, String.format("%.2f", usedPercent), freeBytes);
+                    PickUpPlace.this.onDiskSpaceExceeded(path, usedPercent, freeBytes);
+                }
+
+                @Override
+                public void onDiskSpaceRecovered(Path path, double usedPercent, long freeBytes) {
+                    logger.info("Disk space recovered for {}: {}% used, {} bytes free",
+                            path, String.format("%.2f", usedPercent), freeBytes);
+                    PickUpPlace.this.onDiskSpaceRecovered(path, usedPercent, freeBytes);
+                }
+            });
+
+            logger.info("Disk space monitoring configured for {} with check interval {} seconds",
+                    monitoredPath, checkInterval);
+
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid disk space monitoring configuration: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Called when disk space threshold is exceeded. Subclasses should override this to take appropriate action, such as
+     * pausing pickup operations.
+     *
+     * @param path the filesystem path being monitored
+     * @param usedPercent the current disk usage as a percentage (0-100)
+     * @param freeBytes the current number of free bytes available
+     */
+    protected void onDiskSpaceExceeded(Path path, double usedPercent, long freeBytes) {
+        // Default implementation does nothing - subclasses should override
+        logger.debug("Disk space exceeded callback - subclass should override to take action");
+    }
+
+    /**
+     * Called when disk space has recovered below the resume threshold. Subclasses should override this to resume operations
+     * if they were paused.
+     *
+     * @param path the filesystem path being monitored
+     * @param usedPercent the current disk usage as a percentage (0-100)
+     * @param freeBytes the current number of free bytes available
+     */
+    protected void onDiskSpaceRecovered(Path path, double usedPercent, long freeBytes) {
+        // Default implementation does nothing - subclasses should override
+        logger.debug("Disk space recovered callback - subclass should override to take action");
+    }
+
+    /**
+     * Starts disk space monitoring if configured. Should be called when the pickup place is ready to start operations.
+     */
+    protected void startDiskSpaceMonitoring() {
+        if (diskSpaceMonitor != null) {
+            diskSpaceMonitor.start();
+            logger.info("Disk space monitoring started");
+        }
+    }
+
+    /**
+     * Stops disk space monitoring if configured. Should be called during shutdown.
+     */
+    protected void stopDiskSpaceMonitoring() {
+        if (diskSpaceMonitor != null) {
+            logger.debug("Stopping disk space monitor");
+            diskSpaceMonitor.stop();
+        }
     }
 
     /**
