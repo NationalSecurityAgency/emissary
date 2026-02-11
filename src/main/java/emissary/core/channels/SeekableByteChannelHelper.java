@@ -19,6 +19,9 @@ import java.nio.file.Path;
 public final class SeekableByteChannelHelper {
     private static final Logger logger = LoggerFactory.getLogger(SeekableByteChannelHelper.class);
 
+    // buffer size for skipping in an input stream
+    private static final int BUFFER_SIZE = 8192;
+
     /** Channel factory backed by an empty byte array. Used for situations when a BDO should have its payload discarded. */
     public static final SeekableByteChannelFactory EMPTY_CHANNEL_FACTORY = memory(new byte[0]);
 
@@ -156,7 +159,7 @@ public final class SeekableByteChannelHelper {
         Validate.isTrue(bytesToSkip > -1, "Required: bytesToSkip > -1");
 
         // Skip to position if we're not already there
-        IOUtils.skipFully(inputStream, bytesToSkip);
+        skipFully(inputStream, bytesToSkip);
 
         // Read direct into buffer's array if possible, otherwise copy through an internal buffer
         final int bytesToRead = byteBuffer.remaining();
@@ -174,5 +177,36 @@ public final class SeekableByteChannelHelper {
             }
             return bytesRead;
         }
+    }
+
+    /**
+     * Skips the specified number of bytes in an input stream
+     * <p>
+     * This method can be more efficient than {@link IOUtils#skipFully(InputStream, long)} because it uses a buffer to read
+     * and discard data in larger chunks, reducing the number of IO operations required to skip the desired number of bytes.
+     *
+     * @param inputStream the input stream to skip bytes from
+     * @param bytesToSkip the number of bytes to skip
+     * @throws IOException if an IO error occurs or if the end of stream is reached before the specified number of bytes are
+     *         skipped.
+     */
+    private static void skipFully(final InputStream inputStream, final long bytesToSkip) throws IOException {
+        long remaining = bytesToSkip;
+        byte[] skipBuffer = new byte[BUFFER_SIZE];
+
+        while (remaining > 0) {
+            long toSkip = Math.min(remaining, BUFFER_SIZE);
+            long skipped = inputStream.skip(toSkip);
+            if (skipped == 0) {
+                // If skp return 0, read into the buffer to force the stream to advance
+                int read = inputStream.read(skipBuffer, 0, (int) toSkip);
+                if (read < 0) {
+                    throw new IOException("Unexpected end of stream");
+                }
+                skipped = read;
+            }
+            remaining -= skipped;
+        }
+
     }
 }
