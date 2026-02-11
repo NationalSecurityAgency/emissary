@@ -11,6 +11,7 @@ public class AgentTracker implements Tracker, Comparable<AgentTracker> {
 
     private final String agentName;
     private String agentId;
+    private String bundleFileName;
     private String shortName;
     private String directoryEntryKey;
     private long timer = -1;
@@ -34,7 +35,7 @@ public class AgentTracker implements Tracker, Comparable<AgentTracker> {
         } else {
             this.agentId = agentId;
             if (Strings.CS.contains(agentId, "Agent-")) {
-                this.shortName = getShortName(agentId);
+                this.bundleFileName = getBundleFileName(agentId);
             }
         }
     }
@@ -43,7 +44,15 @@ public class AgentTracker implements Tracker, Comparable<AgentTracker> {
         return shortName;
     }
 
-    public static String getShortName(String agentId) {
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
+    public String getBundleFileName() {
+        return bundleFileName;
+    }
+
+    public static String getBundleFileName(String agentId) {
         return StringUtils.substringAfter(StringUtils.substringAfter(agentId, "Agent-"), "-");
     }
 
@@ -94,6 +103,7 @@ public class AgentTracker implements Tracker, Comparable<AgentTracker> {
     public void clear() {
         this.agentId = "";
         this.shortName = "";
+        this.bundleFileName = "";
         this.directoryEntryKey = "";
         this.flagged = false;
         resetTimer();
@@ -121,6 +131,7 @@ public class AgentTracker implements Tracker, Comparable<AgentTracker> {
                 .append(getAgentName(), that.getAgentName())
                 .append(getAgentId(), that.getAgentId())
                 .append(getShortName(), that.getShortName())
+                .append(getBundleFileName(), that.getBundleFileName())
                 .append(getDirectoryEntryKey(), that.getDirectoryEntryKey())
                 .isEquals();
     }
@@ -131,6 +142,7 @@ public class AgentTracker implements Tracker, Comparable<AgentTracker> {
                 .append(getAgentName())
                 .append(getAgentId())
                 .append(getShortName())
+                .append(getBundleFileName())
                 .append(getDirectoryEntryKey())
                 .append(getTimer())
                 .toHashCode();
@@ -142,6 +154,7 @@ public class AgentTracker implements Tracker, Comparable<AgentTracker> {
                 .add("\"agentName\":\"" + agentName + "\"")
                 .add("\"directoryEntry\":\"" + directoryEntryKey + "\"")
                 .add("\"shortName\":\"" + shortName + "\"")
+                .add("\"bundleFileName\":\"" + bundleFileName + "\"")
                 .add("\"timeInMinutes\":" + timer)
                 .toString();
     }

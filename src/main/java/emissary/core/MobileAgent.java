@@ -157,7 +157,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
 
                 if (isInUse()) {
                     logger.debug("Starting work for {}", agentId());
-                    MDC.put(MDCConstants.SHORT_NAME, getPayload().shortName());
+                    MDC.put(MDCConstants.SHORT_NAME, getShortName());
                     try {
                         agentControl(this.arrivalPlace);
                     } catch (Throwable throwable) {
@@ -262,6 +262,15 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     @Override
     public synchronized IBaseDataObject getPayload() {
         return this.payload;
+    }
+
+    /**
+     * Return a reference to the payload of this agent
+     */
+    @Override
+    @Nullable
+    public String getShortName() {
+        return this.payload == null ? null : this.payload.shortName();
     }
 
     /**

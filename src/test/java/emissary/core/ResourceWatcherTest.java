@@ -113,6 +113,12 @@ class ResourceWatcherTest extends UnitTest {
         }
 
         @Override
+        @Nullable
+        public String getShortName() {
+            return null;
+        }
+
+        @Override
         public void go(Object payload, IServiceProviderPlace sourcePlace) {
 
         }
