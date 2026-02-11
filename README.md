@@ -1,3 +1,5 @@
+[![DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/NationalSecurityAgency/emissary)
+
 ![Emissary Dark Knight - some code just wants to watch the core burn](emissary-knight.png) 
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Sonatype Central](https://maven-badges.sml.io/sonatype-central/gov.nsa.emissary/emissary/badge.svg)](https://maven-badges.sml.io/sonatype-central/gov.nsa.emissary/emissary) [![Java CI with Maven](https://github.com/NationalSecurityAgency/emissary/actions/workflows/maven-ci.yml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/maven-ci.yml) [![CodeQL](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml) [![Lint Codebase](https://github.com/NationalSecurityAgency/emissary/actions/workflows/linter.yaml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/linter.yaml)
