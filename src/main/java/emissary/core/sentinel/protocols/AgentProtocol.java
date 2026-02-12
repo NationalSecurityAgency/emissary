@@ -103,6 +103,7 @@ public class AgentProtocol extends Protocol<AgentTracker> {
                     || !Objects.equals(mobileAgent.getLastPlaceProcessed(), trackedAgent.getDirectoryEntryKey())) {
                 trackedAgent.clear();
                 trackedAgent.setAgentId(mobileAgent.agentId());
+                trackedAgent.setShortName(mobileAgent.getShortName());
                 trackedAgent.setDirectoryEntryKey(mobileAgent.getLastPlaceProcessed());
             }
             trackedAgent.incrementTimer(Sentinel.lookup().getPollingInterval());

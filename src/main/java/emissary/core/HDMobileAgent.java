@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This mobile agent carries around an ArrayList of payload that can be added onto instead of sprouting. The agent is
@@ -599,4 +600,15 @@ public class HDMobileAgent extends MobileAgent {
         return this.timeToQuit;
     }
 
+    /**
+     * Return a reference to the payload of this agent
+     */
+    @Override
+    @Nullable
+    public String getShortName() {
+        return Optional.ofNullable(this.payloadList)
+                .flatMap(list -> list.stream().findFirst())
+                .map(IBaseDataObject::shortName)
+                .orElse(null);
+    }
 }

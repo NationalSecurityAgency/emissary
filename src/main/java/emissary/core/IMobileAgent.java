@@ -21,6 +21,11 @@ public interface IMobileAgent extends Serializable, Runnable {
     IBaseDataObject getPayload();
 
     /**
+     * Get the shortname of the payload of this agent
+     */
+    String getShortName();
+
+    /**
      * Send an agent on its way with the specified payload The payload is not processed at sourcePlace, source is only used
      * to get directory access to figure out where to go next.
      * 

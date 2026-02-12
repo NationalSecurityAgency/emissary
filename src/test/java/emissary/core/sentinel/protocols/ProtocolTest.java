@@ -297,6 +297,7 @@ class ProtocolTest extends UnitTest {
         when(hdma.getName()).thenReturn(agentKey);
         when(hdma.isInUse()).thenReturn(true);
         when(hdma.agentId()).thenReturn("Agent-1234-" + shortname);
+        when(hdma.getShortName()).thenReturn(shortname);
         when(hdma.getLastPlaceProcessed()).thenReturn("http://host.domain.com:8001/" + placename);
 
         Sentinel sm = mock(Sentinel.class);
