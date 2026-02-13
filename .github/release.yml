@@ -25,14 +25,16 @@ changelog:
     - title: Documentation 📚
       labels:
         - documentation
-    - title: Build, Package, Deploy 📦
+    - title: Build, Package, Deploy 👷
       labels:
-        - dependencies
-        - BPD
+        - BPD        
     - title: Automation and Testing 🚦
       labels:
         - CI/CD
         - test-only
+    - title: Dependencies 📦
+      labels:
+        - dependencies        
     - title: Other Changes ⚙️
       labels:
         - "*"
