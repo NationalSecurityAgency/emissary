@@ -198,7 +198,7 @@ public final class SeekableByteChannelHelper {
             long toSkip = Math.min(remaining, BUFFER_SIZE);
             long skipped = inputStream.skip(toSkip);
             if (skipped == 0) {
-                // If skip returns 0, read into the buffer to force the stream to advance
+                logger.debug("Skipped 0 bytes, reading into the buffer to force the stream to advance");
                 int read = inputStream.read(skipBuffer, 0, (int) toSkip);
                 if (read < 0) {
                     throw new IOException("Unexpected end of stream");
