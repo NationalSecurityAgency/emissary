@@ -25,24 +25,36 @@ import java.util.function.Supplier;
  * exponential backoff, default={@code 64}</li>
  * <li>{@code GRPC_RETRY_MAX_ATTEMPTS} - Maximum number of times to attempt execution, <b>including initial attempt
  * before retries</b>, default={@code 4}</li>
+ * <li>{@code GRPC_RETRY_MAX_WAIT_MILLIS} - The maximum amount of time to wait to retry during exponential backoff,
+ * default={@code 1000}</li>
  * <li>{@code GRPC_RETRY_MULTIPLIER} - Multiplier used to determine wait-time for successive retries,
- * default={@code 2}</li>
+ * default={@code 2.0}</li>
  * <li>{@code GRPC_RETRY_NUM_FAILS_BEFORE_WARN} - Determines the number of execution failures before logger should start
  * sending warnings, default={@code 3}</li>
  * </ul>
- * Exponential Backoff Equations:
+ * To calculate exponential backoff wait time, let:
  * <ul>
- * <li>The max wait of the {@code i}th retry is equal to:<br>
- * {@code GRPC_RETRY_INITIAL_WAIT_MILLIS} * ({@code GRPC_RETRY_MULTIPLIER} ^ ({@code GRPC_RETRY_MAX_ATTEMPTS} -
- * {@code i}))</li>
- * <li>The upper bound of total wait time is equal to:<br>
- * {@code GRPC_RETRY_INITIAL_WAIT_MILLIS} * (({@code GRPC_RETRY_MULTIPLIER} ^ ({@code GRPC_RETRY_MAX_ATTEMPTS} - 1)) -
- * 1) / ({@code GRPC_RETRY_MULTIPLIER} - 1)</li>
+ * <li>{@code M = GRPC_RETRY_MULTIPLIER}</li>
+ * <li>{@code N = GRPC_RETRY_MAX_ATTEMPTS} (includes the initial attempt)</li>
+ * <li>{@code W0 = GRPC_RETRY_INITIAL_WAIT_MILLIS}</li>
+ * <li>{@code Wmax = GRPC_RETRY_MAX_WAIT_MILLIS}</li>
  * </ul>
+ * The maximum wait (in milliseconds) before the {@code i}th retry is:
+ * 
+ * <pre>
+ * w(i) = min(W0 * (M ^ (i - 1)), Wmax)
+ * </pre>
+ * 
+ * The maximum total wait time (in milliseconds), assuming all attempts fail, is:
+ * 
+ * <pre>
+ * T = sum(w(i) for i in [1, N - 1])
+ * </pre>
  */
 public final class RetryHandler {
     public static final String GRPC_RETRY_INITIAL_WAIT_MILLIS = "GRPC_RETRY_INITIAL_WAIT_MILLIS";
     public static final String GRPC_RETRY_MAX_ATTEMPTS = "GRPC_RETRY_MAX_ATTEMPTS";
+    public static final String GRPC_RETRY_MAX_WAIT_MILLIS = "GRPC_RETRY_MAX_WAIT_MILLIS";
     public static final String GRPC_RETRY_MULTIPLIER = "GRPC_RETRY_MULTIPLIER";
     public static final String GRPC_RETRY_NUM_FAILS_BEFORE_WARN = "GRPC_RETRY_NUM_FAILS_BEFORE_WARN";
 
@@ -70,7 +82,8 @@ public final class RetryHandler {
                 .maxAttempts(maxAttempts)
                 .intervalFunction(IntervalFunction.ofExponentialBackoff(
                         configG.findIntEntry(GRPC_RETRY_INITIAL_WAIT_MILLIS, 64),
-                        configG.findIntEntry(GRPC_RETRY_MULTIPLIER, 2)))
+                        configG.findDoubleEntry(GRPC_RETRY_MULTIPLIER, 2.0),
+                        configG.findLongEntry(GRPC_RETRY_MAX_WAIT_MILLIS, 1000)))
                 .retryExceptions(PoolException.class, ServiceNotAvailableException.class)
                 .build());
 
