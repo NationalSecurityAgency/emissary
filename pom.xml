@@ -135,7 +135,7 @@
     <plugin.maven-scm-publish.version>3.3.0</plugin.maven-scm-publish.version>
     <plugin.maven-site.version>3.21.0</plugin.maven-site.version>
     <plugin.maven-source.version>3.4.0</plugin.maven-source.version>
-    <plugin.maven-surefire.version>3.5.4</plugin.maven-surefire.version>
+    <plugin.maven-surefire.version>3.5.5</plugin.maven-surefire.version>
     <plugin.protobuf-maven.version>0.6.1</plugin.protobuf-maven.version>
     <plugin.restrict-imports-enforcer-rule.version>3.0.0</plugin.restrict-imports-enforcer-rule.version>
     <plugin.sonar-maven.version>3.11.0.3922</plugin.sonar-maven.version>
