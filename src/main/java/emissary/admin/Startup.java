@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -183,6 +184,15 @@ public class Startup {
 
         if (!verifyNoInvisiblePlacesStarted() && node.isStrictStartupMode()) {
             invisPlacesStartedInStrictMode = true;
+        }
+
+        // Check for routing ambiguity due to duplicate cost/quality per SERVICE_TYPE
+        // Warning is logged inside verifyCostQualityUniqueness(); exit here if strict mode is enabled
+        if (!verifyCostQualityUniqueness() && node.isStrictStartupMode()) {
+            logger.error(
+                    "Server failed to start due to Strict mode being enabled: duplicate cost/quality detected for one or more SERVICE_TYPEs");
+            logger.error("Server shutting down");
+            System.exit(1);
         }
     }
 
@@ -582,6 +592,46 @@ public class Startup {
         }
 
         return true;
+    }
+
+    /**
+     * Verifies that no two places sharing the same service type have identical cost and quality, which would result in the
+     * same expense and create routing ambiguity.
+     *
+     * @return true if no duplicates found, false if ambiguous cost/quality pairs exist
+     */
+    public static boolean verifyCostQualityUniqueness() {
+        try {
+            IDirectoryPlace dirPlace = DirectoryPlace.lookup();
+            List<DirectoryEntry> entries = dirPlace.getEntries();
+
+            // Group entries by serviceType, then by cost:quality pair
+            Map<String, Map<String, List<DirectoryEntry>>> grouped = new HashMap<>();
+            for (DirectoryEntry entry : entries) {
+                grouped
+                        .computeIfAbsent(entry.getServiceType(), k -> new HashMap<>())
+                        .computeIfAbsent(entry.getCost() + ":" + entry.getQuality(), k -> new ArrayList<>())
+                        .add(entry);
+            }
+
+            boolean foundDuplicates = false;
+            for (Map.Entry<String, Map<String, List<DirectoryEntry>>> typeEntry : grouped.entrySet()) {
+                String serviceType = typeEntry.getKey();
+                for (Map.Entry<String, List<DirectoryEntry>> costQualEntry : typeEntry.getValue().entrySet()) {
+                    List<DirectoryEntry> dupes = costQualEntry.getValue();
+                    if (dupes.size() > 1) {
+                        String[] parts = costQualEntry.getKey().split(":");
+                        String keys = dupes.stream().map(e -> placeName(e.getKey())).collect(Collectors.joining(", "));
+                        logger.warn("Routing ambiguity detected: SERVICE_TYPE '{}' has {} places with identical cost={} and quality={}: {}",
+                                serviceType, dupes.size(), parts[0], parts[1], keys);
+                        foundDuplicates = true;
+                    }
+                }
+            }
+            return !foundDuplicates;
+        } catch (EmissaryException e) {
+            throw new EmissaryRuntimeException(e);
+        }
     }
 
     // get invisibly started places
