@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,6 +39,9 @@ public class PayloadUtil {
     @SuppressWarnings("NonFinalStaticField")
     protected static boolean compactHistory;
 
+    @SuppressWarnings("NonFinalStaticField")
+    protected static boolean showCompletionInfo;
+
     static {
         configure();
     }
@@ -47,6 +51,7 @@ public class PayloadUtil {
         try {
             configG = ConfigUtil.getConfigInfo(PayloadUtil.class);
             compactHistory = configG.findBooleanEntry("COMPACT_HISTORY", false);
+            showCompletionInfo = configG.findBooleanEntry("SHOW_COMPLETION_INFO", false);
         } catch (IOException e) {
             logger.error("Cannot open default config file", e);
         }
@@ -122,7 +127,12 @@ public class PayloadUtil {
         final List<String> currentForms = payload.getAllCurrentForms();
         final Instant creationTimestamp = payload.getCreationTimestamp();
 
-        sb.append("\n").append("filename: ").append(fileName).append("\n").append("   creationTimestamp: ").append(creationTimestamp).append("\n")
+        sb.append("\n").append("filename: ").append(fileName).append("\n");
+        if (showCompletionInfo) {
+            sb.append("   id: ").append(payload.getInternalId()).append("\n")
+                    .append("   processingTime: ").append(Duration.between(creationTimestamp, Instant.now()).toMillis()).append("ms\n");
+        }
+        sb.append("   creationTimestamp: ").append(creationTimestamp).append("\n")
                 .append("   currentForms: ").append(currentForms).append("\n").append("   filetype: ").append(fileType).append("\n")
                 .append("   transform history (").append(th.size(true)).append(") :").append("\n");
 
