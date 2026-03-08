@@ -273,6 +273,12 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         return this.payload == null ? null : this.payload.shortName();
     }
 
+    @Override
+    @Nullable
+    public String getPayloadCurrentForm() {
+        return this.payload == null ? null : this.payload.currentForm();
+    }
+
     /**
      * The main control loop to determine and go through an itinerary until the payload is finished (no where else to go)
      *

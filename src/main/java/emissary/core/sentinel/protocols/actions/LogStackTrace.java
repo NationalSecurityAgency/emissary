@@ -30,9 +30,14 @@ public class LogStackTrace extends Action {
             try {
                 final IMobileAgent mobileAgent = (IMobileAgent) Namespace.lookup(agent.getAgentName());
                 final Thread t = ThreadUtils.findThreadById(mobileAgent.getThreadId());
-                MDC.put(MDCConstants.SHORT_NAME, agent.getShortName());
+                MDC.put(MDCConstants.SHORT_NAME, mobileAgent.getShortName());
                 MDC.put(MDCConstants.SERVICE_LOCATION, agent.getDirectoryEntryKey());
-                SENTINEL_LOG.info("In agent {} for {} minute(s)\n\t{}", agent.getAgentName(), agent.getTimer(),
+                /*
+                 * mobileAgent.currentForm() is not necessarily the form at the time the payload arrived at this place, since some
+                 * places change the form even before processing, but it's the best we have to identify the payload being processed
+                 */
+                SENTINEL_LOG.info("In agent {} with currentForm {} for {} minute(s)\n\t{}", agent.getAgentName(), mobileAgent.getPayloadCurrentForm(),
+                        agent.getTimer(),
                         Arrays.stream(t.getStackTrace())
                                 .map(StackTraceElement::toString)
                                 .collect(Collectors.joining("\n\t")));

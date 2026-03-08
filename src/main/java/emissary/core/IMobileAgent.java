@@ -3,6 +3,8 @@ package emissary.core;
 import emissary.directory.DirectoryEntry;
 import emissary.place.IServiceProviderPlace;
 
+import jakarta.annotation.Nullable;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -24,6 +26,15 @@ public interface IMobileAgent extends Serializable, Runnable {
      * Get the shortname of the payload of this agent
      */
     String getShortName();
+
+    /**
+     * Get the current form of the payload (if any) of this agent. This will return the instantaneous value, which may be a
+     * transient value that differs from the value going into or leaving the current place, since some places change the
+     * form even before processing.
+     */
+    @Nullable
+    String getPayloadCurrentForm();
+
 
     /**
      * Send an agent on its way with the specified payload The payload is not processed at sourcePlace, source is only used
