@@ -129,7 +129,7 @@ public class PayloadUtil {
 
         sb.append("\n").append("filename: ").append(fileName).append("\n");
         if (showCompletionInfo) {
-            sb.append("   id: ").append(payload.getInternalId()).append("\n")
+            sb.append("   internal id: ").append(payload.getInternalId()).append("\n")
                     .append("   processingTime: ").append(Duration.between(creationTimestamp, Instant.now()).toMillis()).append("ms\n");
         }
         sb.append("   creationTimestamp: ").append(creationTimestamp).append("\n")
