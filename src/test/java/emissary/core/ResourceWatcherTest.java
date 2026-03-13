@@ -119,6 +119,11 @@ class ResourceWatcherTest extends UnitTest {
         }
 
         @Override
+        public String getPayloadCurrentForm() {
+            return "";
+        }
+
+        @Override
         public void go(Object payload, IServiceProviderPlace sourcePlace) {
 
         }

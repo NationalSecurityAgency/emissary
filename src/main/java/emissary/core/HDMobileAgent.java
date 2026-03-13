@@ -611,4 +611,13 @@ public class HDMobileAgent extends MobileAgent {
                 .map(IBaseDataObject::shortName)
                 .orElse(null);
     }
+
+    @Override
+    @Nullable
+    public String getPayloadCurrentForm() {
+        return Optional.ofNullable(this.payloadList)
+                .flatMap(list -> list.stream().findFirst())
+                .map(IBaseDataObject::currentForm)
+                .orElse(null);
+    }
 }
