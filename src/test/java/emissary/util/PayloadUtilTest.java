@@ -358,6 +358,43 @@ class PayloadUtilTest extends UnitTest {
         assertTrue(answer.contains("BAR.BARPLACE: BarPlace(NonePlace)"), "Answer should have compacted history");
     }
 
+    @Test
+    void testShowCompletionInfoEnabled() {
+        // setup
+        final String fn = "testCompletionInfo";
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
+        d.setCreationTimestamp(Instant.now());
+
+        // test
+        PayloadUtil.showCompletionInfo = true;
+        final String answer = PayloadUtil.getPayloadDisplayString(d);
+        PayloadUtil.showCompletionInfo = false;
+
+        // verify
+        assertTrue(answer.contains("id: "), "Answer should contain id when showCompletionInfo is true");
+        assertTrue(answer.contains("processingTime: "), "Answer should contain processingTime when showCompletionInfo is true");
+        assertTrue(answer.contains("ms"), "processingTime should include ms unit");
+        assertTrue(answer.contains("creationTimestamp: "), "Answer should still contain creationTimestamp");
+    }
+
+    @Test
+    void testShowCompletionInfoDisabled() {
+        // setup
+        final String fn = "testCompletionInfoOff";
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
+        d.setCreationTimestamp(Instant.now());
+
+        // test (showCompletionInfo defaults to false)
+        final String answer = PayloadUtil.getPayloadDisplayString(d);
+
+        // verify
+        assertFalse(answer.contains("   id: "), "Answer should not contain id when showCompletionInfo is false");
+        assertFalse(answer.contains("processingTime: "), "Answer should not contain processingTime when showCompletionInfo is false");
+        assertTrue(answer.contains("creationTimestamp: "), "Answer should still contain creationTimestamp");
+    }
+
     /**
      * Compares the form to a set of valid characters
      * <p>
