@@ -36,6 +36,9 @@ public class Shutdown {
 
     @SuppressWarnings("SystemExitOutsideMain")
     protected Response shutdown(HttpServletRequest request, boolean force) {
+        if (!request.isUserInRole("admin") && !request.isUserInRole("emissary")) {
+            return Response.status(Response.Status.FORBIDDEN).entity("Insufficient privileges").build();
+        }
         try {
             LOG.debug("Calling the stop method");
             // need a new thread so the response will return

@@ -26,6 +26,9 @@ public class Refresh {
     @Path("/" + INVALIDATE)
     @Produces(MediaType.TEXT_HTML)
     public Response invalidatePlaces(@Context HttpServletRequest request) {
+        if (!request.isUserInRole("admin") && !request.isUserInRole("emissary")) {
+            return Response.status(Response.Status.FORBIDDEN).entity("Insufficient privileges").build();
+        }
         try {
             EmissaryServer.invalidate();
             return Response.ok("Invalidated services").build();
@@ -39,6 +42,9 @@ public class Refresh {
     @Path("/" + REFRESH)
     @Produces(MediaType.TEXT_HTML)
     public Response refreshPlaces(@Context HttpServletRequest request) {
+        if (!request.isUserInRole("admin") && !request.isUserInRole("emissary")) {
+            return Response.status(Response.Status.FORBIDDEN).entity("Insufficient privileges").build();
+        }
         try {
             var unused = CompletableFuture.runAsync(EmissaryServer::refresh);
             return Response.ok("Refreshing services").build();

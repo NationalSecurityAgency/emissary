@@ -25,6 +25,9 @@ public class Pause {
     @Path("/" + PAUSE)
     @Produces(MediaType.TEXT_HTML)
     public Response pause(@Context HttpServletRequest request) {
+        if (!request.isUserInRole("admin") && !request.isUserInRole("emissary")) {
+            return Response.status(Response.Status.FORBIDDEN).entity("Insufficient privileges").build();
+        }
         return doAction(true);
     }
 
@@ -37,6 +40,9 @@ public class Pause {
     @Path("/" + UNPAUSE)
     @Produces(MediaType.TEXT_HTML)
     public Response unpause(@Context HttpServletRequest request) {
+        if (!request.isUserInRole("admin") && !request.isUserInRole("emissary")) {
+            return Response.status(Response.Status.FORBIDDEN).entity("Insufficient privileges").build();
+        }
         return doAction(false);
     }
 

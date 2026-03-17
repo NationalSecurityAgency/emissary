@@ -143,32 +143,68 @@ class EmissaryMvcTest extends EndpointTestBase {
     }
 
     @Test
-    void unpause() {
-        // test template is src/test/resources/environment.mustache
-        try (Response response = target("Unpause.action").request().get()) {
+    void unpauseAllowedForEmissaryRole() {
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.isUserInRole("emissary")).thenReturn(true);
+        when(req.isUserInRole("admin")).thenReturn(false);
+        PauseAction action = new PauseAction();
+        try (Response response = action.notifyUnpause(req)) {
             assertEquals(200, response.getStatus());
-            String out = response.readEntity(String.class);
-            assertTrue(out.contains("Unpausing server..."));
         }
     }
 
     @Test
-    void pause() {
-        // test template is src/test/resources/environment.mustache
-        try (Response response = target("Pause.action").request().get()) {
-            assertEquals(200, response.getStatus());
-            String out = response.readEntity(String.class);
-            assertTrue(out.contains("Pausing server..."));
+    void unpauseForbiddenForEveryoneRole() {
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.isUserInRole("emissary")).thenReturn(false);
+        when(req.isUserInRole("admin")).thenReturn(false);
+        PauseAction action = new PauseAction();
+        try (Response response = action.notifyUnpause(req)) {
+            assertEquals(403, response.getStatus());
         }
     }
 
     @Test
-    void shutdown() {
-        // test template is src/test/resources/environment.mustache
-        try (Response response = target("Shutdown.action").request().get()) {
+    void pauseAllowedForEmissaryRole() {
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.isUserInRole("emissary")).thenReturn(true);
+        when(req.isUserInRole("admin")).thenReturn(false);
+        PauseAction action = new PauseAction();
+        try (Response response = action.notifyPause(req)) {
             assertEquals(200, response.getStatus());
-            String out = response.readEntity(String.class);
-            assertTrue(out.contains("Starting shutdown..."));
+        }
+    }
+
+    @Test
+    void pauseForbiddenForEveryoneRole() {
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.isUserInRole("emissary")).thenReturn(false);
+        when(req.isUserInRole("admin")).thenReturn(false);
+        PauseAction action = new PauseAction();
+        try (Response response = action.notifyPause(req)) {
+            assertEquals(403, response.getStatus());
+        }
+    }
+
+    @Test
+    void shutdownAllowedForAdminRole() {
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.isUserInRole("admin")).thenReturn(true);
+        when(req.isUserInRole("emissary")).thenReturn(false);
+        ShutdownAction action = new ShutdownAction();
+        try (Response response = action.notifyShutdown(req)) {
+            assertEquals(200, response.getStatus());
+        }
+    }
+
+    @Test
+    void shutdownForbiddenForEveryoneRole() {
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.isUserInRole("admin")).thenReturn(false);
+        when(req.isUserInRole("emissary")).thenReturn(false);
+        ShutdownAction action = new ShutdownAction();
+        try (Response response = action.notifyShutdown(req)) {
+            assertEquals(403, response.getStatus());
         }
     }
 }

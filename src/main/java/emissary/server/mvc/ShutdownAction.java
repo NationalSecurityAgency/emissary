@@ -6,7 +6,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-import org.glassfish.jersey.server.mvc.Template;
+import jakarta.ws.rs.core.Response;
+import org.glassfish.jersey.server.mvc.Viewable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,11 +19,13 @@ public class ShutdownAction {
     @GET
     @Path("/Shutdown.action")
     @Produces(MediaType.TEXT_HTML)
-    @Template(name = "/shutdown")
-    public Map<String, String> notifyShutdown(@Context HttpServletRequest request) {
+    public Response notifyShutdown(@Context HttpServletRequest request) {
+        if (!request.isUserInRole("admin") && !request.isUserInRole("emissary")) {
+            return Response.status(Response.Status.FORBIDDEN).entity("Insufficient privileges").build();
+        }
         Map<String, String> model = new HashMap<>();
         model.put("message", "Starting shutdown...");
-        return model;
+        return Response.ok(new Viewable("/shutdown", model)).build();
     }
 
 }

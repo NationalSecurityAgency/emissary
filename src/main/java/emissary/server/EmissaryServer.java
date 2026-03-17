@@ -71,6 +71,8 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -615,19 +617,41 @@ public class EmissaryServer {
         authConstraint.setAuthenticate(true);
         authConstraint.setRoles(new String[] {"everyone", "emissary", "admin", "support", "manager"});
 
+        Constraint adminConstraint = new Constraint();
+        adminConstraint.setName("admin");
+        adminConstraint.setAuthenticate(true);
+        adminConstraint.setRoles(new String[] {"admin", "emissary"});
+
         Constraint noAuthConstraint = new Constraint();
         noAuthConstraint.setName("no_auth");
         noAuthConstraint.setAuthenticate(false);
 
+        List<ConstraintMapping> mappings = new ArrayList<>();
+
+        // Restrict destructive/administrative endpoints to the admin role only
+        for (String adminPath : List.of(
+                "/api/shutdown", "/api/shutdown/force",
+                "/api/pause", "/api/unpause",
+                "/api/refresh", "/api/invalidate")) {
+            ConstraintMapping m = new ConstraintMapping();
+            m.setPathSpec(adminPath);
+            m.setConstraint(adminConstraint);
+            mappings.add(m);
+        }
+
+        // Default: all authenticated users
         ConstraintMapping mapping = new ConstraintMapping();
         mapping.setPathSpec("/*");
         mapping.setConstraint(authConstraint);
+        mappings.add(mapping);
 
+        // Health check: no auth required
         ConstraintMapping health = new ConstraintMapping();
         health.setPathSpec("/api/health");
         health.setConstraint(noAuthConstraint);
+        mappings.add(health);
 
-        handler.setConstraintMappings(new ConstraintMapping[] {mapping, health});
+        handler.setConstraintMappings(mappings);
         handler.setAuthenticator(new DigestAuthenticator());
         return handler;
     }

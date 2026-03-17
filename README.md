@@ -8,6 +8,7 @@ Table of Contents
 * [Introduction](#introduction)
 * [Minimum Requirements](#minimum-requirements)
 * [Getting Started](#getting-started)
+* [Authentication and Roles](#authentication-and-roles)
 * [Contact Us](#contact-us)
 
 
@@ -117,16 +118,17 @@ url, you will need to enter the username and password defined in target/config/j
 
 > [!CAUTION]
 > Security Notice: Default Credentials
-> 
-> ***Change Default Credentials Immediately*** The usernames and passwords listed below are for demonstration
-> purposes only. Using default credentials in a production environment poses a significant security risk. 
-> 
-> **Action Required**: Update your `jetty-users.properties` file with strong, unique passwords before deploying.
 >
->| Default Username | Default Password |
->|------------------|------------------|
->| emissary         | emissary123      |
->| console          | console123       |
+> ***Change Default Credentials Immediately.*** The usernames and passwords listed below are for demonstration
+> purposes only. Using default credentials in a production environment poses a significant security risk.
+>
+> **Action Required**: Update your `jetty-users.properties` file with strong, unique passwords before deploying.
+> See [Authentication and Roles](#authentication-and-roles) for full role definitions and configuration guidance.
+>
+> | Default Username | Default Password | Role |
+> |------------------|------------------|------|
+> | emissary         | emissary123      | `emissary` (full admin access) |
+> | console          | console123       | `support` (read-only) |
 
 The default PickUpPlace is configured to read files from _target/data/InputData_.  If you copy
 files into that directory, you will see Emissary process them.  Keep in mind, only toUpper and toLower are
@@ -355,6 +357,67 @@ Clustered
 mkdir ~/Desktop/feed1
 ./emissary feed -p 7443 --ssl --disableSniHostCheck -i ~/Desktop/feed1/
 ````
+
+## Authentication and Roles
+
+Emissary uses Jetty's `HashLoginService` with HTTP Digest authentication. User credentials and role
+assignments are defined in `config/jetty-users.properties`.
+
+### Role Definitions
+
+| Role | Access Level | Description |
+|------|-------------|-------------|
+| `admin` | Full | All endpoints including destructive administrative operations |
+| `emissary` | Full | Same level as `admin` — all endpoints including administrative operations |
+| `support` | Read-only | Monitoring and read endpoints only |
+| `manager` | Read-only | Monitoring and read endpoints only |
+| `everyone` | Read-only | Minimal access — read endpoints only |
+
+### Endpoint Access by Role
+
+| Endpoint | Method | Required Role |
+|----------|--------|---------------|
+| `/api/shutdown` | POST | `admin` or `emissary` |
+| `/api/shutdown/force` | POST | `admin` or `emissary` |
+| `/api/pause` | POST | `admin` or `emissary` |
+| `/api/unpause` | POST | `admin` or `emissary` |
+| `/api/refresh` | POST | `admin` or `emissary` |
+| `/api/invalidate` | POST | `admin` or `emissary` |
+| `/emissary/Pause.action` | GET | `admin` or `emissary` |
+| `/emissary/Unpause.action` | GET | `admin` or `emissary` |
+| `/emissary/Shutdown.action` | GET | `admin` or `emissary` |
+| All other endpoints | * | Any authenticated user |
+| `/api/health` | GET | No authentication required |
+
+### Configuring Users
+
+Passwords must be stored in OBF format (Jetty's reversible obfuscation) or as a Digest MD5 hash.
+Use the Jetty password utility to generate an OBF value:
+
+```bash
+java -cp jetty-util-<version>.jar org.eclipse.jetty.util.security.Password <password>
+```
+
+Example `jetty-users.properties` with recommended role separation:
+
+```properties
+# Administrative users — full access including shutdown/pause/refresh
+admin:    OBF:<hashed-password>, admin
+emissary: OBF:<hashed-password>, emissary
+
+# Read-only monitoring users
+console:  OBF:<hashed-password>, support
+```
+
+> [!CAUTION]
+> Security Notice: Credential Management
+>
+> * **Never use default credentials in production.** Replace all passwords in `jetty-users.properties`
+>   before deployment.
+> * **OBF encoding is not a password hash** — it is reversible. Anyone who can read the properties
+>   file can recover the plaintext password. Restrict file permissions accordingly (`chmod 600`).
+> * **Protect administrative credentials carefully.** Any user with the `admin` or `emissary` role
+>   can shut down or pause the server. Limit these accounts to operators who need that capability.
 
 ## Contact Us
 
