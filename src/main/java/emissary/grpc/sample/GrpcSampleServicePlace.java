@@ -9,6 +9,7 @@ import emissary.grpc.sample.v1.SampleRequest;
 import emissary.grpc.sample.v1.SampleResponse;
 import emissary.grpc.sample.v1.SampleServiceGrpc;
 import emissary.grpc.sample.v1.SampleServiceGrpc.SampleServiceBlockingStub;
+import emissary.grpc.sample.v1.SampleServiceGrpc.SampleServiceFutureStub;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
@@ -16,11 +17,14 @@ import io.grpc.ManagedChannel;
 import jakarta.annotation.Nullable;
 
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Connects to an arbitrary external service that implements {@link emissary.grpc.sample.v1.SampleServiceGrpc}. Results
@@ -99,6 +103,31 @@ public class GrpcSampleServicePlace extends GrpcRoutingPlace {
             SampleResponse response = invokeGrpc(targetId, SampleServiceGrpc::newBlockingStub, callLogic, request);
             o.addAlternateView(ALTERNATE_VIEW_NAME, response.getResult().toByteArray());
         }
+    }
+
+    public void processAllTargetsSequentially(IBaseDataObject o) {
+        hostnameTable.keySet().stream()
+                .sorted(Comparator.naturalOrder())
+                .forEach(targetId -> o.addAlternateView(targetId, invokeGrpc(
+                        targetId,
+                        SampleServiceGrpc::newBlockingStub,
+                        SampleServiceBlockingStub::callSampleService,
+                        SampleRequest.newBuilder()
+                                .setQuery(ByteString.copyFrom(o.data()))
+                                .build())
+                        .getResult().toByteArray()));
+    }
+
+    public void processAllTargetsAsynchronously(IBaseDataObject o) {
+        Map<String, SampleRequest> requestMap = hostnameTable.keySet().stream()
+                .collect(Collectors.toMap(k -> k, k -> SampleRequest.newBuilder()
+                        .setQuery(ByteString.copyFrom(o.data()))
+                        .build()));
+        Map<String, SampleResponse> responseMap = invokeAsyncGrpc(
+                SampleServiceGrpc::newFutureStub,
+                SampleServiceFutureStub::callSampleService,
+                requestMap);
+        responseMap.forEach((k, v) -> o.addAlternateView(k, v.getResult().toByteArray()));
     }
 
     /**

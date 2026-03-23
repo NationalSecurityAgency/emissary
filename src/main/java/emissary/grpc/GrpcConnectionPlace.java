@@ -6,16 +6,13 @@ import emissary.grpc.exceptions.ServiceNotAvailableException;
 import emissary.grpc.pool.ConnectionFactory;
 import emissary.grpc.retry.RetryHandler;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.GeneratedMessageV3;
 import io.grpc.ManagedChannel;
 import io.grpc.stub.AbstractBlockingStub;
-import io.grpc.stub.AbstractFutureStub;
 import jakarta.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -98,23 +95,6 @@ public abstract class GrpcConnectionPlace extends GrpcRoutingPlace {
             Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, R> callLogic, Q request) {
 
         return invokeGrpc(CONNECTION_ID, stubFactory, callLogic, request);
-    }
-
-    /**
-     * Executes multiple unary gRPC calls in parallel using a shared {@link AbstractFutureStub}.
-     *
-     * @param stubFactory function that creates the appropriate {@code FutureStub} from a {@link ManagedChannel}
-     * @param callLogic function that maps a stub and request to a {@link ListenableFuture}
-     * @param requestList list of protobuf request messages to be sent
-     * @return list of gRPC responses in the same order as {@code requestList}
-     * @param <Q> the protobuf request type
-     * @param <R> the protobuf response type
-     * @param <S> the gRPC stub type
-     */
-    protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> List<R> invokeBatchedGrpc(
-            Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, ListenableFuture<R>> callLogic, List<Q> requestList) {
-
-        return invokeBatchedGrpc(CONNECTION_ID, stubFactory, callLogic, requestList);
     }
 
     public String getHost() {

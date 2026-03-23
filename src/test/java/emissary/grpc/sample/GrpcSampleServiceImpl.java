@@ -10,6 +10,7 @@ import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 
 import java.io.ByteArrayOutputStream;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Class for overriding behavior of an arbitrary external service.
@@ -24,11 +25,15 @@ public abstract class GrpcSampleServiceImpl extends SampleServiceGrpc.SampleServ
 
     @Override
     public void callSampleService(SampleRequest request, StreamObserver<SampleResponse> responseObserver) {
-        SampleResponse response = SampleResponse.newBuilder()
-                .setResult(process(request.getQuery()))
-                .build();
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
+        try {
+            SampleResponse response = SampleResponse.newBuilder()
+                    .setResult(process(request.getQuery()))
+                    .build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } catch (Throwable t) {
+            responseObserver.onError(t);
+        }
     }
 
     public ByteString process(ByteString query) {
@@ -65,6 +70,31 @@ public abstract class GrpcSampleServiceImpl extends SampleServiceGrpc.SampleServ
             System.arraycopy(query, 0, result, 0, query.length);
             System.arraycopy(query, 0, result, query.length, query.length);
             return result;
+        }
+    }
+
+    /**
+     * Service that returns its input unchanged once its {@link CountDownLatch CountDownLatches} have been reduced.
+     */
+    public static class CountdownLatchedIdentityServiceImpl extends GrpcSampleServiceImpl {
+        private final CountDownLatch startedLatch;
+        private final CountDownLatch releaseLatch;
+
+        public CountdownLatchedIdentityServiceImpl(CountDownLatch startedLatch, CountDownLatch releaseLatch) {
+            this.startedLatch = startedLatch;
+            this.releaseLatch = releaseLatch;
+        }
+
+        @Override
+        public byte[] process(byte[] query) {
+            startedLatch.countDown();
+            try {
+                releaseLatch.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(e);
+            }
+            return query;
         }
     }
 }

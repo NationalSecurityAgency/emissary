@@ -13,6 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Supplier;
 
 /**
@@ -58,6 +61,7 @@ public final class RetryHandler {
     public static final String GRPC_RETRY_MULTIPLIER = "GRPC_RETRY_MULTIPLIER";
     public static final String GRPC_RETRY_NUM_FAILS_BEFORE_WARN = "GRPC_RETRY_NUM_FAILS_BEFORE_WARN";
 
+    private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private static final Logger logger = LoggerFactory.getLogger(RetryHandler.class);
 
     private final String internalName;
@@ -104,5 +108,9 @@ public final class RetryHandler {
 
     public <T> T execute(Supplier<T> supplier) {
         return Retry.decorateSupplier(retry, supplier).get();
+    }
+
+    public <T> CompletionStage<T> executeAsync(Supplier<CompletionStage<T>> supplier) {
+        return Retry.decorateCompletionStage(retry, scheduler, supplier).get();
     }
 }
