@@ -3,6 +3,7 @@ package emissary.grpc.sample;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.grpc.GrpcRoutingPlace;
+import emissary.grpc.async.AsyncUtils;
 import emissary.grpc.pool.ConnectionFactory;
 import emissary.grpc.retry.RetryHandler;
 import emissary.grpc.sample.v1.SampleRequest;
@@ -18,7 +19,9 @@ import jakarta.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
@@ -119,14 +122,15 @@ public class GrpcSampleServicePlace extends GrpcRoutingPlace {
     }
 
     public void processAllTargetsAsynchronously(IBaseDataObject o) {
-        Map<String, SampleRequest> requestMap = hostnameTable.keySet().stream()
-                .collect(Collectors.toMap(k -> k, k -> SampleRequest.newBuilder()
-                        .setQuery(ByteString.copyFrom(o.data()))
-                        .build()));
-        Map<String, SampleResponse> responseMap = invokeAsyncGrpc(
-                SampleServiceGrpc::newFutureStub,
-                SampleServiceFutureStub::callSampleService,
-                requestMap);
+        Map<String, CompletableFuture<SampleResponse>> futureMap = hostnameTable.keySet().stream()
+                .collect(Collectors.toMap(k -> k, k -> invokeAsyncGrpc(
+                        k,
+                        SampleServiceGrpc::newFutureStub,
+                        SampleServiceFutureStub::callSampleService,
+                        SampleRequest.newBuilder()
+                                .setQuery(ByteString.copyFrom(o.data()))
+                                .build())));
+        Map<String, SampleResponse> responseMap = AsyncUtils.awaitAllAndGet(futureMap, HashMap::new);
         responseMap.forEach((k, v) -> o.addAlternateView(k, v.getResult().toByteArray()));
     }
 
