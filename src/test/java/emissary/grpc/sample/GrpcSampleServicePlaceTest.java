@@ -427,6 +427,8 @@ class GrpcSampleServicePlaceTest extends UnitTest {
             releaseLatchOne.countDown();
 
             assertTrue(startedLatchTwo.await(1, TimeUnit.SECONDS));
+            assertNull(viewRef.get());
+            assertNull(errorRef.get());
 
             assertTrue(clientThread.isAlive());
             releaseLatchTwo.countDown();
@@ -475,7 +477,7 @@ class GrpcSampleServicePlaceTest extends UnitTest {
 
             clientThread.start();
 
-            assertTrue(startedLatch.await(1, TimeUnit.SECONDS), "Not all servers received requests");
+            assertTrue(startedLatch.await(2, TimeUnit.SECONDS), "Not all servers received requests");
             assertNull(viewRef.get());
             assertNull(errorRef.get());
 

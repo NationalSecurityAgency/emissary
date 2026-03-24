@@ -1,8 +1,6 @@
 package emissary.grpc;
 
 import emissary.config.Configurator;
-import emissary.grpc.exceptions.PoolException;
-import emissary.grpc.exceptions.ServiceNotAvailableException;
 import emissary.grpc.invoker.AsyncInvoker;
 import emissary.grpc.invoker.BlockingInvoker;
 import emissary.grpc.pool.ConnectionFactory;
@@ -47,7 +45,6 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
     public static final String GRPC_HOST = "GRPC_HOST_";
     public static final String GRPC_PORT = "GRPC_PORT_";
 
-    protected RetryHandler retryHandler;
     protected BlockingInvoker blockingInvoker;
     protected AsyncInvoker asyncInvoker;
 
@@ -126,9 +123,9 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
             channelPoolTable.put(id, newConnectionPool(id));
         }
 
-        retryHandler = new RetryHandler(configG, this.getPlaceName());
-        blockingInvoker = new BlockingInvoker(this::channelPoolLookup, retryHandler);
-        asyncInvoker = new AsyncInvoker(this::channelPoolLookup, retryHandler);
+        RetryHandler retryHandler = new RetryHandler(configG, this.getPlaceName());
+        blockingInvoker = new BlockingInvoker(retryHandler);
+        asyncInvoker = new AsyncInvoker(retryHandler);
     }
 
     private ObjectPool<ManagedChannel> newConnectionPool(String id) {
@@ -161,10 +158,8 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
     protected void passivateConnection(ManagedChannel managedChannel) { /* No-op */ }
 
     /**
-     * Executes a unary gRPC call to a given endpoint using an {@link AbstractBlockingStub}. If the gRPC connection fails
-     * due to a {@link PoolException} or a {@link ServiceNotAvailableException}, the call will be tried again per the
-     * configurations set using {@link RetryHandler}. All other Exceptions are thrown on the spot. Will also throw an
-     * Exception once max attempts have been reached.
+     * Wrapper method for {@link BlockingInvoker#invoke(ObjectPool, Function, BiFunction, GeneratedMessageV3)} that executes
+     * a unary gRPC call to a given endpoint.
      *
      * @param targetId the identifier used in the configs for the given gRPC endpoint
      * @param stubFactory function that creates the appropriate gRPC stub from a {@link ManagedChannel}
@@ -177,14 +172,12 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
      */
     protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractBlockingStub<S>> R invokeGrpc(
             String targetId, Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, R> callLogic, Q request) {
-        return blockingInvoker.invoke(targetId, stubFactory, callLogic, request);
+        return blockingInvoker.invoke(channelPoolLookup(targetId), stubFactory, callLogic, request);
     }
 
     /**
-     * Executes a unary gRPC call to a given endpoint using an {@link AbstractFutureStub}. If the gRPC connection fails due
-     * to a {@link PoolException} or a {@link ServiceNotAvailableException}, the call will be tried again per the
-     * configurations set using {@link RetryHandler}. All other Exceptions are thrown on the spot. Will also throw an
-     * Exception once max attempts have been reached.
+     * Wrapper method for {@link AsyncInvoker#invoke(ObjectPool, Function, BiFunction, GeneratedMessageV3)} that executes a
+     * unary gRPC call to a given endpoint and returns a {@link CompletableFuture future}.
      *
      * @param targetId the identifier used in the configs for the given gRPC endpoint
      * @param stubFactory function that creates the appropriate gRPC stub from a {@link ManagedChannel}
@@ -197,7 +190,7 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
      */
     protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeAsyncGrpc(
             String targetId, Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, ListenableFuture<R>> callLogic, Q request) {
-        return asyncInvoker.invoke(targetId, stubFactory, callLogic, request);
+        return asyncInvoker.invoke(channelPoolLookup(targetId), stubFactory, callLogic, request);
     }
 
     private ObjectPool<ManagedChannel> channelPoolLookup(String targetId) {
