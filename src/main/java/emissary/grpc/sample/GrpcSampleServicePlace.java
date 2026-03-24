@@ -3,7 +3,7 @@ package emissary.grpc.sample;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.grpc.GrpcRoutingPlace;
-import emissary.grpc.async.AsyncUtils;
+import emissary.grpc.invoker.AsyncInvoker;
 import emissary.grpc.pool.ConnectionFactory;
 import emissary.grpc.retry.RetryHandler;
 import emissary.grpc.sample.v1.SampleRequest;
@@ -130,7 +130,7 @@ public class GrpcSampleServicePlace extends GrpcRoutingPlace {
                         SampleRequest.newBuilder()
                                 .setQuery(ByteString.copyFrom(o.data()))
                                 .build())));
-        Map<String, SampleResponse> responseMap = AsyncUtils.awaitAllAndGet(futureMap, HashMap::new);
+        Map<String, SampleResponse> responseMap = AsyncInvoker.awaitAllAndGet(futureMap, HashMap::new);
         responseMap.forEach((k, v) -> o.addAlternateView(k, v.getResult().toByteArray()));
     }
 
