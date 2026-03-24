@@ -11,13 +11,14 @@ import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractBlockingStub;
 import org.apache.commons.pool2.ObjectPool;
+import org.slf4j.Logger;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class BlockingInvoker extends BaseInvoker {
-    public BlockingInvoker(RetryHandler retryHandler) {
-        super(retryHandler);
+    public BlockingInvoker(RetryHandler retryHandler, Logger logger) {
+        super(retryHandler, logger);
     }
 
     /**

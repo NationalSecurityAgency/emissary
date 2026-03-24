@@ -16,6 +16,7 @@ import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractFutureStub;
 import jakarta.annotation.Nonnull;
 import org.apache.commons.pool2.ObjectPool;
+import org.slf4j.Logger;
 
 import java.util.Collection;
 import java.util.Map;
@@ -29,8 +30,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class AsyncInvoker extends BaseInvoker {
-    public AsyncInvoker(RetryHandler retryHandler) {
-        super(retryHandler);
+    public AsyncInvoker(RetryHandler retryHandler, Logger logger) {
+        super(retryHandler, logger);
     }
 
     /**

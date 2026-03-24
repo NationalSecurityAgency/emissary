@@ -124,8 +124,8 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
         }
 
         RetryHandler retryHandler = new RetryHandler(configG, this.getPlaceName());
-        blockingInvoker = new BlockingInvoker(retryHandler);
-        asyncInvoker = new AsyncInvoker(retryHandler);
+        blockingInvoker = new BlockingInvoker(retryHandler, logger);
+        asyncInvoker = new AsyncInvoker(retryHandler, logger);
     }
 
     private ObjectPool<ManagedChannel> newConnectionPool(String id) {
