@@ -23,20 +23,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -70,19 +66,6 @@ class GrpcSampleServicePlaceTest extends UnitTest {
 
     private GrpcSampleServicePlace samplePlace;
     private IBaseDataObject dataObject;
-
-    static Stream<Integer> grpcCodes() {
-        return Arrays.stream(Status.Code.values()).map(Status.Code::value);
-    }
-
-    static Stream<Integer> recoverableGrpcCodes() {
-        return IntStream.of(Status.Code.RESOURCE_EXHAUSTED.value(), Status.Code.UNAVAILABLE.value()).boxed();
-    }
-
-    static Stream<Integer> nonRecoverableGrpcCodes() {
-        Set<Integer> exclude = recoverableGrpcCodes().collect(Collectors.toSet());
-        return grpcCodes().filter(i -> !exclude.contains(i));
-    }
 
     static String createSampleForm(String formSuffix) {
         return String.join("-", GrpcSampleServicePlace.SERVICE_PROXY, formSuffix);
@@ -204,9 +187,9 @@ class GrpcSampleServicePlaceTest extends UnitTest {
         }
 
         @ParameterizedTest
-        @MethodSource("emissary.grpc.sample.GrpcSampleServicePlaceTest#recoverableGrpcCodes")
-        void testGrpcRecoverableCodes(int code) {
-            Status status = Status.fromCodeValue(code);
+        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "UNAVAILABLE"}, mode = EnumSource.Mode.INCLUDE)
+        void testGrpcRecoverableCodes(Status.Code code) {
+            Status status = Status.fromCode(code);
             Runnable invocation = () -> samplePlace.throwExceptionsDuringProcess(dataObject, new StatusRuntimeException(status));
             ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class, invocation::run);
             assertTrue(e.getMessage().endsWith(status.getCode().name()));
@@ -214,9 +197,9 @@ class GrpcSampleServicePlaceTest extends UnitTest {
         }
 
         @ParameterizedTest
-        @MethodSource("emissary.grpc.sample.GrpcSampleServicePlaceTest#nonRecoverableGrpcCodes")
-        void testGrpcNonRecoverableCodes(int code) {
-            Status status = Status.fromCodeValue(code);
+        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "UNAVAILABLE"}, mode = EnumSource.Mode.EXCLUDE)
+        void testGrpcNonRecoverableCodes(Status.Code code) {
+            Status status = Status.fromCode(code);
             Runnable invocation = () -> samplePlace.throwExceptionsDuringProcess(dataObject, new StatusRuntimeException(status));
             ServiceException e = assertThrows(ServiceException.class, invocation::run);
             assertTrue(e.getMessage().endsWith(status.getCode().name()));
@@ -253,9 +236,9 @@ class GrpcSampleServicePlaceTest extends UnitTest {
         }
 
         @ParameterizedTest
-        @MethodSource("emissary.grpc.sample.GrpcSampleServicePlaceTest#recoverableGrpcCodes")
-        void testGrpcSuccessAfterRecoverableCodes(int code) {
-            Status status = Status.fromCodeValue(code);
+        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "UNAVAILABLE"}, mode = EnumSource.Mode.INCLUDE)
+        void testGrpcSuccessAfterRecoverableCodes(Status.Code code) {
+            Status status = Status.fromCode(code);
             AtomicInteger attemptNumber = new AtomicInteger(0);
 
             Runnable invocation = () -> samplePlace.throwExceptionsDuringProcessWithSuccessfulRetry(
@@ -266,10 +249,11 @@ class GrpcSampleServicePlaceTest extends UnitTest {
             assertEquals(RETRY_ATTEMPTS, attemptNumber.get());
         }
 
+
         @ParameterizedTest
-        @MethodSource("emissary.grpc.sample.GrpcSampleServicePlaceTest#recoverableGrpcCodes")
-        void testGrpcFailureAfterMaxRecoverableCodes(int code) {
-            Status status = Status.fromCodeValue(code);
+        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "UNAVAILABLE"}, mode = EnumSource.Mode.INCLUDE)
+        void testGrpcFailureAfterMaxRecoverableCodes(Status.Code code) {
+            Status status = Status.fromCode(code);
             AtomicInteger attemptNumber = new AtomicInteger(0);
             int retryAttempts = RETRY_ATTEMPTS + 1;
 
@@ -283,9 +267,9 @@ class GrpcSampleServicePlaceTest extends UnitTest {
         }
 
         @ParameterizedTest
-        @MethodSource("emissary.grpc.sample.GrpcSampleServicePlaceTest#nonRecoverableGrpcCodes")
-        void testGrpcFailureAfterNonRecoverableCodes(int code) {
-            Status status = Status.fromCodeValue(code);
+        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "UNAVAILABLE"}, mode = EnumSource.Mode.EXCLUDE)
+        void testGrpcFailureAfterNonRecoverableCodes(Status.Code code) {
+            Status status = Status.fromCode(code);
             AtomicInteger attemptNumber = new AtomicInteger(0);
 
             Runnable invocation = () -> samplePlace.throwExceptionsDuringProcessWithSuccessfulRetry(
