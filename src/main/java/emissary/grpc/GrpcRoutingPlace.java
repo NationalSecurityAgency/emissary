@@ -188,7 +188,7 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
      * @param <R> the protobuf response type
      * @param <S> the gRPC stub type
      */
-    protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeAsyncGrpc(
+    protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeGrpcAsync(
             String targetId, Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, ListenableFuture<R>> callLogic, Q request) {
         return asyncInvoker.invoke(channelPoolLookup(targetId), stubFactory, callLogic, request);
     }

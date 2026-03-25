@@ -123,7 +123,7 @@ public class GrpcSampleServicePlace extends GrpcRoutingPlace {
 
     public void processAllTargetsAsynchronously(IBaseDataObject o) {
         Map<String, CompletableFuture<SampleResponse>> futureMap = hostnameTable.keySet().stream()
-                .collect(Collectors.toMap(k -> k, k -> invokeAsyncGrpc(
+                .collect(Collectors.toMap(k -> k, k -> invokeGrpcAsync(
                         k,
                         SampleServiceGrpc::newFutureStub,
                         SampleServiceFutureStub::callSampleService,

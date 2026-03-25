@@ -96,7 +96,7 @@ public abstract class GrpcConnectionPlace extends GrpcRoutingPlace {
     }
 
     /**
-     * Wrapper method for {@link GrpcRoutingPlace#invokeAsyncGrpc(String, Function, BiFunction, GeneratedMessageV3)} that
+     * Wrapper method for {@link GrpcRoutingPlace#invokeGrpcAsync(String, Function, BiFunction, GeneratedMessageV3)} that
      * executes a unary gRPC call to a given endpoint returns a {@link CompletableFuture future}.
      *
      * @param stubFactory function that creates the appropriate gRPC stub from a {@link ManagedChannel}
@@ -107,9 +107,9 @@ public abstract class GrpcConnectionPlace extends GrpcRoutingPlace {
      * @param <R> the protobuf response type
      * @param <S> the gRPC stub type
      */
-    protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeAsyncGrpc(
+    protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeGrpcAsync(
             Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, ListenableFuture<R>> callLogic, Q request) {
-        return invokeAsyncGrpc(CONNECTION_ID, stubFactory, callLogic, request);
+        return invokeGrpcAsync(CONNECTION_ID, stubFactory, callLogic, request);
     }
 
     public String getHost() {
