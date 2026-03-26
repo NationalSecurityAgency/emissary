@@ -370,114 +370,132 @@ class GrpcSampleServicePlaceTest extends UnitTest {
 
         @Test
         void testBlockedResponsesAreProcessedSequentially() throws IOException, InterruptedException {
-            CountDownLatch startedLatchOne = new CountDownLatch(1);
-            CountDownLatch releaseLatchOne = new CountDownLatch(1);
-            Server synchronicityOneServer = startSynchronicityServer(startedLatchOne, releaseLatchOne);
+            Server synchronicityOneServer = null;
+            Server synchronicityTwoServer = null;
 
-            CountDownLatch startedLatchTwo = new CountDownLatch(1);
-            CountDownLatch releaseLatchTwo = new CountDownLatch(1);
-            Server synchronicityTwoServer = startSynchronicityServer(startedLatchTwo, releaseLatchTwo);
+            try {
+                CountDownLatch startedLatchOne = new CountDownLatch(1);
+                CountDownLatch releaseLatchOne = new CountDownLatch(1);
+                synchronicityOneServer = startSynchronicityServer(startedLatchOne, releaseLatchOne);
 
-            samplePlace = placeFactory.buildPlace(
-                    new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + ENDPOINT_1_ID, null),
-                    new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + ENDPOINT_2_ID, null),
-                    new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + SYNCHRONICITY_1_ID, ENDPOINT_HOST),
-                    new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + SYNCHRONICITY_2_ID, ENDPOINT_HOST),
-                    new ConfigEntry(GrpcSampleServicePlace.GRPC_PORT + SYNCHRONICITY_1_ID, getPort(synchronicityOneServer)),
-                    new ConfigEntry(GrpcSampleServicePlace.GRPC_PORT + SYNCHRONICITY_2_ID, getPort(synchronicityTwoServer)));
+                CountDownLatch startedLatchTwo = new CountDownLatch(1);
+                CountDownLatch releaseLatchTwo = new CountDownLatch(1);
+                synchronicityTwoServer = startSynchronicityServer(startedLatchTwo, releaseLatchTwo);
 
-            IBaseDataObject o = new BaseDataObject(INPUT_DATA, FILENAME);
+                samplePlace = placeFactory.buildPlace(
+                        new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + ENDPOINT_1_ID, null),
+                        new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + ENDPOINT_2_ID, null),
+                        new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + SYNCHRONICITY_1_ID, ENDPOINT_HOST),
+                        new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + SYNCHRONICITY_2_ID, ENDPOINT_HOST),
+                        new ConfigEntry(GrpcSampleServicePlace.GRPC_PORT + SYNCHRONICITY_1_ID, getPort(synchronicityOneServer)),
+                        new ConfigEntry(GrpcSampleServicePlace.GRPC_PORT + SYNCHRONICITY_2_ID, getPort(synchronicityTwoServer)));
 
-            AtomicReference<Map<String, byte[]>> viewRef = new AtomicReference<>();
-            AtomicReference<Throwable> errorRef = new AtomicReference<>();
+                IBaseDataObject o = new BaseDataObject(INPUT_DATA, FILENAME);
 
-            Thread clientThread = new Thread(() -> {
-                try {
-                    samplePlace.processAllTargetsSequentially(o);
-                    viewRef.set(o.getAlternateViews());
-                } catch (Throwable t) {
-                    errorRef.set(t);
+                AtomicReference<Map<String, byte[]>> viewRef = new AtomicReference<>();
+                AtomicReference<Throwable> errorRef = new AtomicReference<>();
+
+                Thread clientThread = new Thread(() -> {
+                    try {
+                        samplePlace.processAllTargetsSequentially(o);
+                        viewRef.set(o.getAlternateViews());
+                    } catch (Throwable t) {
+                        errorRef.set(t);
+                    }
+                });
+
+                clientThread.start();
+
+                assertTrue(startedLatchOne.await(1, TimeUnit.SECONDS), "First server should have received request");
+                assertEquals(1L, startedLatchTwo.getCount(), "Second server should be waiting to receive request");
+                assertNull(viewRef.get());
+                assertNull(errorRef.get());
+
+                assertTrue(clientThread.isAlive());
+                releaseLatchOne.countDown();
+
+                assertTrue(startedLatchTwo.await(1, TimeUnit.SECONDS));
+                assertNull(viewRef.get());
+                assertNull(errorRef.get());
+
+                assertTrue(clientThread.isAlive());
+                releaseLatchTwo.countDown();
+
+                clientThread.join(1000); // Wait for thread to die
+                assertFalse(clientThread.isAlive());
+
+                assertEquals(2, viewRef.get().size());
+                assertArrayEquals(INPUT_DATA, viewRef.get().get(SYNCHRONICITY_1_ID));
+                assertArrayEquals(INPUT_DATA, viewRef.get().get(SYNCHRONICITY_2_ID));
+                assertNull(errorRef.get());
+            } finally {
+                if (synchronicityOneServer != null) {
+                    synchronicityOneServer.shutdownNow();
                 }
-            });
-
-            clientThread.start();
-
-            assertTrue(startedLatchOne.await(1, TimeUnit.SECONDS), "First server should have received request");
-            assertEquals(1L, startedLatchTwo.getCount(), "Second server should be waiting to receive request");
-            assertNull(viewRef.get());
-            assertNull(errorRef.get());
-
-            assertTrue(clientThread.isAlive());
-            releaseLatchOne.countDown();
-
-            assertTrue(startedLatchTwo.await(1, TimeUnit.SECONDS));
-            assertNull(viewRef.get());
-            assertNull(errorRef.get());
-
-            assertTrue(clientThread.isAlive());
-            releaseLatchTwo.countDown();
-
-            clientThread.join(1000); // Wait for thread to die
-            assertFalse(clientThread.isAlive());
-
-            assertEquals(2, viewRef.get().size());
-            assertArrayEquals(INPUT_DATA, viewRef.get().get(SYNCHRONICITY_1_ID));
-            assertArrayEquals(INPUT_DATA, viewRef.get().get(SYNCHRONICITY_2_ID));
-            assertNull(errorRef.get());
-
-            synchronicityOneServer.shutdownNow();
-            synchronicityTwoServer.shutdownNow();
+                if (synchronicityTwoServer != null) {
+                    synchronicityTwoServer.shutdownNow();
+                }
+            }
         }
 
         @Test
         void testFutureResponsesAreProcessedAsynchronously() throws IOException, InterruptedException {
-            CountDownLatch startedLatch = new CountDownLatch(2);
-            CountDownLatch releaseLatch = new CountDownLatch(1);
+            Server synchronicityOneServer = null;
+            Server synchronicityTwoServer = null;
 
-            Server synchronicityOneServer = startSynchronicityServer(startedLatch, releaseLatch);
-            Server synchronicityTwoServer = startSynchronicityServer(startedLatch, releaseLatch);
+            try {
+                CountDownLatch startedLatch = new CountDownLatch(2);
+                CountDownLatch releaseLatch = new CountDownLatch(1);
 
-            samplePlace = placeFactory.buildPlace(
-                    new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + ENDPOINT_1_ID, null),
-                    new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + ENDPOINT_2_ID, null),
-                    new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + SYNCHRONICITY_1_ID, ENDPOINT_HOST),
-                    new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + SYNCHRONICITY_2_ID, ENDPOINT_HOST),
-                    new ConfigEntry(GrpcSampleServicePlace.GRPC_PORT + SYNCHRONICITY_1_ID, getPort(synchronicityOneServer)),
-                    new ConfigEntry(GrpcSampleServicePlace.GRPC_PORT + SYNCHRONICITY_2_ID, getPort(synchronicityTwoServer)));
+                synchronicityOneServer = startSynchronicityServer(startedLatch, releaseLatch);
+                synchronicityTwoServer = startSynchronicityServer(startedLatch, releaseLatch);
 
-            IBaseDataObject o = new BaseDataObject(INPUT_DATA, FILENAME);
+                samplePlace = placeFactory.buildPlace(
+                        new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + ENDPOINT_1_ID, null),
+                        new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + ENDPOINT_2_ID, null),
+                        new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + SYNCHRONICITY_1_ID, ENDPOINT_HOST),
+                        new ConfigEntry(GrpcSampleServicePlace.GRPC_HOST + SYNCHRONICITY_2_ID, ENDPOINT_HOST),
+                        new ConfigEntry(GrpcSampleServicePlace.GRPC_PORT + SYNCHRONICITY_1_ID, getPort(synchronicityOneServer)),
+                        new ConfigEntry(GrpcSampleServicePlace.GRPC_PORT + SYNCHRONICITY_2_ID, getPort(synchronicityTwoServer)));
 
-            AtomicReference<Map<String, byte[]>> viewRef = new AtomicReference<>();
-            AtomicReference<Throwable> errorRef = new AtomicReference<>();
+                IBaseDataObject o = new BaseDataObject(INPUT_DATA, FILENAME);
 
-            Thread clientThread = new Thread(() -> {
-                try {
-                    samplePlace.processAllTargetsAsynchronously(o);
-                    viewRef.set(o.getAlternateViews());
-                } catch (Throwable t) {
-                    errorRef.set(t);
+                AtomicReference<Map<String, byte[]>> viewRef = new AtomicReference<>();
+                AtomicReference<Throwable> errorRef = new AtomicReference<>();
+
+                Thread clientThread = new Thread(() -> {
+                    try {
+                        samplePlace.processAllTargetsAsynchronously(o);
+                        viewRef.set(o.getAlternateViews());
+                    } catch (Throwable t) {
+                        errorRef.set(t);
+                    }
+                });
+
+                clientThread.start();
+
+                assertTrue(startedLatch.await(2, TimeUnit.SECONDS), "Not all servers received requests");
+                assertNull(viewRef.get());
+                assertNull(errorRef.get());
+
+                assertTrue(clientThread.isAlive());
+                releaseLatch.countDown();
+
+                clientThread.join(1000); // Wait for thread to die
+                assertFalse(clientThread.isAlive());
+
+                assertEquals(2, viewRef.get().size());
+                assertArrayEquals(INPUT_DATA, viewRef.get().get(SYNCHRONICITY_1_ID));
+                assertArrayEquals(INPUT_DATA, viewRef.get().get(SYNCHRONICITY_2_ID));
+                assertNull(errorRef.get());
+            } finally {
+                if (synchronicityOneServer != null) {
+                    synchronicityOneServer.shutdownNow();
                 }
-            });
-
-            clientThread.start();
-
-            assertTrue(startedLatch.await(2, TimeUnit.SECONDS), "Not all servers received requests");
-            assertNull(viewRef.get());
-            assertNull(errorRef.get());
-
-            assertTrue(clientThread.isAlive());
-            releaseLatch.countDown();
-
-            clientThread.join(1000); // Wait for thread to die
-            assertFalse(clientThread.isAlive());
-
-            assertEquals(2, viewRef.get().size());
-            assertArrayEquals(INPUT_DATA, viewRef.get().get(SYNCHRONICITY_1_ID));
-            assertArrayEquals(INPUT_DATA, viewRef.get().get(SYNCHRONICITY_2_ID));
-            assertNull(errorRef.get());
-
-            synchronicityOneServer.shutdownNow();
-            synchronicityTwoServer.shutdownNow();
+                if (synchronicityTwoServer != null) {
+                    synchronicityTwoServer.shutdownNow();
+                }
+            }
         }
     }
 }
