@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Interface for dealing with configured properties
@@ -174,7 +175,7 @@ public interface Configurator {
     long findLongEntry(String param, long dflt);
 
     /**
-     * Find config entry as an double
+     * Find config entry as a double
      *
      * @param param name of config entry
      * @param dflt default value when none found
@@ -183,7 +184,7 @@ public interface Configurator {
     double findDoubleEntry(String param, double dflt);
 
     /**
-     * Find config entry as an boolean
+     * Find config entry as a boolean
      *
      * @param param name of config entry
      * @param dflt default value when none found
@@ -193,13 +194,24 @@ public interface Configurator {
 
 
     /**
-     * Find config entry as an boolean
+     * Find config entry as a boolean
      *
      * @param param name of config entry
      * @param dflt default value when none found
      * @return boolean value or dflt when none found or not a boolean
      */
     boolean findBooleanEntry(String param, String dflt);
+
+    /**
+     * Find config entry as a generic Object
+     *
+     * @param param name of config entry
+     * @param dflt default value when none found
+     * @param parser method to turn entry from String into the correct type
+     * @return object value or dflt when none found or not the right type
+     * @param <T> the type of the return object
+     */
+    <T> T findObjectEntry(String param, T dflt, Function<String, T> parser);
 
     /**
      * Get the names of all entries for this config. This set is not backed by the configuration and any changes to it are

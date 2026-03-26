@@ -33,6 +33,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * This class implements the Configurator interface for services within the Emissary framework.
@@ -1155,6 +1156,25 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     @Override
     public boolean findBooleanEntry(final String theParameter, final String dflt) {
         return findBooleanEntry(theParameter, Boolean.parseBoolean(dflt));
+    }
+
+    /**
+     * Return the first entry matching the key parameter or the default if no match is found
+     *
+     * @param theParameter the key to match
+     * @param dflt the value to use when no matches are found
+     * @param parser method to turn the matched value from a String into the correct type
+     * @return the first matching value or the default when none found
+     * @param <T> the expected return type
+     */
+    @Override
+    public <T> T findObjectEntry(String theParameter, T dflt, Function<String, T> parser) {
+        final List<String> matchingEntries = findEntries(theParameter);
+        if (!matchingEntries.isEmpty()) {
+            String el = matchingEntries.get(0);
+            return parser.apply(el);
+        }
+        return dflt;
     }
 
     /**
