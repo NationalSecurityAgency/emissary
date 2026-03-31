@@ -439,7 +439,7 @@ class GrpcSampleServicePlaceTest extends UnitTest {
         }
 
         @Test
-        void testFutureResponsesAreProcessedAsynchronously() throws IOException, InterruptedException {
+        void testFutureResponsesAreProcessedInParallel() throws IOException, InterruptedException {
             Server synchronicityOneServer = null;
             Server synchronicityTwoServer = null;
 
@@ -465,7 +465,7 @@ class GrpcSampleServicePlaceTest extends UnitTest {
 
                 Thread clientThread = new Thread(() -> {
                     try {
-                        samplePlace.processAllTargetsAsynchronously(o);
+                        samplePlace.processAllTargetsInParallel(o);
                         viewRef.set(o.getAlternateViews());
                     } catch (Throwable t) {
                         errorRef.set(t);

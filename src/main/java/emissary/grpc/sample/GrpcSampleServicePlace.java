@@ -121,7 +121,7 @@ public class GrpcSampleServicePlace extends GrpcRoutingPlace {
                         .getResult().toByteArray()));
     }
 
-    public void processAllTargetsAsynchronously(IBaseDataObject o) {
+    public void processAllTargetsInParallel(IBaseDataObject o) {
         Map<String, CompletableFuture<SampleResponse>> futureMap = hostnameTable.keySet().stream()
                 .collect(Collectors.toMap(k -> k, k -> invokeGrpcAsync(
                         k,
