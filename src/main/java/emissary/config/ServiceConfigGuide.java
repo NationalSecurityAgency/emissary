@@ -1162,13 +1162,13 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * Return the first entry matching the key parameter or the default if no match is found
      *
      * @param theParameter the key to match
-     * @param dflt the value to use when no matches are found
      * @param parser method to turn the matched value from a String into the correct type
+     * @param dflt the value to use when no matches are found
      * @return the first matching value or the default when none found
      * @param <T> the expected return type
      */
     @Override
-    public <T> T findObjectEntry(String theParameter, T dflt, Function<String, T> parser) {
+    public <T> T findObjectEntry(String theParameter, Function<String, T> parser, T dflt) {
         final List<String> matchingEntries = findEntries(theParameter);
         if (!matchingEntries.isEmpty()) {
             String el = matchingEntries.get(0);

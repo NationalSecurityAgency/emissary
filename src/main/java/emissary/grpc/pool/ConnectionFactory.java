@@ -116,7 +116,7 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
         // Specifies how the client chooses between multiple backend addresses
         // e.g. "pick_first" uses the first address only, "round_robin" cycles through all of them for client-side balancing
         this.loadBalancingPolicy = configG.findObjectEntry(
-                GRPC_LOAD_BALANCING_POLICY, LoadBalancingPolicy.ROUND_ROBIN, LoadBalancingPolicy::valueOf).formattedName();
+                GRPC_LOAD_BALANCING_POLICY, LoadBalancingPolicy::valueOf, LoadBalancingPolicy.ROUND_ROBIN).formattedName();
 
         // Max size (in bytes) for incoming messages and message metadata from the server
         this.maxInboundMessageByteSize = configG.findIntEntry(GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE, 4 << 20); // 4 MiB
@@ -143,7 +143,7 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
 
         // Order for pool to borrow connections
         PoolRetrievalOrdering retrievalOrdering = configG.findObjectEntry(
-                GRPC_POOL_RETRIEVAL_ORDER, PoolRetrievalOrdering.LIFO, PoolRetrievalOrdering::valueOf);
+                GRPC_POOL_RETRIEVAL_ORDER, PoolRetrievalOrdering::valueOf, PoolRetrievalOrdering.LIFO);
         this.poolConfig.setLifo(retrievalOrdering.equals(PoolRetrievalOrdering.LIFO));
 
         // Whether to validate channels when borrowing from the pool

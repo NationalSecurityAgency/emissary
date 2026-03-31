@@ -354,8 +354,8 @@ class ServiceConfigGuideTest extends UnitTest {
         assertEquals(999L, c.findSizeEntry("SZ9", -1L), "Size digit check");
         assertEquals(0L, c.findSizeEntry("SZ0", -1L), "Size digit check");
 
-        assertEquals(TestType.MATCH_VALUE, c.findObjectEntry("OBJECTM", TestType.DEFAULT_VALUE, TestType::valueOf));
-        assertEquals(TestType.DEFAULT_VALUE, c.findObjectEntry("OBJECTD", TestType.DEFAULT_VALUE, TestType::valueOf));
+        assertEquals(TestType.MATCH_VALUE, c.findObjectEntry("OBJECTM", TestType::valueOf, TestType.DEFAULT_VALUE));
+        assertEquals(TestType.DEFAULT_VALUE, c.findObjectEntry("OBJECTD", TestType::valueOf, TestType.DEFAULT_VALUE));
     }
 
     @Test

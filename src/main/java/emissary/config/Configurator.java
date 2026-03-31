@@ -206,12 +206,12 @@ public interface Configurator {
      * Find config entry as a generic Object
      *
      * @param param name of config entry
-     * @param dflt default value when none found
      * @param parser method to turn entry from String into the correct type
+     * @param dflt default value when none found
      * @return object value or dflt when none found or not the right type
      * @param <T> the type of the return object
      */
-    <T> T findObjectEntry(String param, T dflt, Function<String, T> parser);
+    <T> T findObjectEntry(String param, Function<String, T> parser, T dflt);
 
     /**
      * Get the names of all entries for this config. This set is not backed by the configuration and any changes to it are
