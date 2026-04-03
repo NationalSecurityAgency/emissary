@@ -310,7 +310,8 @@ class ServiceConfigGuideTest extends UnitTest {
                         + "BOOLEANQ = \"BOGUS\"\n" + "SZP = \"123\"\n" + "SZB = \"123b\"\n" + "SZK = \"123k\"\n" + "SZM = \"123m\"\n"
                         + "SZG = \"123g\"\n" + "SZT = \"123t\"\n" + "SZQ = \"red balloons\"\n" + "SZ1 = \"111\"\n" + "SZ2 = \"222\"\n"
                         + "SZ3 = \"333\"\n" + "SZ4 = \"444\"\n" + "SZ5 = \"555\"\n" + "SZ6 = \"666\"\n" + "SZ7 = \"777\"\n" + "SZ8 = \"888\"\n"
-                        + "SZ9 = \"999\"\n" + "SZ0 = \"000\"\n" + "STRING = \"chars\"\n" + "LONG2 = 12345678901234").getBytes();
+                        + "SZ9 = \"999\"\n" + "SZ0 = \"000\"\n" + "STRING = \"chars\"\n" + "LONG2 = 12345678901234\n"
+                        + "OBJECTM = \"MATCH_VALUE\"\n").getBytes();
         final ByteArrayInputStream str = new ByteArrayInputStream(configData);
         final Configurator c = ConfigUtil.getConfigInfo(str);
         assertEquals(123, c.findIntEntry("INTEGER", 456), "Int entry with def");
@@ -352,6 +353,9 @@ class ServiceConfigGuideTest extends UnitTest {
         assertEquals(888L, c.findSizeEntry("SZ8", -1L), "Size digit check");
         assertEquals(999L, c.findSizeEntry("SZ9", -1L), "Size digit check");
         assertEquals(0L, c.findSizeEntry("SZ0", -1L), "Size digit check");
+
+        assertEquals(TestType.MATCH_VALUE, c.findObjectEntry("OBJECTM", TestType::valueOf, TestType.DEFAULT_VALUE));
+        assertEquals(TestType.DEFAULT_VALUE, c.findObjectEntry("OBJECTD", TestType::valueOf, TestType.DEFAULT_VALUE));
     }
 
     @Test
@@ -699,4 +703,7 @@ class ServiceConfigGuideTest extends UnitTest {
 
     }
 
+    private enum TestType {
+        DEFAULT_VALUE, MATCH_VALUE
+    }
 }

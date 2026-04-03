@@ -70,7 +70,7 @@ class ConnectionFactoryTest extends UnitTest {
     @Test
     void testBadLoadBalancingConfig() {
         Configurator configT = getDefaultConfigs();
-        configT.addEntry(ConnectionFactory.GRPC_LOAD_BALANCING_POLICY, "bad_scheduler");
+        configT.addEntry(ConnectionFactory.GRPC_LOAD_BALANCING_POLICY, "BAD_SCHEDULER");
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                 () -> buildConnectionFactory(configT));
         assertEquals("No enum constant emissary.grpc.pool.LoadBalancingPolicy.BAD_SCHEDULER", e.getMessage());
