@@ -1,7 +1,6 @@
 package emissary.grpc.pool;
 
 import emissary.config.Configurator;
-import emissary.grpc.exceptions.PoolException;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;

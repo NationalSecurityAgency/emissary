@@ -1,8 +1,6 @@
 package emissary.grpc.retry;
 
 import emissary.config.Configurator;
-import emissary.grpc.exceptions.PoolException;
-import emissary.grpc.exceptions.ServiceNotAvailableException;
 
 import io.github.resilience4j.core.IntervalFunction;
 import io.github.resilience4j.retry.Retry;
@@ -16,6 +14,7 @@ import org.slf4j.event.Level;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -76,8 +75,9 @@ public final class RetryHandler {
      *
      * @param configG configuration provider for retry logic
      * @param retryName unique name to internally identify the retry policy
+     * @param retryOnException a function that takes a Throwable and determines if it should trigger a retry
      */
-    public RetryHandler(Configurator configG, String retryName) {
+    public RetryHandler(Configurator configG, String retryName, Predicate<Throwable> retryOnException) {
         internalName = retryName;
         maxAttempts = configG.findIntEntry(GRPC_RETRY_MAX_ATTEMPTS, 4);
         numFailsBeforeWarn = configG.findIntEntry(GRPC_RETRY_NUM_FAILS_BEFORE_WARN, 3);
@@ -88,7 +88,7 @@ public final class RetryHandler {
                         configG.findIntEntry(GRPC_RETRY_INITIAL_WAIT_MILLIS, 64),
                         configG.findDoubleEntry(GRPC_RETRY_MULTIPLIER, 2.0),
                         configG.findLongEntry(GRPC_RETRY_MAX_WAIT_MILLIS, 1000)))
-                .retryExceptions(PoolException.class, ServiceNotAvailableException.class)
+                .retryOnException(retryOnException)
                 .build());
 
         retry.getEventPublisher()
