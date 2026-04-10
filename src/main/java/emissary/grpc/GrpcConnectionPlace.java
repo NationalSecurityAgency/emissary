@@ -1,8 +1,6 @@
 package emissary.grpc;
 
 import emissary.config.Configurator;
-import emissary.grpc.exceptions.PoolException;
-import emissary.grpc.exceptions.ServiceNotAvailableException;
 import emissary.grpc.pool.ConnectionFactory;
 import emissary.grpc.retry.RetryHandler;
 
@@ -15,9 +13,9 @@ import jakarta.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -81,10 +79,8 @@ public abstract class GrpcConnectionPlace extends GrpcRoutingPlace {
     }
 
     /**
-     * Executes a unary gRPC call using a {@code BlockingStub}. If the gRPC connection fails due to a {@link PoolException}
-     * or a {@link ServiceNotAvailableException}, the call will be tried again per the configurations set using
-     * {@link RetryHandler}. All other Exceptions are thrown on the spot. Will also throw an Exception once max attempts
-     * have been reached.
+     * Wrapper method for {@link GrpcRoutingPlace#invokeGrpc(String, Function, BiFunction, GeneratedMessageV3)} that
+     * executes a unary gRPC call to a given endpoint.
      *
      * @param stubFactory function that creates the appropriate gRPC stub from a {@link ManagedChannel}
      * @param callLogic function that performs the actual gRPC call using the stub and request
@@ -96,25 +92,24 @@ public abstract class GrpcConnectionPlace extends GrpcRoutingPlace {
      */
     protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractBlockingStub<S>> R invokeGrpc(
             Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, R> callLogic, Q request) {
-
         return invokeGrpc(CONNECTION_ID, stubFactory, callLogic, request);
     }
 
     /**
-     * Executes multiple unary gRPC calls in parallel using a shared {@link AbstractFutureStub}.
+     * Wrapper method for {@link GrpcRoutingPlace#invokeGrpcAsync(String, Function, BiFunction, GeneratedMessageV3)} that
+     * executes a unary gRPC call to a given endpoint returns a {@link CompletableFuture future}.
      *
-     * @param stubFactory function that creates the appropriate {@code FutureStub} from a {@link ManagedChannel}
-     * @param callLogic function that maps a stub and request to a {@link ListenableFuture}
-     * @param requestList list of protobuf request messages to be sent
-     * @return list of gRPC responses in the same order as {@code requestList}
+     * @param stubFactory function that creates the appropriate gRPC stub from a {@link ManagedChannel}
+     * @param callLogic function that performs the actual gRPC call using the stub and request
+     * @param request the protobuf request message to send
+     * @return the future that waits for the response returned by the gRPC call
      * @param <Q> the protobuf request type
      * @param <R> the protobuf response type
      * @param <S> the gRPC stub type
      */
-    protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> List<R> invokeBatchedGrpc(
-            Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, ListenableFuture<R>> callLogic, List<Q> requestList) {
-
-        return invokeBatchedGrpc(CONNECTION_ID, stubFactory, callLogic, requestList);
+    protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeGrpcAsync(
+            Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, ListenableFuture<R>> callLogic, Q request) {
+        return invokeGrpcAsync(CONNECTION_ID, stubFactory, callLogic, request);
     }
 
     public String getHost() {

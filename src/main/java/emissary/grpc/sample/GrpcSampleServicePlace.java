@@ -3,12 +3,14 @@ package emissary.grpc.sample;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.grpc.GrpcRoutingPlace;
+import emissary.grpc.invoker.GrpcInvoker;
 import emissary.grpc.pool.ConnectionFactory;
 import emissary.grpc.retry.RetryHandler;
 import emissary.grpc.sample.v1.SampleRequest;
 import emissary.grpc.sample.v1.SampleResponse;
 import emissary.grpc.sample.v1.SampleServiceGrpc;
 import emissary.grpc.sample.v1.SampleServiceGrpc.SampleServiceBlockingStub;
+import emissary.grpc.sample.v1.SampleServiceGrpc.SampleServiceFutureStub;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
@@ -16,11 +18,16 @@ import io.grpc.ManagedChannel;
 import jakarta.annotation.Nullable;
 
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Connects to an arbitrary external service that implements {@link emissary.grpc.sample.v1.SampleServiceGrpc}. Results
@@ -99,6 +106,32 @@ public class GrpcSampleServicePlace extends GrpcRoutingPlace {
             SampleResponse response = invokeGrpc(targetId, SampleServiceGrpc::newBlockingStub, callLogic, request);
             o.addAlternateView(ALTERNATE_VIEW_NAME, response.getResult().toByteArray());
         }
+    }
+
+    public void processAllTargetsSequentially(IBaseDataObject o) {
+        hostnameTable.keySet().stream()
+                .sorted(Comparator.naturalOrder())
+                .forEach(targetId -> o.addAlternateView(targetId, invokeGrpc(
+                        targetId,
+                        SampleServiceGrpc::newBlockingStub,
+                        SampleServiceBlockingStub::callSampleService,
+                        SampleRequest.newBuilder()
+                                .setQuery(ByteString.copyFrom(o.data()))
+                                .build())
+                        .getResult().toByteArray()));
+    }
+
+    public void processAllTargetsInParallel(IBaseDataObject o) {
+        Map<String, CompletableFuture<SampleResponse>> futureMap = hostnameTable.keySet().stream()
+                .collect(Collectors.toMap(k -> k, k -> invokeGrpcAsync(
+                        k,
+                        SampleServiceGrpc::newFutureStub,
+                        SampleServiceFutureStub::callSampleService,
+                        SampleRequest.newBuilder()
+                                .setQuery(ByteString.copyFrom(o.data()))
+                                .build())));
+        Map<String, SampleResponse> responseMap = GrpcInvoker.awaitAllAndGet(futureMap, HashMap::new);
+        responseMap.forEach((k, v) -> o.addAlternateView(k, v.getResult().toByteArray()));
     }
 
     /**
