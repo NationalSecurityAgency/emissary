@@ -94,7 +94,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
      * @param fileNameGenerator The FileNameGenerator to use for unique destination file names
      * @throws IOException If there is some I/O problem.
      */
-    public JournaledCoalescer(final Path outPath, final FileNameGenerator fileNameGenerator) throws IOException, InterruptedException {
+    public JournaledCoalescer(final Path outPath, final FileNameGenerator fileNameGenerator) throws IOException {
         this(outPath, fileNameGenerator, JournaledChannelPool.DEFAULT_MAX);
     }
 
@@ -105,7 +105,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
      * @param fileNameGenerator The FileNameGenerator to use for unique destination file names
      * @param poolsize The max number of outputs for the pool.
      */
-    public JournaledCoalescer(final Path outPath, final FileNameGenerator fileNameGenerator, int poolsize) throws IOException, InterruptedException {
+    public JournaledCoalescer(final Path outPath, final FileNameGenerator fileNameGenerator, int poolsize) throws IOException {
         this.outputPath = outPath.toAbsolutePath();
         this.fileNameGenerator = fileNameGenerator;
         this.poolsize = poolsize;
@@ -151,7 +151,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
      * <p>
      * Called by the roll method, synchronized for consistency.
      */
-    private Collection<Path> initializeNextPool() throws IOException, InterruptedException {
+    private Collection<Path> initializeNextPool() throws IOException {
         lock.lock();
         try {
             if (journaledPool != null) {
@@ -199,9 +199,6 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
             coalesce(paths);
         } catch (IOException ex) {
             LOG.error("Error occurred during roll.", ex);
-        } catch (InterruptedException ex) {
-            LOG.warn("Roll interrupted during execution. Should continue on next roll.", ex);
-            Thread.currentThread().interrupt();
         } finally {
             this.rolling = false;
         }

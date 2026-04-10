@@ -109,21 +109,29 @@ public class JournaledChannelPool implements AutoCloseable {
     /**
      * Closes the underlying pool. This method will block if any resources have not been returned.
      * 
-     * @throws InterruptedException If interrupted.
      * @throws IOException If there is some I/O problem.
      */
     @Override
-    public void close() throws InterruptedException, IOException {
+    public void close() throws IOException {
         this.lock.lock();
         try {
+            boolean interrupted = false;
             while (this.free.size() < this.created) {
                 LOG.debug("Waiting for leased {} objects.", this.created - this.free.size());
-                this.freeCondition.await();
+                try {
+                    this.freeCondition.await();
+                } catch (InterruptedException ie) {
+                    interrupted = true;
+                    LOG.debug("Interrupted while waiting for free condition", ie);
+                }
             }
             for (final JournaledChannel fc : this.free) {
                 this.allchannels[fc.index].close();
             }
             this.allchannels = null;
+            if (interrupted) {
+                Thread.currentThread().interrupt(); // Restore previous interrupt status
+            }
         } finally {
             this.lock.unlock();
         }
