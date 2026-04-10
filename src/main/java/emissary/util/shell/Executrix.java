@@ -78,6 +78,12 @@ public class Executrix {
     protected static final Pattern INVALID_PLACE_NAME_CHARS = Pattern.compile("[^a-zA-Z0-9_-]");
 
     /**
+     * Allowlist for file ending values. A leading dot is permitted so that normal extensions like {@code .out} are accepted
+     * unchanged; every other character must be alphanumeric, underscore, or hyphen.
+     */
+    protected static final Pattern INVALID_FILE_ENDING_CHARS = Pattern.compile("[^a-zA-Z0-9_.\\-]");
+
+    /**
      * Create using all defaults
      */
     public Executrix() {
@@ -118,8 +124,8 @@ public class Executrix {
         final Configurator configG = (configGArg != null) ? configGArg : new ServiceConfigGuide();
 
         this.command = configG.findStringEntry("EXEC_COMMAND", "echo 'YouForGotToSetEXEC_COMMAND' | tee bla.txt");
-        this.inFileEnding = configG.findStringEntry("IN_FILE_ENDING", "");
-        this.outFileEnding = configG.findStringEntry("OUT_FILE_ENDING", this.inFileEnding.isEmpty() ? ".out" : "");
+        this.inFileEnding = cleanFileEnding(configG.findStringEntry("IN_FILE_ENDING", ""));
+        this.outFileEnding = cleanFileEnding(configG.findStringEntry("OUT_FILE_ENDING", this.inFileEnding.isEmpty() ? ".out" : ""));
         this.output = configG.findStringEntry("OUTPUT_TYPE", "STD");
         this.order = configG.findStringEntry("ORDER", "NORMAL");
         this.numArgs = configG.findStringEntry("NUM_ARGS", "");
@@ -147,6 +153,16 @@ public class Executrix {
      */
     protected static String cleanPlaceName(final String placeName) {
         return INVALID_PLACE_NAME_CHARS.matcher(placeName).replaceAll("_");
+    }
+
+    /**
+     * Remove invalid characters from a file ending value, see {@link Executrix#INVALID_FILE_ENDING_CHARS}
+     *
+     * @param fileEnding the raw file ending (e.g. {@code .out})
+     * @return a cleaned string with shell-unsafe characters replaced by {@code _}
+     */
+    protected static String cleanFileEnding(final String fileEnding) {
+        return INVALID_FILE_ENDING_CHARS.matcher(fileEnding).replaceAll("_");
     }
 
     /**
@@ -1174,7 +1190,7 @@ public class Executrix {
      * @param argInFileEnding Value to assign to this.inFileEnding
      */
     public void setInFileEnding(final String argInFileEnding) {
-        this.inFileEnding = argInFileEnding;
+        this.inFileEnding = cleanFileEnding(argInFileEnding);
     }
 
     /**
@@ -1192,7 +1208,7 @@ public class Executrix {
      * @param argOutFileEnding Value to assign to this.outFileEnding
      */
     public void setOutFileEnding(final String argOutFileEnding) {
-        this.outFileEnding = argOutFileEnding;
+        this.outFileEnding = cleanFileEnding(argOutFileEnding);
     }
 
     /**

@@ -1,5 +1,7 @@
 package emissary.util.shell;
 
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
 import emissary.test.core.junit5.UnitTest;
 
 import jakarta.annotation.Nullable;
@@ -601,6 +603,101 @@ class ExecutrixTest extends UnitTest {
         assertEquals(expected, Executrix.cleanPlaceName("PLACE^NAME@1"));
 
         assertEquals("PLACE-NAME-1", Executrix.cleanPlaceName("PLACE-NAME-1"));
+    }
+
+    // -----------------------------------------------------------------------
+    // cleanFileEnding – covers INVALID_FILE_ENDING_CHARS and cleanFileEnding()
+    // -----------------------------------------------------------------------
+
+    @Test
+    void testCleanFileEndingAllowedCharsPassThrough() {
+        // Normal extensions must survive unchanged
+        assertEquals(".out", Executrix.cleanFileEnding(".out"));
+        assertEquals(".txt", Executrix.cleanFileEnding(".txt"));
+        assertEquals("", Executrix.cleanFileEnding(""));
+        assertEquals(".out-1_a", Executrix.cleanFileEnding(".out-1_a"));
+        assertEquals("ABC123._-", Executrix.cleanFileEnding("ABC123._-"));
+    }
+
+    @Test
+    void testCleanFileEndingShellMetacharacters() {
+        // Every shell-special character must be individually replaced with '_'
+        assertEquals("_", Executrix.cleanFileEnding("`"));
+        assertEquals("_", Executrix.cleanFileEnding("$"));
+        assertEquals("_", Executrix.cleanFileEnding(";"));
+        assertEquals("_", Executrix.cleanFileEnding("&"));
+        assertEquals("_", Executrix.cleanFileEnding("|"));
+        assertEquals("_", Executrix.cleanFileEnding(">"));
+        assertEquals("_", Executrix.cleanFileEnding("<"));
+        assertEquals("_", Executrix.cleanFileEnding("!"));
+        assertEquals("_", Executrix.cleanFileEnding(" "));
+        assertEquals("_", Executrix.cleanFileEnding("("));
+        assertEquals("_", Executrix.cleanFileEnding(")"));
+        assertEquals("_", Executrix.cleanFileEnding("'"));
+        assertEquals("_", Executrix.cleanFileEnding("\""));
+        assertEquals("_", Executrix.cleanFileEnding("\\"));
+        assertEquals("_", Executrix.cleanFileEnding("/"));
+        assertEquals("_", Executrix.cleanFileEnding("\n"));
+        assertEquals("_", Executrix.cleanFileEnding("\t"));
+    }
+
+    @Test
+    void testCleanFileEndingDoesNotStripHyphenOrUnderscore() {
+        // Hyphen and underscore are safe in file extensions and must not be replaced
+        assertEquals(".tar.gz", Executrix.cleanFileEnding(".tar.gz"));
+        assertEquals(".out-v2", Executrix.cleanFileEnding(".out-v2"));
+        assertEquals(".out_v2", Executrix.cleanFileEnding(".out_v2"));
+    }
+
+    // -----------------------------------------------------------------------
+    // setInFileEnding / setOutFileEnding – sanitization enforced by setters
+    // -----------------------------------------------------------------------
+
+    @Test
+    void testSetFileEndingsNormalValuesUnchanged() {
+        // Legitimate extensions must not be altered by the setters
+        e.setInFileEnding(".in");
+        assertEquals(".in", e.getInFileEnding());
+
+        e.setOutFileEnding(".out");
+        assertEquals(".out", e.getOutFileEnding());
+    }
+
+    @Test
+    void testSetFileEndingsSanitizeInjectionPayloads() {
+        e.setInFileEnding("`id`");
+        assertEquals("_id_", e.getInFileEnding());
+
+        e.setOutFileEnding(";rm -rf /");
+        assertEquals("_rm_-rf__", e.getOutFileEnding());
+    }
+
+    // -----------------------------------------------------------------------
+    // configure() path – sanitization applied when reading from Configurator
+    // -----------------------------------------------------------------------
+
+    @Test
+    void testConfigureFileEndingsSanitizedFromConfig() {
+        // Injection payloads in config must be neutralized at construction time
+        final Configurator cfg = new ServiceConfigGuide();
+        cfg.addEntry("IN_FILE_ENDING", "`id > /tmp/pwned.txt`");
+        cfg.addEntry("OUT_FILE_ENDING", "$(whoami)");
+
+        final Executrix ex = new Executrix(cfg);
+        assertEquals("_id____tmp_pwned.txt_", ex.getInFileEnding());
+        assertEquals("__whoami_", ex.getOutFileEnding());
+    }
+
+    @Test
+    void testConfigureNormalFileEndingsUnchanged() {
+        // Normal extensions must pass through configure() without modification
+        final Configurator cfg = new ServiceConfigGuide();
+        cfg.addEntry("IN_FILE_ENDING", ".xml");
+        cfg.addEntry("OUT_FILE_ENDING", ".json");
+
+        final Executrix ex = new Executrix(cfg);
+        assertEquals(".xml", ex.getInFileEnding());
+        assertEquals(".json", ex.getOutFileEnding());
     }
 
     private static void readAndNuke(final String name) throws IOException {
