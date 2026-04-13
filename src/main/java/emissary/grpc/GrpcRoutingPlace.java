@@ -101,23 +101,6 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
         configureGrpc();
     }
 
-    protected Map<String, String> getHostnameConfigs() {
-        return Objects.requireNonNull(configG).findStringMatchMap(GRPC_HOST, true);
-    }
-
-    protected Map<String, Integer> getPortNumberConfigs() {
-        return Objects.requireNonNull(configG).findStringMatchMap(GRPC_PORT).entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> Integer.parseInt(entry.getValue())));
-    }
-
-    protected boolean retryOnException(Throwable t) {
-        if (t instanceof StatusRuntimeException) {
-            StatusRuntimeException e = (StatusRuntimeException) t;
-            return RETRY_GRPC_CODES.contains(e.getStatus().getCode());
-        }
-        return t instanceof PoolException;
-    }
-
     private void configureGrpc() {
         if (configG == null) {
             throw new IllegalStateException("gRPC configurations not found for " + this.getPlaceName());
@@ -141,6 +124,31 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
         }
 
         grpcInvoker = new GrpcInvoker(new RetryHandler(configG, this.getPlaceName(), this::retryOnException));
+    }
+
+    protected Map<String, String> getHostnameConfigs() {
+        return Objects.requireNonNull(configG).findStringMatchMap(GRPC_HOST, true);
+    }
+
+    protected Map<String, Integer> getPortNumberConfigs() {
+        return Objects.requireNonNull(configG).findStringMatchMap(GRPC_PORT).entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> Integer.parseInt(entry.getValue())));
+    }
+
+    /**
+     * Determines if the {@link RetryHandler} should try again when an exception is thrown during gRPC invocation. Default
+     * behavior attempts retries for any {@link PoolException} or for any Exception with a {@link Status.Code} in
+     * {@link #RETRY_GRPC_CODES}. Subclasses may override this behavior.
+     *
+     * @param t the Exception thrown during gRPC invocation
+     * @return {@code true} if the {@link RetryHandler} should try again, otherwise {@code false}
+     */
+    protected boolean retryOnException(Throwable t) {
+        if (t instanceof StatusRuntimeException) {
+            StatusRuntimeException e = (StatusRuntimeException) t;
+            return RETRY_GRPC_CODES.contains(e.getStatus().getCode());
+        }
+        return t instanceof PoolException;
     }
 
     private ObjectPool<ManagedChannel> newConnectionPool(String id) {
