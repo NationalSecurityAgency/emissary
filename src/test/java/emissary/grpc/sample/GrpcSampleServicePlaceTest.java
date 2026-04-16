@@ -296,6 +296,54 @@ class GrpcSampleServicePlaceTest extends UnitTest {
     }
 
     @Nested
+    class UnlimitedRetryTests extends UnitTest {
+        private static final String TARGET_ID = ENDPOINT_1_ID;
+        // Small max attempts per cycle so tests cross cycle boundaries quickly
+        private static final int RETRY_ATTEMPTS = 2;
+
+        @BeforeEach
+        void initialize() {
+            samplePlace = placeFactory.buildPlace(
+                    new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_ATTEMPTS, Integer.toString(RETRY_ATTEMPTS)),
+                    new ConfigEntry(RetryHandler.GRPC_RETRY_UNLIMITED, Boolean.TRUE.toString()),
+                    new ConfigEntry(RetryHandler.GRPC_RETRY_INITIAL_WAIT_MILLIS, "1"),
+                    new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_WAIT_MILLIS, "1"),
+                    new ConfigEntry(GrpcSampleServicePlace.GRPC_PORT + ENDPOINT_1_ID, getPort(endpointOneServer)),
+                    new ConfigEntry(GrpcSampleServicePlace.GRPC_PORT + ENDPOINT_2_ID, getPort(endpointTwoServer)));
+            dataObject = new BaseDataObject(INPUT_DATA, FILENAME, createSampleForm(TARGET_ID));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "UNAVAILABLE"}, mode = EnumSource.Mode.INCLUDE)
+        void testGrpcSucceedsAfterMultipleRetryCycles(Status.Code code) {
+            Status status = Status.fromCode(code);
+            AtomicInteger attemptNumber = new AtomicInteger(0);
+            // Require more failures than a single retry cycle allows, forcing at least one cycle restart
+            int totalFailuresBeforeSuccess = RETRY_ATTEMPTS * 3;
+
+            samplePlace.throwExceptionsDuringProcessWithSuccessfulRetry(dataObject, new StatusRuntimeException(status),
+                    totalFailuresBeforeSuccess, attemptNumber);
+
+            assertArrayEquals(ENDPOINT_1_PROCESSED_DATA, getSampleAltView(dataObject));
+            assertEquals(totalFailuresBeforeSuccess, attemptNumber.get());
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "UNAVAILABLE"}, mode = EnumSource.Mode.EXCLUDE)
+        void testNonRecoverableCodesStillFail(Status.Code code) {
+            Status status = Status.fromCode(code);
+            AtomicInteger attemptNumber = new AtomicInteger(0);
+
+            Runnable invocation = () -> samplePlace.throwExceptionsDuringProcessWithSuccessfulRetry(
+                    dataObject, new StatusRuntimeException(status), RETRY_ATTEMPTS * 3, attemptNumber);
+            assertThrows(ServiceException.class, invocation::run);
+
+            // Non-recoverable errors are not retried regardless of unlimited mode
+            assertEquals(1, attemptNumber.get());
+        }
+    }
+
+    @Nested
     class ProcessRoutingTests extends UnitTest {
         private static final String ENDPOINT_3_ID = "EXAMPLE_ENDPOINT_3";
 

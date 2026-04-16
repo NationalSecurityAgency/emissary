@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,6 +36,9 @@ import java.util.function.Supplier;
  * default={@code 2.0}</li>
  * <li>{@code GRPC_RETRY_NUM_FAILS_BEFORE_WARN} - Determines the number of execution failures before logger should start
  * sending warnings, default={@code 3}</li>
+ * <li>{@code GRPC_RETRY_UNLIMITED} - When {@code true}, the retry cycle restarts indefinitely after exhausting
+ * {@code GRPC_RETRY_MAX_ATTEMPTS} until the call succeeds. Use this when downstream systems must block until the gRPC
+ * request completes and a permanent failure is not acceptable, default={@code false}</li>
  * </ul>
  * To calculate exponential backoff wait time, let:
  * <ul>
@@ -60,6 +65,7 @@ public final class RetryHandler {
     public static final String GRPC_RETRY_MAX_WAIT_MILLIS = "GRPC_RETRY_MAX_WAIT_MILLIS";
     public static final String GRPC_RETRY_MULTIPLIER = "GRPC_RETRY_MULTIPLIER";
     public static final String GRPC_RETRY_NUM_FAILS_BEFORE_WARN = "GRPC_RETRY_NUM_FAILS_BEFORE_WARN";
+    public static final String GRPC_RETRY_UNLIMITED = "GRPC_RETRY_UNLIMITED";
 
     private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private static final Logger logger = LoggerFactory.getLogger(RetryHandler.class);
@@ -67,6 +73,7 @@ public final class RetryHandler {
     private final String internalName;
     private final int maxAttempts;
     private final int numFailsBeforeWarn;
+    private final boolean retryUnlimited;
     private final Retry retry;
 
     /**
@@ -81,6 +88,7 @@ public final class RetryHandler {
         internalName = retryName;
         maxAttempts = configG.findIntEntry(GRPC_RETRY_MAX_ATTEMPTS, 4);
         numFailsBeforeWarn = configG.findIntEntry(GRPC_RETRY_NUM_FAILS_BEFORE_WARN, 3);
+        retryUnlimited = configG.findBooleanEntry(GRPC_RETRY_UNLIMITED, false);
 
         retry = Retry.of(internalName, RetryConfig.custom()
                 .maxAttempts(maxAttempts)
@@ -107,10 +115,52 @@ public final class RetryHandler {
     }
 
     public <T> T execute(Supplier<T> supplier) {
-        return Retry.decorateSupplier(retry, supplier).get();
+        if (!retryUnlimited) {
+            return Retry.decorateSupplier(retry, supplier).get();
+        }
+        int cycleCount = 0;
+        while (true) {
+            try {
+                return Retry.decorateSupplier(retry, supplier).get();
+            } catch (ServiceNotAvailableException | PoolException e) {
+                logger.warn("{} exhausted {} max retry attempts (cycle #{}), restarting due to unlimited retry mode",
+                        internalName, maxAttempts, ++cycleCount);
+            }
+        }
     }
 
     public <T> CompletionStage<T> executeAsync(Supplier<CompletionStage<T>> supplier) {
-        return Retry.decorateCompletionStage(retry, scheduler, supplier).get();
+        if (!retryUnlimited) {
+            return Retry.decorateCompletionStage(retry, scheduler, supplier).get();
+        }
+        CompletableFuture<T> result = new CompletableFuture<>();
+        attemptAsyncUnlimited(supplier, result, 0);
+        return result;
+    }
+
+    private <T> void attemptAsyncUnlimited(Supplier<CompletionStage<T>> supplier, CompletableFuture<T> result, int cycleCount) {
+        Retry.decorateCompletionStage(retry, scheduler, supplier).get()
+                .whenComplete((value, throwable) -> {
+                    if (throwable == null) {
+                        result.complete(value);
+                    } else {
+                        Throwable cause = unwrapCompletionCause(throwable);
+                        if (cause instanceof ServiceNotAvailableException || cause instanceof PoolException) {
+                            logger.warn("{} exhausted {} max retry attempts (cycle #{}), restarting due to unlimited retry mode",
+                                    internalName, maxAttempts, cycleCount + 1);
+                            scheduler.execute(() -> attemptAsyncUnlimited(supplier, result, cycleCount + 1));
+                        } else {
+                            result.completeExceptionally(throwable);
+                        }
+                    }
+                });
+    }
+
+    private static Throwable unwrapCompletionCause(Throwable throwable) {
+        Throwable current = throwable;
+        while (current instanceof CompletionException && current.getCause() != null) {
+            current = current.getCause();
+        }
+        return current;
     }
 }
