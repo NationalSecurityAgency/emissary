@@ -366,26 +366,63 @@
 <a class="jxr_linenumber" name="L358" href="#L358">358</a>         assertTrue(answer.contains(<span class="jxr_string">"BAR.BARPLACE: BarPlace(NonePlace)"</span>), <span class="jxr_string">"Answer should have compacted history"</span>);
 <a class="jxr_linenumber" name="L359" href="#L359">359</a>     }
 <a class="jxr_linenumber" name="L360" href="#L360">360</a> 
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L362" href="#L362">362</a> <em class="jxr_javadoccomment">     * Compares the form to a set of valid characters</em>
-<a class="jxr_linenumber" name="L363" href="#L363">363</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">     * This implementation is marginally faster than the regex implementation, but is less maintainable</em>
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">     * @param form The form to be tested</em>
-<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     * @return Whether the form is considered valid</em>
-<a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isValidFormSetImplementation(String form) {
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>         <strong class="jxr_keyword">if</strong> (form.length() &gt; 0) {
-<a class="jxr_linenumber" name="L371" href="#L371">371</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; form.length(); i++) {
-<a class="jxr_linenumber" name="L372" href="#L372">372</a>                 <strong class="jxr_keyword">if</strong> (!validFormChars.contains(form.charAt(i))) {
-<a class="jxr_linenumber" name="L373" href="#L373">373</a>                     <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L374" href="#L374">374</a>                 }
-<a class="jxr_linenumber" name="L375" href="#L375">375</a>             }
-<a class="jxr_linenumber" name="L376" href="#L376">376</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L377" href="#L377">377</a>         }
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>     @Test
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>     <strong class="jxr_keyword">void</strong> testShowCompletionInfoEnabled() {
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>         <em class="jxr_comment">// setup</em>
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>         <strong class="jxr_keyword">final</strong> String fn = <span class="jxr_string">"testCompletionInfo"</span>;
+<a class="jxr_linenumber" name="L365" href="#L365">365</a>         <strong class="jxr_keyword">final</strong> IBaseDataObject d = DataObjectFactory.getInstance(<span class="jxr_string">"abc"</span>.getBytes(), fn, Form.UNKNOWN);
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>         d.appendTransformHistory(<span class="jxr_string">"FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"</span>);
+<a class="jxr_linenumber" name="L367" href="#L367">367</a>         d.setCreationTimestamp(Instant.now());
+<a class="jxr_linenumber" name="L368" href="#L368">368</a> 
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>         <em class="jxr_comment">// test</em>
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>         PayloadUtil.showCompletionInfo = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L371" href="#L371">371</a>         <strong class="jxr_keyword">final</strong> String answer = PayloadUtil.getPayloadDisplayString(d);
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>         PayloadUtil.showCompletionInfo = false;
+<a class="jxr_linenumber" name="L373" href="#L373">373</a> 
+<a class="jxr_linenumber" name="L374" href="#L374">374</a>         <em class="jxr_comment">// verify</em>
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>         assertTrue(answer.contains(<span class="jxr_string">"id: "</span>), <span class="jxr_string">"Answer should contain id when showCompletionInfo is true"</span>);
+<a class="jxr_linenumber" name="L376" href="#L376">376</a>         assertTrue(answer.contains(<span class="jxr_string">"processingTime: "</span>), <span class="jxr_string">"Answer should contain processingTime when showCompletionInfo is true"</span>);
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>         assertTrue(answer.contains(<span class="jxr_string">"ms"</span>), <span class="jxr_string">"processingTime should include ms unit"</span>);
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>         assertTrue(answer.contains(<span class="jxr_string">"creationTimestamp: "</span>), <span class="jxr_string">"Answer should still contain creationTimestamp"</span>);
 <a class="jxr_linenumber" name="L379" href="#L379">379</a>     }
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> }
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> 
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>     @Test
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>     <strong class="jxr_keyword">void</strong> testShowCompletionInfoDisabled() {
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>         <em class="jxr_comment">// setup</em>
+<a class="jxr_linenumber" name="L384" href="#L384">384</a>         <strong class="jxr_keyword">final</strong> String fn = <span class="jxr_string">"testCompletionInfoOff"</span>;
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>         <strong class="jxr_keyword">final</strong> IBaseDataObject d = DataObjectFactory.getInstance(<span class="jxr_string">"abc"</span>.getBytes(), fn, Form.UNKNOWN);
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>         d.appendTransformHistory(<span class="jxr_string">"FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"</span>);
+<a class="jxr_linenumber" name="L387" href="#L387">387</a>         d.setCreationTimestamp(Instant.now());
+<a class="jxr_linenumber" name="L388" href="#L388">388</a> 
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>         <em class="jxr_comment">// test (showCompletionInfo defaults to false)</em>
+<a class="jxr_linenumber" name="L390" href="#L390">390</a>         <strong class="jxr_keyword">final</strong> String answer = PayloadUtil.getPayloadDisplayString(d);
+<a class="jxr_linenumber" name="L391" href="#L391">391</a> 
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>         <em class="jxr_comment">// verify</em>
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>         assertFalse(answer.contains(<span class="jxr_string">"   id: "</span>), <span class="jxr_string">"Answer should not contain id when showCompletionInfo is false"</span>);
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>         assertFalse(answer.contains(<span class="jxr_string">"processingTime: "</span>), <span class="jxr_string">"Answer should not contain processingTime when showCompletionInfo is false"</span>);
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>         assertTrue(answer.contains(<span class="jxr_string">"creationTimestamp: "</span>), <span class="jxr_string">"Answer should still contain creationTimestamp"</span>);
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>     }
+<a class="jxr_linenumber" name="L397" href="#L397">397</a> 
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L399" href="#L399">399</a> <em class="jxr_javadoccomment">     * Compares the form to a set of valid characters</em>
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">     * This implementation is marginally faster than the regex implementation, but is less maintainable</em>
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">     * @param form The form to be tested</em>
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> <em class="jxr_javadoccomment">     * @return Whether the form is considered valid</em>
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L406" href="#L406">406</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isValidFormSetImplementation(String form) {
+<a class="jxr_linenumber" name="L407" href="#L407">407</a>         <strong class="jxr_keyword">if</strong> (form.length() &gt; 0) {
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; form.length(); i++) {
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>                 <strong class="jxr_keyword">if</strong> (!validFormChars.contains(form.charAt(i))) {
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>                     <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>                 }
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>             }
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>         }
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>     }
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> }
 </pre>
 <hr/>
 <div id="footer">© 2026 <a href="https://code.nsa.gov">National Security Agency</a></div>

@@ -26,24 +26,24 @@
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_javadoccomment"> * Protocols are configured with a list of rules that trigger some action if all conditions are met.</em>
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a name="Protocol" href="../../../../emissary/core/sentinel/protocols/Protocol.html#Protocol">Protocol</a> {
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> Protocol&lt;T&gt; {
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>      <strong class="jxr_keyword">protected</strong> <a name="Configurator" href="../../../../emissary/config/Configurator.html#Configurator">Configurator</a> config;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> Map&lt;String, Rule&gt; rules = <strong class="jxr_keyword">new</strong> ConcurrentHashMap&lt;&gt;();
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> Map&lt;String, Rule&lt;T&gt;&gt; rules = <strong class="jxr_keyword">new</strong> ConcurrentHashMap&lt;&gt;();
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>      <strong class="jxr_keyword">protected</strong> <a name="Action" href="../../../../emissary/core/sentinel/protocols/actions/Action.html#Action">Action</a> action;
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> enabled = false;
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>      <strong class="jxr_keyword">protected</strong> <a name="Protocol" href="../../../../emissary/core/sentinel/protocols/Protocol.html#Protocol">Protocol</a>() {}
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">public</strong> <a name="Protocol" href="../../../../emissary/core/sentinel/protocols/Protocol.html#Protocol">Protocol</a>(<a name="Configurator" href="../../../../emissary/config/Configurator.html#Configurator">Configurator</a> config) {
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">public</strong> <a name="Protocol" href="../../../../emissary/core/sentinel/protocols/Protocol.html#Protocol">Protocol</a>(<strong class="jxr_keyword">final</strong> <a name="Configurator" href="../../../../emissary/config/Configurator.html#Configurator">Configurator</a> config) {
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>          configure(config);
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>      }
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> run() <strong class="jxr_keyword">throws</strong> IOException;
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> Rule&lt;?&gt; getRule(String ruleId) <strong class="jxr_keyword">throws</strong> IOException;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> Rule&lt;T&gt; getRule(String ruleId) <strong class="jxr_keyword">throws</strong> IOException;
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isEnabled() {
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.enabled &amp;&amp; MapUtils.isNotEmpty(<strong class="jxr_keyword">this</strong>.rules);
@@ -67,7 +67,7 @@
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>                  logger.warn(<span class="jxr_string">"Sentinel rule with ID[{}] already exists, this may result in unexpected behavior"</span>, ruleId);
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>              }
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>              <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>                  <strong class="jxr_keyword">final</strong> Rule&lt;?&gt; ruleImpl = getRule(ruleId);
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>                  <strong class="jxr_keyword">final</strong> Rule&lt;T&gt; ruleImpl = getRule(ruleId);
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>                  <strong class="jxr_keyword">this</strong>.rules.put(ruleId, ruleImpl);
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>                  logger.debug(<span class="jxr_string">"Sentinel loaded rule[{}] - {}"</span>, ruleId, ruleImpl);
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>              } <strong class="jxr_keyword">catch</strong> (Exception e) {

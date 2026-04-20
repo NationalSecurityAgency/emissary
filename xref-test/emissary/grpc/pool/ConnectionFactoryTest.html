@@ -78,7 +78,7 @@
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>      @Test
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>      <strong class="jxr_keyword">void</strong> testBadLoadBalancingConfig() {
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>          Configurator configT = getDefaultConfigs();
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          configT.addEntry(ConnectionFactory.GRPC_LOAD_BALANCING_POLICY, <span class="jxr_string">"bad_scheduler"</span>);
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          configT.addEntry(ConnectionFactory.GRPC_LOAD_BALANCING_POLICY, <span class="jxr_string">"BAD_SCHEDULER"</span>);
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>          IllegalArgumentException e = assertThrows(IllegalArgumentException.<strong class="jxr_keyword">class</strong>,
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>                  () -&gt; buildConnectionFactory(configT));
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>          assertEquals(<span class="jxr_string">"No enum constant emissary.grpc.pool.LoadBalancingPolicy.BAD_SCHEDULER"</span>, e.getMessage());
