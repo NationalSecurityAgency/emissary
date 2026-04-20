@@ -4,14 +4,37 @@ updates:
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
-      interval: daily
-    open-pull-requests-limit: 5
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
     commit-message:
       prefix: dependencies
     labels:
       - "dependencies"
-    # Ignore major updates, only allow patch and minor updates
     ignore:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
+    groups:
+      jackson:
+        patterns:
+          - "com.fasterxml.jackson*"
+      grpc:
+        patterns:
+          - "io.grpc:*"
+      netty:
+        patterns:
+          - "io.netty:*"
+      jetty:
+        patterns:
+          - "org.eclipse.jetty:*"
+          - "org.eclipse.jetty.toolchain:*"
+      jersey:
+        patterns:
+          - "org.glassfish.jersey*"
+      junit:
+        patterns:
+          - "org.junit*"
+      metrics:
+        patterns:
+          - "io.dropwizard.metrics:*"
