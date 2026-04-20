@@ -13,7 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -52,7 +52,7 @@ public class PkiUtil {
         if (isPemCertificate(pemData)) {
             loadKeyStore(keyStore, pemData);
         } else {
-            try (InputStream is = Files.newInputStream(Paths.get(path))) {
+            try (InputStream is = Files.newInputStream(Path.of(path))) {
                 keyStore.load(is, pazz);
             }
         }

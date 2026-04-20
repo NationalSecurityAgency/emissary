@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -31,7 +30,7 @@ class ListOpenFilesTest extends UnitTest {
         super.setUp();
         this.instance = new ListOpenFiles();
         this.tmpDir = tmpDir;
-        this.file = Paths.get(tmpDir.toString(), "open");
+        this.file = Path.of(tmpDir.toString(), "open");
         Files.write(file, "test".getBytes(UTF_8));
     }
 
@@ -54,6 +53,6 @@ class ListOpenFilesTest extends UnitTest {
         assertFalse(instance.isOpen(file));
 
         // test for a file that does not exist
-        assertFalse(instance.isOpen(Paths.get(tmpDir.toString(), "dne")));
+        assertFalse(instance.isOpen(Path.of(tmpDir.toString(), "dne")));
     }
 }

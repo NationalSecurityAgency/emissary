@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 /**
  * This class assists users and integrators by extracting the named resource and putting it into the config directory
@@ -63,7 +63,7 @@ public class ExtractResource {
         final String rezdata = getResource(resource);
         final String outputPath = this.outputDirectory + "/" + resource.replaceAll("/", ".");
         logger.debug("Writing " + outputPath);
-        try (BufferedOutputStream os = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {
+        try (BufferedOutputStream os = new BufferedOutputStream(Files.newOutputStream(Path.of(outputPath)))) {
             os.write(rezdata.getBytes());
         }
     }

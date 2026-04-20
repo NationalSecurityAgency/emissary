@@ -18,7 +18,6 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -285,7 +284,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
             return;
         }
         long offset = last.getOffset();
-        Path p = Paths.get(last.getVal());
+        Path p = Path.of(last.getVal());
         LOG.debug("Reading from path {}", p);
         try (FileChannel part = FileChannel.open(p, READ)) {
             long partSize = Files.size(p);
@@ -360,7 +359,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
 
     protected void renameToError(Path path) {
         try {
-            Path errorPath = Paths.get(path.toString() + ERROR_EXT);
+            Path errorPath = Path.of(path.toString() + ERROR_EXT);
             Files.move(path, errorPath);
         } catch (IOException ex) {
             LOG.warn("Unable to rename file {}.", path.toString(), ex);
@@ -390,7 +389,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
 
     private static void deleteParts(Collection<JournalEntry> entries) throws IOException {
         for (JournalEntry entry : entries) {
-            Path p = Paths.get(entry.getVal());
+            Path p = Path.of(entry.getVal());
             Files.deleteIfExists(p);
         }
     }

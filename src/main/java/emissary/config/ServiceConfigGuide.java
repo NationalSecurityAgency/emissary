@@ -18,7 +18,7 @@ import java.io.Serializable;
 import java.io.StreamTokenizer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -323,7 +323,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                 } catch (IOException e) {
                     // Throw exception if it is an IMPORT_FILE and the base file is not found
                     if ("IMPORT_FILE".equals(parmName) && i == 0) {
-                        String importFileName = Paths.get(svalArg).getFileName().toString();
+                        String importFileName = Path.of(svalArg).getFileName().toString();
                         throw new IOException("In " + filename + ", cannot find IMPORT_FILE: " + sval
                                 + " on the specified path. Make sure IMPORT_FILE (" + importFileName + ") exists, and the file path is correct.",
                                 e);

@@ -30,7 +30,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1243,7 +1243,7 @@ public class WorkSpace implements Runnable {
 
                     // Skip dot files possibly
                     // TODO Maybe we want to change this to explicitly look for "." instead of isHidden
-                    if (skipDotFilesArg && Files.isHidden(Paths.get(fileName))) {
+                    if (skipDotFilesArg && Files.isHidden(Path.of(fileName))) {
                         logger.debug("Skipping dot file {}", fileName);
                         continue;
                     }

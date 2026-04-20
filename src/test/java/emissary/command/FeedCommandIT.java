@@ -20,7 +20,6 @@ import picocli.CommandLine.ParameterException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,7 +55,7 @@ class FeedCommandIT extends UnitTest {
     @BeforeEach
     public void setup() throws Exception {
         command = null;
-        baseDir = Paths.get(System.getenv(ConfigUtil.PROJECT_BASE_ENV));
+        baseDir = Path.of(System.getenv(ConfigUtil.PROJECT_BASE_ENV));
         inputDir = Files.createTempDirectory(tmpDir, "input");
         arguments.clear();
     }

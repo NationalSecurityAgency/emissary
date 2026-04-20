@@ -5,7 +5,7 @@ import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -17,13 +17,13 @@ class ServerCommandIT extends UnitTest {
     @Test
     void testGetConfig() throws Exception {
         ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-b", PROJECT_BASE, "-m", "standalone");
-        assertEquals(Paths.get(PROJECT_BASE + "/config"), cmd.getConfig());
+        assertEquals(Path.of(PROJECT_BASE + "/config"), cmd.getConfig());
     }
 
     @Test
     void testGetConfigWithTrailingSlash() throws Exception {
         ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-b ", PROJECT_BASE_SLASH + "/", "-m", "standalone");
-        assertEquals(Paths.get(PROJECT_BASE_SLASH + "/config"), cmd.getConfig());
+        assertEquals(Path.of(PROJECT_BASE_SLASH + "/config"), cmd.getConfig());
     }
 
     @Test

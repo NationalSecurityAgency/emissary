@@ -10,7 +10,6 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,10 +41,10 @@ class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator
         // setup
         String file1name = this.nextFileName();
         String file2name = this.nextFileName();
-        Path file1 = Paths.get(tmpDir.toString(), "." + file1name);
+        Path file1 = Path.of(tmpDir.toString(), "." + file1name);
         Files.createFile(file1);
         Files.write(file1, "Foo".getBytes());
-        Path file2 = Paths.get(tmpDir.toString(), "." + file2name);
+        Path file2 = Path.of(tmpDir.toString(), "." + file2name);
         Files.createFile(file2);
         // test
         try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
@@ -54,10 +53,10 @@ class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator
 
         // verify
         assertFalse(Files.exists(file1));
-        assertTrue(Files.exists(Paths.get(tmpDir.toString(), file1name)));
+        assertTrue(Files.exists(Path.of(tmpDir.toString(), file1name)));
         // make sure 0 byte file was deleted
         assertFalse(Files.exists(file2));
-        assertFalse(Files.exists(Paths.get(tmpDir.toString(), file2name)));
+        assertFalse(Files.exists(Path.of(tmpDir.toString(), file2name)));
     }
 
     /**
@@ -70,8 +69,8 @@ class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator
             instance.write(data.getBytes());
             assertEquals(data.length(), instance.bytesWritten);
             instance.roll();
-            assertTrue(Files.exists(Paths.get(tmpDir.toString(), lastFile)));
-            assertTrue(Files.exists(Paths.get(tmpDir.toString(), "." + currentFile)));
+            assertTrue(Files.exists(Path.of(tmpDir.toString(), lastFile)));
+            assertTrue(Files.exists(Path.of(tmpDir.toString(), "." + currentFile)));
             assertEquals(0L, instance.bytesWritten);
         }
     }
@@ -94,7 +93,7 @@ class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator
         try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
             instance.write(INT);
         }
-        Path f = Paths.get(tmpDir.toString(), currentFile);
+        Path f = Path.of(tmpDir.toString(), currentFile);
         try (InputStream is = Files.newInputStream(f)) {
             assertEquals(INT, is.read());
             assertEquals(-1, is.read());
@@ -109,7 +108,7 @@ class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator
         try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
             instance.write(data.getBytes(), 0, data.length());
         }
-        Path f = Paths.get(tmpDir.toString(), currentFile);
+        Path f = Path.of(tmpDir.toString(), currentFile);
         try (InputStream is = Files.newInputStream(f)) {
             int i = 0;
             for (; i < data.length(); i++) {
@@ -129,7 +128,7 @@ class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator
             instance.setDeleteZeroByteFiles(true);
             instance.roll();
         }
-        Path f = Paths.get(tmpDir.toString(), currentFile);
+        Path f = Path.of(tmpDir.toString(), currentFile);
         assertFalse(Files.exists(f));
     }
 

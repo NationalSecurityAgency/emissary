@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -207,7 +206,7 @@ public class DropOffUtil {
         // If a file already exists under this name, we're going
         // to have to move it aside. This is going to break the link
         // if it is an attachment to another parent document.
-        final Path theFile = Paths.get(fileName);
+        final Path theFile = Path.of(fileName);
         try {
             Files.deleteIfExists(theFile);
         } catch (IOException e) {
@@ -224,7 +223,7 @@ public class DropOffUtil {
      */
     public boolean setupPath(final String fileName) {
         final String pathName = fileName.substring(0, fileName.lastIndexOf(SEPARATOR));
-        final Path thePath = Paths.get(pathName);
+        final Path thePath = Path.of(pathName);
 
         // If the specified output directory doesn't exist try creating it
         if (!Files.exists(thePath)) {

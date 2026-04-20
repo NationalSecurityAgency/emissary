@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 public class EmissaryIsolatedClassLoaderExtension implements InvocationInterceptor {
@@ -66,7 +66,7 @@ public class EmissaryIsolatedClassLoaderExtension implements InvocationIntercept
             String[] paths = System.getProperty("java.class.path").split("[" + File.pathSeparator + "]");
             return Arrays.stream(paths).map(path -> {
                 try {
-                    return Paths.get(path).toUri().toURL();
+                    return Path.of(path).toUri().toURL();
                 } catch (MalformedURLException e) {
                     throw new IllegalArgumentException("Invalid class path item: " + path, e);
                 }

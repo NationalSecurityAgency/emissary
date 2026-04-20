@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -86,7 +85,7 @@ public class RegressionTestAnswerGenerator extends AnswerGenerator {
     @Override
     protected void tweakFinalIbdoBeforeSerialization(final String resource, final IBaseDataObject finalIbdo) {
         try {
-            final Path datFileUrl = Paths.get(new ResourceReader().getResource(resource).toURI());
+            final Path datFileUrl = Path.of(new ResourceReader().getResource(resource).toURI());
             final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
             if (!finalIbdo.currentForm().equals(datFile.getFinalForm())) {
                 final String format = "Final form from place [%s] didn't match final form in filename [%s]";

@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.TimeUnit;
@@ -28,8 +27,8 @@ class EmissaryClientTest extends UnitTest {
     @Test
     void testDefaultRequestConfig() {
         logger.debug("Starting testDefaultRequestConfig");
-        Path origCfg = Paths.get(ConfigUtil.getProjectBase() + "/classes/emissary/client/EmissaryClient.cfg");
-        Path hiddenCfg = Paths.get(ConfigUtil.getProjectBase() + "/classes/emissary/client/EmissaryClient.cfg.hideme");
+        Path origCfg = Path.of(ConfigUtil.getProjectBase() + "/classes/emissary/client/EmissaryClient.cfg");
+        Path hiddenCfg = Path.of(ConfigUtil.getProjectBase() + "/classes/emissary/client/EmissaryClient.cfg.hideme");
         try {
             // remove EmissaryClient.cfg from classpath
             Files.move(origCfg, hiddenCfg, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
@@ -72,7 +71,7 @@ class EmissaryClientTest extends UnitTest {
     @Test
     void testRequestConfigFromConfigDir() throws IOException {
         logger.debug("Starting testRequestConfigFromConfigDir");
-        Path cfgFile = Paths.get(ConfigUtil.getConfigDirs().get(0) + "/emissary.client.EmissaryClient.cfg");
+        Path cfgFile = Path.of(ConfigUtil.getConfigDirs().get(0) + "/emissary.client.EmissaryClient.cfg");
         try (OutputStream out = Files.newOutputStream(cfgFile, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
             int newConnectionTimeout = 5000;
             int newConnectionManagerTimeout = 4000;

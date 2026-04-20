@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -377,8 +376,8 @@ class ServiceConfigGuideTest extends UnitTest {
 
     @Test
     void testCreateDirAndFile(@TempDir final Path tdir) throws IOException {
-        final Path tfile = Paths.get(tdir.toString(), "foo-file.txt");
-        final Path t2file = Paths.get(tdir.toString(), "subdir", "blubdir", "bar-file.txt");
+        final Path tfile = Path.of(tdir.toString(), "foo-file.txt");
+        final Path t2file = Path.of(tdir.toString(), "subdir", "blubdir", "bar-file.txt");
         String s =
                 "CREATE_DIRECTORY = \"" + tdir + "\"\n" + "CREATE_FILE = \"" + tfile + "\"\n" + "CREATE_FILE = \""
                         + tfile + "\"\n" + "CREATE_FILE = \"" + t2file + "\"\n";
@@ -511,7 +510,7 @@ class ServiceConfigGuideTest extends UnitTest {
         final byte[] primary = ("IMPORT_FILE = \"" + impname + "\"\n").getBytes();
 
         String result = "";
-        String importFileName = Paths.get(impname).getFileName().toString();
+        String importFileName = Path.of(impname).getFileName().toString();
 
         try {
             assertTrue(Executrix.writeDataToFile(primary, priname));

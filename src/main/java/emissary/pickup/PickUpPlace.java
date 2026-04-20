@@ -35,7 +35,6 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -252,7 +251,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
             return;
         }
 
-        Path monitoredPath = Paths.get(monitoredPathStr);
+        Path monitoredPath = Path.of(monitoredPathStr);
         if (!Files.exists(monitoredPath)) {
             logger.warn("Monitored path {} does not exist, disk space monitoring disabled", monitoredPath);
             return;

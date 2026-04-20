@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine.ITypeConverter;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class ProjectBaseConverter extends PathExistsConverter implements ITypeConverter<Path> {
     public ProjectBaseConverter() {
@@ -28,7 +27,7 @@ public class ProjectBaseConverter extends PathExistsConverter implements ITypeCo
 
         // if PROJECT_BASE not null, set some variables
         if (projectBaseEnv != null) {
-            projectBaseEnvPath = Paths.get(projectBaseEnv);
+            projectBaseEnvPath = Path.of(projectBaseEnv);
             projectBaseEnvString = projectBaseEnvPath.toAbsolutePath().toString();
         }
 

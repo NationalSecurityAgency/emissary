@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -164,7 +164,7 @@ public class ConfigUtil {
         for (final String dir : dirs) {
             final String dirNoTrailingSlash = removeTrailingSlash(dir);
             // only add directories that exist
-            if (Files.exists(Paths.get(dirNoTrailingSlash))) {
+            if (Files.exists(Path.of(dirNoTrailingSlash))) {
                 configDirs.add(dirNoTrailingSlash);
             } else {
                 logger.warn("Directory configured but didn't exist: {}", dirNoTrailingSlash);
@@ -234,7 +234,7 @@ public class ConfigUtil {
             final List<String> candidates = new ArrayList<>();
             for (final String dir : getConfigDirs()) {
                 final String fname = dir + "/" + file;
-                if (Files.exists(Paths.get(fname))) {
+                if (Files.exists(Path.of(fname))) {
                     candidates.add(fname);
                 }
             }
@@ -545,7 +545,7 @@ public class ConfigUtil {
         // Add config.dir part if not already absolute
         final String filename = f.startsWith("/") ? f : getConfigFile(f);
 
-        return Files.newInputStream(Paths.get(filename));
+        return Files.newInputStream(Path.of(filename));
     }
 
     /**

@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,7 +54,7 @@ class ConfigUtilTest extends UnitTest {
     public void setUp() throws Exception {
         configDir = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY, ".");
         testFilesAndDirectories = new ArrayList<>();
-        configPath = Paths.get(configDir);
+        configPath = Path.of(configDir);
 
         appender = new ListAppender<>();
         appender.start();
@@ -163,12 +162,12 @@ class ConfigUtilTest extends UnitTest {
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTFLAVOR");
         ConfigUtil.initialize();
 
-        final Path baseFile = Paths.get(configDir, "emissary.blubber.Whale.cfg");
+        final Path baseFile = Path.of(configDir, "emissary.blubber.Whale.cfg");
         try (OutputStream ros = Files.newOutputStream(baseFile)) {
             ros.write("FOO = \"BAR\"\n".getBytes());
         }
 
-        final Path flavFile = Paths.get(configDir, "emissary.blubber.Whale-TESTFLAVOR.cfg");
+        final Path flavFile = Path.of(configDir, "emissary.blubber.Whale-TESTFLAVOR.cfg");
         try (OutputStream ros = Files.newOutputStream(flavFile)) {
             ros.write("FOO = \"BAR2\"\n".getBytes());
         }
@@ -194,12 +193,12 @@ class ConfigUtilTest extends UnitTest {
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTFLAVOR");
         ConfigUtil.initialize();
 
-        final Path baseFile = Paths.get(configDir, "emissary.blubber.Shark.cfg");
+        final Path baseFile = Path.of(configDir, "emissary.blubber.Shark.cfg");
         try (OutputStream ros = Files.newOutputStream(baseFile)) {
             ros.write("FOO = \"BAR\"\n".getBytes());
         }
 
-        final Path flavFile = Paths.get(configDir, "emissary.blubber.Shark-TESTFLAVOR.cfg");
+        final Path flavFile = Path.of(configDir, "emissary.blubber.Shark-TESTFLAVOR.cfg");
         try (OutputStream ros = Files.newOutputStream(flavFile)) {
             ros.write("QUUZ = \"@{FOO}\"\n".getBytes());
         }
@@ -276,7 +275,7 @@ class ConfigUtilTest extends UnitTest {
         final Path configDir1 = createTmpSubDir("config1A");
         final String cfgName1 = "emissary.grapes.Monkey.cfg";
         createFileAndPopulate(configDir1, cfgName1, "BOO = \"HOO\"\n");
-        final Path cfgName2 = Paths.get(configPath.toString(), "configgone", "emissary.grapes.Panda.cfg");
+        final Path cfgName2 = Path.of(configPath.toString(), "configgone", "emissary.grapes.Panda.cfg");
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, configDir1 + "," + cfgName2.getParent());
 
@@ -561,32 +560,32 @@ class ConfigUtilTest extends UnitTest {
     @Test
     void testGetFlavorFromFile() {
         final String flavor =
-                ConfigUtil.getFlavorsFromCfgFile(Paths.get(configPath.toString() + "emissary.admin.ClassNameInventory-flavor1.cfg").toFile());
+                ConfigUtil.getFlavorsFromCfgFile(Path.of(configPath.toString() + "emissary.admin.ClassNameInventory-flavor1.cfg").toFile());
         assertEquals("flavor1", flavor, "Flavors didn't match");
     }
 
     @Test
     void testGetMultipleFlavorFromFile() {
-        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(configPath.toString(), "emissary.junk.TrunkPlace-f1,f2,f3.cfg").toFile());
+        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Path.of(configPath.toString(), "emissary.junk.TrunkPlace-f1,f2,f3.cfg").toFile());
         assertEquals("f1,f2,f3", flavor, "Flavors didn't match");
     }
 
     @Test
     void testGetFlavorsNotACfgFile() {
-        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(configPath.toString(), "emissary.util.JunkPlace-f1.config").toFile());
+        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Path.of(configPath.toString(), "emissary.util.JunkPlace-f1.config").toFile());
         assertEquals("", flavor, "Should have been empty, not a cfg file");
     }
 
     @Test
     void testGetNoFlavor() {
-        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(configPath.toString(), "emissary.util.PepperPlace.config").toFile());
+        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Path.of(configPath.toString(), "emissary.util.PepperPlace.config").toFile());
         assertEquals("", flavor, "Should have been empty, no flavor");
     }
 
     @Test
     void testGetFlavorMultipleHyphens() {
         final String flavor =
-                ConfigUtil.getFlavorsFromCfgFile(Paths.get(configPath.toString(), "emissary.util.DrPibbPlace-flavor1-flavor2-flavor3.cfg").toFile());
+                ConfigUtil.getFlavorsFromCfgFile(Path.of(configPath.toString(), "emissary.util.DrPibbPlace-flavor1-flavor2-flavor3.cfg").toFile());
         assertEquals("flavor3", flavor, "Should have been the last flavor");
 
     }
@@ -630,7 +629,7 @@ class ConfigUtilTest extends UnitTest {
         final String[] files = new String[] {priname};
 
         String result = "";
-        String importFileName = Paths.get(impname).getFileName().toString();
+        String importFileName = Path.of(impname).getFileName().toString();
 
         try {
             Executrix.writeDataToFile(primary, priname);
@@ -649,14 +648,14 @@ class ConfigUtilTest extends UnitTest {
     }
 
     private Path createTmpSubDir(final String name) throws IOException {
-        final Path dir = Paths.get(configPath.toString(), name);
+        final Path dir = Path.of(configPath.toString(), name);
         Files.createDirectory(dir);
         testFilesAndDirectories.add(dir);
         return dir;
     }
 
     private Path createFileAndPopulate(final Path dir, final String name, final String contents) {
-        final Path file = Paths.get(dir.toString(), name);
+        final Path file = Path.of(dir.toString(), name);
         testFilesAndDirectories.add(file);
         try (OutputStream ros = Files.newOutputStream(file)) {
             ros.write(contents.getBytes());

@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -204,7 +203,7 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
             Preconditions.checkArgument(StringUtils.isNotBlank(path), "Path cannot be blank");
             Preconditions.checkArgument(intervalMinutes > 0, "Monitoring interval is not greater than 0");
 
-            final Path file = Paths.get(path);
+            final Path file = Path.of(path);
             Preconditions.checkArgument(Files.exists(file), "Path does not exist");
 
             final FileAlterationObserver observer;
