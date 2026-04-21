@@ -23,7 +23,6 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -79,7 +78,7 @@ class JournaledCoalescerTest extends UnitTest {
     @Test
     void testNonExistentDirectory() {
         // test
-        assertThrows(FileNotFoundException.class, () -> new JournaledCoalescer(Paths.get("/asdasd/asdasd/asdasd"), fileNameGenerator));
+        assertThrows(FileNotFoundException.class, () -> new JournaledCoalescer(Path.of("/asdasd/asdasd/asdasd"), fileNameGenerator));
     }
 
     @SuppressWarnings("resource")
@@ -214,7 +213,7 @@ class JournaledCoalescerTest extends UnitTest {
             one.commit();
         }
 
-        Path oldRolling = Paths.get(targetBudPath.toString(), finalBudOutput.getFileName().toString() + ROLLING_EXT);
+        Path oldRolling = Path.of(targetBudPath.toString(), finalBudOutput.getFileName().toString() + ROLLING_EXT);
         Files.createFile(oldRolling);
 
         // test
@@ -342,7 +341,7 @@ class JournaledCoalescerTest extends UnitTest {
         long partSize = Files.size(target);
         // open journal
         Journal j;
-        try (JournalReader jr = new JournalReader(Paths.get(key + Journal.EXT))) {
+        try (JournalReader jr = new JournalReader(Path.of(key + Journal.EXT))) {
             j = jr.getJournal();
         }
         Path rolled = Files.createTempFile(targetBudPath, "rolled_badfile", "");

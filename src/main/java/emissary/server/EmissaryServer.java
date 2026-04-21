@@ -66,7 +66,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -197,7 +196,7 @@ public class EmissaryServer {
             String serverLocation = cmd.getScheme() + "://" + cmd.getHost() + ":" + cmd.getPort();
 
             // write out env.sh file here
-            Path envsh = Paths.get(ConfigUtil.getProjectBase() + File.separator + "env.sh");
+            Path envsh = Path.of(ConfigUtil.getProjectBase() + File.separator + "env.sh");
             if (Files.exists(envsh)) {
                 LOG.debug("Removing old {}", envsh.toAbsolutePath());
                 Files.delete(envsh);
@@ -718,7 +717,7 @@ public class EmissaryServer {
     private ContextHandler buildEmissaryHandler() throws EmissaryException {
         // must set these set or you are not an EmissaryNode
         String configDir = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY, null);
-        if (configDir == null || !Files.exists(Paths.get(configDir))) {
+        if (configDir == null || !Files.exists(Path.of(configDir))) {
             throw new EmissaryException("Config dir error. " + ConfigUtil.CONFIG_DIR_PROPERTY + " is " + configDir);
         }
         // set number of agents if it has been set
@@ -844,7 +843,7 @@ public class EmissaryServer {
         sslContextFactory.setKeyStorePassword(keystorePass);
 
         KeyStore trustStoreInstance;
-        try (InputStream is = Files.newInputStream(Paths.get(trustStore))) {
+        try (InputStream is = Files.newInputStream(Path.of(trustStore))) {
             trustStoreInstance = KeyStore.getInstance("JKS");
             trustStoreInstance.load(is, trustStorePass.toCharArray());
         } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException e) {

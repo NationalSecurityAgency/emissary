@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -83,7 +82,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
      */
     protected void initOutputConfig() {
         this.defaultOutputPath = this.filterConfig.findStringEntry(OUTPUT_PATH, defaultOutputPath);
-        this.outputPath = Paths.get(this.defaultOutputPath);
+        this.outputPath = Path.of(this.defaultOutputPath);
     }
 
     /**

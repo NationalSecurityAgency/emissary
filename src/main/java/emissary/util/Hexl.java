@@ -7,7 +7,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 /**
  * Pretend to be Emacs hexl mode
@@ -124,7 +124,7 @@ public class Hexl {
 
         for (int i = 0; i < argv.length; i++) {
 
-            try (InputStream theFile = Files.newInputStream(Paths.get(argv[i]));
+            try (InputStream theFile = Files.newInputStream(Path.of(argv[i]));
                     DataInputStream theStream = new DataInputStream(theFile)) {
                 theContent = IOUtils.toByteArray(theStream);
             } catch (IOException e) {

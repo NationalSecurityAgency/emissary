@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -33,7 +32,7 @@ class VersionPlaceTest extends UnitTest {
     @BeforeEach
     public void setUp() throws Exception {
         payload = DataObjectFactory.getInstance();
-        gitRepositoryFile = Paths.get(new ResourceReader().getResource("emissary/util/test.git.properties").toURI());
+        gitRepositoryFile = Path.of(new ResourceReader().getResource("emissary/util/test.git.properties").toURI());
         testGitRepoState = GitRepositoryState.getRepositoryState(gitRepositoryFile);
     }
 
@@ -81,7 +80,7 @@ class VersionPlaceTest extends UnitTest {
     void testVersionRegex() throws IOException, URISyntaxException {
         // uses different test gitRepoState properties file with version number that matches default regex
         // passes this file to getVersion() to verify version returned has no date
-        Path regexTestFile = Paths.get(new ResourceReader().getResource("emissary/util/test.version.regex.git.properties").toURI());
+        Path regexTestFile = Path.of(new ResourceReader().getResource("emissary/util/test.version.regex.git.properties").toURI());
         GitRepositoryState regexRepoState = GitRepositoryState.getRepositoryState(regexTestFile);
 
         // create the place, using the normal class cfg

@@ -14,7 +14,6 @@ import org.jdom2.Element;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +76,7 @@ public abstract class RegressionTest extends ExtractionTest {
     @Nullable
     protected String getInitialForm(final String resource) {
         try {
-            final Path datFileUrl = Paths.get(new ResourceReader().getResource(resource).toURI());
+            final Path datFileUrl = Path.of(new ResourceReader().getResource(resource).toURI());
             final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
             return datFile.getInitialForm();
         } catch (final URISyntaxException e) {

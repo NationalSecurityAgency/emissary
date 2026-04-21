@@ -21,7 +21,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -120,7 +119,7 @@ public abstract class AnswerGenerator {
      */
     public static Path getTestResx() {
         // Gets us the parent folder to PROJECT_BASE
-        Path pathBuilder = Paths.get(System.getenv("PROJECT_BASE"));
+        Path pathBuilder = Path.of(System.getenv("PROJECT_BASE"));
         // If in Docker, we need to go into src - we're probably already in it otherwise
         if (pathBuilder.endsWith("main")) { // Docker
             pathBuilder = pathBuilder.getParent();

@@ -38,7 +38,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -228,7 +227,7 @@ public abstract class ExtractionTest extends UnitTest {
     @Nullable
     protected IBaseDataObject getInitialIbdo(final String resource) {
         try {
-            final Path datFileUrl = Paths.get(new ResourceReader().getResource(resource).toURI());
+            final Path datFileUrl = Path.of(new ResourceReader().getResource(resource).toURI());
             final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
             final SeekableByteChannelFactory sbcf = FileChannelFactory.create(datFile.getPath());
             // Create a BDO for the data, and set the filename correctly

@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Set;
 
@@ -113,7 +113,7 @@ public class KffChainLoader {
         KffChain kff = getChainInstance();
 
         for (int i = 0; i < args.length; i++) {
-            try (InputStream is = Files.newInputStream(Paths.get(args[i]))) {
+            try (InputStream is = Files.newInputStream(Path.of(args[i]))) {
                 byte[] buffer = IOUtils.toByteArray(is);
 
                 KffResult r = kff.check(args[i], buffer);

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,10 +62,10 @@ class EmissaryApiTest extends EndpointTestBase {
         doReturn(8001).when(node).getNodePort();
         when(mockServer.getNode()).thenReturn(node);
         when(mockServer.getServerCommand()).thenReturn(srvCmd);
-        when(srvCmd.getConfig()).thenReturn(Paths.get("/path/to/project/config"));
-        when(srvCmd.getProjectBase()).thenReturn(Paths.get("/path/to/project"));
-        when(srvCmd.getOutputDir()).thenReturn(Paths.get("/path/to/project/output"));
-        when(srvCmd.getBinDir()).thenReturn(Paths.get("/path/to/project/bin"));
+        when(srvCmd.getConfig()).thenReturn(Path.of("/path/to/project/config"));
+        when(srvCmd.getProjectBase()).thenReturn(Path.of("/path/to/project"));
+        when(srvCmd.getOutputDir()).thenReturn(Path.of("/path/to/project/output"));
+        when(srvCmd.getBinDir()).thenReturn(Path.of("/path/to/project/bin"));
         when(srvCmd.getHost()).thenReturn("localhost");
         when(srvCmd.getPort()).thenReturn(8001);
         when(srvCmd.getScheme()).thenReturn("https");

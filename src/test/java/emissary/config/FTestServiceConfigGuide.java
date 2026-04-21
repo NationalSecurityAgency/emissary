@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -30,12 +29,12 @@ public class FTestServiceConfigGuide extends FunctionalTest {
         List<Path> configFiles = new ArrayList<>();
 
         for (String dir : ConfigUtil.getConfigDirs()) {
-            configFiles.addAll(findFilesByExtension(Paths.get(dir), ".cfg"));
+            configFiles.addAll(findFilesByExtension(Path.of(dir), ".cfg"));
         }
 
         // look for cfg files under src
-        Path root = Paths.get(ConfigUtil.projectRootDirectory()).getParent();
-        configFiles.addAll(findFilesByExtension(Paths.get(root.toString(), "src"), ".cfg"));
+        Path root = Path.of(ConfigUtil.projectRootDirectory()).getParent();
+        configFiles.addAll(findFilesByExtension(Path.of(root.toString(), "src"), ".cfg"));
 
         return configFiles.stream().map(p -> Arguments.of(p.toString()));
     }
@@ -46,7 +45,7 @@ public class FTestServiceConfigGuide extends FunctionalTest {
     @ParameterizedTest
     @MethodSource("data")
     void testAllConfFiles(String resource) {
-        Path underTest = Paths.get(resource).toAbsolutePath().normalize();
+        Path underTest = Path.of(resource).toAbsolutePath().normalize();
         logger.debug("Parsing config file:" + underTest);
         assertDoesNotThrow(() -> ConfigUtil.getConfigInfo(underTest.toString()));
     }

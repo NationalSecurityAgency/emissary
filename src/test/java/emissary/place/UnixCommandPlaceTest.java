@@ -20,7 +20,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -48,7 +47,7 @@ class UnixCommandPlaceTest extends UnitTest {
     @Override
     @BeforeEach
     public void setUp() throws Exception {
-        scriptFile = Paths.get(TMPDIR, "testUnixCommand.sh");
+        scriptFile = Path.of(TMPDIR, "testUnixCommand.sh");
         // read our default config for this place, not something else that got configured in
         try (InputStream is = new ResourceReader().getConfigDataAsStream(this.getClass())) {
             place = new UnixCommandPlace(is);
@@ -120,7 +119,7 @@ class UnixCommandPlaceTest extends UnitTest {
 
         // fake an output file and load it with some data
         String DATA = "test-test";
-        Path outputFile = Paths.get(TMPDIR, "output.out");
+        Path outputFile = Path.of(TMPDIR, "output.out");
 
         try {
             IOUtils.write(DATA, Files.newOutputStream(outputFile), StandardCharsets.UTF_8);

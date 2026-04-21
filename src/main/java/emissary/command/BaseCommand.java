@@ -23,7 +23,6 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 @Command(description = "Base Command")
@@ -39,7 +38,7 @@ public abstract class BaseCommand implements EmissaryCommand {
 
     @Option(names = {"-b", "--projectBase"}, description = "defaults to PROJECT_BASE, errors if different\nDefault: ${DEFAULT-VALUE}",
             converter = ProjectBaseConverter.class)
-    private Path projectBase = Paths.get(System.getenv("PROJECT_BASE"));
+    private Path projectBase = Path.of(System.getenv("PROJECT_BASE"));
 
     @Option(names = "--logbackConfig", description = "logback configuration file, defaults to <configDir>/logback.xml")
     @Nullable
@@ -210,7 +209,7 @@ public abstract class BaseCommand implements EmissaryCommand {
             // logCfg can be null if Emissary.setupLogbackForConsole is called
             LOG.warn("Not using {}, staying with test config {}", getLogbackConfig(), logCfg);
             doLogbackReinit(loggerContext, logCfg.getPath());
-        } else if (Files.exists(Paths.get(getLogbackConfig()))) {
+        } else if (Files.exists(Path.of(getLogbackConfig()))) {
             doLogbackReinit(loggerContext, getLogbackConfig());
         } else {
             LOG.warn("logback configuration not found {}, not reconfiguring logging", getLogbackConfig());

@@ -18,7 +18,6 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -258,8 +257,8 @@ class ExecutrixTest extends UnitTest {
             assertNotNull(data, "Data read from copy");
             assertEquals(3, data.length, "All data read from copy");
         } finally {
-            Files.deleteIfExists(Paths.get(TMPDIR, "foo.dat"));
-            Files.deleteIfExists(Paths.get(TMPDIR, "bar.dat"));
+            Files.deleteIfExists(Path.of(TMPDIR, "foo.dat"));
+            Files.deleteIfExists(Path.of(TMPDIR, "bar.dat"));
         }
     }
 

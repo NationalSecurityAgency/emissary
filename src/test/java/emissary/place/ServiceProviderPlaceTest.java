@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 
@@ -230,9 +229,9 @@ class ServiceProviderPlaceTest extends UnitTest {
         Path cfg;
         // Write out the config data to the temp config dir
         if (usePackage) {
-            cfg = Paths.get(configDir, thisPackage.getName() + ".MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
+            cfg = Path.of(configDir, thisPackage.getName() + ".MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
         } else {
-            cfg = Paths.get(configDir, "MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
+            cfg = Path.of(configDir, "MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
         }
 
         try (OutputStream fos = Files.newOutputStream(cfg)) {

@@ -8,7 +8,6 @@ import picocli.CommandLine.ITypeConverter;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class PathExistsConverter implements ITypeConverter<Path> {
     private final String optionName;
@@ -29,7 +28,7 @@ public class PathExistsConverter implements ITypeConverter<Path> {
     }
 
     public Path convert(String option, String value) {
-        Path p = Paths.get(Strings.CS.removeEnd(value, "/"));
+        Path p = Path.of(Strings.CS.removeEnd(value, "/"));
         // ensure the value exists
         if (!Files.exists(p)) {
             String msg = String.format("The option '%s' was configured with path '%s' which does not exist", option, p);

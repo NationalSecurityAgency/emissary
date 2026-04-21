@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.UUID;
@@ -158,7 +157,7 @@ public class JournaledChannelPool implements AutoCloseable {
     }
 
     private void createChannel() throws IOException {
-        final Path p = Paths.get(this.directory.toString(), this.key + "_" + UUID.randomUUID().toString() + EXTENSION);
+        final Path p = Path.of(this.directory.toString(), this.key + "_" + UUID.randomUUID().toString() + EXTENSION);
         final JournaledChannel ko = new JournaledChannel(p, this.key, this.created);
         this.allchannels[this.created++] = ko;
         this.free.add(ko);

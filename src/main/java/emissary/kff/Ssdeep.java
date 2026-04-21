@@ -14,7 +14,7 @@ import java.io.RandomAccessFile;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 /**
@@ -708,7 +708,7 @@ public final class Ssdeep {
     public static void main(final String[] args) throws Exception {
         final Ssdeep ss = new Ssdeep();
         for (final String f : args) {
-            try (InputStream is = Files.newInputStream(Paths.get(f))) {
+            try (InputStream is = Files.newInputStream(Path.of(f))) {
                 final byte[] buffer = IOUtils.toByteArray(is);
                 // output format matches the original ssdeep program
                 System.out.println(ss.fuzzyHash(buffer) + ",\"" + f + "\"");

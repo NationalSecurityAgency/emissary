@@ -12,7 +12,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -201,7 +200,7 @@ public class JournalReader implements Closeable {
     @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws Exception {
         String path = args[0];
-        try (JournalReader jr = new JournalReader(Paths.get(path))) {
+        try (JournalReader jr = new JournalReader(Path.of(path))) {
             Journal j = jr.getJournal();
             System.out.println("Journal File: " + path);
             System.out.println("Journal Version: " + j.getKey());
