@@ -15,6 +15,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 import picocli.CommandLine.ParameterException;
 
 import java.io.IOException;
@@ -117,7 +118,7 @@ class FeedCommandIT extends UnitTest {
                 INT_ARGS);
 
         @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+        public Stream<? extends Arguments> provideArguments(ParameterDeclarations parameters, ExtensionContext context) {
             return cartesian.stream().map(list -> Arguments.of((Object[]) list.toArray(new String[0])));
         }
     }
