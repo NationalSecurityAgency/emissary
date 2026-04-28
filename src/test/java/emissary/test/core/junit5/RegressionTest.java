@@ -22,12 +22,11 @@ package emissary.test.core.junit5;
  * <li>Once the tests pass, you can remove the overridden method(s) added above.</li>
  * </ol>
  */
-@Deprecated
 public abstract class RegressionTest extends ExtractionTest {
 
     @Override
-    public TestMode getTestMode() {
-        return TestMode.STRICT;
+    public boolean isStrict() {
+        return true;
     }
 
 }

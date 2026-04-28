@@ -126,28 +126,6 @@ public abstract class ExtractionTest extends UnitTest {
         }
     }
 
-    public enum TestMode {
-        STRICT, LENIENT
-    }
-
-    /**
-     * Get the test mode
-     *
-     * @return the test mode
-     */
-    public TestMode getTestMode() {
-        return TestMode.LENIENT;
-    }
-
-    /**
-     * Extraction mode -- This test mode compares what is defined in the XML to the BDO.
-     *
-     * @return true if extraction mode, false otherwise
-     */
-    public boolean isLenient() {
-        return getTestMode() == TestMode.LENIENT;
-    }
-
     /**
      * Regression mode -- This test mode compares the entire BDO instead of just what is defined in the XML. In other words,
      * the XML must define exactly the output of the Place, no more and no less. There are methods provided to generate the
@@ -156,7 +134,7 @@ public abstract class ExtractionTest extends UnitTest {
      * @return true if regression mode, false otherwise
      */
     public boolean isStrict() {
-        return getTestMode() == TestMode.STRICT;
+        return false;
     }
 
     /**
@@ -268,7 +246,7 @@ public abstract class ExtractionTest extends UnitTest {
     @ForOverride
     @Nullable
     protected String getInitialForm(final String resource) {
-        if (isLenient()) {
+        if (!isStrict()) {
             return resource.replaceAll("^.*/([^/@]+)(@\\d+)?\\.dat$", "$1");
         }
 
@@ -873,7 +851,7 @@ public abstract class ExtractionTest extends UnitTest {
     }
 
     protected void setupPayload(IBaseDataObject payload, Document doc) {
-        if (isLenient()) {
+        if (!isStrict()) {
             kff.hash(payload);
         }
 
