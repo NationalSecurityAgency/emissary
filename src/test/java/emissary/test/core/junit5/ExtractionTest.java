@@ -18,6 +18,7 @@ import com.google.errorprone.annotations.ForOverride;
 import jakarta.annotation.Nullable;
 import jakarta.xml.bind.DatatypeConverter;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +34,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -60,6 +62,7 @@ import static emissary.core.constants.IbdoXmlElementNames.BROKEN;
 import static emissary.core.constants.IbdoXmlElementNames.CLASSIFICATION;
 import static emissary.core.constants.IbdoXmlElementNames.CURRENT_FORM;
 import static emissary.core.constants.IbdoXmlElementNames.DATA;
+import static emissary.core.constants.IbdoXmlElementNames.DATA_FILE;
 import static emissary.core.constants.IbdoXmlElementNames.EXTRACTED_RECORD_ELEMENT_PREFIX;
 import static emissary.core.constants.IbdoXmlElementNames.FILE_TYPE;
 import static emissary.core.constants.IbdoXmlElementNames.FONT_ENCODING;
@@ -199,7 +202,7 @@ public abstract class ExtractionTest extends UnitTest {
     public abstract IServiceProviderPlace createPlace() throws IOException;
 
     public static Stream<? extends Arguments> data() {
-        return getMyTestParameterFiles(ExtractionTest.class);
+        return getMyXmlTestParameterFiles(ExtractionTest.class);
     }
 
     /**
@@ -257,42 +260,73 @@ public abstract class ExtractionTest extends UnitTest {
     public void testExtractionPlace(String resource) {
         logger.debug("Running {} test on resource {}", place.getClass().getName(), resource);
 
-        if (generateAnswers()) {
-            // Get the data and create a channel factory to it
-            final IBaseDataObject initialIbdo = getInitialIbdo(resource);
-            getAnswerGenerator().generateAnswerFiles(resource, place, initialIbdo, getEncoders(resource), super.answerFileClassRef,
-                    getLogbackLoggerName());
-        }
-
         // Need a pair consisting of a .dat file and a .xml file (answers)
         Document controlDoc = getAnswerDocumentFor(resource);
         if (controlDoc == null) {
             fail("No answers provided for test " + resource);
         }
 
-        try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
+        // In XML-driven mode, resolve which .dat to use (via <dataFile> or same-name fallback).
+        // In legacy DAT-driven mode the resource is already the .dat path.
+        String datResource = resource.endsWith(ResourceReader.XML_SUFFIX)
+                ? getDatResourceFor(resource, controlDoc)
+                : resource;
+
+        if (generateAnswers()) {
+            final IBaseDataObject initialIbdo = getInitialIbdo(datResource);
+            getAnswerGenerator().generateAnswerFiles(datResource, place, initialIbdo, getEncoders(datResource), super.answerFileClassRef,
+                    getLogbackLoggerName());
+        }
+
+        try (InputStream doc = new ResourceReader().getResourceAsStream(datResource)) {
             byte[] data = IOUtils.toByteArray(doc);
-            String initialForm = getInitialForm(resource);
-            IBaseDataObject payload = DataObjectFactory.getInstance(data, resource, initialForm);
+            String initialForm = getInitialForm(datResource);
+            IBaseDataObject payload = DataObjectFactory.getInstance(data, datResource, initialForm);
             setupPayload(payload, controlDoc);
             processPreHook(payload, controlDoc);
             List<IBaseDataObject> attachments = processHeavyDutyHook(place, payload);
             processPostHook(payload, attachments);
-            checkAnswersPreHook(controlDoc, payload, attachments, resource);
-            checkAnswers(controlDoc, payload, attachments, resource);
-            checkAnswersPostHook(controlDoc, payload, attachments, resource);
+            checkAnswersPreHook(controlDoc, payload, attachments, datResource);
+            checkAnswers(controlDoc, payload, attachments, datResource);
+            checkAnswersPostHook(controlDoc, payload, attachments, datResource);
         } catch (Exception ex) {
-            logger.error("Error running test {}", resource, ex);
-            fail("Cannot run test " + resource, ex);
+            logger.error("Error running test {}", datResource, ex);
+            fail("Cannot run test " + datResource, ex);
         }
+    }
+
+    /**
+     * Resolve the .dat resource path for an XML-driven test. Checks the {@code <dataFile>} element in the XML root; if
+     * present, the value must be a bare filename (no path separators) and the file is resolved relative to the XML's
+     * directory. If absent, falls back to the same-named .dat file in the same directory.
+     *
+     * @param xmlResource classpath resource path to the answer XML
+     * @param answerDoc the parsed answer document
+     * @return classpath resource path to the .dat file to use
+     */
+    protected String getDatResourceFor(final String xmlResource, final Document answerDoc) {
+        Element root = answerDoc.getRootElement();
+        String dataFileName = root.getChildTextTrim(DATA_FILE);
+        if (StringUtils.isNotBlank(dataFileName)) {
+            if (dataFileName.contains("/") || dataFileName.contains(File.separator)) {
+                fail("dataFile must be a directory-local filename (no path separators): " + dataFileName);
+            }
+            return FilenameUtils.getPath(xmlResource) + dataFileName;
+        }
+        return xmlResource.substring(0, xmlResource.length() - ResourceReader.XML_SUFFIX.length())
+                + ResourceReader.DATA_SUFFIX;
     }
 
     @Override
     protected Document getAnswerDocumentFor(final String resource) {
-        // If generating answers, get the src version, otherwise get the normal XML file
         if (generateAnswers()) {
             return getAnswerGenerator().getAnswerDocumentFor(resource, answerFileClassRef);
         }
+        // XML-driven mode: resource IS the XML file
+        if (resource.endsWith(ResourceReader.XML_SUFFIX)) {
+            return getAnswerDocumentValidated(resource);
+        }
+        // Legacy DAT-driven mode: derive XML path from the .dat resource
         return super.getAnswerDocumentFor(resource);
     }
 

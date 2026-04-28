@@ -94,6 +94,10 @@ public final class IbdoXmlElementNames {
      */
     public static final String WORK_BUNDLE_ID = "workBundleId";
     /**
+     * The XML element name for Data File.
+     */
+    public static final String DATA_FILE = "dataFile";
+    /**
      * The XML element name for Setup.
      */
     public static final String SETUP = "setup";
