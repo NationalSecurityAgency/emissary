@@ -1,4 +1,4 @@
-# Security Policy
+# Security and Reporting Process
 
 ## Emissary Is a Framework
 
