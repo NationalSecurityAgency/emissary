@@ -3,6 +3,7 @@ changelog:
   exclude:
     authors:
       - github-actions
+      - github-actions[bot]
   categories:
     - title: Breaking Changes 🚨
       labels:
