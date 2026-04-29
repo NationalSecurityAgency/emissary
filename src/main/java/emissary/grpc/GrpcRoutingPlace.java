@@ -1,7 +1,6 @@
 package emissary.grpc;
 
 import emissary.config.Configurator;
-import emissary.grpc.future.CompletableFutureFinalizers;
 import emissary.grpc.invoker.GrpcInvoker;
 import emissary.grpc.pool.ConnectionFactory;
 import emissary.grpc.pool.PoolException;
@@ -21,7 +20,6 @@ import org.apache.commons.pool2.ObjectPool;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -29,7 +27,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -214,72 +211,6 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
     protected <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeGrpcAsync(
             String targetId, Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, ListenableFuture<R>> callLogic, Q request) {
         return grpcInvoker.invokeAsync(channelPoolLookup(targetId), stubFactory, callLogic, request);
-    }
-
-    /**
-     * Wrapper for {@link CompletableFutureFinalizers#awaitAllAndGet(Collection, Supplier, Function)}. If any future
-     * completes exceptionally, the corresponding {@link CompletableFuture#join()} call will throw a
-     * {@link RuntimeException}, and iteration will stop at that point.
-     *
-     * @param futures collection of futures representing asynchronous computations
-     * @param factory creates the output collection instance
-     * @return a new collection of the results returned by the asynchronous computations
-     * @param <R> result type
-     * @param <C> collection type
-     */
-    protected <R, C extends Collection<R>> C awaitAllAndGet(
-            Collection<CompletableFuture<R>> futures, Supplier<? extends C> factory) {
-        return CompletableFutureFinalizers.awaitAllAndGet(futures, factory, null);
-    }
-
-    /**
-     * Wrapper for {@link CompletableFutureFinalizers#awaitAllAndGet(Collection, Supplier, Function)} with custom future
-     * exception handling.
-     *
-     * @param futures collection of futures representing asynchronous computations
-     * @param factory creates the output collection instance
-     * @param exceptionally function for handling individual future exceptions, throws normally if {@code null}
-     * @return a new collection of the results returned by the asynchronous computations
-     * @param <R> result type
-     * @param <C> collection type
-     */
-    protected <R, C extends Collection<R>> C awaitAllAndGet(
-            Collection<CompletableFuture<R>> futures, Supplier<? extends C> factory, Function<Throwable, R> exceptionally) {
-        return CompletableFutureFinalizers.awaitAllAndGet(futures, factory, exceptionally);
-    }
-
-    /**
-     * Wrapper for {@link CompletableFutureFinalizers#awaitAllAndGet(Map, Supplier, Function)}. If any future completes
-     * exceptionally, the corresponding {@link CompletableFuture#join()} call will throw a {@link RuntimeException}, and
-     * iteration will stop at that point.
-     *
-     * @param futures map of keys to futures representing asynchronous computations
-     * @param factory creates the output map instance
-     * @return a new map of keys to the results returned by the asynchronous computations
-     * @param <K> key type
-     * @param <R> result type
-     * @param <M> map type
-     */
-    protected <K, R, M extends Map<K, R>> M awaitAllAndGet(
-            Map<K, CompletableFuture<R>> futures, Supplier<? extends M> factory) {
-        return CompletableFutureFinalizers.awaitAllAndGet(futures, factory, null);
-    }
-
-    /**
-     * Wrapper for {@link CompletableFutureFinalizers#awaitAllAndGet(Map, Supplier, Function)} with custom future exception
-     * handling.
-     *
-     * @param futures map of keys to futures representing asynchronous computations
-     * @param factory creates the output map instance
-     * @param exceptionally function for handling individual future exceptions, throws normally if {@code null}
-     * @return a new map of keys to the results returned by the asynchronous computations
-     * @param <K> key type
-     * @param <R> result type
-     * @param <M> map type
-     */
-    protected <K, R, M extends Map<K, R>> M awaitAllAndGet(
-            Map<K, CompletableFuture<R>> futures, Supplier<? extends M> factory, Function<Throwable, R> exceptionally) {
-        return CompletableFutureFinalizers.awaitAllAndGet(futures, factory, exceptionally);
     }
 
     private ObjectPool<ManagedChannel> channelPoolLookup(String targetId) {

@@ -1,22 +1,18 @@
 package emissary.grpc.invoker;
 
 import emissary.grpc.exceptions.GrpcExceptionUtils;
+import emissary.grpc.future.CompletableFutureAdaptors;
 import emissary.grpc.pool.ConnectionFactory;
 import emissary.grpc.retry.RetryHandler;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.GeneratedMessageV3;
 import io.grpc.ManagedChannel;
 import io.grpc.stub.AbstractBlockingStub;
 import io.grpc.stub.AbstractFutureStub;
-import jakarta.annotation.Nonnull;
 import org.apache.commons.pool2.ObjectPool;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -79,7 +75,9 @@ public class GrpcInvoker {
             ManagedChannel channel = ConnectionFactory.acquireChannel(channelPool);
             try {
                 S stub = stubFactory.apply(channel);
-                return handleFuture(callLogic.apply(stub, request), channel, channelPool);
+                ListenableFuture<R> listenable = callLogic.apply(stub, request);
+                CompletableFuture<R> completable = CompletableFutureAdaptors.fromListenableFuture(listenable);
+                return completable.handle(handleFuture(channel, channelPool));
             } catch (RuntimeException e) {
                 ConnectionFactory.invalidateChannel(channel, channelPool);
                 throw GrpcExceptionUtils.toContextualRuntimeException(e);
@@ -88,48 +86,24 @@ public class GrpcInvoker {
     }
 
     /**
-     * Adds a handler for gRPC future completion that manages channel lifecycle and exception mapping. Runs when the future
-     * completes regardless of success or failure.
+     * Creates a handler for gRPC future completion that manages channel lifecycle and exception mapping. Runs when the
+     * future completes regardless of success or failure.
      *
      * @param channel the borrowed channel
      * @param channelPool the pool the channel came from
      * @param <R> response type
-     * @return handler suitable for {@link CompletableFuture#handle}
+     * @return handler function suitable for {@link CompletableFuture#handle}
      */
-    private static <R extends GeneratedMessageV3> CompletionStage<R> handleFuture(
-            ListenableFuture<R> listenable, ManagedChannel channel, ObjectPool<ManagedChannel> channelPool) {
-        return toCompletableFuture(listenable)
-                .handle((response, throwable) -> {
-                    if (throwable == null) {
-                        ConnectionFactory.returnChannel(channel, channelPool);
-                        return response;
-                    }
-                    ConnectionFactory.invalidateChannel(channel, channelPool);
-                    throw GrpcExceptionUtils.toContextualRuntimeException(
-                            GrpcExceptionUtils.unwrapAsyncThrowable(throwable));
-                });
-    }
-
-    /**
-     * Converts a Guava future to a Java completable future.
-     *
-     * @param future Guava future
-     * @return completable future
-     * @param <T> result type
-     */
-    private static <T> CompletableFuture<T> toCompletableFuture(ListenableFuture<T> future) {
-        CompletableFuture<T> completableFuture = new CompletableFuture<>();
-        Futures.addCallback(future, new FutureCallback<>() {
-            @Override
-            public void onSuccess(T result) {
-                completableFuture.complete(result);
+    private static <R extends GeneratedMessageV3> BiFunction<R, Throwable, R> handleFuture(
+            ManagedChannel channel, ObjectPool<ManagedChannel> channelPool) {
+        return (response, throwable) -> {
+            if (throwable == null) {
+                ConnectionFactory.returnChannel(channel, channelPool);
+                return response;
             }
-
-            @Override
-            public void onFailure(@Nonnull Throwable t) {
-                completableFuture.completeExceptionally(t);
-            }
-        }, MoreExecutors.directExecutor()); // Direct executor runs callback immediately on thread completing Guava future
-        return completableFuture;
+            ConnectionFactory.invalidateChannel(channel, channelPool);
+            throw GrpcExceptionUtils.toContextualRuntimeException(
+                    GrpcExceptionUtils.unwrapAsyncThrowable(throwable));
+        };
     }
 }
