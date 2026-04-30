@@ -374,9 +374,9 @@ public class DropOffUtil {
                             break;
                         case 'G':
                             if (tld != null) {
-                                sb.append(datePath(cleanSpecPath(tld.getStringParameter("DTG"))));
+                                sb.append(datePath(cleanSpecPath(tld.getParameterAsString("DTG"))));
                             } else if (d != null) {
-                                sb.append(datePath(cleanSpecPath(d.getStringParameter("DTG"))));
+                                sb.append(datePath(cleanSpecPath(d.getParameterAsString("DTG"))));
                             }
                             break;
                         case 'R':
@@ -424,7 +424,7 @@ public class DropOffUtil {
                 final int endpos = spec.indexOf("'", i + 7);
                 if (endpos > i + 7) {
                     final String token = spec.substring(i + 7, endpos);
-                    final String value = cleanSpecPath(d.getStringParameter(token));
+                    final String value = cleanSpecPath(d.getParameterAsString(token));
                     sb.append(nvl(value, "NO-" + token));
                     i += 8 + token.length(); // META{'token'} SUPPRESS CHECKSTYLE ModifiedControlVariable
                 } else {
@@ -435,7 +435,7 @@ public class DropOffUtil {
                 final int endpos = spec.indexOf("'", i + 6);
                 if (endpos > i + 6) {
                     final String token = spec.substring(i + 6, endpos);
-                    final String value = cleanSpecPath(tld.getStringParameter(token));
+                    final String value = cleanSpecPath(tld.getParameterAsString(token));
                     sb.append(nvl(value, "NO-" + token));
                     i += 7 + token.length(); // TLD{'token'} SUPPRESS CHECKSTYLE ModifiedControlVariable
                 } else {
@@ -470,8 +470,10 @@ public class DropOffUtil {
      */
     public String getBestIdFrom(final IBaseDataObject d) {
         for (final String s : this.idTokens) {
-            if (!StringUtils.isBlank(d.getStringParameter(s))) {
-                return d.getStringParameter(s);
+            for (final String v : d.getParameterAsStrings(s)) {
+                if (!StringUtils.isBlank(v)) {
+                    return v;
+                }
             }
             if (SHORTNAME.equals(s)) {
                 final String shortName = d.shortName();
@@ -510,8 +512,10 @@ public class DropOffUtil {
     public List<String> getExistingIdsList(final IBaseDataObject d) {
         final List<String> values = new ArrayList<>();
         for (final String s : this.idTokens) {
-            if (!StringUtils.isBlank(d.getStringParameter(s))) {
-                values.add(d.getStringParameter(s));
+            for (final String v : d.getParameterAsStrings(s)) {
+                if (!StringUtils.isBlank(v)) {
+                    values.add(v);
+                }
             }
             if (SHORTNAME.equals(s)) {
                 final String shortName = d.shortName();
@@ -542,9 +546,9 @@ public class DropOffUtil {
         if (StringUtils.isNotEmpty(fileName)) {
             logger.debug("usingPathFromSpec instead of TARGETBIN: {}", fileName);
             return fileName;
-        } else if (tld != null && tld.getStringParameter(TARGETBIN) != null) {
+        } else if (tld != null && tld.hasParameter(TARGETBIN)) {
             logger.debug("TARGETBIN is {}", tld.getParameter(TARGETBIN));
-            return fixFileNameSeparators(tld.getStringParameter(TARGETBIN));
+            return fixFileNameSeparators(tld.getParameterAsString(TARGETBIN));
         } else {
             logger.debug("TARGETBIN is null");
             return "NO-CASE" + SEPARATOR + TimeUtil.getCurrentDate();
@@ -668,7 +672,7 @@ public class DropOffUtil {
     public static String getAndPutFileType(final IBaseDataObject bdo, @Nullable final Map<String, String> metaData, @Nullable final String formsArg) {
         String forms = formsArg;
         if (forms == null) {
-            forms = bdo.getStringParameter(FileTypeCheckParameter.POPPED_FORMS.getFieldName());
+            forms = bdo.getParameterAsConcatString(FileTypeCheckParameter.POPPED_FORMS.getFieldName(), " ");
             if (forms == null) {
                 forms = "";
             }
@@ -676,9 +680,9 @@ public class DropOffUtil {
 
         String fileType;
         if (bdo.hasParameter(FileTypeCheckParameter.FILETYPE.getFieldName())) {
-            fileType = bdo.getStringParameter(FileTypeCheckParameter.FILETYPE.getFieldName());
+            fileType = bdo.getParameterAsString(FileTypeCheckParameter.FILETYPE.getFieldName());
         } else if (bdo.hasParameter(FileTypeCheckParameter.FINAL_ID.getFieldName())) {
-            fileType = bdo.getStringParameter(FileTypeCheckParameter.FINAL_ID.getFieldName());
+            fileType = bdo.getParameterAsString(FileTypeCheckParameter.FINAL_ID.getFieldName());
             logger.debug("FINAL_ID FileType is ({})", fileType);
             if (metaData != null) {
                 metaData.put(FileTypeCheckParameter.FILETYPE.getFieldName(), fileType);
@@ -749,7 +753,7 @@ public class DropOffUtil {
             if (AUTO_GENERATED_ID.equals(s)) {
                 String parentAutoGeneratedId = null;
                 if (tld != null) {
-                    parentAutoGeneratedId = tld.getStringParameter(PARENT_AUTO_GENERATED_ID);
+                    parentAutoGeneratedId = tld.getParameterAsString(PARENT_AUTO_GENERATED_ID);
                 }
                 if (StringUtils.isBlank(parentAutoGeneratedId)) {
                     String uuid = getRandomUuid(d);
@@ -768,7 +772,7 @@ public class DropOffUtil {
                 String uuid = null;
                 // try getting param from the tld
                 if (!StringUtils.isBlank(parentAutoGeneratedId) && (tld != null)) {
-                    uuid = tld.getStringParameter(PARENT_AUTO_GENERATED_ID);
+                    uuid = tld.getParameterAsString(PARENT_AUTO_GENERATED_ID);
                 }
                 if (!StringUtils.isBlank(uuid)) {
                     final String component = d.shortName();
@@ -790,10 +794,10 @@ public class DropOffUtil {
                     return shortName;
                 }
 
-                String path = d.getStringParameter(s);
+                String path = d.getParameterAsString(s);
                 // try getting shortname from the tld
                 if (StringUtils.isBlank(path) && (tld != null)) {
-                    path = tld.getStringParameter(s);
+                    path = tld.getParameterAsString(s);
                 }
                 if (!StringUtils.isBlank(path)) {
                     final String component = d.shortName();
@@ -806,8 +810,8 @@ public class DropOffUtil {
 
             }
             // the param from the tld has priority over any child
-            if ((tld != null) && !StringUtils.isBlank(tld.getStringParameter(s))) {
-                String path = tld.getStringParameter(s);
+            if ((tld != null) && !StringUtils.isBlank(tld.getParameterAsString(s))) {
+                String path = tld.getParameterAsString(s);
                 if (!StringUtils.isBlank(path)) {
                     final String component = d.shortName();
                     final int pos = component.indexOf(Family.SEP);
@@ -818,8 +822,8 @@ public class DropOffUtil {
                 }
             }
             // if the param is not in the tld
-            if (!StringUtils.isBlank(d.getStringParameter(s))) {
-                return d.getStringParameter(s);
+            if (!StringUtils.isBlank(d.getParameterAsString(s))) {
+                return d.getParameterAsString(s);
             }
 
         }
@@ -857,7 +861,7 @@ public class DropOffUtil {
      * @return the language or the default value (never null)
      */
     public String getLanguage(final IBaseDataObject d) {
-        String lang = d.getStringParameter("LANGUAGE");
+        String lang = d.getParameterAsString("LANGUAGE");
         if (lang == null) {
             lang = "NONE";
         }
@@ -881,17 +885,18 @@ public class DropOffUtil {
     @Nullable
     public Date extractEventDateFrom(final IBaseDataObject d, final boolean lastResortDefault) {
         for (final String paramName : this.dateTokens) {
-            final String value = d.getStringParameter(paramName);
-            if (value != null) {
-                try {
-                    ZonedDateTime zdt = FlexibleDateTimeParser.parse(value, DATE_ISO_8601);
-                    if (zdt == null) {
-                        logger.debug("FlexibleDateTimeParser returned null trying to parse EventDate");
-                    } else {
-                        return Date.from(zdt.toInstant());
+            for (final String value : d.getParameterAsStrings(paramName)) {
+                if (value != null) {
+                    try {
+                        ZonedDateTime zdt = FlexibleDateTimeParser.parse(value, DATE_ISO_8601);
+                        if (zdt == null) {
+                            logger.debug("FlexibleDateTimeParser returned null trying to parse EventDate");
+                        } else {
+                            return Date.from(zdt.toInstant());
+                        }
+                    } catch (DateTimeParseException ex) {
+                        logger.debug("Cannot parse EventDate", ex);
                     }
-                } catch (DateTimeParseException ex) {
-                    logger.debug("Cannot parse EventDate", ex);
                 }
             }
         }
@@ -1002,7 +1007,7 @@ public class DropOffUtil {
         for (int i = 0; i < parentParams.size(); i++) {
             final String param = parentParams.get(i);
             if (tld.hasParameter(param)) {
-                parentTypes.put("1" + param, tld.getStringParameter(param));
+                parentTypes.put("1" + param, tld.getParameterAsString(param));
             }
         }
 
@@ -1013,7 +1018,7 @@ public class DropOffUtil {
 
             extractUniqueFileExtensions(p);
 
-            if (p.getStringParameter(EXTENDED_FILETYPE) == null) {
+            if (!p.hasParameter(EXTENDED_FILETYPE)) {
                 extendedFileTypes.clear();
                 for (final Map.Entry<String, Collection<Object>> entry : p.getParameters().entrySet()) {
                     final String key = entry.getKey();
@@ -1039,7 +1044,7 @@ public class DropOffUtil {
             for (int j = 0; j < parentParams.size(); j++) {
                 final String param = parentParams.get(j);
                 if (p.hasParameter(param)) {
-                    parentTypes.put("" + level + param, p.getStringParameter(param));
+                    parentTypes.put("" + level + param, p.getParameterAsString(param));
                 } else {
                     // Must clear to keep my children from getting their uncle's value
                     parentTypes.remove("" + level + param);
