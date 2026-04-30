@@ -6,7 +6,7 @@ import emissary.grpc.pool.ConnectionFactory;
 import emissary.grpc.retry.RetryHandler;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.Message;
 import io.grpc.ManagedChannel;
 import io.grpc.stub.AbstractBlockingStub;
 import io.grpc.stub.AbstractFutureStub;
@@ -37,7 +37,7 @@ public class GrpcInvoker {
      * @param <R> the protobuf response type
      * @param <S> the gRPC stub type
      */
-    public <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractBlockingStub<S>> R invoke(
+    public <Q extends Message, R extends Message, S extends AbstractBlockingStub<S>> R invoke(
             ObjectPool<ManagedChannel> channelPool, Function<ManagedChannel, S> stubFactory,
             BiFunction<S, Q, R> callLogic, Q request) {
         return retryHandler.execute(() -> {
@@ -68,7 +68,7 @@ public class GrpcInvoker {
      * @param <R> the protobuf response type
      * @param <S> the gRPC stub type
      */
-    public <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeAsync(
+    public <Q extends Message, R extends Message, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeAsync(
             ObjectPool<ManagedChannel> channelPool, Function<ManagedChannel, S> stubFactory,
             BiFunction<S, Q, ListenableFuture<R>> callLogic, Q request) {
         return retryHandler.executeAsync(() -> {
@@ -94,7 +94,7 @@ public class GrpcInvoker {
      * @param <R> response type
      * @return handler function suitable for {@link CompletableFuture#handle}
      */
-    private static <R extends GeneratedMessageV3> BiFunction<R, Throwable, R> handleFuture(
+    private static <R extends Message> BiFunction<R, Throwable, R> handleFuture(
             ManagedChannel channel, ObjectPool<ManagedChannel> channelPool) {
         return (response, throwable) -> {
             if (throwable == null) {
