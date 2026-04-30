@@ -1,8 +1,10 @@
 package emissary.test.core.junit5;
 
 import emissary.core.DataObjectFactory;
+import emissary.core.DiffCheckConfiguration;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
+import emissary.core.IBaseDataObjectDiffHelper;
 import emissary.core.IBaseDataObjectXmlCodecs;
 import emissary.core.IBaseDataObjectXmlHelper;
 import emissary.core.channels.FileChannelFactory;
@@ -11,6 +13,7 @@ import emissary.kff.KffDataObjectHandler;
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.junit5.LogbackTester.SimplifiedLogEvent;
 import emissary.util.ByteUtil;
+import emissary.util.PlaceComparisonHelper;
 import emissary.util.io.ResourceReader;
 import emissary.util.os.OSReleaseUtil;
 
@@ -74,6 +77,7 @@ import static emissary.core.constants.IbdoXmlElementNames.VIEW;
 import static emissary.test.core.junit5.AnswerGenerator.fixDisposeRunnables;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -123,7 +127,34 @@ public abstract class ExtractionTest extends UnitTest {
     }
 
     /**
+     * Regression mode -- This test mode compares the entire BDO instead of just what is defined in the XML. In other words,
+     * the XML must define exactly the output of the Place, no more and no less. There are methods provided to generate the
+     * XML required.
+     *
+     * @return true if regression mode, false otherwise
+     */
+    public boolean isStrict() {
+        return false;
+    }
+
+    /**
+     * Configuration of {@link IBaseDataObjectDiffHelper} needed in strict mode
+     *
+     * @return diff helper configuration
+     */
+    public DiffCheckConfiguration getDiffCheck() {
+        return DiffCheckConfiguration.configure().enableData().enableKeyValueParameterDiff().build();
+    }
+
+    @Override
+    public String getAnswerXsd() {
+        return isStrict() ? "emissary/test/core/schemas/regression.xsd" : super.getAnswerXsd();
+    }
+
+    /**
      * Override this or set the generateAnswers system property to true to generate XML for data files.
+     * <p>
+     * Optionally, to generate answers file without changing code run {@code mvn clean test -DgenerateAnswers=true}
      *
      * @return defaults to false if no XML should be generated (i.e. normal case of executing tests) or true to generate
      *         automatically
@@ -132,8 +163,9 @@ public abstract class ExtractionTest extends UnitTest {
         return Boolean.getBoolean("generateAnswers") && createAnswerGenerator() != null;
     }
 
+    @Nullable
     protected AnswerGenerator createAnswerGenerator() {
-        return null; // TODO :: create answer generator
+        return isStrict() ? new RegressionTestAnswerGenerator() : null;
     }
 
     protected AnswerGenerator getAnswerGenerator() {
@@ -170,7 +202,7 @@ public abstract class ExtractionTest extends UnitTest {
      */
     @Deprecated
     protected IBaseDataObjectXmlCodecs.ElementEncoders getEncoders() {
-        return DEFAULT_ELEMENT_ENCODERS;
+        return isStrict() ? SHA256_ELEMENT_ENCODERS : DEFAULT_ELEMENT_ENCODERS;
     }
 
     /**
@@ -212,8 +244,20 @@ public abstract class ExtractionTest extends UnitTest {
      * @return the initial form
      */
     @ForOverride
+    @Nullable
     protected String getInitialForm(final String resource) {
-        return resource.replaceAll("^.*/([^/@]+)(@\\d+)?\\.dat$", "$1");
+        if (!isStrict()) {
+            return resource.replaceAll("^.*/([^/@]+)(@\\d+)?\\.dat$", "$1");
+        }
+
+        try {
+            final Path datFileUrl = Path.of(new ResourceReader().getResource(resource).toURI());
+            final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
+            return datFile.getInitialForm();
+        } catch (final URISyntaxException e) {
+            fail("Unable to get initial form from filename", e);
+            return null;
+        }
     }
 
     /**
@@ -411,22 +455,12 @@ public abstract class ExtractionTest extends UnitTest {
             throws DataConversionException {
         Element root = answers.getRootElement();
         Element parent = root.getChild(ANSWERS);
-        if (parent == null) {
-            parent = root;
-        }
 
-        // Check the payload
-        checkAnswers(parent, payload, attachments, tname);
-
-        // Check each attachment
-        for (int attNum = 1; attNum <= attachments.size(); attNum++) {
-            String atname = tname + Family.SEP + attNum;
-            Element el = getChildAnswers(parent, ATTACHMENT_ELEMENT_PREFIX, attNum);
-            if (el != null) {
-                checkAnswersPreHook(el, payload, attachments.get(attNum - 1), atname);
-                checkAnswers(el, attachments.get(attNum - 1), null, atname);
-                checkAnswersPostHook(el, payload, attachments.get(attNum - 1), atname);
-            }
+        if (isStrict()) {
+            assertNotNull(parent, "No 'answers' section found!");
+            checkAnswersStrict(answers, payload, attachments, tname, parent);
+        } else {
+            checkAnswersLenient(Optional.ofNullable(parent).orElse(root), payload, attachments, tname);
         }
     }
 
@@ -673,6 +707,65 @@ public abstract class ExtractionTest extends UnitTest {
         }
     }
 
+    /**
+     * LENIENT: Recursive element-based check for payload and attachments.
+     *
+     * @param parent XML element for the parent
+     * @param payload The base data object
+     * @param attachments The list of child base data objects
+     * @param tname the path of the dat file
+     * @throws DataConversionException data conversion from a string to value type fails
+     */
+    protected void checkAnswersLenient(Element parent, IBaseDataObject payload,
+            List<IBaseDataObject> attachments, String tname) throws DataConversionException {
+        // Check the main payload
+        checkAnswers(parent, payload, attachments, tname);
+
+        // Check each attachment individually
+        for (int attNum = 1; attNum <= attachments.size(); attNum++) {
+            String atname = tname + Family.SEP + attNum;
+            Element el = getChildAnswers(parent, ATTACHMENT_ELEMENT_PREFIX, attNum);
+
+            if (el != null) {
+                IBaseDataObject currentAtt = attachments.get(attNum - 1);
+
+                checkAnswersPreHook(el, payload, currentAtt, atname);
+                checkAnswers(el, currentAtt, null, atname);
+                checkAnswersPostHook(el, payload, currentAtt, atname);
+            }
+        }
+    }
+
+    /**
+     * STRICT: Regression comparison using PlaceComparisonHelper.
+     *
+     * @param answers XML document containing the expected results
+     * @param payload The base data object
+     * @param attachments The list of child base data objects
+     * @param tname the path of the dat file
+     * @param parent XML element for the parent
+     */
+    protected void checkAnswersStrict(Document answers, IBaseDataObject payload,
+            List<IBaseDataObject> attachments, String tname, Element parent) {
+        final List<IBaseDataObject> expectedAttachments = new ArrayList<>();
+        final IBaseDataObject expectedIbdo = IBaseDataObjectXmlHelper.ibdoFromXml(answers, expectedAttachments, getDecoders(tname));
+
+        assertNotNull(place);
+        final String differences = PlaceComparisonHelper.checkDifferences(
+                expectedIbdo, payload,
+                expectedAttachments, attachments,
+                place.getClass().getName(), getDiffCheck());
+
+        String message = generateAnswers()
+                ? differences + "\nNOTE: Since 'generateAnswers' is true, these differences could indicate non-deterministic processing\n"
+                : differences;
+
+        assertNull(differences, message);
+
+        // Strict mode also validates Log Events
+        assertIterableEquals(SimplifiedLogEvent.fromXml(parent), actualSimplifiedLogEvents);
+    }
+
     private static void checkForMissingNameElement(String parentTag, String key, String tname) {
         if (key == null) {
             fail(String.format(Locale.getDefault(), "The element %s has a problem in %s: does not have a child name element", parentTag, tname));
@@ -758,14 +851,29 @@ public abstract class ExtractionTest extends UnitTest {
     }
 
     protected void setupPayload(IBaseDataObject payload, Document doc) {
-        kff.hash(payload);
-        Element root = doc.getRootElement();
+        if (!isStrict()) {
+            kff.hash(payload);
+        }
+
+        Element root = (doc != null) ? doc.getRootElement() : null;
+        if (root == null) {
+            return;
+        }
+
         Element setup = root.getChild(SETUP);
         boolean didSetFiletype = false;
         if (setup != null) {
-            List<Element> cfChildren = setup.getChildren(INITIAL_FORM);
-            if (!cfChildren.isEmpty()) {
-                payload.popCurrentForm(); // remove default
+            if (isStrict()) {
+                // Strict Mode: Clear everything to ensure a blank slate
+                payload.popCurrentForm();
+                payload.setFileType(null);
+                didSetFiletype = true;
+            } else {
+                // Lenient Mode: Only pop if a specific initial form is provided
+                List<Element> cfChildren = setup.getChildren(INITIAL_FORM);
+                if (!cfChildren.isEmpty()) {
+                    payload.popCurrentForm();
+                }
             }
 
             IBaseDataObjectXmlHelper.ibdoFromXmlMainElements(setup, payload, getDecoders(payload.getFilename()));
