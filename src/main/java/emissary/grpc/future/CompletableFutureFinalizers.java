@@ -2,11 +2,13 @@ package emissary.grpc.future;
 
 import emissary.grpc.exceptions.GrpcExceptionUtils;
 
+import io.grpc.Status;
 import jakarta.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -17,8 +19,9 @@ public class CompletableFutureFinalizers {
     /**
      * Waits for a provided asynchronous computation to complete and then return its result. This method blocks the calling
      * thread until the {@link CompletableFuture} input has completed. If the future completes exceptionally, the
-     * corresponding {@link CompletableFuture#join()} call will throw a {@link RuntimeException}, unless the future has been
-     * preconfigured with explicit exception handling behavior.
+     * corresponding {@link CompletableFuture#get()} call will throw a {@link RuntimeException}, unless the future has been
+     * preconfigured with explicit exception handling behavior. If the thread is interrupted while the future is still
+     * completing, the call will be canceled and a {@link io.grpc.StatusRuntimeException} will be thrown.
      *
      * @param future future representing an asynchronous computation
      * @return the result returned by an asynchronous computation
@@ -26,8 +29,13 @@ public class CompletableFutureFinalizers {
      */
     public static <R> R awaitAndGet(CompletableFuture<R> future) {
         try {
-            return future.join();
-        } catch (RuntimeException e) {
+            return future.get();
+        } catch (InterruptedException e) {
+            future.cancel(true);
+            Thread.currentThread().interrupt();
+            throw GrpcExceptionUtils.toContextualRuntimeException(
+                    Status.CANCELLED.asRuntimeException());
+        } catch (ExecutionException | RuntimeException e) {
             throw GrpcExceptionUtils.toContextualRuntimeException(
                     GrpcExceptionUtils.unwrapAsyncThrowable(e));
         }
