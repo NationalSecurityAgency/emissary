@@ -358,6 +358,7 @@ class GrpcSampleServicePlaceTest extends UnitTest {
         }
 
         @Test
+        @SuppressWarnings("Interruption")
         void testThreadInterruptCancelsSequentialGrpc() throws IOException, InterruptedException {
             CountDownLatch startedLatch = new CountDownLatch(1);
             CountDownLatch releaseLatch = new CountDownLatch(1);
@@ -476,6 +477,7 @@ class GrpcSampleServicePlaceTest extends UnitTest {
         }
 
         @Test
+        @SuppressWarnings("Interruption")
         void testThreadInterruptCancelsParallelGrpc() throws IOException, InterruptedException {
             CountDownLatch startedLatch = new CountDownLatch(2);
             CountDownLatch releaseLatch = new CountDownLatch(1);

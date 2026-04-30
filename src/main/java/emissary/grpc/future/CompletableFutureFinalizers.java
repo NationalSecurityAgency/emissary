@@ -31,10 +31,9 @@ public class CompletableFutureFinalizers {
         try {
             return future.get();
         } catch (InterruptedException e) {
-            future.cancel(true);
+            future.cancel(false);
             Thread.currentThread().interrupt();
-            throw GrpcExceptionUtils.toContextualRuntimeException(
-                    Status.CANCELLED.asRuntimeException());
+            throw GrpcExceptionUtils.toContextualRuntimeException(Status.CANCELLED.asRuntimeException());
         } catch (ExecutionException | RuntimeException e) {
             throw GrpcExceptionUtils.toContextualRuntimeException(
                     GrpcExceptionUtils.unwrapAsyncThrowable(e));
