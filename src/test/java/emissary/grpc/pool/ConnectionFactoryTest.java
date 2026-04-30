@@ -2,7 +2,6 @@ package emissary.grpc.pool;
 
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
-import emissary.grpc.exceptions.PoolException;
 import emissary.test.core.junit5.UnitTest;
 
 import io.grpc.ManagedChannel;

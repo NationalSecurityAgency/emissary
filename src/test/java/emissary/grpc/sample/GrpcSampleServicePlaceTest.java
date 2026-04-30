@@ -6,8 +6,6 @@ import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
 import emissary.core.constants.Configurations;
 import emissary.grpc.GrpcRoutingPlace;
-import emissary.grpc.exceptions.ServiceException;
-import emissary.grpc.exceptions.ServiceNotAvailableException;
 import emissary.grpc.pool.ConnectionFactory;
 import emissary.grpc.retry.RetryHandler;
 import emissary.test.core.junit5.UnitTest;
@@ -187,22 +185,12 @@ class GrpcSampleServicePlaceTest extends UnitTest {
         }
 
         @ParameterizedTest
-        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "UNAVAILABLE"}, mode = EnumSource.Mode.INCLUDE)
-        void testGrpcRecoverableCodes(Status.Code code) {
+        @EnumSource(value = Status.Code.class)
+        void testGrpcExceptionCodes(Status.Code code) {
             Status status = Status.fromCode(code);
             Runnable invocation = () -> samplePlace.throwExceptionsDuringProcess(dataObject, new StatusRuntimeException(status));
-            ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class, invocation::run);
-            assertTrue(e.getMessage().endsWith(status.getCode().name()));
-            assertTrue(dataObject.getAlternateViewNames().isEmpty());
-        }
-
-        @ParameterizedTest
-        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "UNAVAILABLE"}, mode = EnumSource.Mode.EXCLUDE)
-        void testGrpcNonRecoverableCodes(Status.Code code) {
-            Status status = Status.fromCode(code);
-            Runnable invocation = () -> samplePlace.throwExceptionsDuringProcess(dataObject, new StatusRuntimeException(status));
-            ServiceException e = assertThrows(ServiceException.class, invocation::run);
-            assertTrue(e.getMessage().endsWith(status.getCode().name()));
+            StatusRuntimeException e = assertThrows(StatusRuntimeException.class, invocation::run);
+            assertTrue(e.getMessage().startsWith(code.name()));
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
         }
 
@@ -236,7 +224,7 @@ class GrpcSampleServicePlaceTest extends UnitTest {
         }
 
         @ParameterizedTest
-        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "UNAVAILABLE"}, mode = EnumSource.Mode.INCLUDE)
+        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "DEADLINE_EXCEEDED", "UNAVAILABLE"}, mode = EnumSource.Mode.INCLUDE)
         void testGrpcSuccessAfterRecoverableCodes(Status.Code code) {
             Status status = Status.fromCode(code);
             AtomicInteger attemptNumber = new AtomicInteger(0);
@@ -251,7 +239,7 @@ class GrpcSampleServicePlaceTest extends UnitTest {
 
 
         @ParameterizedTest
-        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "UNAVAILABLE"}, mode = EnumSource.Mode.INCLUDE)
+        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "DEADLINE_EXCEEDED", "UNAVAILABLE"}, mode = EnumSource.Mode.INCLUDE)
         void testGrpcFailureAfterMaxRecoverableCodes(Status.Code code) {
             Status status = Status.fromCode(code);
             AtomicInteger attemptNumber = new AtomicInteger(0);
@@ -259,24 +247,24 @@ class GrpcSampleServicePlaceTest extends UnitTest {
 
             Runnable invocation = () -> samplePlace.throwExceptionsDuringProcessWithSuccessfulRetry(
                     dataObject, new StatusRuntimeException(status), retryAttempts, attemptNumber);
-            ServiceNotAvailableException e = assertThrows(ServiceNotAvailableException.class, invocation::run);
+            StatusRuntimeException e = assertThrows(StatusRuntimeException.class, invocation::run);
 
-            assertTrue(e.getMessage().endsWith(status.getCode().name()));
+            assertTrue(e.getMessage().startsWith(code.name()));
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
             assertEquals(RETRY_ATTEMPTS, attemptNumber.get());
         }
 
         @ParameterizedTest
-        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "UNAVAILABLE"}, mode = EnumSource.Mode.EXCLUDE)
+        @EnumSource(value = Status.Code.class, names = {"RESOURCE_EXHAUSTED", "DEADLINE_EXCEEDED", "UNAVAILABLE"}, mode = EnumSource.Mode.EXCLUDE)
         void testGrpcFailureAfterNonRecoverableCodes(Status.Code code) {
             Status status = Status.fromCode(code);
             AtomicInteger attemptNumber = new AtomicInteger(0);
 
             Runnable invocation = () -> samplePlace.throwExceptionsDuringProcessWithSuccessfulRetry(
                     dataObject, new StatusRuntimeException(status), RETRY_ATTEMPTS, attemptNumber);
-            ServiceException e = assertThrows(ServiceException.class, invocation::run);
+            StatusRuntimeException e = assertThrows(StatusRuntimeException.class, invocation::run);
 
-            assertTrue(e.getMessage().endsWith(status.getCode().name()));
+            assertTrue(e.getMessage().startsWith(code.name()));
             assertTrue(dataObject.getAlternateViewNames().isEmpty());
             assertEquals(1, attemptNumber.get());
         }

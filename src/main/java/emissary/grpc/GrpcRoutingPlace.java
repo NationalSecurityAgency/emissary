@@ -3,12 +3,15 @@ package emissary.grpc;
 import emissary.config.Configurator;
 import emissary.grpc.invoker.GrpcInvoker;
 import emissary.grpc.pool.ConnectionFactory;
+import emissary.grpc.pool.PoolException;
 import emissary.grpc.retry.RetryHandler;
 import emissary.place.ServiceProviderPlace;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.GeneratedMessageV3;
 import io.grpc.ManagedChannel;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractBlockingStub;
 import io.grpc.stub.AbstractFutureStub;
 import jakarta.annotation.Nonnull;
@@ -41,6 +44,11 @@ import java.util.stream.Collectors;
  * </ul>
  */
 public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements IGrpcRoutingPlace {
+    public static final Set<Status.Code> RETRY_GRPC_CODES = Set.of(
+            Status.Code.UNAVAILABLE,
+            Status.Code.DEADLINE_EXCEEDED,
+            Status.Code.RESOURCE_EXHAUSTED);
+
     public static final String GRPC_HOST = "GRPC_HOST_";
     public static final String GRPC_PORT = "GRPC_PORT_";
 
@@ -90,15 +98,6 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
         configureGrpc();
     }
 
-    protected Map<String, String> getHostnameConfigs() {
-        return Objects.requireNonNull(configG).findStringMatchMap(GRPC_HOST, true);
-    }
-
-    protected Map<String, Integer> getPortNumberConfigs() {
-        return Objects.requireNonNull(configG).findStringMatchMap(GRPC_PORT).entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> Integer.parseInt(entry.getValue())));
-    }
-
     private void configureGrpc() {
         if (configG == null) {
             throw new IllegalStateException("gRPC configurations not found for " + this.getPlaceName());
@@ -121,7 +120,32 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
             channelPoolTable.put(id, newConnectionPool(id));
         }
 
-        grpcInvoker = new GrpcInvoker(new RetryHandler(configG, this.getPlaceName()));
+        grpcInvoker = new GrpcInvoker(new RetryHandler(configG, this.getPlaceName(), this::retryOnException));
+    }
+
+    protected Map<String, String> getHostnameConfigs() {
+        return Objects.requireNonNull(configG).findStringMatchMap(GRPC_HOST, true);
+    }
+
+    protected Map<String, Integer> getPortNumberConfigs() {
+        return Objects.requireNonNull(configG).findStringMatchMap(GRPC_PORT).entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> Integer.parseInt(entry.getValue())));
+    }
+
+    /**
+     * Determines if the {@link RetryHandler} should try again when an exception is thrown during gRPC invocation. Default
+     * behavior attempts retries for any {@link PoolException} or for any Exception with a {@link Status.Code} in
+     * {@link #RETRY_GRPC_CODES}. Subclasses may override this behavior.
+     *
+     * @param t the Exception thrown during gRPC invocation
+     * @return {@code true} if the {@link RetryHandler} should try again, otherwise {@code false}
+     */
+    protected boolean retryOnException(Throwable t) {
+        if (t instanceof StatusRuntimeException) {
+            StatusRuntimeException e = (StatusRuntimeException) t;
+            return RETRY_GRPC_CODES.contains(e.getStatus().getCode());
+        }
+        return t instanceof PoolException;
     }
 
     private ObjectPool<ManagedChannel> newConnectionPool(String id) {
