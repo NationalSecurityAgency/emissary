@@ -30,6 +30,10 @@ public final class IbdoXmlElementNames {
      */
     public static final String FILENAME = "filename";
     /**
+     * The XML element name for Short Name.
+     */
+    public static final String SHORT_NAME = "shortName";
+    /**
      * The XML element name for Font Encoding.
      */
     public static final String FONT_ENCODING = "fontEncoding";
@@ -137,6 +141,14 @@ public final class IbdoXmlElementNames {
      * The XML attribute index for bad alternate view
      */
     public static final String BAD_ALT_VIEW = "badAlternateView";
+    /**
+     * The XML attribute index for number of attachments
+     */
+    public static final String NUM_ATTACHMENTS = "numAttachments";
+    /**
+     * The XML attribute index for number of extracted records
+     */
+    public static final String EXTRACT_COUNT = "extractCount";
 
 
     private IbdoXmlElementNames() {}

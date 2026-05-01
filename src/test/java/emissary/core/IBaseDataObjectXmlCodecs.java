@@ -36,7 +36,9 @@ import javax.xml.XMLConstants;
 
 import static emissary.core.constants.IbdoXmlElementNames.BIRTH_ORDER;
 import static emissary.core.constants.IbdoXmlElementNames.BROKEN;
+import static emissary.core.constants.IbdoXmlElementNames.EXTRACT_COUNT;
 import static emissary.core.constants.IbdoXmlElementNames.NAME;
+import static emissary.core.constants.IbdoXmlElementNames.NUM_ATTACHMENTS;
 import static emissary.core.constants.IbdoXmlElementNames.NUM_CHILDREN;
 import static emissary.core.constants.IbdoXmlElementNames.NUM_SIBLINGS;
 import static emissary.core.constants.IbdoXmlElementNames.OUTPUTABLE;
@@ -73,7 +75,7 @@ public final class IBaseDataObjectXmlCodecs {
     /**
      * The Base64 decoder.
      */
-    private static final Base64.Decoder BASE64_DECODER = Base64.getMimeDecoder();
+    public static final Base64.Decoder BASE64_DECODER = Base64.getMimeDecoder();
     public static final String BASE64 = "base64";
     public static final String SHA256 = "sha256";
     /**
@@ -93,6 +95,8 @@ public final class IBaseDataObjectXmlCodecs {
                     new AbstractMap.SimpleEntry<>(BROKEN, DataObjectFactory.getInstance().isBroken()),
                     new AbstractMap.SimpleEntry<>(NUM_CHILDREN, DataObjectFactory.getInstance().getNumChildren()),
                     new AbstractMap.SimpleEntry<>(NUM_SIBLINGS, DataObjectFactory.getInstance().getNumSiblings()),
+                    new AbstractMap.SimpleEntry<>(NUM_ATTACHMENTS, DataObjectFactory.getInstance().getNumChildren()),
+                    new AbstractMap.SimpleEntry<>(EXTRACT_COUNT, DataObjectFactory.getInstance().getExtractedRecordCount()),
                     new AbstractMap.SimpleEntry<>(OUTPUTABLE, DataObjectFactory.getInstance().isOutputable()),
                     new AbstractMap.SimpleEntry<>(PRIORITY, DataObjectFactory.getInstance().getPriority()))
                     .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue))));
@@ -457,67 +461,80 @@ public final class IBaseDataObjectXmlCodecs {
      * An implementation of an XML element encoder for SeekableByteChannel's that produces a base64 value.
      */
     public static final ElementEncoder<SeekableByteChannelFactory> DEFAULT_SEEKABLE_BYTE_CHANNEL_FACTORY_ENCODER =
-            new SeekableByteChannelFactoryEncoder();
+            new SeekableByteChannelFactoryEncoder(IBaseDataObjectXmlCodecs::protectedElementBase64);
 
-    private static class SeekableByteChannelFactoryEncoder implements ElementEncoder<SeekableByteChannelFactory> {
-        @Override
-        public void encode(final List<SeekableByteChannelFactory> values, final Element parentElement, final String childElementName) {
-            for (final SeekableByteChannelFactory value : values) {
-                if (value != null) {
-                    try {
-                        final byte[] bytes = SeekableByteChannelHelper.getByteArrayFromChannel(value,
-                                BaseDataObject.MAX_BYTE_ARRAY_SIZE);
-                        final Element childElement = preserve(protectedElementBase64(childElementName, bytes));
-
-                        childElement.setAttribute(LENGTH_ATTRIBUTE_NAME, Integer.toString(bytes.length));
-
-                        parentElement.addContent(childElement);
-                    } catch (final IOException e) {
-                        LOGGER.error("Could not get bytes from SeekableByteChannel!", e);
-                    }
-                }
-            }
-        }
-    }
+    /**
+     * An implementation of an XML element encoder for SeekableByteChannel's that produces a base64 value but wraps it in a
+     * value element.
+     */
+    public static final ElementEncoder<SeekableByteChannelFactory> SEEKABLE_BYTE_CHANNEL_VALUE_ENCODER =
+            new SeekableByteChannelFactoryEncoder(IBaseDataObjectXmlCodecs::protectedElementBase64, true);
 
     /**
      * An implementation of an XML element encoder for SeekableByteChannel's that produces a SHA256 hash value.
      */
     public static final ElementEncoder<SeekableByteChannelFactory> SHA256_SEEKABLE_BYTE_CHANNEL_FACTORY_ENCODER =
-            new Sha256SeekableByteChannelFactoryEncoder(false);
+            new SeekableByteChannelFactoryEncoder((n, b, m) -> protectedElementSha256(n, b, false));
 
     /**
      * An implementation of an XML element encoder for SeekableByteChannel's that always produces a SHA256 hash value.
      */
     public static final ElementEncoder<SeekableByteChannelFactory> ALWAYS_SHA256_SEEKABLE_BYTE_CHANNEL_FACTORY_ENCODER =
-            new Sha256SeekableByteChannelFactoryEncoder(true);
+            new SeekableByteChannelFactoryEncoder((n, b, m) -> protectedElementSha256(n, b, true));
 
-    private static class Sha256SeekableByteChannelFactoryEncoder implements ElementEncoder<SeekableByteChannelFactory> {
-        private final boolean alwaysHash;
+    @FunctionalInterface
+    public interface TriFunction<T, U, V, R> {
+        /**
+         * Applies this function to the given arguments.
+         */
+        R apply(T t, U u, V v);
+    }
 
-        public Sha256SeekableByteChannelFactoryEncoder(final boolean alwaysHash) {
-            this.alwaysHash = alwaysHash;
+    private static class SeekableByteChannelFactoryEncoder implements ElementEncoder<SeekableByteChannelFactory> {
+        private final TriFunction<String, byte[], Boolean, Element> elementProducer;
+        private final boolean useValueWrapper;
+
+        private SeekableByteChannelFactoryEncoder(TriFunction<String, byte[], Boolean, Element> elementProducer) {
+            this(elementProducer, false);
+        }
+
+        private SeekableByteChannelFactoryEncoder(TriFunction<String, byte[], Boolean, Element> elementProducer, boolean useValueWrapper) {
+            this.elementProducer = elementProducer;
+            this.useValueWrapper = useValueWrapper;
         }
 
         @Override
-        public void encode(final List<SeekableByteChannelFactory> values, final Element parentElement, final String childElementName) {
+        public void encode(final List<SeekableByteChannelFactory> values, final Element parent, final String name) {
             for (final SeekableByteChannelFactory value : values) {
-                if (value != null) {
-                    try {
-                        final byte[] bytes = SeekableByteChannelHelper.getByteArrayFromChannel(value,
-                                BaseDataObject.MAX_BYTE_ARRAY_SIZE);
-                        final Element childElement = preserve(protectedElementSha256(childElementName, bytes, alwaysHash));
+                if (value == null) {
+                    continue;
+                }
 
-                        childElement.setAttribute(LENGTH_ATTRIBUTE_NAME, Integer.toString(bytes.length));
+                try {
+                    final byte[] bytes = SeekableByteChannelHelper.getByteArrayFromChannel(value, BaseDataObject.MAX_BYTE_ARRAY_SIZE);
+                    final Element element = createElement(name, bytes);
 
-                        parentElement.addContent(childElement);
-                    } catch (final IOException e) {
-                        LOGGER.error("Could not get bytes from SeekableByteChannel!", e);
-                    }
+                    element.setAttribute(LENGTH_ATTRIBUTE_NAME, String.valueOf(bytes.length));
+                    parent.addContent(element);
+                } catch (final IOException e) {
+                    LOGGER.error("Could not get bytes from SeekableByteChannel for element: {}", name, e);
                 }
             }
         }
+
+        private Element createElement(String name, byte[] bytes) {
+            if (!useValueWrapper) {
+                return preserve(elementProducer.apply(name, bytes, false));
+            }
+
+            // Handle Wrapped Value logic
+            Element wrapper = new Element(name);
+            Element valueEl = preserve(elementProducer.apply(VALUE, bytes, true));
+            wrapper.addContent(valueEl);
+            return wrapper;
+        }
     }
+
 
     /**
      * An implementation of an XML element encoder for integers.
@@ -603,8 +620,13 @@ public final class IBaseDataObjectXmlCodecs {
         public void encode(final List<Map<String, Collection<Object>>> values, final Element parentElement, final String childElementName) {
             for (final Map<String, Collection<Object>> value : values) {
                 for (final Entry<String, Collection<Object>> parameter : value.entrySet()) {
+                    int parameterCount = parameter.getValue().size();
                     for (final Object item : parameter.getValue()) {
                         final Element metaElement = new Element(PARAMETER);
+                        if (parameterCount > 1) {
+                            // in lenient mode, we'll have to check if the value is in the string somewhere
+                            metaElement.setAttribute("matchMode", "index");
+                        }
 
                         parentElement.addContent(metaElement);
                         metaElement.addContent(preserve(protectedElement(NAME, parameter.getKey())));
@@ -693,6 +715,18 @@ public final class IBaseDataObjectXmlCodecs {
             DEFAULT_STRING_OBJECT_ENCODER);
 
     /**
+     * The default set of XML element encoders.
+     */
+    public static final ElementEncoders ALT_DEFAULT_ELEMENT_ENCODERS = new ElementEncoders(
+            DEFAULT_BOOLEAN_ENCODER,
+            DEFAULT_BYTE_ARRAY_ENCODER,
+            DEFAULT_INTEGER_ENCODER,
+            SEEKABLE_BYTE_CHANNEL_VALUE_ENCODER,
+            DEFAULT_STRING_BYTE_ARRAY_ENCODER,
+            DEFAULT_STRING_ENCODER,
+            DEFAULT_STRING_OBJECT_ENCODER);
+
+    /**
      * The set of XML element encoders that will sha256 hash the specified element types.
      */
     public static final ElementEncoders SHA256_ELEMENT_ENCODERS = new ElementEncoders(
@@ -755,7 +789,15 @@ public final class IBaseDataObjectXmlCodecs {
      * @return the protected XML element.
      */
     public static Element protectedElement(final String name, final String string) {
+        return protectedElement(name, string, false);
+    }
+
+    public static Element protectedElement(final String name, final String string, final boolean addMatchMode) {
         return protectedElementBase64(name, string.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static Element protectedElementBase64(final String name, final byte[] bytes) {
+        return protectedElementBase64(name, bytes, false);
     }
 
     /**
@@ -767,7 +809,7 @@ public final class IBaseDataObjectXmlCodecs {
      * @param bytes to wrap, if they contain non-printable characters
      * @return the created element
      */
-    public static Element protectedElementBase64(final String name, final byte[] bytes) {
+    public static Element protectedElementBase64(final String name, final byte[] bytes, final boolean addMatchMode) {
         final Element element = new Element(name);
 
         if (ByteUtil.containsNonIndexableBytes(bytes)) {
