@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
     <xs:element name="root">
         <xs:complexType>
             <xs:sequence>
@@ -46,8 +47,8 @@
     <xs:element name="dataLength" type="baseType"/>
     <xs:element name="shortName" type="baseType"/>
     <xs:element name="numAttachments" type="baseType"/>
-    <xs:element name="name" type="xs:string"/>
-    <xs:element name="value" type="xs:string"/>
+    <xs:element name="name" type="baseType"/>
+    <xs:element name="value" type="baseType"/>
     <xs:element name="length" type="xs:integer"/>
     <xs:element name="currentForm">
         <xs:complexType mixed="true">
@@ -71,8 +72,11 @@
     <xs:element name="data">
         <xs:complexType mixed="true">
             <xs:sequence>
-                <xs:element ref="value"/>
+                <xs:element ref="value" minOccurs="0" />
             </xs:sequence>
+            <xs:attribute ref="xml:space"/>
+            <xs:attribute ref="encoding"/>
+            <xs:attribute ref="length"/>
             <xs:attribute ref="os-release"/>
             <xs:attribute ref="os-version"/>
             <xs:attribute ref="matchMode"/>
@@ -123,6 +127,8 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:attribute name="encoding" type="xs:string" />
+    <xs:attribute name="length" type="xs:int" />
     <xs:attribute name="index" type="xs:int" />
     <xs:attribute name="os-release">
         <xs:simpleType>
@@ -154,6 +160,8 @@
     <xs:complexType name="baseType" mixed="true">
         <xs:attribute ref="os-release"/>
         <xs:attribute ref="os-version"/>
+        <xs:attribute ref="xml:space"/>
+        <xs:attribute ref="encoding"/>
     </xs:complexType>
     <xs:complexType name="ibdo">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
