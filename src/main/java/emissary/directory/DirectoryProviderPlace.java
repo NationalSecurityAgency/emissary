@@ -159,7 +159,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
                 localDirPlace = DirectoryPlace.lookup();
                 dirPlace = localDirPlace.toString();
             } catch (EmissaryException ex) {
-                if (EmissaryServer.exists() && !(this instanceof DirectoryPlace)) {
+                if (EmissaryServer.getInstance().isServerRunning() && !(this instanceof DirectoryPlace)) {
                     logger.warn("Unable to find DirectoryPlace in local namespace", ex);
                     return false;
                 }
@@ -221,7 +221,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
     protected void configureServicePlace(@Nullable String placeLocation) throws IOException {
         Configurator configG = getConfigurator();
         serviceDescription = configG.findStringEntry(SERVICE_DESCRIPTION);
-        if (serviceDescription == null || serviceDescription.length() == 0) {
+        if (serviceDescription == null || serviceDescription.isEmpty()) {
             serviceDescription = "Description not available";
         }
 
@@ -247,13 +247,13 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
         int serviceQuality = configG.findIntEntry(SERVICE_QUALITY, -1);
 
         // Bah.
-        if (placeName != null && placeName.length() == 0) {
+        if (placeName != null && placeName.isEmpty()) {
             placeName = null;
         }
-        if (serviceName != null && serviceName.length() == 0) {
+        if (serviceName != null && serviceName.isEmpty()) {
             serviceName = null;
         }
-        if (serviceType != null && serviceType.length() == 0) {
+        if (serviceType != null && serviceType.isEmpty()) {
             serviceType = null;
         }
 
