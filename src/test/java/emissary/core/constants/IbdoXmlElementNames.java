@@ -137,6 +137,14 @@ public final class IbdoXmlElementNames {
      * The XML attribute index for bad alternate view
      */
     public static final String BAD_ALT_VIEW = "badAlternateView";
+    /**
+     * The XML attribute index for number of attachments
+     */
+    public static final String NUM_ATTACHMENTS = "numAttachments";
+    /**
+     * The XML attribute index for number of extracted records
+     */
+    public static final String EXTRACT_COUNT = "extractCount";
 
 
     private IbdoXmlElementNames() {}
