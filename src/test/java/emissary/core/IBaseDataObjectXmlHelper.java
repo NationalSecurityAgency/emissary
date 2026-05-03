@@ -25,6 +25,7 @@ import static emissary.core.constants.IbdoXmlElementNames.CLASSIFICATION;
 import static emissary.core.constants.IbdoXmlElementNames.CURRENT_FORM;
 import static emissary.core.constants.IbdoXmlElementNames.DATA;
 import static emissary.core.constants.IbdoXmlElementNames.EXTRACTED_RECORD_ELEMENT_PREFIX;
+import static emissary.core.constants.IbdoXmlElementNames.EXTRACT_COUNT;
 import static emissary.core.constants.IbdoXmlElementNames.FILENAME;
 import static emissary.core.constants.IbdoXmlElementNames.FONT_ENCODING;
 import static emissary.core.constants.IbdoXmlElementNames.FOOTER;
@@ -33,6 +34,7 @@ import static emissary.core.constants.IbdoXmlElementNames.HEADER_ENCODING;
 import static emissary.core.constants.IbdoXmlElementNames.ID;
 import static emissary.core.constants.IbdoXmlElementNames.INDEX;
 import static emissary.core.constants.IbdoXmlElementNames.INITIAL_FORM;
+import static emissary.core.constants.IbdoXmlElementNames.NUM_ATTACHMENTS;
 import static emissary.core.constants.IbdoXmlElementNames.NUM_CHILDREN;
 import static emissary.core.constants.IbdoXmlElementNames.NUM_SIBLINGS;
 import static emissary.core.constants.IbdoXmlElementNames.OUTPUTABLE;
@@ -102,7 +104,7 @@ public final class IBaseDataObjectXmlHelper {
             final IBaseDataObject childIbdo = DataObjectFactory.getInstance();
             final String childName = answerChild.getName();
 
-            if (childName.startsWith(EXTRACTED_RECORD_ELEMENT_PREFIX)) {
+            if (childName.startsWith(EXTRACTED_RECORD_ELEMENT_PREFIX) && !childName.equalsIgnoreCase(EXTRACT_COUNT)) {
                 parentIbdo.addExtractedRecord(ibdoFromXmlMainElements(answerChild, childIbdo, decoders));
             } else if (childName.startsWith(ATTACHMENT_ELEMENT_PREFIX)) {
                 children.add(ibdoFromXmlMainElements(answerChild, childIbdo, decoders));
@@ -187,8 +189,11 @@ public final class IBaseDataObjectXmlHelper {
 
         xmlFromIbdoMainElements(parent, answersElement, encoders);
 
+        encoders.integerEncoder.encode(Collections.singletonList(children.size()), answersElement, NUM_ATTACHMENTS);
+
         final List<IBaseDataObject> extractedRecords = parent.getExtractedRecords();
         if (extractedRecords != null) {
+            encoders.integerEncoder.encode(Collections.singletonList(extractedRecords.size()), answersElement, EXTRACT_COUNT);
             for (int i = 0; i < extractedRecords.size(); i++) {
                 final IBaseDataObject extractedRecord = extractedRecords.get(i);
                 final Element extractElement = new Element(EXTRACTED_RECORD_ELEMENT_PREFIX);
