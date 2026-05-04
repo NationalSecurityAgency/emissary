@@ -395,13 +395,13 @@ class GrpcSampleServicePlaceTest extends UnitTest {
                 clientThread.interrupt();
                 clientThread.join(500);
                 assertFalse(clientThread.isAlive(), "Client thread should exit after interruption");
+                assertTrue(releaseLatch.await(1, TimeUnit.SECONDS), "RPC should be canceled with resources released");
 
                 Throwable error = errorRef.get();
                 assertInstanceOf(StatusRuntimeException.class, error);
                 assertEquals(Status.Code.CANCELLED, Status.fromThrowable(error).getCode());
                 assertTrue(o.getAlternateViews().isEmpty());
             } finally {
-                releaseLatch.countDown();
                 if (synchronicityServer != null) {
                     synchronicityServer.shutdownNow();
                 }
@@ -516,13 +516,13 @@ class GrpcSampleServicePlaceTest extends UnitTest {
                 clientThread.interrupt();
                 clientThread.join(500);
                 assertFalse(clientThread.isAlive(), "Client thread should exit after interruption");
+                assertTrue(releaseLatch.await(1, TimeUnit.SECONDS), "RPC should be canceled with resources released");
 
                 Throwable error = errorRef.get();
                 assertInstanceOf(StatusRuntimeException.class, error);
                 assertEquals(Status.Code.CANCELLED, Status.fromThrowable(error).getCode());
                 assertTrue(o.getAlternateViews().isEmpty());
             } finally {
-                releaseLatch.countDown();
                 if (synchronicityOneServer != null) {
                     synchronicityOneServer.shutdownNow();
                 }

@@ -5,8 +5,10 @@ import emissary.grpc.sample.v1.SampleRequest;
 import emissary.grpc.sample.v1.SampleResponse;
 import emissary.grpc.sample.v1.SampleServiceGrpc;
 
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
+import io.grpc.Context;
 import io.grpc.stub.StreamObserver;
 
 import java.io.ByteArrayOutputStream;
@@ -87,9 +89,14 @@ public abstract class GrpcSampleServiceImpl extends SampleServiceGrpc.SampleServ
 
         @Override
         public byte[] process(byte[] query) {
+            Context context = Context.current();
+            context.addListener(ignored -> releaseLatch.countDown(), MoreExecutors.directExecutor());
             startedLatch.countDown();
             try {
                 releaseLatch.await();
+                if (context.isCancelled()) {
+                    return new byte[0];
+                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new IllegalStateException(e);

@@ -13,6 +13,9 @@ import io.grpc.stub.AbstractFutureStub;
 import org.apache.commons.pool2.ObjectPool;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -71,32 +74,36 @@ public class GrpcInvoker {
     public <Q extends GeneratedMessageV3, R extends GeneratedMessageV3, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeAsync(
             ObjectPool<ManagedChannel> channelPool, Function<ManagedChannel, S> stubFactory,
             BiFunction<S, Q, ListenableFuture<R>> callLogic, Q request) {
-        return retryHandler.executeAsync(() -> {
+        AtomicReference<ListenableFuture<R>> listenableRef = new AtomicReference<>();
+        CompletionStage<R> stage = retryHandler.executeAsync(() -> {
             ManagedChannel channel = ConnectionFactory.acquireChannel(channelPool);
             try {
                 S stub = stubFactory.apply(channel);
-                ListenableFuture<R> listenable = callLogic.apply(stub, request);
-                CompletableFuture<R> completable = CompletableFutureAdaptors.fromListenableFuture(listenable);
-                return completable.handle(handleFuture(channel, channelPool));
+                listenableRef.set(callLogic.apply(stub, request));
+                CompletableFuture<R> completable = CompletableFutureAdaptors.fromListenableFuture(listenableRef.get());
+                return attachHandlingHook(completable, channel, channelPool);
             } catch (RuntimeException e) {
                 ConnectionFactory.invalidateChannel(channel, channelPool);
                 throw GrpcExceptionUtils.toContextualRuntimeException(e);
             }
-        }).toCompletableFuture();
+        });
+        return attachCancellationHook(stage.toCompletableFuture(), listenableRef);
     }
 
     /**
-     * Creates a handler for gRPC future completion that manages channel lifecycle and exception mapping. Runs when the
-     * future completes regardless of success or failure.
+     * Attaches a completion hook to the provided {@link CompletableFuture} using
+     * {@link CompletableFuture#handle(BiFunction)}. This hook manages channel lifecycle and exception mapping, and runs
+     * when the future completes regardless of its success or failure.
      *
+     * @param future the future to attach the hook to
      * @param channel the borrowed channel
      * @param channelPool the pool the channel came from
      * @param <R> response type
-     * @return handler function suitable for {@link CompletableFuture#handle}
+     * @return a future with explicit handling logic
      */
-    private static <R extends GeneratedMessageV3> BiFunction<R, Throwable, R> handleFuture(
-            ManagedChannel channel, ObjectPool<ManagedChannel> channelPool) {
-        return (response, throwable) -> {
+    private static <R extends GeneratedMessageV3> CompletableFuture<R> attachHandlingHook(
+            CompletableFuture<R> future, ManagedChannel channel, ObjectPool<ManagedChannel> channelPool) {
+        return future.handle((response, throwable) -> {
             if (throwable == null) {
                 ConnectionFactory.returnChannel(channel, channelPool);
                 return response;
@@ -104,6 +111,40 @@ public class GrpcInvoker {
             ConnectionFactory.invalidateChannel(channel, channelPool);
             throw GrpcExceptionUtils.toContextualRuntimeException(
                     GrpcExceptionUtils.unwrapAsyncThrowable(throwable));
-        };
+        });
+    }
+
+    /**
+     * Attaches a completion hook to the provided {@link CompletableFuture} using
+     * {@link CompletableFuture#whenComplete(BiConsumer)}, while explicitly ignoring the returned dependent future. This
+     * helper exists to preserve cancellation semantics when working with chained {@code CompletableFuture} operations.
+     * <p>
+     * {@code CompletableFuture} propagation is directional:
+     * <ul>
+     * <li>Normal completion (success or failure) flows downstream from a source future to its dependent futures.</li>
+     * <li>Cancellation of a dependent future doesn't propagate upstream to the source future.</li>
+     * </ul>
+     * <p>
+     * Hooks added to futures (e.g. {@link CompletableFuture#whenComplete(BiConsumer)}) create new dependent futures. If
+     * those returned futures are used directly, cancellation applied to them will not automatically cancel the original
+     * future.
+     *
+     * @param future the future to attach the hook to
+     * @param currentRpc reference to the currently active RPC future
+     * @param <R> the result type
+     * @return the root future
+     */
+    @SuppressWarnings({"FutureReturnValueIgnored", "Interruption"})
+    private static <R extends GeneratedMessageV3> CompletableFuture<R> attachCancellationHook(
+            CompletableFuture<R> future, AtomicReference<ListenableFuture<R>> currentRpc) {
+        future.whenComplete((response, throwable) -> {
+            if (future.isCancelled()) {
+                ListenableFuture<R> rpc = currentRpc.get();
+                if (rpc != null) {
+                    rpc.cancel(true);
+                }
+            }
+        });
+        return future;
     }
 }
