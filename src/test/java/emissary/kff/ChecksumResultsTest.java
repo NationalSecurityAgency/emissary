@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,7 +20,7 @@ class ChecksumResultsTest extends UnitTest {
     @Test
     void testResultPresentSet() {
         try {
-            ChecksumCalculator cc = new ChecksumCalculator(new String[] {"SHA-1", "SHA-256"});
+            ChecksumCalculator cc = new ChecksumCalculator(List.of("SHA-1", "SHA-256"));
             ChecksumResults cr = cc.digest(DATA);
             assertNotNull(cr, "Results obect returned");
             Set<String> algs = cr.getResultsPresent();

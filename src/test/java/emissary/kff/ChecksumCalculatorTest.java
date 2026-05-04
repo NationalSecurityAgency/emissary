@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -88,7 +89,7 @@ class ChecksumCalculatorTest extends UnitTest {
     @Test
     void testSpecifiedArgWithCrcAsList() {
         try {
-            ChecksumCalculator cc = new ChecksumCalculator(new String[] {"SHA-1", "CRC32"});
+            ChecksumCalculator cc = new ChecksumCalculator(List.of("SHA-1", "CRC32"));
             ChecksumResults cr = cc.digest(DATA);
             assertNotNull(cr, "Results created");
             Set<String> algs = cr.getResultsPresent();
@@ -107,7 +108,7 @@ class ChecksumCalculatorTest extends UnitTest {
     @Test
     void testSpecifiedArgWithoutCrcAsList() {
         try {
-            ChecksumCalculator cc = new ChecksumCalculator(new String[] {"SHA-1"});
+            ChecksumCalculator cc = new ChecksumCalculator(List.of("SHA-1"));
             ChecksumResults cr = cc.digest(DATA);
             assertNotNull(cr, "Results created");
             Set<String> algs = cr.getResultsPresent();
@@ -127,7 +128,7 @@ class ChecksumCalculatorTest extends UnitTest {
     @Test
     void testMultipleShaVariantsSpecifiedAsList() {
         try {
-            ChecksumCalculator cc = new ChecksumCalculator(new String[] {"SHA-1", "SHA-256", "SSDEEP"});
+            ChecksumCalculator cc = new ChecksumCalculator(List.of("SHA-1", "SHA-256", "SSDEEP"));
             cc.setUseSsdeep(true);
             assertTrue(cc.getUseSsdeep(), "SSDEEP being used");
             ChecksumResults cr = cc.digest(DATA);
@@ -151,7 +152,7 @@ class ChecksumCalculatorTest extends UnitTest {
 
     @Test
     void testCompareByteArrayAndSbcDigests() throws Exception {
-        final ChecksumCalculator cc = new ChecksumCalculator(new String[] {"CRC32", "SHA-1", "SHA-256", "SSDEEP"});
+        final ChecksumCalculator cc = new ChecksumCalculator(List.of("CRC32", "SHA-1", "SHA-256", "SSDEEP"));
 
         for (int i = 0; i < 1000; i++) {
             final byte[] b = new byte[i];
