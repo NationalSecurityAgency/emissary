@@ -155,7 +155,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
             try {
                 final Object filterConditionObj = emissary.core.Factory.create(clazz);
 
-                if (filterConditionObj != null && filterConditionObj instanceof IFilterCondition) {
+                if (filterConditionObj instanceof IFilterCondition) {
                     this.filterCondition = (IFilterCondition) filterConditionObj;
                     // initialize using the config
                     filterCondition.initialize(filterConfig);
@@ -200,7 +200,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
         for (String entry : config.findEntriesAsSet("DENYLIST")) {
             String viewName = validateAndRemoveDenylistFiletype(entry);
             if (matchesDenylistViewNameFormatPattern(viewName)) {
-                if (viewName.chars().filter(ch -> ch == '.').count() > 0) {
+                if (viewName.chars().anyMatch(ch -> ch == '.')) {
                     logger.warn("`DENYLIST = \"{}\"` viewName `{}` should not contain any `.` characters", entry, viewName);
                 }
 
@@ -267,7 +267,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     }
 
     /**
-     * Load the filter configuration with precendence of provided, named, default Preference order for loading
+     * Load the filter configuration with precedence of provided, named, default Preference order for loading
      * configurations
      * <ol>
      * <li>[filter-package].FILTER_NAME.cfg</li>
@@ -477,13 +477,13 @@ public abstract class AbstractFilter implements IDropOffFilter {
     protected String getCharset(final IBaseDataObject d, final String defaultCharset) {
         String lang = d.getFontEncoding();
         if (lang == null || lang.toUpperCase(Locale.getDefault()).contains("ASCII") || lang.toUpperCase(Locale.getDefault()).contains("8859-1")) {
-            final String s = d.getStringParameter("HTML_CHARSET");
+            final String s = d.getParameterAsString("HTML_CHARSET");
             if (s != null) {
                 lang = s;
             }
         }
         if (lang == null || lang.toUpperCase(Locale.getDefault()).contains("ASCII") || lang.toUpperCase(Locale.getDefault()).contains("8859-1")) {
-            final String s = d.getStringParameter("MIME_CHARSET");
+            final String s = d.getParameterAsString("MIME_CHARSET");
             if (s != null) {
                 lang = s;
             }
