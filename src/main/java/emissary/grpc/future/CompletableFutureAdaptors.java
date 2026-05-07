@@ -15,23 +15,31 @@ public class CompletableFutureAdaptors {
     /**
      * Converts a Guava {@link ListenableFuture} future to a Java {@link CompletableFuture}.
      *
-     * @param future Guava future
+     * @param listenable Guava future
      * @return completable future
      * @param <R> result type
      */
-    public static <R extends GeneratedMessageV3> CompletableFuture<R> fromListenableFuture(ListenableFuture<R> future) {
-        CompletableFuture<R> completableFuture = new CompletableFuture<>();
-        Futures.addCallback(future, new FutureCallback<>() {
+    public static <R extends GeneratedMessageV3> CompletableFuture<R> fromListenableFuture(ListenableFuture<R> listenable) {
+        CompletableFuture<R> completable = new CompletableFuture<>();
+
+        FutureCallback<R> callback = new FutureCallback<>() {
             @Override
             public void onSuccess(R result) {
-                completableFuture.complete(result);
+                completable.complete(result);
             }
 
             @Override
             public void onFailure(@Nonnull Throwable t) {
-                completableFuture.completeExceptionally(t);
+                if (listenable.isCancelled()) {
+                    completable.cancel(false);
+                } else {
+                    completable.completeExceptionally(t);
+                }
             }
-        }, MoreExecutors.directExecutor()); // Direct executor runs callback immediately on thread completing Guava future
-        return completableFuture;
+        };
+
+        // Direct executor runs callback immediately on thread completing Guava future
+        Futures.addCallback(listenable, callback, MoreExecutors.directExecutor());
+        return completable;
     }
 }
