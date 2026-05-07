@@ -267,8 +267,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     }
 
     /**
-     * Load the filter configuration with precedence of provided, named, default Preference order for loading
-     * configurations
+     * Load the filter configuration with precedence of provided, named, default Preference order for loading configurations
      * <ol>
      * <li>[filter-package].FILTER_NAME.cfg</li>
      * <li>[filter-package].[filter-class]-FILTER_NAME.cfg</li>
