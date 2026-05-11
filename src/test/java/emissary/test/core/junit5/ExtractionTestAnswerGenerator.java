@@ -6,7 +6,6 @@ import emissary.core.IBaseDataObjectXmlCodecs;
 import emissary.core.IBaseDataObjectXmlHelper;
 import emissary.place.IServiceProviderPlace;
 
-import com.google.errorprone.annotations.ForOverride;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
@@ -16,7 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class ExtractionTestAnswerGenerator extends RegressionTestAnswerGenerator {
+public class ExtractionTestAnswerGenerator extends AnswerGenerator {
 
     @Override
     public void generateAnswerFiles(final String resource, final IServiceProviderPlace place, final IBaseDataObject initialIbdo,
@@ -26,9 +25,8 @@ public class ExtractionTestAnswerGenerator extends RegressionTestAnswerGenerator
             // Load the existing document to preserve the <setup> section
             final Document existingDoc = getAnswerDocumentFor(resource, answerFileClassRef);
             if (existingDoc == null) {
-                // Fallback to standard behavior if no file exists yet
-                super.generateAnswerFiles(resource, place, initialIbdo, encoders, answerFileClassRef, logbackLoggerName);
-                return;
+                // expecting an answer doc that may contain a setup block, look for the <root></root> tags at least
+                throw new IllegalArgumentException("No valid answer document provided for " + resource);
             }
 
             // Process the BDO as normal
@@ -80,12 +78,6 @@ public class ExtractionTestAnswerGenerator extends RegressionTestAnswerGenerator
             logger.error("Error running extraction test {}", resource, e);
             fail("Unable to generate extraction answer file", e);
         }
-    }
-
-    @ForOverride
-    @Override
-    protected void tweakInitialIbdoBeforeSerialization(final String resource, final IBaseDataObject initialIbdo) {
-        initialIbdo.clearData();
     }
 
     @Override

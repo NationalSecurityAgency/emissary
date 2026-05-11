@@ -11,6 +11,9 @@ import jakarta.annotation.Nullable;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.output.Format;
 import org.jdom2.output.LineSeparator;
 import org.jdom2.output.XMLOutputter;
@@ -59,7 +62,17 @@ public abstract class AnswerGenerator {
             IBaseDataObjectXmlCodecs.ElementEncoders encoders, AtomicReference<Class<?>> answerFileClassRef, String logbackLoggerName);
 
     @Nullable
-    public abstract Document getAnswerDocumentFor(String resource, AtomicReference<Class<?>> answerFileClassRef);
+    public Document getAnswerDocumentFor(final String resource, final AtomicReference<Class<?>> answerFileClassRef) {
+        try {
+            /* XML builder to read XML answer file in */
+            final Path path = getXmlPath(resource, answerFileClassRef);
+            return path == null ? null : new SAXBuilder(XMLReaders.NONVALIDATING).build(path.toFile());
+        } catch (final JDOMException | IOException e) {
+            // Fail if invalid XML document
+            fail(String.format("No valid answer document provided for %s", resource), e);
+            return null;
+        }
+    }
 
     /**
      * Allow the initial IBDO to be overridden before serializing to XML.
@@ -70,7 +83,10 @@ public abstract class AnswerGenerator {
      * @param resource path to the dat file
      * @param initialIbdo to tweak
      */
-    protected abstract void tweakInitialIbdoBeforeSerialization(String resource, IBaseDataObject initialIbdo);
+    protected void tweakInitialIbdoBeforeSerialization(final String resource, final IBaseDataObject initialIbdo) {
+        initialIbdo.clearData();
+    }
+
 
     /**
      * Allow the generated IBDO to be overridden - for example, adding certain field values. Will modify the provided IBDO.
