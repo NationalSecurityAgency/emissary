@@ -2,11 +2,13 @@ package emissary.grpc.future;
 
 import emissary.grpc.exceptions.GrpcExceptionUtils;
 
+import io.grpc.Status;
 import jakarta.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -17,8 +19,12 @@ public class CompletableFutureFinalizers {
     /**
      * Waits for a provided asynchronous computation to complete and then return its result. This method blocks the calling
      * thread until the {@link CompletableFuture} input has completed. If the future completes exceptionally, the
-     * corresponding {@link CompletableFuture#join()} call will throw a {@link RuntimeException}, unless the future has been
+     * corresponding {@link CompletableFuture#get()} call will throw a {@link RuntimeException}, unless the future has been
      * preconfigured with explicit exception handling behavior.
+     * <p>
+     * If the thread is interrupted while the future is still completing, the client-side future will be canceled and a
+     * {@link io.grpc.StatusRuntimeException} will be thrown. Note that while the client will send a cancellation message,
+     * the in-flight RPC may still complete on the server, depending on how it was built.
      *
      * @param future future representing an asynchronous computation
      * @return the result returned by an asynchronous computation
@@ -26,8 +32,12 @@ public class CompletableFutureFinalizers {
      */
     public static <R> R awaitAndGet(CompletableFuture<R> future) {
         try {
-            return future.join();
-        } catch (RuntimeException e) {
+            return future.get();
+        } catch (InterruptedException e) {
+            future.cancel(false);
+            Thread.currentThread().interrupt();
+            throw GrpcExceptionUtils.toContextualRuntimeException(Status.CANCELLED.asRuntimeException());
+        } catch (ExecutionException | RuntimeException e) {
             throw GrpcExceptionUtils.toContextualRuntimeException(
                     GrpcExceptionUtils.unwrapAsyncThrowable(e));
         }
@@ -39,6 +49,10 @@ public class CompletableFutureFinalizers {
      * corresponding {@link CompletableFuture#join()} call will throw a {@link RuntimeException}, unless explicit behavior
      * has been passed through the {@code exceptionally} argument. Note that the {@code exceptionally} argument will not run
      * if the future has already been preconfigured with exception handling behavior.
+     * <p>
+     * If the thread is interrupted while the future is still completing, the client-side future will be canceled and a
+     * {@link io.grpc.StatusRuntimeException} will be thrown. Note that while the client will send a cancellation message,
+     * the in-flight RPC may still complete on the server, depending on how it was built.
      *
      * @param future future representing an asynchronous computation
      * @param exceptionally function for handling exceptions thrown by the future, throws normally if {@code null}
@@ -57,6 +71,10 @@ public class CompletableFutureFinalizers {
      * calling thread until each {@link CompletableFuture} in the input is complete. If any future completes exceptionally,
      * the corresponding {@link CompletableFuture#join()} call will throw a {@link RuntimeException}, and iteration will
      * stop at that point, unless the future has been preconfigured with explicit exception handling behavior.
+     * <p>
+     * If the thread is interrupted while the futures are still completing, the client-side futures will be canceled and a
+     * {@link io.grpc.StatusRuntimeException} will be thrown. Note that while the client will send a cancellation message,
+     * the in-flight RPCs may still complete on the server, depending on how it was built.
      *
      * @param futures collection of futures representing asynchronous computations
      * @param factory creates the output collection instance
@@ -76,6 +94,10 @@ public class CompletableFutureFinalizers {
      * stop at that point, unless explicit behavior has been passed through the {@code exceptionally} argument. Note that
      * the {@code exceptionally} argument will not run if the future has already been preconfigured with exception handling
      * behavior.
+     * <p>
+     * If the thread is interrupted while the futures are still completing, the client-side futures will be canceled and a
+     * {@link io.grpc.StatusRuntimeException} will be thrown. Note that while the client will send a cancellation message,
+     * the in-flight RPCs may still complete on the server, depending on how it was built.
      *
      * @param futures collection of futures representing asynchronous computations
      * @param factory creates the output collection instance
@@ -96,6 +118,10 @@ public class CompletableFutureFinalizers {
      * calling thread until each {@link CompletableFuture} in the input is complete. If any future completes exceptionally,
      * the corresponding {@link CompletableFuture#join()} call will throw a {@link RuntimeException}, and iteration will
      * stop at that point, unless the future has been preconfigured with explicit exception handling behavior.
+     * <p>
+     * If the thread is interrupted while the futures are still completing, the client-side futures will be canceled and a
+     * {@link io.grpc.StatusRuntimeException} will be thrown. Note that while the client will send a cancellation message,
+     * the in-flight RPCs may still complete on the server, depending on how it was built.
      *
      * @param futures map of keys to futures representing asynchronous computations
      * @param factory creates the output map instance
@@ -116,6 +142,10 @@ public class CompletableFutureFinalizers {
      * stop at that point, unless explicit behavior has been passed through the {@code exceptionally} argument. Note that
      * the {@code exceptionally} argument will not run if the future has already been preconfigured with exception handling
      * behavior.
+     * <p>
+     * If the thread is interrupted while the futures are still completing, the client-side futures will be canceled and a
+     * {@link io.grpc.StatusRuntimeException} will be thrown. Note that while the client will send a cancellation message,
+     * the in-flight RPCs may still complete on the server, depending on how it was built.
      *
      * @param futures map of keys to futures representing asynchronous computations
      * @param factory creates the output map instance
