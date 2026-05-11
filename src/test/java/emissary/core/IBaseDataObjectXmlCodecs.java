@@ -715,7 +715,15 @@ public final class IBaseDataObjectXmlCodecs {
             DEFAULT_STRING_OBJECT_ENCODER);
 
     /**
-     * The default set of XML element encoders.
+     * A specialized map of element encoders designed for backwards compatibility with legacy extraction tests.
+     *
+     * <p>
+     * This configuration extends {@link #DEFAULT_ELEMENT_ENCODERS} but replaces the
+     * {@code DEFAULT_SEEKABLE_BYTE_CHANNEL_FACTORY_ENCODER} with the {@link #SEEKABLE_BYTE_CHANNEL_VALUE_ENCODER}.
+     *
+     * <p>
+     * <b>Compatibility Note:</b> Unlike strict regression tests that use a standalone data tag, legacy extraction tests
+     * expect an embedded value tag within the data tag.
      */
     public static final ElementEncoders ALT_DEFAULT_ELEMENT_ENCODERS = new ElementEncoders(
             DEFAULT_BOOLEAN_ENCODER,
