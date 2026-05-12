@@ -47,12 +47,11 @@ public class GrpcInvoker {
             ManagedChannel channel = ConnectionFactory.acquireChannel(channelPool);
             try {
                 S stub = stubFactory.apply(channel);
-                R response = callLogic.apply(stub, request);
-                ConnectionFactory.returnChannel(channel, channelPool);
-                return response;
+                return callLogic.apply(stub, request);
             } catch (RuntimeException e) {
-                ConnectionFactory.invalidateChannel(channel, channelPool);
                 throw GrpcExceptionUtils.toContextualRuntimeException(e);
+            } finally {
+                ConnectionFactory.returnChannel(channel, channelPool);
             }
         });
     }
@@ -83,7 +82,6 @@ public class GrpcInvoker {
                 CompletableFuture<R> completable = CompletableFutureAdaptors.fromListenableFuture(listenableRef.get());
                 return attachHandlingHook(completable, channel, channelPool);
             } catch (RuntimeException e) {
-                ConnectionFactory.invalidateChannel(channel, channelPool);
                 throw GrpcExceptionUtils.toContextualRuntimeException(e);
             }
         });
@@ -104,11 +102,10 @@ public class GrpcInvoker {
     private static <R extends Message> CompletableFuture<R> attachHandlingHook(
             CompletableFuture<R> future, ManagedChannel channel, ObjectPool<ManagedChannel> channelPool) {
         return future.handle((response, throwable) -> {
+            ConnectionFactory.returnChannel(channel, channelPool);
             if (throwable == null) {
-                ConnectionFactory.returnChannel(channel, channelPool);
                 return response;
             }
-            ConnectionFactory.invalidateChannel(channel, channelPool);
             throw GrpcExceptionUtils.toContextualRuntimeException(
                     GrpcExceptionUtils.unwrapAsyncThrowable(throwable));
         });
