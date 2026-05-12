@@ -50,8 +50,8 @@ public class IBaseDataObjectDiffHelper {
      */
     public static void diff(final IBaseDataObject expected, final IBaseDataObject actual,
             final List<String> differences, final DiffCheckConfiguration options) {
-        Validate.notNull(expected, "Required: expected not null");
-        Validate.notNull(actual, "Required: actual not null");
+        Validate.notNull(expected, "Required: \"expected\" ibdo not null");
+        Validate.notNull(actual, "Required: \"actual\" ibdo not null");
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
         if (options.checkData()) {
@@ -238,8 +238,8 @@ public class IBaseDataObjectDiffHelper {
      */
     public static void diff(final Map<String, byte[]> expected, final Map<String, byte[]> actual, final String identifier,
             final List<String> differences) {
-        Validate.notNull(expected, "Required: expected not null!");
-        Validate.notNull(actual, "Required: actual not null!");
+        Validate.notNull(expected, "Required: \"expected\" map not null!");
+        Validate.notNull(actual, "Required: \"actual\" map not null!");
         Validate.notNull(identifier, ID_NOT_NULL_MSG);
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
