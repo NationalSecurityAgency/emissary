@@ -6,6 +6,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -92,7 +94,7 @@ class FactoryTest extends UnitTest {
     void testCreateAndRegister() throws NamespaceException {
         String key = "http://host.domain.com:8001/thePlace";
         Object[] args = {5};
-        Object o = Factory.create("java.lang.Integer", args, key);
+        Object o = Factory.create("java.lang.Integer", List.of(args), key);
         assertNotNull(o, "Factory creation");
         assertInstanceOf(Integer.class, o, "Type of object");
         Object o2 = Namespace.lookup(key);
@@ -137,7 +139,7 @@ class FactoryTest extends UnitTest {
     @Test
     void testSelfBindingInstanceWithoutVarargs() throws NamespaceException {
         String key = "http://host.domain.com:8001/SelfBindingInstance";
-        Object o = Factory.create("emissary.core.FactoryTest$SelfBinder", new Object[] {key}, key);
+        Object o = Factory.create("emissary.core.FactoryTest$SelfBinder", List.of(key), key);
         Object o2 = Namespace.lookup(key);
         assertNotNull(o2, "Self registered object should be found");
         assertInstanceOf(SelfBinder.class, o2, "Type of self registered object");
@@ -173,7 +175,7 @@ class FactoryTest extends UnitTest {
     @Test
     void testFactoryBindingInstanceWithoutVarargs() throws NamespaceException {
         String key = "http://host.domain.com:8001/FactoryBindingInstance";
-        Object o = Factory.create("emissary.core.FactoryTest$FactoryBinder", new Object[] {key}, key);
+        Object o = Factory.create("emissary.core.FactoryTest$FactoryBinder", List.of(key), key);
         Object o2 = Namespace.lookup(key);
         assertNotNull(o2, "Factory registered object should be found");
         assertInstanceOf(FactoryBinder.class, o2, "Type of factory registered object");
