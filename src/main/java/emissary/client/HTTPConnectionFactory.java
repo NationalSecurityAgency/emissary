@@ -8,22 +8,22 @@ import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.Nullable;
 import org.apache.hc.client5.http.impl.DefaultClientConnectionReuseStrategy;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
-import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
-import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
+import org.apache.hc.client5.http.ssl.HostnameVerificationPolicy;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.core5.http.ConnectionReuseStrategy;
-import org.apache.hc.core5.http.config.Registry;
-import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.util.Objects;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -61,15 +61,10 @@ public class HTTPConnectionFactory {
     static final String CFG_HTTP_MAXCONNS = "http.maxConnections";
     static final String CFG_HTTP_AGENT = "http.agent";
     static final String CFG_NOOP_VERIFIER = "https.useNoopHostnameVerifier";
-    static final String CFG_SSLCONTEXT_TYPE = "emissary.sslcontext.type";
     static final String DEFAULT_HTTP_AGENT = "emissary";
     static final int DFLT_MAXCONNS = 200;
     static final boolean DFLT_KEEPALIVE = true;
     static final String DFLT_STORE_TYPE = "JKS";
-    static final String DFLT_CONTEXT_TYPE = "TLS";
-    // meaningful constants
-    private static final String HTTP = "http";
-    private static final String HTTPS = "https";
 
     private static final Logger log = Logger.getLogger(HTTPConnectionFactory.class);
 
@@ -90,7 +85,7 @@ public class HTTPConnectionFactory {
 
     @VisibleForTesting
     HTTPConnectionFactory(@Nullable final Configurator config) {
-        Registry<ConnectionSocketFactory> registry = null;
+        PoolingHttpClientConnectionManager connectionManager = null;
         try {
             final Configurator cfg = config == null ? ConfigUtil.getConfigInfo(HTTPConnectionFactory.class) : config;
             // if someone doesn't want keep alives...
@@ -102,24 +97,21 @@ public class HTTPConnectionFactory {
             final SSLContext sslContext = build(cfg);
             // mainly for using in test environments where cert name may not match host name
             final HostnameVerifier v = cfg.findBooleanEntry(CFG_NOOP_VERIFIER, false) ? new NoopHostnameVerifier() : new DefaultHostnameVerifier();
-            registry =
-                    RegistryBuilder.<ConnectionSocketFactory>create().register(HTTP, PlainConnectionSocketFactory.getSocketFactory())
-                            .register(HTTPS, new SSLConnectionSocketFactory(sslContext, v)).build();
+
+            // This automatically handles "http" via plain sockets and "https" via the tlsStrategy
+            connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+                    .setTlsSocketStrategy(new DefaultClientTlsStrategy(sslContext, HostnameVerificationPolicy.CLIENT, v))
+                    .build();
         } catch (IOException | GeneralSecurityException ex) {
             log.error("Error configuring HTTPConnectionFactory. The connection factory will use HTTP Client default settings", ex);
         }
-        if (registry == null) {
-            this.connMan = new PoolingHttpClientConnectionManager();
-        } else {
-            this.connMan = new PoolingHttpClientConnectionManager(registry);
-        }
-
+        this.connMan = Objects.requireNonNullElseGet(connectionManager, PoolingHttpClientConnectionManager::new);
         this.connMan.setMaxTotal(this.maxConns);
     }
 
     /**
-     * This method will attempt to configure an SSLSocketFactory using configuration parameters from the
-     * HTTPConnectionFactory.cfg.
+     * This method will attempt to configure an SSLContext using configuration parameters from the HTTPConnectionFactory.cfg
+     * so we can properly build a PoolingHttpClientConnectionManager.
      *
      * @param cfg The configurator.
      * @return the SSLContext
@@ -145,10 +137,12 @@ public class HTTPConnectionFactory {
         final KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         kmf.init(keyStore, kpChar);
 
-        final SSLContext sc = SSLContext.getInstance(cfg.findStringEntry(CFG_SSLCONTEXT_TYPE, DFLT_CONTEXT_TYPE));
-        sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
-
-        return sc;
+        // custom ssl context populated with our trust and key materials
+        return SSLContexts.custom()
+                .loadTrustMaterial(trustStore, (chain, authType) -> true)
+                .loadKeyMaterial(keyStore, kpChar)
+                .setSecureRandom(new SecureRandom())
+                .build();
     }
 
 
@@ -172,7 +166,7 @@ public class HTTPConnectionFactory {
      * @return a CloseableHttpClient
      */
     public CloseableHttpClient buildDefaultClient() {
-        return HttpClientBuilder.create().setConnectionManager(this.connMan).setConnectionManagerShared(true).setUserAgent(this.userAgent)
+        return HttpClients.custom().setConnectionManager(this.connMan).setConnectionManagerShared(true).setUserAgent(this.userAgent)
                 .setConnectionReuseStrategy(this.connReuseStrategy).build();
     }
 
