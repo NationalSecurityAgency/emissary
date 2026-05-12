@@ -380,7 +380,7 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
         String fixedDirName = fixFileName(f.getParent()).replace('\\', '/');
         String eatPrefix = currentBundle.getEatPrefix();
         currentBundle.getOutputRoot();
-        boolean simpleParam = Boolean.parseBoolean(d.getStringParameter("SIMPLE_MODE"));
+        boolean simpleParam = Boolean.parseBoolean(d.getParameterAsString("SIMPLE_MODE"));
         if (eatPrefix != null && eatPrefix.length() > 0 && fixedDirName.startsWith(eatPrefix)) {
             fixedDirName = fixedDirName.substring(eatPrefix.length());
         }

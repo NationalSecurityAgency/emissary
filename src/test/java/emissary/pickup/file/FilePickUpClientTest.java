@@ -60,8 +60,8 @@ class FilePickUpClientTest extends UnitTest {
     @Test
     void testDataObjectCreatedCallbackWithMissingPath() {
         client.dataObjectCreated(payload, new File("/eat/prefix/foo/bar"));
-        assertEquals("bar", payload.getStringParameter(INPUT_FILENAME), "Input filename must be recorded");
-        assertEquals("/foo", payload.getStringParameter("TARGETBIN"), "TargetBin must be recorded without prefix");
+        assertEquals("bar", payload.getParameterAsString(INPUT_FILENAME), "Input filename must be recorded");
+        assertEquals("/foo", payload.getParameterAsString("TARGETBIN"), "TargetBin must be recorded without prefix");
         assertEquals(bundle.getPriority(), payload.getPriority(), "Priority must be transferred from bundle to payload");
     }
 
@@ -69,7 +69,8 @@ class FilePickUpClientTest extends UnitTest {
     void testDataObjectCreatedCallbackWithSimpleCaseId() {
         bundle.setCaseId("PETERPAN");
         client.dataObjectCreated(payload, new File("/eat/prefix/foo/bar"));
-        assertEquals(bundle.getCaseId(), payload.getStringParameter("DATABASE_CASE_ID"), "Simple case id must be transferred from bundle to payload");
+        assertEquals(bundle.getCaseId(), payload.getParameterAsString("DATABASE_CASE_ID"),
+                "Simple case id must be transferred from bundle to payload");
     }
 
     @Test
@@ -77,7 +78,7 @@ class FilePickUpClientTest extends UnitTest {
         String originalShortName = payload.shortName();
         bundle.setCaseId("PROJECT:PETERPAN");
         client.dataObjectCreated(payload, new File("/eat/prefix/foo/bar"));
-        assertEquals("PETERPAN", payload.getStringParameter("PROJECT"), "Complex case id must be transferred from bundle to payload");
+        assertEquals("PETERPAN", payload.getParameterAsString("PROJECT"), "Complex case id must be transferred from bundle to payload");
         assertEquals(originalShortName, payload.shortName(), "Complex case id must not mess with payload filename when not simple");
     }
 
@@ -86,10 +87,10 @@ class FilePickUpClientTest extends UnitTest {
         bundle.setCaseId("PROJECT:PETERPAN");
         payload.putParameter("SIMPLE_MODE", "true");
         client.dataObjectCreated(payload, new File("/eat/prefix/foo/bar"));
-        assertEquals("PETERPAN", payload.getStringParameter("PROJECT"), "Complex case id must be transferred from bundle to payload");
+        assertEquals("PETERPAN", payload.getParameterAsString("PROJECT"), "Complex case id must be transferred from bundle to payload");
         assertTrue(payload.shortName().startsWith("PETERPAN-"),
                 "Complex case in simple mode must add fn hash to payload not " + payload.shortName());
-        assertEquals("/foo/bar", payload.getStringParameter(ORIGINAL_FILENAME), "Original-Filename should be set in simple mode");
+        assertEquals("/foo/bar", payload.getParameterAsString(ORIGINAL_FILENAME), "Original-Filename should be set in simple mode");
     }
 
     @Test
@@ -98,7 +99,7 @@ class FilePickUpClientTest extends UnitTest {
         client.nullifyCaseIdInHook = true;
         client.dataObjectCreated(payload, new File("/eat/prefix/foo/bar"));
         assertEquals(TimeUtil.getCurrentDateOrdinal(),
-                payload.getStringParameter("DATABASE_CASE_ID"),
+                payload.getParameterAsString("DATABASE_CASE_ID"),
                 "Current oridina date must be used when hook nullifies simple case name");
     }
 
