@@ -18,6 +18,7 @@
             <xs:attribute ref="xml:space"/>
             <xs:attribute ref="encoding"/>
             <xs:attribute ref="length"/>
+            <xs:attribute ref="matchMode"/>
         </xs:complexType>
     </xs:element>
     <xs:element name="birthOrder" type="baseType"/>
@@ -25,6 +26,7 @@
     <xs:element name="classification" type="baseType"/>
     <xs:element name="currentForm" type="baseType"/>
     <xs:element name="filename" type="baseType"/>
+    <xs:element name="shortName" type="baseType"/>
     <xs:element name="fontEncoding" type="baseType"/>
     <xs:element name="footer" type="baseType"/>
     <xs:element name="header" type="baseType"/>
@@ -32,6 +34,8 @@
     <xs:element name="id" type="baseType"/>
     <xs:element name="numChildren" type="baseType"/>
     <xs:element name="numSiblings" type="baseType"/>
+    <xs:element name="numAttachments" type="baseType"/>
+    <xs:element name="extractCount" type="baseType"/>
     <xs:element name="outputable" type="baseType"/>
     <xs:element name="priority" type="baseType"/>
     <xs:element name="processingError" type="baseType"/>
@@ -43,6 +47,7 @@
                 <xs:element ref="name"/>
                 <xs:element ref="value" minOccurs="0"/>
             </xs:all>
+            <xs:attribute ref="matchMode"/>
         </xs:complexType>
     </xs:element>
     <xs:element name="view">
@@ -52,6 +57,7 @@
                 <xs:element ref="value" minOccurs="0"/>
             </xs:all>
             <xs:attribute ref="length"/>
+            <xs:attribute ref="matchMode"/>
         </xs:complexType>
     </xs:element>
     <xs:element name="att" type="ibdo"/>
@@ -69,6 +75,20 @@
     <xs:attribute name="encoding" type="xs:string" />
     <xs:attribute name="length" type="xs:int" />
     <xs:attribute name="index" type="xs:int" />
+    <xs:attribute name="matchMode">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="equals"/>
+                <xs:enumeration value="index"/>
+                <xs:enumeration value="!index"/>
+                <xs:enumeration value="contains"/>
+                <xs:enumeration value="!contains"/>
+                <xs:enumeration value="match"/>
+                <xs:enumeration value="base64"/>
+                <xs:enumeration value="collection"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
     <xs:complexType name="baseType" mixed="true">
         <xs:attribute ref="xml:space"/>
         <xs:attribute ref="encoding"/>
@@ -81,6 +101,7 @@
             <xs:element ref="classification"/>
             <xs:element ref="currentForm"/>
             <xs:element ref="filename"/>
+            <xs:element ref="shortName"/>
             <xs:element ref="fontEncoding"/>
             <xs:element ref="footer"/>
             <xs:element ref="header"/>
@@ -96,7 +117,9 @@
             <xs:element ref="meta"/>
             <xs:element ref="view"/>
             <xs:element ref="att"/>
+            <xs:element ref="numAttachments"/>
             <xs:element ref="extract"/>
+            <xs:element ref="extractCount"/>
         </xs:choice>
         <xs:attribute ref="index" />
     </xs:complexType>
