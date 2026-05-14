@@ -50,8 +50,8 @@ class ServiceProviderPlaceGetTLDTest extends UnitTest {
             Thread.sleep(10);
         }
 
-        assertEquals(payload.getStringParameter("PARENT_INFO").toUpperCase(Locale.getDefault()),
-                child.getStringParameter("CHILD_INFO"),
+        assertEquals(payload.getParameterAsString("PARENT_INFO").toUpperCase(Locale.getDefault()),
+                child.getParameterAsString("CHILD_INFO"),
                 "Child should have obtained access to parent metadata");
 
         place.shutDown();
@@ -71,7 +71,7 @@ class ServiceProviderPlaceGetTLDTest extends UnitTest {
         public void process(IBaseDataObject d) {
             IBaseDataObject p = getTld();
             if (p != null && p.hasParameter("PARENT_INFO")) {
-                d.putParameter("CHILD_INFO", p.getStringParameter("PARENT_INFO").toUpperCase(Locale.getDefault()));
+                d.putParameter("CHILD_INFO", p.getParameterAsString("PARENT_INFO").toUpperCase(Locale.getDefault()));
             } else {
                 logger.warn("Could not get parent {}", p);
             }

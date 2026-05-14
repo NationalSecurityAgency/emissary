@@ -51,7 +51,7 @@ class VersionPlaceTest extends UnitTest {
         place = new MyVersionPlace();
 
         place.process(payload);
-        assertEquals(testGitRepoState.getBuildVersion() + "-20240828141716", payload.getStringParameter("EMISSARY_VERSION"),
+        assertEquals(testGitRepoState.getBuildVersion() + "-20240828141716", payload.getParameterAsString("EMISSARY_VERSION"),
                 "added version should contain the date.");
     }
 
@@ -62,8 +62,8 @@ class VersionPlaceTest extends UnitTest {
         place = new MyVersionPlace(is);
 
         place.process(payload);
-        assertFalse(payload.getStringParameter("EMISSARY_VERSION").contains("-20240828141716"), "the date should not be added to the version");
-        assertEquals(testGitRepoState.getBuildVersion(), payload.getStringParameter("EMISSARY_VERSION"), "the version should be added");
+        assertFalse(payload.getParameterAsString("EMISSARY_VERSION").contains("-20240828141716"), "the date should not be added to the version");
+        assertEquals(testGitRepoState.getBuildVersion(), payload.getParameterAsString("EMISSARY_VERSION"), "the version should be added");
     }
 
     @Test
@@ -72,7 +72,7 @@ class VersionPlaceTest extends UnitTest {
         place = new MyVersionPlace();
 
         place.process(payload);
-        assertEquals(testGitRepoState.getCommitIdAbbrev(), payload.getStringParameter("EMISSARY_VERSION_HASH").substring(0, 7),
+        assertEquals(testGitRepoState.getCommitIdAbbrev(), payload.getParameterAsString("EMISSARY_VERSION_HASH").substring(0, 7),
                 "EMISSARY_VERSION_HASH should contain (at least) the abbreviated hash");
     }
 

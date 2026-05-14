@@ -610,7 +610,7 @@ public abstract class ExtractionTest extends UnitTest {
             if (verifyOs(meta)) {
                 String key = meta.getChildTextTrim(NAME);
                 checkForMissingNameElement(PARAMETER, key, tname);
-                checkStringValue(meta, payload.getStringParameter(key), tname);
+                checkStringValue(meta, payload.getParameterAsString(key), tname);
             }
         }
 
@@ -621,7 +621,7 @@ public abstract class ExtractionTest extends UnitTest {
                 checkForMissingNameElement("nometa", key, tname);
                 assertFalse(payload.hasParameter(key),
                         String.format(Locale.getDefault(), "Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
-                                payload.getStringParameter(key)));
+                                payload.getParameterAsString(key)));
             }
         }
 

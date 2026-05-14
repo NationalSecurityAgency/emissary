@@ -89,7 +89,7 @@ class IdPlaceTest extends UnitTest {
         @Override
         public void process(IBaseDataObject payload) throws ResourceException {
             if (payload.hasParameter("THE_ANSWER")) {
-                this.setCurrentForm(payload, payload.getStringParameter("THE_ANSWER"));
+                this.setCurrentForm(payload, payload.getParameterAsString("THE_ANSWER"));
             }
         }
 

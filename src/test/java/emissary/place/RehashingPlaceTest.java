@@ -50,7 +50,8 @@ class RehashingPlaceTest extends UnitTest {
         tp.agentProcessCall(payload);
 
         // Check the new ORIG SIZE parameter
-        assertEquals("" + payload.dataLength(), payload.getStringParameter(SessionParser.ORIG_DOC_SIZE_KEY), "Original Size must be reset on rehash");
+        assertEquals("" + payload.dataLength(), payload.getParameterAsString(SessionParser.ORIG_DOC_SIZE_KEY),
+                "Original Size must be reset on rehash");
 
         // Check the new hash values
         String newhash = KffDataObjectHandler.getHashValue(payload);

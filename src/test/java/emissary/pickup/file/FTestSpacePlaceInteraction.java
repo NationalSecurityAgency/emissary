@@ -262,7 +262,7 @@ class FTestSpacePlaceInteraction extends FunctionalTest {
         @Override
         protected void dataObjectCreated(IBaseDataObject d, File f) {
             super.dataObjectCreated(d, f);
-            boolean foundSimple = Boolean.parseBoolean(d.getStringParameter("SIMPLE_MODE"));
+            boolean foundSimple = Boolean.parseBoolean(d.getParameterAsString("SIMPLE_MODE"));
             if (expectSimple == foundSimple) {
                 expectationsMetCount++;
             } else {
