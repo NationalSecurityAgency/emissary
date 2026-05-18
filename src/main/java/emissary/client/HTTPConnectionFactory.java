@@ -25,9 +25,7 @@ import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.Objects;
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
 /**
  * Emissary HTTP Connection Factory. This is a singleton class that allows for the central configuration of an Apache
@@ -61,10 +59,12 @@ public class HTTPConnectionFactory {
     static final String CFG_HTTP_MAXCONNS = "http.maxConnections";
     static final String CFG_HTTP_AGENT = "http.agent";
     static final String CFG_NOOP_VERIFIER = "https.useNoopHostnameVerifier";
+    static final String CFG_SSLCONTEXT_TYPE = "emissary.sslcontext.type";
     static final String DEFAULT_HTTP_AGENT = "emissary";
     static final int DFLT_MAXCONNS = 200;
     static final boolean DFLT_KEEPALIVE = true;
     static final String DFLT_STORE_TYPE = "JKS";
+    static final String DFLT_CONTEXT_TYPE = "TLS";
 
     private static final Logger log = Logger.getLogger(HTTPConnectionFactory.class);
 
@@ -105,7 +105,7 @@ public class HTTPConnectionFactory {
         } catch (IOException | GeneralSecurityException ex) {
             log.error("Error configuring HTTPConnectionFactory. The connection factory will use HTTP Client default settings", ex);
         }
-        this.connMan = Objects.requireNonNullElseGet(connectionManager, PoolingHttpClientConnectionManager::new);
+        this.connMan = Objects.requireNonNullElseGet(connectionManager, () -> PoolingHttpClientConnectionManagerBuilder.create().build());
         this.connMan.setMaxTotal(this.maxConns);
     }
 
@@ -131,16 +131,11 @@ public class HTTPConnectionFactory {
             return SSLContext.getDefault();
         }
 
-        final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        tmf.init(trustStore);
-
-        final KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        kmf.init(keyStore, kpChar);
-
         // custom ssl context populated with our trust and key materials
         return SSLContexts.custom()
                 .loadTrustMaterial(trustStore, (chain, authType) -> true)
                 .loadKeyMaterial(keyStore, kpChar)
+                .setProtocol(cfg.findStringEntry(CFG_SSLCONTEXT_TYPE, DFLT_CONTEXT_TYPE))
                 .setSecureRandom(new SecureRandom())
                 .build();
     }
