@@ -502,7 +502,7 @@ public class EmissaryServer {
     private static void logThreadDump(String initialLog) {
         if (LOG.isTraceEnabled()) {
             ThreadDumpAction tda = new ThreadDumpAction();
-            Map<String, Object> dumps = tda.getThreaddumps(null);
+            Map<String, Object> dumps = tda.getThreaddumps();
             StringBuilder sb = new StringBuilder();
             sb.append("\n" + initialLog);
             sb.append("\nThread DUMP");

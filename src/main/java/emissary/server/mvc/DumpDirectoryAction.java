@@ -67,6 +67,7 @@ public class DumpDirectoryAction {
             map.put("directory-label", dir.toString());
         }
 
+        map.put("baseResourcePath", BaseResourcePathUtil.getBaseResourcePath());
         int rowCount = 0;
         List<DirectoryInfo> entryKeys = new ArrayList<>();
         long now = System.currentTimeMillis();
@@ -106,7 +107,7 @@ public class DumpDirectoryAction {
             map.put("errors", errors);
         }
 
-        map.put("contextPath", request.getContextPath());
+        map.put("baseResourcePath", BaseResourcePathUtil.getBaseResourcePath());
         return map;
     }
 

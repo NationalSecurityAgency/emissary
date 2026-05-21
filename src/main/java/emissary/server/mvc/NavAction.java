@@ -39,6 +39,7 @@ public class NavAction {
     @Produces(MediaType.TEXT_HTML)
     @Template(name = "/nav")
     public EmissaryNav nav() {
+        nav.setBaseResourcePath(BaseResourcePathUtil.getBaseResourcePath());
         return nav;
     }
 
@@ -48,6 +49,7 @@ public class NavAction {
 
         String appName;
         String appVersion;
+        String baseResourcePath;
         List<NavItem> navItems;
         List<NavItem> navButtons;
 
@@ -61,6 +63,14 @@ public class NavAction {
 
         public String getAppVersion() {
             return appVersion;
+        }
+
+        public String getBaseResourcePath() {
+            return baseResourcePath;
+        }
+
+        public void setBaseResourcePath(String baseResourcePath) {
+            this.baseResourcePath = baseResourcePath;
         }
 
         public void setAppVersion(String appVersion) {
