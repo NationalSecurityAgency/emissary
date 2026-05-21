@@ -197,7 +197,7 @@ public class EmissaryServer {
             configuredServer.start();
             // server.join(); // don't join so we can shutdown
 
-            String serverLocation = cmd.getScheme() + "://" + cmd.getHost() + ":" + cmd.getPort();
+            String serverLocation = cmd.getScheme() + "://" + cmd.getHost() + ":" + cmd.getPort() + BaseResourcePathUtil.getBaseResourcePath();
 
             // write out env.sh file here
             Path envsh = Path.of(ConfigUtil.getProjectBase() + File.separator + "env.sh");

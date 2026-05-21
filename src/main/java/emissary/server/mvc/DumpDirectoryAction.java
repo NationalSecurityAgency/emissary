@@ -45,6 +45,8 @@ public class DumpDirectoryAction {
 
         String cleanTargetDirectory = RequestUtil.sanitizeParameter(targetDir);
 
+        map.put("baseResourcePath", BaseResourcePathUtil.getBaseResourcePath());
+
         // get top level
         if (cleanTargetDirectory == null) {
             LOG.debug("Lookup is using default name since no {} was specified", DirectoryAdapter.TARGET_DIRECTORY);
@@ -68,7 +70,6 @@ public class DumpDirectoryAction {
             map.put("directory-label", dir.toString());
         }
 
-        map.put("baseResourcePath", BaseResourcePathUtil.getBaseResourcePath());
         int rowCount = 0;
         List<DirectoryInfo> entryKeys = new ArrayList<>();
         long now = System.currentTimeMillis();
@@ -108,7 +109,6 @@ public class DumpDirectoryAction {
             map.put("errors", errors);
         }
 
-        map.put("baseResourcePath", BaseResourcePathUtil.getBaseResourcePath());
         return map;
     }
 

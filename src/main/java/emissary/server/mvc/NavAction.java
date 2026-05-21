@@ -2,7 +2,6 @@ package emissary.server.mvc;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
-import emissary.server.util.BaseResourcePathUtil;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -40,7 +39,6 @@ public class NavAction {
     @Produces(MediaType.TEXT_HTML)
     @Template(name = "/nav")
     public EmissaryNav nav() {
-        nav.setBaseResourcePath(BaseResourcePathUtil.getBaseResourcePath());
         return nav;
     }
 
@@ -50,7 +48,6 @@ public class NavAction {
 
         String appName;
         String appVersion;
-        String baseResourcePath;
         List<NavItem> navItems;
         List<NavItem> navButtons;
 
@@ -64,14 +61,6 @@ public class NavAction {
 
         public String getAppVersion() {
             return appVersion;
-        }
-
-        public String getBaseResourcePath() {
-            return baseResourcePath;
-        }
-
-        public void setBaseResourcePath(String baseResourcePath) {
-            this.baseResourcePath = baseResourcePath;
         }
 
         public void setAppVersion(String appVersion) {

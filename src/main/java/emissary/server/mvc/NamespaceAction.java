@@ -4,9 +4,11 @@ import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.server.util.BaseResourcePathUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import org.glassfish.jersey.server.mvc.Template;
 
@@ -24,16 +26,17 @@ public class NamespaceAction {
     @Path("/Namespace.action")
     @Produces(MediaType.TEXT_HTML)
     @Template(name = "/namespace")
-    public Map<String, Object> getNamespace() {
+    public Map<String, Object> getNamespace(@Context HttpServletRequest request) {
         Map<String, Object> model = new HashMap<>();
-        String baseResourcePath = BaseResourcePathUtil.getBaseResourcePath();
-        model.put("baseResourcePath", baseResourcePath);
         Set<NamespaceInfo> namespaces = new LinkedHashSet<>();
+
+        model.put("baseResourcePath", BaseResourcePathUtil.getBaseResourcePath());
 
         int rowCount = 0;
         for (String key : Namespace.keySet()) {
             String clz = rowCount++ % 2 == 0 ? "even" : "odd";
-            namespaces.add(new NamespaceInfo(key, clz, baseResourcePath));
+            String context = request.getContextPath();
+            namespaces.add(new NamespaceInfo(key, clz, context));
         }
 
         model.put("namespaces", namespaces);
