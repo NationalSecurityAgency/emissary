@@ -22,7 +22,7 @@ public class PauseAction {
     @Produces(MediaType.TEXT_HTML)
     @Template(name = "/pause")
     public Map<String, String> notifyPause(@Context HttpServletRequest request) {
-        return generateMessage("Pausing server...");
+        return generateMessage(request, "Pausing server...");
     }
 
     @GET
@@ -30,12 +30,13 @@ public class PauseAction {
     @Produces(MediaType.TEXT_HTML)
     @Template(name = "/unpause")
     public Map<String, String> notifyUnpause(@Context HttpServletRequest request) {
-        return generateMessage("Unpausing server...");
+        return generateMessage(request, "Unpausing server...");
     }
 
-    private static Map<String, String> generateMessage(String message) {
+    private static Map<String, String> generateMessage(HttpServletRequest request, String message) {
         Map<String, String> model = new HashMap<>();
         model.put(MESSAGE, message);
+        model.put("contextPath", request.getContextPath());
         return model;
     }
 

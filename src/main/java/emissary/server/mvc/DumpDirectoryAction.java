@@ -106,6 +106,7 @@ public class DumpDirectoryAction {
             map.put("errors", errors);
         }
 
+        map.put("contextPath", request.getContextPath());
         return map;
     }
 

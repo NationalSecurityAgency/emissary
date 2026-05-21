@@ -3,9 +3,11 @@ package emissary.server.mvc;
 import emissary.util.Version;
 
 import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import org.glassfish.jersey.server.mvc.Template;
 
@@ -25,10 +27,13 @@ public class ThreadDumpAction {
     @Path("/Threaddump.action")
     @Produces(MediaType.TEXT_HTML)
     @Template(name = "/threaddumps")
-    public Map<String, Object> getThreaddumps() {
+    public Map<String, Object> getThreaddumps(@Nullable @Context HttpServletRequest request) {
         ThreadMXBean tmbean = ManagementFactory.getThreadMXBean();
 
         Map<String, Object> model = new HashMap<>();
+        if (request != null) {
+            model.put("contextPath", request.getContextPath());
+        }
         model.put("emissary.version", new Version());
         model.put("java.version", System.getProperty("java.vm.version"));
         model.put("java.name", System.getProperty("java.vm.name"));

@@ -7,7 +7,7 @@ $(document).ready(function () {
     }
   });
 
-  $.get('/emissary/Nav.action', function( data ) {
+  $.get('emissary/Nav.action', function( data ) {
     $('header').prepend(data);
 
     var url = window.location.pathname;

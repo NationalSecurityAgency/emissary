@@ -105,7 +105,13 @@ public class NavAction {
 
             public NavItem(String display, String link) {
                 this.display = display;
-                this.link = link;
+                // Convert absolute paths to relative so they work with base href
+                // Keep external URLs (http://, https://, //) as-is
+                if (link != null && link.startsWith("/") && !link.startsWith("//")) {
+                    this.link = link.substring(1); // Strip leading /
+                } else {
+                    this.link = link;
+                }
             }
 
             public String getDisplay() {

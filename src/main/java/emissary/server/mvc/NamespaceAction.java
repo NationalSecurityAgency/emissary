@@ -27,13 +27,14 @@ public class NamespaceAction {
     @Template(name = "/namespace")
     public Map<String, Object> getNamespace(@Context HttpServletRequest request) {
         Map<String, Object> model = new HashMap<>();
+        String contextPath = request.getContextPath();
+        model.put("contextPath", contextPath);
         Set<NamespaceInfo> namespaces = new LinkedHashSet<>();
 
         int rowCount = 0;
         for (String key : Namespace.keySet()) {
             String clz = rowCount++ % 2 == 0 ? "even" : "odd";
-            String context = request.getContextPath();
-            namespaces.add(new NamespaceInfo(key, clz, context));
+            namespaces.add(new NamespaceInfo(key, clz, contextPath));
         }
 
         model.put("namespaces", namespaces);

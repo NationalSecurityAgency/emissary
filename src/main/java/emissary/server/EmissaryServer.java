@@ -94,16 +94,28 @@ public class EmissaryServer {
 
     private final EmissaryNode emissaryNode;
 
+    private final Configurator config;
+
     @SuppressWarnings("NonFinalStaticField")
     private static EmissaryServer emissaryServer;
 
     private EmissaryServer(ServerCommand cmd) {
+        try {
+            this.config = ConfigUtil.getConfigInfo(this.getClass());
+        } catch (IOException e) {
+            throw new EmissaryRuntimeException("Unable to load configuration for EmissaryServer", e);
+        }
         this.cmd = cmd;
         this.emissaryNode = new EmissaryNode(cmd.getMode());
     }
 
     // there should be a better way to set a custom peer.cfg than this
     private EmissaryServer(ServerCommand cmd, EmissaryNode node) {
+        try {
+            this.config = ConfigUtil.getConfigInfo(this.getClass());
+        } catch (IOException e) {
+            throw new EmissaryRuntimeException("Unable to load configuration for EmissaryServer", e);
+        }
         this.cmd = cmd;
         this.emissaryNode = node;
     }
@@ -149,19 +161,21 @@ public class EmissaryServer {
             // Resource.setDefaultUseCaches(false);
 
             // needs to be loaded first into the server as it setups up Emissary stuff
+            String baseResourcePath = config.findStringEntry("BASE_RESOURCE_PATH", "");
+
             ContextHandler emissaryHandler = buildEmissaryHandler();
             // TODO: rework this, no need for it be set with a context path but if this
             // is left out, it matches / and nothing works correctly
-            emissaryHandler.setContextPath("/idontreallyservecontentnowdoi");
+            emissaryHandler.setContextPath(baseResourcePath + "/idontreallyservecontentnowdoi");
             ContextHandler lbConfigHandler = buildLogbackConfigHandler();
-            lbConfigHandler.setContextPath("/lbConfig");
+            lbConfigHandler.setContextPath(baseResourcePath + "/lbConfig");
             ContextHandler apiHandler = buildApiHandler();
-            apiHandler.setContextPath("/api");
-            ContextHandler mvcHandler = buildMvcHandler();
-            mvcHandler.setContextPath("/emissary");
+            apiHandler.setContextPath(baseResourcePath + "/api");
+            ContextHandler mvcHandler = buildMvcHandler(baseResourcePath);
+            mvcHandler.setContextPath(baseResourcePath + "/emissary");
             // needs to be loaded last into the server so other contexts can match or fall through
             ContextHandler staticHandler = buildStaticHandler();
-            staticHandler.setContextPath("/");
+            staticHandler.setContextPath(baseResourcePath + "/");
 
             LoginService loginService = buildLoginService();
             ConstraintSecurityHandler security = buildSecurityHandler();
@@ -178,6 +192,7 @@ public class EmissaryServer {
             final HandlerList handlers = new HandlerList();
             handlers.addHandler(emissaryHandler); // not secured, no endpoints and must be loaded first
             handlers.addHandler(security);
+
 
             Server configuredServer = configureServer();
             configuredServer.setHandler(handlers);
@@ -487,7 +502,7 @@ public class EmissaryServer {
     private static void logThreadDump(String initialLog) {
         if (LOG.isTraceEnabled()) {
             ThreadDumpAction tda = new ThreadDumpAction();
-            Map<String, Object> dumps = tda.getThreaddumps();
+            Map<String, Object> dumps = tda.getThreaddumps(null);
             StringBuilder sb = new StringBuilder();
             sb.append("\n" + initialLog);
             sb.append("\nThread DUMP");
@@ -686,13 +701,14 @@ public class EmissaryServer {
         return apiHolderContext;
     }
 
-    private ContextHandler buildMvcHandler() {
+    private ContextHandler buildMvcHandler(String baseResourcePath) {
 
         final ResourceConfig application = new ResourceConfig();
         application.setApplicationName("mvc");
         application.register(MultiPartFeature.class);
         // setup mustache templates
         application.property(MustacheMvcFeature.TEMPLATE_BASE_PATH, "/templates");
+        application.property("baseResourcePath", baseResourcePath);
         application.register(MustacheMvcFeature.class).packages("emissary.server.mvc");
         csrfFilter(application);
 
