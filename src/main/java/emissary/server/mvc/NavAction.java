@@ -44,7 +44,7 @@ public class NavAction {
 
     public static class EmissaryNav {
 
-        private static final Pattern VALID_LINK = Pattern.compile("^(https?:/)?/.*");
+        private static final Pattern VALID_LINK = Pattern.compile("^(https?:/)?/?.*");
 
         String appName;
         String appVersion;
@@ -105,13 +105,7 @@ public class NavAction {
 
             public NavItem(String display, String link) {
                 this.display = display;
-                // Convert absolute paths to relative so they work with base href
-                // Keep external URLs (http://, https://, //) as-is
-                if (link != null && link.startsWith("/") && !link.startsWith("//")) {
-                    this.link = link.substring(1); // Strip leading /
-                } else {
-                    this.link = link;
-                }
+                this.link = link;
             }
 
             public String getDisplay() {
