@@ -9,6 +9,7 @@ import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.server.mvc.adapters.DirectoryAdapter;
 import emissary.server.mvc.adapters.RequestUtil;
+import emissary.server.util.BaseResourcePathUtil;
 
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;

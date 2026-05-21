@@ -25,6 +25,7 @@ import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
 import emissary.server.mvc.ThreadDumpAction;
 import emissary.server.mvc.ThreadDumpAction.ThreadDumpInfo;
+import emissary.server.util.BaseResourcePathUtil;
 import emissary.spi.SPILoader;
 
 import ch.qos.logback.classic.ViewStatusMessagesServlet;
@@ -94,28 +95,16 @@ public class EmissaryServer {
 
     private final EmissaryNode emissaryNode;
 
-    private final Configurator config;
-
     @SuppressWarnings("NonFinalStaticField")
     private static EmissaryServer emissaryServer;
 
     private EmissaryServer(ServerCommand cmd) {
-        try {
-            this.config = ConfigUtil.getConfigInfo(this.getClass());
-        } catch (IOException e) {
-            throw new EmissaryRuntimeException("Unable to load configuration for EmissaryServer", e);
-        }
         this.cmd = cmd;
         this.emissaryNode = new EmissaryNode(cmd.getMode());
     }
 
     // there should be a better way to set a custom peer.cfg than this
     private EmissaryServer(ServerCommand cmd, EmissaryNode node) {
-        try {
-            this.config = ConfigUtil.getConfigInfo(this.getClass());
-        } catch (IOException e) {
-            throw new EmissaryRuntimeException("Unable to load configuration for EmissaryServer", e);
-        }
         this.cmd = cmd;
         this.emissaryNode = node;
     }
@@ -161,7 +150,7 @@ public class EmissaryServer {
             // Resource.setDefaultUseCaches(false);
 
             // needs to be loaded first into the server as it setups up Emissary stuff
-            String baseResourcePath = config.findStringEntry("BASE_RESOURCE_PATH", "");
+            String baseResourcePath = BaseResourcePathUtil.getBaseResourcePath();
 
             ContextHandler emissaryHandler = buildEmissaryHandler();
             // TODO: rework this, no need for it be set with a context path but if this

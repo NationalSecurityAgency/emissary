@@ -68,7 +68,7 @@ td.num {
 #czar {
     width: 400px;
     margin-left: 20px;
-    background-image: url("/img/mini-czar.jpg");
+    background-image: url("../img/mini-czar.jpg");
     background-repeat: no-repeat;
     background-position: left;
 }

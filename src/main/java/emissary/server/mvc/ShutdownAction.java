@@ -1,5 +1,7 @@
 package emissary.server.mvc;
 
+import emissary.server.util.BaseResourcePathUtil;
+
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;

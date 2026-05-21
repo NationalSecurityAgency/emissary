@@ -2,6 +2,7 @@ package emissary.server.mvc;
 
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
+import emissary.server.util.BaseResourcePathUtil;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

@@ -2,6 +2,7 @@ package emissary.server.mvc;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.server.util.BaseResourcePathUtil;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

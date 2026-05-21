@@ -1,5 +1,6 @@
 package emissary.server.mvc;
 
+import emissary.server.util.BaseResourcePathUtil;
 import emissary.util.Version;
 
 import jakarta.annotation.Nullable;
