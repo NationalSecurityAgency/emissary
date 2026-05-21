@@ -14,7 +14,6 @@ import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractBlockingStub;
 import io.grpc.stub.AbstractFutureStub;
-import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.apache.commons.pool2.ObjectPool;
 
@@ -153,29 +152,8 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
     }
 
     private ConnectionFactory newConnectionFactory(String id) {
-        return newConnectionFactory(hostnameTable.get(id), portNumberTable.get(id), Objects.requireNonNull(configG));
+        return new ConnectionFactory(hostnameTable.get(id), portNumberTable.get(id), Objects.requireNonNull(configG));
     }
-
-    private ConnectionFactory newConnectionFactory(String host, int port, @Nonnull Configurator cfg) {
-        return new ConnectionFactory(host, port, cfg, this::validateConnection, this::passivateConnection);
-    }
-
-    /**
-     * Validates whether a given {@link ManagedChannel} is capable of successfully communicating with its associated gRPC
-     * server.
-     *
-     * @param managedChannel the gRPC channel to validate
-     * @return {@code true} if the channel is healthy and the server responds successfully, else {@code false}
-     */
-    protected abstract boolean validateConnection(ManagedChannel managedChannel);
-
-    /**
-     * Called after a gRPC call to clean up the channel. No-op by default, since gRPC channels are designed to remain ready
-     * for reuse. Override this if using a stub that requires channels be reset or cleared between uses.
-     *
-     * @param managedChannel the gRPC channel to clean up
-     */
-    protected void passivateConnection(ManagedChannel managedChannel) { /* No-op */ }
 
     /**
      * Wrapper method for {@link GrpcInvoker#invoke(ObjectPool, Function, BiFunction, Message)} that executes a unary gRPC
