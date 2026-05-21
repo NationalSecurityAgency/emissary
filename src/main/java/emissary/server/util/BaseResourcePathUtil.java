@@ -7,7 +7,7 @@ import emissary.core.EmissaryRuntimeException;
 import java.io.IOException;
 
 /**
- * Helper for calculating the base resource path for templates.
+ * Helper for retrieving the base resource path for templates.
  *
  * The base resource path is loaded once on class initialization, and made available for the main server config and any
  * action classes (and therefore templates) that need it.

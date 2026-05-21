@@ -160,7 +160,7 @@ public class EmissaryServer {
             lbConfigHandler.setContextPath(baseResourcePath + "/lbConfig");
             ContextHandler apiHandler = buildApiHandler();
             apiHandler.setContextPath(baseResourcePath + "/api");
-            ContextHandler mvcHandler = buildMvcHandler(baseResourcePath);
+            ContextHandler mvcHandler = buildMvcHandler();
             mvcHandler.setContextPath(baseResourcePath + "/emissary");
             // needs to be loaded last into the server so other contexts can match or fall through
             ContextHandler staticHandler = buildStaticHandler();
@@ -690,14 +690,13 @@ public class EmissaryServer {
         return apiHolderContext;
     }
 
-    private ContextHandler buildMvcHandler(String baseResourcePath) {
+    private ContextHandler buildMvcHandler() {
 
         final ResourceConfig application = new ResourceConfig();
         application.setApplicationName("mvc");
         application.register(MultiPartFeature.class);
         // setup mustache templates
         application.property(MustacheMvcFeature.TEMPLATE_BASE_PATH, "/templates");
-        application.property("baseResourcePath", baseResourcePath);
         application.register(MustacheMvcFeature.class).packages("emissary.server.mvc");
         csrfFilter(application);
 

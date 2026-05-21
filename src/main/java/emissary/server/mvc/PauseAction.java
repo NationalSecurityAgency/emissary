@@ -1,10 +1,11 @@
 package emissary.server.mvc;
 
 import emissary.server.util.BaseResourcePathUtil;
-
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import org.glassfish.jersey.server.mvc.Template;
 
@@ -21,7 +22,7 @@ public class PauseAction {
     @Path("/Pause.action")
     @Produces(MediaType.TEXT_HTML)
     @Template(name = "/pause")
-    public Map<String, String> notifyPause() {
+    public Map<String, String> notifyPause(@Context HttpServletRequest request) {
         return generateMessage("Pausing server...");
     }
 
@@ -29,7 +30,7 @@ public class PauseAction {
     @Path("/Unpause.action")
     @Produces(MediaType.TEXT_HTML)
     @Template(name = "/unpause")
-    public Map<String, String> notifyUnpause() {
+    public Map<String, String> notifyUnpause(@Context HttpServletRequest request) {
         return generateMessage("Unpausing server...");
     }
 
