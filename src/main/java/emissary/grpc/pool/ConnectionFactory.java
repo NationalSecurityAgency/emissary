@@ -228,15 +228,15 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
     }
 
     /**
-     * Required by {@link BasePooledObjectFactory}. Channels naturally check for server health upon RPC so a custom method
-     * is unnecessary.
+     * Required by {@link BasePooledObjectFactory}. Channels naturally check for server health upon RPC so a custom
+     * implementation is unnecessary.
      *
      * @param pooledObject the pooled gRPC channel
-     * @return true, because a channel may always be borrowed
+     * @return always throws an {@link UnsupportedOperationException}
      */
     @Override
     public boolean validateObject(PooledObject<ManagedChannel> pooledObject) {
-        return true;
+        throw new UnsupportedOperationException("This method should not be called");
     }
 
     /**
