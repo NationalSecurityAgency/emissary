@@ -24,6 +24,7 @@ class NavActionTest {
         navItems.put("Item5", "ftp://testing");
         navItems.put("Item6", "mailto:test@example.com");
         navItems.put("Item7", "./relative/path");
+        navItems.put("Item8", "disallowed/relative/path");
 
         EmissaryNav nav = new EmissaryNav();
 
