@@ -621,7 +621,7 @@ public abstract class ExtractionTest extends UnitTest {
                 checkForMissingNameElement("nometa", key, tname);
                 assertFalse(payload.hasParameter(key),
                         String.format(Locale.getDefault(), "Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
-                                payload.getParameterAsString(key)));
+                                payload.getStringParameter(key)));
             }
         }
 
