@@ -1,13 +1,11 @@
 package emissary.grpc.sample;
 
-import emissary.grpc.sample.v1.SampleHealthStatus;
 import emissary.grpc.sample.v1.SampleRequest;
 import emissary.grpc.sample.v1.SampleResponse;
 import emissary.grpc.sample.v1.SampleServiceGrpc.SampleServiceImplBase;
 
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.Empty;
 import io.grpc.BindableService;
 import io.grpc.Context;
 import io.grpc.Server;
@@ -34,15 +32,8 @@ public class GrpcSampleServer implements AutoCloseable {
         }
     }
 
-    private static SampleServiceImplBase newService(Function<SampleRequest, ByteString> behavior, boolean healthOk) {
+    private static SampleServiceImplBase newService(Function<SampleRequest, ByteString> behavior) {
         return new SampleServiceImplBase() {
-            @Override
-            public void callSampleHealthCheck(Empty request, StreamObserver<SampleHealthStatus> responseObserver) {
-                SampleHealthStatus status = SampleHealthStatus.newBuilder().setOk(healthOk).build();
-                responseObserver.onNext(status);
-                responseObserver.onCompleted();
-            }
-
             @Override
             public void callSampleService(SampleRequest request, StreamObserver<SampleResponse> responseObserver) {
                 try {
@@ -65,19 +56,11 @@ public class GrpcSampleServer implements AutoCloseable {
     }
 
     public static GrpcSampleServer defaultBehavior() {
-        return GrpcSampleServer.of(true);
-    }
-
-    public static GrpcSampleServer of(boolean healthOk) {
-        return GrpcSampleServer.of(GrpcSampleServer::success, healthOk);
+        return GrpcSampleServer.of(GrpcSampleServer::success);
     }
 
     public static GrpcSampleServer of(Function<SampleRequest, ByteString> behavior) {
-        return GrpcSampleServer.of(behavior, true);
-    }
-
-    public static GrpcSampleServer of(Function<SampleRequest, ByteString> behavior, boolean healthOk) {
-        return new GrpcSampleServer(newService(behavior, healthOk));
+        return new GrpcSampleServer(newService(behavior));
     }
 
     public static GrpcSampleServer alwaysThrow(RuntimeException ex) {

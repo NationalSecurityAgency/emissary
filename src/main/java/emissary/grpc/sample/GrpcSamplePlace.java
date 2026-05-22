@@ -11,8 +11,6 @@ import emissary.grpc.sample.v1.SampleServiceGrpc.SampleServiceBlockingStub;
 import emissary.grpc.sample.v1.SampleServiceGrpc.SampleServiceFutureStub;
 
 import com.google.protobuf.ByteString;
-import com.google.protobuf.Empty;
-import io.grpc.ManagedChannel;
 import jakarta.annotation.Nullable;
 
 import java.io.IOException;
@@ -61,17 +59,5 @@ public class GrpcSamplePlace extends GrpcRoutingPlace {
                         k, SampleServiceGrpc::newFutureStub, SampleServiceFutureStub::callSampleService, generateRequest(o))));
         Map<String, SampleResponse> responseMap = CompletableFutureFinalizers.awaitAllAndGet(futureMap, HashMap::new, exceptionally);
         responseMap.forEach((k, v) -> o.addAlternateView(k, v.getResult().toByteArray()));
-    }
-
-    /**
-     * Calls a health check to the external service before borrowing the channel from the pool.
-     *
-     * @param managedChannel the gRPC channel to validate
-     * @return {@code true} if channel is healthy, otherwise {@code false}
-     */
-    @Override
-    protected boolean validateConnection(ManagedChannel managedChannel) {
-        SampleServiceBlockingStub stub = SampleServiceGrpc.newBlockingStub(managedChannel);
-        return stub.callSampleHealthCheck(Empty.getDefaultInstance()).getOk();
     }
 }

@@ -15,11 +15,6 @@ message SampleResponse {
   bytes result = 1;
 }
 
-message SampleHealthStatus {
-  bool ok = 1;
-}
-
 service SampleService {
   rpc CallSampleService(SampleRequest) returns (SampleResponse);
-  rpc CallSampleHealthCheck(google.protobuf.Empty) returns (SampleHealthStatus);
 }
