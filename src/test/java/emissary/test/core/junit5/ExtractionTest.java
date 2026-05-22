@@ -610,7 +610,7 @@ public abstract class ExtractionTest extends UnitTest {
             if (verifyOs(meta)) {
                 String key = meta.getChildTextTrim(NAME);
                 checkForMissingNameElement(PARAMETER, key, tname);
-                checkStringValue(meta, payload.getParameterAsString(key), tname);
+                checkStringValue(meta, payload.getStringParameter(key), tname);
             }
         }
 

@@ -232,7 +232,7 @@ public class PayloadUtil {
         }
         final Element meta = new Element("metadata");
         for (final String key : d.getParameters().keySet()) {
-            final Element m = JDOMUtil.protectedElement("param", d.getParameterAsString(key));
+            final Element m = JDOMUtil.protectedElement("param", d.getStringParameter(key));
             m.setAttribute("name", key);
             meta.addContent(m);
         }
