@@ -171,6 +171,22 @@ public abstract class UnitTest {
     }
 
     /**
+     * Get all answer XML resources (*.xml) for this class in a format suitable for Junit Parameterized Tests. Used with
+     * XML-driven test discovery, where each XML file specifies (via an optional {@code <dataFile>} element) which .dat file
+     * to load, falling back to the same-named .dat when the element is absent.
+     *
+     * @param clz the class to test
+     * @return a stream of XML test files
+     */
+    public static Stream<? extends Arguments> getMyXmlTestParameterFiles(Class<?> clz) {
+        ResourceReader rr = new ResourceReader();
+        List<String> rs = rr.findXmlResourcesFor(clz);
+        return rs.stream()
+                .map(resource -> Named.of(StringUtils.substringAfterLast(resource, File.separator), resource))
+                .map(Arguments::of);
+    }
+
+    /**
      * Specifies a non-default source of test answer files
      *
      * @param ansClz Class that provides the test answer files.

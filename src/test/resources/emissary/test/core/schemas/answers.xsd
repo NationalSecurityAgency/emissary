@@ -3,6 +3,7 @@
     <xs:element name="root">
         <xs:complexType>
             <xs:sequence>
+                <xs:element ref="dataFile" minOccurs="0"/>
                 <xs:element ref="setup" minOccurs="0"/>
                 <xs:element ref="answers"/>
             </xs:sequence>
@@ -11,11 +12,13 @@
     <xs:element name="result">
         <xs:complexType>
             <xs:sequence>
+                <xs:element ref="dataFile" minOccurs="0"/>
                 <xs:element ref="setup" minOccurs="0"/>
                 <xs:element ref="answers"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    <xs:element name="dataFile" type="xs:string"/>
     <xs:element name="setup">
         <xs:complexType>
             <xs:choice minOccurs="0" maxOccurs="unbounded">

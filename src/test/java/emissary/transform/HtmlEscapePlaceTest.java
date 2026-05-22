@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class HtmlEscapePlaceTest extends ExtractionTest {
 
     public static Stream<? extends Arguments> data() {
-        return getMyTestParameterFiles(HtmlEscapePlaceTest.class);
+        return getMyXmlTestParameterFiles(HtmlEscapePlaceTest.class);
     }
 
     @Override

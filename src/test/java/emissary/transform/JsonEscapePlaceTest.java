@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 class JsonEscapePlaceTest extends ExtractionTest {
 
     public static Stream<? extends Arguments> data() {
-        return getMyTestParameterFiles(JsonEscapePlaceTest.class);
+        return getMyXmlTestParameterFiles(JsonEscapePlaceTest.class);
     }
 
     @Override

@@ -1,0 +1,25 @@
+<root>
+  <dataFile>sample.dat</dataFile>
+  <setup>
+    <initialForm>HTML</initialForm>
+    <fontEncoding>UTF8</fontEncoding>
+  </setup>
+
+  <answers>
+    <numAttachments>0</numAttachments>
+    <currentForm>HTML</currentForm>
+    <fileType>HTML</fileType>
+    <currentFormSize>1</currentFormSize>
+    <fontEncoding>UTF8</fontEncoding>
+
+    <meta>
+      <name>CHARACTER_DIGIT_HTML_ESCAPE</name>
+      <value>7</value>
+    </meta>
+
+    <data matchMode="index">
+      <value>This Is A Test</value>
+    </data>
+
+  </answers>
+</root>
