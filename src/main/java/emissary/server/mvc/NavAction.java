@@ -44,7 +44,7 @@ public class NavAction {
 
     public static class EmissaryNav {
 
-        private static final Pattern VALID_LINK = Pattern.compile("^(https?:/)?/?.*");
+        private static final Pattern VALID_LINK = Pattern.compile("^(https?:/)?\\.?/.*");
 
         String appName;
         String appVersion;
