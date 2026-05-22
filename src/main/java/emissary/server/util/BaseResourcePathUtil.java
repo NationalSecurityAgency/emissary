@@ -2,7 +2,10 @@ package emissary.server.util;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
-import emissary.core.EmissaryRuntimeException;
+import emissary.server.mvc.NavAction;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -13,9 +16,12 @@ import java.io.IOException;
  * action classes (and therefore templates) that need it.
  */
 public final class BaseResourcePathUtil {
+    private static final Logger logger = LoggerFactory.getLogger(NavAction.class);
+
     private static final String CONFIG_KEY = "BASE_RESOURCE_PATH";
     private static final String DEFAULT_BASE_RESOURCE_PATH = "";
     private static final String BASE_RESOURCE_PATH = initBaseResourcePath();
+
 
     private BaseResourcePathUtil() {}
 
@@ -24,7 +30,8 @@ public final class BaseResourcePathUtil {
             Configurator config = ConfigUtil.getConfigInfo(BaseResourcePathUtil.class);
             return config.findStringEntry(CONFIG_KEY, DEFAULT_BASE_RESOURCE_PATH);
         } catch (IOException e) {
-            throw new EmissaryRuntimeException("Unable to load configuration for BaseResourcePathUtil", e);
+            logger.info("Unable to load configuration for BaseResourcePathUtil; using default values", e);
+            return DEFAULT_BASE_RESOURCE_PATH;
         }
     }
 
