@@ -6,7 +6,6 @@ import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
 import emissary.core.constants.Configurations;
 import emissary.grpc.GrpcRoutingPlace;
-import emissary.grpc.pool.PoolException;
 import emissary.grpc.retry.RetryHandler;
 import emissary.grpc.sample.v1.SampleRequest;
 import emissary.grpc.sample.v1.SampleResponse;
@@ -358,19 +357,6 @@ class GrpcSamplePlaceTest extends UnitTest {
     @Nested
     class SequentialProcessingTests {
         @Test
-        void testConnectionIsNotValidated() {
-            try (GrpcSampleServer serverOne = GrpcSampleServer.of(false);
-                    GrpcSampleServer serverTwo = GrpcSampleServer.defaultBehavior()) {
-
-                startPlaceWithEndpoints(serverOne, serverTwo);
-
-                Runnable invocation = () -> Objects.requireNonNull(place).processEndpointsSequentially(o);
-                PoolException exception = assertThrows(PoolException.class, invocation::run);
-                assertEquals("Unable to borrow channel from pool: Unable to validate object", exception.getMessage());
-            }
-        }
-
-        @Test
         @SuppressWarnings("Interruption")
         void testThreadInterruptCancelsSequentialGrpc() throws InterruptedException {
             CountDownLatch startedLatch = new CountDownLatch(1);
@@ -476,19 +462,6 @@ class GrpcSamplePlaceTest extends UnitTest {
 
     @Nested
     class ParallelProcessingTests {
-        @Test
-        void testConnectionIsNotValidated() {
-            try (GrpcSampleServer serverOne = GrpcSampleServer.of(false);
-                    GrpcSampleServer serverTwo = GrpcSampleServer.defaultBehavior()) {
-
-                startPlaceWithEndpoints(serverOne, serverTwo);
-
-                Runnable invocation = () -> Objects.requireNonNull(place).processEndpointsInParallel(o, null);
-                PoolException exception = assertThrows(PoolException.class, invocation::run);
-                assertEquals("Unable to borrow channel from pool: Unable to validate object", exception.getMessage());
-            }
-        }
-
         @Test
         @SuppressWarnings("Interruption")
         void testThreadInterruptCancelsParallelGrpc() throws InterruptedException {

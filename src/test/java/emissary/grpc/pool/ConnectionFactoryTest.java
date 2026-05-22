@@ -20,15 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 
 class ConnectionFactoryTest extends UnitTest {
     private static ConnectionFactory buildConnectionFactory(Configurator configG) {
-        return new ConnectionFactory("localhost", 2222, configG, channel -> true, channel -> {
-        });
+        return new ConnectionFactory("localhost", 2222, configG);
     }
 
     private static Configurator getDefaultConfigs() {
@@ -99,15 +94,8 @@ class ConnectionFactoryTest extends UnitTest {
         @BeforeEach
         void setUp() {
             Configurator configT = getDefaultConfigs();
-            factory = spy(buildConnectionFactory(configT));
+            factory = buildConnectionFactory(configT);
             pool = factory.newConnectionPool();
-        }
-
-        @Test
-        void testAcquireChannelFails() {
-            doReturn(false).when(factory).validateObject(any());
-            PoolException e = assertThrows(PoolException.class, () -> ConnectionFactory.acquireChannel(pool));
-            assertEquals("Unable to borrow channel from pool: Unable to validate object", e.getMessage());
         }
 
         @Test
@@ -133,23 +121,6 @@ class ConnectionFactoryTest extends UnitTest {
             ManagedChannel c2 = ConnectionFactory.acquireChannel(pool);
             assertSame(c1, c2);
             ConnectionFactory.returnChannel(c2, pool);
-        }
-
-        @Test
-        void testPassivateChannel() {
-            ManagedChannel c1 = ConnectionFactory.acquireChannel(pool);
-            ConnectionFactory.returnChannel(c1, pool);
-            assertFalse(c1.isShutdown());
-
-            doAnswer(invocation -> {
-                PooledObject<ManagedChannel> pooledObject = invocation.getArgument(0);
-                pooledObject.getObject().shutdownNow();
-                return null;
-            }).when(factory).passivateObject(any());
-
-            ManagedChannel c2 = ConnectionFactory.acquireChannel(pool);
-            ConnectionFactory.returnChannel(c2, pool);
-            assertTrue(c2.isShutdown());
         }
 
         @Test
