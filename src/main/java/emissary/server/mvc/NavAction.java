@@ -86,6 +86,9 @@ public class NavAction {
         protected static List<NavItem> convert(Map<String, String> map) {
             return map.entrySet().stream()
                     .filter(e -> isValidLink(e.getValue()))
+                    // TODO: Remove the following map once all necessary integrations are complete, and backwards compatibility is no longer
+                    // required.
+                    .map(e -> Map.entry(e.getKey(), e.getValue().startsWith("/") ? "." + e.getValue() : e.getValue()))
                     .map(e -> new NavItem(e.getKey(), e.getValue()))
                     .collect(Collectors.toList());
         }
