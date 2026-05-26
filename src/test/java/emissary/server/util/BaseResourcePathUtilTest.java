@@ -21,6 +21,8 @@ class BaseResourcePathUtilTest extends UnitTest {
         assertTrue(BaseResourcePathUtil.isValidBaseResourcePath("/route"), "Leading slash route should match");
         assertTrue(BaseResourcePathUtil.isValidBaseResourcePath("/myroute/route"), "Nested route should match");
         assertTrue(BaseResourcePathUtil.isValidBaseResourcePath("/my_route-route2"), "Underscores and hyphens should match");
+        assertTrue(BaseResourcePathUtil.isValidBaseResourcePath("/myroute/route2/route3/route4/route5"), "Up to 5 nested routes should match");
+        assertTrue(BaseResourcePathUtil.isValidBaseResourcePath("/route~route"), "Tilde character should match");
     }
 
     @Test
@@ -30,6 +32,8 @@ class BaseResourcePathUtilTest extends UnitTest {
         assertFalse(BaseResourcePathUtil.isValidBaseResourcePath("http://www.myroute.com"), "Absolute URL should not match");
         assertFalse(BaseResourcePathUtil.isValidBaseResourcePath("myroute!"), "Invalid character should not match");
         assertFalse(BaseResourcePathUtil.isValidBaseResourcePath("/myroute/"), "Ending slash route should not match");
+        assertFalse(BaseResourcePathUtil.isValidBaseResourcePath("/myroute/route2/route3/route4/route5/route6"),
+                "More than 5 nested routes should not match");
     }
 
     @Test

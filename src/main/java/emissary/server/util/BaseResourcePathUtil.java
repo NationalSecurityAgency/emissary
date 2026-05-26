@@ -2,7 +2,6 @@ package emissary.server.util;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
-import emissary.server.mvc.NavAction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,7 @@ import java.util.regex.Pattern;
 public final class BaseResourcePathUtil {
     private static final Logger logger = LoggerFactory.getLogger(BaseResourcePathUtil.class);
 
-    private static final Pattern VALID_BASE_RESOURCE_PATH = Pattern.compile("^(?:\\/[\\w-]+)*$");
+    private static final Pattern VALID_BASE_RESOURCE_PATH = Pattern.compile("^(?:\\/[\\w~-]+){1,5}$");
 
     private static final String CONFIG_KEY = "BASE_RESOURCE_PATH";
     private static final String DEFAULT_BASE_RESOURCE_PATH = "";
