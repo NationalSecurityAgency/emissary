@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  * action classes (and therefore templates) that need it.
  */
 public final class BaseResourcePathUtil {
-    private static final Logger logger = LoggerFactory.getLogger(NavAction.class);
+    private static final Logger logger = LoggerFactory.getLogger(BaseResourcePathUtil.class);
 
     private static final Pattern VALID_BASE_RESOURCE_PATH = Pattern.compile("^(?:\\/[\\w-]+)*$");
 
