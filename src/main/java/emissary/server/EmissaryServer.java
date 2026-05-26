@@ -139,6 +139,10 @@ public class EmissaryServer {
         return cmd;
     }
 
+    public String getBaseResourcePath() {
+        return BaseResourcePathUtil.getBaseResourcePath();
+    }
+
     /**
      * Creates and starts a server that is bound into the local Namespace using DEFAULT_NAMESPACE_NAME and returned
      *
