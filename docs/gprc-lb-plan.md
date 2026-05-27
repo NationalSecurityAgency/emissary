@@ -130,19 +130,35 @@ Together these are belt-and-suspenders: A guarantees coverage; B gives clean GOA
 
 ---
 
-## Implementation sketch (Option A, the recommended emissary change)
+## Interaction with open PR #1400 ("New gRPC channel manager")
+
+[PR #1400](https://github.com/NationalSecurityAgency/emissary/pull/1400) (open, not yet merged) replaces `emissary.grpc.pool.ConnectionFactory` with a pluggable `emissary.grpc.channel.ChannelManager` abstraction and two concrete subclasses: `PooledChannelManager` (current behavior) and `SingletonChannelManager` (one shared channel). It also adds a `GRPC_CHANNEL_MANAGER_CLASS_NAME` config key so each Place picks its manager, makes `ChannelManager` `AutoCloseable`, and threads close-on-shutdown through `GrpcInvoker.close()` → `GrpcRoutingPlace.shutDown()`.
+
+**Effect on this plan:**
+- **No effect on the recommendation.** Channel creation in the PR (`ChannelManager.create()`) is byte-for-byte the same as today — same `host:port` target, same `defaultLoadBalancingPolicy("round_robin")`. The HPA stale-connection problem is unchanged by the PR.
+- **Positive effect on implementation.** The new abstraction is a strictly better place to hang Option A than the current pool. Specifically:
+  - Refresh is a per-channel concern, not a per-pool concern, so it belongs in `ChannelManager`. Putting it in the base class means **both** `PooledChannelManager` and `SingletonChannelManager` inherit it for free.
+  - `ChannelManager.close()` already exists and is wired into Place shutdown — natural place to stop the scheduler. No new lifecycle plumbing needed.
+  - The `GRPC_CHANNEL_*` config-key prefix in the PR aligns with the `GRPC_CHANNEL_REFRESH_INTERVAL_MILLIS` name we'd add.
+- **Timing.** Land Option A *after* PR #1400 merges to avoid a rebase. If #1400 stalls, Option A can still be built on the current `ConnectionFactory` and ported later — the surface area is small either way.
+
+## Implementation sketch (Option A — assuming PR #1400 has merged)
 
 Files to modify:
-- `src/main/java/emissary/grpc/pool/ConnectionFactory.java` — add `GRPC_CHANNEL_REFRESH_INTERVAL_MILLIS` config key (default `-1` = disabled).
-- `src/main/java/emissary/grpc/GrpcRoutingPlace.java` — when refresh interval > 0, start a `ScheduledExecutorService` that iterates the channels in each pool and triggers re-resolution. Shut down the scheduler in the Place's `shutDown()` path.
-- New file `src/main/java/emissary/grpc/pool/ChannelRefresher.java` (optional) to encapsulate the refresh logic and lifecycle, so the pool stays focused on object lifecycle.
-- New unit tests under `src/test/java/emissary/grpc/pool/` that verify the scheduler is created, fires on the configured interval, calls the channel API, and is cleanly shut down.
+- `src/main/java/emissary/grpc/channel/ChannelManager.java`
+  - Add config key `GRPC_CHANNEL_REFRESH_INTERVAL_MILLIS` (default `-1` = disabled).
+  - Add a protected `ScheduledExecutorService` and a `protected abstract Collection<ManagedChannel> channelsForRefresh()` method that subclasses implement.
+  - In the constructor, if the interval is > 0, schedule a periodic task that iterates `channelsForRefresh()` and calls `channel.getState(true)` on each to force the name resolver to re-run.
+  - Extend `close()` to shut down the scheduler.
+- `src/main/java/emissary/grpc/channel/PooledChannelManager.java` — implement `channelsForRefresh()` by snapshotting the channels currently in the pool. (Apache Commons `GenericObjectPool` doesn't expose its objects directly; easiest path is to track created channels in a `Set` populated by `makeObject()` and pruned by `destroyObject()`.)
+- `src/main/java/emissary/grpc/channel/SingletonChannelManager.java` — implement `channelsForRefresh()` by returning `List.of(channel)`.
+- New unit tests under `src/test/java/emissary/grpc/channel/` covering both subclasses: scheduler fires on the configured interval, calls the channel API, is shut down by `close()`.
 
-The refresh mechanism itself: for each `ManagedChannel`, call `channel.getState(true)` — the `true` argument requests a connection attempt, which through the gRPC state machine causes the name resolver to be refreshed if the channel is in `IDLE`. For channels in `READY`, alternatively call a `NameResolver.refresh()` via the channel's internal resolver (requires holding a `ManagedChannelBuilder.nameResolverFactory(...)` reference so we can poke it). Prototype both and benchmark. *(The exact API choice is the first thing to validate during implementation — there are two correct-looking paths in grpc-java and the right one depends on subchannel state.)*
+The refresh API call itself: for each `ManagedChannel`, call `channel.getState(true)` — the `true` argument requests a connection attempt, which through the gRPC state machine causes the name resolver to be refreshed if the channel is in `IDLE`. For channels in `READY`, an additional option is to call `NameResolver.refresh()` via the channel's internal resolver (requires retaining a `ManagedChannelBuilder.nameResolverFactory(...)` reference). Prototype both and benchmark. *(The exact API choice is the first thing to validate during implementation — there are two correct-looking paths in grpc-java and the right one depends on subchannel state.)*
 
-Reusable pieces already in the codebase:
-- `ConnectionFactory.invalidateChannel(...)` (`ConnectionFactory.java:158`) — pattern for safely operating on pooled channels.
-- `GrpcRoutingPlace.channelPoolTable` (`GrpcRoutingPlace.java:58`) — the per-target pool map the refresher needs to walk.
+Reusable pieces already in the codebase (post-#1400):
+- `ChannelManager.close()` — the natural hook to shut down the refresh scheduler.
+- `GrpcInvoker.close()` → `ChannelManager.close()` → place `shutDown()` — close-lifecycle already plumbed.
 - The `Configurator` config pattern used throughout (`findLongEntry`, `findIntEntry`).
 
 ---
