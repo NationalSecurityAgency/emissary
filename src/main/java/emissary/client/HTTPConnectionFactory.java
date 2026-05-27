@@ -15,6 +15,7 @@ import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
 import org.apache.hc.client5.http.ssl.HostnameVerificationPolicy;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.http.ConnectionReuseStrategy;
 import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.log4j.Logger;
@@ -133,7 +134,7 @@ public class HTTPConnectionFactory {
 
         // custom ssl context populated with our trust and key materials
         return SSLContexts.custom()
-                .loadTrustMaterial(trustStore, (chain, authType) -> true)
+                .loadTrustMaterial(trustStore, TrustAllStrategy.INSTANCE)
                 .loadKeyMaterial(keyStore, kpChar)
                 .setProtocol(cfg.findStringEntry(CFG_SSLCONTEXT_TYPE, DFLT_CONTEXT_TYPE))
                 .setSecureRandom(new SecureRandom())
