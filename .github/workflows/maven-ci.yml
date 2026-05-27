@@ -105,6 +105,9 @@ jobs:
   site-build:
     name: Maven site build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      code-quality: write
 
     steps:
       - name: Checkout repo
@@ -118,7 +121,18 @@ jobs:
           distribution: "corretto"
 
       - name: Build with Maven
-        run: mvn -B -e -ntp "-Dstyle.color=always" site -Pcoverage,pmd
+        run: mvn -B -e -ntp "-Dstyle.color=always" verify site -Pcoverage,pmd
+
+      - name: Convert JaCoCo to Cobertura
+        run: python3 contrib/ci/jacoco-to-cobertura.py
+
+      - name: Upload coverage report
+        uses: actions/upload-code-coverage@v1
+        with:
+          file: cobertura.xml
+          language: Java
+          label: code-coverage/jacoco
+          fail-on-error: false
 
   slack-notify:
     if: ${{ github.event_name == 'push' && github.repository == 'NationalSecurityAgency/emissary' }}
