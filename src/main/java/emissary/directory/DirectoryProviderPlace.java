@@ -53,7 +53,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
 
     /**
      * set of keys for this place read from configG. Each of the values defined by
-     * SERVICE_PROXY.SERCVICE_TYPE.SERVICE_NAME.PLACE_LOCATION$EXPENSE from the config file or KEY values from the config
+     * SERVICE_PROXY.SERVICE_TYPE.SERVICE_NAME.PLACE_LOCATION$EXPENSE from the config file or KEY values from the config
      * file.
      */
     protected List<String> keys = new ArrayList<>();
