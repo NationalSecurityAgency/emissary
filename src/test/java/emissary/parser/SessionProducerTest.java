@@ -37,7 +37,7 @@ class SessionProducerTest extends UnitTest {
         assertEquals("The Footer", new String(payload.footer()), "Incorrect footer");
         assertEquals("The Data", new String(payload.data()), "Incorrect data");
         assertEquals("Purple Nurple", payload.getClassification(), "Incorrect classification");
-        assertEquals("bar", payload.getStringParameter("foo"), "Incorrect metadata");
+        assertEquals("bar", payload.getParameterAsString("foo"), "Incorrect metadata");
         assertEquals("name", payload.shortName(), "Incorrect name");
     }
 

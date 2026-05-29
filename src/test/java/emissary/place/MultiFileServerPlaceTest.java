@@ -62,7 +62,7 @@ class MultiFileServerPlaceTest extends UnitTest {
     void testMetadataCopy() {
         parent.setParameter("FOO", "BAR");
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
-        assertNull(children.get(0).getStringParameter("FOO"), "Metadata must not be copied unless configured");
+        assertNull(children.get(0).getParameterAsString("FOO"), "Metadata must not be copied unless configured");
     }
 
     @Test
