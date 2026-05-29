@@ -16,6 +16,6 @@ updates:
         update-types:
           - "version-update:semver-major"
   - package-ecosystem: "github-actions"
-    directory: "./.github/workflows"
+    directory: "/"
     schedule:
       interval: "weekly"
