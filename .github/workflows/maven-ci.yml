@@ -127,7 +127,7 @@ jobs:
     steps:
       - name: Publish to slack channel via bot token
         id: slack
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@v3.0.3
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
