@@ -92,7 +92,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '21'
           cache: 'maven'
@@ -111,7 +111,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure Java & Maven
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: 11
           cache: "maven"
