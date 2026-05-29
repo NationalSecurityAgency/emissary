@@ -55,76 +55,76 @@ public class PlaceComparisonHelper {
     /**
      * Used to compare a 'new' place with another, usually during development aimed at replacing the 'old' place.
      * 
-     * @param newResults an empty list to add results into from running the newPlace
-     * @param ibdoForNewPlace the actual BDO being passed in for comparison
-     * @param newPlace the new place we're comparing 'from'
-     * @param newMethodName to use when comparing (e.g. processHeavyDuty)
-     * @param oldPlace to compare against
-     * @param oldMethodName to use when comparing (e.g. processHeavyDuty)
+     * @param actualChildren an empty list to add results into from running the actual (new) place
+     * @param actualParentIbdo the actual BDO being passed in for comparison
+     * @param actualPlace the new place we're comparing 'from'
+     * @param actualMethodName to use when comparing (e.g. processHeavyDuty)
+     * @param expectedPlace to compare against (the old place)
+     * @param expectedMethodName to use when comparing (e.g. processHeavyDuty)
      * @param options {@link DiffCheckConfiguration} to configure diffing options
      * @return a readable string of differences to log or use elsewhere.
      * @throws ReflectiveOperationException if there is a problem.
      */
     @SuppressWarnings("unchecked")
-    public static String compareToPlace(final List<IBaseDataObject> newResults, final IBaseDataObject ibdoForNewPlace,
-            final ServiceProviderPlace newPlace, final String newMethodName, final ServiceProviderPlace oldPlace, final String oldMethodName,
-            final DiffCheckConfiguration options) throws ReflectiveOperationException {
+    public static String compareToPlace(final List<IBaseDataObject> actualChildren, final IBaseDataObject actualParentIbdo,
+            final ServiceProviderPlace actualPlace, final String actualMethodName, final ServiceProviderPlace expectedPlace,
+            final String expectedMethodName, final DiffCheckConfiguration options) throws ReflectiveOperationException {
 
-        Validate.notNull(newResults, "Required: newResults not null");
-        Validate.notNull(ibdoForNewPlace, "Required: ibdoForNewPlace not null");
-        Validate.notNull(newPlace, "Required: newPlace not null");
-        Validate.notNull(newMethodName, "newMethodName: newResults not null");
-        Validate.notNull(oldPlace, "Required: oldPlace not null");
-        Validate.notNull(oldMethodName, "Required: oldMethodName not null");
+        Validate.notNull(actualChildren, "Required: actualChildren not null");
+        Validate.notNull(actualParentIbdo, "Required: actualParentIbdo not null");
+        Validate.notNull(actualPlace, "Required: actualPlace not null");
+        Validate.notNull(actualMethodName, "actualMethodName: actualChildren not null");
+        Validate.notNull(expectedPlace, "Required: expectedPlace not null");
+        Validate.notNull(expectedMethodName, "Required: expectedMethodName not null");
         Validate.notNull(options, "Required: options not null");
 
         // Generate an identifier from the simple class names, e.g. Comparison[ColorPlace==ColourPlace]
-        final String oldPlaceName = oldPlace.getClass().getSimpleName();
-        final String newPlaceName = newPlace.getClass().getSimpleName();
+        final String oldPlaceName = expectedPlace.getClass().getSimpleName();
+        final String newPlaceName = actualPlace.getClass().getSimpleName();
         final String identifier = String.format("Comparison[%s==%s]", oldPlaceName, newPlaceName);
 
         // Get the method to run (e.g. processHeavyDuty)
-        final Method oldProcess = oldPlace.getClass().getDeclaredMethod(oldMethodName, IBaseDataObject.class);
-        final Method newProcess = newPlace.getClass().getDeclaredMethod(newMethodName, IBaseDataObject.class);
+        final Method oldProcess = expectedPlace.getClass().getDeclaredMethod(expectedMethodName, IBaseDataObject.class);
+        final Method newProcess = actualPlace.getClass().getDeclaredMethod(actualMethodName, IBaseDataObject.class);
 
         // Clone the data before running old or new methods
-        final IBaseDataObject ibdoForOldPlace = IBaseDataObjectHelper.clone(ibdoForNewPlace, true);
+        final IBaseDataObject ibdoForOldPlace = IBaseDataObjectHelper.clone(actualParentIbdo);
 
         // Actually run the places to get results
-        final List<IBaseDataObject> oldResults = (List<IBaseDataObject>) oldProcess.invoke(oldPlace, ibdoForOldPlace);
-        newResults.addAll((List<IBaseDataObject>) newProcess.invoke(newPlace, ibdoForNewPlace));
+        final List<IBaseDataObject> oldResults = (List<IBaseDataObject>) oldProcess.invoke(expectedPlace, ibdoForOldPlace);
+        actualChildren.addAll((List<IBaseDataObject>) newProcess.invoke(actualPlace, actualParentIbdo));
 
         // Now generate the 'diff' for the results
-        return checkDifferences(ibdoForOldPlace, ibdoForNewPlace, oldResults, newResults, identifier, options);
+        return checkDifferences(ibdoForOldPlace, actualParentIbdo, oldResults, actualChildren, identifier, options);
     }
 
     /**
      * Given two BDOs and results from two processing place runs, compare them and log any differences.
      * 
-     * @param ibdoForOldPlace likely a cloned object of the 'new' place object
-     * @param ibdoForNewPlace the 'main' BDO that was originally passed in from upstream
-     * @param oldResults from the 'old' run with the 'ibdoForOldPlace' object
-     * @param newResults from the 'new' run with the 'ibdoForNewPlace' object
+     * @param expectedIbdo likely a cloned object of the 'new' place object
+     * @param actualIbdo the 'main' BDO that was originally passed in from upstream
+     * @param expectedChildren from the 'old' run with the 'expectedIbdo' object
+     * @param actualChildren from the 'new' run with the 'actualIbdo' object
      * @param identifier to highlight any differences in logs
      * @param options {@link DiffCheckConfiguration} to configure diffing options
      * @return the string of differences, or null if there aren't any
      */
     @Nullable
-    public static String checkDifferences(final IBaseDataObject ibdoForOldPlace, final IBaseDataObject ibdoForNewPlace,
-            final List<IBaseDataObject> oldResults, final List<IBaseDataObject> newResults, final String identifier,
+    public static String checkDifferences(final IBaseDataObject expectedIbdo, final IBaseDataObject actualIbdo,
+            final List<IBaseDataObject> expectedChildren, final List<IBaseDataObject> actualChildren, final String identifier,
             final DiffCheckConfiguration options) {
-        Validate.notNull(ibdoForOldPlace, "Required: ibdoForOldPlace not null");
-        Validate.notNull(ibdoForNewPlace, "Required: ibdoForNewPlace not null");
-        Validate.notNull(oldResults, "Required: oldResults not null");
-        Validate.notNull(newResults, "Required: newResults not null");
+        Validate.notNull(expectedIbdo, "Required: expectedIbdo not null");
+        Validate.notNull(actualIbdo, "Required: actualIbdo not null");
+        Validate.notNull(expectedChildren, "Required: expectedChildren not null");
+        Validate.notNull(actualChildren, "Required: actualChildren not null");
         Validate.notNull(identifier, "Required: identifier not null");
         Validate.notNull(options, "Required: options not null");
 
         final List<String> parentDifferences = new ArrayList<>();
         final List<String> childDifferences = new ArrayList<>();
 
-        IBaseDataObjectDiffHelper.diff(ibdoForOldPlace, ibdoForNewPlace, parentDifferences, options);
-        IBaseDataObjectDiffHelper.diff(oldResults, newResults, identifier, childDifferences, options);
+        IBaseDataObjectDiffHelper.diff(expectedIbdo, actualIbdo, parentDifferences, options);
+        IBaseDataObjectDiffHelper.diff(expectedChildren, actualChildren, identifier, childDifferences, options);
 
         if (!parentDifferences.isEmpty() || !childDifferences.isEmpty()) {
             final StringBuilder sb = new StringBuilder();
@@ -132,7 +132,7 @@ public class PlaceComparisonHelper {
                 if (i != 0) {
                     sb.append(StringUtils.LF);
                 }
-                sb.append(identifier).append(": PDiff: ");
+                sb.append(identifier).append(": Parent Diff: ");
                 sb.append(parentDifferences.get(i));
             }
             if (!parentDifferences.isEmpty() && !childDifferences.isEmpty()) {
@@ -142,7 +142,7 @@ public class PlaceComparisonHelper {
                 if (i != 0) {
                     sb.append(StringUtils.LF);
                 }
-                sb.append(identifier).append(": CDiff: ");
+                sb.append(identifier).append(": Child Diff: ");
                 sb.append(childDifferences.get(i));
             }
 

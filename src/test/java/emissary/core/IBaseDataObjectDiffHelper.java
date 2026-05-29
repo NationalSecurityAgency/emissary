@@ -23,8 +23,11 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import static emissary.core.constants.IbdoXmlElementNames.BROKEN;
+import static emissary.core.constants.IbdoXmlElementNames.CLASSIFICATION;
+import static emissary.core.constants.IbdoXmlElementNames.PARAMETER;
+
 public class IBaseDataObjectDiffHelper {
-    private static final String DIFF_OUTPUT_FORMAT = "%s%s: %s : %s";
     private static final String DIFF_NOT_NULL_MSG = "Required: differences not null";
     private static final String ID_NOT_NULL_MSG = "Required: identifier not null";
     private static final String ARE_NOT_EQUAL = " are not equal";
@@ -40,96 +43,96 @@ public class IBaseDataObjectDiffHelper {
     /**
      * This method compares two IBaseDataObject's and adds any differences to the provided string list.
      *
-     * @param ibdo1 the first IBaseDataObject to compare.
-     * @param ibdo2 the second IBaseDataObject to compare.
+     * @param expected the first IBaseDataObject to compare.
+     * @param actual the second IBaseDataObject to compare.
      * @param differences the string list differences are to be added to.
      * @param options {@link DiffCheckConfiguration} containing config to specify whether to check data etc.
      */
-    public static void diff(final IBaseDataObject ibdo1, final IBaseDataObject ibdo2,
+    public static void diff(final IBaseDataObject expected, final IBaseDataObject actual,
             final List<String> differences, final DiffCheckConfiguration options) {
-        Validate.notNull(ibdo1, "Required: ibdo1 not null");
-        Validate.notNull(ibdo2, "Required: ibdo2 not null");
+        Validate.notNull(expected, "Required: \"expected\" ibdo not null");
+        Validate.notNull(actual, "Required: \"actual\" ibdo not null");
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
         if (options.checkData()) {
-            final SeekableByteChannelFactory sbcf1 = ibdo1.getChannelFactory();
-            final SeekableByteChannelFactory sbcf2 = ibdo2.getChannelFactory();
+            final SeekableByteChannelFactory sbcf1 = expected.getChannelFactory();
+            final SeekableByteChannelFactory sbcf2 = actual.getChannelFactory();
             diff(sbcf1, sbcf2, IbdoXmlElementNames.DATA, differences);
         }
 
-        diff(ibdo1.getFilename(), ibdo2.getFilename(), IbdoXmlElementNames.FILENAME, differences);
-        diff(ibdo1.shortName(), ibdo2.shortName(), SHORT_NAME, differences);
+        diff(expected.getFilename(), actual.getFilename(), IbdoXmlElementNames.FILENAME, differences);
+        diff(expected.shortName(), actual.shortName(), SHORT_NAME, differences);
         if (options.checkInternalId()) {
-            diff(ibdo1.getInternalId(), ibdo2.getInternalId(), INTERNAL_ID, differences);
+            diff(expected.getInternalId(), actual.getInternalId(), INTERNAL_ID, differences);
         }
-        diff(ibdo1.currentForm(), ibdo2.currentForm(), IbdoXmlElementNames.CURRENT_FORM, differences);
-        diff(ibdo1.getProcessingError(), ibdo2.getProcessingError(), IbdoXmlElementNames.PROCESSING_ERROR, differences);
+        diff(expected.currentForm(), actual.currentForm(), IbdoXmlElementNames.CURRENT_FORM, differences);
+        diff(expected.getProcessingError(), actual.getProcessingError(), IbdoXmlElementNames.PROCESSING_ERROR, differences);
 
         if (options.checkTransformHistory()) {
-            diff(ibdo1.transformHistory(), ibdo2.transformHistory(), TRANSFORM_HISTORY, differences);
+            diff(expected.transformHistory(), actual.transformHistory(), TRANSFORM_HISTORY, differences);
         }
 
-        diff(ibdo1.getFontEncoding(), ibdo2.getFontEncoding(), IbdoXmlElementNames.FONT_ENCODING, differences);
+        diff(expected.getFontEncoding(), actual.getFontEncoding(), IbdoXmlElementNames.FONT_ENCODING, differences);
 
         if (options.performDetailedParameterDiff()) {
-            diff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), IbdoXmlElementNames.PARAMETER, differences);
+            diff(convertMap(expected.getParameters()), convertMap(actual.getParameters()), PARAMETER, differences);
         } else if (options.performKeyValueParameterDiff()) {
-            keyValueMapDiff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), IbdoXmlElementNames.PARAMETER, differences);
+            keyValueMapDiff(convertMap(expected.getParameters()), convertMap(actual.getParameters()), PARAMETER, differences);
         } else {
-            minimalMapDiff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), IbdoXmlElementNames.PARAMETER, differences);
+            minimalMapDiff(convertMap(expected.getParameters()), convertMap(actual.getParameters()), PARAMETER, differences);
         }
 
-        diff(ibdo1.getNumChildren(), ibdo2.getNumChildren(), IbdoXmlElementNames.NUM_CHILDREN, differences);
-        diff(ibdo1.getNumSiblings(), ibdo2.getNumSiblings(), IbdoXmlElementNames.NUM_SIBLINGS, differences);
-        diff(ibdo1.getBirthOrder(), ibdo2.getBirthOrder(), IbdoXmlElementNames.BIRTH_ORDER, differences);
-        diff(ibdo1.getAlternateViews(), ibdo2.getAlternateViews(), IbdoXmlElementNames.VIEW, differences);
-        diff(ibdo1.header(), ibdo2.header(), IbdoXmlElementNames.HEADER, differences);
-        diff(ibdo1.footer(), ibdo2.footer(), IbdoXmlElementNames.FOOTER, differences);
-        diff(ibdo1.getHeaderEncoding(), ibdo2.getHeaderEncoding(), IbdoXmlElementNames.HEADER_ENCODING, differences);
-        diff(ibdo1.getClassification(), ibdo2.getClassification(), IbdoXmlElementNames.CLASSIFICATION, differences);
-        diff(ibdo1.isBroken(), ibdo2.isBroken(), IbdoXmlElementNames.BROKEN, differences);
-        diff(ibdo1.isFileTypeEmpty(), ibdo2.isFileTypeEmpty(), FILE_TYPE_EMPTY, differences);
-        diff(ibdo1.getPriority(), ibdo2.getPriority(), IbdoXmlElementNames.PRIORITY, differences);
+        diff(expected.getNumChildren(), actual.getNumChildren(), IbdoXmlElementNames.NUM_CHILDREN, differences);
+        diff(expected.getNumSiblings(), actual.getNumSiblings(), IbdoXmlElementNames.NUM_SIBLINGS, differences);
+        diff(expected.getBirthOrder(), actual.getBirthOrder(), IbdoXmlElementNames.BIRTH_ORDER, differences);
+        diff(expected.getAlternateViews(), actual.getAlternateViews(), IbdoXmlElementNames.VIEW, differences);
+        diff(expected.header(), actual.header(), IbdoXmlElementNames.HEADER, differences);
+        diff(expected.footer(), actual.footer(), IbdoXmlElementNames.FOOTER, differences);
+        diff(expected.getHeaderEncoding(), actual.getHeaderEncoding(), IbdoXmlElementNames.HEADER_ENCODING, differences);
+        diff(expected.getClassification(), actual.getClassification(), CLASSIFICATION, differences);
+        diff(expected.isBroken(), actual.isBroken(), BROKEN, differences);
+        diff(expected.isFileTypeEmpty(), actual.isFileTypeEmpty(), FILE_TYPE_EMPTY, differences);
+        diff(expected.getPriority(), actual.getPriority(), IbdoXmlElementNames.PRIORITY, differences);
         if (options.checkTimestamp()) {
-            diff(ibdo1.getCreationTimestamp(), ibdo2.getCreationTimestamp(), CREATION_TIMESTAMP, differences);
+            diff(expected.getCreationTimestamp(), actual.getCreationTimestamp(), CREATION_TIMESTAMP, differences);
         }
-        diff(ibdo1.isOutputable(), ibdo2.isOutputable(), IbdoXmlElementNames.OUTPUTABLE, differences);
-        diff(ibdo1.getId(), ibdo2.getId(), IbdoXmlElementNames.ID, differences);
-        diff(ibdo1.getWorkBundleId(), ibdo2.getWorkBundleId(), IbdoXmlElementNames.WORK_BUNDLE_ID, differences);
-        diff(ibdo1.getTransactionId(), ibdo2.getTransactionId(), IbdoXmlElementNames.TRANSACTION_ID, differences);
+        diff(expected.isOutputable(), actual.isOutputable(), IbdoXmlElementNames.OUTPUTABLE, differences);
+        diff(expected.getId(), actual.getId(), IbdoXmlElementNames.ID, differences);
+        diff(expected.getWorkBundleId(), actual.getWorkBundleId(), IbdoXmlElementNames.WORK_BUNDLE_ID, differences);
+        diff(expected.getTransactionId(), actual.getTransactionId(), IbdoXmlElementNames.TRANSACTION_ID, differences);
 
         // Special case - pass through DiffCheckConfiguration options. This also ensures the right method is called (Object vs
         // List<IBDO>)
-        diff(ibdo1.getExtractedRecords(), ibdo2.getExtractedRecords(), EXTRACTED_RECORDS, differences, options);
+        diff(expected.getExtractedRecords(), actual.getExtractedRecords(), EXTRACTED_RECORDS, differences, options);
     }
 
     /**
      * This method compares two lists of IBaseDataObject's and adds any differences to the provided string list.
      *
-     * @param ibdoList1 the first list of IBaseDataObjects to compare.
-     * @param ibdoList2 the second list of IBaseDataObjects to compare.
+     * @param expected the first list of IBaseDataObjects to compare.
+     * @param actual the second list of IBaseDataObjects to compare.
      * @param identifier a string that helps identify the context of comparing these two list of IBaseDataObjects.
      * @param differences the string list differences are to be added to.
      * @param options {@link DiffCheckConfiguration} containing config to specify whether to check data etc.
      */
-    public static void diff(final List<IBaseDataObject> ibdoList1, final List<IBaseDataObject> ibdoList2,
+    public static void diff(final List<IBaseDataObject> expected, final List<IBaseDataObject> actual,
             final String identifier, final List<String> differences, final DiffCheckConfiguration options) {
         Validate.notNull(identifier, ID_NOT_NULL_MSG);
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
-        final int ibdoList1Size = (ibdoList1 == null) ? 0 : ibdoList1.size();
-        final int ibdoList2Size = (ibdoList2 == null) ? 0 : ibdoList2.size();
+        final int expectedSize = (expected == null) ? 0 : expected.size();
+        final int actualSize = (actual == null) ? 0 : actual.size();
 
-        if (ibdoList1Size != ibdoList2Size) {
-            differences.add(String.format("%s%s: 1.s=%s 2.s=%s", identifier, ARE_NOT_EQUAL, ibdoList1Size, ibdoList2Size));
-        } else if (ibdoList1 != null && ibdoList2 != null) {
+        if (expectedSize != actualSize) {
+            differences.add(String.format("%s list size mismatch -> Expected: %d, Actual: %d", identifier, expectedSize, actualSize));
+        } else if (expected != null && actual != null) {
             final List<String> childDifferences = new ArrayList<>();
-            for (int i = 0; i < ibdoList1.size(); i++) {
+            for (int i = 0; i < expected.size(); i++) {
                 childDifferences.clear();
 
-                diff(ibdoList1.get(i), ibdoList2.get(i), childDifferences, options);
+                diff(expected.get(i), actual.get(i), childDifferences, options);
 
-                final String prefix = identifier + " : " + i + " : ";
+                final String prefix = String.format("%s[index %d] : ", identifier, i);
                 while (!childDifferences.isEmpty()) {
                     differences.add(prefix + childDifferences.remove(0)); // NOSONAR Used correctly
                 }
@@ -141,106 +144,107 @@ public class IBaseDataObjectDiffHelper {
      * This method compares two {@link SeekableByteChannelFactory} (SBCF) objects and adds any differences to the provided
      * string list.
      *
-     * @param sbcf1 the first SBCF to compare.
-     * @param sbcf2 the second SBCF to compare.
+     * @param expected the first SBCF to compare.
+     * @param actual the second SBCF to compare.
      * @param identifier an identifier to describe the context of this SBCF comparison.
      * @param differences the string list differences are to be added to.
      */
-    public static void diff(final SeekableByteChannelFactory sbcf1, final SeekableByteChannelFactory sbcf2,
+    public static void diff(final SeekableByteChannelFactory expected, final SeekableByteChannelFactory actual,
             final String identifier, final List<String> differences) {
         Validate.notNull(identifier, ID_NOT_NULL_MSG);
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
-        if (sbcf1 != null && sbcf2 != null) {
-            try (SeekableByteChannel sbc1 = sbcf1.create();
-                    SeekableByteChannel sbc2 = sbcf2.create();
+        if (expected != null && actual != null) {
+            try (SeekableByteChannel sbc1 = expected.create();
+                    SeekableByteChannel sbc2 = actual.create();
                     InputStream is1 = Channels.newInputStream(sbc1);
                     InputStream is2 = Channels.newInputStream(sbc2)) {
                 if (!IOUtils.contentEquals(is1, is2)) {
-                    differences.add(String.format("%s not equal. 1.cs=%s 2.cs=%s",
+                    differences.add(String.format("%s content mismatch -> Expected size: %d, Actual size: %d",
                             identifier, sbc1.size(), sbc2.size()));
                 }
             } catch (IOException e) {
-                differences.add(String.format("Failed to compare %s: %s", identifier, e.getMessage()));
+                differences.add(String.format("IO Error comparing %s: %s", identifier, e.getMessage()));
             }
-        } else if (sbcf1 == null && sbcf2 == null) {
+        } else if (expected == null && actual == null) {
             // Do nothing as they are considered equal.
         } else {
-            differences.add(String.format("%s not equal. sbcf1=%s sbcf2=%s", identifier, sbcf1, sbcf2));
+            differences.add(String.format("%s not equal. Expected SeekableByteChannelFactory=%s Actual SeekableByteChannelFactory=%s", identifier,
+                    expected, actual));
         }
     }
 
     /**
      * This method compares two Objects and adds any differences to the provided string list.
      *
-     * @param object1 the first Object to compare.
-     * @param object2 the second Object to compare.
+     * @param expected the first Object to compare.
+     * @param actual the second Object to compare.
      * @param identifier an identifier to describe the context of this Object comparison.
      * @param differences the string list differences are to be added to.
      */
-    public static void diff(final Object object1, final Object object2, final String identifier,
+    public static void diff(final Object expected, final Object actual, final String identifier,
             final List<String> differences) {
         Validate.notNull(identifier, ID_NOT_NULL_MSG);
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
-        if (!Objects.deepEquals(object1, object2)) {
-            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL, object1, object2));
+        if (!Objects.deepEquals(expected, actual)) {
+            differences.add(String.format("%s%s -> Expected: %s, Actual: %s", identifier, ARE_NOT_EQUAL, expected, actual));
         }
     }
 
     /**
      * This method compares two integers and adds any differences to the provided string list.
      *
-     * @param integer1 the first integer to compare.
-     * @param integer2 the second integer to compare.
+     * @param expected the first integer to compare.
+     * @param actual the second integer to compare.
      * @param identifier an identifier to describe the context of this integer comparison.
      * @param differences the string list differences are to be added to.
      */
-    public static void diff(final int integer1, final int integer2, final String identifier,
+    public static void diff(final int expected, final int actual, final String identifier,
             final List<String> differences) {
         Validate.notNull(identifier, ID_NOT_NULL_MSG);
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
-        if (integer1 != integer2) {
-            differences.add(identifier + ARE_NOT_EQUAL);
+        if (expected != actual) {
+            differences.add(String.format("%s value mismatch -> Expected: %d, Actual: %d", identifier, expected, actual));
         }
     }
 
     /**
      * This method compares two booleans and adds any differences to the provided string list.
      *
-     * @param boolean1 the first boolean to compare.
-     * @param boolean2 the second boolean to compare.
+     * @param expected the first boolean to compare.
+     * @param actual the second boolean to compare.
      * @param identifier an identifier to describe the context of this boolean comparison.
      * @param differences the string list differences are to be added to.
      */
-    public static void diff(final boolean boolean1, final boolean boolean2, final String identifier,
+    public static void diff(final boolean expected, final boolean actual, final String identifier,
             final List<String> differences) {
         Validate.notNull(identifier, ID_NOT_NULL_MSG);
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
-        if (boolean1 != boolean2) {
-            differences.add(identifier + ARE_NOT_EQUAL);
+        if (expected != actual) {
+            differences.add(String.format("%s boolean mismatch -> Expected: %b, Actual: %b", identifier, expected, actual));
         }
     }
 
     /**
      * This method compares two maps and adds any differences to the provided string list.
      *
-     * @param map1 the first map to compare.
-     * @param map2 the second map to compare.
+     * @param expected the first map to compare.
+     * @param actual the second map to compare.
      * @param identifier an identifier to describe the context of this map comparison.
      * @param differences the string list of differences to be added to.
      */
-    public static void diff(final Map<String, byte[]> map1, final Map<String, byte[]> map2, final String identifier,
+    public static void diff(final Map<String, byte[]> expected, final Map<String, byte[]> actual, final String identifier,
             final List<String> differences) {
-        Validate.notNull(map1, "Required: map1 not null!");
-        Validate.notNull(map2, "Required: map2 not null!");
+        Validate.notNull(expected, "Required: \"expected\" map not null!");
+        Validate.notNull(actual, "Required: \"actual\" map not null!");
         Validate.notNull(identifier, ID_NOT_NULL_MSG);
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
-        if (map1.size() != map2.size() ||
-                !map1.entrySet().stream().allMatch(e -> Arrays.equals(e.getValue(), map2.get(e.getKey())))) {
+        if (expected.size() != actual.size() ||
+                !expected.entrySet().stream().allMatch(e -> Arrays.equals(e.getValue(), actual.get(e.getKey())))) {
             differences.add(identifier + ARE_NOT_EQUAL);
         }
     }
@@ -248,54 +252,75 @@ public class IBaseDataObjectDiffHelper {
     /**
      * This method compares two maps and adds only the key/value pairs that differ to the provided string list.
      * 
-     * @param parameter1 the first map to compare.
-     * @param parameter2 the second map to compare.
+     * @param expected the first map to compare.
+     * @param actual the second map to compare.
      * @param identifier an identifier to describe the context of this map comparison.
      * @param differences the string list of differences to be added to.
      */
-    public static void keyValueMapDiff(final Map<String, Collection<String>> parameter1, final Map<String, Collection<String>> parameter2,
+    public static void keyValueMapDiff(final Map<String, Collection<String>> expected, final Map<String, Collection<String>> actual,
             final String identifier, final List<String> differences) {
-        final Set<Entry<String, Collection<String>>> p1Entries = new HashSet<>(parameter1.entrySet());
-        final Set<Entry<String, Collection<String>>> p2Entries = new HashSet<>(parameter2.entrySet());
-        final Map<String, Collection<String>> p1 = new HashMap<>(parameter1);
-        final Map<String, Collection<String>> p2 = new HashMap<>(parameter2);
+        Map<String, Collection<String>> missingInActual = new HashMap<>(expected);
+        Map<String, Collection<String>> extraInActual = new HashMap<>(actual);
+        Map<String, String> mismatchedValues = new HashMap<>();
 
-        for (Entry<String, Collection<String>> p1Entry : p1Entries) {
-            if (p2Entries.contains(p1Entry)) {
-                p1.remove(p1Entry.getKey());
-                p2.remove(p1Entry.getKey());
+        for (Entry<String, Collection<String>> entry : expected.entrySet()) {
+            String key = entry.getKey();
+            if (actual.containsKey(key)) {
+                Collection<String> expectedColl = entry.getValue();
+                Collection<String> actualColl = actual.get(key);
+
+                boolean areEqual = (expectedColl == null && actualColl == null) ||
+                        (expectedColl != null && actualColl != null &&
+                                new ArrayList<>(expectedColl).equals(new ArrayList<>(actualColl)));
+
+                if (!areEqual) {
+                    mismatchedValues.put(key, String.format("Expected: %s, Actual: %s", expectedColl, actualColl));
+                }
+
+                missingInActual.remove(key);
+                extraInActual.remove(key);
             }
         }
 
-        if (!p1.isEmpty() || !p2.isEmpty()) {
-            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL + "-Differing Keys/Values", p1, p2));
+        if (!missingInActual.isEmpty() || !extraInActual.isEmpty() || !mismatchedValues.isEmpty()) {
+            StringBuilder sb = new StringBuilder(identifier).append(" map differences:");
+            if (!missingInActual.isEmpty()) {
+                sb.append(" | Missing keys: ").append(missingInActual.keySet());
+            }
+            if (!extraInActual.isEmpty()) {
+                sb.append(" | Unexpected keys: ").append(extraInActual.keySet());
+            }
+            if (!mismatchedValues.isEmpty()) {
+                sb.append(" | Value mismatches: ").append(mismatchedValues);
+            }
+            differences.add(sb.toString());
         }
     }
 
     /**
      * This method compares two maps and adds only the keys that differ to the provided string list.
      * 
-     * @param parameter1 the first map to compare.
-     * @param parameter2 the second map to compare.
+     * @param expected the first map to compare.
+     * @param actual the second map to compare.
      * @param identifier an identifier to describe the context of this map comparison.
      * @param differences the string list of differences to be added to.
      */
-    public static void minimalMapDiff(final Map<String, Collection<String>> parameter1, final Map<String, Collection<String>> parameter2,
+    public static void minimalMapDiff(final Map<String, Collection<String>> expected, final Map<String, Collection<String>> actual,
             final String identifier, final List<String> differences) {
-        final Set<Entry<String, Collection<String>>> p1Entries = new HashSet<>(parameter1.entrySet());
-        final Set<Entry<String, Collection<String>>> p2Entries = new HashSet<>(parameter2.entrySet());
-        final Set<String> p1Keys = new TreeSet<>(parameter1.keySet());
-        final Set<String> p2Keys = new TreeSet<>(parameter2.keySet());
+        final Set<Entry<String, Collection<String>>> expectedEntries = new HashSet<>(expected.entrySet());
+        final Set<Entry<String, Collection<String>>> actualEntries = new HashSet<>(actual.entrySet());
+        final Set<String> expectedKeys = new TreeSet<>(expected.keySet());
+        final Set<String> actualKeys = new TreeSet<>(actual.keySet());
 
-        for (Entry<String, Collection<String>> p1Entry : p1Entries) {
-            if (p2Entries.contains(p1Entry)) {
-                p1Keys.remove(p1Entry.getKey());
-                p2Keys.remove(p1Entry.getKey());
+        for (Entry<String, Collection<String>> p1Entry : expectedEntries) {
+            if (actualEntries.contains(p1Entry)) {
+                expectedKeys.remove(p1Entry.getKey());
+                actualKeys.remove(p1Entry.getKey());
             }
         }
 
-        if (!p1Keys.isEmpty() || !p2Keys.isEmpty()) {
-            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL + "-Differing Keys", p1Keys, p2Keys));
+        if (!expectedKeys.isEmpty() || !actualKeys.isEmpty()) {
+            differences.add(String.format("%s key set mismatch -> Expected: %s, Actual: %s", identifier, expectedKeys, actualKeys));
         }
     }
 

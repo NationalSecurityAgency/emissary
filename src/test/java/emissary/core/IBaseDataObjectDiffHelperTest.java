@@ -121,13 +121,15 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
     @Test
     void testDiffChannelFactory() {
         ibdo2.setData(new byte[1]);
-        verifyDiff(List.of("data not equal. sbcf1=null sbcf2=emissary.core.channels.ImmutableChannelFactory$ImmutableChannelFactoryImpl@xxxxxxxx"),
-                List.of("data not equal. sbcf1=emissary.core.channels.ImmutableChannelFactory$ImmutableChannelFactoryImpl@xxxxxxxx sbcf2=null"),
+        verifyDiff(List.of(
+                "data not equal. Expected SeekableByteChannelFactory=null Actual SeekableByteChannelFactory=emissary.core.channels.ImmutableChannelFactory$ImmutableChannelFactoryImpl@xxxxxxxx"),
+                List.of("data not equal. Expected SeekableByteChannelFactory=emissary.core.channels.ImmutableChannelFactory$ImmutableChannelFactoryImpl@xxxxxxxx Actual SeekableByteChannelFactory=null"),
                 CHECK_DATA);
 
         ibdo1.setChannelFactory(InMemoryChannelFactory.create("0123456789".getBytes(StandardCharsets.US_ASCII)));
         ibdo2.setChannelFactory(InMemoryChannelFactory.create("9876543210".getBytes(StandardCharsets.US_ASCII)));
-        verifyDiff(List.of("data not equal. 1.cs=10 2.cs=10"), List.of("data not equal. 1.cs=10 2.cs=10"), CHECK_DATA);
+        verifyDiff(List.of("data content mismatch -> Expected size: 10, Actual size: 10"),
+                List.of("data content mismatch -> Expected size: 10, Actual size: 10"), CHECK_DATA);
 
         ibdo2.setChannelFactory(new SeekableByteChannelFactory() {
             @Override
@@ -151,8 +153,8 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
             }
         });
 
-        verifyDiff(List.of("Failed to compare data: Test SBC that always throws IOException!"),
-                List.of("Failed to compare data: Test SBC that always throws IOException!"), CHECK_DATA);
+        verifyDiff(List.of("IO Error comparing data: Test SBC that always throws IOException!"),
+                List.of("IO Error comparing data: Test SBC that always throws IOException!"), CHECK_DATA);
     }
 
     @Test
@@ -160,7 +162,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         ibdo1.pushCurrentForm("AAA");
         ibdo1.pushCurrentForm("BBB");
         ibdo1.pushCurrentForm("CCC");
-        verifyDiff(List.of("currentForm are not equal: CCC : "), List.of("currentForm are not equal:  : CCC"));
+        verifyDiff(List.of("currentForm are not equal -> Expected: CCC, Actual: "), List.of("currentForm are not equal -> Expected: , Actual: CCC"));
     }
 
     @Test
@@ -168,7 +170,8 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         ibdo1.appendTransformHistory("AAA", false);
         ibdo1.appendTransformHistory("BBB", true);
         final DiffCheckConfiguration checkTransformHistory = DiffCheckConfiguration.configure().enableTransformHistory().build();
-        verifyDiff(List.of("transformHistory are not equal: [AAA] : []"), List.of("transformHistory are not equal: [] : [AAA]"),
+        verifyDiff(List.of("transformHistory are not equal -> Expected: [AAA], Actual: []"),
+                List.of("transformHistory are not equal -> Expected: [], Actual: [AAA]"),
                 checkTransformHistory);
     }
 
@@ -180,13 +183,13 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         ibdo1.putParameter("STRING", "string");
         ibdo1.putParameter("LIST", Arrays.asList("first", "second", "third"));
 
-        verifyDiff(List.of("meta are not equal-Differing Keys: [LIST, STRING] : []"),
-                List.of("meta are not equal-Differing Keys: [] : [LIST, STRING]"));
-        verifyDiff(List.of("meta are not equal-Differing Keys/Values: {LIST=[first, second, third], STRING=[string]} : {}"),
-                List.of("meta are not equal-Differing Keys/Values: {} : {LIST=[first, second, third], STRING=[string]}"),
+        verifyDiff(List.of("meta key set mismatch -> Expected: [LIST, STRING], Actual: []"),
+                List.of("meta key set mismatch -> Expected: [], Actual: [LIST, STRING]"));
+        verifyDiff(List.of("meta map differences: | Missing keys: [LIST, STRING]"),
+                List.of("meta map differences: | Unexpected keys: [LIST, STRING]"),
                 checkKeyValueDiffParameter);
-        verifyDiff(List.of("meta are not equal: {LIST=[first, second, third], STRING=[string]} : {}"),
-                List.of("meta are not equal: {} : {LIST=[first, second, third], STRING=[string]}"), checkDetailedDiffParameter);
+        verifyDiff(List.of("meta are not equal -> Expected: {LIST=[first, second, third], STRING=[string]}, Actual: {}"),
+                List.of("meta are not equal -> Expected: {}, Actual: {LIST=[first, second, third], STRING=[string]}"), checkDetailedDiffParameter);
 
         ibdo1.clearParameters();
         ibdo2.clearParameters();
@@ -194,11 +197,12 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         ibdo1.putParameter("Integer", Integer.valueOf(1));
         ibdo2.putParameter("STRING", "string");
 
-        verifyDiff(List.of("meta are not equal-Differing Keys: [Integer] : []"), List.of("meta are not equal-Differing Keys: [] : [Integer]"));
-        verifyDiff(List.of("meta are not equal-Differing Keys/Values: {Integer=[1]} : {}"),
-                List.of("meta are not equal-Differing Keys/Values: {} : {Integer=[1]}"), checkKeyValueDiffParameter);
-        verifyDiff(List.of("meta are not equal: {Integer=[1], STRING=[string]} : {STRING=[string]}"),
-                List.of("meta are not equal: {STRING=[string]} : {Integer=[1], STRING=[string]}"), checkDetailedDiffParameter);
+        verifyDiff(List.of("meta key set mismatch -> Expected: [Integer], Actual: []"),
+                List.of("meta key set mismatch -> Expected: [], Actual: [Integer]"));
+        verifyDiff(List.of("meta map differences: | Missing keys: [Integer]"),
+                List.of("meta map differences: | Unexpected keys: [Integer]"), checkKeyValueDiffParameter);
+        verifyDiff(List.of("meta are not equal -> Expected: {Integer=[1], STRING=[string]}, Actual: {STRING=[string]}"),
+                List.of("meta are not equal -> Expected: {STRING=[string]}, Actual: {Integer=[1], STRING=[string]}"), checkDetailedDiffParameter);
 
         ibdo1.clearParameters();
         ibdo2.clearParameters();
@@ -206,11 +210,12 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         ibdo2.putParameter("STRING", "string");
         ibdo2.putParameter("Integer", Integer.valueOf(1));
 
-        verifyDiff(List.of("meta are not equal-Differing Keys: [] : [Integer]"), List.of("meta are not equal-Differing Keys: [Integer] : []"));
-        verifyDiff(List.of("meta are not equal-Differing Keys/Values: {} : {Integer=[1]}"),
-                List.of("meta are not equal-Differing Keys/Values: {Integer=[1]} : {}"), checkKeyValueDiffParameter);
-        verifyDiff(List.of("meta are not equal: {STRING=[string]} : {Integer=[1], STRING=[string]}"),
-                List.of("meta are not equal: {Integer=[1], STRING=[string]} : {STRING=[string]}"), checkDetailedDiffParameter);
+        verifyDiff(List.of("meta key set mismatch -> Expected: [], Actual: [Integer]"),
+                List.of("meta key set mismatch -> Expected: [Integer], Actual: []"));
+        verifyDiff(List.of("meta map differences: | Unexpected keys: [Integer]"),
+                List.of("meta map differences: | Missing keys: [Integer]"), checkKeyValueDiffParameter);
+        verifyDiff(List.of("meta are not equal -> Expected: {STRING=[string]}, Actual: {Integer=[1], STRING=[string]}"),
+                List.of("meta are not equal -> Expected: {Integer=[1], STRING=[string]}, Actual: {STRING=[string]}"), checkDetailedDiffParameter);
 
         ibdo1.clearParameters();
         ibdo2.clearParameters();
@@ -238,7 +243,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
     @Test
     void testDiffPriority() {
         ibdo1.setPriority(13);
-        verifyDiff(List.of("priority are not equal"), List.of("priority are not equal"));
+        verifyDiff(List.of("priority value mismatch -> Expected: 13, Actual: 10"), List.of("priority value mismatch -> Expected: 10, Actual: 13"));
     }
 
     @Test
@@ -246,8 +251,8 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         ibdo1.setCreationTimestamp(Instant.ofEpochSecond(1234567890));
         ibdo2.setCreationTimestamp(Instant.ofEpochSecond(1234567891));
         final DiffCheckConfiguration options = DiffCheckConfiguration.configure().enableTimestamp().build();
-        verifyDiff(List.of("creationTimestamp are not equal: 2009-02-13T23:31:30Z : 2009-02-13T23:31:31Z"),
-                List.of("creationTimestamp are not equal: 2009-02-13T23:31:31Z : 2009-02-13T23:31:30Z"), options);
+        verifyDiff(List.of("creationTimestamp are not equal -> Expected: 2009-02-13T23:31:30Z, Actual: 2009-02-13T23:31:31Z"),
+                List.of("creationTimestamp are not equal -> Expected: 2009-02-13T23:31:31Z, Actual: 2009-02-13T23:31:30Z"), options);
     }
 
     @Test
@@ -255,107 +260,121 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         ibdo1.addExtractedRecord(new BaseDataObject());
         ibdo1.addExtractedRecord(new BaseDataObject());
         ibdo1.addExtractedRecord(new BaseDataObject());
-        verifyDiff(List.of("extractedRecords are not equal: 1.s=3 2.s=0"), List.of("extractedRecords are not equal: 1.s=0 2.s=3"));
+        verifyDiff(List.of("extractedRecords list size mismatch -> Expected: 3, Actual: 0"),
+                List.of("extractedRecords list size mismatch -> Expected: 0, Actual: 3"));
     }
 
     @Test
     void testDiffFilename() {
         ibdo1.setFilename("filename");
-        verifyDiff(List.of("filename are not equal: filename : null", "shortName are not equal: filename : null"),
-                List.of("filename are not equal: null : filename", "shortName are not equal: null : filename"));
+        verifyDiff(
+                List.of("filename are not equal -> Expected: filename, Actual: null", "shortName are not equal -> Expected: filename, Actual: null"),
+                List.of("filename are not equal -> Expected: null, Actual: filename", "shortName are not equal -> Expected: null, Actual: filename"));
     }
 
     @Test
     void testDiffInternalId() {
         final DiffCheckConfiguration options = DiffCheckConfiguration.configure().enableInternalId().build();
-        verifyDiff(List.of("internalId are not equal: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx : xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"),
-                List.of("internalId are not equal: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx : xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"),
+        verifyDiff(
+                List.of("internalId are not equal -> Expected: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx, Actual: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"),
+                List.of("internalId are not equal -> Expected: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx, Actual: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"),
                 options);
     }
 
     @Test
     void testDiffProcessingError() {
         ibdo1.addProcessingError("processing_error");
-        verifyDiff(List.of("processingError are not equal: processing_error\n : null"),
-                List.of("processingError are not equal: null : processing_error\n"));
+        verifyDiff(List.of("processingError are not equal -> Expected: processing_error\n, Actual: null"),
+                List.of("processingError are not equal -> Expected: null, Actual: processing_error\n"));
     }
 
     @Test
     void testDiffFontEncoding() {
         ibdo1.setFontEncoding("font_encoding");
-        verifyDiff(List.of("fontEncoding are not equal: font_encoding : null"), List.of("fontEncoding are not equal: null : font_encoding"));
+        verifyDiff(List.of("fontEncoding are not equal -> Expected: font_encoding, Actual: null"),
+                List.of("fontEncoding are not equal -> Expected: null, Actual: font_encoding"));
     }
 
     @Test
     void testDiffNumChildren() {
         ibdo1.setNumChildren(13);
-        verifyDiff(List.of("numChildren are not equal"), List.of("numChildren are not equal"));
+        verifyDiff(List.of("numChildren value mismatch -> Expected: 13, Actual: 0"),
+                List.of("numChildren value mismatch -> Expected: 0, Actual: 13"));
     }
 
     @Test
     void testDiffNumSiblings() {
         ibdo1.setNumSiblings(13);
-        verifyDiff(List.of("numSiblings are not equal"), List.of("numSiblings are not equal"));
+        verifyDiff(List.of("numSiblings value mismatch -> Expected: 13, Actual: 0"),
+                List.of("numSiblings value mismatch -> Expected: 0, Actual: 13"));
     }
 
     @Test
     void testDiffBirthOrder() {
         ibdo1.setBirthOrder(13);
-        verifyDiff(List.of("birthOrder are not equal"), List.of("birthOrder are not equal"));
+        verifyDiff(List.of("birthOrder value mismatch -> Expected: 13, Actual: 0"), List.of("birthOrder value mismatch -> Expected: 0, Actual: 13"));
     }
 
     @Test
     void testDiffHeader() {
         ibdo1.setHeader("header".getBytes(StandardCharsets.US_ASCII));
-        verifyDiff(List.of("header are not equal: [B@xxxxxxxx : null"), List.of("header are not equal: null : [B@xxxxxxxx"));
+        verifyDiff(List.of("header are not equal -> Expected: [B@xxxxxxxx, Actual: null"),
+                List.of("header are not equal -> Expected: null, Actual: [B@xxxxxxxx"));
     }
 
     @Test
     void testDiffFooter() {
         ibdo1.setFooter("footer".getBytes(StandardCharsets.US_ASCII));
-        verifyDiff(List.of("footer are not equal: [B@xxxxxxxx : null"), List.of("footer are not equal: null : [B@xxxxxxxx"));
+        verifyDiff(List.of("footer are not equal -> Expected: [B@xxxxxxxx, Actual: null"),
+                List.of("footer are not equal -> Expected: null, Actual: [B@xxxxxxxx"));
     }
 
     @Test
     void testDiffHeaderEncoding() {
         ibdo1.setHeaderEncoding("header_encoding");
-        verifyDiff(List.of("headerEncoding are not equal: header_encoding : null"), List.of("headerEncoding are not equal: null : header_encoding"));
+        verifyDiff(List.of("headerEncoding are not equal -> Expected: header_encoding, Actual: null"),
+                List.of("headerEncoding are not equal -> Expected: null, Actual: header_encoding"));
     }
 
     @Test
     void testDiffClassification() {
         ibdo1.setClassification("classification");
-        verifyDiff(List.of("classification are not equal: classification : null"), List.of("classification are not equal: null : classification"));
+        verifyDiff(List.of("classification are not equal -> Expected: classification, Actual: null"),
+                List.of("classification are not equal -> Expected: null, Actual: classification"));
     }
 
     @Test
     void testDiffBroken() {
         ibdo1.setBroken("broken");
-        verifyDiff(List.of("broken are not equal"), List.of("broken are not equal"));
+        verifyDiff(List.of("broken boolean mismatch -> Expected: true, Actual: false"),
+                List.of("broken boolean mismatch -> Expected: false, Actual: true"));
     }
 
     @Test
     void testDiffOutputable() {
         ibdo1.setOutputable(false);
-        verifyDiff(List.of("outputable are not equal"), List.of("outputable are not equal"));
+        verifyDiff(List.of("outputable boolean mismatch -> Expected: false, Actual: true"),
+                List.of("outputable boolean mismatch -> Expected: true, Actual: false"));
     }
 
     @Test
     void testDiffId() {
         ibdo1.setId("id");
-        verifyDiff(List.of("id are not equal: id : null"), List.of("id are not equal: null : id"));
+        verifyDiff(List.of("id are not equal -> Expected: id, Actual: null"), List.of("id are not equal -> Expected: null, Actual: id"));
     }
 
     @Test
     void testDiffWorkBundleId() {
         ibdo1.setWorkBundleId("workbundle_id");
-        verifyDiff(List.of("workBundleId are not equal: workbundle_id : null"), List.of("workBundleId are not equal: null : workbundle_id"));
+        verifyDiff(List.of("workBundleId are not equal -> Expected: workbundle_id, Actual: null"),
+                List.of("workBundleId are not equal -> Expected: null, Actual: workbundle_id"));
     }
 
     @Test
     void testDiffTransactionId() {
         ibdo1.setTransactionId("transaction_id");
-        verifyDiff(List.of("transactionId are not equal: transaction_id : null"), List.of("transactionId are not equal: null : transaction_id"));
+        verifyDiff(List.of("transactionId are not equal -> Expected: transaction_id, Actual: null"),
+                List.of("transactionId are not equal -> Expected: null, Actual: transaction_id"));
     }
 
     @Test
@@ -365,11 +384,11 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         verifyDiffList(Collections.emptyList(), new ArrayList<>(), null);
         verifyDiffList(Collections.emptyList(), null, new ArrayList<>());
         verifyDiffList(Collections.emptyList(), ibdoList1, ibdoList1);
-        verifyDiffList(List.of("test are not equal: 1.s=2 2.s=1"), ibdoList3, ibdoList2);
-        verifyDiffList(List.of("test are not equal: 1.s=1 2.s=2"), ibdoList1, ibdoList3);
+        verifyDiffList(List.of("test list size mismatch -> Expected: 2, Actual: 1"), ibdoList3, ibdoList2);
+        verifyDiffList(List.of("test list size mismatch -> Expected: 1, Actual: 2"), ibdoList1, ibdoList3);
 
         ibdo2.setClassification("classification");
-        verifyDiffList(List.of("test : 0 : classification are not equal: null : classification"), ibdoList1, ibdoList2);
+        verifyDiffList(List.of("test[index 0] : classification are not equal -> Expected: null, Actual: classification"), ibdoList1, ibdoList2);
     }
 
     @Test
