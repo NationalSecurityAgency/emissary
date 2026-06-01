@@ -20,4 +20,4 @@ updates:
     schedule:
       interval: "weekly"
     labels:
-      - "CI/CD"      
+      - "CI/CD"
