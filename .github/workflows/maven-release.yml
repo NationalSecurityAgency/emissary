@@ -72,7 +72,7 @@ jobs:
         shell: bash
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Get the version
         run: echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' | awk -v release_suffix="$IN_RELEASE_SUFFIX" -F- '{print ""$1""release_suffix}')" >> "$GITHUB_ENV"
@@ -95,7 +95,7 @@ jobs:
         run: echo "RELEASE_VERSION=${{ needs.get_version.outputs.RELEASE_VERSION }}" >> "$GITHUB_ENV"
 
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v5
@@ -166,7 +166,7 @@ jobs:
         shell: bash
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up JDK
         uses: actions/setup-java@v5
