@@ -22,6 +22,9 @@ class NavActionTest {
         navItems.put("Item3", "https://testing2.com");
         navItems.put("Item4", "javascript:alert(document.cookie)");
         navItems.put("Item5", "ftp://testing");
+        navItems.put("Item6", "mailto:test@example.com");
+        navItems.put("Item7", "./relative/path");
+        navItems.put("Item8", "disallowed/relative/path");
 
         EmissaryNav nav = new EmissaryNav();
 
@@ -30,13 +33,16 @@ class NavActionTest {
         assertTrue(CollectionUtils.isEmpty(nav.getNavItems()));
 
         nav.setNavItems(navItems);
-        assertEquals(3, nav.getNavItems().size());
+        assertEquals(4, nav.getNavItems().size());
         assertEquals("Item1", nav.getNavItems().get(0).getDisplay());
-        assertEquals("/path/to/resource", nav.getNavItems().get(0).getLink());
+        // TODO: Revert this test to "/path/to/resource" NavAction.java:91 is removed
+        assertEquals("./path/to/resource", nav.getNavItems().get(0).getLink());
         assertEquals("Item2", nav.getNavItems().get(1).getDisplay());
         assertEquals("http://testing1.com", nav.getNavItems().get(1).getLink());
         assertEquals("Item3", nav.getNavItems().get(2).getDisplay());
         assertEquals("https://testing2.com", nav.getNavItems().get(2).getLink());
+        assertEquals("Item7", nav.getNavItems().get(3).getDisplay());
+        assertEquals("./relative/path", nav.getNavItems().get(3).getLink());
     }
 
 }

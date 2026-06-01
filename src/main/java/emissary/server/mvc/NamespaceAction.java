@@ -2,6 +2,7 @@ package emissary.server.mvc;
 
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
+import emissary.server.util.BaseResourcePathUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
@@ -28,6 +29,8 @@ public class NamespaceAction {
     public Map<String, Object> getNamespace(@Context HttpServletRequest request) {
         Map<String, Object> model = new HashMap<>();
         Set<NamespaceInfo> namespaces = new LinkedHashSet<>();
+
+        model.put("baseResourcePath", BaseResourcePathUtil.getBaseResourcePath());
 
         int rowCount = 0;
         for (String key : Namespace.keySet()) {

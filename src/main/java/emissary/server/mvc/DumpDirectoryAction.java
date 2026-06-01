@@ -9,6 +9,7 @@ import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.server.mvc.adapters.DirectoryAdapter;
 import emissary.server.mvc.adapters.RequestUtil;
+import emissary.server.util.BaseResourcePathUtil;
 
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,6 +44,8 @@ public class DumpDirectoryAction {
         List<String> errors = new ArrayList<>();
 
         String cleanTargetDirectory = RequestUtil.sanitizeParameter(targetDir);
+
+        map.put("baseResourcePath", BaseResourcePathUtil.getBaseResourcePath());
 
         // get top level
         if (cleanTargetDirectory == null) {

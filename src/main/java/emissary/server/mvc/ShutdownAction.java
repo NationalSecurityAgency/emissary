@@ -1,5 +1,7 @@
 package emissary.server.mvc;
 
+import emissary.server.util.BaseResourcePathUtil;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -22,6 +24,7 @@ public class ShutdownAction {
     public Map<String, String> notifyShutdown(@Context HttpServletRequest request) {
         Map<String, String> model = new HashMap<>();
         model.put("message", "Starting shutdown...");
+        model.put("baseResourcePath", BaseResourcePathUtil.getBaseResourcePath());
         return model;
     }
 

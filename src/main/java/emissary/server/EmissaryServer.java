@@ -25,6 +25,7 @@ import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
 import emissary.server.mvc.ThreadDumpAction;
 import emissary.server.mvc.ThreadDumpAction.ThreadDumpInfo;
+import emissary.server.util.BaseResourcePathUtil;
 import emissary.spi.SPILoader;
 
 import ch.qos.logback.classic.ViewStatusMessagesServlet;
@@ -138,6 +139,10 @@ public class EmissaryServer {
         return cmd;
     }
 
+    public String getBaseResourcePath() {
+        return BaseResourcePathUtil.getBaseResourcePath();
+    }
+
     /**
      * Creates and starts a server that is bound into the local Namespace using DEFAULT_NAMESPACE_NAME and returned
      *
@@ -149,19 +154,21 @@ public class EmissaryServer {
             // Resource.setDefaultUseCaches(false);
 
             // needs to be loaded first into the server as it setups up Emissary stuff
+            String baseResourcePath = BaseResourcePathUtil.getBaseResourcePath();
+
             ContextHandler emissaryHandler = buildEmissaryHandler();
             // TODO: rework this, no need for it be set with a context path but if this
             // is left out, it matches / and nothing works correctly
-            emissaryHandler.setContextPath("/idontreallyservecontentnowdoi");
+            emissaryHandler.setContextPath(baseResourcePath + "/idontreallyservecontentnowdoi");
             ContextHandler lbConfigHandler = buildLogbackConfigHandler();
-            lbConfigHandler.setContextPath("/lbConfig");
+            lbConfigHandler.setContextPath(baseResourcePath + "/lbConfig");
             ContextHandler apiHandler = buildApiHandler();
-            apiHandler.setContextPath("/api");
+            apiHandler.setContextPath(baseResourcePath + "/api");
             ContextHandler mvcHandler = buildMvcHandler();
-            mvcHandler.setContextPath("/emissary");
+            mvcHandler.setContextPath(baseResourcePath + "/emissary");
             // needs to be loaded last into the server so other contexts can match or fall through
             ContextHandler staticHandler = buildStaticHandler();
-            staticHandler.setContextPath("/");
+            staticHandler.setContextPath(baseResourcePath + "/");
 
             LoginService loginService = buildLoginService();
             ConstraintSecurityHandler security = buildSecurityHandler();
@@ -179,6 +186,7 @@ public class EmissaryServer {
             handlers.addHandler(emissaryHandler); // not secured, no endpoints and must be loaded first
             handlers.addHandler(security);
 
+
             Server configuredServer = configureServer();
             configuredServer.setHandler(handlers);
             configuredServer.addBean(loginService);
@@ -193,7 +201,7 @@ public class EmissaryServer {
             configuredServer.start();
             // server.join(); // don't join so we can shutdown
 
-            String serverLocation = cmd.getScheme() + "://" + cmd.getHost() + ":" + cmd.getPort();
+            String serverLocation = cmd.getScheme() + "://" + cmd.getHost() + ":" + cmd.getPort() + BaseResourcePathUtil.getBaseResourcePath();
 
             // write out env.sh file here
             Path envsh = Path.of(ConfigUtil.getProjectBase() + File.separator + "env.sh");

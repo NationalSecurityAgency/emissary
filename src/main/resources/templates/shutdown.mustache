@@ -2,8 +2,9 @@
 <html lang="en">
   <head>
     <title>Shutdown</title>
-    <link rel="stylesheet" href="/css/lib/bootstrap.min.css">
-    <link type="text/css" rel="stylesheet" href="/css/emissary.css"/>
+    <base href="{{baseResourcePath}}/">
+    <link rel="stylesheet" href="css/lib/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="css/emissary.css"/>
   </head>
 
   <body>
@@ -14,14 +15,14 @@
       </div>
   </main>
 
-  <script src="/js/lib/jquery.min.js"></script>
-  <script src="/js/lib/popper.min.js"></script>
-  <script src="/js/lib/bootstrap.min.js"></script>
-  <script src="/js/emissary.js" type="text/javascript" ></script>
+  <script src="js/lib/jquery.min.js"></script>
+  <script src="js/lib/popper.min.js"></script>
+  <script src="js/lib/bootstrap.min.js"></script>
+  <script src="js/emissary.js" type="text/javascript" ></script>
 
   <script>
     $(document).ready(function () {
-        doPost('/api/shutdown', 'czar-message');
+        doPost('api/shutdown', 'czar-message');
     });
   </script>
 

@@ -1,5 +1,6 @@
 package emissary.server.mvc;
 
+import emissary.server.util.BaseResourcePathUtil;
 import emissary.util.Version;
 
 import jakarta.annotation.Nullable;
@@ -29,6 +30,7 @@ public class ThreadDumpAction {
         ThreadMXBean tmbean = ManagementFactory.getThreadMXBean();
 
         Map<String, Object> model = new HashMap<>();
+        model.put("baseResourcePath", BaseResourcePathUtil.getBaseResourcePath());
         model.put("emissary.version", new Version());
         model.put("java.version", System.getProperty("java.vm.version"));
         model.put("java.name", System.getProperty("java.vm.name"));

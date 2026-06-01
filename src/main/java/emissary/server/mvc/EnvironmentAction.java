@@ -1,5 +1,7 @@
 package emissary.server.mvc;
 
+import emissary.server.util.BaseResourcePathUtil;
+
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -22,6 +24,7 @@ public class EnvironmentAction {
     @Template(name = "/environment")
     public Map<String, Object> getEnvironment() {
         Map<String, Object> model = new HashMap<>();
+        model.put("baseResourcePath", BaseResourcePathUtil.getBaseResourcePath());
 
         Set<JustAString> systemProperties = new TreeSet<>();
         Enumeration<?> e = System.getProperties().propertyNames();

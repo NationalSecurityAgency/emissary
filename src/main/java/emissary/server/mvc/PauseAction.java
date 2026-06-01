@@ -1,5 +1,7 @@
 package emissary.server.mvc;
 
+import emissary.server.util.BaseResourcePathUtil;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -36,6 +38,7 @@ public class PauseAction {
     private static Map<String, String> generateMessage(String message) {
         Map<String, String> model = new HashMap<>();
         model.put(MESSAGE, message);
+        model.put("baseResourcePath", BaseResourcePathUtil.getBaseResourcePath());
         return model;
     }
 
