@@ -2,8 +2,9 @@ package emissary.grpc.channel;
 
 import emissary.config.Configurator;
 
+import io.grpc.Grpc;
+import io.grpc.InsecureChannelCredentials;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,14 +105,13 @@ public abstract class ChannelManager implements AutoCloseable {
      * @return a new gRPC channel
      */
     protected final ManagedChannel create() {
-        return ManagedChannelBuilder.forTarget(this.target)
+        return Grpc.newChannelBuilder(this.target, InsecureChannelCredentials.create())
                 .keepAliveTime(this.keepAliveMillis, TimeUnit.MILLISECONDS)
                 .keepAliveTimeout(this.keepAliveTimeoutMillis, TimeUnit.MILLISECONDS)
                 .keepAliveWithoutCalls(this.keepAliveWithoutCalls)
                 .defaultLoadBalancingPolicy(this.loadBalancingPolicy)
                 .maxInboundMessageSize(this.maxInboundMessageByteSize)
                 .maxInboundMetadataSize(this.maxInboundMetadataByteSize)
-                .usePlaintext()
                 .build();
     }
 
