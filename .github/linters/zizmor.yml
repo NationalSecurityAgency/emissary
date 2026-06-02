@@ -1,0 +1,6 @@
+# zizmor configuration
+# https://docs.zizmor.sh/configuration/
+rules:
+  unpinned-uses:
+    ignore:
+      - linter.yaml # TODO: remove when the actions are updated to use pinned versions
