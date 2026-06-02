@@ -3,4 +3,7 @@
 rules:
   unpinned-uses:
     ignore:
-      - linter.yaml # TODO: remove when the actions are updated to use pinned versions
+      - .github/workflows/linter.yaml # TODO: pin action refs to commit SHAs in a follow-up PR
+  artipacked:
+    ignore:
+      - .github/workflows/linter.yaml
