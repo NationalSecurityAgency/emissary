@@ -4,6 +4,3 @@ rules:
   unpinned-uses:
     ignore:
       - .github/workflows/linter.yaml # TODO: pin action refs to commit SHAs in a follow-up PR
-  artipacked:
-    ignore:
-      - .github/workflows/linter.yaml
