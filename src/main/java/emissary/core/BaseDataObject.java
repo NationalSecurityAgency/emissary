@@ -1136,18 +1136,12 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    @Deprecated
-    public boolean setFileTypeIfEmpty(final String v, final String[] empties) {
-        if (isFileTypeEmpty(empties)) {
+    public boolean setFileTypeIfEmpty(final String v) {
+        if (isFileTypeEmpty(this.emptyFileTypes)) {
             setFileType(v);
             return true;
         }
         return false;
-    }
-
-    @Override
-    public boolean setFileTypeIfEmpty(final String v) {
-        return setFileTypeIfEmpty(v, this.emptyFileTypes);
     }
 
     @Override
