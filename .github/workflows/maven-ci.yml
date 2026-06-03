@@ -127,8 +127,11 @@ jobs:
     steps:
       - name: Publish to slack channel via bot token
         id: slack
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@v3.0.3
         with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload-templated: true
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
             {
@@ -144,5 +147,3 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
