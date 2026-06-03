@@ -9,6 +9,8 @@ import emissary.place.ServiceProviderPlace;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Message;
+import io.grpc.ChannelCredentials;
+import io.grpc.InsecureChannelCredentials;
 import io.grpc.ManagedChannel;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -113,9 +115,11 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
 
         RetryHandler retryHandler = new RetryHandler(configG, this.getPlaceName(), this::retryOnException);
         String channelManagerName = configG.findStringEntry(CHANNEL_MANAGER_CLASS_NAME, PooledChannelManager.class.getName());
+        ChannelCredentials channelCredentials = getChannelCredentials(configG);
 
         for (String id : targetIds) {
-            ChannelManager channelManager = ChannelManager.ofSubClass(channelManagerName, hosts.get(id), ports.get(id), configG);
+            ChannelManager channelManager = ChannelManager.ofSubClass(
+                    channelManagerName, hosts.get(id), ports.get(id), configG, channelCredentials);
             GrpcInvoker grpcInvoker = new GrpcInvoker(channelManager, retryHandler);
             invokerTable.put(id, grpcInvoker);
         }
@@ -128,6 +132,18 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
     protected Map<String, Integer> getPortNumberConfigs() {
         return Objects.requireNonNull(configG).findStringMatchMap(GRPC_PORT).entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> Integer.parseInt(entry.getValue())));
+    }
+
+    /**
+     * Creates a new {@link ChannelCredentials} object with all security and encryption configurations necessary for
+     * establishing a gRPC connection. Base class returns {@link InsecureChannelCredentials}, which asserts that no client
+     * identity, authentication, or encryption is to be used. Subclasses should override this method as necessary.
+     *
+     * @param configG any necessary configurations for creating the credentials object
+     * @return gRPC channel credentials
+     */
+    protected ChannelCredentials getChannelCredentials(Configurator configG) {
+        return InsecureChannelCredentials.create();
     }
 
     /**

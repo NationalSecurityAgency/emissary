@@ -3,6 +3,7 @@ package emissary.grpc.channel;
 import emissary.config.Configurator;
 import emissary.grpc.exceptions.GrpcExceptionUtils;
 
+import io.grpc.ChannelCredentials;
 import io.grpc.ManagedChannel;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolUtils;
@@ -58,8 +59,8 @@ public class PooledChannelManager extends ChannelManager implements PooledObject
      * @see ChannelManager
      * @see PooledChannelManager
      */
-    public PooledChannelManager(String host, int port, Configurator configG) {
-        super(host, port, configG);
+    public PooledChannelManager(String host, int port, Configurator configG, ChannelCredentials credentials) {
+        super(host, port, configG, credentials);
 
         GenericObjectPoolConfig<ManagedChannel> poolConfig = new GenericObjectPoolConfig<>();
 

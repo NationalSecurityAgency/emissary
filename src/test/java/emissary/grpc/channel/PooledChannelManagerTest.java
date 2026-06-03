@@ -6,6 +6,7 @@ import emissary.config.ServiceConfigGuide;
 import emissary.grpc.channel.PooledChannelManager.PoolRetrievalOrdering;
 import emissary.test.core.junit5.UnitTest;
 
+import io.grpc.InsecureChannelCredentials;
 import io.grpc.ManagedChannel;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PooledChannelManagerTest extends UnitTest {
 
     private static PooledChannelManager newChannelManager(Configurator configT) {
-        return new PooledChannelManager("localhost", 1234, configT);
+        return new PooledChannelManager("localhost", 1234, configT, InsecureChannelCredentials.create());
     }
 
     private static Configurator buildConfigs(ConfigEntry... configEntries) {
