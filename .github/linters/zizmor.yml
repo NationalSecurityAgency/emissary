@@ -2,5 +2,4 @@
 # https://docs.zizmor.sh/configuration/
 rules:
   unpinned-uses:
-    ignore:
-      - .github/workflows/linter.yaml # TODO: pin action refs to commit SHAs in a follow-up PR
+    disable: true # TODO: pin action refs to commit SHAs in a follow-up PR
