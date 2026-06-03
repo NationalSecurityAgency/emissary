@@ -2,6 +2,7 @@ package emissary.grpc.channel;
 
 import emissary.config.Configurator;
 
+import io.grpc.ChannelCredentials;
 import io.grpc.Grpc;
 import io.grpc.InsecureChannelCredentials;
 import io.grpc.ManagedChannel;
@@ -44,6 +45,7 @@ public abstract class ChannelManager implements AutoCloseable {
     protected final int maxInboundMessageByteSize;
     protected final int maxInboundMetadataByteSize;
     protected final String loadBalancingPolicy;
+    protected final ChannelCredentials channelCredentials;
 
     /**
      * Constructs a new gRPC connection manager using the provided host, port, and configuration. Initializes gRPC channel
@@ -81,6 +83,20 @@ public abstract class ChannelManager implements AutoCloseable {
         // Max size (in bytes) for incoming messages and message metadata from the server
         this.maxInboundMessageByteSize = configG.findIntEntry(MAX_INBOUND_MESSAGE_BYTE_SIZE, 4 << 20); // 4 MiB
         this.maxInboundMetadataByteSize = configG.findIntEntry(MAX_INBOUND_METADATA_BYTE_SIZE, 8 << 10); // 8 KiB
+
+        this.channelCredentials = createChannelCredentials(configG);
+    }
+
+    /**
+     * Creates a new {@link ChannelCredentials} object with all security and encryption configurations necessary for
+     * establishing a gRPC connection. Base class returns {@link InsecureChannelCredentials}, which asserts that no client
+     * identity, authentication, or encryption is to be used. Subclasses should override this method as necessary.
+     *
+     * @param configG any necessary configurations for creating the credentials object
+     * @return gRPC channel credentials
+     */
+    protected ChannelCredentials createChannelCredentials(Configurator configG) {
+        return InsecureChannelCredentials.create();
     }
 
     public static ChannelManager ofSubClass(String className, String host, int port, Configurator configG) {
@@ -105,7 +121,7 @@ public abstract class ChannelManager implements AutoCloseable {
      * @return a new gRPC channel
      */
     protected final ManagedChannel create() {
-        return Grpc.newChannelBuilder(this.target, InsecureChannelCredentials.create())
+        return Grpc.newChannelBuilder(this.target, this.channelCredentials)
                 .keepAliveTime(this.keepAliveMillis, TimeUnit.MILLISECONDS)
                 .keepAliveTimeout(this.keepAliveTimeoutMillis, TimeUnit.MILLISECONDS)
                 .keepAliveWithoutCalls(this.keepAliveWithoutCalls)
