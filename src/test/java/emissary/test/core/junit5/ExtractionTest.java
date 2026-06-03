@@ -75,6 +75,8 @@ import static emissary.core.constants.IbdoXmlElementNames.INDEX;
 import static emissary.core.constants.IbdoXmlElementNames.INITIAL_FORM;
 import static emissary.core.constants.IbdoXmlElementNames.INPUT_ALT_VIEW;
 import static emissary.core.constants.IbdoXmlElementNames.NAME;
+import static emissary.core.constants.IbdoXmlElementNames.NOMETA;
+import static emissary.core.constants.IbdoXmlElementNames.NOVIEW;
 import static emissary.core.constants.IbdoXmlElementNames.NUM_ATTACHMENTS;
 import static emissary.core.constants.IbdoXmlElementNames.PARAMETER;
 import static emissary.core.constants.IbdoXmlElementNames.SETUP;
@@ -668,10 +670,10 @@ public abstract class ExtractionTest extends UnitTest {
         }
 
         // Check specified nometa
-        for (Element meta : el.getChildren("nometa")) {
+        for (Element meta : el.getChildren(NOMETA)) {
             if (verifyOs(meta)) {
                 String key = meta.getChildTextTrim(NAME);
-                checkForMissingNameElement("nometa", key, tname);
+                checkForMissingNameElement(NOMETA, key, tname);
                 assertFalse(payload.hasParameter(key),
                         String.format(Locale.getDefault(), "Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
                                 payload.getStringParameter(key)));
@@ -709,7 +711,7 @@ public abstract class ExtractionTest extends UnitTest {
         }
 
         // Check for noview items
-        for (Element view : el.getChildren("noview")) {
+        for (Element view : el.getChildren(NOVIEW)) {
             if (verifyOs(view)) {
                 String viewName = view.getChildTextTrim(NAME);
                 byte[] viewData = payload.getAlternateView(viewName);

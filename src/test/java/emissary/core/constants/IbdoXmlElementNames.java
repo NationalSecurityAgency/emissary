@@ -153,6 +153,14 @@ public final class IbdoXmlElementNames {
      * The XML attribute index for number of extracted records
      */
     public static final String EXTRACT_COUNT = "extractCount";
+    /**
+     * The XML attribute index for no meta
+     */
+    public static final String NOMETA = "nometa";
+    /**
+     * The XML attribute index for noview
+     */
+    public static final String NOVIEW = "noview";
 
 
     private IbdoXmlElementNames() {}
