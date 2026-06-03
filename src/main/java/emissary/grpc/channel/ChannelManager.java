@@ -4,7 +4,6 @@ import emissary.config.Configurator;
 
 import io.grpc.ChannelCredentials;
 import io.grpc.Grpc;
-import io.grpc.InsecureChannelCredentials;
 import io.grpc.ManagedChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +33,10 @@ public abstract class ChannelManager implements AutoCloseable {
     public static final String MAX_INBOUND_MESSAGE_BYTE_SIZE = GRPC_CHANNEL_PREFIX + "MAX_INBOUND_MESSAGE_BYTE_SIZE";
     public static final String MAX_INBOUND_METADATA_BYTE_SIZE = GRPC_CHANNEL_PREFIX + "MAX_INBOUND_METADATA_BYTE_SIZE";
 
+    protected static final String LOCALHOST = "localhost";
+    protected static final String DNS_PREFIX = "dns:///";
+    protected static final int MAX_PORT_NUMBER = 0xFFFF;
+
     protected final Logger logger;
 
     protected final String host;
@@ -54,16 +57,17 @@ public abstract class ChannelManager implements AutoCloseable {
      * @param host gRPC service hostname or DNS target
      * @param port gRPC service port
      * @param configG configuration provider for channel parameters
+     * @param credentials transport-level credentials for the gRPC server
      * @see ChannelManager
      * @see <a href="https://docs.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-5.0">Source</a> for
      *      default gRPC configurations.
      */
-    protected ChannelManager(String host, int port, Configurator configG) {
+    protected ChannelManager(String host, int port, Configurator configG, ChannelCredentials credentials) {
         this.logger = LoggerFactory.getLogger(this.getClass().getName());
 
-        this.host = host;
-        this.port = port;
-        this.target = host + ":" + port; // target may be a host or dns service
+        this.host = validateHostName(host);
+        this.port = validatePortNumber(port);
+        this.target = createTarget(host, port);
 
         // How often (in milliseconds) to send pings when the connection is idle
         this.keepAliveMillis = configG.findLongEntry(KEEP_ALIVE_MILLIS, 60000L);
@@ -84,32 +88,42 @@ public abstract class ChannelManager implements AutoCloseable {
         this.maxInboundMessageByteSize = configG.findIntEntry(MAX_INBOUND_MESSAGE_BYTE_SIZE, 4 << 20); // 4 MiB
         this.maxInboundMetadataByteSize = configG.findIntEntry(MAX_INBOUND_METADATA_BYTE_SIZE, 8 << 10); // 8 KiB
 
-        this.channelCredentials = createChannelCredentials(configG);
+        this.channelCredentials = credentials;
     }
 
-    /**
-     * Creates a new {@link ChannelCredentials} object with all security and encryption configurations necessary for
-     * establishing a gRPC connection. Base class returns {@link InsecureChannelCredentials}, which asserts that no client
-     * identity, authentication, or encryption is to be used. Subclasses should override this method as necessary.
-     *
-     * @param configG any necessary configurations for creating the credentials object
-     * @return gRPC channel credentials
-     */
-    protected ChannelCredentials createChannelCredentials(Configurator configG) {
-        return InsecureChannelCredentials.create();
+    protected String validateHostName(String host) {
+        if (host.equals(LOCALHOST) || host.startsWith(DNS_PREFIX)) {
+            return host;
+        }
+        throw new IllegalArgumentException(String.format("Expected DNS URI prefix \"dns:///\" but got \"%s\"", host));
     }
 
-    public static ChannelManager ofSubClass(String className, String host, int port, Configurator configG) {
+    protected int validatePortNumber(int port) {
+        if (port > 0 && port <= MAX_PORT_NUMBER) {
+            return port;
+        }
+        throw new IllegalArgumentException(String.format("Port \"%d\" is outside valid range [1, %d]", port, MAX_PORT_NUMBER));
+    }
+
+    protected String createTarget(String host, int port) {
+        return host + ":" + port;
+    }
+
+    public static ChannelManager ofSubClass(
+            String className, String host, int port, Configurator configG, ChannelCredentials credentials) {
         try {
-            return ofSubClass(Class.forName(className).asSubclass(ChannelManager.class), host, port, configG);
+            return ofSubClass(Class.forName(className).asSubclass(ChannelManager.class), host, port, configG, credentials);
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException("Cannot find class: " + className, e);
         }
     }
 
-    public static ChannelManager ofSubClass(Class<? extends ChannelManager> clz, String host, int port, Configurator configG) {
+    public static ChannelManager ofSubClass(
+            Class<? extends ChannelManager> clz, String host, int port, Configurator configG, ChannelCredentials credentials) {
         try {
-            return clz.getDeclaredConstructor(String.class, int.class, Configurator.class).newInstance(host, port, configG);
+            return clz
+                    .getDeclaredConstructor(String.class, int.class, Configurator.class, ChannelCredentials.class)
+                    .newInstance(host, port, configG, credentials);
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException("Unable to instantiate new ChannelManager: " + e.getMessage(), e);
         }

@@ -4,6 +4,7 @@ import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.test.core.junit5.UnitTest;
 
+import io.grpc.InsecureChannelCredentials;
 import io.grpc.ManagedChannel;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SingletonChannelManagerTest extends UnitTest {
     private static SingletonChannelManager newChannelManager(Configurator configT) {
-        return new SingletonChannelManager("localhost", 1234, configT);
+        return new SingletonChannelManager("localhost", 1234, configT, InsecureChannelCredentials.create());
     }
 
     @Test

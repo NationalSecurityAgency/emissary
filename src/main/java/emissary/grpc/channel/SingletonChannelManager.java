@@ -2,6 +2,7 @@ package emissary.grpc.channel;
 
 import emissary.config.Configurator;
 
+import io.grpc.ChannelCredentials;
 import io.grpc.ManagedChannel;
 
 /**
@@ -19,8 +20,8 @@ public class SingletonChannelManager extends ChannelManager {
      * @param configG configuration provider for channel parameters
      * @see ChannelManager
      */
-    public SingletonChannelManager(String host, int port, Configurator configG) {
-        super(host, port, configG);
+    public SingletonChannelManager(String host, int port, Configurator configG, ChannelCredentials credentials) {
+        super(host, port, configG, credentials);
         channel = create();
     }
 
