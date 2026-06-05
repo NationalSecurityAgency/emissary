@@ -25,7 +25,7 @@ class ChannelManagerTest extends UnitTest {
     void testBadHostName(String host) {
         Runnable invocation = () -> new TestChannelManager(host, 1).close();
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, invocation::run);
-        assertEquals(String.format("Expected DNS URI prefix \"dns:///\" but got \"%s\"", host), e.getMessage());
+        assertEquals(String.format("Expected \"localhost\" or DNS URI prefix \"dns:///\" but got \"%s\"", host), e.getMessage());
     }
 
     @ParameterizedTest
