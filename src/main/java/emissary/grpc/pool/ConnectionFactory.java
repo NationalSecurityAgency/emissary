@@ -59,6 +59,10 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
     public static final String GRPC_POOL_MIN_IDLE_CONNECTIONS = "GRPC_POOL_MIN_IDLE_CONNECTIONS";
     public static final String GRPC_POOL_RETRIEVAL_ORDER = "GRPC_POOL_RETRIEVAL_ORDER";
 
+    private static final String LOCALHOST = "localhost";
+    private static final String DNS_PREFIX = "dns:///";
+    private static final int MAX_PORT_NUMBER = 0xFFFF;
+
     protected static final Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
 
     private final GenericObjectPoolConfig<ManagedChannel> poolConfig = new GenericObjectPoolConfig<>();
@@ -85,9 +89,9 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
      * @param configG configuration provider for channel and pool parameters
      */
     public ConnectionFactory(String host, int port, Configurator configG) {
-        this.host = host;
-        this.port = port;
-        this.target = host + ":" + port; // target may be a host or dns service
+        this.host = validateHostName(host);
+        this.port = validatePortNumber(port);
+        this.target = createTarget(host, port);
 
         // How often (in milliseconds) to send pings when the connection is idle
         this.keepAliveMillis = configG.findLongEntry(GRPC_KEEP_ALIVE_MILLIS, 60000L);
@@ -131,6 +135,26 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
         PoolRetrievalOrdering retrievalOrdering = configG.findObjectEntry(
                 GRPC_POOL_RETRIEVAL_ORDER, PoolRetrievalOrdering::valueOf, PoolRetrievalOrdering.LIFO);
         this.poolConfig.setLifo(retrievalOrdering.equals(PoolRetrievalOrdering.LIFO));
+    }
+
+    private static String validateHostName(String host) {
+        if (host.equals(LOCALHOST) || host.startsWith(DNS_PREFIX)) {
+            return host;
+        }
+        throw new IllegalArgumentException(
+                String.format("Expected \"%s\" or DNS URI prefix \"%s\" but got \"%s\"", LOCALHOST, DNS_PREFIX, host));
+    }
+
+    private static int validatePortNumber(int port) {
+        if (port > 0 && port <= MAX_PORT_NUMBER) {
+            return port;
+        }
+        throw new IllegalArgumentException(
+                String.format("Port \"%d\" is outside valid range [1, %d]", port, MAX_PORT_NUMBER));
+    }
+
+    private static String createTarget(String host, int port) {
+        return host + ":" + port;
     }
 
     /**

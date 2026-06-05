@@ -11,6 +11,8 @@ import org.apache.commons.pool2.PooledObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,6 +34,36 @@ class ConnectionFactoryTest extends UnitTest {
         configT.addEntry(ConnectionFactory.GRPC_POOL_MAX_IDLE_CONNECTIONS, "2");
         configT.addEntry(ConnectionFactory.GRPC_POOL_MAX_SIZE, "2");
         return configT;
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"localhost", "dns:///foo.bar"})
+    void testGoodHostName(String host) {
+        Runnable invocation = () -> new ConnectionFactory(host, 1, new ServiceConfigGuide());
+        assertDoesNotThrow(invocation::run);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"dns:foo.bar", "dns:/foo.bar", "dns://foo.bar", "http:///foo.bar", "https:///foo.bar", "foo.bar"})
+    void testBadHostName(String host) {
+        Runnable invocation = () -> new ConnectionFactory(host, 1, new ServiceConfigGuide());
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, invocation::run);
+        assertEquals(String.format("Expected \"localhost\" or DNS URI prefix \"dns:///\" but got \"%s\"", host), e.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 8000, 8001, 8080, 65535})
+    void testGoodPortNumber(int port) {
+        Runnable invocation = () -> new ConnectionFactory("dns:///foo.bar", port, new ServiceConfigGuide());
+        assertDoesNotThrow(invocation::run);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 0, 65536})
+    void testBadPortNumber(int port) {
+        Runnable invocation = () -> new ConnectionFactory("dns:///foo.bar", port, new ServiceConfigGuide());
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, invocation::run);
+        assertEquals(String.format("Port \"%d\" is outside valid range [1, 65535]", port), e.getMessage());
     }
 
     @Test
