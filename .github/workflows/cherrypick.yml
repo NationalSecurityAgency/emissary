@@ -29,7 +29,7 @@ jobs:
       - name: Set env
         run: |
           echo "CHERRYPICK_COMMITS=$([ -n "$IN_COMMITS" ] && echo "$IN_COMMITS" || echo "$IN_CHERRYPICK_COMMITS")" >> "$GITHUB_ENV"
-          echo "BRANCH=$([ -n "$IN_BRANCH" ] && echo "$IN_BRANCH" || echo "${{ github.ref_name }}")" >> "$GITHUB_ENV"
+          echo "BRANCH=$([ -n "$IN_BRANCH" ] && echo "$IN_BRANCH" || echo "${GITHUB_REF_NAME}")" >> "$GITHUB_ENV"
         env:
           IN_CHERRYPICK_COMMITS: ${{ github.event.inputs.cherrypick_commits }}
           IN_COMMITS: ${{ inputs.commits }}
@@ -50,19 +50,25 @@ jobs:
       - name: Check for valid commit(s)
         if: ${{ env.CHERRYPICK_COMMITS != '' }}
         run: |
-          if [[ ! "${{ env.CHERRYPICK_COMMITS }}" =~ ^([0-9a-f]{7,40})(\s+[0-9a-f]{7,40})*$ ]]; then
+          if [[ ! "${CHERRYPICK_COMMITS}" =~ ^([0-9a-f]{7,40})(\s+[0-9a-f]{7,40})*$ ]]; then
             echo "Invalid commits to cherry-pick: must contain 7- to 40-character hexadecimal SHA separated by a single space."
             exit 1
           fi
 
       - name: Checkout repo
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Cherry pick to patch branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          gh auth setup-git
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git fetch --all
-          git switch ${{ env.BRANCH }}
-          git cherry-pick ${{ env.CHERRYPICK_COMMITS }}
-          git push -u origin ${{ env.BRANCH }}
+          git switch "${BRANCH}"
+          # shellcheck disable=SC2086 # CHERRYPICK_COMMITS may contain space-separated SHAs
+          git cherry-pick ${CHERRYPICK_COMMITS}
+          git push -u origin "${BRANCH}"
