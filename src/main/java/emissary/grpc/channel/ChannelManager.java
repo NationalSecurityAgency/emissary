@@ -95,14 +95,16 @@ public abstract class ChannelManager implements AutoCloseable {
         if (host.equals(LOCALHOST) || host.startsWith(DNS_PREFIX)) {
             return host;
         }
-        throw new IllegalArgumentException(String.format("Expected DNS URI prefix \"dns:///\" but got \"%s\"", host));
+        throw new IllegalArgumentException(
+                String.format("Expected \"%s\" or DNS URI prefix \"%s\" but got \"%s\"", LOCALHOST, DNS_PREFIX, host));
     }
 
     protected int validatePortNumber(int port) {
         if (port > 0 && port <= MAX_PORT_NUMBER) {
             return port;
         }
-        throw new IllegalArgumentException(String.format("Port \"%d\" is outside valid range [1, %d]", port, MAX_PORT_NUMBER));
+        throw new IllegalArgumentException(
+                String.format("Port \"%d\" is outside valid range [1, %d]", port, MAX_PORT_NUMBER));
     }
 
     protected String createTarget(String host, int port) {
