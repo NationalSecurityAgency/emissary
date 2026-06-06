@@ -1,5 +1,3 @@
 # zizmor configuration
 # https://docs.zizmor.sh/configuration/
-rules:
-  unpinned-uses:
-    disable: true # TODO: pin action refs to commit SHAs in a follow-up PR
+rules: {}
