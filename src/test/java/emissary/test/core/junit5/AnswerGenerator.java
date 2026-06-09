@@ -11,6 +11,9 @@ import jakarta.annotation.Nullable;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.output.Format;
 import org.jdom2.output.LineSeparator;
 import org.jdom2.output.XMLOutputter;
@@ -30,6 +33,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
+import static emissary.core.constants.IbdoXmlElementNames.DATA_FILE;
+import static emissary.core.constants.IbdoXmlElementNames.SETUP;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AnswerGenerator {
@@ -58,8 +63,23 @@ public abstract class AnswerGenerator {
     public abstract void generateAnswerFiles(String resource, IServiceProviderPlace place, IBaseDataObject initialIbdo,
             IBaseDataObjectXmlCodecs.ElementEncoders encoders, AtomicReference<Class<?>> answerFileClassRef, String logbackLoggerName);
 
+    public void generateAnswerFiles(String datResource, String answerResource, IServiceProviderPlace place, IBaseDataObject initialIbdo,
+            IBaseDataObjectXmlCodecs.ElementEncoders encoders, AtomicReference<Class<?>> answerFileClassRef, String logbackLoggerName) {
+        generateAnswerFiles(datResource, place, initialIbdo, encoders, answerFileClassRef, logbackLoggerName);
+    }
+
     @Nullable
-    public abstract Document getAnswerDocumentFor(String resource, AtomicReference<Class<?>> answerFileClassRef);
+    public Document getAnswerDocumentFor(final String resource, final AtomicReference<Class<?>> answerFileClassRef) {
+        try {
+            /* XML builder to read XML answer file in */
+            final Path path = getXmlPath(resource, answerFileClassRef);
+            return path == null ? null : new SAXBuilder(XMLReaders.NONVALIDATING).build(path.toFile());
+        } catch (final JDOMException | IOException e) {
+            // Fail if invalid XML document
+            fail(String.format("No valid answer document provided for %s", resource), e);
+            return null;
+        }
+    }
 
     /**
      * Allow the initial IBDO to be overridden before serializing to XML.
@@ -70,7 +90,10 @@ public abstract class AnswerGenerator {
      * @param resource path to the dat file
      * @param initialIbdo to tweak
      */
-    protected abstract void tweakInitialIbdoBeforeSerialization(String resource, IBaseDataObject initialIbdo);
+    protected void tweakInitialIbdoBeforeSerialization(final String resource, final IBaseDataObject initialIbdo) {
+        initialIbdo.clearData();
+    }
+
 
     /**
      * Allow the generated IBDO to be overridden - for example, adding certain field values. Will modify the provided IBDO.
@@ -155,6 +178,52 @@ public abstract class AnswerGenerator {
         writeXml(resource, xmlContent, answerFileClassRef);
     }
 
+    /**
+     * Generate the relevant XML and write to disk.
+     *
+     * @param datResource referencing the DAT file
+     * @param answerResource referencing the answer file
+     * @param existingDoc referencing the existing xml file
+     * @param initialIbdo for 'setup' section
+     * @param finalIbdo for 'answers' section
+     * @param finalResults for 'answers' section
+     * @param finalLogEvents events to send to the LogbackTester
+     * @param encoders for encoding ibdo into XML
+     * @param answerFileClassRef answer file class (if different from data class)
+     */
+    public static void writeAnswerXml(String datResource, String answerResource, Document existingDoc, IBaseDataObject initialIbdo,
+            IBaseDataObject finalIbdo, List<IBaseDataObject> finalResults, List<LogbackTester.SimplifiedLogEvent> finalLogEvents,
+            IBaseDataObjectXmlCodecs.ElementEncoders encoders, @Nullable AtomicReference<Class<?>> answerFileClassRef) {
+
+        final Element existingRoot = existingDoc.getRootElement();
+        final Element dataFileElement = existingRoot.getChild(DATA_FILE);
+        final Element setupElement = existingRoot.getChild(SETUP);
+        if (setupElement == null) {
+            logger.trace("Existing XML for {} does not contain a <setup> element.", datResource);
+        }
+
+        // Generate a fresh root using the helper (we pass null for initialIbdo to keep the answer section clean)
+        final Element newFullRoot = IBaseDataObjectXmlHelper.xmlElementFromIbdo(finalIbdo, finalResults, initialIbdo, encoders);
+        final Element newAnswerElement = newFullRoot.getChild(ANSWERS);
+
+        // Add log events to the new answer section
+        LogbackTester.SimplifiedLogEvent.toXml(finalLogEvents).forEach(newAnswerElement::addContent);
+
+        // Construct the merged Document
+        final Element mergedRoot = new Element(existingRoot.getName(), existingRoot.getNamespace());
+        if (dataFileElement != null) {
+            mergedRoot.addContent(dataFileElement.detach());
+        }
+        if (setupElement != null) {
+            mergedRoot.addContent(setupElement.detach());
+        }
+        mergedRoot.addContent(newAnswerElement.detach());
+
+        // Write back to answer file
+        final byte[] xmlContent = bytesFromDocument(new Document(mergedRoot));
+        writeXml(answerResource == null ? datResource : answerResource, xmlContent, answerFileClassRef);
+    }
+
     @Nullable
     public static byte[] bytesFromDocument(Document jdom) {
         final Format format = Format.getPrettyFormat().setLineSeparator(LineSeparator.UNIX);
@@ -198,6 +267,12 @@ public abstract class AnswerGenerator {
      */
     @Nullable
     public static Path getXmlPath(String resource, @Nullable AtomicReference<Class<?>> answerFileClassRef) {
+
+        if (resource.endsWith(ResourceReader.XML_SUFFIX)) {
+            logger.debug("Resource is the answer file {}", resource);
+            return TEST_RESX.resolve(resource);
+        }
+
         final int datPos = resource.lastIndexOf(ResourceReader.DATA_SUFFIX);
         if (datPos == -1) {
             logger.debug("Resource is not a DATA file {}", resource);
