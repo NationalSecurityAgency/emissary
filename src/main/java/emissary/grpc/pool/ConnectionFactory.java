@@ -89,8 +89,11 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
      * @param configG configuration provider for channel and pool parameters
      */
     public ConnectionFactory(String host, int port, Configurator configG) {
-        this.host = validateHostName(host);
-        this.port = validatePortNumber(port);
+        validateHostName(host);
+        validatePortNumber(port);
+
+        this.host = host;
+        this.port = port;
         this.target = createTarget(host, port);
 
         // How often (in milliseconds) to send pings when the connection is idle
@@ -137,20 +140,18 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
         this.poolConfig.setLifo(retrievalOrdering.equals(PoolRetrievalOrdering.LIFO));
     }
 
-    private static String validateHostName(String host) {
-        if (host.equals(LOCALHOST) || host.startsWith(DNS_PREFIX)) {
-            return host;
+    private static void validateHostName(String host) {
+        if (!host.equals(LOCALHOST) && !host.startsWith(DNS_PREFIX)) {
+            throw new IllegalArgumentException(
+                    String.format("Expected \"%s\" or DNS URI prefix \"%s\" but got \"%s\"", LOCALHOST, DNS_PREFIX, host));
         }
-        throw new IllegalArgumentException(
-                String.format("Expected \"%s\" or DNS URI prefix \"%s\" but got \"%s\"", LOCALHOST, DNS_PREFIX, host));
     }
 
-    private static int validatePortNumber(int port) {
-        if (port > 0 && port <= MAX_PORT_NUMBER) {
-            return port;
+    private static void validatePortNumber(int port) {
+        if (port <= 0 || port > MAX_PORT_NUMBER) {
+            throw new IllegalArgumentException(
+                    String.format("Port \"%d\" is outside valid range [1, %d]", port, MAX_PORT_NUMBER));
         }
-        throw new IllegalArgumentException(
-                String.format("Port \"%d\" is outside valid range [1, %d]", port, MAX_PORT_NUMBER));
     }
 
     private static String createTarget(String host, int port) {
