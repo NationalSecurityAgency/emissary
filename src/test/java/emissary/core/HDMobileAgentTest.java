@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  *
  */
+@SuppressWarnings("IdentifierName")
 class HDMobileAgentTest extends UnitTest {
 
     public HDMobileAgentTest() {}

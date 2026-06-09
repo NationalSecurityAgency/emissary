@@ -6,6 +6,7 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+import java.io.Serial;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.stream.Stream;
 @XmlRootElement(name = "agents")
 @XmlAccessorType(XmlAccessType.NONE)
 public class AgentsResponseEntity extends BaseResponseEntity {
+    @Serial
     private static final long serialVersionUID = 5686691885767273319L;
 
     @XmlElement(name = "local")

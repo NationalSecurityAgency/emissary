@@ -181,7 +181,7 @@ class DirectoryEntryMapTest extends UnitTest {
         final List<String> changed = this.dm.addCostToMatching("*.*.TRANSFORM.*", 100);
         assertNotNull(changed, "Cost changed");
         assertEquals(1, changed.size(), "Cost changed");
-        final String ckey = changed.get(0);
+        final String ckey = changed.getFirst();
         assertEquals(DirectoryEntry.calculateExpense(100 + cost, quality), KeyManipulator.getExpense(ckey, -1), "Cost on returned entry");
         final DirectoryEntryList del = this.dm.get("UNKNOWN::TRANSFORM");
         assertNotNull(del, "Found entry list for changed entry");

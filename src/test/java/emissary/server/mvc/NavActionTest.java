@@ -34,9 +34,9 @@ class NavActionTest {
 
         nav.setNavItems(navItems);
         assertEquals(4, nav.getNavItems().size());
-        assertEquals("Item1", nav.getNavItems().get(0).getDisplay());
+        assertEquals("Item1", nav.getNavItems().getFirst().getDisplay());
         // TODO: Revert this test to "/path/to/resource" NavAction.java:91 is removed
-        assertEquals("./path/to/resource", nav.getNavItems().get(0).getLink());
+        assertEquals("./path/to/resource", nav.getNavItems().getFirst().getLink());
         assertEquals("Item2", nav.getNavItems().get(1).getDisplay());
         assertEquals("http://testing1.com", nav.getNavItems().get(1).getLink());
         assertEquals("Item3", nav.getNavItems().get(2).getDisplay());

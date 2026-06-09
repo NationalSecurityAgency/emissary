@@ -516,10 +516,10 @@ public abstract class ExtractionTest extends UnitTest {
         // check attachments answer file count against payload count
         if (numAtt > -1) {
             assertEquals(numAtt, attachments != null ? attachments.size() : 0,
-                    String.format("Expected <numAttachments> in %s not equal to number of att in payload.", tname));
+                    String.format(Locale.getDefault(), "Expected <numAttachments> in %s not equal to number of att in payload.", tname));
         } else if (numAtt == -1 && numAttElements > 0) {
             assertEquals(numAttElements, attachments != null ? attachments.size() : 0,
-                    String.format("Expected <att#> in %s not equal to number of att in payload.", tname));
+                    String.format(Locale.getDefault(), "Expected <att#> in %s not equal to number of att in payload.", tname));
         } else {
             if (attachments != null && !attachments.isEmpty()) {
                 fail(String.format(Locale.getDefault(),
@@ -630,7 +630,8 @@ public abstract class ExtractionTest extends UnitTest {
             if (verifyOs(procErrEl)) {
                 String procError = procErrEl.getTextTrim();
                 if (procError != null && !procError.isEmpty()) {
-                    assertNotNull(payload.getProcessingError(), String.format("Expected processing error '%s' in %s", procError, tname));
+                    assertNotNull(payload.getProcessingError(),
+                            String.format(Locale.getDefault(), "Expected processing error '%s' in %s", procError, tname));
                     // simple work around for answer files, so we can see multiple errors w/o dealing with line breaks added on by
                     // StringBuilder in BDO
                     String shortProcErrMessage = payload.getProcessingError().replaceAll("\n", ";");

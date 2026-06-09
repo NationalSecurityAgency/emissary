@@ -25,8 +25,8 @@ public class RollScheduledExecutor extends ScheduledThreadPoolExecutor {
 
     @Override
     protected <V> RunnableScheduledFuture<V> decorateTask(Runnable runnable, RunnableScheduledFuture<V> task) {
-        if (runnable instanceof Roller) {
-            return new RollFuture<>(task, (Roller) runnable);
+        if (runnable instanceof Roller roller) {
+            return new RollFuture<>(task, roller);
         } else {
             return super.decorateTask(runnable, task);
         }
@@ -35,8 +35,7 @@ public class RollScheduledExecutor extends ScheduledThreadPoolExecutor {
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
         super.afterExecute(r, t);
-        if (r instanceof RollFuture) {
-            RollFuture<?> f = (RollFuture<?>) r;
+        if (r instanceof RollFuture<?> f) {
             try {
                 // we don't want to block if we're scheduled for another run
                 if (f.isDone()) {

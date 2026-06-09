@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -71,7 +72,7 @@ public class RegressionTestAnswerGenerator extends AnswerGenerator {
             return path == null ? null : new SAXBuilder(XMLReaders.NONVALIDATING).build(path.toFile());
         } catch (final JDOMException | IOException e) {
             // Fail if invalid XML document
-            fail(String.format("No valid answer document provided for %s", resource), e);
+            fail(String.format(Locale.getDefault(), "No valid answer document provided for %s", resource), e);
             return null;
         }
     }
@@ -89,7 +90,7 @@ public class RegressionTestAnswerGenerator extends AnswerGenerator {
             final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
             if (!finalIbdo.currentForm().equals(datFile.getFinalForm())) {
                 final String format = "Final form from place [%s] didn't match final form in filename [%s]";
-                fail(String.format(format, finalIbdo.currentForm(), datFile.getFinalForm()));
+                fail(String.format(Locale.getDefault(), format, finalIbdo.currentForm(), datFile.getFinalForm()));
             }
         } catch (final URISyntaxException e) {
             fail("Couldn't get path for resource: " + resource, e);

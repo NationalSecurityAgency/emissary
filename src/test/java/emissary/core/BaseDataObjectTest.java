@@ -700,7 +700,7 @@ class BaseDataObjectTest extends UnitTest {
     void testGetAllForms() {
         final List<String> al = this.b.getAllCurrentForms();
         assertEquals(3, al.size(), "Forms returned");
-        assertEquals("THREE", al.get(0), "Form order");
+        assertEquals("THREE", al.getFirst(), "Form order");
     }
 
     @Test
@@ -1395,7 +1395,7 @@ class BaseDataObjectTest extends UnitTest {
         ibdo.setData(bytes1);
 
         try (InputStream bytesInputStream = ibdo.newInputStream();
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();) {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             IOUtils.copy(bytesInputStream, byteArrayOutputStream);
 
             assertArrayEquals(bytes1, byteArrayOutputStream.toByteArray());

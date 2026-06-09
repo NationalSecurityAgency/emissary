@@ -95,7 +95,7 @@ class RoutingAlgorithmTest extends UnitTest {
         this.payload.pushCurrentForm("BAR");
         final int oldSize = this.payload.currentFormSize();
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertEquals(this.unknowns.get(0).getKey(), result.getKey(), "Next keys returns lowest cost");
+        assertEquals(this.unknowns.getFirst().getKey(), result.getKey(), "Next keys returns lowest cost");
         assertEquals(oldSize, this.payload.currentFormSize(), "Form stack must have same size");
         assertEquals("UNKNOWN", this.payload.currentForm(), "Payload form used pulled to top");
     }
@@ -105,14 +105,14 @@ class RoutingAlgorithmTest extends UnitTest {
         this.dir.addTestEntries(this.unknowns);
         this.payload.pushCurrentForm("UNKNOWN");
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertEquals(this.unknowns.get(0).getKey(), result.getKey(), "Next keys returns lowest cost");
+        assertEquals(this.unknowns.getFirst().getKey(), result.getKey(), "Next keys returns lowest cost");
     }
 
     @Test
     void testIdsInOrderWithCheaperLastPlace() {
         this.dir.addTestEntries(this.unknowns);
         this.payload.pushCurrentForm("UNKNOWN");
-        this.payload.appendTransformHistory(this.unknowns.get(0).getFullKey());
+        this.payload.appendTransformHistory(this.unknowns.getFirst().getFullKey());
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
         assertEquals(this.unknowns.get(1).getKey(), result.getKey(), "Next keys should return next in cost/quality order");
     }
@@ -203,7 +203,7 @@ class RoutingAlgorithmTest extends UnitTest {
 
         this.payload.pushCurrentForm("FOO");
         this.payload.pushCurrentForm("BAR");
-        this.payload.appendTransformHistory(this.unknowns.get(0).getFullKey());
+        this.payload.appendTransformHistory(this.unknowns.getFirst().getFullKey());
         this.payload.appendTransformHistory(foo.getFullKey());
 
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
@@ -216,7 +216,7 @@ class RoutingAlgorithmTest extends UnitTest {
         loadAllTestEntries();
         this.payload.pushCurrentForm("UNKNOWN");
         for (int i = 0; i <= this.agent.getMaxItinerarySteps(); i++) {
-            this.payload.appendTransformHistory(this.unknowns.get(0).getFullKey());
+            this.payload.appendTransformHistory(this.unknowns.getFirst().getFullKey());
         }
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
         assertNull(result, "Must not proceed past MAX steps but we got " + result);
@@ -228,7 +228,7 @@ class RoutingAlgorithmTest extends UnitTest {
         this.payload.pushCurrentForm("UNKNOWN");
         this.agent.setMaxItinerarySteps(10);
         for (int i = 0; i <= this.agent.getMaxItinerarySteps(); i++) {
-            this.payload.appendTransformHistory(this.unknowns.get(0).getFullKey());
+            this.payload.appendTransformHistory(this.unknowns.getFirst().getFullKey());
         }
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
         assertNull(result, "Must not proceed past MAX steps but we got " + result);
@@ -302,7 +302,7 @@ class RoutingAlgorithmTest extends UnitTest {
 
         this.payload.pushCurrentForm("BAR");
         this.payload.pushCurrentForm("FOO");
-        this.payload.appendTransformHistory(this.unknowns.get(0).getFullKey());
+        this.payload.appendTransformHistory(this.unknowns.getFirst().getFullKey());
         this.payload.appendTransformHistory(foo.getFullKey());
 
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
@@ -320,7 +320,7 @@ class RoutingAlgorithmTest extends UnitTest {
 
         this.payload.pushCurrentForm("BAR");
         this.payload.pushCurrentForm("FOO");
-        this.payload.appendTransformHistory(this.unknowns.get(0).getFullKey());
+        this.payload.appendTransformHistory(this.unknowns.getFirst().getFullKey());
         this.payload.appendTransformHistory(foo.getFullKey());
 
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
@@ -337,7 +337,7 @@ class RoutingAlgorithmTest extends UnitTest {
 
         this.payload.pushCurrentForm("FOO");
         this.payload.pushCurrentForm("BAR");
-        this.payload.appendTransformHistory(this.unknowns.get(0).getFullKey());
+        this.payload.appendTransformHistory(this.unknowns.getFirst().getFullKey());
         this.payload.appendTransformHistory(foo.getFullKey());
 
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);

@@ -54,7 +54,7 @@ class StageTest extends UnitTest {
             stage = list.get(i);
             assertEquals(list.get(i + 1), Stage.nextStageAfter(stage), "Next stage progression from " + stage);
         }
-        stage = list.get(list.size() - 1);
+        stage = list.getLast();
         assertNull(Stage.nextStageAfter(stage), "Next stage progression from " + stage);
     }
 

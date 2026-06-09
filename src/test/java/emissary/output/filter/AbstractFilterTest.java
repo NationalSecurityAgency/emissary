@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,7 +73,7 @@ public class AbstractFilterTest extends UnitTest {
             assertEquals("^[a-zA-Z0-9_\\-]+$", pattern);
 
             assertFalse(f.matchesDenylistFiletypeFormatPattern(""),
-                    String.format("Unexpected match [empty string] for Pattern %s", pattern));
+                    String.format(Locale.getDefault(), "Unexpected match [empty string] for Pattern %s", pattern));
 
             String formatString = "Fi1e%sTyp3";
 
@@ -81,19 +82,19 @@ public class AbstractFilterTest extends UnitTest {
                 char noMatchChar = noMatchChars.charAt(i);
                 String noMatch = String.format(formatString, noMatchChar);
                 assertFalse(f.matchesDenylistFiletypeFormatPattern(noMatch),
-                        String.format("Unexpected match %s for Pattern %s", noMatch, pattern));
+                        String.format(Locale.getDefault(), "Unexpected match %s for Pattern %s", noMatch, pattern));
             }
 
             String nullInsert = String.format(formatString, "");
             assertTrue(f.matchesDenylistFiletypeFormatPattern(nullInsert),
-                    String.format("Expected match %s for Pattern %s", nullInsert, pattern));
+                    String.format(Locale.getDefault(), "Expected match %s for Pattern %s", nullInsert, pattern));
 
             String matchChars = "-_";
             for (int i = 0; i < matchChars.length(); i++) {
                 char matchChar = matchChars.charAt(i);
                 String match = String.format(formatString, matchChar);
                 assertTrue(f.matchesDenylistFiletypeFormatPattern(match),
-                        String.format("Expected match %s for Pattern %s", match, pattern));
+                        String.format(Locale.getDefault(), "Expected match %s for Pattern %s", match, pattern));
             }
         }
 
@@ -103,10 +104,10 @@ public class AbstractFilterTest extends UnitTest {
             assertEquals("^[a-zA-Z0-9_\\-]+(\\.[a-zA-Z0-9_\\-]+)?\\*?$", pattern);
 
             assertFalse(f.matchesDenylistViewNameFormatPattern(""),
-                    String.format("Unexpected match [empty string] for Pattern %s", pattern));
+                    String.format(Locale.getDefault(), "Unexpected match [empty string] for Pattern %s", pattern));
 
             assertFalse(f.matchesDenylistViewNameFormatPattern("pt1.PT2.pt3"),
-                    String.format("Unexpected match pt1.PT2.pt3 for Pattern %s", pattern));
+                    String.format(Locale.getDefault(), "Unexpected match pt1.PT2.pt3 for Pattern %s", pattern));
 
             List<String> formatStrings = Arrays.asList("view%sN4ME", "view%sN4ME*", "pt1.PT2%spt3", "pt1.PT2%spt3*");
             for (String formatString : formatStrings) {
@@ -114,21 +115,21 @@ public class AbstractFilterTest extends UnitTest {
                 String noMatchChars = " !@#$%^&*()+=\\/,";
                 for (int i = 0; i < noMatchChars.length(); i++) {
                     char noMatchChar = noMatchChars.charAt(i);
-                    String noMatch = String.format(formatString, noMatchChar);
+                    String noMatch = String.format(Locale.getDefault(), formatString, noMatchChar);
                     assertFalse(f.matchesDenylistViewNameFormatPattern(noMatch),
-                            String.format("Unexpected match %s for Pattern %s", noMatch, pattern));
+                            String.format(Locale.getDefault(), "Unexpected match %s for Pattern %s", noMatch, pattern));
                 }
 
-                String nullInsert = String.format(formatString, "");
+                String nullInsert = String.format(Locale.getDefault(), formatString, "");
                 assertTrue(f.matchesDenylistViewNameFormatPattern(nullInsert),
-                        String.format("Expected match %s for Pattern %s", nullInsert, pattern));
+                        String.format(Locale.getDefault(), "Expected match %s for Pattern %s", nullInsert, pattern));
 
                 String matchChars = "-_";
                 for (int i = 0; i < matchChars.length(); i++) {
                     char matchChar = matchChars.charAt(i);
-                    String match = String.format(formatString, matchChar);
+                    String match = String.format(Locale.getDefault(), formatString, matchChar);
                     assertTrue(f.matchesDenylistViewNameFormatPattern(match),
-                            String.format("Expected match %s for Pattern %s", match, pattern));
+                            String.format(Locale.getDefault(), "Expected match %s for Pattern %s", match, pattern));
                 }
             }
         }
@@ -151,7 +152,7 @@ public class AbstractFilterTest extends UnitTest {
             EmissaryRuntimeException e = assertThrows(
                     EmissaryRuntimeException.class,
                     () -> f.initialize(new ServiceConfigGuide(), "FOO", config));
-            assertTrue(e.getMessage().contains(String.format("Invalid filter configuration: `DENYLIST = \"%s\"`", entry)));
+            assertTrue(e.getMessage().contains(String.format(Locale.getDefault(), "Invalid filter configuration: `DENYLIST = \"%s\"`", entry)));
         }
     }
 

@@ -2,6 +2,7 @@ package emissary.command;
 
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("IdentifierName")
 class HttpCommandIT {
 
     @Test

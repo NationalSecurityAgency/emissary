@@ -90,19 +90,19 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
 
         List<IBaseDataObject> att = place.processHeavyDuty(payload);
         assertEquals(1, att.size(), "Attachments should be created");
-        assertEquals("UNKNOWN", att.get(0).currentForm(), "Attachment current form set");
-        assertEquals(W, new String(att.get(0).data()).trim(), "Clean UTF-8 coming from the script must in attachment");
+        assertEquals("UNKNOWN", att.getFirst().currentForm(), "Attachment current form set");
+        assertEquals(W, new String(att.getFirst().data()).trim(), "Clean UTF-8 coming from the script must in attachment");
         assertEquals("UCP-PROCESSED", payload.currentForm(), "Payload should have configured current form");
         assertEquals(W, new String(payload.data()).trim(), "Clean UTF-8 coming from script must be in parent");
         assertEquals(1, payload.currentFormSize(), "Single form remaining for parent");
-        assertEquals(1, att.get(0).currentFormSize(), "Single form for child");
+        assertEquals(1, att.getFirst().currentFormSize(), "Single form for child");
 
-        assertEquals("copy value", att.get(0).getStringParameter("COPY_THIS"), "Child should have propagating metadata value");
-        assertEquals("copy value", att.get(0).getParameterAsConcatString("COPY_THIS"), "Child should have propagating metadata value");
-        assertEquals("copy value", att.get(0).getParameterAsString("COPY_THIS"), "Child should have propagating metadata value");
-        assertNull(att.get(0).getStringParameter("IGNORE_THIS"), "Child should not have non-propagating metadata value");
-        assertNull(att.get(0).getParameterAsConcatString("IGNORE_THIS"), "Child should not have non-propagating metadata value");
-        assertNull(att.get(0).getParameterAsString("IGNORE_THIS"), "Child should not have non-propagating metadata value");
+        assertEquals("copy value", att.getFirst().getStringParameter("COPY_THIS"), "Child should have propagating metadata value");
+        assertEquals("copy value", att.getFirst().getParameterAsConcatString("COPY_THIS"), "Child should have propagating metadata value");
+        assertEquals("copy value", att.getFirst().getParameterAsString("COPY_THIS"), "Child should have propagating metadata value");
+        assertNull(att.getFirst().getStringParameter("IGNORE_THIS"), "Child should not have non-propagating metadata value");
+        assertNull(att.getFirst().getParameterAsConcatString("IGNORE_THIS"), "Child should not have non-propagating metadata value");
+        assertNull(att.getFirst().getParameterAsString("IGNORE_THIS"), "Child should not have non-propagating metadata value");
     }
 
     @Test
@@ -114,17 +114,17 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
         List<IBaseDataObject> att = place.processHeavyDuty(payload);
         assertEquals("UCP-PROCESSED", payload.currentForm(), "Payload should have configured current form");
         assertEquals(2, att.size(), "Attachments should be created");
-        assertEquals("UNKNOWN", att.get(0).currentForm(), "Attachment current form set");
-        assertEquals(W, new String(att.get(0).data()).trim(), "Clean UTF-8 coming from the script must be maintained");
+        assertEquals("UNKNOWN", att.getFirst().currentForm(), "Attachment current form set");
+        assertEquals(W, new String(att.getFirst().data()).trim(), "Clean UTF-8 coming from the script must be maintained");
         assertEquals(1, payload.currentFormSize(), "Single form remaining for parent");
-        assertEquals(1, att.get(0).currentFormSize(), "Single form for child");
+        assertEquals(1, att.getFirst().currentFormSize(), "Single form for child");
 
-        assertEquals("copy value", att.get(0).getStringParameter("COPY_THIS"), "Child should have propagating metadata value");
-        assertEquals("copy value", att.get(0).getParameterAsConcatString("COPY_THIS"), "Child should have propagating metadata value");
-        assertEquals("copy value", att.get(0).getParameterAsString("COPY_THIS"), "Child should have propagating metadata value");
-        assertNull(att.get(0).getStringParameter("IGNORE_THIS"), "Child should not have non-propagating metadata value");
-        assertNull(att.get(0).getParameterAsConcatString("IGNORE_THIS"), "Child should not have non-propagating metadata value");
-        assertNull(att.get(0).getParameterAsString("IGNORE_THIS"), "Child should not have non-propagating metadata value");
+        assertEquals("copy value", att.getFirst().getStringParameter("COPY_THIS"), "Child should have propagating metadata value");
+        assertEquals("copy value", att.getFirst().getParameterAsConcatString("COPY_THIS"), "Child should have propagating metadata value");
+        assertEquals("copy value", att.getFirst().getParameterAsString("COPY_THIS"), "Child should have propagating metadata value");
+        assertNull(att.getFirst().getStringParameter("IGNORE_THIS"), "Child should not have non-propagating metadata value");
+        assertNull(att.getFirst().getParameterAsConcatString("IGNORE_THIS"), "Child should not have non-propagating metadata value");
+        assertNull(att.getFirst().getParameterAsString("IGNORE_THIS"), "Child should not have non-propagating metadata value");
     }
 
     @Test
@@ -159,7 +159,7 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
         List<IBaseDataObject> att = place.processHeavyDuty(payload);
         assertEquals(1, att.size(), "One Attachment should be created");
         assertEquals(PAYLOAD_STRING, new String(payload.data()), "Parent data should be preserved");
-        assertEquals(W, new String(att.get(0).data()).trim(), "Child payload should match script output");
+        assertEquals(W, new String(att.getFirst().data()).trim(), "Child payload should match script output");
     }
 
     @Test

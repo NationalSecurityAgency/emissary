@@ -9,6 +9,7 @@ import emissary.place.IServiceProviderPlace;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -112,7 +113,7 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
             return exceptionType.cast(e.getCause());
         }
         throw new IllegalStateException(
-                String.format("Succeeded building %s but expected to throw %s", placeName, exceptionType.getName()));
+                String.format(Locale.getDefault(), "Succeeded building %s but expected to throw %s", placeName, exceptionType.getName()));
     }
 
     private Configurator newInstanceConfigurator(ConfigEntry... optionalConfigs) {

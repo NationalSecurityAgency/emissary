@@ -144,16 +144,16 @@ public class FileFind {
             // While the stack is not empty, and we have not found the type of file that we are looking for.
             while (!currentPath.isEmpty() && !found) {
                 Object tmp = currentPath.peek();
-                if (tmp instanceof File && !((File) tmp).isDirectory()) {
+                if (tmp instanceof File file1 && !file1.isDirectory()) {
                     // We found one. Leave it on the stack for 'next()'
                     found = true;
-                } else if (tmp instanceof File && ((File) tmp).isDirectory()) {
+                } else if (tmp instanceof File file && file.isDirectory()) {
 
                     // Pop the entry for the directory name if not desired
                     Object theDir = currentPath.pop();
 
                     // Add the directory contents to the stack
-                    File[] tmpContents = ((File) tmp).listFiles(filter);
+                    File[] tmpContents = file.listFiles(filter);
                     currentPath.push(new DirectoryList(tmpContents));
 
                     // Put back the directory if we are supposed to return thm
@@ -162,10 +162,10 @@ public class FileFind {
                         found = true;
                     }
 
-                } else if (tmp instanceof DirectoryList) {
+                } else if (tmp instanceof DirectoryList list) {
                     // This is a directories contents. Check for the next entry.
-                    if (((DirectoryList) tmp).hasNext()) {
-                        currentPath.push(((DirectoryList) tmp).next());
+                    if (list.hasNext()) {
+                        currentPath.push(list.next());
                     } else {
                         currentPath.pop();
                     }

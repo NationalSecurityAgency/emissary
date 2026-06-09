@@ -133,8 +133,8 @@ public class SessionProducer {
                     Collection<Object> values = entry.getValue();
                     for (Object valueItem : values) {
                         String viewName = baseViewName + (viewCounter > 0 ? ("." + Integer.toString(viewCounter)) : "");
-                        if (valueItem instanceof byte[]) {
-                            dataObject.addAlternateView(viewName, (byte[]) valueItem);
+                        if (valueItem instanceof byte[] bytes) {
+                            dataObject.addAlternateView(viewName, bytes);
                         } else {
                             dataObject.addAlternateView(viewName, valueItem.toString().getBytes());
                         }

@@ -124,11 +124,11 @@ class PlaceComparisonHelperTest extends UnitTest {
         ibdoForNewPlaceTwoChanges.setData(new byte[1]);
         ibdoForNewPlaceTwoChanges.addAlternateView("alternateView1", new byte[1]);
         newResultsTwoChanges.add(new BaseDataObject());
-        newResultsTwoChanges.get(0).setData(new byte[2]);
-        newResultsTwoChanges.get(0).addAlternateView("alternateView2", new byte[2]);
+        newResultsTwoChanges.getFirst().setData(new byte[2]);
+        newResultsTwoChanges.getFirst().addAlternateView("alternateView2", new byte[2]);
         oldResultsTwoChanges.add(new BaseDataObject());
-        oldResultsTwoChanges.get(0).setData(new byte[3]);
-        oldResultsTwoChanges.get(0).addAlternateView("alternateView3", new byte[3]);
+        oldResultsTwoChanges.getFirst().setData(new byte[3]);
+        oldResultsTwoChanges.getFirst().addAlternateView("alternateView3", new byte[3]);
 
         assertNull(PlaceComparisonHelper.checkDifferences(
                 ibdoOldPlace, ibdoNewPlace, resultsOldPlace, resultsNewPlace, identifier, DIFF_OPTIONS));

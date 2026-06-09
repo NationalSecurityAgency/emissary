@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@SuppressWarnings("IdentifierName")
 class ServerCommandIT extends UnitTest {
     private static final String PROJECT_BASE = System.getenv(ConfigUtil.PROJECT_BASE_ENV);
     private static final String PROJECT_BASE_SLASH = PROJECT_BASE + "/";

@@ -8,6 +8,7 @@ import jakarta.annotation.Nullable;
 /**
  * For hacking the move test. This agent forces a move even when place is in the namespace.
  */
+@SuppressWarnings("IdentifierName")
 public class BogusHDAgent extends HDMobileAgent {
 
     static final long serialVersionUID = -8044923045057998565L;

@@ -3,6 +3,7 @@ package emissary.parser;
 /**
  * Exception thrown when parsing has fully completed
  */
+@SuppressWarnings("IdentifierName")
 public class ParserEOFException extends ParserException {
 
     static final long serialVersionUID = -5773911956597083703L;

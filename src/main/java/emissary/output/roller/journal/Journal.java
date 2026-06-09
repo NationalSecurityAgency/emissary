@@ -75,7 +75,7 @@ public final class Journal {
      */
     @Nullable
     public JournalEntry getLastEntry() {
-        return entries.isEmpty() ? null : entries.get(entries.size() - 1);
+        return entries.isEmpty() ? null : entries.getLast();
     }
 
     /**

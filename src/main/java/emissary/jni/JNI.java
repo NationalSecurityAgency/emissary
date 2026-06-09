@@ -31,7 +31,7 @@ import java.util.Map;
  * wishing to loadLibraries from the JniRepositoryPlace should include this class via composition and invoke
  * this.loadLibrary rather than System.loadLibrary()
  */
-@SuppressWarnings("AvoidObjectArrays")
+@SuppressWarnings({"AvoidObjectArrays", "IdentifierName"})
 public class JNI implements Serializable {
 
     static final long serialVersionUID = 3037911106823343480L;
@@ -128,7 +128,7 @@ public class JNI implements Serializable {
             // Get the osname-dependent SAVE_PATH
             final List<String> iparms = this.configG.findEntries(arch + "_LIBRARY_SAVE_PATH");
             if (CollectionUtils.isNotEmpty(iparms)) {
-                this.savePath.put(arch, iparms.get(0));
+                this.savePath.put(arch, iparms.getFirst());
             }
         }
 
@@ -359,7 +359,7 @@ public class JNI implements Serializable {
             }
 
             // Just use the first one
-            final DirectoryEntry entry = entries.get(0);
+            final DirectoryEntry entry = entries.getFirst();
             String repositoryKey = entry.getKey();
 
             // No related place, try a bootstrapping repository

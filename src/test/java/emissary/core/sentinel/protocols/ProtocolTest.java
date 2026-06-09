@@ -282,7 +282,7 @@ class ProtocolTest extends UnitTest {
         protocol.trackers.put("MobileAgent-20", tracker3);
 
         List<AgentTracker> sorted = protocol.trackers.values().stream().sorted().collect(Collectors.toList());
-        assertEquals("MobileAgent-01", sorted.get(0).getAgentName());
+        assertEquals("MobileAgent-01", sorted.getFirst().getAgentName());
         assertEquals("MobileAgent-10", sorted.get(1).getAgentName());
         assertEquals("MobileAgent-20", sorted.get(2).getAgentName());
     }

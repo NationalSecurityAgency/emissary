@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -47,6 +48,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public static final int MAX_BYTE_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     /* Including this here make serialization of this object faster. */
+    @Serial
     private static final long serialVersionUID = 7362181964652092657L;
 
     /* Actual data - migrate away from this towards byte channels. */
@@ -623,7 +625,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         if (this.currentForm.isEmpty()) {
             return null;
         } else {
-            return this.currentForm.remove(0);
+            return this.currentForm.removeFirst();
         }
     }
 
@@ -727,7 +729,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
             // If deleted, add it back on top
             if (count > 0) {
-                this.currentForm.add(0, curForm);
+                this.currentForm.addFirst(curForm);
             }
         }
     }
@@ -868,8 +870,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public void putParameter(final String key, final Object val) {
         this.parameters.removeAll(key);
 
-        if (val instanceof Iterable) {
-            this.parameters.putAll(key, (Iterable<?>) val);
+        if (val instanceof Iterable<?> iterable) {
+            this.parameters.putAll(key, iterable);
         } else {
             this.parameters.put(key, val);
         }
@@ -909,8 +911,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
                 continue;
             }
 
-            if (value instanceof Iterable) {
-                for (final Object v : (Iterable<?>) value) {
+            if (value instanceof Iterable<?> iterable) {
+                for (final Object v : iterable) {
                     if (policy == MergePolicy.KEEP_ALL || policy == MergePolicy.KEEP_EXISTING) {
                         this.parameters.put(name, v);
                     } else if (policy == MergePolicy.DISTINCT) {

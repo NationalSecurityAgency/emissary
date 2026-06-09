@@ -23,8 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ServiceProviderRefreshablePlaceTest extends UnitTest {
 
-    private static final byte[] cfgData = ("SERVICE_KEY = \"UNKNOWN.TEST_PLACE.ID.http://localhost:8001/RefreshablePlaceTest$6050\"\n" +
-            "KEY_1 = 200").getBytes();
+    private static final byte[] cfgData = """
+            SERVICE_KEY = "UNKNOWN.TEST_PLACE.ID.http://localhost:8001/RefreshablePlaceTest$6050"
+            KEY_1 = 200""".getBytes();
 
     @Nullable
     private RefreshablePlaceTest place = null;
