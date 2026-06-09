@@ -4,13 +4,13 @@ updates:
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
-      interval: daily
-    open-pull-requests-limit: 5
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
     commit-message:
       prefix: dependencies
     labels:
       - "dependencies"
-    # Ignore major updates, only allow patch and minor updates
     ignore:
       - dependency-name: "*"
         update-types:
