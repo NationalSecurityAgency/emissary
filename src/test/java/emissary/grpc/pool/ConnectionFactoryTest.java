@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -37,18 +38,18 @@ class ConnectionFactoryTest extends UnitTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"localhost", "dns:///foo.bar"})
+    @ValueSource(strings = {"localhost", "dns:///foo.bar", "foo.bar"})
     void testGoodHostName(String host) {
         Runnable invocation = () -> new ConnectionFactory(host, 1, new ServiceConfigGuide());
         assertDoesNotThrow(invocation::run);
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"dns:foo.bar", "dns:/foo.bar", "dns://foo.bar", "http:///foo.bar", "https:///foo.bar", "foo.bar"})
+    @NullAndEmptySource
     void testBadHostName(String host) {
         Runnable invocation = () -> new ConnectionFactory(host, 1, new ServiceConfigGuide());
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, invocation::run);
-        assertEquals(String.format("Expected \"localhost\" or DNS URI prefix \"dns:///\" but got \"%s\"", host), e.getMessage());
+        assertEquals("Missing required gRPC host configuration", e.getMessage());
     }
 
     @ParameterizedTest
