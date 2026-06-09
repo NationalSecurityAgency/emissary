@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.time.Duration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
@@ -139,7 +140,7 @@ public class ResourceWatcher implements Runnable {
         while (!this.timeToQuit) {
             // Delay this loop
             try {
-                Thread.sleep(100);
+                Thread.sleep(Duration.ofMillis(100));
             } catch (InterruptedException ignore) {
                 Thread.currentThread().interrupt();
             }

@@ -14,6 +14,7 @@ import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -51,7 +52,7 @@ public class GrpcSampleServer implements AutoCloseable {
 
     private static ByteString success(SampleRequest sampleRequest) {
         String requestString = new String(sampleRequest.getQuery().toByteArray());
-        String responseString = String.format("RPC {\"%s\"} completed successfully", requestString);
+        String responseString = String.format(Locale.getDefault(), "RPC {\"%s\"} completed successfully", requestString);
         return ByteString.copyFrom(responseString.getBytes());
     }
 

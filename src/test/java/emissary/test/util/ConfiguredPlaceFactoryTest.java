@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -239,7 +240,7 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
         ClassCastException e = assertThrows(ClassCastException.class,
                 () -> factory.getBuildPlaceException(NullPointerException.class));
-        assertEquals(String.format("Cannot cast %s to %s", actualExceptionName, expectedExceptionName), e.getMessage());
+        assertEquals(String.format(Locale.getDefault(), "Cannot cast %s to %s", actualExceptionName, expectedExceptionName), e.getMessage());
     }
 
     @Test
@@ -250,6 +251,6 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
 
         IllegalStateException e = assertThrows(IllegalStateException.class,
                 () -> factory.getBuildPlaceException(StartupFailureTestPlace.SomeException.class));
-        assertEquals(String.format("Succeeded building %s but expected to throw %s", placeName, exceptionName), e.getMessage());
+        assertEquals(String.format(Locale.getDefault(), "Succeeded building %s but expected to throw %s", placeName, exceptionName), e.getMessage());
     }
 }

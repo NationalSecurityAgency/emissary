@@ -21,6 +21,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
@@ -236,7 +237,7 @@ public class DropOffUtil {
                 }
                 if (!Files.exists(thePath)) {
                     try {
-                        Thread.sleep(50L * tryCount);
+                        Thread.sleep(Duration.ofMillis(50L * tryCount));
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
@@ -1001,7 +1002,7 @@ public class DropOffUtil {
 
         // Keep track of parent's filetype to output; relies on the attachments being sorted
         final Map<String, String> parentTypes = new HashMap<>();
-        final IBaseDataObject tld = payloadList.get(0);
+        final IBaseDataObject tld = payloadList.getFirst();
         final List<String> extendedFileTypes = new ArrayList<>();
         parentTypes.put("1", tld.getFileType());
         for (int i = 0; i < parentParams.size(); i++) {

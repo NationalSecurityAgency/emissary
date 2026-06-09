@@ -137,7 +137,7 @@ class JournaledCoalescerTest extends UnitTest {
         assertTrue(Files.exists(bud1destination));
         List<String> fileResults = Files.readAllLines(bud1destination, StandardCharsets.UTF_8);
         assertEquals(4, fileResults.size());
-        assertTrue(fileResults.containsAll(Arrays.asList(BUD1_LINES.get(0), BUD1_LINES.get(1), BUD2_LINES.get(0), BUD2_LINES.get(1))));
+        assertTrue(fileResults.containsAll(Arrays.asList(BUD1_LINES.getFirst(), BUD1_LINES.get(1), BUD2_LINES.getFirst(), BUD2_LINES.get(1))));
     }
 
     @Test

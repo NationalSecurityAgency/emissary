@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Utilities for dealing with JDOM documents
  */
+@SuppressWarnings("IdentifierName")
 public abstract class AbstractJDOMUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractJDOMUtil.class);
@@ -49,6 +50,7 @@ public abstract class AbstractJDOMUtil {
         builder.setFeature("http://xml.org/sax/features/external-general-entities", false);
         builder.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         builder.setFeature("http://apache.org/xml/features/xinclude", false);
+        builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
         builder.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
         builder.setExpandEntities(false);
         return builder;

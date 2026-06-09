@@ -5,6 +5,7 @@ import emissary.core.Pausable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.Iterator;
 
 /**
@@ -83,18 +84,18 @@ public abstract class QueServer extends Pausable {
 
             if (checkPaused()) {
                 // check to see if we want to stop taking work
-                continue;
+                // continue;
             } else if (space.getSpaceCount() > 0 && queue.canHold(1)) {
                 // If pull mode and we have room for one more.
                 logger.debug("Que can hold more, trying take()");
                 boolean status = space.take();
                 if (status) {
                     try {
-                        Thread.sleep(pollingInterval);
+                        Thread.sleep(Duration.ofMillis(pollingInterval));
                     } catch (InterruptedException ignore) {
                         Thread.currentThread().interrupt();
                     }
-                    continue;
+                    // continue;
                 }
             } else {
                 // We must be in push mode or the queue is full,

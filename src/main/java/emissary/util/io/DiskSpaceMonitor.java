@@ -9,6 +9,7 @@ import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -169,7 +170,7 @@ public class DiskSpaceMonitor {
             isPaused = true;
             if (logger.isDebugEnabled()) {
                 logger.debug("Disk space threshold exceeded: {}% used (threshold: {}%)",
-                        String.format("%.2f", info.usedPercent), pauseThresholdPercent);
+                        String.format(Locale.getDefault(), "%.2f", info.usedPercent), pauseThresholdPercent);
             }
             notifyListenersExceeded(info);
         } else if (isPaused && info.usedPercent < resumeThresholdPercent) {
@@ -177,7 +178,7 @@ public class DiskSpaceMonitor {
             isPaused = false;
             if (logger.isDebugEnabled()) {
                 logger.debug("Disk space recovered: {}% used (threshold: {}%)",
-                        String.format("%.2f", info.usedPercent), resumeThresholdPercent);
+                        String.format(Locale.getDefault(), "%.2f", info.usedPercent), resumeThresholdPercent);
             }
             notifyListenersRecovered(info);
         }

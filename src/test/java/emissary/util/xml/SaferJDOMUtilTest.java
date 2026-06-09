@@ -10,18 +10,20 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@SuppressWarnings("IdentifierName")
 class SaferJDOMUtilTest extends UnitTest {
 
     @Test
     void testDTDDisallowed() {
         final String plistXml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<!DOCTYPE note SYSTEM \"http://www.example.com/Note.dtd\">\n"
-                        + "<note>\n"
-                        + "<to>To</to>\n"
-                        + "<from>From</from>\n"
-                        + "<heading>Reminder</heading>\n"
-                        + "</note>";
+                """
+                        <?xml version="1.0" encoding="UTF-8"?>
+                        <!DOCTYPE note SYSTEM "http://www.example.com/Note.dtd">
+                        <note>
+                        <to>To</to>
+                        <from>From</from>
+                        <heading>Reminder</heading>
+                        </note>""";
 
         assertThrows(JDOMParseException.class, () -> SaferJDOMUtil.createDocument(plistXml));
     }
@@ -29,12 +31,13 @@ class SaferJDOMUtilTest extends UnitTest {
     @Test
     void testNonValidating() throws JDOMException {
         final String plistXml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<note>\n"
-                        + "<to>To</to>\n"
-                        + "<from>From</from>\n"
-                        + "<heading>Reminder</heading>\n"
-                        + "</note>";
+                """
+                        <?xml version="1.0" encoding="UTF-8"?>
+                        <note>
+                        <to>To</to>
+                        <from>From</from>
+                        <heading>Reminder</heading>
+                        </note>""";
 
         final Document doc = SaferJDOMUtil.createDocument(plistXml);
         assertNotNull(doc, "Document should be created");

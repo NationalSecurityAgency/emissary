@@ -38,9 +38,16 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class ServiceConfigGuideTest extends UnitTest {
 
-    private static final String cdata = "PLACE_NAME = TestPlace\n" + "SERVICE_NAME = TEST_PLACE\n" + "SERVICE_TYPE = \"INITIAL\"\n"
-            + "SERVICE_DESCRIPTION = \"Test Place\"\n" + "SERVICE_COST = 50\n" + "SERVICE_QUALITY = 50\n" + "INITIAL_FORM = \"UNKNOWN\"\n"
-            + "SERVICE_PROXY = \"TESTJUNK\"\n";
+    private static final String cdata = """
+            PLACE_NAME = TestPlace
+            SERVICE_NAME = TEST_PLACE
+            SERVICE_TYPE = "INITIAL"
+            SERVICE_DESCRIPTION = "Test Place"
+            SERVICE_COST = 50
+            SERVICE_QUALITY = 50
+            INITIAL_FORM = "UNKNOWN"
+            SERVICE_PROXY = "TESTJUNK"
+            """;
 
     private final InputStream cis = new ByteArrayInputStream(cdata.getBytes());
 
@@ -88,7 +95,7 @@ class ServiceConfigGuideTest extends UnitTest {
         sc.addEntry("FOO", "BAR");
         final List<String> entries = sc.findEntries("FOO");
         assertEquals(1, entries.size(), "Only one entry may be returned");
-        assertEquals("BAR", entries.get(0), "Added entry must be stored and retrieved");
+        assertEquals("BAR", entries.getFirst(), "Added entry must be stored and retrieved");
     }
 
     @Test
@@ -119,7 +126,7 @@ class ServiceConfigGuideTest extends UnitTest {
         sc.removeEntry("FOO", "BAR");
         sc.addEntry("BLUB", "@{FOO}");
         final List<String> entries = sc.findEntries("BLUB");
-        assertEquals("@{FOO}", entries.get(0), "Removed entry may not be used in expansion");
+        assertEquals("@{FOO}", entries.getFirst(), "Removed entry may not be used in expansion");
     }
 
     @Test
@@ -138,7 +145,7 @@ class ServiceConfigGuideTest extends UnitTest {
         sc.removeEntry("FOO", "QUUZ");
         sc.addEntry("BLUB", "@{FOO}");
         final List<String> entries = sc.findEntries("BLUB");
-        assertEquals("BAR", entries.get(0), "Entry must remain in map after non-matching remove");
+        assertEquals("BAR", entries.getFirst(), "Entry must remain in map after non-matching remove");
     }
 
     @Test
@@ -149,7 +156,7 @@ class ServiceConfigGuideTest extends UnitTest {
         sc.addEntry("XYZ", "ZYX");
         sc.removeEntry("FOO", "*");
         final List<String> entries = sc.findEntries("XYZ");
-        assertEquals("ZYX", entries.get(0), "Entry must remain in map after remove all of other parameter");
+        assertEquals("ZYX", entries.getFirst(), "Entry must remain in map after remove all of other parameter");
     }
 
     @Test
@@ -159,7 +166,7 @@ class ServiceConfigGuideTest extends UnitTest {
         sc.addEntry("@{FOO}", "QUUZ");
         final List<String> entries = sc.findEntries("BAR");
         assertEquals(1, entries.size(), "Substitution must take place on LHS");
-        assertEquals("QUUZ", entries.get(0), "Substitution must take place on LHS");
+        assertEquals("QUUZ", entries.getFirst(), "Substitution must take place on LHS");
     }
 
     @Test
@@ -283,8 +290,8 @@ class ServiceConfigGuideTest extends UnitTest {
         List<String> values = new ArrayList<>(map.values());
         assertNotNull(map, "Mapped entries");
         assertEquals(4, map.size(), "Mapped all entries");
-        assertEquals("ONE", keys.get(0), "Mapped key one");
-        assertEquals("BAR", values.get(0), "Mapped value one");
+        assertEquals("ONE", keys.getFirst(), "Mapped key one");
+        assertEquals("BAR", values.getFirst(), "Mapped value one");
         assertEquals("TWO", keys.get(1), "Mapped key two");
         assertEquals("BAZ", values.get(1), "Mapped value two");
         assertEquals("THREE", keys.get(2), "Mapped key three");
@@ -304,13 +311,34 @@ class ServiceConfigGuideTest extends UnitTest {
 
     @Test
     void testEntryPrimitives() throws IOException {
-        final byte[] configData =
-                ("INTEGER = \"123\"\n" + "LONG = \"123456\"\n" + "DOUBLE = \"12345678\"\n" + "BOOLEANT = \"TRUE\"\n" + "BOOLEANF = \"FALSE\"\n"
-                        + "BOOLEANQ = \"BOGUS\"\n" + "SZP = \"123\"\n" + "SZB = \"123b\"\n" + "SZK = \"123k\"\n" + "SZM = \"123m\"\n"
-                        + "SZG = \"123g\"\n" + "SZT = \"123t\"\n" + "SZQ = \"red balloons\"\n" + "SZ1 = \"111\"\n" + "SZ2 = \"222\"\n"
-                        + "SZ3 = \"333\"\n" + "SZ4 = \"444\"\n" + "SZ5 = \"555\"\n" + "SZ6 = \"666\"\n" + "SZ7 = \"777\"\n" + "SZ8 = \"888\"\n"
-                        + "SZ9 = \"999\"\n" + "SZ0 = \"000\"\n" + "STRING = \"chars\"\n" + "LONG2 = 12345678901234\n"
-                        + "OBJECTM = \"MATCH_VALUE\"\n").getBytes();
+        final byte[] configData = """
+                INTEGER = "123"
+                LONG = "123456"
+                DOUBLE = "12345678"
+                BOOLEANT = "TRUE"
+                BOOLEANF = "FALSE"
+                BOOLEANQ = "BOGUS"
+                SZP = "123"
+                SZB = "123b"
+                SZK = "123k"
+                SZM = "123m"
+                SZG = "123g"
+                SZT = "123t"
+                SZQ = "red balloons"
+                SZ1 = "111"
+                SZ2 = "222"
+                SZ3 = "333"
+                SZ4 = "444"
+                SZ5 = "555"
+                SZ6 = "666"
+                SZ7 = "777"
+                SZ8 = "888"
+                SZ9 = "999"
+                SZ0 = "000"
+                STRING = "chars"
+                LONG2 = 12345678901234
+                OBJECTM = "MATCH_VALUE"
+                """.getBytes();
         final ByteArrayInputStream str = new ByteArrayInputStream(configData);
         final Configurator c = ConfigUtil.getConfigInfo(str);
         assertEquals(123, c.findIntEntry("INTEGER", 456), "Int entry with def");
@@ -393,11 +421,19 @@ class ServiceConfigGuideTest extends UnitTest {
 
     @Test
     void testMagicSubstitutions() throws IOException {
-        final String s =
-                "TGT_HOST = \"MYHOST\"\n" + "TGT_DOMAIN = \"MYDOMAIN\"\n" + "TGT_PORT = \"9999\"\n" + "DEBUG = \"true\"\n" + "MYHOST = \"@{HOST}\"\n"
-                        + "MYPROJ = \"@{PRJ_BASE}/bin\"\n" + "MYTMP = \"@{TMPDIR}\"\n" + "MYBOGUS = \"@{HEREITIS}\"\n"
-                        + "MYURL = \"http://@{TGT_HOST}.@{TGT_DOMAIN}:@{TGT_PORT}/\"\n" + "MYLIB = \"thelib-@{OS.NAME}-@{OS.VER}-@{OS.ARCH}.so\"\n"
-                        + "MYCFG = \"@{CONFIG_DIR}@{/}TheStuff.cfg\"\n";
+        final String s = """
+                TGT_HOST = "MYHOST"
+                TGT_DOMAIN = "MYDOMAIN"
+                TGT_PORT = "9999"
+                DEBUG = "true"
+                MYHOST = "@{HOST}"
+                MYPROJ = "@{PRJ_BASE}/bin"
+                MYTMP = "@{TMPDIR}"
+                MYBOGUS = "@{HEREITIS}"
+                MYURL = "http://@{TGT_HOST}.@{TGT_DOMAIN}:@{TGT_PORT}/"
+                MYLIB = "thelib-@{OS.NAME}-@{OS.VER}-@{OS.ARCH}.so"
+                MYCFG = "@{CONFIG_DIR}@{/}TheStuff.cfg"
+                """;
         final ServiceConfigGuide sc = new ServiceConfigGuide(new ByteArrayInputStream(s.getBytes()));
 
         assertEquals("@{HEREITIS}", sc.findStringEntry("MYBOGUS"), "Replacement of bogus key is unexpected");
@@ -456,7 +492,7 @@ class ServiceConfigGuideTest extends UnitTest {
         c1.merge(c2);
         assertEquals("BAZ2", c1.findStringEntry("FOO"), "Newly merged entry is first");
         // #997 -- Would expect the ordering to be [BAR2,CAT2,BAZ2,BAR,CAT,BAZ]
-        assertEquals("BAZ2", c1.findEntries("FOO").get(0), "Merge contains union of values");
+        assertEquals("BAZ2", c1.findEntries("FOO").getFirst(), "Merge contains union of values");
         assertEquals("CAT2", c1.findEntries("FOO").get(1), "Merge contains union of values");
         assertEquals("BAR2", c1.findEntries("FOO").get(2), "Merge contains union of values");
         assertEquals("BAR", c1.findEntries("FOO").get(3), "Merge contains union of values");

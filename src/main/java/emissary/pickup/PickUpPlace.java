@@ -38,6 +38,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import static emissary.core.constants.Parameters.FILE_DATE;
@@ -310,14 +311,14 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
                 @Override
                 public void onDiskSpaceExceeded(Path path, double usedPercent, long freeBytes) {
                     logger.warn("Disk space threshold exceeded for {}: {}% used, {} bytes free",
-                            path, String.format("%.2f", usedPercent), freeBytes);
+                            path, String.format(Locale.getDefault(), "%.2f", usedPercent), freeBytes);
                     PickUpPlace.this.onDiskSpaceExceeded(path, usedPercent, freeBytes);
                 }
 
                 @Override
                 public void onDiskSpaceRecovered(Path path, double usedPercent, long freeBytes) {
                     logger.info("Disk space recovered for {}: {}% used, {} bytes free",
-                            path, String.format("%.2f", usedPercent), freeBytes);
+                            path, String.format(Locale.getDefault(), "%.2f", usedPercent), freeBytes);
                     PickUpPlace.this.onDiskSpaceRecovered(path, usedPercent, freeBytes);
                 }
             });

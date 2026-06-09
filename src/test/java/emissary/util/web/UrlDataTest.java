@@ -99,7 +99,7 @@ class UrlDataTest extends UnitTest {
         // nullify the properties array to show that the UrlData object holds its
         // own list.
         properties = null;
-        assertEquals("VALUE", urlData.getProps().get(0).getValue());
+        assertEquals("VALUE", urlData.getProps().getFirst().getValue());
     }
 
     @Test

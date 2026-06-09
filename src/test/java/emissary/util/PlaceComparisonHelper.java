@@ -14,6 +14,7 @@ import org.apache.commons.lang3.Validate;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Helper class to use during development of a major refactoring or replacement of a Place.
@@ -81,7 +82,7 @@ public class PlaceComparisonHelper {
         // Generate an identifier from the simple class names, e.g. Comparison[ColorPlace==ColourPlace]
         final String oldPlaceName = expectedPlace.getClass().getSimpleName();
         final String newPlaceName = actualPlace.getClass().getSimpleName();
-        final String identifier = String.format("Comparison[%s==%s]", oldPlaceName, newPlaceName);
+        final String identifier = String.format(Locale.getDefault(), "Comparison[%s==%s]", oldPlaceName, newPlaceName);
 
         // Get the method to run (e.g. processHeavyDuty)
         final Method oldProcess = expectedPlace.getClass().getDeclaredMethod(expectedMethodName, IBaseDataObject.class);

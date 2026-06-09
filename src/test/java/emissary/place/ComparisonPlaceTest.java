@@ -78,16 +78,18 @@ class ComparisonPlaceTest extends UnitTest {
 
     @Test
     void testProcessHDPlaceAChanges() throws Exception {
-        final String logMessage = "COMPARISONPLACETEST: Parent Diff: meta key set mismatch -> Expected: [], Actual: [KEY]\n" +
-                "COMPARISONPLACETEST: Child Diff: COMPARISONPLACETEST[index 0] : meta key set mismatch -> Expected: [], Actual: [KEY]";
+        final String logMessage = """
+                COMPARISONPLACETEST: Parent Diff: meta key set mismatch -> Expected: [], Actual: [KEY]
+                COMPARISONPLACETEST: Child Diff: COMPARISONPLACETEST[index 0] : meta key set mismatch -> Expected: [], Actual: [KEY]""";
 
         testComparisonPlace(PROCESSHD_PLACE_A_CHANGES, logMessage);
     }
 
     @Test
     void testProcessHDPlaceBChanges() throws Exception {
-        final String logMessage = "COMPARISONPLACETEST: Parent Diff: meta key set mismatch -> Expected: [KEY], Actual: []\n" +
-                "COMPARISONPLACETEST: Child Diff: COMPARISONPLACETEST[index 0] : meta key set mismatch -> Expected: [KEY], Actual: []";
+        final String logMessage = """
+                COMPARISONPLACETEST: Parent Diff: meta key set mismatch -> Expected: [KEY], Actual: []
+                COMPARISONPLACETEST: Child Diff: COMPARISONPLACETEST[index 0] : meta key set mismatch -> Expected: [KEY], Actual: []""";
 
         testComparisonPlace(PROCESSHD_PLACE_B_CHANGES, logMessage);
     }

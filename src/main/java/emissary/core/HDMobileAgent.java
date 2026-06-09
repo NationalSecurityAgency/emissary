@@ -22,6 +22,7 @@ import java.util.Optional;
  * This mobile agent carries around an ArrayList of payload that can be added onto instead of sprouting. The agent is
  * responsible for getting all payloads on the list processed to completion before going idle
  */
+@SuppressWarnings("IdentifierName")
 public class HDMobileAgent extends MobileAgent {
 
     // Our logger, shadow the superclass for our own name in the log
@@ -563,7 +564,7 @@ public class HDMobileAgent extends MobileAgent {
         if (this.payloadList != null && !this.payloadList.isEmpty()) {
             // Avoid synchronizing this [don't call getPayload()]
             try {
-                sn = this.payloadList.get(0).shortName();
+                sn = this.payloadList.getFirst().shortName();
                 sz = this.payloadList.size();
             } catch (Throwable ignored) {
                 // empty catch block

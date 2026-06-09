@@ -292,7 +292,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         } else {
             // Save the entry in the list
             if (merge) {
-                this.serviceParameters.add(0, anEntry);
+                this.serviceParameters.addFirst(anEntry);
             } else {
                 this.serviceParameters.add(anEntry);
             }
@@ -996,7 +996,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         final List<String> matchingEntries = findEntries(theParameter);
         if (!matchingEntries.isEmpty()) {
             long val = dflt;
-            final String s = matchingEntries.get(0);
+            final String s = matchingEntries.getFirst();
             final char c = Character.toUpperCase(s.charAt(s.length() - 1));
             final String ss = s.substring(0, s.length() - 1);
             boolean broken = false;
@@ -1073,7 +1073,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         if (!matchingEntries.isEmpty()) {
             try {
-                return Integer.parseInt(matchingEntries.get(0));
+                return Integer.parseInt(matchingEntries.getFirst());
             } catch (NumberFormatException e) {
                 logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
@@ -1094,7 +1094,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         if (!matchingEntries.isEmpty()) {
             try {
-                return Long.parseLong(matchingEntries.get(0));
+                return Long.parseLong(matchingEntries.getFirst());
             } catch (NumberFormatException e) {
                 logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
@@ -1115,7 +1115,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         if (!matchingEntries.isEmpty()) {
             try {
-                return Double.parseDouble(matchingEntries.get(0));
+                return Double.parseDouble(matchingEntries.getFirst());
             } catch (NumberFormatException e) {
                 logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
@@ -1135,7 +1135,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         final List<String> matchingEntries = findEntries(theParameter);
 
         if (!matchingEntries.isEmpty()) {
-            String el = matchingEntries.get(0);
+            String el = matchingEntries.getFirst();
             el = el.toUpperCase(Locale.getDefault());
             if (el.startsWith("F")) {
                 return false;
@@ -1171,7 +1171,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     public <T> T findObjectEntry(String theParameter, Function<String, T> parser, T dflt) {
         final List<String> matchingEntries = findEntries(theParameter);
         if (!matchingEntries.isEmpty()) {
-            String el = matchingEntries.get(0);
+            String el = matchingEntries.getFirst();
             return parser.apply(el);
         }
         return dflt;
@@ -1215,8 +1215,8 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         int i = 1;
 
         // First handle the remove entries from "other"
-        if (other instanceof ServiceConfigGuide) {
-            for (final ConfigEntry entry : ((ServiceConfigGuide) other).getRemoveEntries()) {
+        if (other instanceof ServiceConfigGuide guide) {
+            for (final ConfigEntry entry : guide.getRemoveEntries()) {
                 handleNewEntry(entry.getKey(), entry.getValue(), "!=", "<merge>", i++, true);
             }
         }

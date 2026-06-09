@@ -40,7 +40,7 @@ public class HeartbeatAction {
         }
 
         // Make sure it is running if the endpoint is a directory place
-        if (thePlace instanceof IDirectoryPlace && !((IDirectoryPlace) thePlace).isRunning()) {
+        if (thePlace instanceof IDirectoryPlace place && !place.isRunning()) {
             logger.error("Heartbeat failed, directory not running {}", thePlace.getKey());
             return Response.status(500).entity("Heartbeat failed, directory not running " + thePlace.getKey()).build();
         }

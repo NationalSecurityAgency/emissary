@@ -13,6 +13,7 @@ import java.util.ServiceLoader;
  * - Configured via src/main/resources/META-INF/services/emissary.spi.InitializationProvider
  * </pre>
  */
+@SuppressWarnings("IdentifierName")
 public class SPILoader {
 
     private static final Logger logger = LoggerFactory.getLogger(SPILoader.class);

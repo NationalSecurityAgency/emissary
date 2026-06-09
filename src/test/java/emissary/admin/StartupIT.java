@@ -32,6 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings("IdentifierName")
 class StartupIT extends UnitTest {
     @Test
     void testSortPlaces() throws IOException {
@@ -95,7 +96,7 @@ class StartupIT extends UnitTest {
             when(entry.getLocalPlace()).thenReturn(null);
 
             List<DirectoryEntry> dirEntries = new ArrayList<>();
-            dirEntries.add(0, entry);
+            dirEntries.addFirst(entry);
 
             IDirectoryPlace directoryPlace = mock(IDirectoryPlace.class);
             when(directoryPlace.getEntries()).thenReturn(dirEntries);

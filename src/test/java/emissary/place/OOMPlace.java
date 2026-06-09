@@ -5,6 +5,7 @@ import emissary.core.IBaseDataObject;
 import java.io.IOException;
 import java.io.InputStream;
 
+@SuppressWarnings("IdentifierName")
 public class OOMPlace extends ServiceProviderPlace {
     public OOMPlace(String configInfo, String dir, String placeLoc) throws IOException {
         super(configInfo, dir, placeLoc);

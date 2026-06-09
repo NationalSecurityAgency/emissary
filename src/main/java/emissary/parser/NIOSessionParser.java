@@ -15,6 +15,7 @@ import java.util.Arrays;
  * maxChunkSize in order to accomodate a complete session. Sessions larger than maxChunkSize will lead to
  * ParserExceptions
  */
+@SuppressWarnings("IdentifierName")
 public abstract class NIOSessionParser extends SessionParser {
     // Logger
     private final static Logger logger = LoggerFactory.getLogger(NIOSessionParser.class);

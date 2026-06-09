@@ -52,7 +52,7 @@ public class CachePlace extends ServiceProviderPlace {
 
         // Remove oldest if over size limit
         if (cache.size() > cacheSize) {
-            IBaseDataObject evicted = cache.remove(0);
+            IBaseDataObject evicted = cache.removeFirst();
             evictedPayload(evicted);
         }
     }
@@ -72,7 +72,7 @@ public class CachePlace extends ServiceProviderPlace {
     @Nullable
     public synchronized IBaseDataObject pop() {
         if (!cache.isEmpty()) {
-            return cache.remove(0);
+            return cache.removeFirst();
         }
         return null;
     }
@@ -81,7 +81,7 @@ public class CachePlace extends ServiceProviderPlace {
     public void shutDown() {
         logger.debug("Removing {} items in shutdown", cache.size());
         while (!cache.isEmpty()) {
-            cache.remove(0);
+            cache.removeFirst();
         }
         super.shutDown();
     }
