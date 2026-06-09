@@ -155,8 +155,8 @@ public abstract class AbstractFilter implements IDropOffFilter {
             try {
                 final Object filterConditionObj = emissary.core.Factory.create(clazz);
 
-                if (filterConditionObj instanceof IFilterCondition) {
-                    this.filterCondition = (IFilterCondition) filterConditionObj;
+                if (filterConditionObj instanceof IFilterCondition condition) {
+                    this.filterCondition = condition;
                     // initialize using the config
                     filterCondition.initialize(filterConfig);
                 } else {

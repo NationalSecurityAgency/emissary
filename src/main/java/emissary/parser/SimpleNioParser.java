@@ -85,8 +85,8 @@ public class SimpleNioParser extends NIOSessionParser {
             Object tmp = entry.getValue();
             if (tmp != null) {
                 String value;
-                if (tmp instanceof PositionRecord) {
-                    value = new String(makeDataSlice((PositionRecord) tmp)).trim();
+                if (tmp instanceof PositionRecord record) {
+                    value = new String(makeDataSlice(record)).trim();
                 } else {
                     value = tmp.toString();
                 }
@@ -180,7 +180,7 @@ public class SimpleNioParser extends NIOSessionParser {
             return null;
         }
         if (records.size() == 1) {
-            return makeDataSlice(records.get(0));
+            return makeDataSlice(records.getFirst());
         }
 
         int total = 0;

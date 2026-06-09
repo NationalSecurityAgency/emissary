@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+@SuppressWarnings("IdentifierName")
 public class OSReleaseUtil {
 
     private static final Path OS_RELEASE_PATH = Path.of("/etc/os-release");

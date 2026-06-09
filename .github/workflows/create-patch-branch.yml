@@ -10,7 +10,7 @@ on: # yamllint disable-line rule:truthy
         default: ""
 
 env:
-  JAVA_VERSION: "11"
+  JAVA_VERSION: "21"
   JAVA_DISTRIBUTION: "corretto"
 
 permissions:

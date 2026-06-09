@@ -117,7 +117,7 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
      */
     @Override
     public void shutDown() {
-        logger.info("*** Shutting Down: " + keys.get(0));
+        logger.info("*** Shutting Down: " + keys.getFirst());
         if (queServer != null) {
             logger.info("*** Stopping queue monitor ");
             queServer.shutdown();

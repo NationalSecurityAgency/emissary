@@ -263,8 +263,8 @@ public class KffDataObjectHandler {
 
         if (d.hasParameter(KFF_PARAM_MD5)) {
             var paramValue = d.getParameter(KFF_PARAM_MD5);
-            if (!paramValue.isEmpty() && paramValue.get(0) != null) {
-                String originalMD5 = paramValue.get(0).toString();
+            if (!paramValue.isEmpty() && paramValue.getFirst() != null) {
+                String originalMD5 = paramValue.getFirst().toString();
                 // only preserve the KFF_PARAM_MD5 value if it's not blank
                 return StringUtils.trimToNull(originalMD5);
             }
@@ -282,8 +282,8 @@ public class KffDataObjectHandler {
     static boolean previouslyComputedMd5HasChanged(IBaseDataObject d, String originalMD5) {
         if (StringUtils.isNotBlank(originalMD5) && d.hasParameter(KFF_PARAM_MD5)) {
             var paramValue = d.getParameter(KFF_PARAM_MD5);
-            if (!paramValue.isEmpty() && paramValue.get(0) != null) {
-                String currentMD5 = paramValue.get(0).toString();
+            if (!paramValue.isEmpty() && paramValue.getFirst() != null) {
+                String currentMD5 = paramValue.getFirst().toString();
                 return !originalMD5.equals(currentMD5);
             }
         }

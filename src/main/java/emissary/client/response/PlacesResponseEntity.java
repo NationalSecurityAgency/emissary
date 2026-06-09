@@ -8,12 +8,14 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
 import java.util.HashSet;
 import java.util.Set;
 
 @XmlRootElement(name = "places")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PlacesResponseEntity extends BaseResponseEntity {
+    @Serial
     private static final long serialVersionUID = 5686691885767273319L;
 
     private static final Logger logger = LoggerFactory.getLogger(PlacesResponseEntity.class);

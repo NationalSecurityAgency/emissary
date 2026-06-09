@@ -206,7 +206,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
     public int filter(final List<IBaseDataObject> list, final Map<String, Object> params, final OutputStream output) {
 
         // We subtract 1 from the list because the first element is currently assumed to be the TLD
-        list.get(0).putParameter("DESCENDANT_COUNT", list.size() - 1);
+        list.getFirst().putParameter("DESCENDANT_COUNT", list.size() - 1);
 
         try {
             output.write(convert(list, params));

@@ -83,7 +83,7 @@ class DirectoryPlaceTest extends UnitTest {
         final List<DirectoryEntry> allEntries = this.primary.getEntries();
         // Two for the keys, one primary and client directories shadowing
         assertEquals(3, allEntries.size(), "Entries made " + allEntries);
-        final DirectoryEntry de = allEntries.get(0);
+        final DirectoryEntry de = allEntries.getFirst();
         assertNotNull(de, "Entry produced");
         assertEquals(5050, de.getExpense(), "Expense computation");
     }
@@ -100,7 +100,7 @@ class DirectoryPlaceTest extends UnitTest {
         this.client.addPlaces(keys);
         final List<DirectoryEntry> allEntries = this.primary.getEntries();
         assertTrue(allEntries.size() > 0, "Entry made");
-        final DirectoryEntry de = allEntries.get(0);
+        final DirectoryEntry de = allEntries.getFirst();
         assertNotNull(de, "Entry produced");
         assertEquals(5050, de.getExpense(), "Expense computation");
     }

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+@SuppressWarnings("IdentifierName")
 public class ComparisonPlaceTestProcessHDPlace extends ServiceProviderPlace {
     private final ImmutableMap<String, String> metadataKeyValueMap;
 

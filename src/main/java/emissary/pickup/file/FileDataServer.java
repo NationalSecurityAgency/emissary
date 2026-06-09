@@ -10,6 +10,7 @@ import org.slf4j.MDC;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.time.Duration;
 
 /**
  * Thread to monitor a directory for files
@@ -155,7 +156,7 @@ public class FileDataServer extends Pausable {
             // get right back in there...
             if (processedCount == 0) {
                 try {
-                    Thread.sleep(pollingInterval);
+                    Thread.sleep(Duration.ofMillis(pollingInterval));
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }

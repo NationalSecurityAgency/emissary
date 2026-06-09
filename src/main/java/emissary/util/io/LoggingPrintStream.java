@@ -132,8 +132,7 @@ public class LoggingPrintStream extends PrintStream {
      */
     @Override
     public void println(final Object object) {
-        if (object instanceof Throwable) {
-            final Throwable throwable = (Throwable) object;
+        if (object instanceof Throwable throwable) {
 
             try (StringWriter stringWriter = new StringWriter();
                     PrintWriter printWriter = new PrintWriter(stringWriter)) {

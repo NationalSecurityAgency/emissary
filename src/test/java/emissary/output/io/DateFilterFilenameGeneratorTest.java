@@ -34,15 +34,15 @@ class DateFilterFilenameGeneratorTest extends UnitTest {
         assertNotEquals(filename1, filename2);
 
         // Test that filename starts with date (11 digits)
-        assertTrue(NumberUtils.isDigits(filename1Parts.get(0)));
-        assertEquals(11, filename1Parts.get(0).length());
+        assertTrue(NumberUtils.isDigits(filename1Parts.getFirst()));
+        assertEquals(11, filename1Parts.getFirst().length());
 
         // Test that uuid is valid
         assertEquals(UUID.fromString(filename1Parts.get(1)).toString(), filename1Parts.get(1));
 
         // Test that filename has 4 parts and filter name is present at the end
         assertEquals(4, filename1Parts.size());
-        assertEquals(FAKE_FILTER, filename1Parts.get(filename1Parts.size() - 1));
+        assertEquals(FAKE_FILTER, filename1Parts.getLast());
     }
 
     @Test
@@ -63,7 +63,7 @@ class DateFilterFilenameGeneratorTest extends UnitTest {
 
         // Only expect 3 parts now and that node name is the last element
         assertEquals(3, filenameParts.size());
-        assertEquals(System.getProperty(EmissaryNode.NODE_NAME_PROPERTY), filenameParts.get(filenameParts.size() - 1));
+        assertEquals(System.getProperty(EmissaryNode.NODE_NAME_PROPERTY), filenameParts.getLast());
     }
 
 

@@ -107,8 +107,8 @@ public class SizeUtil {
             // Get the size of the List of values
             Collection<Object> values = entry.getValue();
             for (Object v : values) {
-                if (v instanceof String) {
-                    totalSize += sizeof((String) v);
+                if (v instanceof String string) {
+                    totalSize += sizeof(string);
                     totalSize += refSize;
                 }
                 // TODO: factor in non-String objects

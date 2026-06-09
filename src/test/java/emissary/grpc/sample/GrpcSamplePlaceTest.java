@@ -25,6 +25,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
@@ -181,7 +182,7 @@ class GrpcSamplePlaceTest extends UnitTest {
 
                 Runnable invocation = () -> Objects.requireNonNull(place).processEndpoint(o, invalidEndpoint);
                 IllegalArgumentException e = assertThrows(IllegalArgumentException.class, invocation::run);
-                assertEquals(String.format("Target-ID %s was never configured", invalidEndpoint), e.getMessage());
+                assertEquals(String.format(Locale.getDefault(), "Target-ID %s was never configured", invalidEndpoint), e.getMessage());
             }
         }
     }

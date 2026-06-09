@@ -7,6 +7,7 @@ import jakarta.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.time.Duration;
 import java.time.Instant;
 
 public class WatcherThread extends Thread {
@@ -47,7 +48,7 @@ public class WatcherThread extends Thread {
         while (flag && (ii++ < nTries)) {
             if (proc != null) {
                 try {
-                    sleep(partialDelay);
+                    sleep(Duration.ofMillis(partialDelay));
 
                     if (ii == nTries) {
                         try {
@@ -80,7 +81,7 @@ public class WatcherThread extends Thread {
 
         System.out.println(name + " begins at " + Instant.now());
 
-        Process proc = Runtime.getRuntime().exec(args[1]);
+        Process proc = Runtime.getRuntime().exec(args[1].split(" "));
 
         wt.setProcess(proc);
 

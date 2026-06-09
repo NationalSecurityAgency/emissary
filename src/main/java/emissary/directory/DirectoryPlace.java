@@ -190,7 +190,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         // the peer discovery mechanism when they zone transfer
         // this entry
         final List<String> list = new ArrayList<>();
-        list.add(keys.get(0));
+        list.add(keys.getFirst());
         addPlaces(list);
         this.running = true;
     }
@@ -488,7 +488,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
                         staleEntries.add(d);
                     } else if (matches.size() == 1) {
                         // remove from newEntries if exact dup
-                        final DirectoryEntry me = matches.get(0);
+                        final DirectoryEntry me = matches.getFirst();
                         if (me.getFullKey().equals(d.getFullKey())) {
                             logger.debug("Removing duplcate key from incoming map {}", me.getKey());
                             newEntries.removeEntry(me.getKey());
@@ -551,7 +551,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
                 final List<DirectoryEntry> matches = loadMap.collectAllMatching(e.getKey());
                 if (matches.isEmpty()) {
                     newEntries.addEntry(e);
-                } else if ((matches.size() == 1) && e.isBetterThan(matches.get(0))) {
+                } else if ((matches.size() == 1) && e.isBetterThan(matches.getFirst())) {
                     costChangeEntries.addEntry(e);
                 }
             }
@@ -836,7 +836,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     @Override
     public void addPlaces(@Nullable final List<String> keys) {
         // Validate contract
-        if ((keys == null) || keys.isEmpty() || (keys.get(0) == null)) {
+        if ((keys == null) || keys.isEmpty() || (keys.getFirst() == null)) {
             logger.error("addPlaces skipping place with no keys");
             return;
         }
@@ -876,7 +876,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
         // These keys better all be from the same emissary node
         // We should check that they are and throw if not
-        final String place = entryList.get(0).getKey(); // !!
+        final String place = entryList.getFirst().getKey(); // !!
         final boolean isLocal = isLocal(place);
 
         if (logger.isDebugEnabled()) {
@@ -1370,8 +1370,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         final String name = "DirectoryPlace";
 
         final Object nsval = Namespace.lookup(name);
-        if (nsval instanceof IDirectoryPlace) {
-            return (IDirectoryPlace) nsval;
+        if (nsval instanceof IDirectoryPlace place) {
+            return place;
         }
 
         throw new EmissaryException("Bad directory place lookup found " + nsval);

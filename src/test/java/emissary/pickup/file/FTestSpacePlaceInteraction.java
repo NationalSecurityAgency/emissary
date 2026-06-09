@@ -215,7 +215,7 @@ class FTestSpacePlaceInteraction extends FunctionalTest {
             assertEquals(1, space.getPendingQueueSize(), "File marked pending");
 
             assertEquals(1, bundle.size(), "Bundle should contain the one extra file");
-            assertEquals(extrafile.getPath(), bundle.getFileNameList().get(0), "Bundle should match extra file name");
+            assertEquals(extrafile.getPath(), bundle.getFileNameList().getFirst(), "Bundle should match extra file name");
             assertEquals(simple, bundle.getSimpleMode(), "Bundle should mirror work space simple mode");
             space.workCompleted(fakeKey, bundle.getBundleId(), true);
             pause(t4);

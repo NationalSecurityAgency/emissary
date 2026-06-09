@@ -55,7 +55,7 @@ class DirectoryEntryListTest extends UnitTest {
     void testInsert() {
         assertTrue(this.dl.add(this.d), "Add good item");
         assertEquals(1, this.dl.size(), "Insert successful");
-        final DirectoryEntry o = this.dl.get(0);
+        final DirectoryEntry o = this.dl.getFirst();
         assertNotNull(o, "Object retrieved");
     }
 
@@ -64,7 +64,7 @@ class DirectoryEntryListTest extends UnitTest {
         assertTrue(this.dl.add(this.d), "Add good item");
         assertTrue(this.dl.add(this.d), "Add another good item");
         assertEquals(1, this.dl.size(), "Inserts successful");
-        final DirectoryEntry o = this.dl.get(0);
+        final DirectoryEntry o = this.dl.getFirst();
         assertNotNull(o, "Object retrieved");
     }
 
@@ -83,7 +83,7 @@ class DirectoryEntryListTest extends UnitTest {
         assertTrue(this.dl.add(this.d), "Add good item");
         assertTrue(this.dl.add(this.d2), "Add another good item");
         assertEquals(2, this.dl.size(), "Inserts successful");
-        final DirectoryEntry o = this.dl.get(0);
+        final DirectoryEntry o = this.dl.getFirst();
         assertNotNull(o, "Object retrieved");
         final DirectoryEntry o2 = this.dl.get(1);
         assertNotNull(o2, "Object retrieved");
@@ -95,7 +95,7 @@ class DirectoryEntryListTest extends UnitTest {
         assertTrue(dl.add(d2), "Add another good item"); // add FOOPLACE first
         assertTrue(dl.add(d3), "Add another good item"); // then add BARPLACE
         assertEquals(3, dl.size(), "Inserts successful");
-        DirectoryEntry o = dl.get(0);
+        DirectoryEntry o = dl.getFirst();
         assertNotNull(o, "Object was null");
         DirectoryEntry o2 = dl.get(1);
         assertNotNull(o2, "Object was null");
@@ -170,9 +170,9 @@ class DirectoryEntryListTest extends UnitTest {
         assertEquals(this.dl.size(), dl3.size(), "Copy ctor size");
 
         // Assure that the copy is deep
-        final DirectoryEntry e1 = dl3.get(0);
+        final DirectoryEntry e1 = dl3.getFirst();
         e1.setCost(cost * 4);
-        assertEquals(cost, this.dl.get(0).getCost(), "Cost of original entry unchanged");
+        assertEquals(cost, this.dl.getFirst().getCost(), "Cost of original entry unchanged");
 
         // Test possible NPE path
         final DirectoryEntryList dl4 = new DirectoryEntryList(null);

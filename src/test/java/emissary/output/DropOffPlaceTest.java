@@ -77,7 +77,7 @@ class DropOffPlaceTest extends UnitTest {
         final List<IBaseDataObject> val = this.place.agentProcessHeavyDuty(payloadList);
         assertEquals(1, payloadList.size(), "All payloads still on list");
         assertEquals(0, val.size(), "Nothing returned from drop off");
-        assertEquals(0, payloadList.get(0).currentFormSize(), "All current forms removed");
+        assertEquals(0, payloadList.getFirst().currentFormSize(), "All current forms removed");
     }
 
 

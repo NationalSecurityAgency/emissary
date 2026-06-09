@@ -271,8 +271,7 @@ public final class IBaseDataObjectHelper {
 
         return Optional.ofNullable(preferredViewNamePatterns).orElse(Collections.emptyList()).stream()
                 .map(preferredViewNamePattern -> findFirstAlternameViewNameByRegex(payload, preferredViewNamePattern))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMap(Optional::stream)
                 .map(payload::getAlternateView)
                 .findFirst().orElse(payload.data());
     }

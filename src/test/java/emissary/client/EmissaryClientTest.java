@@ -71,7 +71,7 @@ class EmissaryClientTest extends UnitTest {
     @Test
     void testRequestConfigFromConfigDir() throws IOException {
         logger.debug("Starting testRequestConfigFromConfigDir");
-        Path cfgFile = Path.of(ConfigUtil.getConfigDirs().get(0) + "/emissary.client.EmissaryClient.cfg");
+        Path cfgFile = Path.of(ConfigUtil.getConfigDirs().getFirst() + "/emissary.client.EmissaryClient.cfg");
         try (OutputStream out = Files.newOutputStream(cfgFile, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
             int newConnectionTimeout = 5000;
             int newConnectionManagerTimeout = 4000;

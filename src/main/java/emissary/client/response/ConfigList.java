@@ -6,6 +6,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +15,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.NONE)
 public class ConfigList implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 746634175699321058L;
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigList.class);

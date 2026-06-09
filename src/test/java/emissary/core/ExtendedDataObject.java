@@ -4,6 +4,7 @@ import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ public class ExtendedDataObject extends BaseDataObject implements Serializable, 
     /**
      * provide uid for serialization
      */
+    @Serial
     private static final long serialVersionUID = -1487131411076568497L;
 
     private static final Logger logger = LoggerFactory.getLogger(ExtendedDataObject.class);

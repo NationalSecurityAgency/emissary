@@ -140,8 +140,7 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
      * @return {@code true} if the {@link RetryHandler} should try again, otherwise {@code false}
      */
     protected boolean retryOnException(Throwable t) {
-        if (t instanceof StatusRuntimeException) {
-            StatusRuntimeException e = (StatusRuntimeException) t;
+        if (t instanceof StatusRuntimeException e) {
             return RETRY_GRPC_CODES.contains(e.getStatus().getCode());
         }
         return t instanceof PoolException;

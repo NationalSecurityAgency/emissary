@@ -2,6 +2,8 @@ package emissary.config;
 
 import emissary.core.EmissaryException;
 
+import java.io.Serial;
+
 /**
  * This exceptionis used for tracking internal configuration errors
  */
@@ -10,6 +12,7 @@ public class ConfigSyntaxException extends EmissaryException {
     /**
      * provide uid for serialization
      */
+    @Serial
     private static final long serialVersionUID = -6742020817447824759L;
 
     /**

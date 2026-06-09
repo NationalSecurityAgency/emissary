@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    name: RHEL8 standard build on Java 11 with compiler target 11
+    name: RHEL8 standard build on Java 21 with compiler target 21
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -39,8 +39,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java-compiler: ['11', '17']
-        java-version: ['21']
+        java-compiler: ['21']
+        java-version: ['21', '25']
     continue-on-error: true
 
     steps:
@@ -71,7 +71,7 @@ jobs:
           cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max' || '' }}
 
   centos7-build:
-    name: Centos7 legacy build on Java 11 with compiler target 11
+    name: Centos7 legacy build on Java 21
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -100,7 +100,7 @@ jobs:
           cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max' || '' }}
 
   macos-build:
-    name: MacOS non-standard build on Java 21 with compiler target 11
+    name: MacOS non-standard build on Java 21
     runs-on: macos-14
     steps:
       - name: Checkout repo
@@ -131,7 +131,7 @@ jobs:
       - name: Configure Java & Maven
         uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
         with:
-          java-version: 11
+          java-version: 21
           distribution: "corretto"
 
       - name: Build with Maven
