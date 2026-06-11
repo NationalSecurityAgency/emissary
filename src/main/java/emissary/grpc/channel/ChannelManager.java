@@ -5,6 +5,7 @@ import emissary.config.Configurator;
 import io.grpc.ChannelCredentials;
 import io.grpc.Grpc;
 import io.grpc.ManagedChannel;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +34,6 @@ public abstract class ChannelManager implements AutoCloseable {
     public static final String MAX_INBOUND_MESSAGE_BYTE_SIZE = GRPC_CHANNEL_PREFIX + "MAX_INBOUND_MESSAGE_BYTE_SIZE";
     public static final String MAX_INBOUND_METADATA_BYTE_SIZE = GRPC_CHANNEL_PREFIX + "MAX_INBOUND_METADATA_BYTE_SIZE";
 
-    protected static final String LOCALHOST = "localhost";
-    protected static final String DNS_PREFIX = "dns:///";
     protected static final int MAX_PORT_NUMBER = 0xFFFF;
 
     protected final Logger logger;
@@ -65,9 +64,9 @@ public abstract class ChannelManager implements AutoCloseable {
     protected ChannelManager(String host, int port, Configurator configG, ChannelCredentials credentials) {
         this.logger = LoggerFactory.getLogger(this.getClass().getName());
 
-        this.host = validateHostName(host);
-        this.port = validatePortNumber(port);
-        this.target = createTarget(host, port);
+        this.host = host;
+        this.port = port;
+        this.target = createTarget();
 
         // How often (in milliseconds) to send pings when the connection is idle
         this.keepAliveMillis = configG.findLongEntry(KEEP_ALIVE_MILLIS, 60000L);
@@ -91,23 +90,14 @@ public abstract class ChannelManager implements AutoCloseable {
         this.channelCredentials = credentials;
     }
 
-    protected String validateHostName(String host) {
-        if (host.equals(LOCALHOST) || host.startsWith(DNS_PREFIX)) {
-            return host;
+    private String createTarget() {
+        if (StringUtils.isEmpty(host)) {
+            throw new IllegalArgumentException("Missing required gRPC host configuration");
         }
-        throw new IllegalArgumentException(
-                String.format("Expected \"%s\" or DNS URI prefix \"%s\" but got \"%s\"", LOCALHOST, DNS_PREFIX, host));
-    }
-
-    protected int validatePortNumber(int port) {
-        if (port > 0 && port <= MAX_PORT_NUMBER) {
-            return port;
+        if (port <= 0 || port > MAX_PORT_NUMBER) {
+            throw new IllegalArgumentException(
+                    String.format("Port \"%d\" is outside valid range [1, %d]", port, MAX_PORT_NUMBER));
         }
-        throw new IllegalArgumentException(
-                String.format("Port \"%d\" is outside valid range [1, %d]", port, MAX_PORT_NUMBER));
-    }
-
-    protected String createTarget(String host, int port) {
         return host + ":" + port;
     }
 
