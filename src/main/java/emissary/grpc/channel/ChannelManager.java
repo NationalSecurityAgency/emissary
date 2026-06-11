@@ -112,13 +112,7 @@ public abstract class ChannelManager implements AutoCloseable {
 
     public static ChannelManager ofSubClass(
             Class<? extends ChannelManager> clz, String host, int port, Configurator configG, ChannelCredentials credentials) {
-        try {
-            return clz
-                    .getDeclaredConstructor(String.class, int.class, Configurator.class, ChannelCredentials.class)
-                    .newInstance(host, port, configG, credentials);
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException("Unable to instantiate new ChannelManager: " + e.getMessage(), e);
-        }
+        return ChannelManagerRegistry.ofSubClass(clz, host, port, configG, credentials);
     }
 
     /**

@@ -12,6 +12,10 @@ import io.grpc.ManagedChannel;
 public class SingletonChannelManager extends ChannelManager {
     private final ManagedChannel channel;
 
+    static {
+        ChannelManagerRegistry.register(SingletonChannelManager.class, SingletonChannelManager::new);
+    }
+
     /**
      * Constructs a new gRPC connection factory using the provided host, port, and configuration.
      *

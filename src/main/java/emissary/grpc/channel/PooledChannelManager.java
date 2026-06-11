@@ -47,6 +47,10 @@ public class PooledChannelManager extends ChannelManager implements PooledObject
     public static final String RETRIEVAL_ORDER = GRPC_CHANNEL_POOL_PREFIX + "RETRIEVAL_ORDER";
     public static final String TEST_BEFORE_BORROW = GRPC_CHANNEL_POOL_PREFIX + "TEST_BEFORE_BORROW";
 
+    static {
+        ChannelManagerRegistry.register(PooledChannelManager.class, PooledChannelManager::new);
+    }
+
     private final ObjectPool<ManagedChannel> channelPool;
 
     /**
