@@ -6,6 +6,7 @@ import emissary.test.core.junit5.UnitTest;
 import io.grpc.InsecureChannelCredentials;
 import io.grpc.ManagedChannel;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -14,18 +15,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ChannelManagerTest extends UnitTest {
     @ParameterizedTest
-    @ValueSource(strings = {"localhost", "dns:///foo.bar"})
+    @ValueSource(strings = {"localhost", "dns:///foo.bar", "foo.bar"})
     void testGoodHostName(String host) {
         Runnable invocation = () -> new TestChannelManager(host, 1).close();
         assertDoesNotThrow(invocation::run);
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"dns:foo.bar", "dns:/foo.bar", "dns://foo.bar", "http:///foo.bar", "https:///foo.bar", "foo.bar"})
+    @NullAndEmptySource
     void testBadHostName(String host) {
         Runnable invocation = () -> new TestChannelManager(host, 1).close();
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, invocation::run);
-        assertEquals(String.format("Expected \"localhost\" or DNS URI prefix \"dns:///\" but got \"%s\"", host), e.getMessage());
+        assertEquals("Missing required gRPC host configuration", e.getMessage());
     }
 
     @ParameterizedTest
