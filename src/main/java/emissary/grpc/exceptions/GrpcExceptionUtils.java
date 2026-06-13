@@ -58,7 +58,7 @@ public class GrpcExceptionUtils {
 
     private static String getStatusCodeDescription(Status status, String message) {
         String description = status.getDescription();
-        if (description != null) {
+        if (description != null && !description.equals(message)) {
             return String.format("%s (%s)", description, message);
         }
         return message;
