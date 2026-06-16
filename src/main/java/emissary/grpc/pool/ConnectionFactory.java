@@ -5,6 +5,7 @@ import emissary.config.Configurator;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import jakarta.annotation.Nullable;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolUtils;
@@ -59,6 +60,8 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
     public static final String GRPC_POOL_MIN_IDLE_CONNECTIONS = "GRPC_POOL_MIN_IDLE_CONNECTIONS";
     public static final String GRPC_POOL_RETRIEVAL_ORDER = "GRPC_POOL_RETRIEVAL_ORDER";
 
+    private static final int MAX_PORT_NUMBER = 0xFFFF;
+
     protected static final Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
 
     private final GenericObjectPoolConfig<ManagedChannel> poolConfig = new GenericObjectPoolConfig<>();
@@ -87,7 +90,7 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
     public ConnectionFactory(String host, int port, Configurator configG) {
         this.host = host;
         this.port = port;
-        this.target = host + ":" + port; // target may be a host or dns service
+        this.target = createTarget();
 
         // How often (in milliseconds) to send pings when the connection is idle
         this.keepAliveMillis = configG.findLongEntry(GRPC_KEEP_ALIVE_MILLIS, 60000L);
@@ -131,6 +134,17 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
         PoolRetrievalOrdering retrievalOrdering = configG.findObjectEntry(
                 GRPC_POOL_RETRIEVAL_ORDER, PoolRetrievalOrdering::valueOf, PoolRetrievalOrdering.LIFO);
         this.poolConfig.setLifo(retrievalOrdering.equals(PoolRetrievalOrdering.LIFO));
+    }
+
+    private String createTarget() {
+        if (StringUtils.isEmpty(host)) {
+            throw new IllegalArgumentException("Missing required gRPC host configuration");
+        }
+        if (port <= 0 || port > MAX_PORT_NUMBER) {
+            throw new IllegalArgumentException(
+                    String.format("Port \"%d\" is outside valid range [1, %d]", port, MAX_PORT_NUMBER));
+        }
+        return host + ":" + port;
     }
 
     /**
