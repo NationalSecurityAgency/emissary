@@ -23,6 +23,27 @@ RUN rpm --import https://yum.corretto.aws/corretto.key \
 
 
 
+FROM redhat/ubi10 AS base_ubi10
+
+ENV JAVA_TOOL_OPTIONS -Dfile.encoding=UTF8
+ENV PROJECT_BASE=/opt/emissary
+
+ARG java_version=11
+ARG user=emissary
+ARG group=emissary
+ARG uid=1000
+ARG gid=1000
+RUN rpm --import https://yum.corretto.aws/corretto.key \
+     && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
+     && dnf install -y java-${java_version}-amazon-corretto-devel \
+     && dnf install -y glibc-langpack-en lsof git \
+     && groupadd -g ${gid} ${group} \
+     && useradd -u ${uid} -g ${group} -m -s /bin/sh ${user} \
+     && dnf clean all -y \
+     && rm -rf /var/cache/yum
+
+
+
 FROM centos:7 AS base_centos7
 
 ENV JAVA_TOOL_OPTIONS -Dfile.encoding=UTF8
