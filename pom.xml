@@ -1763,6 +1763,20 @@
       </build>
     </profile>
     <profile>
+      <!-- Java 25 runtime overrides. Activated by the runtime JDK version so the standard
+           (Java 11/17/21) builds keep the pinned versions. Add other Java 25-only dependency or
+           plugin overrides here.
+           impsort: 1.9.0 bundles a javaparser without a JAVA_25 language level, so it fails on a
+           Java 25 runtime; 1.13.0 bundles javaparser 3.28.0 which supports Java 25. -->
+      <id>j25</id>
+      <activation>
+        <jdk>[25,)</jdk>
+      </activation>
+      <properties>
+        <plugin.impsort-maven.version>1.13.0</plugin.impsort-maven.version>
+      </properties>
+    </profile>
+    <profile>
       <!-- on by default, but disable with '-P !errorprone' or '-DskipErrorProne' -->
       <id>errorprone</id>
       <activation>
