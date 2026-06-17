@@ -15,6 +15,7 @@ public class AgentThreadGroup extends ThreadGroup {
     }
 
     @Override
+    @SuppressWarnings("removal") // ThreadDeath is deprecated for removal as of Java 25; retained for legacy agent shutdown handling
     public void uncaughtException(Thread thread, Throwable throwable) {
         if (throwable instanceof ThreadDeath) {
             logger.error("Fatal ThreadDeath on {} had ThreadDeath exception ", thread.getName(), throwable);
