@@ -51,6 +51,23 @@ class ServerCommandIT extends UnitTest {
     }
 
     @Test
+    void testBlankConfigDirInListRejected() {
+        String firstConfig = PROJECT_BASE + "/config";
+        // an empty token (a,,b) must not silently resolve to the current working directory
+        assertThrows(Exception.class,
+                () -> ServerCommand.parse(ServerCommand.class, "-b", PROJECT_BASE, "-m", "standalone",
+                        "-c", firstConfig + ",," + firstConfig));
+    }
+
+    @Test
+    void testConfigDirWhitespaceTrimmed(@TempDir Path extraConfig) throws Exception {
+        String firstConfig = PROJECT_BASE + "/config";
+        ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-b", PROJECT_BASE, "-m", "standalone",
+                "-c", firstConfig + " , " + extraConfig);
+        assertEquals(List.of(Path.of(firstConfig), extraConfig), cmd.getConfigDirs());
+    }
+
+    @Test
     void testModeAddedToFlavors() throws Exception {
         ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-b ", PROJECT_BASE_SLASH + "/", "-m", "standalone");
         assertEquals("STANDALONE", cmd.getFlavor());

@@ -28,7 +28,15 @@ public class PathExistsConverter implements ITypeConverter<Path> {
     }
 
     public Path convert(String option, String value) {
-        Path p = Path.of(Strings.CS.removeEnd(value, "/"));
+        String trimmed = value == null ? "" : value.trim();
+        // reject blank entries (e.g. an empty token from a comma-separated list), which would otherwise resolve to the
+        // current working directory via Path.of("")
+        if (trimmed.isEmpty()) {
+            String msg = String.format("The option '%s' was configured with a blank path", option);
+            LOG.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+        Path p = Path.of(Strings.CS.removeEnd(trimmed, "/"));
         // ensure the value exists
         if (!Files.exists(p)) {
             String msg = String.format("The option '%s' was configured with path '%s' which does not exist", option, p);

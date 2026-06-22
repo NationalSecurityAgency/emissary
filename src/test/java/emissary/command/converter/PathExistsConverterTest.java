@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -52,6 +53,20 @@ class PathExistsConverterTest extends UnitTest {
     @Test
     void convertFailed() {
         assertThrows(IllegalArgumentException.class, () -> converter.convert("hello"));
+    }
+
+    @Test
+    void blankRejected() {
+        assertThrows(IllegalArgumentException.class, () -> converter.convert(""));
+        assertThrows(IllegalArgumentException.class, () -> converter.convert("   "));
+    }
+
+    @Test
+    void trimsWhitespace() {
+        // leading/trailing whitespace is trimmed before resolving the path
+        Path result = converter.convert("  " + path + "  ");
+
+        assertEquals(path, result);
     }
 
 }
