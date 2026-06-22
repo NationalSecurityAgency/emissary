@@ -71,6 +71,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -725,7 +726,7 @@ public class EmissaryServer {
     private ContextHandler buildEmissaryHandler() throws EmissaryException {
         // must set these set or you are not an EmissaryNode
         String configDir = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY, null);
-        if (configDir == null || !Files.exists(Path.of(configDir))) {
+        if (configDir == null || Arrays.stream(configDir.split(",")).anyMatch(d -> d.isEmpty() || !Files.exists(Path.of(d)))) {
             throw new EmissaryException("Config dir error. " + ConfigUtil.CONFIG_DIR_PROPERTY + " is " + configDir);
         }
         // set number of agents if it has been set

@@ -47,7 +47,7 @@ public class Env {
         try {
             EmissaryServer server = (EmissaryServer) Namespace.lookup(EMISSARY_SERVER);
             ServerCommand command = server.getServerCommand();
-            entity.addKeyValue("CONFIG_DIR", command.getConfig().toAbsolutePath().toString());
+            entity.addKeyValue("CONFIG_DIR", command.getConfigDirsProperty());
             entity.addKeyValue("PROJECT_BASE", command.getProjectBase().toAbsolutePath().toString());
             entity.addKeyValue("OUTPUT_ROOT", command.getOutputDir().toAbsolutePath().toString());
             entity.addKeyValue("BIN_DIR", command.getBinDir().toAbsolutePath().toString());

@@ -63,6 +63,7 @@ class EmissaryApiTest extends EndpointTestBase {
         when(mockServer.getNode()).thenReturn(node);
         when(mockServer.getServerCommand()).thenReturn(srvCmd);
         when(srvCmd.getConfig()).thenReturn(Path.of("/path/to/project/config"));
+        when(srvCmd.getConfigDirsProperty()).thenReturn("/path/to/project/config");
         when(srvCmd.getProjectBase()).thenReturn(Path.of("/path/to/project"));
         when(srvCmd.getOutputDir()).thenReturn(Path.of("/path/to/project/output"));
         when(srvCmd.getBinDir()).thenReturn(Path.of("/path/to/project/bin"));

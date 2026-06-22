@@ -23,7 +23,9 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Command(description = "Base Command")
 public abstract class BaseCommand implements EmissaryCommand {
@@ -31,10 +33,10 @@ public abstract class BaseCommand implements EmissaryCommand {
 
     public static final String COMMAND_NAME = "BaseCommand";
 
-    @Option(names = {"-c", "--config"}, description = "config dir, comma separated if multiple, defaults to <projectBase>/config",
+    @Option(names = {"-c", "--config"}, split = ",", description = "config dir, comma separated if multiple, defaults to <projectBase>/config",
             converter = PathExistsConverter.class)
     @Nullable
-    private Path config;
+    private List<Path> config;
 
     @Option(names = {"-b", "--projectBase"}, description = "defaults to PROJECT_BASE, errors if different\nDefault: ${DEFAULT-VALUE}",
             converter = ProjectBaseConverter.class)
@@ -62,15 +64,43 @@ public abstract class BaseCommand implements EmissaryCommand {
     @Option(names = {"-q", "--quiet"}, description = "hide banner and non essential messages\nDefault: ${DEFAULT-VALUE}")
     private boolean quiet = false;
 
-    public Path getConfig() {
+    /**
+     * Get all configured config directories, in order. Defaults to a single {@code <projectBase>/config} dir when none were
+     * supplied on the command line.
+     *
+     * @return the ordered list of config directories
+     */
+    public List<Path> getConfigDirs() {
         if (config == null) {
-            config = getProjectBase().toAbsolutePath().resolve("config");
-            if (!Files.exists(config)) {
-                throw new IllegalArgumentException("Config dir not configured and " + config.toAbsolutePath() + " does not exist");
+            Path defaultConfig = getProjectBase().toAbsolutePath().resolve("config");
+            if (!Files.exists(defaultConfig)) {
+                throw new IllegalArgumentException("Config dir not configured and " + defaultConfig.toAbsolutePath() + " does not exist");
             }
+            config = new ArrayList<>(List.of(defaultConfig));
         }
 
         return config;
+    }
+
+    /**
+     * Get the first/primary config directory.
+     *
+     * @return the first configured config directory
+     */
+    public Path getConfig() {
+        return getConfigDirs().get(0);
+    }
+
+    /**
+     * Get the configured config directories as the comma-separated, absolute-path string used for the
+     * {@value ConfigUtil#CONFIG_DIR_PROPERTY} system property.
+     *
+     * @return the config dirs joined by commas
+     */
+    public String getConfigDirsProperty() {
+        return getConfigDirs().stream()
+                .map(p -> p.toAbsolutePath().toString())
+                .collect(Collectors.joining(","));
     }
 
     public Path getProjectBase() {
@@ -130,7 +160,7 @@ public abstract class BaseCommand implements EmissaryCommand {
 
     public void setupConfig() {
         logInfo("{} is set to {} ", ConfigUtil.PROJECT_BASE_ENV, getProjectBase().toAbsolutePath().toString());
-        setSystemProperty(ConfigUtil.CONFIG_DIR_PROPERTY, getConfig().toAbsolutePath().toString());
+        setSystemProperty(ConfigUtil.CONFIG_DIR_PROPERTY, getConfigDirsProperty());
         setSystemProperty(ConfigUtil.CONFIG_BIN_PROPERTY, getBinDir().toAbsolutePath().toString());
         setSystemProperty(ConfigUtil.CONFIG_OUTPUT_ROOT_PROPERTY, getOutputDir().toAbsolutePath().toString());
         logInfo("Emissary error dir set to {} ", getErrorDir().toAbsolutePath().toString());
