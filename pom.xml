@@ -108,7 +108,7 @@
     <maven.min-version>3.6.3</maven.min-version>
     <plugin.build-helper-maven.version>3.6.1</plugin.build-helper-maven.version>
     <plugin.central-publishing-maven.version>0.11.0</plugin.central-publishing-maven.version>
-    <plugin.cyclonedx-maven.version>2.9.1</plugin.cyclonedx-maven.version>
+    <plugin.cyclonedx-maven.version>2.9.2</plugin.cyclonedx-maven.version>
     <plugin.duplicate-finder-maven.version>1.5.1</plugin.duplicate-finder-maven.version>
     <plugin.exec-maven.version>3.6.3</plugin.exec-maven.version>
     <plugin.formatter-maven.version>2.23.0</plugin.formatter-maven.version>
