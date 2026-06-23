@@ -49,6 +49,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static emissary.core.IBaseDataObjectXmlCodecs.ALT_DEFAULT_ELEMENT_ENCODERS;
@@ -521,250 +523,12 @@ public abstract class ExtractionTest extends UnitTest {
 
     protected void checkAnswers(Element el, IBaseDataObject payload, @Nullable List<IBaseDataObject> attachments, String tname)
             throws DataConversionException {
-
-        int numAtt = -1;
-        long numAttElements = 0;
-        List<Element> numAttachments = el.getChildren(NUM_ATTACHMENTS);
-        for (Element numAttEl : numAttachments) {
-            if (verifyOs(numAttEl)) {
-                numAtt = Integer.parseInt(numAttEl.getValue());
-                numAttElements = el.getChildren().stream().filter(
-                        c -> c.getName().startsWith(ATTACHMENT_ELEMENT_PREFIX) && verifyOs(c)).count();
-                break;
-            }
-        }
-
-        // check attachments answer file count against payload count
-        if (numAtt > -1) {
-            assertEquals(numAtt, attachments != null ? attachments.size() : 0,
-                    String.format("Expected <numAttachments> in %s not equal to number of att in payload.", tname));
-        } else if (numAtt == -1 && numAttElements > 0) {
-            assertEquals(numAttElements, attachments != null ? attachments.size() : 0,
-                    String.format("Expected <att#> in %s not equal to number of att in payload.", tname));
-        } else {
-            if (attachments != null && !attachments.isEmpty()) {
-                fail(String.format(Locale.getDefault(),
-                        "%d attachments in payload with no count in answer xml, add matching <numAttachments> count for %s",
-                        attachments.size(), tname));
-            }
-        }
-
-        for (Element currentForm : el.getChildren(CURRENT_FORM)) {
-            if (verifyOs(currentForm)) {
-                String cf = currentForm.getTextTrim();
-                if (cf != null) {
-                    Attribute index = currentForm.getAttribute(INDEX);
-                    if (index != null) {
-                        assertEquals(payload.currentFormAt(index.getIntValue()), cf,
-                                String.format(Locale.getDefault(), "Current form '%s' not found at position [%d] in %s, %s", cf, index.getIntValue(),
-                                        tname,
-                                        payload.getAllCurrentForms()));
-                    } else {
-                        assertTrue(payload.searchCurrentForm(cf) > -1,
-                                String.format(Locale.getDefault(), "Current form %s not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
-                    }
-                }
-            }
-        }
-
-        for (Element currentFormEl : el.getChildren(CURRENT_FORM)) {
-            if (verifyOs(currentFormEl)) {
-                String cf = currentFormEl.getTextTrim();
-                if (cf != null) {
-                    assertTrue(payload.searchCurrentForm(cf) > -1,
-                            String.format(Locale.getDefault(), "Current form '%s' not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
-                }
-            }
-        }
-
-        for (Element fileTypeEl : el.getChildren(FILE_TYPE)) {
-            if (verifyOs(fileTypeEl)) {
-                String ft = fileTypeEl.getTextTrim();
-                if (ft != null) {
-                    assertEquals(ft, payload.getFileType(), String.format(Locale.getDefault(), "Expected File Type '%s' in %s", ft, tname));
-                }
-            }
-        }
-
-        for (Element currentFormSizeEl : el.getChildren("currentFormSize")) {
-            if (verifyOs(currentFormSizeEl)) {
-                int cfsize = Integer.parseInt(currentFormSizeEl.getValue());
-                if (cfsize > -1) {
-                    assertEquals(cfsize, payload.currentFormSize(), "Current form size in " + tname);
-                }
-            }
-        }
-
-        for (Element classificationEl : el.getChildren(CLASSIFICATION)) {
-            if (verifyOs(classificationEl)) {
-                String classification = classificationEl.getTextTrim();
-                if (classification != null) {
-                    assertEquals(classification, payload.getClassification(),
-                            String.format(Locale.getDefault(), "Classification in '%s' is '%s', not expected '%s'", tname,
-                                    payload.getClassification(), classification));
-                }
-            }
-        }
-
-        for (Element dataLength : el.getChildren("dataLength")) {
-            if (verifyOs(dataLength)) {
-                int length;
-                try {
-                    length = Integer.parseInt(dataLength.getValue());
-                } catch (NumberFormatException e) {
-                    length = -1;
-                }
-                if (length > -1) {
-                    assertEquals(length, payload.dataLength(), "Data length in " + tname);
-                }
-            }
-        }
-
-        for (Element shortNameEl : el.getChildren(SHORT_NAME)) {
-            if (verifyOs(shortNameEl)) {
-                String shortName = shortNameEl.getTextTrim();
-                if (shortName != null && shortName.length() > 0) {
-                    assertEquals(shortName, payload.shortName(), "Shortname does not match expected in " + tname);
-                }
-            }
-        }
-
-        for (Element encodeEl : el.getChildren(FONT_ENCODING)) {
-            if (verifyOs(encodeEl)) {
-                String fontEncoding = encodeEl.getTextTrim();
-                if (StringUtils.isNotBlank(fontEncoding)) {
-                    assertEquals(fontEncoding, payload.getFontEncoding(), "Font encoding does not match expected in " + tname);
-                }
-            }
-        }
-
-        for (Element brokeEl : el.getChildren(BROKEN)) {
-            if (verifyOs(brokeEl)) {
-                String broke = brokeEl.getTextTrim();
-                if (broke != null && !broke.isEmpty()) {
-                    assertEquals(broke, payload.isBroken() ? "true" : "false", "Broken status in " + tname);
-                }
-            }
-        }
-
-        for (Element procErrEl : el.getChildren("procError")) {
-            if (verifyOs(procErrEl)) {
-                String procError = procErrEl.getTextTrim();
-                if (procError != null && !procError.isEmpty()) {
-                    assertNotNull(payload.getProcessingError(), String.format("Expected processing error '%s' in %s", procError, tname));
-                    // simple work around for answer files, so we can see multiple errors w/o dealing with line breaks added on by
-                    // StringBuilder in BDO
-                    String shortProcErrMessage = payload.getProcessingError().replaceAll("\n", ";");
-                    assertEquals(procError, shortProcErrMessage, "Processing Error does not match expected in " + tname);
-                }
-            }
-        }
-
-        // Check specified metadata
-        for (Element meta : el.getChildren(PARAMETER)) {
-            if (verifyOs(meta)) {
-                String key = meta.getChildTextTrim(NAME);
-                checkForMissingNameElement(PARAMETER, key, tname);
-                checkStringValue(meta, payload.getStringParameter(key), tname);
-            }
-        }
-
-        // Check specified nometa
-        for (Element meta : el.getChildren(NOMETA)) {
-            if (verifyOs(meta)) {
-                String key = meta.getChildTextTrim(NAME);
-                checkForMissingNameElement(NOMETA, key, tname);
-                assertFalse(payload.hasParameter(key),
-                        String.format(Locale.getDefault(), "Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
-                                payload.getStringParameter(key)));
-            }
-        }
-
-        // Check the primary view. Even though there is only one
-        // primary view there can be multiple elements to test it
-        // with differing matchMode operators
-        for (Element dataEl : el.getChildren(DATA)) {
-            if (verifyOs(dataEl)) {
-                int length = NumberUtils.toInt(dataEl.getChildTextTrim(LENGTH_ATTRIBUTE_NAME), -1);
-                if (length > -1) {
-                    assertEquals(length, payload.dataLength(), "Data length in " + tname);
-                }
-
-                byte[] payloadData = payload.data();
-                checkStringValue(dataEl, new String(payloadData), tname);
-            }
-        }
-
-        // Check each alternate view
-        for (Element view : el.getChildren(VIEW)) {
-            if (verifyOs(view)) {
-                String viewName = view.getChildTextTrim(NAME);
-                String lengthStr = view.getChildTextTrim(LENGTH_ATTRIBUTE_NAME);
-                byte[] viewData = payload.getAlternateView(viewName);
-                assertNotNull(viewData, String.format(Locale.getDefault(), "Alternate View '%s' is missing in %s", viewName, tname));
-                if (lengthStr != null) {
-                    assertEquals(Integer.parseInt(lengthStr), viewData.length,
-                            String.format(Locale.getDefault(), "Length of Alternate View '%s' is wrong in %s", viewName, tname));
-                }
-                checkStringValue(view, new String(viewData), tname);
-            }
-        }
-
-        // Check for noview items
-        for (Element view : el.getChildren(NOVIEW)) {
-            if (verifyOs(view)) {
-                String viewName = view.getChildTextTrim(NAME);
-                byte[] viewData = payload.getAlternateView(viewName);
-                assertNull(viewData, String.format(Locale.getDefault(), "Alternate View '%s' is present, but should not be, in %s", viewName, tname));
-            }
-        }
-
-        // Check each extract
-        int extractCount = -1;
-        long numExtractElements = -1;
-        for (Element numAttEl : el.getChildren(EXTRACT_COUNT)) {
-            if (verifyOs(numAttEl)) {
-                extractCount = Integer.parseInt(numAttEl.getValue());
-                numExtractElements = el.getChildren().stream().filter(
-                        c -> c.getName().startsWith(EXTRACTED_RECORD_ELEMENT_PREFIX) && !c.getName().equals(EXTRACT_COUNT) && verifyOs(c))
-                        .count();
-                break;
-            }
-        }
-
-        if (payload.hasExtractedRecords()) {
-            List<IBaseDataObject> extractedChildren = payload.getExtractedRecords();
-            int foundCount = extractedChildren.size();
-            // check extracted records answer file count against payload count
-            if (extractCount > -1) {
-                assertEquals(extractCount, foundCount,
-                        String.format(Locale.getDefault(), "Expected <extractCount> in %s not equal to number of extracts in payload.", tname));
-            } else if (extractCount == -1 && numExtractElements > 0) {
-                assertEquals(numExtractElements, foundCount,
-                        String.format(Locale.getDefault(), "Expected <extract#> in %s not equal to number of extracts in payload.", tname));
-            } else {
-                fail(String.format(Locale.getDefault(),
-                        "%d extracts in payload with no count in answer xml, add matching <extractCount> count for %s",
-                        foundCount, tname));
-            }
-
-
-            for (int attNum = 1; attNum <= extractedChildren.size(); attNum++) {
-                Element extel = getChildAnswers(el, EXTRACTED_RECORD_ELEMENT_PREFIX, attNum);
-                if (extel != null) {
-                    checkAnswers(extel, extractedChildren.get(attNum - 1), NO_ATTACHMENTS,
-                            String.format(Locale.getDefault(), "%s::extract%d", tname, attNum));
-                }
-            }
-        } else {
-            if (extractCount > -1) {
-                assertEquals(0, extractCount,
-                        String.format(Locale.getDefault(), "No extracted children in '%s' when <extractCount> is %d", tname, extractCount));
-            } else if (numExtractElements > 0) {
-                assertEquals(0, numExtractElements,
-                        String.format(Locale.getDefault(), "No extracted children in '%s' when <extract#> is %d", tname, numExtractElements));
-            }
-        }
+        checkAttachmentCounts(el, attachments, tname);
+        checkCurrentForms(el, payload, tname);
+        checkFields(el, payload, tname);
+        checkMetadata(el, payload, tname);
+        checkViews(el, payload, tname);
+        checkExtractedRecords(el, payload, tname);
     }
 
     /**
@@ -824,6 +588,232 @@ public abstract class ExtractionTest extends UnitTest {
 
         // Strict mode also validates Log Events
         assertIterableEquals(SimplifiedLogEvent.fromXml(parent), actualSimplifiedLogEvents);
+    }
+
+    protected void checkAttachmentCounts(Element el, List<IBaseDataObject> attachments, String tname) {
+        int payloadSize = attachments != null ? attachments.size() : 0;
+
+        Element numAttEl = null;
+        long numAttElements = 0;
+
+        for (Element child : el.getChildren()) {
+            if (verifyOs(child)) {
+                String name = child.getName();
+                if (name.equals(NUM_ATTACHMENTS) && numAttEl == null) {
+                    numAttEl = child;
+                } else if (name.startsWith(ATTACHMENT_ELEMENT_PREFIX)) {
+                    numAttElements++;
+                }
+            }
+        }
+
+        if (numAttEl != null) {
+            int numAtt = Integer.parseInt(numAttEl.getValue());
+            assertEquals(numAtt, payloadSize,
+                    String.format(Locale.getDefault(), "Expected <numAttachments> in %s not equal to number of att in payload.", tname));
+        } else if (numAttElements > 0) {
+            assertEquals(numAttElements, payloadSize,
+                    String.format(Locale.getDefault(), "Expected <att#> in %s not equal to number of att in payload.", tname));
+        } else if (payloadSize > 0) {
+            fail(String.format(Locale.getDefault(),
+                    "%d attachments in payload with no count in answer xml, add matching <numAttachments> count for %s",
+                    payloadSize, tname));
+        }
+    }
+
+    protected void checkCurrentForms(Element el, IBaseDataObject payload, String tname) throws DataConversionException {
+        for (Element currentForm : el.getChildren(CURRENT_FORM)) {
+            if (verifyOs(currentForm)) {
+                String cf = currentForm.getTextTrim();
+                if (cf != null) {
+                    Attribute index = currentForm.getAttribute(INDEX);
+                    if (index != null) {
+                        assertEquals(payload.currentFormAt(index.getIntValue()), cf,
+                                String.format(Locale.getDefault(), "Current form '%s' not found at position [%d] in %s, %s",
+                                        cf, index.getIntValue(), tname, payload.getAllCurrentForms()));
+                    } else {
+                        assertTrue(payload.searchCurrentForm(cf) > -1,
+                                String.format(Locale.getDefault(), "Current form '%s' not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
+                    }
+                }
+            }
+        }
+    }
+
+    protected void checkFields(Element el, IBaseDataObject payload, String tname) {
+        // File Type
+        assertStringProperty(el, FILE_TYPE, payload.getFileType(),
+                ft -> String.format(Locale.getDefault(), "Expected File Type '%s' in %s", ft, tname));
+
+        // Current Form Size
+        assertIntProperty(el, "currentFormSize", payload.currentFormSize(),
+                size -> String.format(Locale.getDefault(), "Current form size '%d' does not match in %s", size, tname));
+
+        // Classification
+        assertStringProperty(el, CLASSIFICATION, payload.getClassification(),
+                cl -> String.format(Locale.getDefault(), "Classification in '%s' is '%s', not expected '%s'", tname, payload.getClassification(),
+                        cl));
+
+        // Data Length
+        assertIntProperty(el, "dataLength", payload.dataLength(),
+                len -> String.format(Locale.getDefault(), "Data length '%d' does not match in %s", len, tname));
+
+        // Short Name
+        assertStringProperty(el, SHORT_NAME, payload.shortName(), val -> "Shortname does not match expected in " + tname);
+
+        // Font Encoding
+        assertStringProperty(el, FONT_ENCODING, payload.getFontEncoding(), val -> "Font encoding does not match expected in " + tname);
+
+        // Broken
+        assertStringProperty(el, BROKEN, Boolean.toString(payload.isBroken()), val -> "Broken status in " + tname);
+
+        // Processing Error
+        assertProcessingError(el, payload.getProcessingError(), expected -> String.format("Expected processing error '%s' in %s", expected, tname),
+                () -> "Processing Error does not match expected in " + tname);
+    }
+
+    protected void checkMetadata(Element el, IBaseDataObject payload, String tname) {
+        // Parameters
+        for (Element meta : el.getChildren(PARAMETER)) {
+            if (verifyOs(meta)) {
+                String key = meta.getChildTextTrim(NAME);
+                checkForMissingNameElement(PARAMETER, key, tname);
+                checkStringValue(meta, payload.getStringParameter(key), tname);
+            }
+        }
+
+        // Nometa
+        for (Element meta : el.getChildren(NOMETA)) {
+            if (verifyOs(meta)) {
+                String key = meta.getChildTextTrim(NAME);
+                checkForMissingNameElement(NOMETA, key, tname);
+                assertFalse(payload.hasParameter(key),
+                        String.format(Locale.getDefault(), "Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
+                                payload.getStringParameter(key)));
+            }
+        }
+    }
+
+    protected void checkViews(Element el, IBaseDataObject payload, String tname) {
+        // Primary Data View
+        List<Element> dataElements = el.getChildren(DATA);
+        if (!dataElements.isEmpty()) {
+            String primaryDataStr = new String(payload.data()); // Allocated once safely out of loop
+            for (Element dataEl : dataElements) {
+                if (verifyOs(dataEl)) {
+                    int length = NumberUtils.toInt(dataEl.getChildTextTrim(LENGTH_ATTRIBUTE_NAME), -1);
+                    if (length > -1) {
+                        assertEquals(length, payload.dataLength(), "Data length in " + tname);
+                    }
+                    checkStringValue(dataEl, primaryDataStr, tname);
+                }
+            }
+        }
+
+        // Alternate Views
+        for (Element view : el.getChildren(VIEW)) {
+            if (verifyOs(view)) {
+                String viewName = view.getChildTextTrim(NAME);
+                byte[] viewData = payload.getAlternateView(viewName);
+                assertNotNull(viewData, String.format(Locale.getDefault(), "Alternate View '%s' is missing in %s", viewName, tname));
+
+                String lengthStr = view.getChildTextTrim(LENGTH_ATTRIBUTE_NAME);
+                if (lengthStr != null) {
+                    assertEquals(Integer.parseInt(lengthStr), viewData.length,
+                            String.format(Locale.getDefault(), "Length of Alternate View '%s' is wrong in %s", viewName, tname));
+                }
+                checkStringValue(view, new String(viewData), tname);
+            }
+        }
+
+        // Noview
+        for (Element view : el.getChildren(NOVIEW)) {
+            if (verifyOs(view)) {
+                String viewName = view.getChildTextTrim(NAME);
+                assertNull(payload.getAlternateView(viewName),
+                        String.format(Locale.getDefault(), "Alternate View '%s' is present, but should not be, in %s", viewName, tname));
+            }
+        }
+    }
+
+    protected void checkExtractedRecords(Element el, IBaseDataObject payload, String tname) throws DataConversionException {
+        List<IBaseDataObject> extractedChildren = payload.hasExtractedRecords() ? payload.getExtractedRecords() : List.of();
+        int payloadSize = extractedChildren.size();
+
+        Element extractCountEl = null;
+        long numExtractElements = 0;
+
+        for (Element child : el.getChildren()) {
+            if (verifyOs(child)) {
+                String name = child.getName();
+                if (name.equals(EXTRACT_COUNT) && extractCountEl == null) {
+                    extractCountEl = child;
+                } else if (name.startsWith(EXTRACTED_RECORD_ELEMENT_PREFIX)) {
+                    numExtractElements++;
+                }
+            }
+        }
+
+        int extractCount = extractCountEl != null ? Integer.parseInt(extractCountEl.getValue()) : -1;
+        if (extractCount > -1) {
+            assertEquals(extractCount, payloadSize,
+                    String.format(Locale.getDefault(), "Expected <extractCount> in %s not equal to number of extracts in payload.", tname));
+        } else if (numExtractElements > 0) {
+            assertEquals(numExtractElements, payloadSize,
+                    String.format(Locale.getDefault(), "Expected <extract#> in %s not equal to number of extracts in payload.", tname));
+        } else if (payloadSize > 0) {
+            fail(String.format(Locale.getDefault(),
+                    "%d extracts in payload with no count in answer xml, add matching <extractCount> count for %s", payloadSize, tname));
+        }
+
+        for (int attNum = 1; attNum <= payloadSize; attNum++) {
+            Element extel = getChildAnswers(el, EXTRACTED_RECORD_ELEMENT_PREFIX, attNum);
+            if (extel != null) {
+                checkAnswers(extel, extractedChildren.get(attNum - 1), NO_ATTACHMENTS,
+                        String.format(Locale.getDefault(), "%s::extract%d", tname, attNum));
+            }
+        }
+    }
+
+    protected void assertStringProperty(Element parent, String childName, String actualValue, Function<String, String> messageProvider) {
+        for (Element child : parent.getChildren(childName)) {
+            if (verifyOs(child)) {
+                String expectedValue = child.getTextTrim();
+                if (StringUtils.isNotBlank(expectedValue)) {
+                    assertEquals(expectedValue, actualValue, messageProvider.apply(expectedValue));
+                }
+            }
+        }
+    }
+
+    protected void assertIntProperty(Element parent, String childName, int actualValue, Function<Integer, String> messageProvider) {
+        for (Element child : parent.getChildren(childName)) {
+            if (verifyOs(child)) {
+                int expectedValue;
+                try {
+                    expectedValue = Integer.parseInt(child.getValue());
+                } catch (NumberFormatException e) {
+                    expectedValue = -1;
+                }
+                if (expectedValue > -1) {
+                    assertEquals(expectedValue, actualValue, messageProvider.apply(expectedValue));
+                }
+            }
+        }
+    }
+
+    protected void assertProcessingError(Element parent, String actualError, Function<String, String> notNullMessageProvider,
+            Supplier<String> equalityMessageProvider) {
+        for (Element child : parent.getChildren("procError")) {
+            if (verifyOs(child)) {
+                String expectedError = child.getTextTrim();
+                if (StringUtils.isNotBlank(expectedError)) {
+                    assertNotNull(actualError, notNullMessageProvider.apply(expectedError));
+                    String normalizedActual = actualError.replace("\n", ";");
+                    assertEquals(expectedError, normalizedActual, equalityMessageProvider.get());
+                }
+            }
+        }
     }
 
     private static void checkForMissingNameElement(String parentTag, String key, String tname) {
