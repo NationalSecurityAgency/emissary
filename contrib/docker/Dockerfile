@@ -4,7 +4,7 @@ ARG target_os=ubi8
 
 FROM redhat/ubi8 AS base_ubi8
 
-ENV JAVA_TOOL_OPTIONS -Dfile.encoding=UTF8
+ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 ENV PROJECT_BASE=/opt/emissary
 
 ARG java_version=11
@@ -25,7 +25,7 @@ RUN rpm --import https://yum.corretto.aws/corretto.key \
 
 FROM centos:7 AS base_centos7
 
-ENV JAVA_TOOL_OPTIONS -Dfile.encoding=UTF8
+ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 ENV PROJECT_BASE=/opt/emissary
 
 ARG java_version=11
@@ -51,7 +51,7 @@ RUN sed -i s/mirrorlist.centos.org/vault.centos.org/g /etc/yum.repos.d/CentOS-*.
 
 FROM alpine:3 AS base_alpine3
 
-ENV JAVA_TOOL_OPTIONS -Dfile.encoding=UTF8
+ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 ENV PROJECT_BASE=/opt/emissary
 
 ARG java_version=11
@@ -74,8 +74,8 @@ RUN  apk update \
 
 FROM base_${target_os} AS build
 
-ENV MAVEN_OPTS -Xms512M -Xmx1024M -Xss1M -Djava.awt.headless=true
-ENV MAVEN_HOME /opt/maven
+ENV MAVEN_OPTS="-Xms512M -Xmx1024M -Xss1M -Djava.awt.headless=true"
+ENV MAVEN_HOME=/opt/maven
 
 ARG maven_version=3.9.10
 RUN curl -L -o /tmp/maven.tar.gz https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/${maven_version}/apache-maven-${maven_version}-bin.tar.gz \
