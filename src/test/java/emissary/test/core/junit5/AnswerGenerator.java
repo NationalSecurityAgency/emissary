@@ -34,6 +34,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
 import static emissary.core.constants.IbdoXmlElementNames.DATA_FILE;
+import static emissary.core.constants.IbdoXmlElementNames.NOMETA;
+import static emissary.core.constants.IbdoXmlElementNames.NOVIEW;
 import static emissary.core.constants.IbdoXmlElementNames.SETUP;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -206,6 +208,21 @@ public abstract class AnswerGenerator {
         final Element newFullRoot = IBaseDataObjectXmlHelper.xmlElementFromIbdo(finalIbdo, finalResults, initialIbdo, encoders);
         final Element newAnswerElement = newFullRoot.getChild(ANSWERS);
 
+        final Element answerElement = existingRoot.getChild(ANSWERS);
+        if (answerElement != null && newAnswerElement != null) {
+            List<Element> originalChildren = new ArrayList<>(answerElement.getChildren());
+
+            for (Element oldChild : originalChildren) {
+                // Fail-fast safety check for OS-specific markers anywhere in the subtree
+                if (hasOsReleaseAttribute(oldChild)) {
+                    throw new UnsupportedOperationException("Cannot generate answers for OS specific output");
+                }
+
+                // Recursively find and copy nometa/noview tags
+                copyTargetedElementsIfPathExists(oldChild, newAnswerElement);
+            }
+        }
+
         // Add log events to the new answer section
         LogbackTester.SimplifiedLogEvent.toXml(finalLogEvents).forEach(newAnswerElement::addContent);
 
@@ -222,6 +239,61 @@ public abstract class AnswerGenerator {
         // Write back to answer file
         final byte[] xmlContent = bytesFromDocument(new Document(mergedRoot));
         writeXml(answerResource == null ? datResource : answerResource, xmlContent, answerFileClassRef);
+    }
+
+    /**
+     * Recursively traverses the old XML tree and copies nometa/noview elements into the new tree ONLY if the matching
+     * parent path already exists.
+     */
+    private static void copyTargetedElementsIfPathExists(Element oldElement, Element newParent) {
+        String name = oldElement.getName();
+
+        if (NOMETA.equals(name) || NOVIEW.equals(name)) {
+            newParent.addContent(oldElement.detach());
+            return;
+        }
+
+        // Is there a nested nometa/noview further down this branch?
+        if (containsNometaOrNoview(oldElement)) {
+            // Look for the matching container in the new tree
+            Element existingNewContainer = newParent.getChild(name);
+
+            // If the path does not exist in the new tree, abandon this branch
+            if (existingNewContainer == null) {
+                return;
+            }
+
+            // find the leaf nodes
+            List<Element> oldChildren = new ArrayList<>(oldElement.getChildren());
+            for (Element oldChild : oldChildren) {
+                copyTargetedElementsIfPathExists(oldChild, existingNewContainer);
+            }
+        }
+    }
+
+    private static boolean hasOsReleaseAttribute(Element element) {
+        if (element.getAttribute("os-release") != null) {
+            return true;
+        }
+        for (Element child : element.getChildren()) {
+            if (hasOsReleaseAttribute(child)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean containsNometaOrNoview(Element element) {
+        String name = element.getName();
+        if (NOMETA.equals(name) || NOVIEW.equals(name)) {
+            return true;
+        }
+        for (Element child : element.getChildren()) {
+            if (containsNometaOrNoview(child)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Nullable
