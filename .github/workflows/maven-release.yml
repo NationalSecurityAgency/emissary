@@ -131,6 +131,8 @@ jobs:
           mvn -B -V -e -ntp release:clean
 
       - name: Release that version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mvn -V -B -e versions:set "-DnewVersion=${RELEASE_VERSION}" -DprocessAllModules -DgenerateBackupPoms=false
           mvn -V -B -e versions:set-scm-tag "-DnewTag=${RELEASE_VERSION}" -DgenerateBackupPoms=false
@@ -206,6 +208,8 @@ jobs:
         run: git switch -c "${PR_BRANCH}"
 
       - name: Set the next snapshot version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mvn -B -V -e -ntp versions:set "-DnewVersion=${NEXT_DEV_VERSION}" -DgenerateBackupPoms=false
           mvn -B -V -e -ntp versions:commit
