@@ -2,7 +2,7 @@ package emissary.grpc;
 
 import emissary.config.Configurator;
 import emissary.grpc.channel.ChannelManager;
-import emissary.grpc.channel.ChannelPoolFactory.PoolException;
+import emissary.grpc.channel.PooledChannelManager;
 import emissary.grpc.invoker.GrpcInvoker;
 import emissary.grpc.retry.RetryHandler;
 import emissary.place.ServiceProviderPlace;
@@ -110,7 +110,7 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
 
         RetryHandler retryHandler = new RetryHandler(configG, this.getPlaceName(), this::retryOnException, this::retryOnResult);
         for (String id : targetIds) {
-            ChannelManager channelManager = new ChannelManager(hosts.get(id), ports.get(id), configG);
+            ChannelManager channelManager = new PooledChannelManager(hosts.get(id), ports.get(id), configG);
             GrpcInvoker grpcInvoker = new GrpcInvoker(channelManager, retryHandler);
             invokerTable.put(id, grpcInvoker);
         }
@@ -127,7 +127,7 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
 
     /**
      * Determines if the {@link RetryHandler} should try again when an exception is thrown during gRPC invocation. Default
-     * behavior attempts retries for any {@link PoolException} or for any Exception with a {@link Status.Code} in
+     * behavior attempts retries for any {@code PoolException} or for any Exception with a {@link Status.Code} in
      * {@link #RETRY_GRPC_CODES}. Subclasses may override this behavior.
      *
      * @param t the Exception thrown during gRPC invocation
@@ -138,7 +138,7 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
             StatusRuntimeException e = (StatusRuntimeException) t;
             return RETRY_GRPC_CODES.contains(e.getStatus().getCode());
         }
-        return t instanceof PoolException;
+        return false;
     }
 
     /**
