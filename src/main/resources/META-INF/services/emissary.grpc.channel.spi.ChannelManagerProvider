@@ -1,1 +1,2 @@
 emissary.grpc.channel.impl.PooledChannelManager$Provider
+emissary.grpc.channel.impl.StandaloneChannelManager$Provider
