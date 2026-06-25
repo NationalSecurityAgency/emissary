@@ -1,4 +1,4 @@
-package emissary.grpc.pool;
+package emissary.grpc.channel;
 
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
@@ -24,30 +24,30 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ConnectionFactoryTest extends UnitTest {
-    private static ConnectionFactory buildConnectionFactory(Configurator configG) {
-        return new ConnectionFactory("localhost", 2222, configG);
+class ChannelPoolFactoryTest extends UnitTest {
+    private static ChannelPoolFactory buildConnectionFactory(Configurator configG) {
+        return new ChannelPoolFactory("localhost", 2222, configG);
     }
 
     private static Configurator getDefaultConfigs() {
         Configurator configT = new ServiceConfigGuide();
-        configT.addEntry(ConnectionFactory.GRPC_POOL_MIN_IDLE_CONNECTIONS, "1");
-        configT.addEntry(ConnectionFactory.GRPC_POOL_MAX_IDLE_CONNECTIONS, "2");
-        configT.addEntry(ConnectionFactory.GRPC_POOL_MAX_SIZE, "2");
+        configT.addEntry(ChannelPoolFactory.GRPC_POOL_MIN_IDLE_CONNECTIONS, "1");
+        configT.addEntry(ChannelPoolFactory.GRPC_POOL_MAX_IDLE_CONNECTIONS, "2");
+        configT.addEntry(ChannelPoolFactory.GRPC_POOL_MAX_SIZE, "2");
         return configT;
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"localhost", "dns:///foo.bar", "foo.bar"})
     void testGoodHostName(String host) {
-        Runnable invocation = () -> new ConnectionFactory(host, 1, new ServiceConfigGuide());
+        Runnable invocation = () -> new ChannelPoolFactory(host, 1, new ServiceConfigGuide());
         assertDoesNotThrow(invocation::run);
     }
 
     @ParameterizedTest
     @NullAndEmptySource
     void testBadHostName(String host) {
-        Runnable invocation = () -> new ConnectionFactory(host, 1, new ServiceConfigGuide());
+        Runnable invocation = () -> new ChannelPoolFactory(host, 1, new ServiceConfigGuide());
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, invocation::run);
         assertEquals("Missing required gRPC host configuration", e.getMessage());
     }
@@ -55,14 +55,14 @@ class ConnectionFactoryTest extends UnitTest {
     @ParameterizedTest
     @ValueSource(ints = {1, 8000, 8001, 8080, 65535})
     void testGoodPortNumber(int port) {
-        Runnable invocation = () -> new ConnectionFactory("dns:///foo.bar", port, new ServiceConfigGuide());
+        Runnable invocation = () -> new ChannelPoolFactory("dns:///foo.bar", port, new ServiceConfigGuide());
         assertDoesNotThrow(invocation::run);
     }
 
     @ParameterizedTest
     @ValueSource(ints = {-1, 0, 65536})
     void testBadPortNumber(int port) {
-        Runnable invocation = () -> new ConnectionFactory("dns:///foo.bar", port, new ServiceConfigGuide());
+        Runnable invocation = () -> new ChannelPoolFactory("dns:///foo.bar", port, new ServiceConfigGuide());
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, invocation::run);
         assertEquals(String.format("Port \"%d\" is outside valid range [1, 65535]", port), e.getMessage());
     }
@@ -70,17 +70,17 @@ class ConnectionFactoryTest extends UnitTest {
     @Test
     void testBadPoolRetrievalOrderConfig() {
         Configurator configT = getDefaultConfigs();
-        configT.addEntry(ConnectionFactory.GRPC_POOL_RETRIEVAL_ORDER, "ZIFO");
+        configT.addEntry(ChannelPoolFactory.GRPC_POOL_RETRIEVAL_ORDER, "ZIFO");
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                 () -> buildConnectionFactory(configT));
-        assertEquals("No enum constant emissary.grpc.pool.PoolRetrievalOrdering.ZIFO", e.getMessage());
+        assertEquals("No enum constant emissary.grpc.channel.ChannelPoolFactory.PoolRetrievalOrdering.ZIFO", e.getMessage());
     }
 
     @Test
     void testLifoPoolRetrievalOrderConfig() {
         Configurator configT = getDefaultConfigs();
-        configT.addEntry(ConnectionFactory.GRPC_POOL_RETRIEVAL_ORDER, PoolRetrievalOrdering.LIFO.name());
-        ConnectionFactory factory = buildConnectionFactory(configT);
+        configT.addEntry(ChannelPoolFactory.GRPC_POOL_RETRIEVAL_ORDER, ChannelPoolFactory.PoolRetrievalOrdering.LIFO.name());
+        ChannelPoolFactory factory = buildConnectionFactory(configT);
         assertTrue(factory.getPoolIsLifo());
         assertFalse(factory.getPoolIsFifo());
     }
@@ -88,8 +88,8 @@ class ConnectionFactoryTest extends UnitTest {
     @Test
     void testFifoPoolRetrievalOrderConfig() {
         Configurator configT = getDefaultConfigs();
-        configT.addEntry(ConnectionFactory.GRPC_POOL_RETRIEVAL_ORDER, PoolRetrievalOrdering.FIFO.name());
-        ConnectionFactory factory = buildConnectionFactory(configT);
+        configT.addEntry(ChannelPoolFactory.GRPC_POOL_RETRIEVAL_ORDER, ChannelPoolFactory.PoolRetrievalOrdering.FIFO.name());
+        ChannelPoolFactory factory = buildConnectionFactory(configT);
         assertFalse(factory.getPoolIsLifo());
         assertTrue(factory.getPoolIsFifo());
     }
@@ -97,31 +97,31 @@ class ConnectionFactoryTest extends UnitTest {
     @Test
     void testBadLoadBalancingConfig() {
         Configurator configT = getDefaultConfigs();
-        configT.addEntry(ConnectionFactory.GRPC_LOAD_BALANCING_POLICY, "BAD_SCHEDULER");
+        configT.addEntry(ChannelPoolFactory.GRPC_LOAD_BALANCING_POLICY, "BAD_SCHEDULER");
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                 () -> buildConnectionFactory(configT));
-        assertEquals("No enum constant emissary.grpc.pool.LoadBalancingPolicy.BAD_SCHEDULER", e.getMessage());
+        assertEquals("No enum constant emissary.grpc.channel.ChannelPoolFactory.LoadBalancingPolicy.BAD_SCHEDULER", e.getMessage());
     }
 
     @Test
     void testRoundRobinLoadBalancingConfig() {
         Configurator configT = getDefaultConfigs();
-        configT.addEntry(ConnectionFactory.GRPC_LOAD_BALANCING_POLICY, LoadBalancingPolicy.ROUND_ROBIN.name());
-        ConnectionFactory factory = buildConnectionFactory(configT);
+        configT.addEntry(ChannelPoolFactory.GRPC_LOAD_BALANCING_POLICY, ChannelPoolFactory.LoadBalancingPolicy.ROUND_ROBIN.name());
+        ChannelPoolFactory factory = buildConnectionFactory(configT);
         assertEquals("round_robin", factory.getLoadBalancingPolicy());
     }
 
     @Test
     void testPickFirstLoadBalancingConfig() {
         Configurator configT = getDefaultConfigs();
-        configT.addEntry(ConnectionFactory.GRPC_LOAD_BALANCING_POLICY, LoadBalancingPolicy.PICK_FIRST.name());
-        ConnectionFactory factory = buildConnectionFactory(configT);
+        configT.addEntry(ChannelPoolFactory.GRPC_LOAD_BALANCING_POLICY, ChannelPoolFactory.LoadBalancingPolicy.PICK_FIRST.name());
+        ChannelPoolFactory factory = buildConnectionFactory(configT);
         assertEquals("pick_first", factory.getLoadBalancingPolicy());
     }
 
     @Nested
     class PooledChannelTests {
-        private ConnectionFactory factory;
+        private ChannelPoolFactory factory;
         private ObjectPool<ManagedChannel> pool;
 
         @BeforeEach
@@ -133,38 +133,39 @@ class ConnectionFactoryTest extends UnitTest {
 
         @Test
         void testAcquireChannel() throws Exception {
-            ManagedChannel channel = ConnectionFactory.acquireChannel(pool);
+            ManagedChannel channel = ChannelPoolFactory.acquireChannel(pool);
             assertNotNull(channel);
             pool.returnObject(channel);
         }
 
         @Test
         void testInvalidateChannel() throws Exception {
-            ManagedChannel c1 = ConnectionFactory.acquireChannel(pool);
-            ConnectionFactory.invalidateChannel(c1, pool);
-            ManagedChannel c2 = ConnectionFactory.acquireChannel(pool);
+            ManagedChannel c1 = ChannelPoolFactory.acquireChannel(pool);
+            ChannelPoolFactory.invalidateChannel(c1, pool);
+            ManagedChannel c2 = ChannelPoolFactory.acquireChannel(pool);
             assertNotSame(c1, c2);
             pool.returnObject(c2);
         }
 
         @Test
         void testReturnChannel() {
-            ManagedChannel c1 = ConnectionFactory.acquireChannel(pool);
-            ConnectionFactory.returnChannel(c1, pool);
-            ManagedChannel c2 = ConnectionFactory.acquireChannel(pool);
+            ManagedChannel c1 = ChannelPoolFactory.acquireChannel(pool);
+            ChannelPoolFactory.returnChannel(c1, pool);
+            ManagedChannel c2 = ChannelPoolFactory.acquireChannel(pool);
             assertSame(c1, c2);
-            ConnectionFactory.returnChannel(c2, pool);
+            ChannelPoolFactory.returnChannel(c2, pool);
         }
 
         @Test
         void testMaxPoolSizeBlocks() {
-            ManagedChannel c1 = ConnectionFactory.acquireChannel(pool);
-            ManagedChannel c2 = ConnectionFactory.acquireChannel(pool);
-            PoolException exception = assertThrows(PoolException.class, () -> ConnectionFactory.acquireChannel(pool));
+            ManagedChannel c1 = ChannelPoolFactory.acquireChannel(pool);
+            ManagedChannel c2 = ChannelPoolFactory.acquireChannel(pool);
+            ChannelPoolFactory.PoolException exception =
+                    assertThrows(ChannelPoolFactory.PoolException.class, () -> ChannelPoolFactory.acquireChannel(pool));
             assertTrue(Strings.CS.startsWith(exception.getMessage(),
                     "Unable to borrow channel from pool: Timeout waiting for idle object"));
-            ConnectionFactory.returnChannel(c1, pool);
-            ConnectionFactory.returnChannel(c2, pool);
+            ChannelPoolFactory.returnChannel(c1, pool);
+            ChannelPoolFactory.returnChannel(c2, pool);
         }
 
         @Test
