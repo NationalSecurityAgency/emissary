@@ -149,6 +149,32 @@ class MagicNumberTest extends UnitTest {
     }
 
     @Test
+    void testOrBeshort() throws ParseException, DecoderException {
+        // AB
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("0 beshort x0x1010 FOO");
+        assertFalse(m.test(Hex.decodeHex("0000")), "Greater than magic operator failed");
+        assertFalse(m.test(Hex.decodeHex("0001")), "Greater than magic operator failed");
+        assertFalse(m.test(Hex.decodeHex("1100")), "Greater than magic operator failed");
+        assertFalse(m.test(Hex.decodeHex("0011")), "Greater than magic operator failed");
+        assertFalse(m.test(Hex.decodeHex("1010")), "Greater than magic operator failed");
+        assertTrue(m.test(Hex.decodeHex("0101")), "Greater than magic operator failed");
+        assertTrue(m.test(Hex.decodeHex("1111")), "Greater than magic operator failed");
+    }
+
+    @Test
+    void testOrBeLong() throws ParseException, DecoderException {
+        // AB
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("0 belong x0x10101010 FOO");
+        assertFalse(m.test(Hex.decodeHex("00000000")), "Greater than magic operator failed");
+        assertFalse(m.test(Hex.decodeHex("00010001")), "Greater than magic operator failed");
+        assertFalse(m.test(Hex.decodeHex("11001100")), "Greater than magic operator failed");
+        assertFalse(m.test(Hex.decodeHex("00110011")), "Greater than magic operator failed");
+        assertFalse(m.test(Hex.decodeHex("10101010")), "Greater than magic operator failed");
+        assertTrue(m.test(Hex.decodeHex("01010101")), "Greater than magic operator failed");
+        assertTrue(m.test(Hex.decodeHex("11111111")), "Greater than magic operator failed");
+    }
+
+    @Test
     void testString() throws ParseException {
         // ABCD
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string ABCD FOO");

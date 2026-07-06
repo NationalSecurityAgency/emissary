@@ -335,8 +335,8 @@ public class MagicNumber {
         log.debug("Unary Operator: {}", unaryOperator);
 
         // Detect numeric short and long types
-        boolean isShortType = (dataType == TYPE_SHORT || dataType == TYPE_BESHORT || dataType == TYPE_LESHORT);
-        boolean isLongType = (dataType == TYPE_LONG || dataType == TYPE_BELONG || dataType == TYPE_LELONG);
+        boolean isShortType = dataType == TYPE_SHORT || dataType == TYPE_BESHORT || dataType == TYPE_LESHORT;
+        boolean isLongType = dataType == TYPE_LONG || dataType == TYPE_BELONG || dataType == TYPE_LELONG;
 
         if (isShortType || isLongType) {
             int requiredBytes = isLongType ? 4 : 2;
@@ -345,7 +345,7 @@ public class MagicNumber {
                 return false;
             }
 
-            boolean isLittleEndian = (dataType == TYPE_LESHORT || dataType == TYPE_LELONG);
+            boolean isLittleEndian = dataType == TYPE_LESHORT || dataType == TYPE_LELONG;
 
             return testMultiByteNumeric(data, mValues, requiredBytes, isLittleEndian);
         }
@@ -419,9 +419,9 @@ public class MagicNumber {
     /**
      * Test multi-byte numeric
      *
-     * @param data           array containing byte data
-     * @param test           array containing test data
-     * @param requiredBytes  number of bytes to compare
+     * @param data array containing byte data
+     * @param test array containing test data
+     * @param requiredBytes number of bytes to compare
      * @param isLittleEndian true for little-endian byte order, false for big-endian
      * @return result of operator
      */
@@ -440,7 +440,8 @@ public class MagicNumber {
             case MAGICOPERATOR_LTHAN:
                 return dataVal < testValue;
             case MAGICOPERATOR_OR:
-                return (dataVal | testValue) != 0;
+                String hexString = "1".repeat(requiredBytes * 2);
+                return (dataVal | testValue) == Long.parseLong(hexString, 16);
             case MAGICOPERATOR_BWNOT:
             case MAGICOPERATOR_NOT:
                 return dataVal != testValue;
@@ -457,9 +458,9 @@ public class MagicNumber {
     /**
      * Parses multi-byte numeric values into an unsigned 64-bit long integer.
      *
-     * @param bytes          Array containing byte data.
+     * @param bytes Array containing byte data.
      * @param isLittleEndian true for Little-Endian byte order, false for Big-Endian.
-     * @param requiredBytes  number of bytes to assemble (e.g., 2 for short, 4 for long).
+     * @param requiredBytes number of bytes to assemble (e.g., 2 for short, 4 for long).
      * @return assembled unsigned value as a long primitive.
      */
     private static long parseNumericValue(byte[] bytes, boolean isLittleEndian, int requiredBytes) {
