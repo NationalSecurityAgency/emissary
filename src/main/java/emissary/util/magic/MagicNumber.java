@@ -16,77 +16,147 @@ public class MagicNumber {
 
     private static final Logger log = LoggerFactory.getLogger(MagicNumber.class);
 
-    /** The default charset used when loading the config file and when sampling data */
+    /**
+     * The default charset used when loading the config file and when sampling data
+     */
     public static final Charset DEFAULT_CHARSET = StandardCharsets.ISO_8859_1;
-    /** Byte data type */
+    /**
+     * Byte data type
+     */
     public static final String TYPE_KEY_BYTE = "BYTE"; //
-    /** Short data type */
+    /**
+     * Short data type
+     */
     public static final String TYPE_KEY_SHORT = "SHORT"; //
-    /** Long data type */
+    /**
+     * Long data type
+     */
     public static final String TYPE_KEY_LONG = "LONG"; //
-    /** String data type */
+    /**
+     * String data type
+     */
     public static final String TYPE_KEY_STRING = "STRING"; //
-    /** Date data type */
+    /**
+     * Date data type
+     */
     public static final String TYPE_KEY_DATE = "DATE"; // long integer - seconds since epoch
-    /** Big endian short data type */
+    /**
+     * Big endian short data type
+     */
     public static final String TYPE_KEY_BESHORT = "BESHORT"; // big-endian 16-bit
-    /** Big endian long data type */
+    /**
+     * Big endian long data type
+     */
     public static final String TYPE_KEY_BELONG = "BELONG"; // big-endian 32-bit
-    /** Big endian date data type */
+    /**
+     * Big endian date data type
+     */
     public static final String TYPE_KEY_BEDATE = "BEDATE"; // big-endian 32-bit date
-    /** Little endian short data type */
+    /**
+     * Little endian short data type
+     */
     public static final String TYPE_KEY_LESHORT = "LESHORT"; // little-end 16-bit
-    /** Little endian long data type */
+    /**
+     * Little endian long data type
+     */
     public static final String TYPE_KEY_LELONG = "LELONG"; // little-end 32-bit
-    /** Little endian long data type */
+    /**
+     * Little endian long data type
+     */
     public static final String TYPE_KEY_LEDATE = "LEDATE"; // little-end 32-bit date
 
-    /** Unknown data type id */
+    /**
+     * Unknown data type id
+     */
     public static final int TYPE_UNKNOWN = -1;
-    /** Byte data type id */
+    /**
+     * Byte data type id
+     */
     public static final int TYPE_BYTE = 0;
-    /** Short data type id */
+    /**
+     * Short data type id
+     */
     public static final int TYPE_SHORT = 1;
-    /** Long data type id */
+    /**
+     * Long data type id
+     */
     public static final int TYPE_LONG = 2;
-    /** String data type id */
+    /**
+     * String data type id
+     */
     public static final int TYPE_STRING = 3;
-    /** Date data type id */
+    /**
+     * Date data type id
+     */
     public static final int TYPE_DATE = 4;
-    /** Big endian short data type id */
+    /**
+     * Big endian short data type id
+     */
     public static final int TYPE_BESHORT = 5;
-    /** Big endian long data type id */
+    /**
+     * Big endian long data type id
+     */
     public static final int TYPE_BELONG = 6;
-    /** Big endian date data type id */
+    /**
+     * Big endian date data type id
+     */
     public static final int TYPE_BEDATE = 7;
-    /** Little endian short data type id */
+    /**
+     * Little endian short data type id
+     */
     public static final int TYPE_LESHORT = 8;
-    /** Little endian long data type id */
+    /**
+     * Little endian long data type id
+     */
     public static final int TYPE_LELONG = 9;
-    /** Little endian date data type id */
+    /**
+     * Little endian date data type id
+     */
     public static final int TYPE_LEDATE = 10;
-    /** Empty string constant */
+    /**
+     * Empty string constant
+     */
     public static final String EMPTYSTRING = "";
 
-    /** Unary Operator: Equals */
+    /**
+     * Unary Operator: Equals
+     */
     public static final char MAGICOPERATOR_AND = '=';
-    /** Unary Operator: Greater than */
+    /**
+     * Unary Operator: Greater than
+     */
     public static final char MAGICOPERATOR_GTHAN = '>';
-    /** Unary Operator: Less than */
+    /**
+     * Unary Operator: Less than
+     */
     public static final char MAGICOPERATOR_LTHAN = '<';
-    /** Unary Operator: At least one bit matches */
+    /**
+     * Unary Operator: At least one bit matches
+     */
     public static final char MAGICOPERATOR_OR = 'x';
-    /** Unary Operator: All bits match */
+    /**
+     * Unary Operator: All bits match
+     */
     public static final char MAGICOPERATOR_BWAND = '&';
-    /** Unary Operator: None or some bits match */
+    /**
+     * Unary Operator: None or some bits match
+     */
     public static final char MAGICOPERATOR_BWNOT = '^';
-    /** Unary Operator: Default Operator (AND) */
+    /**
+     * Unary Operator: Default Operator (AND)
+     */
     public static final char MAGICOPERATOR_NOT = '!';
-    /** Unary Operator: Greater than or equal to */
+    /**
+     * Unary Operator: Greater than or equal to
+     */
     public static final char MAGICOPERATOR_EQUAL_GTHAN = ']';
-    /** Unary operator: Less than or equal to */
+    /**
+     * Unary operator: Less than or equal to
+     */
     public static final char MAGICOPERATOR_EQUAL_LTHAN = '[';
-    /** Default Unary Operator - and */
+    /**
+     * Default Unary Operator - and
+     */
     public static final char MAGICOPERATOR_DEFAULT = MAGICOPERATOR_AND;
 
 
@@ -253,13 +323,10 @@ public class MagicNumber {
         if (subject == null) {
             return false;
         }
-        return testNumeric(subject);
+        return testMultiByteNumeric(subject);
     }
 
-    /**
-     * Tests numeric byte data only
-     */
-    private boolean testNumeric(byte[] data) {
+    private boolean testMultiByteNumeric(byte[] data) {
         if (substitute) {
             return true;
         }
@@ -267,6 +334,23 @@ public class MagicNumber {
 
         log.debug("Unary Operator: {}", unaryOperator);
 
+        // Detect numeric short and long types
+        boolean isShortType = (dataType == TYPE_SHORT || dataType == TYPE_BESHORT || dataType == TYPE_LESHORT);
+        boolean isLongType = (dataType == TYPE_LONG || dataType == TYPE_BELONG || dataType == TYPE_LELONG);
+
+        if (isShortType || isLongType) {
+            int requiredBytes = isLongType ? 4 : 2;
+
+            if (data == null || data.length < requiredBytes || mValues.length < requiredBytes) {
+                return false;
+            }
+
+            boolean isLittleEndian = (dataType == TYPE_LESHORT || dataType == TYPE_LELONG);
+
+            return testMultiByteNumeric(data, mValues, requiredBytes, isLittleEndian);
+        }
+
+        // Fallback for byte-by-byte direct evaluations
         int end = mValues.length;
         switch (unaryOperator) {
             case MAGICOPERATOR_AND:
@@ -329,9 +413,83 @@ public class MagicNumber {
             default:
                 throw new IllegalStateException(
                         "This MagicNumber instance is configured incorrectly. The unary operator is set to an unknown or unconfigured value.");
-
         }
     }
+
+    /**
+     * Test multi-byte numeric
+     *
+     * @param data           array containing byte data
+     * @param test           array containing test data
+     * @param requiredBytes  number of bytes to compare
+     * @param isLittleEndian true for little-endian byte order, false for big-endian
+     * @return result of operator
+     */
+    private boolean testMultiByteNumeric(byte[] data, byte[] test, int requiredBytes, boolean isLittleEndian) {
+        // Parse values using extracted helper method
+        long dataVal = parseNumericValue(data, isLittleEndian, requiredBytes);
+        long testValue = parseNumericValue(test, isLittleEndian, requiredBytes);
+
+        // Evaluate operators on parsed 64-bit representation
+        switch (unaryOperator) {
+            case MAGICOPERATOR_AND:
+            case MAGICOPERATOR_BWAND:
+                return dataVal == testValue;
+            case MAGICOPERATOR_GTHAN:
+                return dataVal > testValue;
+            case MAGICOPERATOR_LTHAN:
+                return dataVal < testValue;
+            case MAGICOPERATOR_OR:
+                return (dataVal | testValue) != 0;
+            case MAGICOPERATOR_BWNOT:
+            case MAGICOPERATOR_NOT:
+                return dataVal != testValue;
+            case MAGICOPERATOR_EQUAL_GTHAN:
+                return dataVal >= testValue;
+            case MAGICOPERATOR_EQUAL_LTHAN:
+                return dataVal <= testValue;
+            default:
+                throw new IllegalStateException(
+                        "This MagicNumber instance is configured incorrectly. The unary operator is set to an unknown or unconfigured value.");
+        }
+    }
+
+    /**
+     * Parses multi-byte numeric values into an unsigned 64-bit long integer.
+     *
+     * @param bytes          Array containing byte data.
+     * @param isLittleEndian true for Little-Endian byte order, false for Big-Endian.
+     * @param requiredBytes  number of bytes to assemble (e.g., 2 for short, 4 for long).
+     * @return assembled unsigned value as a long primitive.
+     */
+    private static long parseNumericValue(byte[] bytes, boolean isLittleEndian, int requiredBytes) {
+        if (requiredBytes == 2) {
+            short val = (short) (((bytes[0] & 0xFF) << 8) | (bytes[1] & 0xFF));
+            return Short.toUnsignedLong(isLittleEndian ? Short.reverseBytes(val) : val);
+        }
+
+        if (requiredBytes == 4) {
+            int val = ((bytes[0] & 0xFF) << 24)
+                    | ((bytes[1] & 0xFF) << 16)
+                    | ((bytes[2] & 0xFF) << 8)
+                    | (bytes[3] & 0xFF);
+            return Integer.toUnsignedLong(isLittleEndian ? Integer.reverseBytes(val) : val);
+        }
+
+        if (requiredBytes == 8) {
+            long val = ((bytes[0] & 0xFFL) << 56)
+                    | ((bytes[1] & 0xFFL) << 48)
+                    | ((bytes[2] & 0xFFL) << 40)
+                    | ((bytes[3] & 0xFFL) << 32)
+                    | ((bytes[4] & 0xFFL) << 24)
+                    | ((bytes[5] & 0xFFL) << 16)
+                    | ((bytes[6] & 0xFFL) << 8)
+                    | (bytes[7] & 0xFFL);
+            return isLittleEndian ? Long.reverseBytes(val) : val;
+        }
+        throw new IllegalArgumentException("Unsupported byte length: " + requiredBytes);
+    }
+
 
     /**
      * Retrieves the data sample

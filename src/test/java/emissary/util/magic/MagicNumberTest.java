@@ -3,6 +3,8 @@ package emissary.util.magic;
 import emissary.test.core.junit5.UnitTest;
 
 import jakarta.xml.bind.DatatypeConverter;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -107,6 +109,16 @@ class MagicNumberTest extends UnitTest {
         assertTrue(m.test("AC".getBytes()), "Greater than magic operator failed");
         assertFalse(m.test("AB".getBytes()), "Greater than magic operator failed");
         assertFalse(m.test("AA".getBytes()), "Greater than magic operator failed");
+    }
+
+    @Test
+    void testGreaterThanBeshort2() throws ParseException, DecoderException {
+        // AB
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("0 beshort >0x0000 FOO");
+        assertFalse(m.test(Hex.decodeHex("0000")), "Greater than magic operator failed");
+        assertTrue(m.test(Hex.decodeHex("0001")), "Greater than magic operator failed");
+        assertTrue(m.test(Hex.decodeHex("0101")), "Greater than magic operator failed");
+        assertTrue(m.test(Hex.decodeHex("0100")), "Greater than magic operator failed");
     }
 
     @Test
