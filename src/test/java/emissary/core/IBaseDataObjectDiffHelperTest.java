@@ -3,9 +3,12 @@ package emissary.core;
 import emissary.core.channels.AbstractSeekableByteChannel;
 import emissary.core.channels.InMemoryChannelFactory;
 import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.core.constants.IbdoXmlElementNames;
 import emissary.test.core.junit5.UnitTest;
 
 import jakarta.annotation.Nullable;
+import org.jdom2.Attribute;
+import org.jdom2.Element;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -17,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,9 +29,19 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import static emissary.core.IBaseDataObjectDiffHelper.checkAttachmentCounts;
+import static emissary.core.IBaseDataObjectDiffHelper.checkMetadata;
+import static emissary.core.IBaseDataObjectDiffHelper.checkStringValue;
+import static emissary.core.IBaseDataObjectDiffHelper.checkViews;
+import static emissary.core.IBaseDataObjectDiffHelper.diff;
+import static emissary.core.IBaseDataObjectDiffHelper.verifyOs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class IBaseDataObjectDiffHelperTest extends UnitTest {
 
@@ -35,7 +49,10 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
     private IBaseDataObject ibdo2;
     private List<IBaseDataObject> ibdoList1;
     private List<IBaseDataObject> ibdoList2;
+    private IBaseDataObject mockPayload;
+    private DiffCheckConfiguration mockOptions;
     private List<String> differences;
+    private Element mockElement;
     private static final DiffCheckConfiguration EMPTY_OPTIONS = DiffCheckConfiguration.configure().build();
     private static final DiffCheckConfiguration CHECK_DATA = DiffCheckConfiguration.onlyCheckData();
 
@@ -45,7 +62,10 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         ibdo2 = new BaseDataObject();
         ibdoList1 = Arrays.asList(ibdo1);
         ibdoList2 = Arrays.asList(ibdo2);
+        mockPayload = mock(IBaseDataObject.class);
+        mockOptions = mock(DiffCheckConfiguration.class);
         differences = new ArrayList<>();
+        mockElement = mock(Element.class);
     }
 
     private void verifyDiff(final List<String> expectedDifferencesForward, final List<String> expectedDifferencesReverse) {
@@ -54,13 +74,13 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
 
     private void verifyDiff(final List<String> expectedDifferencesForward, final List<String> expectedDifferencesReverse,
             final DiffCheckConfiguration options) {
-        IBaseDataObjectDiffHelper.diff(ibdo1, ibdo1, differences, options);
+        diff(ibdo1, ibdo1, differences, options);
         assertEquals(0, differences.size());
-        IBaseDataObjectDiffHelper.diff(ibdo1, ibdo2, differences, options);
+        diff(ibdo1, ibdo2, differences, options);
         replaceVariableText(differences);
         assertIterableEquals(expectedDifferencesForward, differences);
         differences.clear();
-        IBaseDataObjectDiffHelper.diff(ibdo2, ibdo1, differences, options);
+        diff(ibdo2, ibdo1, differences, options);
         replaceVariableText(differences);
         assertIterableEquals(expectedDifferencesReverse, differences);
         differences.clear();
@@ -80,9 +100,9 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
 
     private void verifyDiffList(final List<String> expectedDifferences, @Nullable final List<IBaseDataObject> list1,
             @Nullable final List<IBaseDataObject> list2) {
-        IBaseDataObjectDiffHelper.diff(list1, list1, "test", differences, EMPTY_OPTIONS);
+        diff(list1, list1, "test", differences, EMPTY_OPTIONS);
         assertEquals(0, differences.size());
-        IBaseDataObjectDiffHelper.diff(list1, list2, "test", differences, EMPTY_OPTIONS);
+        diff(list1, list2, "test", differences, EMPTY_OPTIONS);
         assertIterableEquals(expectedDifferences, differences);
         differences.clear();
     }
@@ -94,28 +114,28 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
     @Test
     void testDiffArguments() {
         // Objects
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(null, ibdo2, differences, EMPTY_OPTIONS));
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(ibdo1, null, differences, EMPTY_OPTIONS));
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(ibdo1, ibdo2, null, EMPTY_OPTIONS));
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(ibdoList1, ibdoList2, null, differences, EMPTY_OPTIONS));
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(ibdoList1, ibdoList2, "id", null, EMPTY_OPTIONS));
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(ibdo1, ibdo2, differences, null));
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(new Object(), new Object(), null, differences));
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(new Object(), new Object(), "id", null));
+        checkThrowsNull(() -> diff((IBaseDataObject) null, ibdo2, differences, EMPTY_OPTIONS));
+        checkThrowsNull(() -> diff(ibdo1, null, differences, EMPTY_OPTIONS));
+        checkThrowsNull(() -> diff(ibdo1, ibdo2, null, EMPTY_OPTIONS));
+        checkThrowsNull(() -> diff(ibdoList1, ibdoList2, null, differences, EMPTY_OPTIONS));
+        checkThrowsNull(() -> diff(ibdoList1, ibdoList2, "id", null, EMPTY_OPTIONS));
+        checkThrowsNull(() -> diff(ibdo1, ibdo2, differences, null));
+        checkThrowsNull(() -> diff(new Object(), new Object(), null, differences));
+        checkThrowsNull(() -> diff(new Object(), new Object(), "id", null));
 
         // Integers
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(0, 0, null, differences));
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(0, 0, "id", null));
+        checkThrowsNull(() -> diff(0, 0, null, differences));
+        checkThrowsNull(() -> diff(0, 0, "id", null));
 
         // Booleans
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(false, false, null, differences));
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(false, false, "id", null));
+        checkThrowsNull(() -> diff(false, false, null, differences));
+        checkThrowsNull(() -> diff(false, false, "id", null));
 
         // Maps
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(null, new HashMap<>(), "id", differences));
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(new HashMap<>(), null, "id", differences));
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(new HashMap<>(), new HashMap<>(), null, differences));
-        checkThrowsNull(() -> IBaseDataObjectDiffHelper.diff(new HashMap<>(), new HashMap<>(), "id", null));
+        checkThrowsNull(() -> diff(null, new HashMap<>(), "id", differences));
+        checkThrowsNull(() -> diff(new HashMap<>(), null, "id", differences));
+        checkThrowsNull(() -> diff(new HashMap<>(), new HashMap<>(), null, differences));
+        checkThrowsNull(() -> diff(new HashMap<>(), new HashMap<>(), "id", null));
     }
 
     @Test
@@ -405,5 +425,289 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         // test
         TreeMap<String, Collection<Object>> sortedParams = new TreeMap<>(ibdo1.getParameters());
         assertEquals(expectedParams, sortedParams.keySet(), "parameters should be sorted in natural order of keys");
+    }
+
+    @Test
+    void testCheckAttachmentCounts() {
+        Element root = new Element("answers");
+        root.addContent(new Element(IbdoXmlElementNames.NUM_ATTACHMENTS).setText("2"));
+
+        List<IBaseDataObject> attachments = new ArrayList<>();
+        attachments.add(new BaseDataObject());
+
+        List<String> diffs = new ArrayList<>();
+        checkAttachmentCounts(root, attachments, diffs);
+
+        assertEquals(1, diffs.size());
+        assertEquals("Expected <numAttachments> 2 not equal to number of attachments in payload (1).", diffs.get(0));
+    }
+
+    @Test
+    void testLenientDiffListAttachmentCountMismatch() {
+        Element root = new Element("answers");
+        root.addContent(new Element(IbdoXmlElementNames.NUM_ATTACHMENTS).setText("3"));
+
+        List<IBaseDataObject> actual = new ArrayList<>();
+        actual.add(new BaseDataObject());
+
+        DiffCheckConfiguration options = DiffCheckConfiguration.configure().setLenientExpectationElement(root).build();
+
+        List<String> diffs = new ArrayList<>();
+        diff(new BaseDataObject(), actual, "test", diffs, diffs, options);
+
+        assertEquals(1, diffs.size());
+        assertEquals("Expected <numAttachments> 3 not equal to number of attachments in payload (1).", diffs.get(0));
+    }
+
+
+    @Test
+    void shouldThrowExceptionWhenStrictModeIsEnabled() {
+        when(mockOptions.isStrict()).thenReturn(true);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> diff(mockPayload, differences, mockOptions)
+        );
+
+        assertTrue(exception.getMessage().contains("Cannot invoke single-payload lenient diff()"));
+    }
+
+    @Test
+    void shouldDoNothingIfRootXmlIsNull() {
+        when(mockOptions.isStrict()).thenReturn(false);
+        when(mockOptions.getLenientExpectationElement()).thenReturn(null);
+
+        diff(mockPayload, differences, mockOptions);
+
+        assertTrue(differences.isEmpty());
+    }
+
+    @Test
+    void shouldReportMismatchWhenNumAttachmentsDiffers() {
+        Element root = new Element("root");
+        Element numAtt = new Element("numAttachments").setText("5");
+        root.addContent(numAtt);
+
+        List<IBaseDataObject> attachments = List.of(mockPayload, mockPayload); // Size = 2
+
+        checkAttachmentCounts(root, attachments, differences);
+
+        assertEquals(1, differences.size());
+        assertTrue(differences.get(0).contains("Expected <numAttachments> 5 not equal to number of attachments in payload (2)."));
+    }
+
+    @Test
+    void shouldReportMissingCountTagWhenPayloadHasItems() {
+        Element root = new Element("root");
+        List<IBaseDataObject> attachments = List.of(mockPayload);
+
+        checkAttachmentCounts(root, attachments, differences);
+
+        assertEquals(1, differences.size());
+        assertTrue(differences.get(0).contains("1 attachments in payload with no count in answer xml"));
+    }
+
+    @Test
+    void shouldReportErrorIfParameterNameMissing() {
+        Element root = new Element("answers");
+        Element param = new Element("meta"); // No name element added
+        root.addContent(param);
+
+        checkMetadata(root, mockPayload, differences);
+
+        assertEquals(1, differences.size());
+        assertTrue(differences.get(0).contains("missing a child name element"));
+    }
+
+    @Test
+    void shouldReportErrorIfForbiddenMetadataExists() {
+        Element root = new Element("root");
+        Element nometa = new Element("nometa");
+        nometa.addContent(new Element("name").setText("forbiddenKey"));
+        root.addContent(nometa);
+
+        when(mockPayload.hasParameter("forbiddenKey")).thenReturn(true);
+        when(mockPayload.getStringParameter("forbiddenKey")).thenReturn("someValue");
+
+        checkMetadata(root, mockPayload, differences);
+
+        assertEquals(1, differences.size());
+        assertTrue(differences.get(0).contains("Metadata element 'forbiddenKey' should not exist, but has value of 'someValue'"));
+    }
+
+    @Test
+    void shouldReportMissingView() {
+        Element root = new Element("root");
+        Element view = new Element("view");
+        view.addContent(new Element("name").setText("TEXT_VIEW"));
+        root.addContent(view);
+
+        when(mockPayload.getAlternateView("TEXT_VIEW")).thenReturn(null);
+
+        checkViews(root, mockPayload, differences);
+
+        assertEquals(1, differences.size());
+        assertTrue(differences.get(0).contains("Alternate View 'TEXT_VIEW' is missing from payload"));
+    }
+
+    @Test
+    void shouldReportForbiddenViewPresence() {
+        Element root = new Element("root");
+        Element noview = new Element("noview");
+        noview.addContent(new Element("name").setText("SECRET_VIEW"));
+        root.addContent(noview);
+
+        when(mockPayload.getAlternateView("SECRET_VIEW")).thenReturn("secret data".getBytes(StandardCharsets.UTF_8));
+
+        checkViews(root, mockPayload, differences);
+
+        assertEquals(1, differences.size());
+        assertTrue(differences.get(0).contains("Alternate View 'SECRET_VIEW' is present, but was flagged as forbidden (noview)"));
+    }
+
+    @Test
+    void testEqualsMatchSuccess() {
+        Element meta = buildMetaElement("equals", "hello");
+        checkStringValue(meta, "hello", differences);
+
+        assertTrue(differences.isEmpty());
+    }
+
+    @Test
+    void testEqualsMatchFailure() {
+        Element meta = buildMetaElement("equals", "hello");
+        checkStringValue(meta, "world", differences);
+
+        assertEquals(1, differences.size());
+        assertTrue(differences.get(0).contains("does not equal"));
+    }
+
+    @Test
+    void testContainsMatchSuccess() {
+        Element meta = buildMetaElement("contains", "bar");
+        checkStringValue(meta, "foo bar baz", differences);
+
+        assertTrue(differences.isEmpty());
+    }
+
+    @Test
+    void testRegexMatchFailure() {
+        Element meta = buildMetaElement("match", "^[0-9]+$");
+        checkStringValue(meta, "abc1234", differences);
+
+        assertEquals(1, differences.size());
+        assertTrue(differences.get(0).contains("does not match regex"));
+    }
+
+    @Test
+    void testBase64MatchSuccess() {
+        String originalStr = "DecodedText123";
+        String encoded = Base64.getEncoder().encodeToString(originalStr.getBytes(StandardCharsets.UTF_8));
+
+        Element meta = buildMetaElement("base64", encoded);
+        checkStringValue(meta, originalStr, differences);
+
+        assertTrue(differences.isEmpty());
+    }
+
+    @Test
+    void testBase64MatchFailure() {
+        Element meta = buildMetaElement("base64", "!!!not-valid-base64!!!");
+        checkStringValue(meta, "anything", differences);
+
+        assertEquals(1, differences.size());
+        assertTrue(differences.get(0).contains("Base64 mismatch"));
+    }
+
+    @Test
+    void testCollectionMatch() {
+        Element meta = buildMetaElement("collection", "A|B|C");
+        meta.setAttribute("collectionSeparator", "\\|");
+
+        // Equal ignoring order
+        checkStringValue(meta, "C|A|B", differences);
+        assertTrue(differences.isEmpty());
+
+        // Missing element triggers error
+        checkStringValue(meta, "A|B", differences);
+        assertEquals(1, differences.size());
+        assertTrue(differences.get(0).contains("collections not equal"));
+    }
+
+    @Test
+    void shouldReturnTrueWhenNoOsAttribute() {
+        Element element = new Element("field");
+        boolean result = verifyOs(element, differences);
+
+        assertTrue(result);
+        assertTrue(differences.isEmpty());
+    }
+
+    @Test
+    void shouldFailAndRecordErrorForUnsupportedOs() {
+        Element element = new Element("field");
+        element.setAttribute("os-release", "windows");
+
+        boolean result = verifyOs(element, differences);
+
+        assertFalse(result);
+        assertEquals(1, differences.size());
+        assertTrue(differences.get(0).contains("Unsupported or mistyped os-release target 'windows'"));
+    }
+
+    private static Element buildMetaElement(String mode, String valueStr) {
+        Element meta = new Element("parameter");
+        meta.addContent(new Element("name").setText("testKey"));
+        if (mode != null) {
+            meta.setAttribute("matchMode", mode);
+        }
+        if (valueStr != null) {
+            Element valEl = new Element("value").setText(valueStr);
+            meta.addContent(valEl);
+        }
+        return meta;
+    }
+
+    @Test
+    void testVerifyOs_NoOsRestriction_ReturnsTrue() {
+        when(mockElement.getAttribute("os-release")).thenReturn(null);
+
+        boolean result = verifyOs(mockElement, differences);
+
+        assertTrue(result, "Should return true if no OS is specified");
+        assertTrue(differences.isEmpty(), "Differences list should remain empty");
+    }
+
+    @Test
+    void testVerifyOs_SupportedOsMatchesButVersionMismatches_ReturnsFalse() {
+        Attribute osAttr = mock(Attribute.class);
+        when(osAttr.getValue()).thenReturn("ubuntu");
+
+        Attribute versionAttr = mock(Attribute.class);
+        when(versionAttr.getValue()).thenReturn("20.04");
+
+        when(mockElement.getAttribute("os-release")).thenReturn(osAttr);
+        when(mockElement.getAttribute("os-version")).thenReturn(versionAttr);
+
+        boolean result = verifyOs(mockElement, differences);
+
+        assertFalse(result, "Should return false when OS matches but version is wrong");
+        assertTrue(differences.isEmpty());
+    }
+
+    @Test
+    void testVerifyOs_UnsupportedOs_ReturnsFalseAndAddsDifference() {
+        Attribute osAttr = mock(Attribute.class);
+        when(osAttr.getValue()).thenReturn("windows");
+        when(mockElement.getAttribute("os-release")).thenReturn(osAttr);
+        when(mockElement.getName()).thenReturn("test-node");
+
+        boolean result = verifyOs(mockElement, differences);
+
+        assertFalse(result, "Should return false for unsupported OS");
+        assertEquals(1, differences.size(), "Should log exactly one difference error");
+
+        String expectedError = "Unsupported or mistyped os-release target 'windows' found in element <test-node>";
+        assertEquals(expectedError, differences.get(0));
     }
 }

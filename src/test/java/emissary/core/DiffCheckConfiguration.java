@@ -1,5 +1,8 @@
 package emissary.core;
 
+import jakarta.annotation.Nullable;
+import org.jdom2.Element;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -22,6 +25,16 @@ public class DiffCheckConfiguration {
     private final Set<DiffCheckOptions> enabled;
 
     /**
+     * Flag indicating if the verification is in strict mode.
+     */
+    private final boolean strict;
+
+    /**
+     * The JDOM element containing expected values for lenient checks.
+     */
+    private final Element lenientExpectationElement;
+
+    /**
      * Start building a new configuration
      * 
      * @return a new builder instance
@@ -36,7 +49,25 @@ public class DiffCheckConfiguration {
      * @return a new config instance which only enables checking data
      */
     public static DiffCheckConfiguration onlyCheckData() {
-        return new DiffCheckConfiguration(EnumSet.of(DiffCheckOptions.DATA));
+        return new DiffCheckConfiguration(EnumSet.of(DiffCheckOptions.DATA), true, null);
+    }
+
+    /**
+     * Check if the configuration is in strict mode
+     *
+     * @return if strict mode is enabled
+     */
+    public boolean isStrict() {
+        return this.strict;
+    }
+
+    /**
+     * Accessor for the lenient expectation XML element
+     *
+     * @return the lenient expectation element
+     */
+    public Element getLenientExpectationElement() {
+        return this.lenientExpectationElement;
     }
 
     /**
@@ -107,8 +138,21 @@ public class DiffCheckConfiguration {
      * 
      * @param enabled set of pre-configured options
      */
-    private DiffCheckConfiguration(final EnumSet<DiffCheckOptions> enabled) {
+    private DiffCheckConfiguration(final EnumSet<DiffCheckOptions> enabled, final boolean strict,
+            @Nullable final Element lenientExpectationElement) {
         this.enabled = Collections.unmodifiableSet(enabled);
+        this.strict = strict;
+        this.lenientExpectationElement = lenientExpectationElement;
+    }
+
+    /**
+     * Creates a builder pre-populated with the settings of an existing configuration.
+     *
+     * @param prototype The configuration instance to copy from.
+     * @return A DiffCheckBuilder primed with the prototype's settings.
+     */
+    public static DiffCheckBuilder from(final DiffCheckConfiguration prototype) {
+        return new DiffCheckBuilder(prototype);
     }
 
     /**
@@ -122,12 +166,47 @@ public class DiffCheckConfiguration {
         private final EnumSet<DiffCheckOptions> building;
 
         /**
+         * Internal strict state tracking
+         */
+        private boolean strict = true;
+
+        /**
+         * Internal element tracking for lenient modes
+         */
+        @Nullable
+        private Element lenientExpectationElement = null;
+
+        /**
+         * Set strict processing mode behavior
+         *
+         * @param strict true to execute exact-match tracking, false for lenient checks
+         * @return the builder
+         */
+        public DiffCheckBuilder setStrict(boolean strict) {
+            this.strict = strict;
+            return this;
+        }
+
+        /**
+         * Set the underlying template element to evaluate lenient parameter rules
+         *
+         * @param element the source XML mapping element
+         * @return the builder
+         */
+        public DiffCheckBuilder setLenientExpectationElement(Element element) {
+            this.lenientExpectationElement = element;
+            /* Setting a lenient expectation element implies lenient mode */
+            this.strict = false;
+            return this;
+        }
+
+        /**
          * Finish building and create the final DiffCheckConfiguration object
          * 
          * @return a new Configuration instance with the enabled options
          */
         public DiffCheckConfiguration build() {
-            return new DiffCheckConfiguration(building);
+            return new DiffCheckConfiguration(building, strict, lenientExpectationElement);
         }
 
         /**
@@ -155,12 +234,45 @@ public class DiffCheckConfiguration {
         }
 
         /**
+         * Public/Package-private constructor to build from an existing configuration
+         *
+         * @param configuration the configuration to duplicate state from
+         */
+        private DiffCheckBuilder(final DiffCheckConfiguration configuration) {
+            this.building = EnumSet.noneOf(DiffCheckOptions.class);
+
+            if (configuration.checkData()) {
+                this.building.add(DiffCheckOptions.DATA);
+            }
+            if (configuration.checkTimestamp()) {
+                this.building.add(DiffCheckOptions.TIMESTAMP);
+            }
+            if (configuration.checkInternalId()) {
+                this.building.add(DiffCheckOptions.INTERNAL_ID);
+            }
+            if (configuration.checkTransformHistory()) {
+                this.building.add(DiffCheckOptions.TRANSFORM_HISTORY);
+            }
+            if (configuration.performDetailedParameterDiff()) {
+                this.building.add(DiffCheckOptions.DETAILED_PARAMETER_DIFF);
+            }
+            if (configuration.performKeyValueParameterDiff()) {
+                this.building.add(DiffCheckOptions.KEY_VALUE_PARAMETER_DIFF);
+            }
+
+            this.strict = configuration.isStrict();
+            this.lenientExpectationElement = configuration.getLenientExpectationElement();
+        }
+
+        /**
          * Reset the list of enabled options
          * 
          * @return the builder
          */
         public DiffCheckBuilder reset() {
             building.clear();
+            this.strict = true;
+            this.lenientExpectationElement = null;
             return this;
         }
 
