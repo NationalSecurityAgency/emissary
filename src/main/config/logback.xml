@@ -69,6 +69,34 @@
     </then>
   </if>
 
+  <!-- Enable drop-off view-count stats logging by creating an environment variable of "LOG_DROPOFF_STATS=true" -->
+  <if condition="&quot;${LOG_DROPOFF_STATS}&quot;.equals(&quot;true&quot;)">
+    <then>
+      <appender name="DROPOFF-STATS" class="emissary.util.CustomRolloverLogbackAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+          <customFields>{"node":"${emissary.node.name}"}</customFields>
+          <includeMdc>false</includeMdc>
+          <fieldNames>
+            <version>[ignore]</version>
+            <logger>[ignore]</logger>
+            <thread>[ignore]</thread>
+            <levelValue>[ignore]</levelValue>
+            <level>[ignore]</level>
+            <message>[ignore]</message>
+          </fieldNames>
+        </encoder>
+        <file>${PROJECT_BASE}/logs/${emissary.node.name}-${emissary.node.port}-dropoff-stats.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+          <fileNamePattern>${PROJECT_BASE}/logs/${emissary.node.name}-${emissary.node.port}-dropoff-stats.log.%d{yyyyMMdd-HHmm}</fileNamePattern>
+        </rollingPolicy>
+      </appender>
+
+      <logger name="dropOffStats" level="INFO" additivity="false">
+        <appender-ref ref="DROPOFF-STATS" />
+      </logger>
+    </then>
+  </if>
+
   <root level="INFO">
     <!-- stop logging to a file in development man, redirect or tee to a file
     <appender-ref ref="TOFILE"/>

@@ -5,6 +5,7 @@ import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffPlace;
 import emissary.output.DropOffUtil;
+import emissary.output.stats.ViewOutputStats;
 
 import jakarta.annotation.Nullable;
 
@@ -64,6 +65,8 @@ public class DataFilter extends AbstractFilter {
             final byte[] data = d.data();
             final boolean status = writeDataFile(d, tld, baseFileName, data, null);
             writeCount += (status ? 1 : -1);
+            ViewOutputStats.record(AbstractFilter.PRIMARY_VIEW_NAME, fileType,
+                    status ? ViewOutputStats.STATUS_OK : ViewOutputStats.STATUS_WRITE_FAILED);
         }
 
         // Check each alt view
@@ -72,6 +75,9 @@ public class DataFilter extends AbstractFilter {
                 final String fixedViewName = viewName.replace(" ", "_");
                 final boolean status = writeDataFile(d, tld, baseFileName, d.getAlternateView(viewName), fixedViewName);
                 writeCount += (status ? 1 : -1);
+                ViewOutputStats.record(viewName, fileType, status ? ViewOutputStats.STATUS_OK : ViewOutputStats.STATUS_WRITE_FAILED);
+            } else {
+                ViewOutputStats.record(viewName, fileType, ViewOutputStats.STATUS_NOT_OUTPUTTABLE);
             }
         }
 
@@ -105,6 +111,8 @@ public class DataFilter extends AbstractFilter {
             final byte[] data = d.data();
             final boolean status = writeDataStream(d, tld, output, data, null);
             writeCount += (status ? 1 : -1);
+            ViewOutputStats.record(AbstractFilter.PRIMARY_VIEW_NAME, fileType,
+                    status ? ViewOutputStats.STATUS_OK : ViewOutputStats.STATUS_WRITE_FAILED);
         }
 
         // Check each alt view
@@ -113,6 +121,9 @@ public class DataFilter extends AbstractFilter {
                 final String fixedViewName = viewName.replace(" ", "_");
                 final boolean status = writeDataStream(d, tld, output, d.getAlternateView(viewName), fixedViewName);
                 writeCount += (status ? 1 : -1);
+                ViewOutputStats.record(viewName, fileType, status ? ViewOutputStats.STATUS_OK : ViewOutputStats.STATUS_WRITE_FAILED);
+            } else {
+                ViewOutputStats.record(viewName, fileType, ViewOutputStats.STATUS_NOT_OUTPUTTABLE);
             }
         }
 

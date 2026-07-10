@@ -8,6 +8,7 @@ import emissary.core.EmissaryException;
 import emissary.core.MetricsManager;
 import emissary.core.ResourceWatcher;
 import emissary.core.sentinel.Sentinel;
+import emissary.output.stats.ViewOutputStats;
 import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.pool.MoveSpool;
@@ -279,6 +280,13 @@ public class EmissaryNode {
         // The resource watcher
         ResourceWatcher watcher = new ResourceWatcher(metricsManager);
         logger.debug("Started resource watcher...{}", watcher);
+
+        // The drop-off view stats aggregator (opt-in via LOG_DROPOFF_STATS=true)
+        if ("true".equalsIgnoreCase(System.getenv("LOG_DROPOFF_STATS"))) {
+            ViewOutputStats viewStats = ViewOutputStats.fromConfig();
+            viewStats.startAndBind();
+            logger.info("Started drop-off view stats...{}", viewStats);
+        }
 
         // Initialize list of configured spi classes
         SPILoader.load();
