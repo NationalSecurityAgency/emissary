@@ -101,8 +101,8 @@ public class DirectoryObserverManager {
     public void peerUpdate(final Set<DirectoryEntry> peers) {
         int count = 0;
         for (final DirectoryObserver d : this.observers) {
-            if (d instanceof PeerObserver) {
-                ((PeerObserver) d).peerUpdate(this.directoryKey, peers);
+            if (d instanceof PeerObserver observer) {
+                observer.peerUpdate(this.directoryKey, peers);
                 count++;
             }
         }
@@ -225,8 +225,7 @@ public class DirectoryObserverManager {
         int matchcount = 0;
 
         for (final DirectoryObserver d : this.observers) {
-            if (d instanceof PlaceObserver) {
-                final PlaceObserver p = (PlaceObserver) d;
+            if (d instanceof PlaceObserver p) {
                 obcount++;
                 if (KeyManipulator.gmatch(placeKey, p.getPattern())) {
                     matchcount++;

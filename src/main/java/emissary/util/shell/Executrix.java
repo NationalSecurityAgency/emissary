@@ -47,6 +47,7 @@ public class Executrix {
     private static final int DEFAULT_CPU_TIME_LIMIT = 300;
     private static final long DEFAULT_PROCESS_MAX_MILLIS = 300 * 1000L; // 5 min
 
+    @SuppressWarnings("IdentifierName")
     public enum OUTPUT_TYPE {
         STD, FILE
     }
@@ -1418,7 +1419,7 @@ public class Executrix {
                 // Try 2
                 if (!deleted && dir.exists()) {
                     try {
-                        Thread.sleep(10);
+                        Thread.sleep(Duration.ofMillis(10));
                     } catch (InterruptedException ignore) {
                         Thread.currentThread().interrupt();
                     }
@@ -1430,7 +1431,7 @@ public class Executrix {
                 // Try 3
                 if (!deleted && dir.exists()) {
                     try {
-                        Thread.sleep(10);
+                        Thread.sleep(Duration.ofMillis(10));
                     } catch (InterruptedException ignore) {
                         Thread.currentThread().interrupt();
                     }

@@ -149,7 +149,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
         setTitleToFile = configG.findBooleanEntry("SET_TITLE_TO_FILENAME", true);
         placeDisplayName = configG.findStringEntry("SERVICE_DISPLAY_NAME", placeName);
-        logfilename = configG.findStringEntry("LOG_FILE_NAME", KeyManipulator.getServiceName(keys.get(0)) + ".log");
+        logfilename = configG.findStringEntry("LOG_FILE_NAME", KeyManipulator.getServiceName(keys.getFirst()) + ".log");
         singleOutputAsChild = configG.findBooleanEntry("SINGLE_OUTPUT_AS_CHILD", singleOutputAsChild);
         preserveParentData = configG.findBooleanEntry("PRESERVE_PARENT_DATA", preserveParentData);
         ignoreEmptyFile = configG.findBooleanEntry("IGNORE_EMPTY_FILE", true);
@@ -365,7 +365,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
             List<String> tmpForms = getFormsFromFile(f);
 
-            IBaseDataObject dObj = DataObjectFactory.getInstance(theData, parent.getFilename() + Family.SEP + birthOrder, tmpForms.get(0));
+            IBaseDataObject dObj = DataObjectFactory.getInstance(theData, parent.getFilename() + Family.SEP + birthOrder, tmpForms.getFirst());
 
             dObj.putParameters(metaData);
             sprouts.add(dObj);
@@ -570,7 +570,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
         // Replace parent if single child and singleOutputAsChild is false
         if (executrix.getOutput().equals("FILE") && entries.size() == 1 && contentFile == null && !singleOutputAsChild) {
-            IBaseDataObject d = entries.get(0);
+            IBaseDataObject d = entries.getFirst();
             tData.setData(d.data());
             if (keepParentHashesForSingleChild) {
                 KffDataObjectHandler.removeHash(d);

@@ -72,7 +72,7 @@ public class EmissaryNode {
     public static final long DEFAULT_REFRESH_TIMEOUT = TimeUnit.MINUTES.toMillis(30);
 
     public enum Mode {
-        STANDALONE, CLUSTER;
+        STANDALONE, CLUSTER
     }
 
     @Nullable

@@ -9,6 +9,7 @@ import org.xml.sax.XMLFilter;
 /**
  * Utilities for dealing with JDOM documents. If DTD validation is not needed, consider using {@link SaferJDOMUtil}.
  */
+@SuppressWarnings("IdentifierName")
 public class JDOMUtil extends AbstractJDOMUtil {
 
     /**

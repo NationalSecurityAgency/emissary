@@ -402,7 +402,7 @@ class WorkSpaceTest extends UnitTest {
         FeedCommand command = FeedCommand.parse(FeedCommand.class, args);
         WorkSpace mws = new WorkSpace(command);
         assertEquals(3, mws.getDirectories().size(), "Three priority directory args must be present");
-        assertTrue(mws.getDirectories().get(0).contains("quuz"), "Highest priority directory must be first");
+        assertTrue(mws.getDirectories().getFirst().contains("quuz"), "Highest priority directory must be first");
         assertTrue(mws.getSimpleMode(), "Simple argument must cause flag to be set");
     }
 

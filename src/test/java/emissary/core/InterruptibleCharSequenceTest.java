@@ -5,6 +5,7 @@ import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Pattern;
@@ -72,7 +73,7 @@ class InterruptibleCharSequenceTest extends UnitTest {
     void testNoninterruptibleString() throws InterruptedException {
         BlockingQueue<Object> blockingQueue = new LinkedBlockingQueue<>();
         Thread t = tryMatchInThread(INPUT, BACKTRACKER, blockingQueue);
-        sleep(1000);
+        sleep(Duration.ofSeconds(1));
         t.interrupt();
         Object result = blockingQueue.take();
         assertEquals(Boolean.FALSE, result, "expected to not find a match");
@@ -87,7 +88,7 @@ class InterruptibleCharSequenceTest extends UnitTest {
         while (sleepMillis > 0) {
             BlockingQueue<Object> blockingQueue = new LinkedBlockingQueue<>();
             Thread t = tryMatchInThread(new InterruptibleCharSequence(obnoxiousInput), BACKTRACKER, blockingQueue);
-            sleep(sleepMillis);
+            sleep(Duration.ofMillis(sleepMillis));
             if (Thread.State.TERMINATED == t.getState()) {
                 sleepMillis /= 2;
                 logger.info("Task completed, retrying with shorter sleep time: {} ms", sleepMillis);

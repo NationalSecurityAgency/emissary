@@ -10,6 +10,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import java.util.Locale;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -69,7 +71,7 @@ class GrpcExceptionUtilsTest extends UnitTest {
         RuntimeException withDesc = newContextualRuntimeException(Status.UNAVAILABLE, statusDescription);
 
         assertEquals("UNAVAILABLE: It's likely service crashed", noDesc.getMessage());
-        assertEquals(String.format("UNAVAILABLE: %s (%s)", statusDescription, errorMessage), withDesc.getMessage());
+        assertEquals(String.format(Locale.getDefault(), "UNAVAILABLE: %s (%s)", statusDescription, errorMessage), withDesc.getMessage());
     }
 
     @ParameterizedTest
@@ -83,7 +85,7 @@ class GrpcExceptionUtilsTest extends UnitTest {
         RuntimeException withDesc = newContextualRuntimeException(status, "Test");
 
         assertEquals(code.name(), noDesc.getMessage());
-        assertEquals(String.format("%s: Test", code.name()), withDesc.getMessage());
+        assertEquals(String.format(Locale.getDefault(), "%s: Test", code.name()), withDesc.getMessage());
     }
 
     @Test

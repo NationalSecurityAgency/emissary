@@ -95,7 +95,7 @@ public class Identification implements Serializable {
         if (this.types.isEmpty()) {
             return null;
         } else {
-            return this.types.get(0);
+            return this.types.getFirst();
         }
     }
 
@@ -159,7 +159,7 @@ public class Identification implements Serializable {
         if (this.types.isEmpty()) {
             return null;
         } else {
-            return this.types.remove(0);
+            return this.types.removeFirst();
         }
     }
 
@@ -167,7 +167,7 @@ public class Identification implements Serializable {
      * Add the type to the front of the list and return it
      */
     public void pushType(String s) {
-        this.types.add(0, s);
+        this.types.addFirst(s);
     }
 
     /**

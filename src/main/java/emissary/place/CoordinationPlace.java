@@ -117,8 +117,8 @@ public class CoordinationPlace extends ServiceProviderPlace {
             try {
                 // See if the place already exists
                 Object ref = Namespace.lookup(s);
-                if (ref instanceof IServiceProviderPlace) {
-                    placeRefs.add((IServiceProviderPlace) ref);
+                if (ref instanceof IServiceProviderPlace place) {
+                    placeRefs.add(place);
                     logger.debug("Added reference for {}:{}", s, ref);
                 } else {
                     logger.error("Referenced place {} is of the wrong type: {}", s, ref.getClass().getName());
@@ -126,7 +126,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
             } catch (NamespaceException ex) {
                 // Try creating the place
                 try {
-                    String skey = KeyManipulator.getServiceHostUrl(keys.get(0)) + s;
+                    String skey = KeyManipulator.getServiceHostUrl(keys.getFirst()) + s;
                     logger.debug("No such place {}, creating as {}", s, skey, ex);
                     String sclz = PlaceStarter.getClassString(skey);
                     IServiceProviderPlace p = PlaceStarter.createPlace(skey, null, sclz, dirPlace);

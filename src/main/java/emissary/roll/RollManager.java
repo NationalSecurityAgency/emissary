@@ -145,6 +145,7 @@ public class RollManager implements PropertyChangeListener {
         rollManager = null;
     }
 
+    @SuppressWarnings("IdentifierName")
     private static final class RMThreadFactory implements ThreadFactory {
         final AtomicInteger count = new AtomicInteger();
 

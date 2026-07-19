@@ -475,11 +475,11 @@ class DropOffUtilTest extends UnitTest {
         assertEquals("FOO",
                 child.getParameterAsString("PARENT_FOO"),
                 "Propagation of configured parent type must use closest available entry on child");
-        assertEquals("CHILD_FOO", childRecords.get(0)
+        assertEquals("CHILD_FOO", childRecords.getFirst()
                 .getStringParameter("PARENT_FOO"), "Propagation of configured parent type must use closest available entry on child records");
-        assertEquals("CHILD_FOO", childRecords.get(0)
+        assertEquals("CHILD_FOO", childRecords.getFirst()
                 .getParameterAsConcatString("PARENT_FOO"), "Propagation of configured parent type must use closest available entry on child records");
-        assertEquals("CHILD_FOO", childRecords.get(0)
+        assertEquals("CHILD_FOO", childRecords.getFirst()
                 .getParameterAsString("PARENT_FOO"), "Propagation of configured parent type must use closest available entry on child records");
 
         // Child 2 subtree only has the TLD FOO param to use
@@ -491,11 +491,11 @@ class DropOffUtilTest extends UnitTest {
                 "Propagation of configured parent type must fall back to TLD on grandchild");
         assertEquals("FOO", grandchild.getParameterAsString("PARENT_FOO"),
                 "Propagation of configured parent type must fall back to TLD on grandchild");
-        assertEquals("FOO", gchildRecords.get(0)
+        assertEquals("FOO", gchildRecords.getFirst()
                 .getStringParameter("PARENT_FOO"), "Propagation of configured parent type must use closest available entry on grandchild records");
-        assertEquals("FOO", gchildRecords.get(0).getParameterAsConcatString("PARENT_FOO"),
+        assertEquals("FOO", gchildRecords.getFirst().getParameterAsConcatString("PARENT_FOO"),
                 "Propagation of configured parent type must use closest available entry on grandchild records");
-        assertEquals("FOO", gchildRecords.get(0).getParameterAsString("PARENT_FOO"),
+        assertEquals("FOO", gchildRecords.getFirst().getParameterAsString("PARENT_FOO"),
                 "Propagation of configured parent type must use closest available entry on grandchild records");
     }
 
@@ -676,12 +676,12 @@ class DropOffUtilTest extends UnitTest {
         ibdo.setParameter(FILE_ABSOLUTEPATH, "theOtherFile.csv");
         bestFilenames = DropOffUtil.getFullFilepathsFromParams(ibdo);
         assertEquals(1, bestFilenames.size(), "There should be one filename extracted");
-        assertEquals("theOtherFile.csv", bestFilenames.get(0), "The FILE_ABSOLUTEPATH should have been extracted");
+        assertEquals("theOtherFile.csv", bestFilenames.getFirst(), "The FILE_ABSOLUTEPATH should have been extracted");
 
         ibdo.setParameter(ORIGINAL_FILENAME, "file.docx");
         bestFilenames = DropOffUtil.getFullFilepathsFromParams(ibdo);
         assertEquals(2, bestFilenames.size(), "There should be two filenames extracted");
-        assertEquals("file.docx", bestFilenames.get(0), "The Original-Filename should have been extracted");
+        assertEquals("file.docx", bestFilenames.getFirst(), "The Original-Filename should have been extracted");
         assertEquals("theOtherFile.csv", bestFilenames.get(1), "The Original-Filename should have been extracted");
     }
 
@@ -693,7 +693,7 @@ class DropOffUtilTest extends UnitTest {
         List<String> bestFilenames = DropOffUtil.getFullFilepathsFromParams(ibdo, new String[] {"CustomField"});
 
         assertEquals(1, bestFilenames.size(), "Only one filename should have been extracted");
-        assertEquals("customName.txt", bestFilenames.get(0), "Only the value in CustomField should have been extracted");
+        assertEquals("customName.txt", bestFilenames.getFirst(), "Only the value in CustomField should have been extracted");
     }
 
     private static void setupMetadata(IBaseDataObject bdo, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {

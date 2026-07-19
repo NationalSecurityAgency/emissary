@@ -10,6 +10,7 @@ import java.nio.channels.SeekableByteChannel;
  * Encapsulate the behavior necessary to slide a window through a channel and parse sessions from it. nextChunkOrDie
  * will load the next region.
  */
+@SuppressWarnings("IdentifierName")
 public abstract class FillingNIOParser extends NIOSessionParser {
 
     private final static Logger logger = LoggerFactory.getLogger(FillingNIOParser.class);

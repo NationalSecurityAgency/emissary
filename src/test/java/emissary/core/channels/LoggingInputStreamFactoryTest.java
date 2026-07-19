@@ -106,7 +106,7 @@ class LoggingInputStreamFactoryTest extends UnitTest {
     private void check(final String message, final boolean testStackTrace) {
         assertEquals(1, appender.list.size());
 
-        final ILoggingEvent loggingEvent = appender.list.get(0);
+        final ILoggingEvent loggingEvent = appender.list.getFirst();
 
         assertEquals(message, loggingEvent.getFormattedMessage());
 

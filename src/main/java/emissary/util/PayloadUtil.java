@@ -93,12 +93,12 @@ public class PayloadUtil {
      */
     public static String getName(final Object o) {
         String payloadName = o.getClass().getName();
-        if (o instanceof IBaseDataObject) {
-            payloadName = ((IBaseDataObject) o).shortName();
-        } else if (o instanceof Collection) {
-            final Iterator<?> pi = ((Collection<?>) o).iterator();
+        if (o instanceof IBaseDataObject object) {
+            payloadName = object.shortName();
+        } else if (o instanceof Collection<?> collection) {
+            final Iterator<?> pi = collection.iterator();
             if (pi.hasNext()) {
-                payloadName = ((IBaseDataObject) pi.next()).shortName() + "(" + ((Collection<?>) o).size() + ")";
+                payloadName = ((IBaseDataObject) pi.next()).shortName() + "(" + collection.size() + ")";
             }
         }
         return payloadName;

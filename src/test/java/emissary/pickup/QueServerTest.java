@@ -22,9 +22,16 @@ class QueServerTest extends UnitTest {
     @BeforeEach
     public void setUp() throws Exception {
         String cdata =
-                "PLACE_NAME = TestPickUpPlace\n" + "SERVICE_NAME = TEST_PICK_UP\n" + "SERVICE_TYPE = \"INITIAL\"\n"
-                        + "SERVICE_DESCRIPTION = \"Test Place\"\n" + "SERVICE_COST = 50\n" + "SERVICE_QUALITY = 50\n"
-                        + "INITIAL_FORM = \"UNKNOWN\"\n" + "SERVICE_PROXY = \"TESTJUNK\"\n";
+                """
+                        PLACE_NAME = TestPickUpPlace
+                        SERVICE_NAME = TEST_PICK_UP
+                        SERVICE_TYPE = "INITIAL"
+                        SERVICE_DESCRIPTION = "Test Place"
+                        SERVICE_COST = 50
+                        SERVICE_QUALITY = 50
+                        INITIAL_FORM = "UNKNOWN"
+                        SERVICE_PROXY = "TESTJUNK"
+                        """;
         tepusConfigStream = new ByteArrayInputStream(cdata.getBytes());
     }
 

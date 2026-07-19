@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -319,14 +320,14 @@ public abstract class AnswerGenerator {
     public static void writeXml(String resource, byte[] xmlContent, @Nullable AtomicReference<Class<?>> answerFileClassRef) {
         final Path path = getXmlPath(resource, answerFileClassRef);
         if (path == null) {
-            fail(String.format("Could not get path for resource = %s", resource));
+            fail(String.format(Locale.getDefault(), "Could not get path for resource = %s", resource));
         }
         logger.info("Writing answers file to path: {}", path);
         try (FileChannel fc = FileChannel.open(path, CREATE_WRITE_TRUNCATE);
                 SeekableInMemoryByteChannel simbc = new SeekableInMemoryByteChannel(xmlContent)) {
             fc.transferFrom(simbc, 0, simbc.size());
         } catch (final IOException ioe) {
-            fail(String.format("Couldn't write XML answer file for resource: %s", resource), ioe);
+            fail(String.format(Locale.getDefault(), "Couldn't write XML answer file for resource: %s", resource), ioe);
         }
     }
 

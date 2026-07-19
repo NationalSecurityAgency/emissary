@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,7 +61,8 @@ public final class RegularExpressionTestUtil {
         if (!CollectionUtils.isEmpty(shouldMatch)) {
             for (String matchMe : shouldMatch) {
                 Matcher mm = patternUnderTest.matcher(matchMe);
-                assertTrue(mm.find(), String.format(" -- Pattern SHOULD match the regex [%s], but did not: %s", patternUnderTest.pattern(), matchMe));
+                assertTrue(mm.find(), String.format(Locale.getDefault(), " -- Pattern SHOULD match the regex [%s], but did not: %s",
+                        patternUnderTest.pattern(), matchMe));
                 fineGrainTestCount++;
             }
         }
@@ -69,7 +71,8 @@ public final class RegularExpressionTestUtil {
             for (String dontMatchMe : shouldNotMatch) {
                 Matcher dmm = patternUnderTest.matcher(dontMatchMe);
                 assertFalse(dmm.find(),
-                        String.format(" -- Pattern SHOULD NOT match the regex[%s], but did: %s", patternUnderTest.pattern(), dontMatchMe));
+                        String.format(Locale.getDefault(), " -- Pattern SHOULD NOT match the regex[%s], but did: %s", patternUnderTest.pattern(),
+                                dontMatchMe));
                 fineGrainTestCount++;
             }
         }

@@ -230,8 +230,8 @@ public class DecomposedSession {
             for (Map.Entry<String, ?> entry : m.entrySet()) {
                 String key = entry.getKey();
                 Object v = entry.getValue();
-                if (v instanceof Iterable) {
-                    metadata.putAll(key, (Iterable<?>) v);
+                if (v instanceof Iterable<?> iterable) {
+                    metadata.putAll(key, iterable);
                 } else {
                     metadata.put(key, v);
                 }

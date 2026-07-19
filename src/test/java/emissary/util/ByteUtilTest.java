@@ -57,9 +57,9 @@ class ByteUtilTest extends UnitTest {
         byte[] input = "abcdefghijklmnopqrstuvwxyz".getBytes();
         List<byte[]> parts = ByteUtil.split(input, 5);
         assertEquals(2, parts.size(), "Two parts after split");
-        assertEquals(5, parts.get(0).length, "Length of part 1 after split");
+        assertEquals(5, parts.getFirst().length, "Length of part 1 after split");
         assertEquals(21, parts.get(1).length, "Length of part 2 after split");
-        assertEquals("abcde", new String(parts.get(0)), "Data in part 1 after split");
+        assertEquals("abcde", new String(parts.getFirst()), "Data in part 1 after split");
         assertEquals('f', parts.get(1)[0], "Data in part 2 after split");
     }
 
@@ -67,7 +67,7 @@ class ByteUtilTest extends UnitTest {
     void testSplitNull() {
         List<byte[]> parts = ByteUtil.split(null, 5);
         assertEquals(1, parts.size(), "Two parts after split");
-        assertNull(parts.get(0), "Null array on list");
+        assertNull(parts.getFirst(), "Null array on list");
     }
 
     @Test
@@ -75,7 +75,7 @@ class ByteUtilTest extends UnitTest {
         byte[] input = "abcdefghijklmnopqrstuvwxyz".getBytes();
         List<byte[]> parts = ByteUtil.split(input, -1);
         assertEquals(1, parts.size(), "Two parts after split");
-        assertEquals(input.length, parts.get(0).length, "Whole array on list");
+        assertEquals(input.length, parts.getFirst().length, "Whole array on list");
     }
 
     @Test
@@ -83,7 +83,7 @@ class ByteUtilTest extends UnitTest {
         byte[] input = "abcdefghijklmnopqrstuvwxyz".getBytes();
         List<byte[]> parts = ByteUtil.split(input, 55);
         assertEquals(1, parts.size(), "Two parts after split");
-        assertEquals(input.length, parts.get(0).length, "Whole array on list");
+        assertEquals(input.length, parts.getFirst().length, "Whole array on list");
     }
 
     @Test

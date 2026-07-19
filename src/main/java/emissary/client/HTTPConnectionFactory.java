@@ -48,6 +48,7 @@ import javax.net.ssl.SSLContext;
  * provided to allow for passwords to be placed in limited access files and directories and to eliminate the need to
  * pass these options in JVM System properties which are easily found.
  */
+@SuppressWarnings("IdentifierName")
 public class HTTPConnectionFactory {
 
     static final String CFG_TRUST_STORE = "javax.net.ssl.trustStore";

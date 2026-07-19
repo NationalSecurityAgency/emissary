@@ -18,6 +18,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.List;
 
 import static emissary.core.Form.TEXT;
@@ -49,7 +50,7 @@ class FTestMovingAgent extends FunctionalTest {
         this.dir1 = directory; // setup in super class
         this.dir2 = startDirectory(9005);
         try {
-            Thread.sleep(500);
+            Thread.sleep(Duration.ofMillis(500));
         } catch (InterruptedException ignored) {
             // empty catch block
         }
@@ -127,7 +128,7 @@ class FTestMovingAgent extends FunctionalTest {
         int waitCounter = 0;
         while (this.cache.getCacheSize() == 0 && waitCounter < 40) {
             try {
-                Thread.sleep(250);
+                Thread.sleep(Duration.ofMillis(250));
             } catch (Exception ex) {
                 if (ex instanceof InterruptedException) {
                     Thread.currentThread().interrupt();

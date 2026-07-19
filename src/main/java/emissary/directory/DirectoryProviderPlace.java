@@ -110,7 +110,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
         }
 
         // Backwards compatibility setup items
-        DirectoryEntry firstentry = new DirectoryEntry(keys.get(0));
+        DirectoryEntry firstentry = new DirectoryEntry(keys.getFirst());
         myKey = firstentry.getKey();
         serviceCost = firstentry.getCost();
         serviceQuality = firstentry.getQuality();
@@ -168,7 +168,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
             dirPlace = theDir;
             localDirPlace = null;
             try {
-                String myUrl = KeyManipulator.getServiceHostUrl(keys.get(0));
+                String myUrl = KeyManipulator.getServiceHostUrl(keys.getFirst());
                 String dirUrl = KeyManipulator.getServiceHostUrl(dirPlace);
                 if (Strings.CS.equals(dirUrl, myUrl)) {
                     localDirPlace = (IDirectoryPlace) Namespace.lookup(KeyManipulator.getServiceLocation(theDir));
@@ -199,7 +199,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
      */
     @Override
     public DirectoryEntry getDirectoryEntry() {
-        return new DirectoryEntry(keys.get(0), serviceDescription, serviceCost, serviceQuality);
+        return new DirectoryEntry(keys.getFirst(), serviceDescription, serviceCost, serviceQuality);
     }
 
     /**
@@ -325,7 +325,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
         if (localDirPlace != null) {
             return localDirPlace.nextKeys(dataId, payload, lastEntry);
         }
-        logger.error("No local directory in place {} with dir={}", keys.get(0), dirPlace);
+        logger.error("No local directory in place {} with dir={}", keys.getFirst(), dirPlace);
         return null;
     }
 
@@ -406,7 +406,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
      */
     @Override
     public String getPrimaryProxy() {
-        String s = KeyManipulator.getDataType(keys.get(0));
+        String s = KeyManipulator.getDataType(keys.getFirst());
         if (s.equals(UNUSED_PROXY)) {
             s = "";
         }
@@ -419,7 +419,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
      */
     @Override
     public String toString() {
-        return keys.get(0) + "[" + keys.size() + "]";
+        return keys.getFirst() + "[" + keys.size() + "]";
     }
 
     /**
@@ -427,7 +427,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
      */
     @Override
     public String getKey() {
-        return KeyManipulator.removeExpense(keys.get(0));
+        return KeyManipulator.removeExpense(keys.getFirst());
     }
 
     /**
@@ -438,12 +438,12 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
     @Override
     public void addServiceProxy(String serviceProxy) {
         // Add new one to the top key in the list
-        DirectoryEntry de = new DirectoryEntry(keys.get(0));
+        DirectoryEntry de = new DirectoryEntry(keys.getFirst());
         boolean keyAdded = false;
         if (!de.getDataType().equals(serviceProxy)) {
             // Clear out the placeholder
             if (de.getDataType().equals(UNUSED_PROXY)) {
-                keys.remove(0);
+                keys.removeFirst();
             }
 
             de.setDataType(serviceProxy);
@@ -471,9 +471,9 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
     @Override
     public void addKey(String key) {
         if (KeyManipulator.isValid(key)) {
-            DirectoryEntry de = new DirectoryEntry(keys.get(0));
+            DirectoryEntry de = new DirectoryEntry(keys.getFirst());
             if (de.getDataType().equals(UNUSED_PROXY)) {
-                keys.remove(0);
+                keys.removeFirst();
             }
 
             logger.debug("Adding and registering new key {}", key);
@@ -599,7 +599,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
 
         // Make sure we leave something on the keys list
         if (keys.isEmpty() && !keylist.isEmpty()) {
-            DirectoryEntry de = new DirectoryEntry(keylist.get(0));
+            DirectoryEntry de = new DirectoryEntry(keylist.getFirst());
             de.setCost(serviceCost);
             de.setQuality(serviceQuality);
             de.setDataType(UNUSED_PROXY);
@@ -657,7 +657,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
      */
     @Override
     public String getPlaceName() {
-        return KeyManipulator.getServiceClassname(keys.get(0));
+        return KeyManipulator.getServiceClassname(keys.getFirst());
     }
 
     @Override
