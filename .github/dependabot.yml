@@ -19,5 +19,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      github-codeql-action:
+        patterns:
+          - "github/codeql-action*"
     labels:
       - "CI/CD"
