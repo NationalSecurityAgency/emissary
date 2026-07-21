@@ -2,6 +2,7 @@ package emissary.core;
 
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.core.constants.IbdoXmlElementNames;
+import emissary.util.os.OSReleaseUtil;
 
 import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
@@ -56,10 +57,6 @@ import static emissary.core.constants.IbdoXmlElementNames.VALUE;
 import static emissary.core.constants.IbdoXmlElementNames.VIEW;
 
 public class IBaseDataObjectDiffHelper {
-
-    // Environment/OS isolation verification targets
-    private static final String SYSTEM_OS_RELEASE = System.getProperty("os.name", "").toLowerCase(Locale.getDefault());
-    private static final String MAJOR_OS_VERSION = System.getProperty("os.version", "");
 
     // Centralized message template definitions
     private static final String DIFF_NOT_NULL_MSG = "Required: differences not null";
@@ -803,21 +800,36 @@ public class IBaseDataObjectDiffHelper {
         }
 
         String os = specifiedOs.getValue().toLowerCase(Locale.getDefault());
+        boolean isMatchingOs;
         switch (os) {
             case "ubuntu":
+                isMatchingOs = OSReleaseUtil.isUbuntu();
+                break;
             case "centos":
+                isMatchingOs = OSReleaseUtil.isCentOs();
+                break;
             case "rhel":
+                isMatchingOs = OSReleaseUtil.isRhel();
+                break;
             case "mac":
-                if (specifiedVersion != null) {
-                    return os.equalsIgnoreCase(SYSTEM_OS_RELEASE) && specifiedVersion.getValue().equals(MAJOR_OS_VERSION);
-                } else {
-                    return os.equalsIgnoreCase(SYSTEM_OS_RELEASE);
-                }
+                isMatchingOs = OSReleaseUtil.isMac();
+                break;
             default:
                 differences.add(String.format("Unsupported or mistyped os-release target '%s' found in element <%s>",
                         specifiedOs.getValue(), element.getName()));
                 return false;
         }
+
+        if (!isMatchingOs) {
+            return false;
+        }
+
+        // Check version match if specified
+        if (specifiedVersion != null) {
+            return specifiedVersion.getValue().equals(OSReleaseUtil.getMajorReleaseVersion());
+        }
+
+        return true;
     }
 
     protected static String formatErr(Element meta, String key, String reason, String actual, String expected) {
