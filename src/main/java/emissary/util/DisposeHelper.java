@@ -90,8 +90,8 @@ public final class DisposeHelper {
         final List<Object> existingRunnables = ibdo.getParameter(KEY);
 
         for (final Object possibleRunnable : existingRunnables) {
-            if (possibleRunnable instanceof Runnable) {
-                validatedAsRunnables.add((Runnable) possibleRunnable);
+            if (possibleRunnable instanceof Runnable runnable) {
+                validatedAsRunnables.add(runnable);
             } else if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn("Not a valid Runnable on object {}", ibdo.shortName());
             }

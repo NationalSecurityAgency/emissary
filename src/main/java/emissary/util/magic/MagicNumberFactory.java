@@ -138,7 +138,7 @@ public class MagicNumberFactory {
 
 
                     if (depth > 0) {
-                        MagicNumber mItem = magicNumberList.get(magicNumberList.size() - 1);
+                        MagicNumber mItem = magicNumberList.getLast();
                         String signature = mItem.toString();
                         List<String> failedExtensions = continuationErrorMap.get(signature);
                         if (failedExtensions == null) {

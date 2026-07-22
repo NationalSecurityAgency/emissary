@@ -1,5 +1,6 @@
 package emissary.log;
 
+@SuppressWarnings("IdentifierName")
 public class MDCConstants {
     public static final String SERVICE_LOCATION = "serviceLocation";
     public static final String SHORT_NAME = "shortName";

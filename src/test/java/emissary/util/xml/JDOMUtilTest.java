@@ -10,17 +10,34 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@SuppressWarnings("IdentifierName")
 class JDOMUtilTest extends UnitTest {
 
     static final String PLIST_XML =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                    + "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
-                    + "<plist version=\"1.0\">\n" + "<dict>\n" + "   <key>Label</key>\n" + "   <string>com.apple.AOSNotification</string>\n"
-                    + "   <key>Program</key>\n" + "   <string>/usr/sbin/aosnotifyd</string>\n" + "   <key>MachServices</key>\n" + "   <dict>\n"
-                    + "           <key>com.apple.AOSNotification</key>\n" + "           <dict>\n"
-                    + "                   <key>ResetAtClose</key>\n" + "                   <true/>\n" + "           </dict>\n" + "   </dict>\n"
-                    + "   <key>WorkingDirectory</key>\n" + "   <string>/tmp</string>\n" + "   <key>Umask</key>\n" + "   <integer>23</integer>\n"
-                    + "</dict>\n" + "</plist>\n";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                    <plist version="1.0">
+                    <dict>
+                       <key>Label</key>
+                       <string>com.apple.AOSNotification</string>
+                       <key>Program</key>
+                       <string>/usr/sbin/aosnotifyd</string>
+                       <key>MachServices</key>
+                       <dict>
+                               <key>com.apple.AOSNotification</key>
+                               <dict>
+                                       <key>ResetAtClose</key>
+                                       <true/>
+                               </dict>
+                       </dict>
+                       <key>WorkingDirectory</key>
+                       <string>/tmp</string>
+                       <key>Umask</key>
+                       <integer>23</integer>
+                    </dict>
+                    </plist>
+                    """;
 
     @Test
     void testNonValidatingDTDRetrievalSuppression() {

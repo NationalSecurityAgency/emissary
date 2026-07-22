@@ -11,6 +11,7 @@ import javax.management.ObjectName;
 /**
  * Utility class for JMX operations.
  */
+@SuppressWarnings("IdentifierName")
 public class JMXUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(JMXUtil.class);

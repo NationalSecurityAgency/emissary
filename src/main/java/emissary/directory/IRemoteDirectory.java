@@ -78,8 +78,8 @@ public interface IRemoteDirectory extends IDirectoryPlace {
 
             IRemoteDirectory remoteDirectory = null;
             if (dir != null) {
-                if (dir instanceof IRemoteDirectory) {
-                    remoteDirectory = (IRemoteDirectory) dir;
+                if (dir instanceof IRemoteDirectory directory) {
+                    remoteDirectory = directory;
                 } else {
                     this.logger.error("Directory is not an IRemoteDirectory!");
                 }

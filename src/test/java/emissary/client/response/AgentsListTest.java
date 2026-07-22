@@ -47,10 +47,11 @@ class AgentsListTest {
 
         agentList.dumpToConsole();
 
-        String expected = "localhost :" +
-                "\n         Agent-01: header-footer.dat(1) - LOWER_CASE.TO_UPPER.TRANSFORM.http://localhost:8001/ToUpperPlace" +
-                "\n         Agent-02: Idle" +
-                "\n         Agent-03: junk";
+        String expected = """
+                localhost :
+                         Agent-01: header-footer.dat(1) - LOWER_CASE.TO_UPPER.TRANSFORM.http://localhost:8001/ToUpperPlace
+                         Agent-02: Idle
+                         Agent-03: junk""";
 
         assertTrue(appender.list.stream().anyMatch(i -> i.getFormattedMessage().contains(expected)));
     }

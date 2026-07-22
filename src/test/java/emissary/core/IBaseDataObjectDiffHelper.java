@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -124,7 +125,8 @@ public class IBaseDataObjectDiffHelper {
         final int actualSize = (actual == null) ? 0 : actual.size();
 
         if (expectedSize != actualSize) {
-            differences.add(String.format("%s list size mismatch -> Expected: %d, Actual: %d", identifier, expectedSize, actualSize));
+            differences.add(
+                    String.format(Locale.getDefault(), "%s list size mismatch -> Expected: %d, Actual: %d", identifier, expectedSize, actualSize));
         } else if (expected != null && actual != null) {
             final List<String> childDifferences = new ArrayList<>();
             for (int i = 0; i < expected.size(); i++) {
@@ -132,9 +134,9 @@ public class IBaseDataObjectDiffHelper {
 
                 diff(expected.get(i), actual.get(i), childDifferences, options);
 
-                final String prefix = String.format("%s[index %d] : ", identifier, i);
+                final String prefix = String.format(Locale.getDefault(), "%s[index %d] : ", identifier, i);
                 while (!childDifferences.isEmpty()) {
-                    differences.add(prefix + childDifferences.remove(0)); // NOSONAR Used correctly
+                    differences.add(prefix + childDifferences.removeFirst()); // NOSONAR Used correctly
                 }
             }
         }
@@ -160,16 +162,17 @@ public class IBaseDataObjectDiffHelper {
                     InputStream is1 = Channels.newInputStream(sbc1);
                     InputStream is2 = Channels.newInputStream(sbc2)) {
                 if (!IOUtils.contentEquals(is1, is2)) {
-                    differences.add(String.format("%s content mismatch -> Expected size: %d, Actual size: %d",
+                    differences.add(String.format(Locale.getDefault(), "%s content mismatch -> Expected size: %d, Actual size: %d",
                             identifier, sbc1.size(), sbc2.size()));
                 }
             } catch (IOException e) {
-                differences.add(String.format("IO Error comparing %s: %s", identifier, e.getMessage()));
+                differences.add(String.format(Locale.getDefault(), "IO Error comparing %s: %s", identifier, e.getMessage()));
             }
         } else if (expected == null && actual == null) {
             // Do nothing as they are considered equal.
         } else {
-            differences.add(String.format("%s not equal. Expected SeekableByteChannelFactory=%s Actual SeekableByteChannelFactory=%s", identifier,
+            differences.add(String.format(Locale.getDefault(),
+                    "%s not equal. Expected SeekableByteChannelFactory=%s Actual SeekableByteChannelFactory=%s", identifier,
                     expected, actual));
         }
     }
@@ -188,7 +191,7 @@ public class IBaseDataObjectDiffHelper {
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
         if (!Objects.deepEquals(expected, actual)) {
-            differences.add(String.format("%s%s -> Expected: %s, Actual: %s", identifier, ARE_NOT_EQUAL, expected, actual));
+            differences.add(String.format(Locale.getDefault(), "%s%s -> Expected: %s, Actual: %s", identifier, ARE_NOT_EQUAL, expected, actual));
         }
     }
 
@@ -206,7 +209,7 @@ public class IBaseDataObjectDiffHelper {
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
         if (expected != actual) {
-            differences.add(String.format("%s value mismatch -> Expected: %d, Actual: %d", identifier, expected, actual));
+            differences.add(String.format(Locale.getDefault(), "%s value mismatch -> Expected: %d, Actual: %d", identifier, expected, actual));
         }
     }
 
@@ -224,7 +227,7 @@ public class IBaseDataObjectDiffHelper {
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
         if (expected != actual) {
-            differences.add(String.format("%s boolean mismatch -> Expected: %b, Actual: %b", identifier, expected, actual));
+            differences.add(String.format(Locale.getDefault(), "%s boolean mismatch -> Expected: %b, Actual: %b", identifier, expected, actual));
         }
     }
 
@@ -274,7 +277,7 @@ public class IBaseDataObjectDiffHelper {
                                 new ArrayList<>(expectedColl).equals(new ArrayList<>(actualColl)));
 
                 if (!areEqual) {
-                    mismatchedValues.put(key, String.format("Expected: %s, Actual: %s", expectedColl, actualColl));
+                    mismatchedValues.put(key, String.format(Locale.getDefault(), "Expected: %s, Actual: %s", expectedColl, actualColl));
                 }
 
                 missingInActual.remove(key);
@@ -320,7 +323,8 @@ public class IBaseDataObjectDiffHelper {
         }
 
         if (!expectedKeys.isEmpty() || !actualKeys.isEmpty()) {
-            differences.add(String.format("%s key set mismatch -> Expected: %s, Actual: %s", identifier, expectedKeys, actualKeys));
+            differences
+                    .add(String.format(Locale.getDefault(), "%s key set mismatch -> Expected: %s, Actual: %s", identifier, expectedKeys, actualKeys));
         }
     }
 

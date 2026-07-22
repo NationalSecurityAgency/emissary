@@ -281,7 +281,7 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
                 list.addAll(l);
             } catch (Exception e) {
                 logger.error("Place.process exception", e);
-                dataObject.addProcessingError("agentProcessHD(" + keys.get(0) + "): " + e);
+                dataObject.addProcessingError("agentProcessHD(" + keys.getFirst() + "): " + e);
                 dataObject.replaceCurrentForm(Form.ERROR);
             }
         }
@@ -479,13 +479,11 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
         try {
             MobileAgent agent = getAgent();
 
-            if (agent instanceof HDMobileAgent) {
-                Object payload = ((HDMobileAgent) agent).getPayloadForTransport();
-                if (payload instanceof List) {
-                    List<?> familyTree = (List<?>) payload;
+            if (agent instanceof HDMobileAgent mobileAgent) {
+                Object payload = mobileAgent.getPayloadForTransport();
+                if (payload instanceof List<?> familyTree) {
                     for (Object familyMember : familyTree) {
-                        if (familyMember instanceof IBaseDataObject) {
-                            IBaseDataObject member = (IBaseDataObject) familyMember;
+                        if (familyMember instanceof IBaseDataObject member) {
                             if (!member.shortName().contains(Family.SEP)) {
                                 return member;
                             }

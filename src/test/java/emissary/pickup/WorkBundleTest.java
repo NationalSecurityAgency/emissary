@@ -163,7 +163,7 @@ class WorkBundleTest extends UnitTest {
         List<String> w2l = w2.getFileNameList();
         assertNotNull(w2l, "File list from xml");
         assertEquals(2, w2l.size(), "Size of file list from xml");
-        assertEquals("file1.txt", w2l.get(0), "File values from xml");
+        assertEquals("file1.txt", w2l.getFirst(), "File values from xml");
         assertEquals("<file2.txt&foo=bar>", w2l.get(1), "File values from xml");
     }
 
@@ -197,7 +197,7 @@ class WorkBundleTest extends UnitTest {
         List<String> w2l = w2.getFileNameList();
         assertNotNull(w2l, "File list from xml");
         assertEquals(2, w2l.size(), "Size of file list from xml");
-        assertEquals("file1.txt", w2l.get(0), "File values from xml");
+        assertEquals("file1.txt", w2l.getFirst(), "File values from xml");
         assertEquals("<file2.txt&foo=bar>", w2l.get(1), "File values from xml");
     }
 

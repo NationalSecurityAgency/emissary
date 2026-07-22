@@ -60,8 +60,8 @@ public class EmissaryIsolatedClassLoaderExtension implements InvocationIntercept
 
         private static URL[] getUrlsFromSystemClassLoader() {
             ClassLoader systemClassLoader = getSystemClassLoader();
-            if (systemClassLoader instanceof URLClassLoader) {
-                return ((URLClassLoader) systemClassLoader).getURLs();
+            if (systemClassLoader instanceof URLClassLoader loader) {
+                return loader.getURLs();
             }
             String[] paths = System.getProperty("java.class.path").split("[" + File.pathSeparator + "]");
             return Arrays.stream(paths).map(path -> {

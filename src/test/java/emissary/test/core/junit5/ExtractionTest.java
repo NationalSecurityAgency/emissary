@@ -755,7 +755,8 @@ public abstract class ExtractionTest extends UnitTest {
         assertStringProperty(el, BROKEN, Boolean.toString(payload.isBroken()), val -> "Broken status in " + tname);
 
         // Processing Error
-        assertProcessingError(el, payload.getProcessingError(), expected -> String.format("Expected processing error '%s' in %s", expected, tname),
+        assertProcessingError(el, payload.getProcessingError(),
+                expected -> String.format(Locale.getDefault(), "Expected processing error '%s' in %s", expected, tname),
                 () -> "Processing Error does not match expected in " + tname);
     }
 

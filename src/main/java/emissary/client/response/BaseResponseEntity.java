@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlAccessorOrder;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.Set;
 @XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)
 public class BaseResponseEntity implements Serializable, BaseEntity {
 
+    @Serial
     private static final long serialVersionUID = 3432436269155177605L;
 
     @XmlElement(name = "errors")

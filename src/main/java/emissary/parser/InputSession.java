@@ -140,8 +140,8 @@ public class InputSession {
         for (Map.Entry<String, Object> entry : m.entrySet()) {
             String key = entry.getKey();
             Object val = entry.getValue();
-            if (val instanceof PositionRecord) {
-                validateRecord((PositionRecord) val);
+            if (val instanceof PositionRecord record) {
+                validateRecord(record);
                 metaData.put(key, val);
             } else if (val instanceof String) {
                 metaData.put(key, val);
@@ -475,8 +475,8 @@ public class InputSession {
         }
 
         for (Object obj : metaData.values()) {
-            if (obj instanceof PositionRecord) {
-                validateRecord((PositionRecord) obj);
+            if (obj instanceof PositionRecord record) {
+                validateRecord(record);
             }
         }
     }

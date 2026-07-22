@@ -101,7 +101,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
     protected void configurePlace() {
         doSynchronized = configG.findBooleanEntry("SYNCHRONIZED_PROCESS", false);
         newForm = configG.findStringEntry(NEW_FORM, Form.UNKNOWN);
-        if (newForm == null && keys.get(0).indexOf(".ID.") > -1) {
+        if (newForm == null && keys.getFirst().indexOf(".ID.") > -1) {
             newForm = Form.UNKNOWN;
         }
         if ("<null>".equals(newForm)) {
@@ -118,7 +118,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
         keepFilesDebug = configG.findBooleanEntry("KEEP_FILES_DEBUG", false);
         charset = configG.findStringEntry("OUTPUT_CHARSET", charset);
         executrix = new Executrix(configG);
-        logfilename = configG.findStringEntry("LOG_FILE_NAME", KeyManipulator.getServiceName(keys.get(0)) + ".log");
+        logfilename = configG.findStringEntry("LOG_FILE_NAME", KeyManipulator.getServiceName(keys.getFirst()) + ".log");
         logger.debug("Configured {} type process with charset {}", executrix.getOutput(), charset);
     }
 
@@ -345,7 +345,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      */
     protected void asMetaDataHook(IBaseDataObject tData, String tag, byte[] outputData) {
         tData.putParameter(metaDataTag, new String(outputData));
-        if (keys.get(0).indexOf(".TRANSFORM.") == -1 && newForm != null) {
+        if (keys.getFirst().indexOf(".TRANSFORM.") == -1 && newForm != null) {
             tData.setCurrentForm(newForm);
         }
     }
@@ -379,7 +379,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
         if (newFormOnError != null) {
             tData.setCurrentForm(newFormOnError);
         }
-        tData.addProcessingError("" + keys.get(0) + ": command produced null or no output");
+        tData.addProcessingError("" + keys.getFirst() + ": command produced null or no output");
     }
 
     /**
@@ -402,7 +402,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
     protected void processData(IBaseDataObject tData) throws ResourceException {
 
         byte[] outputData = runCommandOn(findPreferredData(tData));
-        String serviceType = KeyManipulator.getServiceType(keys.get(0));
+        String serviceType = KeyManipulator.getServiceType(keys.getFirst());
 
         if (serviceType.equals("ID") || serviceType.equals("ANALYZE")) {
             if (outputData == null || outputData.length == 0) {

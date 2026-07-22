@@ -17,11 +17,11 @@ public class GrpcExceptionUtils {
      * @return the throwable as a {@link RuntimeException}
      */
     public static RuntimeException toContextualRuntimeException(Throwable throwable) {
-        if (throwable instanceof StatusRuntimeException) {
-            return addStatusRuntimeExceptionMessage((StatusRuntimeException) throwable);
+        if (throwable instanceof StatusRuntimeException exception) {
+            return addStatusRuntimeExceptionMessage(exception);
         }
-        if (throwable instanceof RuntimeException) {
-            return (RuntimeException) throwable;
+        if (throwable instanceof RuntimeException exception1) {
+            return exception1;
         }
         return new IllegalStateException(throwable);
     }
@@ -33,27 +33,16 @@ public class GrpcExceptionUtils {
 
     private static String getStatusCodeDescription(Status status) {
         Status.Code code = status.getCode();
-        switch (code) {
-            case CANCELLED:
-                return getStatusCodeDescription(status, "It's likely a client side interrupt occurred");
-            case DEADLINE_EXCEEDED:
-                return getStatusCodeDescription(status, "gRPC client connection has timed out");
-            case RESOURCE_EXHAUSTED:
-                return getStatusCodeDescription(status, "It's likely we've exceeded the maximum number of requests");
-            case INTERNAL:
-                return getStatusCodeDescription(status, "It's likely a GPU OOM error or other resource error has caused server to kill itself");
-            case UNAVAILABLE: {
-                // Likely server has gone down. Could be a crash or resources were scaled down.
-                // So-called "poison pill" files have resulted in crashes for unknown reasons.
-                // Out of an abundance of caution, we consider these files as failures.
-                // Otherwise, we indicate the server is not live.
-                return status.getDescription() != null && status.getDescription().contains("Network closed for unknown reason")
-                        ? getStatusCodeDescription(status, "It's possible service crashed due to a misbehaving file")
-                        : getStatusCodeDescription(status, "It's likely service crashed");
-            }
-            default:
-                return status.getDescription();
-        }
+        return switch (code) {
+            case CANCELLED -> getStatusCodeDescription(status, "It's likely a client side interrupt occurred");
+            case DEADLINE_EXCEEDED -> getStatusCodeDescription(status, "gRPC client connection has timed out");
+            case RESOURCE_EXHAUSTED -> getStatusCodeDescription(status, "It's likely we've exceeded the maximum number of requests");
+            case INTERNAL -> getStatusCodeDescription(status, "It's likely a GPU OOM error or other resource error has caused server to kill itself");
+            case UNAVAILABLE -> status.getDescription() != null && status.getDescription().contains("Network closed for unknown reason")
+                    ? getStatusCodeDescription(status, "It's possible service crashed due to a misbehaving file")
+                    : getStatusCodeDescription(status, "It's likely service crashed");
+            default -> status.getDescription();
+        };
     }
 
     private static String getStatusCodeDescription(Status status, String message) {

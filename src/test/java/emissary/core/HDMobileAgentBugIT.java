@@ -22,6 +22,7 @@ import static org.mockito.Mockito.spy;
 /**
  * This test class only exists to highlight a bug in the HDMobileAgent
  */
+@SuppressWarnings("IdentifierName")
 class HDMobileAgentBugIT extends UnitTest {
 
     private static final String FAKE_ANALYZE_HISTORY = "FRM-PROCESSED-alternative.FAKE_ANALYZE.ANALYZE.http://localhost:8001/FakeAnalyzePlace$105050";
