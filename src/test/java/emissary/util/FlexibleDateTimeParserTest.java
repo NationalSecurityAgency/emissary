@@ -619,6 +619,24 @@ class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
+    void parse_yyyy_MM_ddHHmmssSS() {
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy:MM:dd[ H:m[:ss[.SS]][ ][z][ ][Z][ ][Z]]", Locale.getDefault());
+        test("2016:01:04 18:20:30.00", EXPECTED_FULL, pattern);
+        test("2016:01:04 18:20:30", EXPECTED_FULL, pattern);
+        test("2016:01:04 18:20:30 +0000", EXPECTED_FULL, pattern);
+        test("2016:01:04 18:20:30 GMT+0000", EXPECTED_FULL, pattern);
+        test("2016:01:04 18:20:30 GMT", EXPECTED_FULL, pattern);
+        test("2016:01:04 18:20:30+0000", EXPECTED_FULL, pattern);
+        test("2016:01:04 18:20", EXPECTED_NO_SECS, pattern);
+        test("2016:01:04", EXPECTED_NO_TIME, pattern);
+    }
+
+    @Test
+    void parse_yyyy_MM_ddHHmmssSS_Extra() {
+        testAllOffsets("2016:01:04 13:20:30.00", EXPECTED_FULL);
+    }
+
+    @Test
     void parse_yyyyMMddHHmmss() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss", Locale.getDefault());
         test("20160104182030", EXPECTED_FULL, pattern);
