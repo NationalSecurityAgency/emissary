@@ -2,8 +2,15 @@
 * text=auto
 
 # Explicit LF
-*.cfg text eol=lf
-*.xml text eol=lf
+*.cfg 	text eol=lf
+*.xml 	text eol=lf
 
-# Don't treat these as text
-*.dat -text
+# Don't perform line ending conversion
+*.dat 	-text
+
+# Treat these as pure binary
+*.bin 	binary
+*.jks 	binary
+*.jpg 	binary
+*.png 	binary
+*.zip 	binary
