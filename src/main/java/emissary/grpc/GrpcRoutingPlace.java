@@ -1,21 +1,22 @@
 package emissary.grpc;
 
 import emissary.config.Configurator;
+import emissary.grpc.channel.ChannelManager;
+import emissary.grpc.channel.PooledChannelManager;
 import emissary.grpc.invoker.GrpcInvoker;
-import emissary.grpc.pool.ConnectionFactory;
-import emissary.grpc.pool.PoolException;
 import emissary.grpc.retry.RetryHandler;
 import emissary.place.ServiceProviderPlace;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Message;
+import io.grpc.ChannelCredentials;
+import io.grpc.InsecureChannelCredentials;
 import io.grpc.ManagedChannel;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractBlockingStub;
 import io.grpc.stub.AbstractFutureStub;
 import jakarta.annotation.Nullable;
-import org.apache.commons.pool2.ObjectPool;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +39,9 @@ import java.util.stream.Collectors;
  * identifier for the given host:port</li>
  * <li>{@code GRPC_PORT_{Target-ID}} - gRPC service port, where {@code Target-ID} is the unique identifier for the given
  * host:port</li>
- * <li>See {@link ConnectionFactory} for supported pooling and gRPC channel configuration keys and defaults.</li>
+ * <li>{@code GRPC_CHANNEL_MANAGER_CLASS_NAME} - fully qualified class name of the {@link ChannelManager} to use,
+ * default={@link PooledChannelManager emissary.grpc.channel.PooledChannelManager}</li>
+ * <li>See {@link ChannelManager} for supported gRPC channel configuration keys and defaults.</li>
  * <li>See {@link RetryHandler} for supported retry configuration keys and defaults.</li>
  * </ul>
  */
@@ -50,12 +53,9 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
 
     public static final String GRPC_HOST = "GRPC_HOST_";
     public static final String GRPC_PORT = "GRPC_PORT_";
+    public static final String CHANNEL_MANAGER_CLASS_NAME = ChannelManager.GRPC_CHANNEL_PREFIX + "MANAGER_CLASS_NAME";
 
-    protected GrpcInvoker grpcInvoker;
-
-    protected final Map<String, String> hostnameTable = new HashMap<>();
-    protected final Map<String, Integer> portNumberTable = new HashMap<>();
-    protected final Map<String, ObjectPool<ManagedChannel>> channelPoolTable = new HashMap<>();
+    protected final Map<String, GrpcInvoker> invokerTable = new HashMap<>();
 
     protected GrpcRoutingPlace() throws IOException {
         super();
@@ -98,28 +98,31 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
     }
 
     private void configureGrpc() {
-        if (configG == null) {
-            throw new IllegalStateException("gRPC configurations not found for " + this.getPlaceName());
-        }
+        Objects.requireNonNull(configG);
 
-        hostnameTable.putAll(getHostnameConfigs());
-        portNumberTable.putAll(getPortNumberConfigs());
+        Map<String, String> hosts = getHostnameConfigs();
+        Map<String, Integer> ports = getPortNumberConfigs();
 
-        if (!hostnameTable.keySet().equals(portNumberTable.keySet())) {
+        if (!hosts.keySet().equals(ports.keySet())) {
             throw new IllegalArgumentException("gRPC hostname target-IDs do not match gRPC port number target-IDs");
         }
 
-        if (hostnameTable.isEmpty()) {
+        Set<String> targetIds = hosts.keySet();
+        if (targetIds.isEmpty()) {
             throw new NullPointerException(String.format(
                     "Missing required arguments: %s${Target-ID} and %s${Target-ID}", GRPC_HOST, GRPC_PORT));
         }
 
-        Set<String> targetIds = hostnameTable.keySet();
-        for (String id : targetIds) {
-            channelPoolTable.put(id, newConnectionPool(id));
-        }
+        RetryHandler retryHandler = new RetryHandler(configG, this.getPlaceName(), this::retryOnException);
+        String channelManagerName = configG.findStringEntry(CHANNEL_MANAGER_CLASS_NAME, PooledChannelManager.class.getName());
+        ChannelCredentials channelCredentials = getChannelCredentials(configG);
 
-        grpcInvoker = new GrpcInvoker(new RetryHandler(configG, this.getPlaceName(), this::retryOnException));
+        for (String id : targetIds) {
+            ChannelManager channelManager = ChannelManager.ofSubClass(
+                    channelManagerName, hosts.get(id), ports.get(id), configG, channelCredentials);
+            GrpcInvoker grpcInvoker = new GrpcInvoker(channelManager, retryHandler);
+            invokerTable.put(id, grpcInvoker);
+        }
     }
 
     protected Map<String, String> getHostnameConfigs() {
@@ -132,9 +135,21 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
     }
 
     /**
+     * Creates a new {@link ChannelCredentials} object with all security and encryption configurations necessary for
+     * establishing a gRPC connection. Base class returns {@link InsecureChannelCredentials}, which asserts that no client
+     * identity, authentication, or encryption is to be used. Subclasses should override this method as necessary.
+     *
+     * @param configG any necessary configurations for creating the credentials object
+     * @return gRPC channel credentials
+     */
+    protected ChannelCredentials getChannelCredentials(Configurator configG) {
+        return InsecureChannelCredentials.create();
+    }
+
+    /**
      * Determines if the {@link RetryHandler} should try again when an exception is thrown during gRPC invocation. Default
-     * behavior attempts retries for any {@link PoolException} or for any Exception with a {@link Status.Code} in
-     * {@link #RETRY_GRPC_CODES}. Subclasses may override this behavior.
+     * behavior attempts retries for any Exception with a {@link Status.Code} in {@link #RETRY_GRPC_CODES}. Subclasses may
+     * override this behavior.
      *
      * @param t the Exception thrown during gRPC invocation
      * @return {@code true} if the {@link RetryHandler} should try again, otherwise {@code false}
@@ -144,20 +159,12 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
             StatusRuntimeException e = (StatusRuntimeException) t;
             return RETRY_GRPC_CODES.contains(e.getStatus().getCode());
         }
-        return t instanceof PoolException;
-    }
-
-    private ObjectPool<ManagedChannel> newConnectionPool(String id) {
-        return newConnectionFactory(id).newConnectionPool();
-    }
-
-    private ConnectionFactory newConnectionFactory(String id) {
-        return new ConnectionFactory(hostnameTable.get(id), portNumberTable.get(id), Objects.requireNonNull(configG));
+        return false;
     }
 
     /**
-     * Wrapper method for {@link GrpcInvoker#invoke(ObjectPool, Function, BiFunction, Message)} that executes a unary gRPC
-     * call to a given endpoint.
+     * Wrapper method for {@link GrpcInvoker#invoke(Function, BiFunction, Message)} that executes a unary gRPC call to a
+     * given endpoint.
      *
      * @param targetId the identifier used in the configs for the given gRPC endpoint
      * @param stubFactory function that creates the appropriate gRPC stub from a {@link ManagedChannel}
@@ -170,12 +177,12 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
      */
     protected <Q extends Message, R extends Message, S extends AbstractBlockingStub<S>> R invokeGrpc(
             String targetId, Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, R> callLogic, Q request) {
-        return grpcInvoker.invoke(channelPoolLookup(targetId), stubFactory, callLogic, request);
+        return getInvoker(targetId).invoke(stubFactory, callLogic, request);
     }
 
     /**
-     * Wrapper method for {@link GrpcInvoker#invokeAsync(ObjectPool, Function, BiFunction, Message)} that executes a unary
-     * gRPC call to a given endpoint and returns a {@link CompletableFuture future}.
+     * Wrapper method for {@link GrpcInvoker#invokeAsync(Function, BiFunction, Message)} that executes a unary gRPC call to
+     * a given endpoint and returns a {@link CompletableFuture future}.
      *
      * @param targetId the identifier used in the configs for the given gRPC endpoint
      * @param stubFactory function that creates the appropriate gRPC stub from a {@link ManagedChannel}
@@ -188,25 +195,27 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
      */
     protected <Q extends Message, R extends Message, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeGrpcAsync(
             String targetId, Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, ListenableFuture<R>> callLogic, Q request) {
-        return grpcInvoker.invokeAsync(channelPoolLookup(targetId), stubFactory, callLogic, request);
-    }
-
-    private ObjectPool<ManagedChannel> channelPoolLookup(String targetId) {
-        return tableLookup(channelPoolTable, targetId);
+        return getInvoker(targetId).invokeAsync(stubFactory, callLogic, request);
     }
 
     public String getHostname(String targetId) {
-        return tableLookup(hostnameTable, targetId);
+        return getInvoker(targetId).getHost();
     }
 
     public int getPortNumber(String targetId) {
-        return tableLookup(portNumberTable, targetId);
+        return getInvoker(targetId).getPort();
     }
 
-    protected <T> T tableLookup(Map<String, T> table, String targetId) {
-        if (table.containsKey(targetId)) {
-            return table.get(targetId);
+    private GrpcInvoker getInvoker(String targetId) {
+        if (invokerTable.containsKey(targetId)) {
+            return invokerTable.get(targetId);
         }
         throw new IllegalArgumentException(String.format("Target-ID %s was never configured", targetId));
+    }
+
+    @Override
+    public void shutDown() {
+        super.shutDown();
+        invokerTable.values().forEach(GrpcInvoker::close);
     }
 }
