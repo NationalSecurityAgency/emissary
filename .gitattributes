@@ -4,3 +4,6 @@
 # Explicit LF
 *.cfg text eol=lf
 *.xml text eol=lf
+
+# Don't treat these as text
+*.dat -text
