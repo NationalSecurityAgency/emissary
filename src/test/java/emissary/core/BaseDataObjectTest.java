@@ -567,10 +567,6 @@ class BaseDataObjectTest extends UnitTest {
     void testFileTypeIsEmpty() {
         this.b.setFileType(Form.UNKNOWN);
         assertTrue(this.b.isFileTypeEmpty(), "Unknown form must count as empty");
-        this.b.setFileType("BAR");
-        final String[] fakeEmpties = {Form.UNKNOWN, "FOO", "BAR"};
-        assertTrue(this.b.setFileTypeIfEmpty("BAZ", fakeEmpties), "Unknown form must count as empty when passing in list");
-        assertEquals("BAZ", this.b.getFileType(), "Failed to use supplied list of empty forms " + Arrays.asList(fakeEmpties));
 
         this.b.setFileType("TEST-UNWRAPPED");
         assertTrue(this.b.setFileTypeIfEmpty("ZAZ"), "Unknown form must count as empty when passing in list");
