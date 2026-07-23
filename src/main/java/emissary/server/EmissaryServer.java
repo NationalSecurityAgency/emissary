@@ -18,6 +18,7 @@ import emissary.core.ResourceWatcher;
 import emissary.core.sentinel.Sentinel;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
+import emissary.output.stats.ViewOutputStats;
 import emissary.place.IServiceProviderPlace;
 import emissary.place.ServiceProviderRefreshablePlace;
 import emissary.pool.AgentPool;
@@ -454,6 +455,15 @@ public class EmissaryServer {
             rw.quit();
         } catch (Exception ex) {
             LOG.warn("No resource statistics available");
+        }
+
+        // Final flush of drop-off view stats (if enabled)
+        try {
+            ViewOutputStats viewStats = ViewOutputStats.lookup();
+            viewStats.flush();
+            viewStats.shutdown();
+        } catch (Exception ex) {
+            LOG.debug("No drop-off view statistics available");
         }
 
         try {

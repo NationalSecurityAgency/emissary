@@ -3,10 +3,12 @@ package emissary.output.filter;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
+import emissary.output.DropOffUtil;
 import emissary.output.io.DateStampFilenameGenerator;
 import emissary.output.roller.IJournaler;
 import emissary.output.roller.JournaledCoalescer;
 import emissary.output.roller.journal.KeyedOutput;
+import emissary.output.stats.ViewOutputStats;
 import emissary.pool.AgentPool;
 import emissary.roll.RollManager;
 import emissary.roll.Roller;
@@ -208,6 +210,8 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
         // We subtract 1 from the list because the first element is currently assumed to be the TLD
         list.get(0).putParameter("DESCENDANT_COUNT", list.size() - 1);
 
+        recordViewStats(list);
+
         try {
             output.write(convert(list, params));
             if (appendNewLine) {
@@ -220,5 +224,26 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
         return STATUS_SUCCESS;
     }
 
+    /**
+     * Record drop-off view-count stats for every object written by this filter. Rollable filters (JSON/XML) emit an
+     * object's primary view and all of its non-empty alternate views together, so each is counted with status
+     * {@link ViewOutputStats#STATUS_OK}. No-op unless the feature is enabled.
+     *
+     * @param list the payloads being written out
+     */
+    protected void recordViewStats(final List<IBaseDataObject> list) {
+        for (final IBaseDataObject d : list) {
+            final String fileType = DropOffUtil.getFileType(d);
+            if (d.dataLength() > 0) {
+                ViewOutputStats.record(AbstractFilter.PRIMARY_VIEW_NAME, fileType, ViewOutputStats.STATUS_OK);
+            }
+            for (final String viewName : d.getAlternateViewNames()) {
+                final byte[] av = d.getAlternateView(viewName);
+                if (av != null && av.length > 0) {
+                    ViewOutputStats.record(viewName, fileType, ViewOutputStats.STATUS_OK);
+                }
+            }
+        }
+    }
 
 }

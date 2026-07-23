@@ -3,6 +3,7 @@ package emissary.output.filter;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
+import emissary.output.stats.ViewOutputStats;
 import emissary.test.core.junit5.UnitTest;
 
 import jakarta.annotation.Nullable;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.Logger;
+import org.slf4j.Marker;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,10 +25,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class JsonOutputFilterTest extends UnitTest {
 
@@ -83,6 +92,27 @@ class JsonOutputFilterTest extends UnitTest {
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
         assertTrue(output.toString().contains("\"FILETYPE\":[\"FTYPE\"]"), "Filter output should have file type");
         assertTrue(output.toString().contains("\"payload\":\"VGhpcyBpcyB0aGUgZGF0YQ==\""), "Filter should have payload");
+    }
+
+    @Test
+    void testViewOutputStatsRecorded() {
+        f.initialize(config, "FOO", config);
+        payload.addAlternateView("NormalizedText", "some normalized text".getBytes());
+
+        ViewOutputStats stats = new ViewOutputStats(10, TimeUnit.MINUTES);
+        stats.startAndBind();
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            int status = f.filter(Collections.singletonList(payload), new HashMap<>(), output);
+            assertEquals(IDropOffFilter.STATUS_SUCCESS, status);
+
+            // PrimaryView (payload present) + NormalizedText alt view => two distinct keys
+            Logger logger = mock(Logger.class);
+            stats.logStats(logger);
+            verify(logger, times(2)).info(any(Marker.class), eq(""));
+        } finally {
+            stats.shutdown();
+        }
     }
 
     @Test
