@@ -1,4 +1,4 @@
-package emissary.grpc.pool;
+package emissary.grpc.channel;
 
 import emissary.config.Configurator;
 
@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  * <a href="https://docs.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-5.0">Source</a> for default
  * gRPC configurations.
  */
-public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
+public class ChannelPoolFactory extends BasePooledObjectFactory<ManagedChannel> {
     public static final String GRPC_KEEP_ALIVE_MILLIS = "GRPC_KEEP_ALIVE_MILLIS";
     public static final String GRPC_KEEP_ALIVE_TIMEOUT_MILLIS = "GRPC_KEEP_ALIVE_TIMEOUT_MILLIS";
     public static final String GRPC_KEEP_ALIVE_WITHOUT_CALLS = "GRPC_KEEP_ALIVE_WITHOUT_CALLS";
@@ -62,7 +62,7 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
 
     private static final int MAX_PORT_NUMBER = 0xFFFF;
 
-    protected static final Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ChannelPoolFactory.class);
 
     private final GenericObjectPoolConfig<ManagedChannel> poolConfig = new GenericObjectPoolConfig<>();
 
@@ -81,13 +81,13 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
      * Constructs a new gRPC connection factory using the provided host, port, and configuration. Initializes pool settings
      * and gRPC channel properties from the given configuration source.
      * <p>
-     * See {@link ConnectionFactory} for supported configuration keys and defaults.
+     * See {@link ChannelPoolFactory} for supported configuration keys and defaults.
      * 
      * @param host gRPC service hostname or DNS target
      * @param port gRPC service port
      * @param configG configuration provider for channel and pool parameters
      */
-    public ConnectionFactory(String host, int port, Configurator configG) {
+    public ChannelPoolFactory(String host, int port, Configurator configG) {
         this.host = host;
         this.port = port;
         this.target = createTarget();
@@ -105,7 +105,7 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
         // Specifies how the client chooses between multiple backend addresses
         // e.g. "pick_first" uses the first address only, "round_robin" cycles through all of them for client-side balancing
         this.loadBalancingPolicy = configG.findObjectEntry(
-                GRPC_LOAD_BALANCING_POLICY, LoadBalancingPolicy::valueOf, LoadBalancingPolicy.ROUND_ROBIN).formattedName();
+                GRPC_LOAD_BALANCING_POLICY, LoadBalancingPolicy::valueOf, LoadBalancingPolicy.ROUND_ROBIN).toString();
 
         // Max size (in bytes) for incoming messages and message metadata from the server
         this.maxInboundMessageByteSize = configG.findIntEntry(GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE, 4 << 20); // 4 MiB
@@ -330,5 +330,36 @@ public class ConnectionFactory extends BasePooledObjectFactory<ManagedChannel> {
 
     public boolean getPoolIsFifo() {
         return !this.poolConfig.getLifo();
+    }
+
+    /**
+     * Exception type for failures with handling the gRPC connection pool, such as failed borrows.
+     */
+    public static class PoolException extends RuntimeException {
+
+        private static final long serialVersionUID = 1495483102825486040L;
+
+        public PoolException(String errorMessage, Throwable err) {
+            super(errorMessage, err);
+        }
+    }
+
+    public enum PoolRetrievalOrdering {
+        LIFO, FIFO;
+    }
+
+    public enum LoadBalancingPolicy {
+        ROUND_ROBIN("round_robin"), PICK_FIRST("pick_first");
+
+        private final String policy;
+
+        LoadBalancingPolicy(String policy) {
+            this.policy = policy;
+        }
+
+        @Override
+        public String toString() {
+            return policy;
+        }
     }
 }

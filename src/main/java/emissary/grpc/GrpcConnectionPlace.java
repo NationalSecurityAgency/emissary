@@ -1,7 +1,7 @@
 package emissary.grpc;
 
 import emissary.config.Configurator;
-import emissary.grpc.pool.ConnectionFactory;
+import emissary.grpc.channel.ChannelManager;
 import emissary.grpc.retry.RetryHandler;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -27,7 +27,7 @@ import java.util.function.Function;
  * <ul>
  * <li>{@code GRPC_HOST} - gRPC service hostname or DNS target, <i>required</i></li>
  * <li>{@code GRPC_PORT} - gRPC service port, <i>required</i></li>
- * <li>See {@link ConnectionFactory} for supported pooling and gRPC channel configuration keys and defaults.</li>
+ * <li>See {@link ChannelManager} for supported gRPC channel configuration keys and defaults.</li>
  * <li>See {@link RetryHandler} for supported retry configuration keys and defaults.</li>
  * </ul>
  */
