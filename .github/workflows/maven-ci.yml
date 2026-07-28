@@ -149,7 +149,7 @@ jobs:
           method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload-templated: true
-          channel: ${{ env.SLACK_CHANNEL_ID }}
+          channel: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
             {
               "unfurl_links": false,
