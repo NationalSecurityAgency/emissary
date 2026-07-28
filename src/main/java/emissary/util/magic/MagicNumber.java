@@ -8,9 +8,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
 
 public class MagicNumber {
 
@@ -144,7 +145,9 @@ public class MagicNumber {
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < desc.length(); i++) {
             if (desc.charAt(i) == '\\' && (i + 1) < desc.length() && desc.charAt(i + 1) == 'b') {
-                s = new StringBuilder(s.substring(0, s.length() - 1));
+                if (s.length() > 0) {
+                    s.setLength(s.length() - 1);
+                }
                 i++;
                 continue;
             }
@@ -172,16 +175,16 @@ public class MagicNumber {
         if (!substitute) {
             return desc;
         }
-        Deque<Character> chars = new ArrayDeque<>();
-        for (int i = desc.length() - 1; i >= 0; --i) {
-            chars.push(desc.charAt(i));
+        Queue<Character> chars = new ArrayDeque<>();
+        for (int i = 0; i < desc.length(); i++) {
+            chars.add(desc.charAt(i));
         }
         StringBuilder sb = new StringBuilder();
 
         while (!chars.isEmpty()) {
-            Character next = chars.pop();
+            Character next = chars.poll();
             if (!chars.isEmpty() && next == '%') {
-                char subType = chars.pop();
+                char subType = chars.poll();
                 if (dataType == TYPE_STRING) {
                     if (offset < (data.length - 2)) {
                         String sub = new String(Objects.requireNonNull(getElement(data, offset, 1)), DEFAULT_CHARSET);
@@ -205,11 +208,11 @@ public class MagicNumber {
                 }
 
                 if (subType == 'l' && !chars.isEmpty() && chars.peek() == 'd') {
-                    chars.pop();
+                    chars.poll();
                 }
                 continue;
             }
-            sb.append(next.charValue());
+            sb.append(next);
         }
         return sb.toString();
     }
@@ -263,11 +266,29 @@ public class MagicNumber {
         if (substitute) {
             return true;
         }
+
+        if (mask != null && mask.length == data.length) {
+            for (int i = 0; i < data.length; i++) {
+                data[i] = (byte) (data[i] & mask[i]);
+            }
+        }
+
+        // Short-circuit instantly for strings
+        if (dataType == TYPE_STRING) {
+            return Arrays.equals(data, value);
+        }
+
         byte[] mValues = value;
+        if (mValues == null || data.length != mValues.length) {
+            return false;
+        }
+
+        int end = mValues.length;
+        boolean isBigEndian = dataType == TYPE_BESHORT || dataType == TYPE_BELONG || dataType == TYPE_BEDATE ||
+                dataType == TYPE_SHORT || dataType == TYPE_LONG || dataType == TYPE_BYTE;
 
         log.debug("Unary Operator: {}", unaryOperator);
 
-        int end = mValues.length;
         switch (unaryOperator) {
             case MAGICOPERATOR_AND:
             case MAGICOPERATOR_BWAND:
@@ -277,59 +298,63 @@ public class MagicNumber {
                     }
                 }
                 return true;
-            case MAGICOPERATOR_GTHAN:
-                for (int i = 0; i < end; i++) {
-                    if ((data[i] & 0xFF) < (mValues[i] & 0xFF)) {
-                        return false;
-                    }
-                    if (i == end - 1 && data[i] == mValues[i]) {
-                        return false;
-                    }
-                }
-                return true;
-            case MAGICOPERATOR_LTHAN:
-                for (int i = 0; i < end; i++) {
-                    if ((data[i] & 0xFF) > (mValues[i] & 0xFF)) {
-                        return false;
-                    }
-                    if (i == end - 1 && data[i] == mValues[i]) {
-                        return false;
-                    }
-                }
-                return true;
             case MAGICOPERATOR_OR:
                 for (int i = 0; i < end; i++) {
-                    if (data[i] == mValues[i]) {
+                    if ((data[i] & mValues[i]) != 0) {
                         return true;
                     }
                 }
                 return false;
-            case MAGICOPERATOR_BWNOT:
             case MAGICOPERATOR_NOT:
+            case MAGICOPERATOR_BWNOT:
                 for (int i = 0; i < end; i++) {
                     if (data[i] != mValues[i]) {
                         return true;
                     }
                 }
                 return false;
+            case MAGICOPERATOR_GTHAN:
             case MAGICOPERATOR_EQUAL_GTHAN:
-                for (int i = 0; i < end; i++) {
-                    if ((data[i] & 0xFF) < (mValues[i] & 0xFF)) {
-                        return false;
-                    }
-                }
-                return true;
+            case MAGICOPERATOR_LTHAN:
             case MAGICOPERATOR_EQUAL_LTHAN:
-                for (int i = 0; i < end; i++) {
-                    if ((data[i] & 0xFF) > (mValues[i] & 0xFF)) {
-                        return false;
+                int cmp = 0;
+                if (isBigEndian) {
+                    // Big Endian: MSB is at index 0
+                    for (int i = 0; i < end; i++) {
+                        int v1 = data[i] & 0xFF;
+                        int v2 = mValues[i] & 0xFF;
+                        if (v1 != v2) {
+                            cmp = Integer.compare(v1, v2);
+                            break;
+                        }
+                    }
+                } else {
+                    // Little Endian: MSB is at the last index
+                    for (int i = end - 1; i >= 0; i--) {
+                        int v1 = data[i] & 0xFF;
+                        int v2 = mValues[i] & 0xFF;
+                        if (v1 != v2) {
+                            cmp = Integer.compare(v1, v2);
+                            break;
+                        }
                     }
                 }
-                return true;
+
+                switch (unaryOperator) {
+                    case MAGICOPERATOR_GTHAN:
+                        return cmp > 0;
+                    case MAGICOPERATOR_EQUAL_GTHAN:
+                        return cmp >= 0;
+                    case MAGICOPERATOR_LTHAN:
+                        return cmp < 0;
+                    case MAGICOPERATOR_EQUAL_LTHAN:
+                        return cmp <= 0;
+                    default:
+                        return false;
+                }
             default:
                 throw new IllegalStateException(
                         "This MagicNumber instance is configured incorrectly. The unary operator is set to an unknown or unconfigured value.");
-
         }
     }
 
@@ -397,7 +422,12 @@ public class MagicNumber {
         } else {
             sb.append(unaryOperator);
         }
-        sb.append(MagicMath.byteArrayToHexString(value));
+
+        if (dataType == TYPE_STRING && value != null) {
+            sb.append(new String(value, DEFAULT_CHARSET));
+        } else {
+            sb.append(MagicMath.byteArrayToHexString(value));
+        }
 
         sb.append('\t');
         sb.append(description);
