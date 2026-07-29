@@ -108,7 +108,7 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
                     "Missing required arguments: %s${Target-ID} and %s${Target-ID}", GRPC_HOST, GRPC_PORT));
         }
 
-        RetryHandler retryHandler = new RetryHandler(configG, this.getPlaceName(), this::retryOnException);
+        RetryHandler retryHandler = new RetryHandler(configG, this.getPlaceName(), this::retryOnException, this::retryOnResult);
         for (String id : targetIds) {
             ChannelManager channelManager = new ChannelManager(hosts.get(id), ports.get(id), configG);
             GrpcInvoker grpcInvoker = new GrpcInvoker(channelManager, retryHandler);
@@ -139,6 +139,17 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
             return RETRY_GRPC_CODES.contains(e.getStatus().getCode());
         }
         return t instanceof PoolException;
+    }
+
+    /**
+     * Determines if the {@link RetryHandler} should try again when a given result is returned during gRPC invocation.
+     * Default behavior always returns {@code false}. Subclasses may override this behavior.
+     *
+     * @param response the response object to check
+     * @return {@code true} if the {@link RetryHandler} should try again, otherwise {@code false}
+     */
+    protected boolean retryOnResult(Object response) {
+        return false;
     }
 
     /**
