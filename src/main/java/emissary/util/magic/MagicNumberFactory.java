@@ -84,11 +84,9 @@ public class MagicNumberFactory {
                 try {
                     if (depth == 0 && !extensions.isEmpty()) {
                         if (finger == null) {
-                            extensions = null;
                             extensions = new ArrayList<>();
                         } else {
                             addExtensionsLayer(extensions, finger);
-                            extensions = null;
                             extensions = new ArrayList<>();
                             finger = null;
                         }
@@ -119,7 +117,6 @@ public class MagicNumberFactory {
                             }
                             currentDepth = depth;
                             addExtensionsLayer(extensions, finger);
-                            extensions = null;
                             extensions = new ArrayList<>();
                             parseAndStore(extensions, s, swallowParseException);
                         }
@@ -140,11 +137,7 @@ public class MagicNumberFactory {
                     if (depth > 0) {
                         MagicNumber mItem = magicNumberList.get(magicNumberList.size() - 1);
                         String signature = mItem.toString();
-                        List<String> failedExtensions = continuationErrorMap.get(signature);
-                        if (failedExtensions == null) {
-                            failedExtensions = new ArrayList<>();
-                            continuationErrorMap.put(mItem.toString(), failedExtensions);
-                        }
+                        List<String> failedExtensions = continuationErrorMap.computeIfAbsent(signature, k -> new ArrayList<>());
                         failedExtensions.add("[MAGIC LINE# " + counter + "] " + s);
                     } else {
                         // depth = 0
@@ -190,11 +183,7 @@ public class MagicNumberFactory {
      * @param extensions a {@link List} of continuations which are MagicNumber instances
      */
     private static void addExtensionsLayer(List<MagicNumber> extensions, MagicNumber target) {
-        MagicNumber[] extensionArray = new MagicNumber[extensions.size()];
-        int index = 0;
-        for (MagicNumber m : extensions) {
-            extensionArray[index++] = m;
-        }
+        MagicNumber[] extensionArray = extensions.toArray(new MagicNumber[0]);
         target.addDependencyLayer(extensionArray);
     }
 
@@ -246,7 +235,10 @@ public class MagicNumberFactory {
             // column C parsing
             item.unaryOperator = resolveUnary(columns, item);
             item.value = resolveValue(columns, item);
-            item.dataTypeLength = item.value.length;
+
+            if (item.dataType == MagicNumber.TYPE_STRING && item.value != null) {
+                item.dataTypeLength = item.value.length;
+            }
         } catch (Exception e) {
             throw new ParseException("Error on column 2:" + columns[2] + ". " + e.getMessage());
         }
@@ -261,10 +253,8 @@ public class MagicNumberFactory {
     private static String[] tokenizeEntry(String entry) {
         int index = 0;
         String[] columns = new String[4];
-        columns[0] = EMPTYSTRING;
-        columns[1] = EMPTYSTRING;
-        columns[2] = EMPTYSTRING;
-        columns[3] = EMPTYSTRING;
+        Arrays.fill(columns, EMPTYSTRING);
+
         for (int i = 0; i < entry.length(); i++) {
             char c = entry.charAt(i);
             if (c == '\\' && i != (entry.length() - 1) && entry.charAt(i + 1) == ' ') {
@@ -308,10 +298,7 @@ public class MagicNumberFactory {
 
         String[] columns = tokenizeEntry(subject);
         for (int count = 0; count < columns.length; count++) {
-            if (count == 3 && columns[count].isEmpty() && columns[0].charAt(0) != '>') {
-                // columns[count] = NULL_DESCRIPTION;
-
-            } else if (columns[count].isEmpty() && count < 3) {
+            if (columns[count].isEmpty() && count < 3) {
                 throw new ParseException(ENTRY_4COLUMN_RULE);
             }
         }
@@ -339,7 +326,7 @@ public class MagicNumberFactory {
     }
 
     private static char resolveOffsetUnary(String[] columns) {
-        if (columns[0].charAt(0) == '&') {
+        if (!columns[0].isEmpty() && columns[0].charAt(0) == '&') {
             return '&';
         }
         return (char) 0;
@@ -388,7 +375,10 @@ public class MagicNumberFactory {
     }
 
     private static int lookupDataType(String arg) {
-        int dataTypeIdInt = typeMap.get(arg.toUpperCase(Locale.getDefault()));
+        Integer dataTypeIdInt = typeMap.get(arg.toUpperCase(Locale.getDefault()));
+        if (dataTypeIdInt == null) {
+            return -1;
+        }
         switch (dataTypeIdInt) {
             case MagicNumber.TYPE_DATE:
             case MagicNumber.TYPE_BEDATE:
@@ -404,7 +394,7 @@ public class MagicNumberFactory {
         int ix = columns[1].indexOf("&");
         if (ix > 0) {
             byte[] maskValues = MagicMath.stringToByteArray(columns[1].substring(ix + 1));
-            MagicMath.setLength(maskValues, item.dataTypeLength);
+            return MagicMath.setLength(maskValues, item.dataTypeLength);
         }
         return null;
     }
@@ -416,9 +406,7 @@ public class MagicNumberFactory {
         String subject = columns[2];
 
         if (item.dataType == MagicNumber.TYPE_STRING && !(subject.length() == 1 && subject.charAt(0) == 'x')) {
-            byte[] strVal = MagicMath.parseEscapedString(subject);
-            item.dataTypeLength = strVal.length;
-            return strVal;
+            return MagicMath.parseEscapedString(subject);
         } else if (subject.length() == 1 && subject.charAt(0) == 'x') {
             item.substitute = true;
             return new byte[0];
@@ -434,9 +422,6 @@ public class MagicNumberFactory {
         byte[] valueArray = MagicMath.stringToByteArray(subject);
         valueArray = MagicMath.setLength(valueArray, item.dataTypeLength);
 
-        if (item.mask != null) {
-            valueArray = MagicMath.mask(valueArray, item.mask);
-        }
         if (item.dataType == MagicNumber.TYPE_LELONG) {
             MagicMath.longEndianSwap(valueArray, 0);
         } else if (item.dataType == MagicNumber.TYPE_LESHORT) {
@@ -462,7 +447,6 @@ public class MagicNumberFactory {
                 case MagicNumber.MAGICOPERATOR_NOT:
                     return 1;
                 case MagicNumber.MAGICOPERATOR_GTHAN:
-                    return len > 1 && s.charAt(1) == MagicNumber.MAGICOPERATOR_AND ? 2 : 1;
                 case MagicNumber.MAGICOPERATOR_LTHAN:
                     return len > 1 && s.charAt(1) == MagicNumber.MAGICOPERATOR_AND ? 2 : 1;
                 default:
@@ -476,11 +460,7 @@ public class MagicNumberFactory {
         int dataTypeId = item.dataType;
         switch (dataTypeId) {
             case MagicNumber.TYPE_STRING:
-                if (item.value == null) {
-                    return -1;
-                } else {
-                    return item.value.length;
-                }
+                return (item.value == null) ? -1 : item.value.length;
             case MagicNumber.TYPE_BYTE:
                 return 1;
             case MagicNumber.TYPE_SHORT:

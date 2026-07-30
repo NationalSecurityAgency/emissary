@@ -2,36 +2,66 @@ package emissary.core;
 
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.core.constants.IbdoXmlElementNames;
+import emissary.util.os.OSReleaseUtil;
 
+import jakarta.annotation.Nullable;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.jdom2.Attribute;
+import org.jdom2.Element;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
+import static emissary.core.IBaseDataObjectXmlCodecs.BASE64;
+import static emissary.core.IBaseDataObjectXmlCodecs.BASE64_DECODER;
+import static emissary.core.IBaseDataObjectXmlCodecs.ENCODING_ATTRIBUTE_NAME;
+import static emissary.core.constants.IbdoXmlElementNames.ATTACHMENT_ELEMENT_PREFIX;
 import static emissary.core.constants.IbdoXmlElementNames.BROKEN;
 import static emissary.core.constants.IbdoXmlElementNames.CLASSIFICATION;
+import static emissary.core.constants.IbdoXmlElementNames.CURRENT_FORM;
+import static emissary.core.constants.IbdoXmlElementNames.DATA;
+import static emissary.core.constants.IbdoXmlElementNames.EXTRACTED_RECORD_ELEMENT_PREFIX;
+import static emissary.core.constants.IbdoXmlElementNames.EXTRACT_COUNT;
+import static emissary.core.constants.IbdoXmlElementNames.FILE_TYPE;
+import static emissary.core.constants.IbdoXmlElementNames.FONT_ENCODING;
+import static emissary.core.constants.IbdoXmlElementNames.INDEX;
+import static emissary.core.constants.IbdoXmlElementNames.NAME;
+import static emissary.core.constants.IbdoXmlElementNames.NOMETA;
+import static emissary.core.constants.IbdoXmlElementNames.NOVIEW;
+import static emissary.core.constants.IbdoXmlElementNames.NUM_ATTACHMENTS;
 import static emissary.core.constants.IbdoXmlElementNames.PARAMETER;
+import static emissary.core.constants.IbdoXmlElementNames.SHORT_NAME;
+import static emissary.core.constants.IbdoXmlElementNames.VALUE;
+import static emissary.core.constants.IbdoXmlElementNames.VIEW;
 
 public class IBaseDataObjectDiffHelper {
+
+    // Centralized message template definitions
     private static final String DIFF_NOT_NULL_MSG = "Required: differences not null";
     private static final String ID_NOT_NULL_MSG = "Required: identifier not null";
     private static final String ARE_NOT_EQUAL = " are not equal";
-    private static final String SHORT_NAME = "shortName";
     private static final String INTERNAL_ID = "internalId";
     private static final String TRANSFORM_HISTORY = "transformHistory";
     private static final String FILE_TYPE_EMPTY = "fileTypeEmpty";
@@ -48,11 +78,21 @@ public class IBaseDataObjectDiffHelper {
      * @param differences the string list differences are to be added to.
      * @param options {@link DiffCheckConfiguration} containing config to specify whether to check data etc.
      */
+    /**
+     * This method compares two IBaseDataObject's and adds any differences to the provided string list.
+     *
+     * @param expected the first IBaseDataObject to compare.
+     * @param actual the second IBaseDataObject to compare.
+     * @param differences the string list differences are to be added to.
+     * @param options {@link DiffCheckConfiguration} containing config to specify whether to check data etc.
+     */
     public static void diff(final IBaseDataObject expected, final IBaseDataObject actual,
             final List<String> differences, final DiffCheckConfiguration options) {
         Validate.notNull(expected, "Required: \"expected\" ibdo not null");
         Validate.notNull(actual, "Required: \"actual\" ibdo not null");
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
+        Validate.notNull(options, "Required: options not null");
+        Validate.isTrue(options.isStrict(), "Cannot invoke strict multi-payload diff() when configuration is set to lenient mode.");
 
         if (options.checkData()) {
             final SeekableByteChannelFactory sbcf1 = expected.getChannelFactory();
@@ -107,6 +147,46 @@ public class IBaseDataObjectDiffHelper {
     }
 
     /**
+     * This method compares an IBaseDataObject and against an answer file adds any differences to the provided string list.
+     *
+     * @param actual the IBaseDataObject to compare.
+     * @param differences the string list of differences are to be added to.
+     * @param options {@link DiffCheckConfiguration} containing config to specify whether to check data etc.
+     */
+    public static void diff(final IBaseDataObject actual, final List<String> differences, final DiffCheckConfiguration options) {
+        Validate.notNull(actual, "Required: \"actual\" ibdo not null");
+        Validate.notNull(differences, DIFF_NOT_NULL_MSG);
+        Validate.notNull(options, "Required: options not null");
+        Validate.isTrue(!options.isStrict(), "Cannot invoke single-payload lenient diff() when configuration is set to strict mode.");
+
+        Element expectationElement = options.getLenientExpectationElement();
+        if (expectationElement != null) {
+            checkCurrentForms(expectationElement, actual, differences);
+            checkFields(expectationElement, actual, differences);
+            checkMetadata(expectationElement, actual, differences);
+            checkViews(expectationElement, actual, differences);
+            checkExtractedRecords(expectationElement, actual, differences, options);
+        }
+    }
+
+    /**
+     * This method compares an IBaseDataObject and against an answer file adds any differences to the provided string list.
+     *
+     * @param actualIbdo the IBaseDataObject to compare.
+     * @param actualChildren the list of child IBaseDataObjects to compare.
+     * @param identifier a string that helps identify the context of comparing these two list of IBaseDataObjects.
+     * @param parentDifferences the string list of parent differences are to be added to.
+     * @param childDifferences the string list of child differences are to be added to.
+     * @param options {@link DiffCheckConfiguration} containing config to specify whether to check data etc.
+     */
+    public static void diff(final IBaseDataObject actualIbdo, final List<IBaseDataObject> actualChildren, final String identifier,
+            final List<String> parentDifferences, final List<String> childDifferences, final DiffCheckConfiguration options) {
+        checkAttachmentCounts(options.getLenientExpectationElement(), actualChildren, parentDifferences);
+        diff(actualIbdo, parentDifferences, options);
+        diff(actualChildren, identifier, childDifferences, options);
+    }
+
+    /**
      * This method compares two lists of IBaseDataObject's and adds any differences to the provided string list.
      *
      * @param expected the first list of IBaseDataObjects to compare.
@@ -119,6 +199,8 @@ public class IBaseDataObjectDiffHelper {
             final String identifier, final List<String> differences, final DiffCheckConfiguration options) {
         Validate.notNull(identifier, ID_NOT_NULL_MSG);
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
+        Validate.notNull(options, "Required: options not null");
+        Validate.isTrue(options.isStrict(), "Cannot invoke strict multi-list diff() when configuration is set to lenient mode.");
 
         final int expectedSize = (expected == null) ? 0 : expected.size();
         final int actualSize = (actual == null) ? 0 : actual.size();
@@ -138,6 +220,50 @@ public class IBaseDataObjectDiffHelper {
                 }
             }
         }
+    }
+
+    /**
+     * This method compares a list of IBaseDataObjects and anwser file and adds any differences to the provided string list.
+     *
+     * @param actual the list of IBaseDataObjects to compare.
+     * @param identifier a string that helps identify the context of comparing these two list of IBaseDataObjects.
+     * @param differences the string list of differences are to be added to.
+     * @param options {@link DiffCheckConfiguration} containing config to specify whether to check data etc.
+     */
+    public static void diff(final List<IBaseDataObject> actual, final String identifier,
+            final List<String> differences, final DiffCheckConfiguration options) {
+        Validate.notNull(identifier, ID_NOT_NULL_MSG);
+        Validate.notNull(differences, DIFF_NOT_NULL_MSG);
+        Validate.notNull(options, "Required: options not null");
+        Validate.isTrue(!options.isStrict(), "Cannot invoke single-list lenient diff() when configuration is set to strict mode.");
+
+        Element rootXml = options.getLenientExpectationElement();
+        if (rootXml != null && actual != null) {
+            final List<String> childDifferences = new ArrayList<>();
+            for (int i = 0; i < actual.size(); i++) {
+                childDifferences.clear();
+
+                Element attel = getChildAnswers(rootXml, ATTACHMENT_ELEMENT_PREFIX, i + 1, differences);
+                if (attel != null) {
+
+                    diff(attel, actual.get(i), childDifferences, options);
+
+                    final String prefix = String.format("%s[index %d] : ", identifier, i);
+                    for (String diff : childDifferences) {
+                        differences.add(prefix + diff);
+                    }
+                }
+            }
+        }
+    }
+
+    protected static void diff(Element attel, final IBaseDataObject actual, final List<String> differences, final DiffCheckConfiguration options) {
+        DiffCheckConfiguration childOpts = DiffCheckConfiguration.from(options)
+                .setLenientExpectationElement(attel)
+                .build();
+
+        checkAttachmentCounts(attel, null, differences);
+        diff(actual, differences, childOpts);
     }
 
     /**
@@ -345,4 +471,380 @@ public class IBaseDataObjectDiffHelper {
 
         return newMap;
     }
+
+    protected static Element getChildAnswers(Element parent, String name, int index, List<String> differences) {
+        Element el = parent.getChildren().stream()
+                .filter(c -> c.getName().equalsIgnoreCase(name) && String.valueOf(index).equals(c.getAttributeValue(INDEX))
+                        && verifyOs(c, differences))
+                .findFirst()
+                .orElse(null);
+        if (el == null) {
+            el = parent.getChildren().stream()
+                    .filter(c -> c.getName().equalsIgnoreCase(name + index) && verifyOs(c, differences))
+                    .findFirst()
+                    .orElse(null);
+        }
+        return el;
+    }
+
+    protected static void checkAttachmentCounts(Element el, @Nullable List<IBaseDataObject> attachments, List<String> differences) {
+        int payloadSize = attachments != null ? attachments.size() : 0;
+        Element numAttEl = null;
+        long numAttElements = 0;
+
+        for (Element child : el.getChildren()) {
+            if (verifyOs(child, differences)) {
+                String name = child.getName();
+                if (name.equals(NUM_ATTACHMENTS) && numAttEl == null) {
+                    numAttEl = child;
+                } else if (name.startsWith(ATTACHMENT_ELEMENT_PREFIX)) {
+                    numAttElements++;
+                }
+            }
+        }
+
+        if (numAttEl != null) {
+            int numAtt = NumberUtils.toInt(numAttEl.getValue(), -1);
+            if (numAtt != payloadSize) {
+                differences
+                        .add(String.format("Expected <numAttachments> %d not equal to number of attachments in payload (%d).", numAtt, payloadSize));
+            }
+        } else if (numAttElements > 0) {
+            if (numAttElements != payloadSize) {
+                differences.add(
+                        String.format("Expected <att#> count %d not equal to number of attachments in payload (%d).", numAttElements, payloadSize));
+            }
+        } else if (payloadSize > 0) {
+            differences.add(String.format("%d attachments in payload with no count in answer xml. Add matching <numAttachments>", payloadSize));
+        }
+    }
+
+    protected static void checkCurrentForms(Element el, IBaseDataObject payload, List<String> differences) {
+        for (Element currentForm : el.getChildren(CURRENT_FORM)) {
+            if (verifyOs(currentForm, differences)) {
+                String cf = currentForm.getTextTrim();
+                if (cf != null) {
+                    Attribute index = currentForm.getAttribute(INDEX);
+                    if (index != null) {
+                        try {
+                            int idxVal = index.getIntValue();
+                            String actualForm = payload.currentFormAt(idxVal);
+                            if (!cf.equals(actualForm)) {
+                                differences.add(String.format("Current form '%s' not found at position [%d]. Actual: %s, All: %s", cf, idxVal,
+                                        actualForm, payload.getAllCurrentForms()));
+                            }
+                        } catch (Exception e) {
+                            differences.add("Invalid index integer value parsing currentForm rule: " + index.getValue());
+                        }
+                    } else if (payload.searchCurrentForm(cf) <= -1) {
+                        differences.add(String.format("Current form '%s' not found in payload forms: %s", cf, payload.getAllCurrentForms()));
+                    }
+                }
+            }
+        }
+    }
+
+    protected static void checkFields(Element el, IBaseDataObject payload, List<String> differences) {
+        for (Element child : el.getChildren(FILE_TYPE)) {
+            if (verifyOs(child, differences)) {
+                diff(child.getTextTrim(), payload.getFileType(), "Expected File Type", differences);
+            }
+        }
+        for (Element child : el.getChildren(CLASSIFICATION)) {
+            if (verifyOs(child, differences)) {
+                diff(child.getTextTrim(), payload.getClassification(), "Classification mismatch", differences);
+            }
+        }
+        for (Element child : el.getChildren(SHORT_NAME)) {
+            if (verifyOs(child, differences)) {
+                diff(child.getTextTrim(), payload.shortName(), "Shortname", differences);
+            }
+        }
+        for (Element child : el.getChildren(FONT_ENCODING)) {
+            if (verifyOs(child, differences)) {
+                diff(child.getTextTrim(), payload.getFontEncoding(), "Font encoding", differences);
+            }
+        }
+        for (Element child : el.getChildren(BROKEN)) {
+            if (verifyOs(child, differences)) {
+                diff(child.getTextTrim(), Boolean.toString(payload.isBroken()), "Broken status", differences);
+            }
+        }
+
+        for (Element child : el.getChildren("currentFormSize")) {
+            if (verifyOs(child, differences)) {
+                diff(NumberUtils.toInt(child.getValue(), -1), payload.currentFormSize(), "Current form size", differences);
+            }
+        }
+        for (Element child : el.getChildren("dataLength")) {
+            if (verifyOs(child, differences)) {
+                diff(NumberUtils.toInt(child.getValue(), -1), payload.dataLength(), "Data length", differences);
+            }
+        }
+
+        for (Element child : el.getChildren("procError")) {
+            if (verifyOs(child, differences)) {
+                String expectedError = child.getTextTrim();
+                if (StringUtils.isNotBlank(expectedError)) {
+                    String actualError = payload.getProcessingError();
+                    if (actualError == null) {
+                        differences.add(String.format("Expected processing error '%s', but got null", expectedError));
+                    } else {
+                        String normalizedActual = actualError.replace("\n", ";");
+                        diff(expectedError, normalizedActual, "Processing Error mismatch", differences);
+                    }
+                }
+            }
+        }
+    }
+
+    protected static void checkMetadata(Element el, IBaseDataObject payload, List<String> differences) {
+        for (Element meta : el.getChildren(PARAMETER)) {
+            if (verifyOs(meta, differences)) {
+                String key = meta.getChildTextTrim(NAME);
+                if (key == null) {
+                    differences.add(String.format("The element %s missing a child name element", PARAMETER));
+                } else {
+                    checkStringValue(meta, payload.getStringParameter(key), differences);
+                }
+            }
+        }
+
+        for (Element meta : el.getChildren(NOMETA)) {
+            if (verifyOs(meta, differences)) {
+                String key = meta.getChildTextTrim(NAME);
+                if (key == null) {
+                    differences.add(String.format("The element %s missing a child name element", NOMETA));
+                } else if (payload.hasParameter(key)) {
+                    differences.add(
+                            String.format("Metadata element '%s' should not exist, but has value of '%s'", key, payload.getStringParameter(key)));
+                }
+            }
+        }
+    }
+
+    protected static void checkViews(Element el, IBaseDataObject payload, List<String> differences) {
+        List<Element> dataElements = el.getChildren(DATA);
+        if (!dataElements.isEmpty()) {
+            String primaryDataStr = payload.data() != null ? new String(payload.data(), StandardCharsets.UTF_8) : "";
+            for (Element dataEl : dataElements) {
+                if (verifyOs(dataEl, differences)) {
+                    int length = NumberUtils.toInt(dataEl.getChildTextTrim("length"), -1);
+                    if (length > -1 && length != payload.dataLength()) {
+                        differences.add(String.format("Data length mismatch -> Expected: %d, Actual: %d", length, payload.dataLength()));
+                    }
+                    checkStringValue(dataEl, primaryDataStr, differences);
+                }
+            }
+        }
+
+        for (Element view : el.getChildren(VIEW)) {
+            if (verifyOs(view, differences)) {
+                String viewName = view.getChildTextTrim(NAME);
+                byte[] viewData = payload.getAlternateView(viewName);
+                if (viewData == null) {
+                    differences.add(String.format("Alternate View '%s' is missing from payload", viewName));
+                } else {
+                    String lengthStr = view.getChildTextTrim("length");
+                    if (lengthStr != null && Integer.parseInt(lengthStr) != viewData.length) {
+                        differences.add(String.format("Length of Alternate View '%s' mismatch -> Expected: %s, Actual: %d", viewName, lengthStr,
+                                viewData.length));
+                    }
+                    checkStringValue(view, new String(viewData, StandardCharsets.UTF_8), differences);
+                }
+            }
+        }
+
+        for (Element view : el.getChildren(NOVIEW)) {
+            if (verifyOs(view, differences)) {
+                String viewName = view.getChildTextTrim(NAME);
+                if (payload.getAlternateView(viewName) != null) {
+                    differences.add(String.format("Alternate View '%s' is present, but was flagged as forbidden (noview)", viewName));
+                }
+            }
+        }
+    }
+
+    protected static void checkExtractedRecords(Element el, IBaseDataObject payload, List<String> differences, final DiffCheckConfiguration options) {
+        List<IBaseDataObject> extractedChildren = payload.hasExtractedRecords()
+                ? Objects.requireNonNullElse(payload.getExtractedRecords(), List.of())
+                : List.of();
+        int payloadSize = extractedChildren.size();
+
+        List<Element> validChildren = el.getChildren().stream()
+                .filter(child -> verifyOs(child, differences))
+                .collect(Collectors.toList());
+
+        Optional<Element> extractCountEl = validChildren.stream()
+                .filter(child -> EXTRACT_COUNT.equals(child.getName()))
+                .findFirst();
+
+        long numExtractElements = validChildren.stream()
+                .filter(child -> child.getName().startsWith(EXTRACTED_RECORD_ELEMENT_PREFIX))
+                .count();
+
+        validateExtractCounts(extractCountEl.orElse(null), numExtractElements, payloadSize, differences);
+
+        for (int i = 0; i < payloadSize; i++) {
+            int extNum = i + 1;
+            Element extel = getChildAnswers(el, EXTRACTED_RECORD_ELEMENT_PREFIX, extNum, differences);
+            if (extel == null) {
+                continue;
+            }
+
+            List<String> childDiffs = new ArrayList<>();
+            diff(extel, extractedChildren.get(i), childDiffs, options);
+
+            String prefix = String.format("extract%d :: ", extNum);
+            childDiffs.stream()
+                    .map(diff -> prefix + diff)
+                    .forEach(differences::add);
+        }
+    }
+
+    protected static void validateExtractCounts(@Nullable Element extractCountEl, long numExtractElements, int payloadSize,
+            List<String> differences) {
+        int extractCount = extractCountEl != null ? NumberUtils.toInt(extractCountEl.getValue(), -1) : -1;
+        if (extractCount > -1) {
+            if (extractCount != payloadSize) {
+                differences
+                        .add(String.format("Expected <extractCount> %d not equal to number of extracts in payload (%d).", extractCount, payloadSize));
+            }
+        } else if (numExtractElements > 0) {
+            if (numExtractElements != payloadSize) {
+                differences.add(String.format("Expected <extract#> count %d not equal to number of extracts in payload (%d).", numExtractElements,
+                        payloadSize));
+            }
+        } else if (payloadSize > 0) {
+            differences.add(String.format("%d extracts in payload with no count in answer xml. Add matching <extractCount>", payloadSize));
+        }
+    }
+
+    protected static void checkStringValue(Element meta, String data, List<String> differences) {
+        Element valueElement = meta.getChild(VALUE);
+        String value = (valueElement != null) ? valueElement.getText() : null;
+        if (value == null || "null".equalsIgnoreCase(value)) {
+            return;
+        }
+
+        String encoding = valueElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
+        String matchMode = (encoding != null && !encoding.isEmpty())
+                ? encoding
+                : meta.getAttributeValue("matchMode", "equals");
+        String key = meta.getChildTextTrim(NAME);
+
+        String truncatedData = truncate(data);
+
+        switch (matchMode.toLowerCase(Locale.getDefault())) {
+            case "equals":
+                if (!Objects.equals(value, data)) {
+                    differences.add(formatErr(meta, key, "does not equal", truncatedData, truncate(value)));
+                }
+                break;
+            case "index":
+            case "contains":
+                if (data == null || !data.contains(value)) {
+                    differences.add(formatErr(meta, key, "does not contain", truncatedData, truncate(value)));
+                }
+                break;
+            case "!index":
+            case "!contains":
+                if (data != null && data.contains(value)) {
+                    differences.add(formatErr(meta, key, "should not contain", truncatedData, truncate(value)));
+                }
+                break;
+            case "match":
+                if (data == null || !data.matches(value)) {
+                    differences.add(formatErr(meta, key, "does not match regex", truncatedData, truncate(value)));
+                }
+                break;
+            case BASE64:
+                try {
+                    value = new String(BASE64_DECODER.decode(value));
+                    if (!Objects.equals(value, data)) {
+                        differences.add(formatErr(meta, key, "Base64 mismatch", truncatedData, truncate(value)));
+                    }
+                } catch (RuntimeException e) {
+                    differences.add(String.format("%s element '%s': Base64 decoding failed.", meta.getName(), key));
+                }
+                break;
+            case "collection":
+                handleCollectionMatch(meta, data, value, key, differences);
+                break;
+            default:
+                differences.add(String.format("Problematic matchMode '%s' for test '%s' in %s", matchMode, key, meta.getName()));
+                break;
+        }
+    }
+
+    protected static void handleCollectionMatch(Element meta, String data, String value, String key, List<String> differences) {
+        Attribute sepAttr = meta.getAttribute("collectionSeparator");
+        String separator = (sepAttr != null) ? sepAttr.getValue() : ",";
+
+        List<String> expectedValues = Arrays.asList((value != null ? value : "").split(separator));
+        List<String> actualValues = Arrays.asList((data != null ? data : "").split(separator));
+
+        if (!CollectionUtils.isEqualCollection(expectedValues, actualValues)) {
+            differences.add(String.format("%s element '%s': collections not equal. Sep: '%s' | Expected: %s, Actual: %s",
+                    meta.getName(), key, separator, expectedValues, actualValues));
+        }
+    }
+
+    protected static boolean verifyOs(Element element, List<String> differences) {
+        Attribute specifiedOs = element.getAttribute("os-release");
+        Attribute specifiedVersion = element.getAttribute("os-version");
+
+        if (specifiedOs == null) {
+            // No OS restriction, safe to run
+            return true;
+        }
+
+        String os = specifiedOs.getValue().toLowerCase(Locale.getDefault());
+        boolean isMatchingOs;
+        switch (os) {
+            case "ubuntu":
+                isMatchingOs = OSReleaseUtil.isUbuntu();
+                break;
+            case "centos":
+                isMatchingOs = OSReleaseUtil.isCentOs();
+                break;
+            case "rhel":
+                isMatchingOs = OSReleaseUtil.isRhel();
+                break;
+            case "mac":
+                isMatchingOs = OSReleaseUtil.isMac();
+                break;
+            default:
+                differences.add(String.format("Unsupported or mistyped os-release target '%s' found in element <%s>",
+                        specifiedOs.getValue(), element.getName()));
+                return false;
+        }
+
+        if (!isMatchingOs) {
+            return false;
+        }
+
+        // Check version match if specified
+        if (specifiedVersion != null) {
+            return specifiedVersion.getValue().equals(OSReleaseUtil.getMajorReleaseVersion());
+        }
+
+        return true;
+    }
+
+    protected static String formatErr(Element meta, String key, String reason, String actual, String expected) {
+        return String.format("%s element '%s' problem: '%s' %s '%s'", meta.getName(), key, actual, reason, expected);
+    }
+
+    protected static String truncate(String input) {
+        return truncate(input, 150);
+    }
+
+    protected static String truncate(String input, int maxLength) {
+        if (input == null || input.length() <= maxLength) {
+            return input;
+        }
+        return input.substring(0, maxLength);
+    }
+
 }

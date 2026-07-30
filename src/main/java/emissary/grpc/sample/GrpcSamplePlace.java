@@ -29,6 +29,15 @@ public class GrpcSamplePlace extends GrpcRoutingPlace {
         super(configs);
     }
 
+    @Override
+    protected boolean retryOnResult(Object response) {
+        if (response instanceof SampleResponse) {
+            ByteString result = ((SampleResponse) response).getResult();
+            return new String(result.toByteArray()).equals("retry");
+        }
+        return false;
+    }
+
     protected SampleRequest generateRequest(IBaseDataObject o) {
         return SampleRequest.newBuilder()
                 .setQuery(ByteString.copyFrom(o.data()))
@@ -48,13 +57,13 @@ public class GrpcSamplePlace extends GrpcRoutingPlace {
     }
 
     public void processEndpointsSequentially(IBaseDataObject o) {
-        hostnameTable.keySet().stream()
+        invokerTable.keySet().stream()
                 .sorted(Comparator.naturalOrder())
                 .forEach(endpoint -> processEndpoint(o, endpoint));
     }
 
     public void processEndpointsInParallel(IBaseDataObject o, @Nullable Function<Throwable, SampleResponse> exceptionally) {
-        Map<String, CompletableFuture<SampleResponse>> futureMap = hostnameTable.keySet().stream()
+        Map<String, CompletableFuture<SampleResponse>> futureMap = invokerTable.keySet().stream()
                 .collect(Collectors.toMap(k -> k, k -> invokeGrpcAsync(
                         k, SampleServiceGrpc::newFutureStub, SampleServiceFutureStub::callSampleService, generateRequest(o))));
         Map<String, SampleResponse> responseMap = CompletableFutureFinalizers.awaitAllAndGet(futureMap, HashMap::new, exceptionally);

@@ -1,8 +1,8 @@
 package emissary.grpc.invoker;
 
+import emissary.grpc.channel.ChannelManager;
 import emissary.grpc.exceptions.GrpcExceptionUtils;
 import emissary.grpc.future.CompletableFutureAdaptors;
-import emissary.grpc.pool.ConnectionFactory;
 import emissary.grpc.retry.RetryHandler;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -10,7 +10,6 @@ import com.google.protobuf.Message;
 import io.grpc.ManagedChannel;
 import io.grpc.stub.AbstractBlockingStub;
 import io.grpc.stub.AbstractFutureStub;
-import org.apache.commons.pool2.ObjectPool;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -19,10 +18,12 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class GrpcInvoker {
+public class GrpcInvoker implements AutoCloseable {
+    private final ChannelManager channelManager;
     private final RetryHandler retryHandler;
 
-    public GrpcInvoker(RetryHandler retryHandler) {
+    public GrpcInvoker(ChannelManager channelManager, RetryHandler retryHandler) {
+        this.channelManager = channelManager;
         this.retryHandler = retryHandler;
     }
 
@@ -31,7 +32,6 @@ public class GrpcInvoker {
      * due to an allowed Exception, the call will be tried again per the configurations set using {@link RetryHandler}. All
      * other Exceptions are thrown on the spot. Will also throw an Exception once max attempts have been reached.
      *
-     * @param channelPool object pool of gRPC connections for a given endpoint
      * @param stubFactory function that creates the appropriate gRPC stub from a {@link ManagedChannel}
      * @param callLogic function that performs the actual gRPC call using the stub and request
      * @param request the protobuf request message to send
@@ -41,17 +41,16 @@ public class GrpcInvoker {
      * @param <S> the gRPC stub type
      */
     public <Q extends Message, R extends Message, S extends AbstractBlockingStub<S>> R invoke(
-            ObjectPool<ManagedChannel> channelPool, Function<ManagedChannel, S> stubFactory,
-            BiFunction<S, Q, R> callLogic, Q request) {
+            Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, R> callLogic, Q request) {
         return retryHandler.execute(() -> {
-            ManagedChannel channel = ConnectionFactory.acquireChannel(channelPool);
+            ManagedChannel channel = channelManager.acquire();
             try {
                 S stub = stubFactory.apply(channel);
                 return callLogic.apply(stub, request);
             } catch (RuntimeException e) {
                 throw GrpcExceptionUtils.toContextualRuntimeException(e);
             } finally {
-                ConnectionFactory.returnChannel(channel, channelPool);
+                channelManager.release(channel);
             }
         });
     }
@@ -61,7 +60,6 @@ public class GrpcInvoker {
      * to an allowed Exception, the call will be tried again per the configurations set using {@link RetryHandler}. All
      * other Exceptions are thrown on the spot. Will also throw an Exception once max attempts have been reached.
      *
-     * @param channelPool object pool of gRPC connections for a given endpoint
      * @param stubFactory function that creates the appropriate gRPC stub from a {@link ManagedChannel}
      * @param callLogic function that performs the actual gRPC call using the stub and request
      * @param request the protobuf request message to send
@@ -71,16 +69,15 @@ public class GrpcInvoker {
      * @param <S> the gRPC stub type
      */
     public <Q extends Message, R extends Message, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeAsync(
-            ObjectPool<ManagedChannel> channelPool, Function<ManagedChannel, S> stubFactory,
-            BiFunction<S, Q, ListenableFuture<R>> callLogic, Q request) {
+            Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, ListenableFuture<R>> callLogic, Q request) {
         AtomicReference<ListenableFuture<R>> listenableRef = new AtomicReference<>();
         CompletionStage<R> stage = retryHandler.executeAsync(() -> {
-            ManagedChannel channel = ConnectionFactory.acquireChannel(channelPool);
+            ManagedChannel channel = channelManager.acquire();
             try {
                 S stub = stubFactory.apply(channel);
                 listenableRef.set(callLogic.apply(stub, request));
                 CompletableFuture<R> completable = CompletableFutureAdaptors.fromListenableFuture(listenableRef.get());
-                return attachHandlingHook(completable, channel, channelPool);
+                return attachHandlingHook(completable, channel);
             } catch (RuntimeException e) {
                 throw GrpcExceptionUtils.toContextualRuntimeException(e);
             }
@@ -95,14 +92,13 @@ public class GrpcInvoker {
      *
      * @param future the future to attach the hook to
      * @param channel the borrowed channel
-     * @param channelPool the pool the channel came from
      * @param <R> response type
      * @return a future with explicit handling logic
      */
-    private static <R extends Message> CompletableFuture<R> attachHandlingHook(
-            CompletableFuture<R> future, ManagedChannel channel, ObjectPool<ManagedChannel> channelPool) {
+    private <R extends Message> CompletableFuture<R> attachHandlingHook(
+            CompletableFuture<R> future, ManagedChannel channel) {
         return future.handle((response, throwable) -> {
-            ConnectionFactory.returnChannel(channel, channelPool);
+            channelManager.release(channel);
             if (throwable == null) {
                 return response;
             }
@@ -143,5 +139,18 @@ public class GrpcInvoker {
             }
         });
         return future;
+    }
+
+    public String getHost() {
+        return channelManager.getHost();
+    }
+
+    public int getPort() {
+        return channelManager.getPort();
+    }
+
+    @Override
+    public void close() {
+        channelManager.close();
     }
 }

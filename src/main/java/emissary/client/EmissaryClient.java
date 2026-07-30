@@ -21,7 +21,7 @@ import org.apache.hc.client5.http.entity.EntityBuilder;
 import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.HttpStatus;
@@ -156,7 +156,7 @@ public class EmissaryClient {
         CONNECTION_MANAGER.setDefaultConnectionConfig(staticConnectionConfig);
 
         staticClient =
-                HttpClientBuilder.create().setConnectionManager(CONNECTION_MANAGER).setDefaultCredentialsProvider(CRED_PROV)
+                HttpClients.custom().setConnectionManager(CONNECTION_MANAGER).setDefaultCredentialsProvider(CRED_PROV)
                         .setDefaultRequestConfig(staticRequestConfig).build();
 
     }
@@ -197,7 +197,7 @@ public class EmissaryClient {
         }
 
         HttpClientContext localContext = HttpClientContext.create();
-        localContext.setAttribute(HttpClientContext.AUTH_CACHE, EmissaryClient.AUTH_CACHE);
+        localContext.setAuthCache(EmissaryClient.AUTH_CACHE);
 
         if (cookie != null) {
             localContext.getCookieStore().addCookie(cookie);
@@ -209,7 +209,7 @@ public class EmissaryClient {
             // to use a different context and request config per request
             method.setConfig(requestConfig);
             CloseableHttpClient thisClient = getHttpClient();
-            return thisClient.execute(method, localContext, new EmissaryResponseHandler());
+            return thisClient.execute(method, localContext, response -> new EmissaryResponseHandler().handleResponse(response));
         } catch (IOException e) {
             LOGGER.debug("Problem processing request:", e);
             BasicClassicHttpResponse response = new BasicClassicHttpResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());

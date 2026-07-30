@@ -352,6 +352,23 @@ class GrpcSamplePlaceTest extends UnitTest {
                 assertTrue(1 >= baselineCounter.get());
             }
         }
+
+        @Test
+        void testRetryResponse() {
+            byte[] retryMessage = "retry".getBytes();
+            byte[] baselineMessage = "baseline".getBytes();
+            try (GrpcSampleServer serverOne = GrpcSampleServer.countTries(ByteString.copyFrom(retryMessage), retryCounter);
+                    GrpcSampleServer serverTwo = GrpcSampleServer.countTries(ByteString.copyFrom(baselineMessage), baselineCounter)) {
+
+                startPlaceWithEndpoints(serverOne, serverTwo, retryConfigs);
+                process(place, o);
+
+                assertArrayEquals(retryMessage, o.getAlternateView(ENDPOINT_1));
+                assertArrayEquals(baselineMessage, o.getAlternateView(ENDPOINT_2));
+                assertEquals(5, retryCounter.get());
+                assertEquals(1, baselineCounter.get());
+            }
+        }
     }
 
     @Nested

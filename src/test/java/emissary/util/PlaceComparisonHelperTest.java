@@ -141,4 +141,72 @@ class PlaceComparisonHelperTest extends UnitTest {
         assertNotNull(PlaceComparisonHelper.checkDifferences(
                 ibdoOldPlace, ibdoForNewPlaceTwoChanges, oldResultsTwoChanges, newResultsTwoChanges, identifier, DIFF_OPTIONS));
     }
+
+
+    @Test
+    void testGetPlaceToCompareWithNoConfiguration() throws Exception {
+        final Configurator configurator1 = ConfigUtil.getConfigInfo(new ByteArrayInputStream(configurationBytes));
+        assertNull(PlaceComparisonHelper.getPlaceToCompare(configurator1),
+                "Place to compare should be null when PLACE_TO_COMPARE is not configured");
+    }
+
+    @Test
+    void testMultipleChildrenComparison() {
+        final IBaseDataObject parentOld = new BaseDataObject();
+        final IBaseDataObject parentNew = new BaseDataObject();
+
+        final List<IBaseDataObject> oldChildren = new ArrayList<>();
+        final List<IBaseDataObject> newChildren = new ArrayList<>();
+
+        // Add multiple children with different data
+        for (int i = 0; i < 3; i++) {
+            final IBaseDataObject oldChild = new BaseDataObject();
+            oldChild.setData(String.format("old-data-%d", i).getBytes());
+            oldChildren.add(oldChild);
+
+            final IBaseDataObject newChild = new BaseDataObject();
+            newChild.setData(String.format("old-data-%d", i).getBytes());
+            newChildren.add(newChild);
+        }
+
+        // Should be no differences
+        assertNull(PlaceComparisonHelper.checkDifferences(
+                parentOld, parentNew, oldChildren, newChildren, "multi-test", DIFF_OPTIONS));
+
+        // Modify one child
+        newChildren.get(1).setData("different-data".getBytes());
+        assertNotNull(PlaceComparisonHelper.checkDifferences(
+                parentOld, parentNew, oldChildren, newChildren, "multi-test", DIFF_OPTIONS));
+    }
+
+    @Test
+    void testChildrenCountMismatch() {
+        final IBaseDataObject parentOld = new BaseDataObject();
+        final IBaseDataObject parentNew = new BaseDataObject();
+
+        final List<IBaseDataObject> oldChildren = new ArrayList<>();
+        final List<IBaseDataObject> newChildren = new ArrayList<>();
+
+        oldChildren.add(new BaseDataObject());
+        oldChildren.add(new BaseDataObject());
+
+        newChildren.add(new BaseDataObject());
+
+        // Different count should result in differences
+        assertNotNull(PlaceComparisonHelper.checkDifferences(
+                parentOld, parentNew, oldChildren, newChildren, "count-test", DIFF_OPTIONS));
+    }
+
+    @Test
+    void testEmptyChildrenLists() {
+        final IBaseDataObject parentOld = new BaseDataObject();
+        final IBaseDataObject parentNew = new BaseDataObject();
+
+        final List<IBaseDataObject> oldChildren = new ArrayList<>();
+        final List<IBaseDataObject> newChildren = new ArrayList<>();
+
+        // Both empty - no differences
+        assertNull(PlaceComparisonHelper.checkDifferences(
+                parentOld, parentNew, oldChildren, newChildren, "empty-test", DIFF_OPTIONS));
+    }
 }

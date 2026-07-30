@@ -25,6 +25,7 @@ import static emissary.core.constants.IbdoXmlElementNames.CLASSIFICATION;
 import static emissary.core.constants.IbdoXmlElementNames.CURRENT_FORM;
 import static emissary.core.constants.IbdoXmlElementNames.DATA;
 import static emissary.core.constants.IbdoXmlElementNames.EXTRACTED_RECORD_ELEMENT_PREFIX;
+import static emissary.core.constants.IbdoXmlElementNames.EXTRACT_COUNT;
 import static emissary.core.constants.IbdoXmlElementNames.FILENAME;
 import static emissary.core.constants.IbdoXmlElementNames.FONT_ENCODING;
 import static emissary.core.constants.IbdoXmlElementNames.FOOTER;
@@ -33,6 +34,7 @@ import static emissary.core.constants.IbdoXmlElementNames.HEADER_ENCODING;
 import static emissary.core.constants.IbdoXmlElementNames.ID;
 import static emissary.core.constants.IbdoXmlElementNames.INDEX;
 import static emissary.core.constants.IbdoXmlElementNames.INITIAL_FORM;
+import static emissary.core.constants.IbdoXmlElementNames.NUM_ATTACHMENTS;
 import static emissary.core.constants.IbdoXmlElementNames.NUM_CHILDREN;
 import static emissary.core.constants.IbdoXmlElementNames.NUM_SIBLINGS;
 import static emissary.core.constants.IbdoXmlElementNames.OUTPUTABLE;
@@ -41,6 +43,7 @@ import static emissary.core.constants.IbdoXmlElementNames.PRIORITY;
 import static emissary.core.constants.IbdoXmlElementNames.PROCESSING_ERROR;
 import static emissary.core.constants.IbdoXmlElementNames.RESULT;
 import static emissary.core.constants.IbdoXmlElementNames.SETUP;
+import static emissary.core.constants.IbdoXmlElementNames.SHORT_NAME;
 import static emissary.core.constants.IbdoXmlElementNames.TRANSACTION_ID;
 import static emissary.core.constants.IbdoXmlElementNames.VIEW;
 import static emissary.core.constants.IbdoXmlElementNames.WORK_BUNDLE_ID;
@@ -102,7 +105,7 @@ public final class IBaseDataObjectXmlHelper {
             final IBaseDataObject childIbdo = DataObjectFactory.getInstance();
             final String childName = answerChild.getName();
 
-            if (childName.startsWith(EXTRACTED_RECORD_ELEMENT_PREFIX)) {
+            if (childName.startsWith(EXTRACTED_RECORD_ELEMENT_PREFIX) && !childName.equalsIgnoreCase(EXTRACT_COUNT)) {
                 parentIbdo.addExtractedRecord(ibdoFromXmlMainElements(answerChild, childIbdo, decoders));
             } else if (childName.startsWith(ATTACHMENT_ELEMENT_PREFIX)) {
                 children.add(ibdoFromXmlMainElements(answerChild, childIbdo, decoders));
@@ -187,18 +190,9 @@ public final class IBaseDataObjectXmlHelper {
 
         xmlFromIbdoMainElements(parent, answersElement, encoders);
 
-        final List<IBaseDataObject> extractedRecords = parent.getExtractedRecords();
-        if (extractedRecords != null) {
-            for (int i = 0; i < extractedRecords.size(); i++) {
-                final IBaseDataObject extractedRecord = extractedRecords.get(i);
-                final Element extractElement = new Element(EXTRACTED_RECORD_ELEMENT_PREFIX);
-                extractElement.setAttribute(INDEX, String.valueOf(i + 1));
+        encoders.integerEncoder.encode(Collections.singletonList(children.size()), answersElement, NUM_ATTACHMENTS);
 
-                xmlFromIbdoMainElements(extractedRecord, extractElement, encoders);
-
-                answersElement.addContent(extractElement);
-            }
-        }
+        xmlFromIbdoExtractedRecords(parent.getExtractedRecords(), encoders, answersElement);
 
         for (int i = 0; i < children.size(); i++) {
             final IBaseDataObject child = children.get(i);
@@ -206,11 +200,31 @@ public final class IBaseDataObjectXmlHelper {
             childElement.setAttribute(INDEX, String.valueOf(i + 1));
 
             xmlFromIbdoMainElements(child, childElement, encoders);
+            xmlFromIbdoExtractedRecords(child.getExtractedRecords(), encoders, childElement);
 
             answersElement.addContent(childElement);
         }
 
         return rootElement;
+    }
+
+    private static void xmlFromIbdoExtractedRecords(final List<IBaseDataObject> extractedRecords, final ElementEncoders encoders,
+            final Element element) {
+        Validate.notNull(encoders, "Required: encoders not null!");
+        Validate.notNull(element, "Required: element not null!");
+
+        if (extractedRecords != null) {
+            encoders.integerEncoder.encode(Collections.singletonList(extractedRecords.size()), element, EXTRACT_COUNT);
+            for (int i = 0; i < extractedRecords.size(); i++) {
+                final IBaseDataObject extractedRecord = extractedRecords.get(i);
+                final Element extractElement = new Element(EXTRACTED_RECORD_ELEMENT_PREFIX);
+                extractElement.setAttribute(INDEX, String.valueOf(i + 1));
+
+                xmlFromIbdoMainElements(extractedRecord, extractElement, encoders);
+
+                element.addContent(extractElement);
+            }
+        }
     }
 
     /**
@@ -247,6 +261,7 @@ public final class IBaseDataObjectXmlHelper {
         encoders.stringEncoder.encode(Collections.singletonList(ibdo.getClassification()), element, CLASSIFICATION);
         encoders.stringEncoder.encode(ibdo.getAllCurrentForms(), element, CURRENT_FORM);
         encoders.stringEncoder.encode(Collections.singletonList(ibdo.getFilename()), element, FILENAME);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.shortName()), element, SHORT_NAME);
         encoders.stringEncoder.encode(Collections.singletonList(ibdo.getFontEncoding()), element, FONT_ENCODING);
         encoders.byteArrayEncoder.encode(Collections.singletonList(ibdo.footer()), element, FOOTER);
         encoders.byteArrayEncoder.encode(Collections.singletonList(ibdo.header()), element, HEADER);

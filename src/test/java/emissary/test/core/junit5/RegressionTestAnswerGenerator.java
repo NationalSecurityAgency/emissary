@@ -6,16 +6,9 @@ import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.io.ResourceReader;
 
-import com.google.errorprone.annotations.ForOverride;
-import jakarta.annotation.Nullable;
-import org.jdom2.Document;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.input.sax.XMLReaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -60,26 +53,6 @@ public class RegressionTestAnswerGenerator extends AnswerGenerator {
             logger.error("Error running test {}", resource, e);
             fail("Unable to generate answer file", e);
         }
-    }
-
-    @Nullable
-    @Override
-    public Document getAnswerDocumentFor(final String resource, final AtomicReference<Class<?>> answerFileClassRef) {
-        try {
-            /* XML builder to read XML answer file in */
-            final Path path = getXmlPath(resource, answerFileClassRef);
-            return path == null ? null : new SAXBuilder(XMLReaders.NONVALIDATING).build(path.toFile());
-        } catch (final JDOMException | IOException e) {
-            // Fail if invalid XML document
-            fail(String.format("No valid answer document provided for %s", resource), e);
-            return null;
-        }
-    }
-
-    @ForOverride
-    @Override
-    protected void tweakInitialIbdoBeforeSerialization(final String resource, final IBaseDataObject initialIbdo) {
-        initialIbdo.clearData();
     }
 
     @Override

@@ -13,7 +13,10 @@ import org.apache.commons.lang3.Validate;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Helper class to use during development of a major refactoring or replacement of a Place.
@@ -126,29 +129,58 @@ public class PlaceComparisonHelper {
         IBaseDataObjectDiffHelper.diff(expectedIbdo, actualIbdo, parentDifferences, options);
         IBaseDataObjectDiffHelper.diff(expectedChildren, actualChildren, identifier, childDifferences, options);
 
-        if (!parentDifferences.isEmpty() || !childDifferences.isEmpty()) {
-            final StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < parentDifferences.size(); i++) {
-                if (i != 0) {
-                    sb.append(StringUtils.LF);
-                }
-                sb.append(identifier).append(": Parent Diff: ");
-                sb.append(parentDifferences.get(i));
-            }
-            if (!parentDifferences.isEmpty() && !childDifferences.isEmpty()) {
-                sb.append(StringUtils.LF);
-            }
-            for (int i = 0; i < childDifferences.size(); i++) {
-                if (i != 0) {
-                    sb.append(StringUtils.LF);
-                }
-                sb.append(identifier).append(": Child Diff: ");
-                sb.append(childDifferences.get(i));
-            }
+        return buildDifferences(parentDifferences, childDifferences, identifier);
+    }
 
-            return sb.toString();
-        }
+    /**
+     * Given two BDOs and results from two processing place runs, compare them and log any differences.
+     *
+     * @param actualIbdo the 'main' BDO that was originally passed in from upstream
+     * @param actualChildren from the 'new' run with the 'actualIbdo' object
+     * @param identifier to highlight any differences in logs
+     * @param options {@link DiffCheckConfiguration} to configure diffing options
+     * @return the string of differences, or null if there aren't any
+     */
+    @Nullable
+    public static String checkDifferences(final IBaseDataObject actualIbdo, final List<IBaseDataObject> actualChildren, final String identifier,
+            final DiffCheckConfiguration options) {
+        Validate.notNull(actualIbdo, "Required: actualIbdo not null");
+        Validate.notNull(actualChildren, "Required: actualChildren not null");
+        Validate.notNull(identifier, "Required: identifier not null");
+        Validate.notNull(options, "Required: options not null");
+        Validate.notNull(options.getLenientExpectationElement(), "Required: LenientExpectationElement not null");
 
-        return null;
+        final List<String> parentDifferences = new ArrayList<>();
+        final List<String> childDifferences = new ArrayList<>();
+        IBaseDataObjectDiffHelper.diff(actualIbdo, actualChildren, identifier, parentDifferences, childDifferences, options);
+
+        return buildDifferences(parentDifferences, childDifferences, identifier);
+    }
+
+    /**
+     * Build the string of differences/errors
+     *
+     * @param parentDifferences differences in the parent ibdo
+     * @param childDifferences differences in the children ibdos
+     * @param identifier to highlight any differences in logs
+     * @return the string of differences, or null if there aren't any
+     */
+    @Nullable
+    private static String buildDifferences(final List<String> parentDifferences,
+            final List<String> childDifferences,
+            final String identifier) {
+
+        Stream<String> parentStream = (parentDifferences == null ? Stream.<String>empty() : parentDifferences.stream())
+                .flatMap(diff -> Arrays.stream(diff.split("\\r?\\n")))
+                .map(line -> identifier + ": Parent Diff: " + line);
+
+        Stream<String> childStream = (childDifferences == null ? Stream.<String>empty() : childDifferences.stream())
+                .flatMap(diff -> Arrays.stream(diff.split("\\r?\\n")))
+                .map(line -> identifier + ": Child Diff: " + line);
+
+        String result = Stream.concat(parentStream, childStream)
+                .collect(Collectors.joining(StringUtils.LF));
+
+        return result.isEmpty() ? null : result;
     }
 }

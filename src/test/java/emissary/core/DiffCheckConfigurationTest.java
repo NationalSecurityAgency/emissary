@@ -131,4 +131,126 @@ class DiffCheckConfigurationTest extends UnitTest {
                 DiffCheckOptions.DETAILED_PARAMETER_DIFF,
                 DiffCheckOptions.KEY_VALUE_PARAMETER_DIFF));
     }
+
+    @Test
+    void testFromConfiguration() {
+        final DiffCheckBuilder originalBuilder = DiffCheckConfiguration.configure();
+        originalBuilder.enableData();
+        originalBuilder.enableTimestamp();
+        originalBuilder.enableDetailedParameterDiff();
+        final DiffCheckConfiguration originalConfig = originalBuilder.build();
+
+        final DiffCheckBuilder copiedBuilder = DiffCheckConfiguration.from(originalConfig);
+        final DiffCheckConfiguration copiedConfig = copiedBuilder.build();
+
+        assertTrue(copiedConfig.checkData());
+        assertTrue(copiedConfig.checkTimestamp());
+        assertFalse(copiedConfig.checkInternalId());
+        assertFalse(copiedConfig.checkTransformHistory());
+        assertTrue(copiedConfig.performDetailedParameterDiff());
+        assertFalse(copiedConfig.performKeyValueParameterDiff());
+    }
+
+    @Test
+    void testStrictMode() {
+        final DiffCheckBuilder builder = DiffCheckConfiguration.configure();
+
+        // Default is strict
+        DiffCheckConfiguration config = builder.build();
+        assertTrue(config.isStrict());
+
+        // Disable strict mode
+        builder.setStrict(false);
+        config = builder.build();
+        assertFalse(config.isStrict());
+
+        // Re-enable strict mode
+        builder.setStrict(true);
+        config = builder.build();
+        assertTrue(config.isStrict());
+    }
+
+    @Test
+    void testOnlyCheckDataFactory() {
+        final DiffCheckConfiguration config = DiffCheckConfiguration.onlyCheckData();
+
+        assertTrue(config.checkData());
+        assertFalse(config.checkTimestamp());
+        assertFalse(config.checkInternalId());
+        assertFalse(config.checkTransformHistory());
+        assertFalse(config.performDetailedParameterDiff());
+        assertFalse(config.performKeyValueParameterDiff());
+        assertEquals(1, config.getEnabled().size());
+    }
+
+    @Test
+    void testMultipleBuilderModifications() {
+        final DiffCheckBuilder builder = DiffCheckConfiguration.configure();
+
+        builder.enableData();
+        builder.enableTimestamp();
+        builder.enableInternalId();
+        builder.enableTransformHistory();
+
+        final DiffCheckConfiguration config1 = builder.build();
+        assertTrue(config1.checkData());
+        assertTrue(config1.checkTimestamp());
+        assertTrue(config1.checkInternalId());
+        assertTrue(config1.checkTransformHistory());
+        assertEquals(4, config1.getEnabled().size());
+
+        // Disable some options
+        builder.disableTimestamp();
+        builder.disableInternalId();
+
+        final DiffCheckConfiguration config2 = builder.build();
+        assertTrue(config2.checkData());
+        assertFalse(config2.checkTimestamp());
+        assertFalse(config2.checkInternalId());
+        assertTrue(config2.checkTransformHistory());
+        assertEquals(2, config2.getEnabled().size());
+    }
+
+    @Test
+    void testMutualExclusivityOfParameterDiffs() {
+        final DiffCheckBuilder builder = DiffCheckConfiguration.configure();
+
+        builder.enableDetailedParameterDiff();
+        DiffCheckConfiguration config = builder.build();
+        assertTrue(config.performDetailedParameterDiff());
+        assertFalse(config.performKeyValueParameterDiff());
+
+        // Enabling key-value should disable detailed
+        builder.enableKeyValueParameterDiff();
+        config = builder.build();
+        assertFalse(config.performDetailedParameterDiff());
+        assertTrue(config.performKeyValueParameterDiff());
+
+        // Enabling detailed should disable key-value
+        builder.enableDetailedParameterDiff();
+        config = builder.build();
+        assertTrue(config.performDetailedParameterDiff());
+        assertFalse(config.performKeyValueParameterDiff());
+    }
+
+    @Test
+    void testCumulativeEnablingAllOptions() {
+        final DiffCheckBuilder builder = DiffCheckConfiguration.configure();
+
+        builder.enableData();
+        builder.enableTimestamp();
+        builder.enableInternalId();
+        builder.enableTransformHistory();
+        builder.enableDetailedParameterDiff();
+
+        final DiffCheckConfiguration config = builder.build();
+
+        assertTrue(config.checkData());
+        assertTrue(config.checkTimestamp());
+        assertTrue(config.checkInternalId());
+        assertTrue(config.checkTransformHistory());
+        assertTrue(config.performDetailedParameterDiff());
+        assertFalse(config.performKeyValueParameterDiff());
+        assertEquals(5, config.getEnabled().size());
+    }
 }

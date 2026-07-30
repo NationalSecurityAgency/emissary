@@ -30,6 +30,10 @@ public final class IbdoXmlElementNames {
      */
     public static final String FILENAME = "filename";
     /**
+     * The XML element name for Short Name.
+     */
+    public static final String SHORT_NAME = "shortName";
+    /**
      * The XML element name for Font Encoding.
      */
     public static final String FONT_ENCODING = "fontEncoding";
@@ -122,25 +126,41 @@ public final class IbdoXmlElementNames {
     // legacy fields
 
     /**
-     * The XML attribute for initial form
+     * The XML element name for initial form
      */
     public static final String INITIAL_FORM = "initialForm";
     /**
-     * The XML attribute index for file type
+     * The XML element name for file type
      */
     public static final String FILE_TYPE = "fileType";
     /**
-     * The XML attribute index for alternate view
+     * The XML element name for alternate view
      */
     public static final String ALT_VIEW = "altView";
     /**
-     * The XML attribute index for input alternate view
+     * The XML element name for input alternate view
      */
     public static final String INPUT_ALT_VIEW = "inputAlternateView";
     /**
-     * The XML attribute index for bad alternate view
+     * The XML element name for bad alternate view
      */
     public static final String BAD_ALT_VIEW = "badAlternateView";
+    /**
+     * The XML element name for number of attachments
+     */
+    public static final String NUM_ATTACHMENTS = "numAttachments";
+    /**
+     * The XML element name for number of extracted records
+     */
+    public static final String EXTRACT_COUNT = "extractCount";
+    /**
+     * The XML element name for no meta assertions.
+     */
+    public static final String NOMETA = "nometa";
+    /**
+     * The XML element name for no view assertions.
+     */
+    public static final String NOVIEW = "noview";
 
 
     private IbdoXmlElementNames() {}

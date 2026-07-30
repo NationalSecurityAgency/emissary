@@ -75,7 +75,7 @@ jobs:
         shell: bash
     steps:
       - name: Checkout repo
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -102,12 +102,12 @@ jobs:
           NEEDS_GET_VERSION_OUTPUTS_RELEASE_VERSION: ${{ needs.get_version.outputs.RELEASE_VERSION }}
 
       - name: Checkout repo
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           java-version: ${{ env.JAVA_VERSION }}
           cache: "maven"
@@ -131,6 +131,8 @@ jobs:
           mvn -B -V -e -ntp release:clean
 
       - name: Release that version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mvn -V -B -e versions:set "-DnewVersion=${RELEASE_VERSION}" -DprocessAllModules -DgenerateBackupPoms=false
           mvn -V -B -e versions:set-scm-tag "-DnewTag=${RELEASE_VERSION}" -DgenerateBackupPoms=false
@@ -177,12 +179,12 @@ jobs:
         shell: bash
     steps:
       - name: Checkout repo
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Set up JDK
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -206,6 +208,8 @@ jobs:
         run: git switch -c "${PR_BRANCH}"
 
       - name: Set the next snapshot version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mvn -B -V -e -ntp versions:set "-DnewVersion=${NEXT_DEV_VERSION}" -DgenerateBackupPoms=false
           mvn -B -V -e -ntp versions:commit
@@ -230,7 +234,7 @@ jobs:
 
       - name: Publish to slack channel via bot token
         id: slack
-        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
+        uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
         with:
           method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}
@@ -263,7 +267,7 @@ jobs:
 
       - name: Publish to slack channel via bot token
         id: slack
-        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
+        uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
         with:
           method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}

@@ -105,6 +105,13 @@ public class GrpcSampleServer implements AutoCloseable {
         });
     }
 
+    public static GrpcSampleServer countTries(ByteString message, AtomicInteger counter) {
+        return GrpcSampleServer.of(request -> {
+            counter.incrementAndGet();
+            return message;
+        });
+    }
+
     @Override
     public void close() {
         server.shutdownNow();
