@@ -29,6 +29,15 @@ public class GrpcSamplePlace extends GrpcRoutingPlace {
         super(configs);
     }
 
+    @Override
+    protected boolean retryOnResult(Object response) {
+        if (response instanceof SampleResponse) {
+            ByteString result = ((SampleResponse) response).getResult();
+            return new String(result.toByteArray()).equals("retry");
+        }
+        return false;
+    }
+
     protected SampleRequest generateRequest(IBaseDataObject o) {
         return SampleRequest.newBuilder()
                 .setQuery(ByteString.copyFrom(o.data()))
