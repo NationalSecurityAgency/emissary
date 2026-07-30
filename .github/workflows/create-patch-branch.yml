@@ -82,6 +82,8 @@ jobs:
   cherry_pick:
     if: ${{ github.event.inputs.cherrypick_commits != '' }}
     needs: patch
+    permissions:
+      contents: write
     uses: ./.github/workflows/cherrypick.yml
     with:
       branch: ${{ needs.patch.outputs.branch }}
