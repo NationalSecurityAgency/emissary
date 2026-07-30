@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
@@ -249,7 +250,26 @@ public class MagicNumber {
      * Tests this magic number against the given data
      */
     public boolean test(byte[] data) {
-        byte[] subject = getElement(data, offset, dataTypeLength);
+        if (data == null) {
+            return false;
+        }
+
+        int actualOffset = (offset == -1) ? 0 : offset;
+
+        // Ensure we have enough data to even check the offset and length
+        if (data.length < (actualOffset + dataTypeLength)) {
+            return false;
+        }
+
+        if (dataType == TYPE_STRING) {
+            byte[] subject = getElement(data, actualOffset, dataTypeLength);
+            if (subject == null) {
+                return false;
+            }
+            return Arrays.equals(subject, value);
+        }
+
+        byte[] subject = getElement(data, actualOffset, dataTypeLength);
         if (subject == null) {
             return false;
         }
@@ -423,6 +443,5 @@ public class MagicNumber {
         }
         return toString(sb, d + 1);
     }
-
 
 }

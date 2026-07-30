@@ -11,7 +11,6 @@ import java.util.List;
 
 public class MagicMath {
 
-    private static final String EMPTYSTRING = "";
     public static final String HEX_PREFIX = "0x";
     private static final String ZERO = "0";
     private static final String PRE_OCT = "0";
@@ -44,7 +43,6 @@ public class MagicMath {
             , -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 // 240
             , -1, -1, -1, -1, -1, -1, -1}; // 250
 
-
     public static String byteArrayToHexString(byte[] b) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < b.length; i++) {
@@ -64,37 +62,107 @@ public class MagicMath {
         }
         while (!chars.isEmpty()) {
             Character c = chars.pop();
-            String val = EMPTYSTRING;
             if (c == '\\') {
                 if (chars.isEmpty()) {
                     array.add(32);
                     break;
                 }
                 Character next = chars.peek();
-                if (literals[next] > 0) {
-                    array.add(literals[next]);
-                    chars.pop();
-                } else if (Character.isDigit(next)) {
-                    int max = 3;
-                    while (!chars.isEmpty() && Character.isDigit(next) && max-- > 0) {
-                        val += chars.pop();
-                        if (!chars.isEmpty()) {
-                            next = chars.peek();
-                        }
+                if (next == '(') {
+                    chars.pop(); // pop '('
+                    StringBuilder countStr = new StringBuilder();
+                    while (!chars.isEmpty() && Character.isDigit(chars.peek())) {
+                        countStr.append(chars.pop());
                     }
-                    array.add(new BigInteger(val, 8));
-                    val = EMPTYSTRING;
-                } else if (next == 'x') {
-                    chars.pop(); // pop the hex symbol
-                    val += chars.pop();
-                    val += chars.pop();
-                    array.add(new BigInteger(val, 16));
-                    val = EMPTYSTRING;
+                    if (!chars.isEmpty() && chars.peek() == ')') {
+                        chars.pop(); // pop ')'
+                        int count = Integer.parseInt(countStr.toString());
+
+                        if (chars.isEmpty()) {
+                            array.add(32);
+                            continue;
+                        }
+
+                        int repeatedByteValue;
+                        if (chars.peek() == '\\') {
+                            chars.pop(); // pop '\'
+                            Character bNext = chars.peek();
+                            if (bNext == null) {
+                                repeatedByteValue = 32;
+                            } else if (literals[bNext] > 0) {
+                                repeatedByteValue = literals[bNext];
+                                chars.pop();
+                            } else if (Character.isDigit(bNext)) {
+                                int max = 3;
+                                StringBuilder octalVal = new StringBuilder();
+                                while (!chars.isEmpty() && Character.isDigit(chars.peek()) && max-- > 0) {
+                                    octalVal.append(chars.pop());
+                                }
+                                repeatedByteValue = new BigInteger(octalVal.toString(), 8).intValue();
+                            } else if (bNext == 'x') {
+                                chars.pop(); // pop 'x'
+                                StringBuilder hexVal = new StringBuilder();
+                                if (!chars.isEmpty()) {
+                                    hexVal.append(chars.pop());
+                                }
+                                if (!chars.isEmpty()) {
+                                    hexVal.append(chars.pop());
+                                }
+                                repeatedByteValue = new BigInteger(hexVal.toString(), 16).intValue();
+                            } else {
+                                repeatedByteValue = (int) bNext;
+                                chars.pop();
+                            }
+                        } else {
+                            repeatedByteValue = (int) chars.pop();
+                        }
+
+                        for (int i = 0; i < count; i++) {
+                            array.add(repeatedByteValue);
+                        }
+                        continue;
+                    } else {
+                        // Malformed repeated byte pattern without closing ')', skip it entirely
+                        continue;
+                    }
                 }
-                continue;
+
+                Character nextByte = chars.peek();
+                int byteValue = -1;
+
+                if (nextByte != null && literals[nextByte] > 0) {
+                    byteValue = literals[nextByte];
+                    chars.pop();
+                } else if (nextByte != null && Character.isDigit(nextByte)) {
+                    int max = 3;
+                    StringBuilder octalVal = new StringBuilder();
+                    while (!chars.isEmpty() && Character.isDigit(chars.peek()) && max-- > 0) {
+                        octalVal.append(chars.pop());
+                    }
+                    byteValue = new BigInteger(octalVal.toString(), 8).intValue();
+                } else if (nextByte != null && nextByte == 'x') {
+                    chars.pop();
+                    StringBuilder hexVal = new StringBuilder();
+                    if (!chars.isEmpty()) {
+                        hexVal.append(chars.pop());
+                    }
+                    if (!chars.isEmpty()) {
+                        hexVal.append(chars.pop());
+                    }
+                    byteValue = new BigInteger(hexVal.toString(), 16).intValue();
+                }
+
+                if (byteValue != -1) {
+                    array.add(byteValue);
+                    continue;
+                }
+
+                array.add((int) c);
+            } else {
+                array.add((int) c);
             }
-            array.add((int) c);
         }
+
         byte[] bytes = new byte[array.size()];
         Iterator<Number> iter = array.iterator();
         for (int i = 0; i < bytes.length; i++) {
