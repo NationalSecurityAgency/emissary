@@ -380,15 +380,15 @@ class MagicNumberTest extends UnitTest {
     @Test
     void testLessEqualByte() throws ParseException {
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 byte <=0x09 FOO");
-        assertFalse(m.test(DatatypeConverter.parseHexBinary("A1")));
-        assertTrue(m.test(DatatypeConverter.parseHexBinary("01")));
-        assertTrue(m.test(DatatypeConverter.parseHexBinary("09")));
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("A1")), "LessEqual than magic operator failed");
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("01")), "LessEqual than magic operator failed");
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("09")), "LessEqual than magic operator failed");
 
         m = MagicNumberFactory.buildMagicNumber("0 byte <=0xF2 FOO");
-        assertTrue(m.test(DatatypeConverter.parseHexBinary("A1")));
-        assertFalse(m.test(DatatypeConverter.parseHexBinary("F8")));
-        assertTrue(m.test(DatatypeConverter.parseHexBinary("91")));
-        assertTrue(m.test(DatatypeConverter.parseHexBinary("F2")));
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("A1")), "LessEqual than magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("F8")), "LessEqual than magic operator failed");
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("91")), "LessEqual than magic operator failed");
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("F2")), "LessEqual than magic operator failed");
     }
 
     @Test
