@@ -1,16 +1,15 @@
 package emissary.util.magic;
 
-import emissary.test.core.junit5.UnitTest;
-
-import jakarta.xml.bind.DatatypeConverter;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-import org.junit.jupiter.api.Test;
-
 import java.util.Arrays;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+
+import emissary.test.core.junit5.UnitTest;
+import jakarta.xml.bind.DatatypeConverter;
 
 class MagicNumberTest extends UnitTest {
 
@@ -389,6 +388,83 @@ class MagicNumberTest extends UnitTest {
         assertFalse(m.test(DatatypeConverter.parseHexBinary("F8")));
         assertTrue(m.test(DatatypeConverter.parseHexBinary("91")));
         assertTrue(m.test(DatatypeConverter.parseHexBinary("F2")));
+    }
+
+    @Test
+    void testRepeatedByteLargeCount() throws ParseException {
+        // Test large repeat count: \(100)\x00
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string \\(100)\\x00 FOO");
+        byte[] expected = new byte[100];
+        assertTrue(m.test(expected), "Large repeat count should match");
+        assertFalse(m.test(new byte[99]), "Large repeat count should not match shorter array");
+    }
+
+    @Test
+    void testRepeatedByteMixedWithNormal() throws ParseException {
+        // Test: \(2)\x41B\(1)\x43 -> AAB C
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string \\(2)\\x41B\\(1)\\x43 FOO");
+        byte[] expected = {0x41, 0x41, 0x42, 0x43};
+        assertTrue(m.test(expected), "Mixed repeat and normal bytes should match");
+        // "AABC" is actually 0x41, 0x41, 0x42, 0x43 which matches the pattern
+        assertTrue(m.test("AABC".getBytes()), "AABC should match AABC pattern");
+        assertFalse(m.test("ABCD".getBytes()), "ABCD should not match AABC pattern");
+    }
+
+    @Test
+    void testRepeatedByteOctalValue() throws ParseException {
+        // Test repeat with octal byte value: \(3)\040 (three spaces)
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string \\(3)\\040 FOO");
+        byte[] expected = {0x20, 0x20, 0x20};
+        assertTrue(m.test(expected), "Repeat with octal value should match");
+    }
+
+    @Test
+    void testRepeatedByteHexValue() throws ParseException {
+        // Test repeat with hex byte value: \(3)\x20 (three spaces)
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string \\(3)\\x20 FOO");
+        byte[] expected = {0x20, 0x20, 0x20};
+        assertTrue(m.test(expected), "Repeat with hex value should match");
+    }
+
+    @Test
+    void testRepeatedByteAtNonZeroOffset() throws ParseException {
+        // Test repeat at offset 1: >1 string \(5)\x41
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("1 string \\(5)\\x41 FOO");
+        byte[] data = new byte[6];
+        Arrays.fill(data, (byte) 0x41);
+        assertTrue(m.test(data), "Repeat at offset should match");
+
+        byte[] wrongFirst = {0x00, 0x41, 0x41, 0x41, 0x41, 0x41};
+        assertTrue(m.test(wrongFirst), "Repeat at offset should match even if first byte differs");
+    }
+
+    @Test
+    void testRepeatedByteMalformedNoByte() throws ParseException {
+        // Test: \(10) - missing byte value after closing paren
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string \\(10) FOO");
+        // This is malformed - no byte value specified, so it should not match
+        assertFalse(m.test(new byte[0]), "Malformed no byte should not match");
+        assertFalse(m.test("anything".getBytes()), "Malformed no byte should not match any data");
+    }
+
+    @Test
+    void testRepeatedByteCountTooLarge() throws ParseException {
+        // Test: \(200)\x00 - count larger than data
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string \\(200)\\x00 FOO");
+        byte[] shortData = new byte[50];
+        assertFalse(m.test(shortData), "Should not match when repeat count exceeds data length");
+    }
+
+
+    @Test
+    void testRepeatedByteWithLiteralAfter() throws ParseException {
+        // Test: \(27)\0\1\0 - 27 zeros followed by literal bytes
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string \\(27)\\0\\1\\0 FOO");
+        byte[] expected = new byte[30];
+        Arrays.fill(expected, 0, 27, (byte) 0x00);
+        expected[27] = 0x01;
+        expected[28] = 0x00;
+        assertTrue(m.test(expected), "27 zeros followed by literal should match");
     }
 
 }
