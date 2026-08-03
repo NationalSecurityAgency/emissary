@@ -1,15 +1,16 @@
 package emissary.util.magic;
 
-import java.util.Arrays;
+import emissary.test.core.junit5.UnitTest;
 
+import jakarta.xml.bind.DatatypeConverter;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
-import emissary.test.core.junit5.UnitTest;
-import jakarta.xml.bind.DatatypeConverter;
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MagicNumberTest extends UnitTest {
 
