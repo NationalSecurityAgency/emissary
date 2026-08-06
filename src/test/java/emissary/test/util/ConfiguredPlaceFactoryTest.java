@@ -252,4 +252,24 @@ class ConfiguredPlaceFactoryTest extends UnitTest {
                 () -> factory.getBuildPlaceException(StartupFailureTestPlace.SomeException.class));
         assertEquals(String.format("Succeeded building %s but expected to throw %s", placeName, exceptionName), e.getMessage());
     }
+
+    @Test
+    void testCopyConstructor() {
+        ConfiguredPlaceFactory<NoConfigFileTestPlace> baseFactory = new ConfiguredPlaceFactory<>(NoConfigFileTestPlace.class,
+                new ConfigEntry(CONSTANT_KEY, CONSTANT_VALUE_1),
+                new ConfigEntry(CONSTANT_KEY, CONSTANT_VALUE_2),
+                new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_1));
+
+        ConfiguredPlaceFactory<NoConfigFileTestPlace> copyFactory = new ConfiguredPlaceFactory<>(baseFactory,
+                new ConfigEntry(VARIABLE_KEY, FACTORY_CONSTRUCTOR_VALUE_2));
+
+        NoConfigFileTestPlace basePlace = baseFactory.buildPlace();
+        NoConfigFileTestPlace copyPlace = copyFactory.buildPlace();
+
+        assertIterableEquals(List.of(CONSTANT_VALUE_1, CONSTANT_VALUE_2), basePlace.getConstantTestConfigs());
+        assertIterableEquals(List.of(FACTORY_CONSTRUCTOR_VALUE_1), basePlace.getVariableTestConfigs());
+
+        assertIterableEquals(List.of(CONSTANT_VALUE_1, CONSTANT_VALUE_2), copyPlace.getConstantTestConfigs());
+        assertIterableEquals(List.of(FACTORY_CONSTRUCTOR_VALUE_2), copyPlace.getVariableTestConfigs());
+    }
 }

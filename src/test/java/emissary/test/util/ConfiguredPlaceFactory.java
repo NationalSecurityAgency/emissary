@@ -41,6 +41,13 @@ public class ConfiguredPlaceFactory<T extends IServiceProviderPlace> {
         addAndReplaceConfigEntries(defaultConfigurator, defaultConfigs);
     }
 
+    public ConfiguredPlaceFactory(ConfiguredPlaceFactory<T> baseFactory, ConfigEntry... defaultConfigs) {
+        this.placeName = baseFactory.placeName;
+        this.placeConstructor = baseFactory.placeConstructor;
+        this.defaultConfigurator = copyConfigurator(baseFactory.defaultConfigurator);
+        addAndReplaceConfigEntries(defaultConfigurator, defaultConfigs);
+    }
+
     private Constructor<T> getPlaceConstructor(Class<T> place) {
         try {
             return place.getDeclaredConstructor(Configurator.class);
