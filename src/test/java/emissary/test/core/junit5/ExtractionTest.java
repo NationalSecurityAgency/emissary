@@ -57,6 +57,7 @@ import static emissary.core.constants.IbdoXmlElementNames.INITIAL_FORM;
 import static emissary.core.constants.IbdoXmlElementNames.INPUT_ALT_VIEW;
 import static emissary.core.constants.IbdoXmlElementNames.SETUP;
 import static emissary.test.core.junit5.AnswerGenerator.fixDisposeRunnables;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -65,7 +66,7 @@ public abstract class ExtractionTest extends UnitTest {
 
     protected static final Logger logger = LoggerFactory.getLogger(ExtractionTest.class);
 
-    private static final byte[] INCORRECT_VIEW_MESSAGE = "This is the incorrect view, the place should not have processed this view".getBytes();
+    private static final byte[] INCORRECT_VIEW_MESSAGE = "This is the incorrect view, the place should not have processed this view".getBytes(UTF_8);
 
     private volatile AnswerGenerator answerGenerator;
 

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SizeIdPlaceTest extends UnitTest {
@@ -48,7 +49,7 @@ class SizeIdPlaceTest extends UnitTest {
     @Test
     void testPayload() throws Exception {
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is a test".getBytes());
+        payload.setData("This is a test".getBytes(UTF_8));
         payload.setCurrentForm("UNKNOWN");
         place.process(payload);
         assertEquals("SIZE_TINY", payload.currentForm(), "Current form set from size");

@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.NonWritableChannelException;
 import java.nio.channels.SeekableByteChannel;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,11 +24,11 @@ class ImmutableChannelFactoryTest extends UnitTest {
         final SeekableByteChannelFactory simbcf = new SeekableByteChannelFactory() {
             @Override
             public SeekableByteChannel create() {
-                return new SeekableInMemoryByteChannel(TEST_STRING.getBytes());
+                return new SeekableInMemoryByteChannel(TEST_STRING.getBytes(UTF_8));
             }
         };
         final SeekableByteChannelFactory sbcf = ImmutableChannelFactory.create(simbcf);
-        final ByteBuffer buff = ByteBuffer.wrap(TEST_STRING.concat(TEST_STRING).getBytes());
+        final ByteBuffer buff = ByteBuffer.wrap(TEST_STRING.concat(TEST_STRING).getBytes(UTF_8));
         try (SeekableByteChannel sbc = sbcf.create()) {
             assertThrows(NonWritableChannelException.class, () -> sbc.write(buff), "Writes aren't allowed to immutable channels");
         }
@@ -44,7 +45,7 @@ class ImmutableChannelFactoryTest extends UnitTest {
 
     @Test
     void testOverrides() throws IOException {
-        final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(TEST_STRING.getBytes());
+        final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(TEST_STRING.getBytes(UTF_8));
         final SeekableByteChannel sbc = ImmutableChannelFactory.create(sbcf).create();
         assertTrue(sbc.isOpen());
         sbc.position(3);
