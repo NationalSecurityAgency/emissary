@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import static emissary.core.constants.Configurations.OUTPUT_FORM;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -54,14 +55,14 @@ class FTestCoordinatePlace extends FunctionalTest {
 
     @Test
     void testProcessing() throws Exception {
-        IBaseDataObject payload = DataObjectFactory.getInstance("test data".getBytes(), "test.dat", place.getPrimaryProxy());
+        IBaseDataObject payload = DataObjectFactory.getInstance("test data".getBytes(UTF_8), "test.dat", place.getPrimaryProxy());
         place.processHeavyDuty(payload);
         assertEquals(config.findStringEntry(OUTPUT_FORM), payload.currentForm(), "Current form must be set by coordinate place");
     }
 
     @Test
     void testProcessingWithResourceTracking() throws Exception {
-        IBaseDataObject payload = DataObjectFactory.getInstance("test data".getBytes(), "test.dat", place.getPrimaryProxy());
+        IBaseDataObject payload = DataObjectFactory.getInstance("test data".getBytes(UTF_8), "test.dat", place.getPrimaryProxy());
         ResourceWatcher rw = new ResourceWatcher();
         place.processHeavyDuty(payload);
         assertEquals(config.findStringEntry(OUTPUT_FORM), payload.currentForm(), "Current form must be set by coordinate place");
