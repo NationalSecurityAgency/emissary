@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * A very simple minded parser implementation that assumes each input channel is one session. This parser has no idea
  * about headers and footers, just the basic session and not much of an idea about that.
@@ -86,7 +88,7 @@ public class SimpleNioParser extends NIOSessionParser {
             if (tmp != null) {
                 String value;
                 if (tmp instanceof PositionRecord) {
-                    value = new String(makeDataSlice((PositionRecord) tmp)).trim();
+                    value = new String(makeDataSlice((PositionRecord) tmp), UTF_8).trim();
                 } else {
                     value = tmp.toString();
                 }
