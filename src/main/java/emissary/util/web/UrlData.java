@@ -5,6 +5,8 @@ import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * The consolidated output from a web page retrieval
  *
@@ -261,7 +263,7 @@ public class UrlData {
                 sb.append(prop.toString());
             }
         }
-        sb.append("\n\n").append(new String(this.theContent)).append("\n");
+        sb.append("\n\n").append(new String(this.theContent, UTF_8)).append("\n");
         return sb;
     }
 

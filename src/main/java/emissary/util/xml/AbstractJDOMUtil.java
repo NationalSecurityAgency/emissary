@@ -24,6 +24,8 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Utilities for dealing with JDOM documents
  */
@@ -87,10 +89,10 @@ public abstract class AbstractJDOMUtil {
             try {
                 isr = new InputStreamReader(bais, charset);
             } catch (UnsupportedEncodingException e) {
-                isr = new InputStreamReader(bais);
+                isr = new InputStreamReader(bais, UTF_8);
             }
         } else {
-            isr = new InputStreamReader(bais);
+            isr = new InputStreamReader(bais, UTF_8);
         }
 
         try {
@@ -123,7 +125,7 @@ public abstract class AbstractJDOMUtil {
         final XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             outputter.output(jdom, os);
-            return os.toString();
+            return os.toString(UTF_8);
         } catch (IOException iox) {
             logger.error("ByteArrayOutputStream exception", iox);
             return null;
@@ -198,11 +200,11 @@ public abstract class AbstractJDOMUtil {
         if ((1.0 * badCount) / (1.0 * s.length()) > 0.1) {
             e.setAttribute("encoding", "base64");
             final Base64 b64 = new Base64();
-            e.addContent(new String(b64.encode(s.getBytes())));
+            e.addContent(new String(b64.encode(s.getBytes(UTF_8)), UTF_8));
         } else if (badCount > 0) {
             e.setAttribute("encoding", "quoted-printable");
             final QuotedPrintableCodec qp = new QuotedPrintableCodec();
-            e.addContent(new String(qp.encode(s.getBytes())));
+            e.addContent(new String(qp.encode(s.getBytes(UTF_8)), UTF_8));
         } else {
             e.addContent(s);
         }

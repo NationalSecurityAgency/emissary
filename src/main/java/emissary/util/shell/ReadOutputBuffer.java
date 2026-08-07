@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class ReadOutputBuffer extends ProcessReader {
 
     private static final Logger logger = LoggerFactory.getLogger(ReadOutputBuffer.class);
@@ -30,10 +32,10 @@ public class ReadOutputBuffer extends ProcessReader {
     public ReadOutputBuffer(final InputStream is, final long maxSize, @Nullable final String charset) {
         this.maxSize = maxSize;
         try {
-            this.br = new BufferedReader(StringUtils.isBlank(charset) ? new InputStreamReader(is) : new InputStreamReader(is, charset));
+            this.br = new BufferedReader(StringUtils.isBlank(charset) ? new InputStreamReader(is, UTF_8) : new InputStreamReader(is, charset));
         } catch (UnsupportedEncodingException e) {
             logger.error("Cannot read output using charset {}, reverting to JVM default", charset);
-            this.br = new BufferedReader(new InputStreamReader(is));
+            this.br = new BufferedReader(new InputStreamReader(is, UTF_8));
         }
     }
 

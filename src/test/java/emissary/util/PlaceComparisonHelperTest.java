@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -161,11 +162,11 @@ class PlaceComparisonHelperTest extends UnitTest {
         // Add multiple children with different data
         for (int i = 0; i < 3; i++) {
             final IBaseDataObject oldChild = new BaseDataObject();
-            oldChild.setData(String.format("old-data-%d", i).getBytes());
+            oldChild.setData(String.format("old-data-%d", i).getBytes(UTF_8));
             oldChildren.add(oldChild);
 
             final IBaseDataObject newChild = new BaseDataObject();
-            newChild.setData(String.format("old-data-%d", i).getBytes());
+            newChild.setData(String.format("old-data-%d", i).getBytes(UTF_8));
             newChildren.add(newChild);
         }
 
@@ -174,7 +175,7 @@ class PlaceComparisonHelperTest extends UnitTest {
                 parentOld, parentNew, oldChildren, newChildren, "multi-test", DIFF_OPTIONS));
 
         // Modify one child
-        newChildren.get(1).setData("different-data".getBytes());
+        newChildren.get(1).setData("different-data".getBytes(UTF_8));
         assertNotNull(PlaceComparisonHelper.checkDifferences(
                 parentOld, parentNew, oldChildren, newChildren, "multi-test", DIFF_OPTIONS));
     }

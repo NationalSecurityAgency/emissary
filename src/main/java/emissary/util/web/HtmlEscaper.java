@@ -3,14 +3,16 @@ package emissary.util.web;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Methods for dealing with escaped HTML as bytes and strings
  */
 public class HtmlEscaper {
 
-    private static final byte[] LT_BYTES = "&lt;".getBytes();
-    private static final byte[] GT_BYTES = "&gt;".getBytes();
-    private static final byte[] AMPERSAND_BYTES = "&amp;".getBytes();
+    private static final byte[] LT_BYTES = "&lt;".getBytes(UTF_8);
+    private static final byte[] GT_BYTES = "&gt;".getBytes(UTF_8);
+    private static final byte[] AMPERSAND_BYTES = "&amp;".getBytes(UTF_8);
 
     /**
      * encode greater than, less than, and ampersand characters in a byte arroy.
@@ -49,7 +51,7 @@ public class HtmlEscaper {
      * @return the escaped string
      */
     public static String escapeHtml(final String s) {
-        return new String(escapeHtml(s.getBytes()));
+        return new String(escapeHtml(s.getBytes(UTF_8)), UTF_8);
     }
 
     /** This class is not meant to be instantiated. */

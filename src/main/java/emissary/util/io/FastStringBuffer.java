@@ -13,6 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * This buffer implementation attempts to improve file creation performance by preventing conversion from byte array to
  * string and then back to byte array for writing to a stream. The append method here accepts byte arrays and strings.
@@ -26,8 +28,8 @@ public class FastStringBuffer extends OutputStream {
     protected static final Logger logger = LoggerFactory.getLogger(FastStringBuffer.class);
 
     public static final int MAX_CACHE_SIZE = 256;
-    private static final byte[] CRBYTES = "\n".getBytes();
-    private static final byte[] CRLFBYTES = "\r\n".getBytes();
+    private static final byte[] CRBYTES = "\n".getBytes(UTF_8);
+    private static final byte[] CRLFBYTES = "\r\n".getBytes(UTF_8);
 
     static final Map<String, byte[]> strings = new HashMap<>(MAX_CACHE_SIZE * 3);
 
@@ -220,7 +222,7 @@ public class FastStringBuffer extends OutputStream {
     @Override
     public String toString() {
         if ((this.myString == null) || (this.myString.length() != this.buffer.length)) {
-            this.myString = new String(this.buffer, 0, this.curPos);
+            this.myString = new String(this.buffer, 0, this.curPos, UTF_8);
         }
         return this.myString;
     }
@@ -299,10 +301,10 @@ public class FastStringBuffer extends OutputStream {
                 logger.debug("Converted data from {} to utf-8", charset);
             } catch (UnsupportedEncodingException uee) {
                 logger.warn("Unable to convert from {}", charset);
-                converted = new String(data, actualStart, actualEnd - actualStart);
+                converted = new String(data, actualStart, actualEnd - actualStart, UTF_8);
             }
         } else {
-            converted = new String(data, actualStart, actualEnd - actualStart);
+            converted = new String(data, actualStart, actualEnd - actualStart, UTF_8);
         }
 
         // Escape the HTML in the converted string
@@ -316,7 +318,7 @@ public class FastStringBuffer extends OutputStream {
             tmp = s.getBytes(charset);
         } catch (UnsupportedEncodingException e) {
             logger.warn("Unsupported encoding:{}", e.getMessage());
-            tmp = s.getBytes();
+            tmp = s.getBytes(UTF_8);
         }
         return tmp;
     }

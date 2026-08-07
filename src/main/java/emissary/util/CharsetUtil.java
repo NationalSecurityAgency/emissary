@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * A collection of utilities for dealing with different character sets in Java. Mainly with the aim of getting to UTF-8.
  * The j* routines generally take Java CharSet names while the non j* routines take derived charset names.
@@ -162,7 +164,7 @@ public class CharsetUtil {
      * @param bArray the input data
      */
     public static char[] byteToCharArray(final byte[] bArray) {
-        final String theContent = new String(bArray);
+        final String theContent = new String(bArray, UTF_8);
         final char[] cArray = theContent.toCharArray();
         return cArray;
     }
@@ -318,7 +320,7 @@ public class CharsetUtil {
             return false;
         }
         final int cpc = value.codePointCount(0, value.length());
-        final int bc = value.getBytes().length;
+        final int bc = value.getBytes(UTF_8).length;
         return cpc != bc;
     }
 

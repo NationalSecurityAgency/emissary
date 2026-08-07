@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,19 +17,19 @@ class LineTokenizerTest extends UnitTest {
 
     @Test
     void testCharset() {
-        LineTokenizer lt = new LineTokenizer((W + "\n").getBytes(), StandardCharsets.UTF_8);
+        LineTokenizer lt = new LineTokenizer((W + "\n").getBytes(UTF_8), StandardCharsets.UTF_8);
         assertEquals(W, lt.nextToken(), "UTF-8 passed through clean");
     }
 
     @Test
     void testStringCharset() {
-        LineTokenizer lt = new LineTokenizer((W + "\n").getBytes(), StandardCharsets.UTF_8);
+        LineTokenizer lt = new LineTokenizer((W + "\n").getBytes(UTF_8), StandardCharsets.UTF_8);
         assertEquals(W, lt.nextToken(), "UTF-8 passed through clean");
     }
 
     @Test
     void testParsing() {
-        LineTokenizer lt = new LineTokenizer("ABC\nDEF\r\nGHI\n\nJKL\r\n\r\nMNO".getBytes());
+        LineTokenizer lt = new LineTokenizer("ABC\nDEF\r\nGHI\n\nJKL\r\n\r\nMNO".getBytes(UTF_8));
         assertEquals(7, lt.countTokens(), "Line counting");
         assertTrue(lt.hasMoreTokens(), "Token setup");
         assertEquals(0, lt.index, "Index should be at the beginning of the string");
@@ -52,7 +53,7 @@ class LineTokenizerTest extends UnitTest {
 
     @Test
     void testParsingWithSpecifiedDelimiter() {
-        LineTokenizer lt = new LineTokenizer("ABC\r\nDEF\r\nGHI\n\nJKL\r\n\r\nMNO".getBytes(), (byte) '\r', StandardCharsets.UTF_8);
+        LineTokenizer lt = new LineTokenizer("ABC\r\nDEF\r\nGHI\n\nJKL\r\n\r\nMNO".getBytes(UTF_8), (byte) '\r', StandardCharsets.UTF_8);
         assertEquals(5, lt.countTokens(), "Line counting");
         assertTrue(lt.hasMoreTokens(), "Token setup");
         assertEquals("ABC", lt.nextToken(), "Line parsing with LF");
@@ -61,7 +62,7 @@ class LineTokenizerTest extends UnitTest {
 
     @Test
     void testParsingWithSpecifiedDelimiterAndStringCharset() {
-        LineTokenizer lt = new LineTokenizer("ABC\r\nDEF\r\nGHI\n\nJKL\r\n\r\nMNO".getBytes(), (byte) '\r', "UTF-8");
+        LineTokenizer lt = new LineTokenizer("ABC\r\nDEF\r\nGHI\n\nJKL\r\n\r\nMNO".getBytes(UTF_8), (byte) '\r', "UTF-8");
         assertEquals(5, lt.countTokens(), "Line counting");
         assertTrue(lt.hasMoreTokens(), "Token setup");
         assertEquals("ABC", lt.nextToken(), "Line parsing with LF");
@@ -70,7 +71,7 @@ class LineTokenizerTest extends UnitTest {
 
     @Test
     void testPushback() {
-        LineTokenizer lt = new LineTokenizer("ABC\nDEF\nGHI\nJKL\n".getBytes());
+        LineTokenizer lt = new LineTokenizer("ABC\nDEF\nGHI\nJKL\n".getBytes(UTF_8));
         assertEquals(4, lt.countTokens(), "Line counting");
         assertEquals("ABC", lt.nextToken(), "First token");
         assertEquals(4, lt.index, "Index should be at the index of 'D'");
