@@ -9,6 +9,7 @@ import org.junit.jupiter.api.condition.JRE;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,7 +51,7 @@ class ComplexUnicodeSamplesTest {
         // SCALAR 5 is 3 UTF8 bytes
         // TOTAL : 17 UTF8 bytes
         assertEquals(17, facepalm.getBytes(StandardCharsets.UTF_8).length);
-        assertEquals(facepalm, new String(facepalm.getBytes(StandardCharsets.UTF_8)));
+        assertEquals(facepalm, new String(facepalm.getBytes(StandardCharsets.UTF_8), UTF_8));
 
         // SCALAR 1 is 4 UTF16 bytes
         // SCALAR 2 is 4 UTF16 bytes

@@ -14,6 +14,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -42,9 +43,9 @@ class FileChannelFactoryTest extends UnitTest {
 
         final ByteBuffer buff = ByteBuffer.allocate(4);
         sbc.read(buff);
-        assertEquals("test", new String(buff.array()));
+        assertEquals("test", new String(buff.array(), UTF_8));
         sbc2.read(buff);
-        assertEquals("test", new String(buff.array()));
+        assertEquals("test", new String(buff.array(), UTF_8));
     }
 
     @Test
@@ -57,14 +58,14 @@ class FileChannelFactoryTest extends UnitTest {
     void testNormalPath() throws IOException {
         final ByteBuffer buff = ByteBuffer.allocate(TEST_STRING.length());
         sbcf.create().read(buff);
-        assertEquals(TEST_STRING, new String(buff.array()));
+        assertEquals(TEST_STRING, new String(buff.array(), UTF_8));
     }
 
     @Test
     void testPositioning() throws IOException {
         final ByteBuffer buff = ByteBuffer.allocate(TEST_STRING.length() - 2);
         sbcf.create().position(2).read(buff);
-        assertEquals(TEST_STRING.substring(2), new String(buff.array()));
+        assertEquals(TEST_STRING.substring(2), new String(buff.array(), UTF_8));
     }
 
     @Test
@@ -79,7 +80,7 @@ class FileChannelFactoryTest extends UnitTest {
     @Test
     void testImmutability() throws IOException {
         final SeekableByteChannel sbc = sbcf.create();
-        final ByteBuffer buff = ByteBuffer.wrap("New data".getBytes());
+        final ByteBuffer buff = ByteBuffer.wrap("New data".getBytes(UTF_8));
         assertThrows(NonWritableChannelException.class, () -> sbc.write(buff), "Can't write to byte channel as it's immutable");
         assertThrows(NonWritableChannelException.class, () -> sbc.truncate(5L), "Can't truncate byte channel as it's immutable");
     }

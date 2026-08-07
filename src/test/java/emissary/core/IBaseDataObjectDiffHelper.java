@@ -55,6 +55,7 @@ import static emissary.core.constants.IbdoXmlElementNames.PARAMETER;
 import static emissary.core.constants.IbdoXmlElementNames.SHORT_NAME;
 import static emissary.core.constants.IbdoXmlElementNames.VALUE;
 import static emissary.core.constants.IbdoXmlElementNames.VIEW;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class IBaseDataObjectDiffHelper {
 
@@ -760,7 +761,7 @@ public class IBaseDataObjectDiffHelper {
                 break;
             case BASE64:
                 try {
-                    value = new String(BASE64_DECODER.decode(value));
+                    value = new String(BASE64_DECODER.decode(value), UTF_8);
                     if (!Objects.equals(value, data)) {
                         differences.add(formatErr(meta, key, "Base64 mismatch", truncatedData, truncate(value)));
                     }
