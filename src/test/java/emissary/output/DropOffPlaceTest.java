@@ -27,6 +27,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -69,7 +70,7 @@ class DropOffPlaceTest extends UnitTest {
     @Test
     void testWithNoValidOutputTypes() throws Exception {
         final IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the data".getBytes());
+        payload.setData("This is the data".getBytes(UTF_8));
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
         final List<IBaseDataObject> payloadList = new ArrayList<>();
@@ -87,7 +88,7 @@ class DropOffPlaceTest extends UnitTest {
         final Logger rootLogger = lc.getLogger(Logger.ROOT_LOGGER_NAME);
 
         ListAppender<ILoggingEvent> appender = new ListAppender<>();
-        byte[] content = "This is the data".getBytes();
+        byte[] content = "This is the data".getBytes(UTF_8);
         String expected = "payload size: " + content.length + " bytes";
 
         try {

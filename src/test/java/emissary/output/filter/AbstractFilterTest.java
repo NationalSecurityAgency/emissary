@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -55,10 +56,10 @@ public class AbstractFilterTest extends UnitTest {
 
     IBaseDataObject getTestPayload(final String filetype, final List<String> altViews) {
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("".getBytes());
+        payload.setData("".getBytes(UTF_8));
         payload.setFileType(filetype);
         payload.setFilename("");
-        altViews.forEach(viewName -> payload.addAlternateView(viewName, "".getBytes()));
+        altViews.forEach(viewName -> payload.addAlternateView(viewName, "".getBytes(UTF_8)));
         return payload;
     }
 
