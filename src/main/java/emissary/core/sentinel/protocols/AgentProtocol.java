@@ -43,8 +43,14 @@ public class AgentProtocol extends Protocol<AgentTracker> {
         try {
             Map<String, String> map = config.findStringMatchMap(ruleId + "_");
             String rule = map.getOrDefault("RULE", AllMaxTime.class.getName());
-            return (Rule<AgentTracker>) Factory.create(rule, ruleId, validate(map.get("PLACE_MATCHER")), map.get("TIME_LIMIT_MINUTES"),
+            Object ruleImpl = Factory.create(rule, ruleId, validate(map.get("PLACE_MATCHER")), map.get("TIME_LIMIT_MINUTES"),
                     map.get("PLACE_THRESHOLD"));
+            if (!(ruleImpl instanceof Rule<?>)) {
+                throw new IOException("Configured rule [" + rule + "] is not a Rule implementation");
+            }
+            @SuppressWarnings("unchecked")
+            Rule<AgentTracker> typedRule = (Rule<AgentTracker>) ruleImpl;
+            return typedRule;
         } catch (NamespaceException e) {
             throw new IOException(e);
         }
