@@ -77,6 +77,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.naming.directory.AttributeInUseException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class EmissaryServer {
 
     /* Default namespace name */
@@ -213,7 +215,7 @@ public class EmissaryServer {
             EmissaryResponse er = new EmissaryClient().send(new HttpGet(envUri));
             String envString = er.getContentString();
             Files.createFile(envsh);
-            Files.write(envsh, envString.getBytes());
+            Files.write(envsh, envString.getBytes(UTF_8));
             LOG.info("Wrote {}", envsh.toAbsolutePath());
             LOG.debug(" with \n{}", envString);
 
