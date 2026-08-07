@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -61,7 +62,7 @@ class PeersCommandIT extends UnitTest {
         captureStdOutAndStdErrAndRunCommand(command);
 
         // verify
-        assertTrue(outContent.toString().endsWith("localhost"));
+        assertTrue(outContent.toString(UTF_8).endsWith("localhost"));
     }
 
     @Test
@@ -77,7 +78,7 @@ class PeersCommandIT extends UnitTest {
         captureStdOutAndStdErrAndRunCommand(command);
 
         // verify
-        assertTrue(outContent.toString().endsWith("remoteHost,remoteHost2"));
+        assertTrue(outContent.toString(UTF_8).endsWith("remoteHost,remoteHost2"));
     }
 
     @Test
@@ -95,7 +96,7 @@ class PeersCommandIT extends UnitTest {
         captureStdOutAndStdErrAndRunCommand(command);
 
         // verify
-        assertTrue(outContent.toString().endsWith(expected));
+        assertTrue(outContent.toString(UTF_8).endsWith(expected));
     }
 
     @Test

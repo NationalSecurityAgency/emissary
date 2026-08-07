@@ -25,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 @Command(description = "Base Command")
 public abstract class BaseCommand implements EmissaryCommand {
     static final Logger LOG = LoggerFactory.getLogger(BaseCommand.class);
@@ -175,7 +177,7 @@ public abstract class BaseCommand implements EmissaryCommand {
             System.setOut(old);
         }
         if (cl != null && code == 2) {
-            throw new ParameterException(cl, baos.toString());
+            throw new ParameterException(cl, baos.toString(UTF_8));
         }
         cmd.setup();
         return cmd;
