@@ -18,6 +18,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class GrpcSampleServer implements AutoCloseable {
     private final Server server;
 
@@ -50,9 +52,9 @@ public class GrpcSampleServer implements AutoCloseable {
     }
 
     private static ByteString success(SampleRequest sampleRequest) {
-        String requestString = new String(sampleRequest.getQuery().toByteArray());
+        String requestString = new String(sampleRequest.getQuery().toByteArray(), UTF_8);
         String responseString = String.format("RPC {\"%s\"} completed successfully", requestString);
-        return ByteString.copyFrom(responseString.getBytes());
+        return ByteString.copyFromUtf8(responseString);
     }
 
     public static GrpcSampleServer defaultBehavior() {

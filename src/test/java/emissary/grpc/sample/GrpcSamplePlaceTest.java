@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,8 +56,8 @@ class GrpcSamplePlaceTest extends UnitTest {
     public static final String ENDPOINT_1 = "EP1";
     public static final String ENDPOINT_2 = "EP2";
     public static final String LOCALHOST = "localhost";
-    private static final byte[] INPUT_DATA = "Data123!".getBytes();
-    private static final byte[] OUTPUT_DATA = "RPC {\"Data123!\"} completed successfully".getBytes();
+    private static final byte[] INPUT_DATA = "Data123!".getBytes(UTF_8);
+    private static final byte[] OUTPUT_DATA = "RPC {\"Data123!\"} completed successfully".getBytes(UTF_8);
 
     @Nullable
     private GrpcSamplePlace place;
@@ -134,8 +135,8 @@ class GrpcSamplePlaceTest extends UnitTest {
 
     @Nested
     class EndpointRoutingTests {
-        private final byte[] endpointOneMessage = "1".getBytes();
-        private final byte[] endpointTwoMessage = "2".getBytes();
+        private final byte[] endpointOneMessage = "1".getBytes(UTF_8);
+        private final byte[] endpointTwoMessage = "2".getBytes(UTF_8);
 
         private ByteString getEndpointOneMessage(SampleRequest ignored) {
             return ByteString.copyFrom(endpointOneMessage);
@@ -355,8 +356,8 @@ class GrpcSamplePlaceTest extends UnitTest {
 
         @Test
         void testRetryResponse() {
-            byte[] retryMessage = "retry".getBytes();
-            byte[] baselineMessage = "baseline".getBytes();
+            byte[] retryMessage = "retry".getBytes(UTF_8);
+            byte[] baselineMessage = "baseline".getBytes(UTF_8);
             try (GrpcSampleServer serverOne = GrpcSampleServer.countTries(ByteString.copyFrom(retryMessage), retryCounter);
                     GrpcSampleServer serverTwo = GrpcSampleServer.countTries(ByteString.copyFrom(baselineMessage), baselineCounter)) {
 

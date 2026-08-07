@@ -21,6 +21,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Connects to an arbitrary external service that implements {@link emissary.grpc.sample.v1.SampleServiceGrpc}.
  */
@@ -33,7 +35,7 @@ public class GrpcSamplePlace extends GrpcRoutingPlace {
     protected boolean retryOnResult(Object response) {
         if (response instanceof SampleResponse) {
             ByteString result = ((SampleResponse) response).getResult();
-            return new String(result.toByteArray()).equals("retry");
+            return new String(result.toByteArray(), UTF_8).equals("retry");
         }
         return false;
     }
