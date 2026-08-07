@@ -28,6 +28,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -109,7 +110,7 @@ class KffMemcachedTest extends UnitTest {
     private static ChecksumResults createSums(KffMemcached mcd) throws NoSuchAlgorithmException {
         List<String> kffalgs = new ArrayList<>();
         kffalgs.add(mcd.getPreferredAlgorithm());
-        return new ChecksumCalculator(kffalgs).digest(TEST_PAYLOAD.getBytes());
+        return new ChecksumCalculator(kffalgs).digest(TEST_PAYLOAD.getBytes(UTF_8));
     }
 
 
