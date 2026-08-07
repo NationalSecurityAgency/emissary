@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static emissary.util.io.LoggingPrintStream.NORMAL_SEPARATOR;
 import static emissary.util.io.LoggingPrintStream.THROWABLE_PREFIX;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -159,7 +160,7 @@ class LoggingPrintStreamTest {
             logger.detachAndStopAllAppenders();
 
         } finally {
-            final String logMessage = baos.toString();
+            final String logMessage = baos.toString(UTF_8);
 
             assertEquals(" INFO emissary.util.io.LoggingPrintStreamTest.testMdcContextMap - MDC_VALUE1 MDC_VALUE2 - STDTEST : MDC_TEST_MESSAGE\n",
                     logMessage);

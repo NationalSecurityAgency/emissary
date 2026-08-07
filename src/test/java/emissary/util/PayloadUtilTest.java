@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,7 +51,7 @@ class PayloadUtilTest extends UnitTest {
 
         // setup
         final String fn = "fname" + Family.SEP + "4";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
         d.appendTransformHistory("BAR.BURP.BURPPLACE.http://example.com:1234/BurpPlace");
@@ -71,7 +72,7 @@ class PayloadUtilTest extends UnitTest {
 
         // setup
         final String fn = "fname";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), fn, Form.UNKNOWN);
         d.setCreationTimestamp(now);
         d.appendTransformHistory("BOGUSKEYELEMENT");
         final String expected = ">>[UNKNOWN]//UNKNOWN//" + now;
@@ -91,7 +92,7 @@ class PayloadUtilTest extends UnitTest {
 
         // setup
         final String fn = "fname" + Family.SEP + "4";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
         d.setCreationTimestamp(now);
@@ -116,7 +117,7 @@ class PayloadUtilTest extends UnitTest {
     void testReducedHistory() {
         // setup
         final String fn = "testReducedHistory";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
         d.appendTransformHistory("TEST.DROPOFFPLACE.http://example.com:1234/DropOffPlace");
@@ -143,7 +144,7 @@ class PayloadUtilTest extends UnitTest {
     void testNoUrlHistory() {
         // setup
         final String fn = "noUrlHistory";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
         d.setCreationTimestamp(Instant.now());
@@ -168,7 +169,7 @@ class PayloadUtilTest extends UnitTest {
     void testHistoryDoesNotReduce() {
         // setup
         final String fn = "noMatch";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
         d.setCreationTimestamp(Instant.now());
@@ -190,7 +191,7 @@ class PayloadUtilTest extends UnitTest {
 
     @Test
     void testNameOfSimpleObject() {
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), "ab/fn", Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), "ab/fn", Form.UNKNOWN);
         assertEquals("fn", PayloadUtil.getName(d), "Name of simple payload is shortname");
     }
 
@@ -198,7 +199,7 @@ class PayloadUtilTest extends UnitTest {
     void testNameOfCollection() {
         final List<IBaseDataObject> list = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), "ab/fn" + i, Form.UNKNOWN);
+            final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), "ab/fn" + i, Form.UNKNOWN);
             list.add(d);
         }
         assertEquals("fn0(3)", PayloadUtil.getName(list), "Name of collection payload is shortname with count");
@@ -218,12 +219,12 @@ class PayloadUtilTest extends UnitTest {
 
     @Test
     void testXmlSerizliaztion() {
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), "testfile", Form.UNKNOWN);
-        d.addAlternateView("AV", "def".getBytes());
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), "testfile", Form.UNKNOWN);
+        d.addAlternateView("AV", "def".getBytes(UTF_8));
         d.putParameter("P", "ghi");
         d.addProcessingError("jkl");
-        d.setHeader("mno".getBytes());
-        d.setFooter("pqr".getBytes());
+        d.setHeader("mno".getBytes(UTF_8));
+        d.setFooter("pqr".getBytes(UTF_8));
         d.appendTransformHistory("stu");
 
         final String xml = PayloadUtil.toXmlString(d);
@@ -297,7 +298,7 @@ class PayloadUtilTest extends UnitTest {
     void testCompactHistory() {
         // setup
         final String fn = "noMatch";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.PLACE_ONE.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.PLACE_TWO.BARPLACE.http://example.com:1234/BarPlace");
         d.appendTransformHistory("BAR.PLACE_THREE.NONEPLACE.http://example.com:1234/NonePlace", true);
@@ -318,7 +319,7 @@ class PayloadUtilTest extends UnitTest {
     void testCompactHistoryFormStack() {
         // setup
         final String fn = "noMatch";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.PLACE_ONE.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("[BAR-UPDATED].PLACE_TWO.BARPLACE.http://example.com:1234/BarPlace");
         d.appendTransformHistory("[BAR].PLACE_THREE.NONEPLACE.http://example.com:1234/NonePlace");
@@ -340,7 +341,7 @@ class PayloadUtilTest extends UnitTest {
     void testCompactHistorySprout() {
         // setup
         final String fn = "noMatch";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.PLACE_ONE.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("*.*.<SPROUT>.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.PLACE_TWO.BARPLACE.http://example.com:1234/BarPlace");
@@ -362,7 +363,7 @@ class PayloadUtilTest extends UnitTest {
     void testShowCompletionInfoEnabled() {
         // setup
         final String fn = "testCompletionInfo";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.setCreationTimestamp(Instant.now());
 
@@ -382,7 +383,7 @@ class PayloadUtilTest extends UnitTest {
     void testShowCompletionInfoDisabled() {
         // setup
         final String fn = "testCompletionInfoOff";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.setCreationTimestamp(Instant.now());
 

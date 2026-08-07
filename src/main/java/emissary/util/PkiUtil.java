@@ -9,11 +9,11 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -25,6 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class PkiUtil {
 
@@ -92,7 +93,7 @@ public class PkiUtil {
         if (password.startsWith(FILE_PRE)) {
             final String pth = password.substring(FILE_PRE.length());
             log.debug("Loading key password from file " + pth);
-            try (BufferedReader r = new BufferedReader(new FileReader(pth))) {
+            try (BufferedReader r = Files.newBufferedReader(Paths.get(pth), UTF_8)) {
                 realPw = r.readLine();
             }
             if (realPw == null) {

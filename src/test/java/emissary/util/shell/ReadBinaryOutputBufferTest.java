@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -19,7 +20,7 @@ class ReadBinaryOutputBufferTest {
             ReadBinaryOutputBuffer buffer = new ReadBinaryOutputBuffer(is, new ByteArrayOutputStream());
             buffer.runImpl();
             buffer.finish();
-            assertArrayEquals("Testing".getBytes(), buffer.getBytes());
+            assertArrayEquals("Testing".getBytes(UTF_8), buffer.getBytes());
             assertNotNull(buffer.getByteStream());
         } catch (Exception e) {
             fail(e);

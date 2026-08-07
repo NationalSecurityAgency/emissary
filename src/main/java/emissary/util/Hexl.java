@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Pretend to be Emacs hexl mode
  */
@@ -60,7 +62,7 @@ public class Hexl {
 
             // end a line
             if (j >= CHARS_PER_LINE) {
-                output.append("  ").append(new String(rhs));
+                output.append("  ").append(new String(rhs, UTF_8));
                 output.append(System.getProperty("line.separator", "\n"));
                 j = 0;
                 lineCount++;
@@ -104,7 +106,7 @@ public class Hexl {
         while (j < CHARS_PER_LINE) {
             rhs[j++] = (byte) ' ';
         }
-        output.append(new String(rhs));
+        output.append(new String(rhs, UTF_8));
 
         return output.toString();
     }
