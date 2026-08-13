@@ -163,7 +163,7 @@ public abstract class BaseCommand implements EmissaryCommand {
             throw new EmissaryException("Cannot construct command", e);
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
+        PrintStream ps = new PrintStream(baos, true, UTF_8);
         PrintStream old = System.out;
         System.setOut(ps);
 
