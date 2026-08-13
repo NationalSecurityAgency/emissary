@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
@@ -82,5 +84,63 @@ class JournalTest extends UnitTest {
     void testEmptyJournal() {
         Journal j = new Journal(tmpDir);
         assertNull(j.getLastEntry(), "Journal Entry should be null");
+    }
+
+    @Test
+    void testSerializeDeserializeNonAscii() {
+        String nonAscii = "föö-文件-😀";
+        JournalEntry entry = new JournalEntry(nonAscii, 12345L);
+
+        ByteBuffer b = ByteBuffer.allocate(1024);
+        entry.serialize(b);
+        b.flip();
+
+        JournalEntry result = JournalEntry.deserialize(b);
+        assertEquals(entry, result, "Journal Entry should have non-ascii values");
+        assertEquals(12345L, result.getOffset());
+    }
+
+    @Test
+    void testSerializeDeserializeAscii() {
+        JournalEntry entry = new JournalEntry("plain-ascii-path", 77L);
+
+        ByteBuffer b = ByteBuffer.allocate(1024);
+        entry.serialize(b);
+        b.flip();
+
+        JournalEntry result = JournalEntry.deserialize(b);
+        assertEquals(entry, result);
+        assertEquals(77L, result.getOffset());
+    }
+
+    @Test
+    void testSerializeUsesByteLengthPrefix() {
+        String nonAscii = "café";
+        JournalEntry entry = new JournalEntry(nonAscii, 0L);
+
+        ByteBuffer b = ByteBuffer.allocate(1024);
+        entry.serialize(b);
+        b.flip();
+
+        int lenPrefix = b.getInt();
+        assertEquals(nonAscii.getBytes(StandardCharsets.UTF_8).length, lenPrefix, "Length should be byte count not char count");
+    }
+
+    @Test
+    void testJournalRoundTripNonAscii() throws Exception {
+        final String uuid = UUID.randomUUID().toString();
+        final String nonAscii = uuid + "-文件-1";
+        try (JournalWriter instance = new JournalWriter(this.tmpDir, uuid)) {
+            instance.write(new JournalEntry(nonAscii, 0));
+            instance.write(new JournalEntry(nonAscii, 500));
+        }
+        try (JournalReader instance = new JournalReader(this.tmpDir.resolve(uuid + Journal.EXT))) {
+            Journal j = instance.getJournal();
+            final List<JournalEntry> entries = j.getEntries();
+            assertEquals(2, entries.size());
+            for (final JournalEntry entry : entries) {
+                assertEquals(nonAscii, entry.getVal(), "JournalEntry should have non-ascii values");
+            }
+        }
     }
 }
