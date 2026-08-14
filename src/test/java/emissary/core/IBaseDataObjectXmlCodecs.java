@@ -60,7 +60,7 @@ public final class IBaseDataObjectXmlCodecs {
     /**
      * New line string to use for normalised XML
      */
-    public static final String BASE64_NEW_LINE_STRING = new String(new byte[] {'\n'}, UTF_8);
+    public static final String BASE64_NEW_LINE_STRING = "\n";
     /**
      * Max width of Base64 char block.
      */

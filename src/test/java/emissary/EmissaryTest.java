@@ -156,8 +156,8 @@ class EmissaryTest extends UnitTest {
         @Override
         // hook in Emissary so we can capture the output
         protected void reconfigureLogHook() {
-            System.setOut(new PrintStream(outContent));
-            System.setErr(new PrintStream(errContent));
+            System.setOut(new PrintStream(outContent, true, UTF_8));
+            System.setErr(new PrintStream(errContent, true, UTF_8));
         }
 
         @Override
