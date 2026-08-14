@@ -9,15 +9,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.StreamTokenizer;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +35,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * This class implements the Configurator interface for services within the Emissary framework.
@@ -202,7 +205,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
 
     protected void readConfigData(final InputStream is, final String filename) throws IOException, ConfigSyntaxException {
-        final Reader r = new BufferedReader(new InputStreamReader(is));
+        final Reader r = new BufferedReader(new InputStreamReader(is, UTF_8));
         final StreamTokenizer in = new StreamTokenizer(r);
         int nextToken = StreamTokenizer.TT_WORD;
         String parmName;
@@ -497,7 +500,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         final String fixedSval = sval.replace('\\', '/');
         logger.debug("Trying to create file {}", fixedSval);
         final File d = new File(fixedSval);
-        FileWriter newFile = null;
+        Writer newFile = null;
         if (!d.exists()) {
             try {
                 // Ensure the directory exists to hold the file
@@ -507,7 +510,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                     return false;
                 }
                 // Create the file in the directory
-                newFile = new FileWriter(d);
+                newFile = Files.newBufferedWriter(d.toPath(), UTF_8);
             } catch (IOException e) {
                 logger.debug("Failed to create file {}", fixedSval, e);
                 return false;
