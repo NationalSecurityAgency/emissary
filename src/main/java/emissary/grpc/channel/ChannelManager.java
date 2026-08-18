@@ -113,25 +113,72 @@ public abstract class ChannelManager implements AutoCloseable {
                 .build();
     }
 
+    /**
+     * Acquires a {@link ManagedChannel} from the manager.
+     *
+     * @return a new {@link ManagedChannel} for gRPC connections
+     */
     public abstract ManagedChannel acquire();
 
+    /**
+     * For use with {@link ChannelManager} implementations that expect channel exclusivity. Tells the manager that a
+     * {@link ManagedChannel} is no longer in use.
+     *
+     * @param channel the channel to release
+     */
     public abstract void release(ManagedChannel channel);
 
+    /**
+     * Shuts down a {@link ManagedChannel} and frees its resources. Must be called on each channel that is acquired.
+     *
+     * @param channel the channel to shut down
+     */
     public abstract void shutdown(ManagedChannel channel);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public abstract void close();
 
+    /**
+     * Returns the configured host name of the gRPC channel
+     *
+     * @return the host name
+     */
     public String getHost() {
         return host;
     }
 
+    /**
+     * Returns the configured port number of the gRPC channel
+     *
+     * @return the port number
+     */
     public int getPort() {
         return port;
     }
 
+    /**
+     * These policies dictate how gRPC distributes remote procedure calls (RPCs) across available backend subchannels
+     * resolved by the name resolver.
+     */
     public enum LoadBalancingPolicy {
-        ROUND_ROBIN("round_robin"), PICK_FIRST("pick_first");
+        /**
+         * Distributes outgoing RPCs sequentially across all available healthy backend subchannels.
+         * <p>
+         * This policy connects to all addresses returned by the name resolver and cycles through them in a round-robin fashion
+         * for each subsequent call. It is ideal for distributing traffic evenly among multiple replicated microservices.
+         */
+        ROUND_ROBIN("round_robin"),
+        /**
+         * Attempts to connect to the first resolved backend address and routes all traffic there.
+         * <p>
+         * This is the default gRPC behavior. The channel tries addresses in the order returned by the name resolver. If a
+         * connection succeeds, all RPCs use that subchannel until the connection fails, at which point it tries the next
+         * available address.
+         */
+        PICK_FIRST("pick_first");
 
         private final String policy;
 
@@ -142,6 +189,17 @@ public abstract class ChannelManager implements AutoCloseable {
         @Override
         public String toString() {
             return policy;
+        }
+    }
+
+    /**
+     * Exception type for failures with handling the gRPC connection pool, such as failed borrows.
+     */
+    public static class ChannelException extends RuntimeException {
+        private static final long serialVersionUID = 3997386404035396614L;
+
+        public ChannelException(String errorMessage, Throwable err) {
+            super(errorMessage, err);
         }
     }
 }

@@ -1,6 +1,8 @@
-package emissary.grpc.channel;
+package emissary.grpc.channel.impl;
 
 import emissary.config.Configurator;
+import emissary.grpc.channel.ChannelManager;
+import emissary.grpc.channel.spi.ChannelManagerProvider;
 
 import io.grpc.ManagedChannel;
 import org.apache.commons.pool2.ObjectPool;
@@ -205,10 +207,23 @@ public class PooledChannelManager extends ChannelManager implements PooledObject
     }
 
     /**
+     * Defines the eviction and access policies for the channel pool.
+     */
+    public enum PoolRetrievalOrdering {
+        /**
+         * Last-In, First-Out (LIFO) order.
+         */
+        LIFO,
+        /**
+         * First-In, First-Out (FIFO) order.
+         */
+        FIFO
+    }
+
+    /**
      * Exception type for failures with handling the gRPC connection pool, such as failed borrows.
      */
-    public static class PoolException extends RuntimeException {
-
+    public static class PoolException extends ChannelException {
         private static final long serialVersionUID = 1495483102825486040L;
 
         public PoolException(String errorMessage, Throwable err) {
@@ -216,7 +231,15 @@ public class PooledChannelManager extends ChannelManager implements PooledObject
         }
     }
 
-    public enum PoolRetrievalOrdering {
-        LIFO, FIFO
+    public static final class Provider implements ChannelManagerProvider {
+        @Override
+        public Class<? extends ChannelManager> type() {
+            return PooledChannelManager.class;
+        }
+
+        @Override
+        public ChannelManager build(String host, int port, Configurator configG) {
+            return new PooledChannelManager(host, port, configG);
+        }
     }
 }

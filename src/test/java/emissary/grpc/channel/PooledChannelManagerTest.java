@@ -3,8 +3,9 @@ package emissary.grpc.channel;
 import emissary.config.ConfigEntry;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
-import emissary.grpc.channel.PooledChannelManager.PoolException;
-import emissary.grpc.channel.PooledChannelManager.PoolRetrievalOrdering;
+import emissary.grpc.channel.impl.PooledChannelManager;
+import emissary.grpc.channel.impl.PooledChannelManager.PoolException;
+import emissary.grpc.channel.impl.PooledChannelManager.PoolRetrievalOrdering;
 import emissary.test.core.junit5.UnitTest;
 
 import io.grpc.ManagedChannel;
@@ -41,7 +42,7 @@ class PooledChannelManagerTest extends UnitTest {
                 new ConfigEntry(PooledChannelManager.RETRIEVAL_ORDER, "ZIFO"))).close();
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, invocation::run);
         assertEquals("No enum constant " +
-                "emissary.grpc.channel.PooledChannelManager.PoolRetrievalOrdering.ZIFO", e.getMessage());
+                "emissary.grpc.channel.impl.PooledChannelManager.PoolRetrievalOrdering.ZIFO", e.getMessage());
     }
 
     @Test
