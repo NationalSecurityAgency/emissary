@@ -310,7 +310,8 @@ class ServiceConfigGuideTest extends UnitTest {
                         + "SZG = \"123g\"\n" + "SZT = \"123t\"\n" + "SZQ = \"red balloons\"\n" + "SZ1 = \"111\"\n" + "SZ2 = \"222\"\n"
                         + "SZ3 = \"333\"\n" + "SZ4 = \"444\"\n" + "SZ5 = \"555\"\n" + "SZ6 = \"666\"\n" + "SZ7 = \"777\"\n" + "SZ8 = \"888\"\n"
                         + "SZ9 = \"999\"\n" + "SZ0 = \"000\"\n" + "STRING = \"chars\"\n" + "LONG2 = 12345678901234\n"
-                        + "OBJECTM = \"MATCH_VALUE\"\n").getBytes();
+                        + "OBJECTM = \"MATCH_VALUE\"\n" + "DOUBLE1 = 0.5\n" + "DOUBLE2 = \"0.5\"\n"
+                        + "DOUBLE3 = \"1.0E7\"\n" + "DOUBLE4 = \"10000000.0\"\n" + "DOUBLE5 = 10000000.0\n").getBytes();
         final ByteArrayInputStream str = new ByteArrayInputStream(configData);
         final Configurator c = ConfigUtil.getConfigInfo(str);
         assertEquals(123, c.findIntEntry("INTEGER", 456), "Int entry with def");
@@ -324,6 +325,12 @@ class ServiceConfigGuideTest extends UnitTest {
         final double d2 = 456;
         assertEquals(d, c.findDoubleEntry("DOUBLE", d2), 0d);
         assertEquals(d2, c.findDoubleEntry("BLUBBER", d2), 0d);
+
+        assertEquals(0.5, c.findDoubleEntry("DOUBLE1", 1.0), "Double entry");
+        assertEquals(0.5, c.findDoubleEntry("DOUBLE2", 1.0), "Double entry");
+        assertEquals(10000000.0, c.findDoubleEntry("DOUBLE3", 1.0), "Double entry");
+        assertEquals(10000000.0, c.findDoubleEntry("DOUBLE4", 1.0), "Double entry");
+        assertEquals(10000000.0, c.findDoubleEntry("DOUBLE5", 1.0), "Double entry");
 
         assertTrue(c.findBooleanEntry("BOOLEANT", false), "Boolean entry");
         assertFalse(c.findBooleanEntry("BOOLEANF", true), "Boolean entry");

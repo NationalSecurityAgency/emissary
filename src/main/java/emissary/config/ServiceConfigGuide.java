@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.StreamTokenizer;
+import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
@@ -234,7 +235,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
             nextToken = in.nextToken();
             if (nextToken == StreamTokenizer.TT_NUMBER) {
-                sval = Long.toString((long) in.nval);
+                sval = BigDecimal.valueOf(in.nval).stripTrailingZeros().toPlainString();
             } else {
                 sval = in.sval;
             }
