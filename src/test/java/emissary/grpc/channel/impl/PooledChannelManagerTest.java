@@ -1,9 +1,8 @@
-package emissary.grpc.channel;
+package emissary.grpc.channel.impl;
 
 import emissary.config.ConfigEntry;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
-import emissary.grpc.channel.impl.PooledChannelManager;
 import emissary.grpc.channel.impl.PooledChannelManager.PoolException;
 import emissary.grpc.channel.impl.PooledChannelManager.PoolRetrievalOrdering;
 import emissary.test.core.junit5.UnitTest;

@@ -43,7 +43,6 @@ class ChannelManagerTest extends UnitTest {
         assertEquals(String.format("Port \"%d\" is outside valid range [1, 65535]", port), e.getMessage());
     }
 
-
     private static class TestChannelManager extends ChannelManager {
         public TestChannelManager(String host, int port) {
             super(host, port, new ServiceConfigGuide());
