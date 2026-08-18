@@ -138,12 +138,39 @@ jobs:
         run: mvn -B -e -ntp "-Dstyle.color=always" site -Pcoverage,pmd
 
   slack-notify:
-    if: ${{ github.event_name == 'push' && github.repository == 'NationalSecurityAgency/emissary' }}
-    needs: build
+    if: ${{ !cancelled() && github.event_name == 'push' && github.repository == 'NationalSecurityAgency/emissary' }}
+    needs: [build, matrix-build, centos7-build, macos-build, site-build]
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
     steps:
+      - name: Gather job results
+        id: job-results
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          jobs_json=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs" --paginate --jq '[.jobs[] | select(.name != "slack-notify")]')
+
+          fields=$(jq -c '
+            map(
+              (if .conclusion == "success" then "✅"
+               elif .conclusion == "failure" then "❌"
+               elif .conclusion == "cancelled" then "⚠️"
+               elif .conclusion == "skipped" then "⏭️"
+               else "❓" end) as $emoji
+              | {
+                  type: "mrkdwn",
+                  text: ($emoji + " *" + .name + "*" + (if .conclusion != "success" then "\n<" + .html_url + "|View logs>" else "" end))
+                }
+            )
+          ' <<< "$jobs_json")
+
+          echo "fields=$fields" >> "$GITHUB_OUTPUT"
+
       - name: Publish to slack channel via bot token
         id: slack
+        env:
+          CI_RESULT: ${{ contains(needs.*.result, 'failure') && 'Failed ❌' || 'Passed ✅' }}
         uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
         with:
           method: chat.postMessage
@@ -152,7 +179,7 @@ jobs:
           payload: |
             {
               "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
-              "text": "emissary-main -- CI Job Status: ${{ join(needs.*.result, ' ')}}",
+              "text": "emissary (${{ github.ref_name }}) -- CI ${{ env.CI_RESULT }}",
               "unfurl_links": false,
               "unfurl_media": false,
               "blocks": [
@@ -160,8 +187,12 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "emissary-main -- Commit: <${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.sha }}> merged by ${{ github.actor }}.\nCI Job Status: *${{ join(needs.*.result, ' ')}}*"
+                    "text": "*emissary* (`${{ github.ref_name }}`) -- CI ${{ env.CI_RESULT }}\nCommit: <${{ github.event.head_commit.url }}|${{ github.sha }}> by ${{ github.actor }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View full run>"
                   }
+                },
+                {
+                  "type": "section",
+                  "fields": ${{ steps.job-results.outputs.fields }}
                 }
               ]
             }
