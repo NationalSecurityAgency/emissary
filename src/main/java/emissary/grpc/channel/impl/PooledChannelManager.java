@@ -122,8 +122,8 @@ public class PooledChannelManager extends ChannelManager implements PooledObject
         try {
             channelPool.returnObject(channel);
         } catch (Exception e) {
+            logger.error("Unable to cleanly return grpc connection channel to the pool: {}", e.getMessage(), e);
             shutdown(channel);
-            throw new PoolException("Unable to cleanly return gRPC connection channel to the pool: " + e.getMessage(), e);
         }
     }
 
@@ -138,7 +138,7 @@ public class PooledChannelManager extends ChannelManager implements PooledObject
         try {
             channelPool.invalidateObject(channel);
         } catch (Exception e) {
-            throw new PoolException("Unable to invalidate existing grpc connection: " + e.getMessage(), e);
+            logger.error("Unable to invalidate existing grpc connection: {}", e.getMessage(), e);
         }
     }
 
