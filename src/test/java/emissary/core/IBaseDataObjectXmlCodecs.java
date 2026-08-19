@@ -47,6 +47,7 @@ import static emissary.core.constants.IbdoXmlElementNames.PRIORITY;
 import static emissary.core.constants.IbdoXmlElementNames.PROCESSING_ERROR;
 import static emissary.core.constants.IbdoXmlElementNames.VALUE;
 import static emissary.core.constants.IbdoXmlElementNames.VIEW;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * This class contains the interfaces and implementations used to convert an IBDO-&gt;XML and XML-&gt;IBDO.
@@ -59,7 +60,7 @@ public final class IBaseDataObjectXmlCodecs {
     /**
      * New line string to use for normalised XML
      */
-    public static final String BASE64_NEW_LINE_STRING = new String(new byte[] {'\n'});
+    public static final String BASE64_NEW_LINE_STRING = "\n";
     /**
      * Max width of Base64 char block.
      */
@@ -451,7 +452,7 @@ public final class IBaseDataObjectXmlCodecs {
             final Element valueElement = element.getChild(VALUE);
             final String value = valueElement.getValue();
             final String valueEncoding = valueElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
-            final String valueDecoded = new String(extractBytes(valueEncoding, value));
+            final String valueDecoded = new String(extractBytes(valueEncoding, value), UTF_8);
 
             method.accept(ibdo, new ImmutablePair<>(nameDecoded, valueDecoded));
         }

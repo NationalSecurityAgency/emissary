@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -137,11 +138,11 @@ class EmissaryTest extends UnitTest {
         final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
 
         public String getOut() {
-            return outContent.toString();
+            return outContent.toString(UTF_8);
         }
 
         public String getErr() {
-            return errContent.toString();
+            return errContent.toString(UTF_8);
         }
 
         protected Emissary2() {
@@ -155,8 +156,8 @@ class EmissaryTest extends UnitTest {
         @Override
         // hook in Emissary so we can capture the output
         protected void reconfigureLogHook() {
-            System.setOut(new PrintStream(outContent));
-            System.setErr(new PrintStream(errContent));
+            System.setOut(new PrintStream(outContent, true, UTF_8));
+            System.setErr(new PrintStream(errContent, true, UTF_8));
         }
 
         @Override
@@ -166,7 +167,7 @@ class EmissaryTest extends UnitTest {
 
         public void addReturnCodeToOutContent(String retOutput) {
             try {
-                outContent.write(retOutput.getBytes());
+                outContent.write(retOutput.getBytes(UTF_8));
             } catch (IOException e) {
                 fail("OutContent should never throw IOException", e);
             }
