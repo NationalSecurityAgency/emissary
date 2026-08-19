@@ -23,16 +23,16 @@ import java.util.function.Supplier;
  * <p>
  * Configuration Keys:
  * <ul>
- * <li>{@code GRPC_CHANNEL_POOL_BLOCK_EXHAUSTED} - If {@code true}, threads block when pool is empty, otherwise throws
+ * <li>{@code GRPC_POOL_BLOCK_EXHAUSTED} - If {@code true}, threads block when pool is empty, otherwise throws
  * an Exception, default={@code true}</li>
- * <li>{@code GRPC_CHANNEL_POOL_ERODING_FACTOR} - Optional shrink rate for idle connections, default={@code -1.0f}</li>
- * <li>{@code GRPC_CHANNEL_POOL_MAX_BORROW_WAIT_MILLIS} - Time to wait before failing a borrow attempt,
+ * <li>{@code GRPC_POOL_ERODING_FACTOR} - Optional shrink rate for idle connections, default={@code -1.0f}</li>
+ * <li>{@code GRPC_POOL_MAX_BORROW_WAIT_MILLIS} - Time to wait before failing a borrow attempt,
  * default={@code 10000L}</li>
- * <li>{@code GRPC_CHANNEL_POOL_MAX_IDLE_CONNECTIONS} - Maximum idle connections in the pool, default={@code 8}</li>
- * <li>{@code GRPC_CHANNEL_POOL_MAX_SIZE} - Maximum total connections allowed, default={@code 8}</li>
- * <li>{@code GRPC_CHANNEL_POOL_MIN_IDLE_CONNECTIONS} - Minimum idle connections in the pool, default={@code 0}</li>
- * <li>{@code GRPC_CHANNEL_POOL_RETRIEVAL_ORDER} - Whether pool behaves LIFO or FIFO, default={@code "LIFO"}</li>
- * <li>{@code GRPC_CHANNEL_POOL_TEST_BEFORE_BORROW} - If {@code true}, validates pooled connections before use with
+ * <li>{@code GRPC_POOL_MAX_IDLE_CONNECTIONS} - Maximum idle connections in the pool, default={@code 8}</li>
+ * <li>{@code GRPC_POOL_MAX_SIZE} - Maximum total connections allowed, default={@code 8}</li>
+ * <li>{@code GRPC_POOL_MIN_IDLE_CONNECTIONS} - Minimum idle connections in the pool, default={@code 0}</li>
+ * <li>{@code GRPC_POOL_RETRIEVAL_ORDER} - Whether pool behaves LIFO or FIFO, default={@code "LIFO"}</li>
+ * <li>{@code GRPC_POOL_TEST_BEFORE_BORROW} - If {@code true}, validates pooled connections before use with
  * {@link #validateObject(PooledObject)}, default={@code false}</li>
  * </ul>
  */

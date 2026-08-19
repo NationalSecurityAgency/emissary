@@ -16,17 +16,17 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Configuration Keys:
  * <ul>
- * <li>{@code GRPC_CHANNEL_KEEP_ALIVE_MILLIS} - Time to wait before sending a ping on idle, default={@code 60000L}</li>
- * <li>{@code GRPC_CHANNEL_KEEP_ALIVE_TIMEOUT_MILLIS} - Timeout for receiving ping ACKs, default={@code 30000L}</li>
- * <li>{@code GRPC_CHANNEL_KEEP_ALIVE_WITHOUT_CALLS} - Send pings even when no RPCs are active if {@code true},
+ * <li>{@code GRPC_KEEP_ALIVE_MILLIS} - Time to wait before sending a ping on idle, default={@code 60000L}</li>
+ * <li>{@code GRPC_KEEP_ALIVE_TIMEOUT_MILLIS} - Timeout for receiving ping ACKs, default={@code 30000L}</li>
+ * <li>{@code GRPC_KEEP_ALIVE_WITHOUT_CALLS} - Send pings even when no RPCs are active if {@code true},
  * default={@code false}</li>
- * <li>{@code GRPC_CHANNEL_LOAD_BALANCING_POLICY} - gRPC load balancing policy, default={@code "round_robin"}</li>
- * <li>{@code GRPC_CHANNEL_MAX_INBOUND_MESSAGE_BYTE_SIZE} - Max inbound gRPC message size, default={@code 4194304}</li>
- * <li>{@code GRPC_CHANNEL_MAX_INBOUND_METADATA_BYTE_SIZE} - Max inbound gRPC metadata size, default={@code 8192}</li>
+ * <li>{@code GRPC_LOAD_BALANCING_POLICY} - gRPC load balancing policy, default={@code "round_robin"}</li>
+ * <li>{@code GRPC_MAX_INBOUND_MESSAGE_BYTE_SIZE} - Max inbound gRPC message size, default={@code 4194304}</li>
+ * <li>{@code GRPC_MAX_INBOUND_METADATA_BYTE_SIZE} - Max inbound gRPC metadata size, default={@code 8192}</li>
  * </ul>
  */
 public abstract class ChannelManager implements AutoCloseable {
-    public static final String GRPC_CHANNEL_PREFIX = "GRPC_CHANNEL_";
+    public static final String GRPC_CHANNEL_PREFIX = "GRPC_";
     public static final String KEEP_ALIVE_MILLIS = GRPC_CHANNEL_PREFIX + "KEEP_ALIVE_MILLIS";
     public static final String KEEP_ALIVE_TIMEOUT_MILLIS = GRPC_CHANNEL_PREFIX + "KEEP_ALIVE_TIMEOUT_MILLIS";
     public static final String KEEP_ALIVE_WITHOUT_CALLS = GRPC_CHANNEL_PREFIX + "KEEP_ALIVE_WITHOUT_CALLS";
