@@ -23,8 +23,8 @@ import java.util.function.Supplier;
  * <p>
  * Configuration Keys:
  * <ul>
- * <li>{@code GRPC_POOL_BLOCK_EXHAUSTED} - If {@code true}, threads block when pool is empty, otherwise throws
- * an Exception, default={@code true}</li>
+ * <li>{@code GRPC_POOL_BLOCK_EXHAUSTED} - If {@code true}, threads block when pool is empty, otherwise throws an
+ * Exception, default={@code true}</li>
  * <li>{@code GRPC_POOL_ERODING_FACTOR} - Optional shrink rate for idle connections, default={@code -1.0f}</li>
  * <li>{@code GRPC_POOL_MAX_BORROW_WAIT_MILLIS} - Time to wait before failing a borrow attempt,
  * default={@code 10000L}</li>
@@ -122,7 +122,7 @@ public class PooledChannelManager extends ChannelManager implements PooledObject
         try {
             channelPool.returnObject(channel);
         } catch (Exception e) {
-            logger.error("Unable to cleanly return grpc connection channel to the pool: {}", e.getMessage(), e);
+            logger.error("Unable to cleanly return gRPC connection channel to the pool: {}", e.getMessage(), e);
             shutdown(channel);
         }
     }
@@ -138,7 +138,7 @@ public class PooledChannelManager extends ChannelManager implements PooledObject
         try {
             channelPool.invalidateObject(channel);
         } catch (Exception e) {
-            logger.error("Unable to invalidate existing grpc connection: {}", e.getMessage(), e);
+            logger.error("Unable to invalidate existing gRPC connection: {}", e.getMessage(), e);
         }
     }
 

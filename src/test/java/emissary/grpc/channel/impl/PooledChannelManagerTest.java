@@ -7,8 +7,15 @@ import emissary.grpc.channel.impl.PooledChannelManager.PoolException;
 import emissary.grpc.channel.impl.PooledChannelManager.PoolRetrievalOrdering;
 import emissary.test.core.junit5.UnitTest;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import io.grpc.ManagedChannel;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -21,6 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PooledChannelManagerTest extends UnitTest {
+    private Logger logbackLogger;
+    private ListAppender<ILoggingEvent> listAppender;
 
     private static PooledChannelManager newChannelManager(Configurator configT) {
         return new PooledChannelManager("localhost", 1234, configT);
@@ -33,6 +42,20 @@ class PooledChannelManagerTest extends UnitTest {
         configT.addEntry(PooledChannelManager.MAX_IDLE_CONNECTIONS, "2");
         configT.addEntry(PooledChannelManager.MAX_SIZE, "2");
         return configT;
+    }
+
+    @BeforeEach
+    void setUpLogCapture() {
+        logbackLogger = (Logger) LoggerFactory.getLogger(PooledChannelManager.class);
+        listAppender = new ListAppender<>();
+        listAppender.start();
+        logbackLogger.addAppender(listAppender);
+    }
+
+    @AfterEach
+    void tearDownLogCapture() {
+        logbackLogger.detachAppender(listAppender);
+        listAppender.stop();
     }
 
     @Test
@@ -95,11 +118,14 @@ class PooledChannelManagerTest extends UnitTest {
 
             assertFalse(channel.isShutdown());
 
-            PoolException e = assertThrows(PoolException.class, () -> manager.release(channel));
+            manager.release(channel);
 
             assertTrue(channel.isShutdown());
+
+            ILoggingEvent log = listAppender.list.get(0);
+            assertEquals(Level.ERROR, log.getLevel());
             assertEquals("Unable to cleanly return gRPC connection channel to the pool: " +
-                    "Object has already been returned to this pool or is invalid", e.getMessage());
+                    "Object has already been returned to this pool or is invalid", log.getFormattedMessage());
         }
     }
 
@@ -114,9 +140,12 @@ class PooledChannelManagerTest extends UnitTest {
 
             assertTrue(channel.isShutdown());
 
-            PoolException e = assertThrows(PoolException.class, () -> manager.shutdown(channel));
-            assertEquals("Unable to invalidate existing grpc connection: " +
-                    "Invalidated object not currently part of this pool", e.getMessage());
+            manager.shutdown(channel);
+
+            ILoggingEvent log = listAppender.list.get(0);
+            assertEquals(Level.ERROR, log.getLevel());
+            assertEquals("Unable to invalidate existing gRPC connection: " +
+                    "Invalidated object not currently part of this pool", log.getFormattedMessage());
         }
     }
 

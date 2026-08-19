@@ -130,8 +130,8 @@ public abstract class ChannelManager implements AutoCloseable {
 
     /**
      * Shuts down a {@link ManagedChannel} and frees its resources. Must be called on each channel at the end of its
-     * lifecycle to prevent memory leaks. If left open, channels retain active thread pools, TCP connections, and
-     * internal buffers.
+     * lifecycle to prevent memory leaks. If left open, channels retain active thread pools, TCP connections, and internal
+     * buffers.
      *
      * @param channel the channel to shut down
      */
