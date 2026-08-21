@@ -20,6 +20,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,8 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class KffDataObjectHandlerTest extends UnitTest {
-    static final byte[] DATA = "This is a test".getBytes();
-    static final SeekableByteChannelFactory SBC_DATA = SeekableByteChannelHelper.memory("This is a test".getBytes());
+    static final byte[] DATA = "This is a test".getBytes(UTF_8);
+    static final SeekableByteChannelFactory SBC_DATA = SeekableByteChannelHelper.memory("This is a test".getBytes(UTF_8));
 
     // echo -n "This is a test" | openssl sha1
     static final String DATA_SHA1 = "a54d88e06612d820bc3be72877c74f257b561b19";
@@ -231,7 +232,7 @@ class KffDataObjectHandlerTest extends UnitTest {
         assertNull(payload.getParameterAsString(KffDataObjectHandler.MD5_ORIGINAL),
                 "MD5_ORIGINAL should only be populated if hashing more than once and data has changed");
 
-        payload.setData("This is a changed data".getBytes());
+        payload.setData("This is a changed data".getBytes(UTF_8));
         // hash again, to see the effect on the hash-related params.
         // none of the parameters should have a duplicated value
 
