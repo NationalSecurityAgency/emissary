@@ -13,6 +13,8 @@ import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * A simple base class for doing data type identification This simple implementation can only match constant strings
  * against data. The things to match are read from a config file
@@ -65,9 +67,9 @@ public class DataIdentifier {
      */
     protected String getTestString(byte[] data, int limit) {
         if (data.length < limit) {
-            return new String(data);
+            return new String(data, UTF_8);
         }
-        return new String(data, 0, limit);
+        return new String(data, 0, limit, UTF_8);
     }
 
     /**
@@ -87,7 +89,7 @@ public class DataIdentifier {
      */
     public String identify(byte[] data) {
         for (Map.Entry<String, String> entry : typesMap.entrySet()) {
-            byte[] pattern = entry.getValue().getBytes();
+            byte[] pattern = entry.getValue().getBytes(UTF_8);
             if (data.length < pattern.length) {
                 continue;
             }
