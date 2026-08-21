@@ -5,6 +5,8 @@ import jakarta.annotation.Nullable;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Journal Entry containing a value, generally a file name, and an offset.
  */
@@ -14,7 +16,7 @@ public final class JournalEntry {
     long offset;
 
     public JournalEntry(final String val, final long offset) {
-        if (val == null || val.length() > 512) {
+        if (val == null || val.getBytes(UTF_8).length > 512) {
             throw new IllegalArgumentException("Val must be present and cannot exceed 512 bytes");
         }
         this.val = val;
@@ -22,9 +24,10 @@ public final class JournalEntry {
     }
 
     void serialize(final ByteBuffer b) {
-        b.putInt(this.val.length());
+        final byte[] valBytes = this.val.getBytes(UTF_8);
+        b.putInt(valBytes.length);
         b.put(SEP);
-        b.put(this.val.getBytes());
+        b.put(valBytes);
         b.put(SEP);
         b.putLong(this.offset);
     }
