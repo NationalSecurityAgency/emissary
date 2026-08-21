@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * A collection of utilities for dealing with different character sets in Java. Mainly with the aim of getting to UTF-8.
  * The j* routines generally take Java CharSet names while the non j* routines take derived charset names.
@@ -116,11 +118,11 @@ public class CharsetUtil {
                 } catch (UnsupportedEncodingException uee) {
                     logger.warn("Unable to convert to " + charSet);
                     // Convert from Byte Array to Char Array...
-                    cbuffer = byteToCharArray(byteArray, start, actualEnd);
+                    cbuffer = bytesToLatin1Chars(byteArray, start, actualEnd);
                 }
             } else {
                 // Convert from Byte Array to Char Array...
-                cbuffer = byteToCharArray(byteArray, start, actualEnd);
+                cbuffer = bytesToLatin1Chars(byteArray, start, actualEnd);
             }
         }
 
@@ -157,24 +159,26 @@ public class CharsetUtil {
     }
 
     /**
-     * Convert bytes to chars using platform default encoding
+     * Convert bytes to chars as UTF-8
      *
      * @param bArray the input data
      */
     public static char[] byteToCharArray(final byte[] bArray) {
-        final String theContent = new String(bArray);
+        final String theContent = new String(bArray, UTF_8);
         final char[] cArray = theContent.toCharArray();
         return cArray;
     }
 
     /**
-     * Convert bytes to chars using platform default encoding with begin and end points
+     * Convert bytes to chars using a Latin-1 style one-to-one mapping. Each byte becomes a single char with the value
+     * {@code byte & 0xFF} (0-255). This is a byte-preserving passthrough used as a fallback when no usable charset is
+     * available.
      *
      * @param bArray the input data
      * @param start byte index into input to start copy
      * @param end byte index into input to end copy or -1 for end
      */
-    private static char[] byteToCharArray(final byte[] bArray, final int start, final int end) {
+    private static char[] bytesToLatin1Chars(final byte[] bArray, final int start, final int end) {
         final int len = (end == -1 ? bArray.length : (bArray.length < end) ? bArray.length : end) - start;
         final char[] cArray = new char[len];
 
@@ -318,7 +322,7 @@ public class CharsetUtil {
             return false;
         }
         final int cpc = value.codePointCount(0, value.length());
-        final int bc = value.getBytes().length;
+        final int bc = value.getBytes(UTF_8).length;
         return cpc != bc;
     }
 

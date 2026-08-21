@@ -4,20 +4,22 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class SocketUtils {
 
     public static final String RCS_ID = "$Id$";
 
     public static void sendString(String str, DataOutputStream os) throws IOException {
         os.writeInt(str.length());
-        os.write(str.getBytes(), 0, str.length());
+        os.write(str.getBytes(UTF_8), 0, str.length());
     }
 
     public static String readString(DataInputStream is) throws IOException {
         int contentSize = is.readInt();
         byte[] theContent = new byte[contentSize];
         is.readFully(theContent);
-        return new String(theContent);
+        return new String(theContent, UTF_8);
     }
 
     public static void sendByteArray(byte[] bb, DataOutputStream os) throws IOException {

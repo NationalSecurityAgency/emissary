@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import static emissary.log.MDCConstants.SERVICE_LOCATION;
 import static emissary.log.MDCConstants.SHORT_NAME;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ProcessReaderTest extends UnitTest {
@@ -91,7 +92,7 @@ class ProcessReaderTest extends UnitTest {
             objectUnderTest.join();
 
             String expected = String.format(FORMAT_PATTERN, SOME_NAME, SOME_LOCATION, SOME_MESSAGE);
-            assertEquals(expected, outputStream.toString());
+            assertEquals(expected, outputStream.toString(UTF_8));
         }
     }
 
@@ -109,7 +110,7 @@ class ProcessReaderTest extends UnitTest {
             objectUnderTest.join();
 
             String expected = String.format(FORMAT_PATTERN, NOT_SET, NOT_SET, SOME_MESSAGE);
-            assertEquals(expected, outputStream.toString());
+            assertEquals(expected, outputStream.toString(UTF_8));
         }
     }
 

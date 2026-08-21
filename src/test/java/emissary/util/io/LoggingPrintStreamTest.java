@@ -159,7 +159,7 @@ class LoggingPrintStreamTest {
             logger.detachAndStopAllAppenders();
 
         } finally {
-            final String logMessage = baos.toString();
+            final String logMessage = baos.toString(UTF_8);
 
             assertEquals(" INFO emissary.util.io.LoggingPrintStreamTest.testMdcContextMap - MDC_VALUE1 MDC_VALUE2 - STDTEST : MDC_TEST_MESSAGE\n",
                     logMessage);
