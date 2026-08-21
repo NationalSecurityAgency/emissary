@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * DropOffPlace manages the output from the system It has evolved into a controller of sorts with way too many options,
  * that controls which types of output are desired and called the appropriate output helper for the desired output.
@@ -342,7 +344,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
         for (int i = 0; i < tData.currentFormSize(); i++) {
             final String cf = tData.currentFormAt(i);
             if (this.elideContentForms.contains(cf)) {
-                tData.setData(("[[ " + tData.getAllCurrentForms() + " content elided in DropOffPlace. ]]").getBytes());
+                tData.setData(("[[ " + tData.getAllCurrentForms() + " content elided in DropOffPlace. ]]").getBytes(UTF_8));
             }
         }
 

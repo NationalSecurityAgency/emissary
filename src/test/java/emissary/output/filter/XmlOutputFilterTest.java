@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -44,7 +45,7 @@ class XmlOutputFilterTest extends UnitTest {
         f = new XmlOutputFilter();
 
         payload = DataObjectFactory.getInstance();
-        payload.setData("This is the data".getBytes());
+        payload.setData("This is the data".getBytes(UTF_8));
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
     }
@@ -77,7 +78,7 @@ class XmlOutputFilterTest extends UnitTest {
         int status = f.filter(payloadList, params, output);
 
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Status of filter should be success");
-        assertTrue(output.toString().contains("<name>/this/is/a/testfile</name>"), "Output must contain name field '" + output + "'");
+        assertTrue(output.toString(UTF_8).contains("<name>/this/is/a/testfile</name>"), "Output must contain name field '" + output + "'");
     }
 
 }

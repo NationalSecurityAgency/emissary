@@ -5,6 +5,8 @@ import jakarta.annotation.Nullable;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Journal Entry containing a value, generally a file name, and an offset.
  */
@@ -24,7 +26,7 @@ public final class JournalEntry {
     void serialize(final ByteBuffer b) {
         b.putInt(this.val.length());
         b.put(SEP);
-        b.put(this.val.getBytes());
+        b.put(this.val.getBytes(UTF_8));
         b.put(SEP);
         b.putLong(this.offset);
     }
@@ -41,7 +43,7 @@ public final class JournalEntry {
         b.get(keyBytes, 0, keyLen);
         validateSep(b.get());
         final long offset = b.getLong();
-        return new JournalEntry(new String(keyBytes), offset);
+        return new JournalEntry(new String(keyBytes, UTF_8), offset);
     }
 
     static void validateSep(final byte b) {
