@@ -51,6 +51,7 @@
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
     <argLine/>
     <checkstyleFormatter>${project.basedir}/contrib/checkstyle.xml</checkstyleFormatter>
+    <dep.amqp-client.version>5.33.1</dep.amqp-client.version>
     <dep.checkstyle.version>10.26.1</dep.checkstyle.version>
     <dep.commons-codec.version>1.22.1</dep.commons-codec.version>
     <dep.commons-collections.version>4.5.0</dep.commons-collections.version>
@@ -260,6 +261,11 @@
         <groupId>com.ibm.icu</groupId>
         <artifactId>icu4j</artifactId>
         <version>${dep.icu4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.rabbitmq</groupId>
+        <artifactId>amqp-client</artifactId>
+        <version>${dep.amqp-client.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
