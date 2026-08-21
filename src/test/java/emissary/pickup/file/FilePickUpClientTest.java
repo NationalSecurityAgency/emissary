@@ -23,6 +23,7 @@ import java.util.Map;
 
 import static emissary.core.constants.Parameters.INPUT_FILENAME;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -38,7 +39,7 @@ class FilePickUpClientTest extends UnitTest {
 
     @BeforeEach
     public void testSetup() {
-        payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
+        payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
         InputStream clientConfig = new ResourceReader().getConfigDataAsStream(this);
         client =
                 (MyFilePickUpClient) PlaceStarter.createPlace(CLIENT_KEY, clientConfig, MyFilePickUpClient.class.getName(), DIRECTORY_KEY);
@@ -109,7 +110,7 @@ class FilePickUpClientTest extends UnitTest {
         String filePath = "/foo/bar";
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         digest.reset();
-        byte[] resultHash = digest.digest(filePath.getBytes());
+        byte[] resultHash = digest.digest(filePath.getBytes(UTF_8));
         String resultString = Hexl.toUnformattedHexString(resultHash);
 
         // Compare with the output of the createFilename() method
