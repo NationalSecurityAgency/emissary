@@ -155,6 +155,6 @@ class MagicNumberFactoryTest extends UnitTest {
     @Test
     void testStringSubstitution() throws ParseException {
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string x SUBST");
-        assertTrue(m.substitute, "the 'x' value should set the substitute flag");
+        assertTrue(m.isSubstitute(), "the 'x' value should set the substitute flag");
     }
 }
