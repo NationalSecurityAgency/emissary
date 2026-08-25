@@ -27,7 +27,7 @@ public class Sentinel implements Runnable {
     public static final String DEFAULT_NAMESPACE_NAME = "Sentinel";
 
     // protocols contain an action to perform when the set of rule conditions are met
-    protected final Set<Protocol> protocols = new LinkedHashSet<>();
+    protected final Set<Protocol<?>> protocols = new LinkedHashSet<>();
 
     // the default configuration Sentinel.cfg
     protected Configurator config;
@@ -112,7 +112,7 @@ public class Sentinel implements Runnable {
         logger.info("Sentinel stopped");
     }
 
-    protected void run(final Protocol protocol) {
+    protected void run(final Protocol<?> protocol) {
         try {
             protocol.run();
         } catch (IOException e) {
@@ -148,7 +148,7 @@ public class Sentinel implements Runnable {
             logger.trace("Sentinel protocols initializing...");
             for (String protocolConfig : this.config.findEntries("PROTOCOL")) {
                 try {
-                    Protocol protocol = ProtocolFactory.get(protocolConfig);
+                    Protocol<?> protocol = ProtocolFactory.get(protocolConfig);
                     if (protocol.isEnabled()) {
                         logger.debug("Sentinel protocol initialized {}", protocol);
                         this.protocols.add(protocol);

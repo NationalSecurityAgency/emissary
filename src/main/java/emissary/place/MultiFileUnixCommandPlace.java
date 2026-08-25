@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import static emissary.core.constants.Parameters.DOCUMENT_TITLE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements IMultiFileUnixCommandPlace {
     protected boolean doSynchronized;
@@ -382,7 +383,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
                 parent.setData(newData.toString().getBytes(charset));
             } catch (UnsupportedEncodingException e) {
                 logger.debug("SproutResults charset problem", e);
-                parent.setData(newData.toString().getBytes());
+                parent.setData(newData.toString().getBytes(UTF_8));
             }
         }
         return sprouts;
@@ -422,7 +423,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         if (contentFile != null) {
             byte[] fileData = Executrix.readDataFromFile(dirName + File.separator + contentFile);
             if (fileData != null) {
-                newData.append(new String(fileData));
+                newData.append(new String(fileData, UTF_8));
             } else {
                 logger.debug("Can't find new content file:{}{}{}", dirName, File.separator, contentFile);
             }

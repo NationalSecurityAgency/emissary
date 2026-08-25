@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -62,7 +63,7 @@ class DependencyCheckTest extends UnitTest {
         DependencyCheck d = new DependencyCheck(conf);
         PrintStream originalOut = System.out;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream myOut = new PrintStream(baos);
+        PrintStream myOut = new PrintStream(baos, true, UTF_8);
         System.setOut(myOut);
         d.printDependencyReport();
         System.setOut(originalOut);

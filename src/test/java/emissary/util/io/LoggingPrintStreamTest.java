@@ -17,7 +17,6 @@ import java.io.Closeable;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -26,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static emissary.util.io.LoggingPrintStream.NORMAL_SEPARATOR;
 import static emissary.util.io.LoggingPrintStream.THROWABLE_PREFIX;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -159,7 +159,7 @@ class LoggingPrintStreamTest {
             logger.detachAndStopAllAppenders();
 
         } finally {
-            final String logMessage = baos.toString();
+            final String logMessage = baos.toString(UTF_8);
 
             assertEquals(" INFO emissary.util.io.LoggingPrintStreamTest.testMdcContextMap - MDC_VALUE1 MDC_VALUE2 - STDTEST : MDC_TEST_MESSAGE\n",
                     logMessage);
@@ -178,7 +178,7 @@ class LoggingPrintStreamTest {
             loggingPrintStream.println(LOG_MSG_1);
             loggingPrintStream.close();
         } finally {
-            final String streamString = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+            final String streamString = new String(baos.toByteArray(), UTF_8);
 
             assertEquals(LOG_MSG_1 + "\n", streamString, "OutputStream did not contain expected data");
             logbackTester.checkLogList(new Level[] {Level.INFO}, new String[] {logbackTester.name + NORMAL_SEPARATOR + LOG_MSG_1},
@@ -201,7 +201,7 @@ class LoggingPrintStreamTest {
             EXCEPTION_ONE.printStackTrace(printWriter);
             loggingPrintStream.close();
         } finally {
-            final String streamString = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+            final String streamString = new String(baos.toByteArray(), UTF_8);
             final String expectedString = stringWriter.toString();
 
             assertEquals(expectedString, streamString, "OutputStream did not contain expected data");
@@ -215,7 +215,7 @@ class LoggingPrintStreamTest {
 
         LogbackTester logbackTester = new LogbackTester(LoggingPrintStreamTest.class.getName());
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        PrintStream printStream = new PrintStream(byteArrayOutputStream);
+        PrintStream printStream = new PrintStream(byteArrayOutputStream, true, UTF_8);
         LoggingPrintStream loggingPrintStream =
                 new LoggingPrintStream(printStream, logbackTester.name, logbackTester.logger, slf4jLevel, 30, TimeUnit.SECONDS);
         try {
@@ -245,7 +245,7 @@ class LoggingPrintStreamTest {
 
         LogbackTester logbackTester = new LogbackTester(LoggingPrintStreamTest.class.getName());
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        PrintStream printStream = new PrintStream(byteArrayOutputStream);
+        PrintStream printStream = new PrintStream(byteArrayOutputStream, true, UTF_8);
         LoggingPrintStream loggingPrintStream =
                 new LoggingPrintStream(printStream, logbackTester.name, logbackTester.logger, slf4jLevel, 30, TimeUnit.SECONDS);
         final int iterations = 25;

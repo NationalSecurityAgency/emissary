@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,13 +32,13 @@ class CharsetUtilTest extends UnitTest {
         assertTrue(CharsetUtil.isUtf8("!@#$%^&*(F)=+-_[]{}\\|'\";:,.></?`~"), "Punctuation is utf8");
         assertTrue(CharsetUtil.isUtf8("0123456789 9876543210"), "Numbers are utf8");
 
-        assertTrue(CharsetUtil.isUtf8("This is a bytes array test. 123 #$%".getBytes()), "Ascii bytes are utf8");
+        assertTrue(CharsetUtil.isUtf8("This is a bytes array test. 123 #$%".getBytes(UTF_8)), "Ascii bytes are utf8");
 
         for (int i = 0; i < S.size(); i++) {
             assertTrue(CharsetUtil.isUtf8(S.get(i)),
                     "Foreign strings from java, entry " + i + " of " + S.size() + " == " + S.get(i) + "/" + S.get(i).length());
-            assertTrue(CharsetUtil.isUtf8(S.get(i).getBytes()),
-                    "Foreign bytes from java, entry " + i + " of " + S.size() + " == " + S.get(i) + "/" + S.get(i).getBytes().length);
+            assertTrue(CharsetUtil.isUtf8(S.get(i).getBytes(UTF_8)),
+                    "Foreign bytes from java, entry " + i + " of " + S.size() + " == " + S.get(i) + "/" + S.get(i).getBytes(UTF_8).length);
         }
     }
 
@@ -66,4 +68,28 @@ class CharsetUtilTest extends UnitTest {
         assertFalse(CharsetUtil.isAscii("Шарифа"), "This is not ascii");
     }
 
+    @Test
+    void byteToCharArrayIsUtf8() {
+        final String s = "This is a test. 123 #$%";
+        assertArrayEquals(s.toCharArray(), CharsetUtil.byteToCharArray(s.getBytes(UTF_8)), "ascii bytes decode");
+    }
+
+    @Test
+    void byteToCharArrayDecodesMultibyteUtf8() {
+        final String s = S.get(0);
+        assertArrayEquals(s.toCharArray(), CharsetUtil.byteToCharArray(s.getBytes(UTF_8)), "utf8 bytes decode");
+    }
+
+    @Test
+    void jGetUtfCharArrayNullCharsetUsesLatin1Fallback() {
+        final byte[] bytes = new byte[] {0, 1, 0x7f, (byte) 0x80, (byte) 0xff};
+        final char[] expected = new char[] {0, 1, 0x7f, (char) 0x80, (char) 0xff};
+        assertArrayEquals(expected, CharsetUtil.jGetUtfCharArray(bytes, null, 0, -1), "latin-1 for null charset");
+    }
+
+    @Test
+    void getUtfCharArrayWithCharset() {
+        final String s = S.get(1);
+        assertArrayEquals(s.toCharArray(), CharsetUtil.getUtfCharArray(s.getBytes(UTF_8), "UTF-8", 0, -1), "known charset decode");
+    }
 }

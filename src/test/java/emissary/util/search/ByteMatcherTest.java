@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,8 +29,8 @@ class ByteMatcherTest extends UnitTest {
     @Override
     @BeforeEach
     public void setUp() throws Exception {
-        this.b = new ByteMatcher(DATA.getBytes());
-        this.bl = new ByteMatcher(LIST_DATA.getBytes());
+        this.b = new ByteMatcher(DATA.getBytes(UTF_8));
+        this.bl = new ByteMatcher(LIST_DATA.getBytes(UTF_8));
     }
 
     @Override
@@ -87,7 +88,7 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testIndexOfBytes() {
-        assertEquals(DATA.indexOf("fox"), this.b.indexOf("fox".getBytes()), "Match pos same as string");
+        assertEquals(DATA.indexOf("fox"), this.b.indexOf("fox".getBytes(UTF_8)), "Match pos same as string");
     }
 
     @Test
@@ -95,9 +96,9 @@ class ByteMatcherTest extends UnitTest {
         // Case Sensitive
         List<Integer> findTestCaseSensitive = List.of(10, 26, 47);
         // Byte pattern param test.
-        assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test".getBytes()));
-        assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test".getBytes(), 0));
-        assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test".getBytes(), 0, LIST_DATA.length()));
+        assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test".getBytes(UTF_8)));
+        assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test".getBytes(UTF_8), 0));
+        assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test".getBytes(UTF_8), 0, LIST_DATA.length()));
 
         // String pattern param test
         assertEquals(findTestCaseSensitive, this.bl.listIndexOf("test"));
@@ -107,9 +108,9 @@ class ByteMatcherTest extends UnitTest {
         // Case-insensitive
         List<Integer> findTestCaseInsensitive = List.of(10, 26, 47, 53);
         // Byte pattern param test
-        assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test".getBytes()));
-        assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test".getBytes(), 0));
-        assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test".getBytes(), 0, LIST_DATA.length()));
+        assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test".getBytes(UTF_8)));
+        assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test".getBytes(UTF_8), 0));
+        assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test".getBytes(UTF_8), 0, LIST_DATA.length()));
 
         // String pattern param test
         assertEquals(findTestCaseInsensitive, this.bl.indexListIgnoreCase("test"));
@@ -119,8 +120,8 @@ class ByteMatcherTest extends UnitTest {
         // Test startOffset and endOffset
         List<Integer> testStartOffs = List.of(26, 47, 53);
         List<Integer> testEndOffs = List.of(26, 47);
-        assertEquals(testStartOffs, this.bl.indexListIgnoreCase("test".getBytes(), 15, LIST_DATA.length()));
-        assertEquals(testEndOffs, this.bl.listIndexOf("test".getBytes(), 15, 52));
+        assertEquals(testStartOffs, this.bl.indexListIgnoreCase("test".getBytes(UTF_8), 15, LIST_DATA.length()));
+        assertEquals(testEndOffs, this.bl.listIndexOf("test".getBytes(UTF_8), 15, 52));
 
     }
 
@@ -136,12 +137,12 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testIndexOfBytesExcludedByEndIndex() {
-        assertEquals(ByteMatcher.NOTFOUND, this.b.indexOf("dog".getBytes(), 0, b.length() - 1), "Match pos not found");
+        assertEquals(ByteMatcher.NOTFOUND, this.b.indexOf("dog".getBytes(UTF_8), 0, b.length() - 1), "Match pos not found");
     }
 
     @Test
     void testIndexOfBytesIncludedWithEndIndex() {
-        assertEquals(DATA.indexOf("dog"), this.b.indexOf("dog".getBytes(), 0, b.length()), "Match pos same as string");
+        assertEquals(DATA.indexOf("dog"), this.b.indexOf("dog".getBytes(UTF_8), 0, b.length()), "Match pos same as string");
     }
 
     @Test
@@ -173,13 +174,13 @@ class ByteMatcherTest extends UnitTest {
     @Test
     void testSlice() {
         final int pos = this.b.indexOf("fox");
-        assertEquals("fox", new String(this.b.slice(pos, pos + 3)), "Slice extraction");
+        assertEquals("fox", new String(this.b.slice(pos, pos + 3), UTF_8), "Slice extraction");
     }
 
     @Test
     void testSliceAtEndOfRange() {
         final int pos = this.b.indexOf("dog");
-        assertEquals("dog", new String(this.b.slice(pos, pos + 3)), "Slice extraction at end of range");
+        assertEquals("dog", new String(this.b.slice(pos, pos + 3), UTF_8), "Slice extraction at end of range");
     }
 
     @Test
@@ -196,61 +197,61 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testGetValueDefaultDelim() {
-        this.b = new ByteMatcher("Abc\nkey=value\r\nanother=key and value\n\r\n".getBytes());
+        this.b = new ByteMatcher("Abc\nkey=value\r\nanother=key and value\n\r\n".getBytes(UTF_8));
         assertEquals("value", this.b.getValue("key"), "Value extraction");
     }
 
     @Test
     void testGetSValue() {
-        this.b = new ByteMatcher("Abc\nkey: 6\nvalue\r\nanother: 14\nkey and value\n\r\n".getBytes());
-        assertEquals("value", new String(this.b.getSValue("key")).trim(), "SValue extraction");
+        this.b = new ByteMatcher("Abc\nkey: 6\nvalue\r\nanother: 14\nkey and value\n\r\n".getBytes(UTF_8));
+        assertEquals("value", new String(this.b.getSValue("key"), UTF_8).trim(), "SValue extraction");
     }
 
     @Test
     void testGetSValueNotFound() {
-        this.b = new ByteMatcher("Abc\nkey: 6\nvalue\r\nanother: 14\nkey and value\n\r\n".getBytes());
+        this.b = new ByteMatcher("Abc\nkey: 6\nvalue\r\nanother: 14\nkey and value\n\r\n".getBytes(UTF_8));
         assertNull(this.b.getSValue("foo"), "SValue extraction");
     }
 
     @Test
     void testGetSValueWithOfs() {
-        this.b = new ByteMatcher("Abc\nkey: 6\nvalue\r\nanother: 14\nkey and value\n\r\n".getBytes());
-        assertEquals("value", new String(this.b.getSValue("key", 4, DATA.length())).trim(), "SValue extraction");
+        this.b = new ByteMatcher("Abc\nkey: 6\nvalue\r\nanother: 14\nkey and value\n\r\n".getBytes(UTF_8));
+        assertEquals("value", new String(this.b.getSValue("key", 4, DATA.length()), UTF_8).trim(), "SValue extraction");
     }
 
     @Test
     void testGetValueDefaultDelimWithOfs() {
-        this.b = new ByteMatcher("Abc\nkey=value\r\nanother=key and value\n\r\n".getBytes());
+        this.b = new ByteMatcher("Abc\nkey=value\r\nanother=key and value\n\r\n".getBytes(UTF_8));
         assertEquals("value", this.b.getValue("key", 0), "Value extraction");
     }
 
     @Test
     void testGetValue() {
-        this.b = new ByteMatcher("Abc\nkey: value\r\nanother: key and value\n\r\n".getBytes());
+        this.b = new ByteMatcher("Abc\nkey: value\r\nanother: key and value\n\r\n".getBytes(UTF_8));
         assertEquals(" value", this.b.getValue("key", 0, ":"), "Value extraction");
     }
 
     @Test
     void testGetValueMultiCharDelim() {
-        this.b = new ByteMatcher("Abc\nkey : value\r\nanother : key and value\n\r\n".getBytes());
+        this.b = new ByteMatcher("Abc\nkey : value\r\nanother : key and value\n\r\n".getBytes(UTF_8));
         assertEquals("value", this.b.getValue("key", 0, " : "), "Value extraction");
     }
 
     @Test
     void testGetValueNoKey() {
-        this.b = new ByteMatcher("Abc\nkey: value\r\nanother: key and value\n\r\n".getBytes());
+        this.b = new ByteMatcher("Abc\nkey: value\r\nanother: key and value\n\r\n".getBytes(UTF_8));
         assertNull(this.b.getValue("foo", 0, ":"), "Value extraction");
     }
 
     @Test
     void testGetValueNoDelimiter() {
-        this.b = new ByteMatcher("Abc\nkey: value\r\nanother: key and value\n\r\n".getBytes());
+        this.b = new ByteMatcher("Abc\nkey: value\r\nanother: key and value\n\r\n".getBytes(UTF_8));
         assertNull(this.b.getValue("key", 0, "="), "Value extraction");
     }
 
     @Test
     void testGetValueNoValue() {
-        this.b = new ByteMatcher("Abc\nkey:\r\nanother: key and value\n\r\n".getBytes());
+        this.b = new ByteMatcher("Abc\nkey:\r\nanother: key and value\n\r\n".getBytes(UTF_8));
         assertEquals("", this.b.getValue("key", 0, ":"), "Value extraction");
     }
 
@@ -261,7 +262,7 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testIgnoreCaseByteScan() {
-        assertEquals(DATA.indexOf("fox"), this.b.indexIgnoreCase("foX".getBytes()), "Pos in case insensitive search");
+        assertEquals(DATA.indexOf("fox"), this.b.indexIgnoreCase("foX".getBytes(UTF_8)), "Pos in case insensitive search");
     }
 
     @Test
@@ -307,19 +308,19 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testBadConditionOnIndexIgnoreCase() {
-        assertEquals(-1, this.b.indexIgnoreCase("lazy".getBytes(), DATA.length() + 5), "IndexIgnore cannot find pattern with bad ofs");
+        assertEquals(-1, this.b.indexIgnoreCase("lazy".getBytes(UTF_8), DATA.length() + 5), "IndexIgnore cannot find pattern with bad ofs");
     }
 
     @Test
     void testNullDataBytesIndexOf() {
         this.b = new ByteMatcher((byte[]) null);
-        assertEquals(-1, this.b.indexOf("Fred".getBytes()), "Match pos not found");
+        assertEquals(-1, this.b.indexOf("Fred".getBytes(UTF_8)), "Match pos not found");
     }
 
     @Test
     void testNullDataBytesIgnoreCase() {
         this.b = new ByteMatcher((byte[]) null);
-        assertEquals(-1, this.b.indexIgnoreCase("Fred".getBytes()), "Match pos not found");
+        assertEquals(-1, this.b.indexIgnoreCase("Fred".getBytes(UTF_8)), "Match pos not found");
     }
 
 }

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -55,7 +56,7 @@ class DataUtilTest extends UnitTest {
         final byte[] foo = {'f', 'o', '1'};
         final byte[] blankNum = {' ', ' ', '1'};
         final byte[] blankNumControl = {' ', ' ', '1', ByteUtil.ASCII_ESC};
-        final byte[] W = "Президент Буш".getBytes();
+        final byte[] W = "Президент Буш".getBytes(UTF_8);
         for (final byte[] bytes : Arrays.asList(blankSpace, blankSpaces, control, foo, blankNum, blankNumControl, W)) {
             assertFalse(DataUtil.isEmpty(bytes), "empty: " + Arrays.toString(bytes));
             final IBaseDataObject d2 = DataObjectFactory.getInstance();
@@ -68,7 +69,7 @@ class DataUtilTest extends UnitTest {
     @Test
     void testEmptyWorkUnit() {
         assertTrue(DataUtil.isEmpty(new WorkUnit()), "Empty work unit is empty");
-        assertFalse(DataUtil.isEmpty(new WorkUnit("foo", "abc".getBytes(), Form.UNKNOWN)), "Work unit is not empty");
+        assertFalse(DataUtil.isEmpty(new WorkUnit("foo", "abc".getBytes(UTF_8), Form.UNKNOWN)), "Work unit is not empty");
     }
 
     @Test

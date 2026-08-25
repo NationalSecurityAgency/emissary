@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -16,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class KffChainTest extends UnitTest {
 
-    static final byte[] DATA = "This is a test".getBytes();
+    static final byte[] DATA = "This is a test".getBytes(UTF_8);
 
     @Test
     void testAlgorithmsUsedWithAddAlgorithm() {
