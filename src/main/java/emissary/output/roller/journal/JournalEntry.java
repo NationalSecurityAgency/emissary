@@ -27,7 +27,7 @@ public final class JournalEntry {
         final byte[] valBytes = this.val.getBytes(UTF_8);
         b.putInt(valBytes.length);
         b.put(SEP);
-        b.put(valBytes.getBytes(UTF_8));
+        b.put(valBytes);
         b.put(SEP);
         b.putLong(this.offset);
     }
