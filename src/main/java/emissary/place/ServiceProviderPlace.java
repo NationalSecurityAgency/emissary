@@ -263,28 +263,36 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
      */
     @Override
     public List<IBaseDataObject> agentProcessHeavyDuty(List<IBaseDataObject> payloadList) throws Exception {
-
         logger.debug("Entering agentProcessHeavyDuty with {} payload items", payloadList.size());
 
         List<IBaseDataObject> list = new ArrayList<>();
 
-        // For each incoming payload object
-        for (IBaseDataObject dataObject : payloadList) {
+        if (isBatchProcessingEnabled()) {
             try {
-                // Process the payload item
-                List<IBaseDataObject> l = agentProcessHeavyDuty(dataObject);
-                if (!l.isEmpty()) {
-                    dataObject.setNumChildren(dataObject.getNumChildren() + l.size());
-                }
-
-                // Accumulate results in a list to return
-                list.addAll(l);
+                MDC.put(MDCConstants.SERVICE_LOCATION, this.getKey());
+                list = processHeavyDuty(payloadList);
+                payloadList.forEach(this::rehash);
             } catch (Exception e) {
-                logger.error("Place.process exception", e);
-                dataObject.addProcessingError("agentProcessHD(" + keys.get(0) + "): " + e);
-                dataObject.replaceCurrentForm(Form.ERROR);
+                payloadList.forEach(d -> handleProcessingError(d, e));
+            }
+        } else {
+            // For each incoming payload object
+            for (IBaseDataObject dataObject : payloadList) {
+                try {
+                    // Process the payload item
+                    List<IBaseDataObject> l = agentProcessHeavyDuty(dataObject);
+                    if (!l.isEmpty()) {
+                        dataObject.setNumChildren(dataObject.getNumChildren() + l.size());
+                    }
+
+                    // Accumulate results in a list to return
+                    list.addAll(l);
+                } catch (Exception e) {
+                    handleProcessingError(dataObject, e);
+                }
             }
         }
+
 
         // Some debug output
         if (logger.isDebugEnabled()) {
@@ -329,6 +337,11 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
         }
     }
 
+    private void handleProcessingError(IBaseDataObject payload, Exception e) {
+        logger.error("Place.process exception", e);
+        payload.addProcessingError("agentProcessHD(" + keys.get(0) + "): " + e);
+        payload.replaceCurrentForm(Form.ERROR);
+    }
 
     /**
      * Convenience method to process a single payload when there is no expecation of decomposing any new payload objects
@@ -338,6 +351,22 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
     public void process(IBaseDataObject payload) throws ResourceException {
         if (heavyDutyMethodImplemented) {
             List<IBaseDataObject> children = processHeavyDuty(payload);
+            if (children != null && !children.isEmpty()) {
+                logger.error("Sprouting is no longer supported, lost {} children", children.size());
+            }
+        } else {
+            throw new IllegalStateException("Neither process nor processHeavyDuty appears to be implemented");
+        }
+    }
+
+    /**
+     * Convenience method to process a single payload when there is no expecation of decomposing any new payload objects
+     * from what was provided
+     */
+    @Override
+    public void process(List<IBaseDataObject> payloadList) throws ResourceException {
+        if (heavyDutyMethodImplemented) {
+            List<IBaseDataObject> children = processHeavyDuty(payloadList);
             if (children != null && !children.isEmpty()) {
                 logger.error("Sprouting is no longer supported, lost {} children", children.size());
             }
@@ -358,6 +387,22 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
     public List<IBaseDataObject> processHeavyDuty(IBaseDataObject payload) throws ResourceException {
         if (processMethodImplemented) {
             process(payload);
+            return Collections.emptyList();
+        } else {
+            throw new IllegalStateException("Neither process nor processHeavyDuty appears to be implemented");
+        }
+    }
+
+    /**
+     * Override point for HD Agent calls
+     *
+     * @param payloadList list of sibling payloads to be processed
+     * @return list of IBaseDataObject result attachments
+     */
+    @Override
+    public List<IBaseDataObject> processHeavyDuty(List<IBaseDataObject> payloadList) throws ResourceException {
+        if (processMethodImplemented) {
+            process(payloadList);
             return Collections.emptyList();
         } else {
             throw new IllegalStateException("Neither process nor processHeavyDuty appears to be implemented");
