@@ -319,7 +319,6 @@ public class CoordinationPlace extends ServiceProviderPlace {
 
         for (IBaseDataObject d : dList) {
             applyForm(d, errors.contains(d));
-            sproutHook(sprouts, d);
             cleanUpHook(d);
         }
 
@@ -341,7 +340,9 @@ public class CoordinationPlace extends ServiceProviderPlace {
             for (IBaseDataObject d : selected) {
                 updateTransformHistory(d, p);
                 try {
-                    sprouts.addAll(p.agentProcessHeavyDuty(d));
+                    List<IBaseDataObject> s = p.agentProcessHeavyDuty(d);
+                    sprouts.addAll(s);
+                    sproutHook(s, d); // only calls hook when we know the sprout's parent
                 } catch (Exception e) {
                     errors.add(d);
                     handlePlaceException(p, true, e);
