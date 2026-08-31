@@ -314,7 +314,14 @@ public class CoordinationPlace extends ServiceProviderPlace {
                 }
             }
 
-            selected.stream().filter(d -> Form.ERROR.equals(d.currentForm())).forEach(errors::add);
+            selected.stream()
+                    .filter(d -> Form.ERROR.equals(d.currentForm()))
+                    .forEach(errors::add);
+
+            active.removeIf(d -> !shouldContinue(p, errors.contains(d)));
+            if (active.isEmpty()) {
+                break;
+            }
         }
 
         for (IBaseDataObject d : dList) {
