@@ -268,7 +268,12 @@ public class MagicNumber {
             if (!chars.isEmpty() && next == '%') {
                 char subType = chars.poll();
                 if (dataType == MagicDataType.STRING) {
-                    if (offset < (data.length - 2)) {
+                    if (subType == 'd' || subType == 'l') {
+                        byte[] subData = extractElement(data, offset, dataTypeLength);
+                        if (subData != null) {
+                            sb.append(MagicMath.byteArrayToString(subData, 10));
+                        }
+                    } else if (offset < data.length) {
                         String sub = new String(Objects.requireNonNull(extractElement(data, offset, 1)), DEFAULT_CHARSET);
                         sb.append(sub);
                     }
@@ -378,7 +383,7 @@ public class MagicNumber {
         if (data == null) {
             return null;
         }
-        if (data.length < (offset + length)) {
+        if (offset < 0 || data.length < (offset + length)) {
             return null;
         }
         byte[] subject = new byte[length];
