@@ -74,6 +74,8 @@ class MagicMathTest extends UnitTest {
         assertArrayEquals(new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF}, MagicMath.stringToByteArray(4, "-1"));
         assertArrayEquals(new byte[] {0x01, (byte) 0xFF}, MagicMath.stringToByteArray(2, "0777"), "octal works here too");
         assertArrayEquals(new byte[] {0x2C}, MagicMath.stringToByteArray(1, "300"), "values too big simply lose their highest bytes");
+        assertArrayEquals(new byte[] {0x00, 0x00, 0x41, 0x42}, MagicMath.stringToByteArray(4, "0x4142"),
+                "hex values padded to the requested size like decimals are");
     }
 
     @Test
@@ -90,13 +92,14 @@ class MagicMathTest extends UnitTest {
         assertEquals("65", MagicMath.byteArrayToString(new byte[] {0x00, 0x41}, 10), "empty bytes at the front are skipped");
         assertEquals("0", MagicMath.byteArrayToString(new byte[] {0x00, 0x00}, 10), "all-empty bytes just read as zero");
         assertEquals("41", MagicMath.byteArrayToString(new byte[] {0x41}, 16));
+        assertEquals("255", MagicMath.byteArrayToString(new byte[] {(byte) 0xFF}, 10), "bytes read as unsigned values");
+        assertEquals("4294967295", MagicMath.byteArrayToString(new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF}, 10));
     }
 
     @Test
     void testBytesToDebugHexString() {
         assertEquals("0x4142", MagicMath.byteArrayToHexString(new byte[] {0x41, 0x42}));
-        assertEquals("0x41-45", MagicMath.byteArrayToHexString(new byte[] {0x41, (byte) 0xBB}),
-                "debug helper only: high-bit bytes print with a minus sign instead of proper hex digits");
+        assertEquals("0x41bb", MagicMath.byteArrayToHexString(new byte[] {0x41, (byte) 0xBB}));
     }
 
     @Test

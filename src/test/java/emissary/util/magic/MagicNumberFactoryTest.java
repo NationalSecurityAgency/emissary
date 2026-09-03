@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -156,5 +157,18 @@ class MagicNumberFactoryTest extends UnitTest {
     void testStringSubstitution() throws ParseException {
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string x SUBST");
         assertTrue(m.isSubstitute(), "the 'x' value should set the substitute flag");
+    }
+
+    @Test
+    void testStringSubstitutionDescribe() throws ParseException {
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string x %s");
+        assertEquals("A", m.describe(new byte[] {0x41}), "a %s string substitution should emit the single byte as text");
+    }
+
+    @Test
+    void testTwoByteFileStillSubstitutesSingleByte() throws ParseException {
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string x %s");
+        assertEquals("A", m.describe(new byte[] {0x41, 0x42}),
+                "a two-byte value must not skip the substitution even though there is no trailing byte");
     }
 }

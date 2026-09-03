@@ -26,8 +26,8 @@ public class MagicMath {
             "The new byte array length must fit the existing value.";
 
     /**
-     * Turns each byte into a signed decimal represented in hex format, starting with {@code 0x}. Note: This is meant as a
-     * quick debugging helper rather than strict standard hex formatting.
+     * Turns each byte into a properly formatted hexadecimal string, starting with {@code 0x}. Each byte is written as two
+     * lowercase hex digits.
      *
      * @param b the bytes to convert
      * @return the formatted string representation
@@ -38,7 +38,7 @@ public class MagicMath {
             if (i == 0) {
                 sb.append(HEX_PREFIX);
             }
-            sb.append(Integer.toString((int) b[i], 16));
+            sb.append(String.format("%02x", b[i] & 0xFF));
         }
         return sb.toString();
     }
@@ -158,7 +158,7 @@ public class MagicMath {
             return null;
         }
         if (stringValue.length() > 2 && HEX_PREFIX.equals(stringValue.substring(0, 2))) {
-            return hexStringToByteArray(stringValue);
+            return setLength(hexStringToByteArray(stringValue), arraySize);
         } else {
             return integerToByteArray(arraySize, stringToLong(stringValue));
         }
@@ -277,7 +277,7 @@ public class MagicMath {
             return ZERO;
         }
         byte[] adjustedData = setLength(data, actualSize);
-        BigInteger value = new BigInteger(adjustedData);
+        BigInteger value = new BigInteger(1, adjustedData);
         return value.toString(radix);
     }
 
