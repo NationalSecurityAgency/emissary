@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Filter that writes unadorned data as utf-8.
  */
@@ -35,7 +37,7 @@ public class XmlOutputFilter extends AbstractRollableFilter {
 
     @Override
     public byte[] convert(final List<IBaseDataObject> list, final Map<String, Object> params) throws IOException {
-        return PayloadUtil.toXmlString(list).getBytes();
+        return PayloadUtil.toXmlString(list).getBytes(UTF_8);
     }
 
     /**

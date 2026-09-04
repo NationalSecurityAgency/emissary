@@ -28,6 +28,7 @@ import static emissary.core.constants.Parameters.FILEXT;
 import static emissary.core.constants.Parameters.FILE_ABSOLUTEPATH;
 import static emissary.core.constants.Parameters.FILE_DATE;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -65,7 +66,7 @@ class DropOffUtilTest extends UnitTest {
         cfg.addEntry("PARENT_PARAM", "FOO");
 
         this.util = new DropOffUtil(cfg);
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
     }
 
     @AfterEach
@@ -87,7 +88,7 @@ class DropOffUtilTest extends UnitTest {
     @Test
     void testGetBestId() {
         // Test auto gen //////////////////////////////
-        final IBaseDataObject tld = DataObjectFactory.getInstance("This is another test".getBytes(), "/eat/prefix/anotherTestPath", "UNKNOWN");
+        final IBaseDataObject tld = DataObjectFactory.getInstance("This is another test".getBytes(UTF_8), "/eat/prefix/anotherTestPath", "UNKNOWN");
         Configurator cfg = new ServiceConfigGuide();
         final List<String> dates = new ArrayList<>();
         dates.add(EVENT_DATE);
@@ -103,7 +104,7 @@ class DropOffUtilTest extends UnitTest {
         cfg.addEntry("AUTO_GENERATED_ID_PREFIX", "ABCDEFGH");
 
         this.util = new DropOffUtil(cfg);
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
         String id = this.util.getBestId(this.payload, tld);
         assertTrue(id.startsWith("ABCD"), "auto gen id should start with a (truncated to 4 char) prefix");
         assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
@@ -115,7 +116,7 @@ class DropOffUtilTest extends UnitTest {
         cfg.removeEntry("AUTO_GENERATED_ID_PREFIX", "ABCDEFGH");
 
         this.util = new DropOffUtil(cfg);
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
         assertNotNull(this.util.getBestId(this.payload, tld));
         assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
@@ -130,7 +131,7 @@ class DropOffUtilTest extends UnitTest {
         ids.add("AUTO_GENERATED_ID");
         cfg.addEntries("ID", ids);
 
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
         this.payload.setParameter("MY_ID", "672317892139");
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestId(this.payload, tld);
@@ -148,7 +149,7 @@ class DropOffUtilTest extends UnitTest {
         ids.add("AUTO_GENERATED_ID");
         cfg.addEntries("ID", ids);
 
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
 
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestId(this.payload, tld);
@@ -169,7 +170,7 @@ class DropOffUtilTest extends UnitTest {
 
         cfg.addEntry("AUTO_GENERATED_ID_PREFIX", "ABCDEFGH");
 
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "", "UNKNOWN");// shortname is blank
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "", "UNKNOWN");// shortname is blank
 
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestId(this.payload, tld);
@@ -190,7 +191,7 @@ class DropOffUtilTest extends UnitTest {
 
         cfg.addEntry("AUTO_GENERATED_ID_PREFIX", "ABCDEFGH");
 
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "", "UNKNOWN");// shortname is blank
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "", "UNKNOWN");// shortname is blank
 
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestId(this.payload, tld);
@@ -220,7 +221,7 @@ class DropOffUtilTest extends UnitTest {
         cfg.addEntry("AUTO_GENERATED_ID_PREFIX", "ABCDEFGH");
 
         this.util = new DropOffUtil(cfg);
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
         String id = this.util.getBestIdFrom(this.payload);
         assertTrue(id.startsWith("ABCD"), "auto gen id should start with a (truncated to 4 char) prefix");
         assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
@@ -232,7 +233,7 @@ class DropOffUtilTest extends UnitTest {
         cfg.removeEntry("AUTO_GENERATED_ID_PREFIX", "ABCDEFGH");
 
         this.util = new DropOffUtil(cfg);
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
         id = this.util.getBestIdFrom(this.payload);
         assertFalse(id.startsWith("ABCD"), "auto gen id should NOT start with a (truncated to 4 char) prefix");
         assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
@@ -248,7 +249,7 @@ class DropOffUtilTest extends UnitTest {
         ids.add("AUTO_GENERATED_ID");
         cfg.addEntries("ID", ids);
 
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
         this.payload.setParameter("MY_ID", "672317892139");
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestIdFrom(this.payload);
@@ -266,7 +267,7 @@ class DropOffUtilTest extends UnitTest {
         ids.add("AUTO_GENERATED_ID");
         cfg.addEntries("ID", ids);
 
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
 
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestIdFrom(this.payload);
@@ -287,7 +288,7 @@ class DropOffUtilTest extends UnitTest {
 
         cfg.addEntry("AUTO_GENERATED_ID_PREFIX", "ABCDEFGH");
 
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "", "UNKNOWN");// shortname is blank
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "", "UNKNOWN");// shortname is blank
 
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestIdFrom(this.payload);
@@ -308,7 +309,7 @@ class DropOffUtilTest extends UnitTest {
 
         cfg.addEntry("AUTO_GENERATED_ID_PREFIX", "ABCDEFGH");
 
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "", "UNKNOWN");// shortname is blank
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "", "UNKNOWN");// shortname is blank
 
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestIdFrom(this.payload);
@@ -332,7 +333,7 @@ class DropOffUtilTest extends UnitTest {
         ids.add("AUTO_GENERATED_ID");
         cfg.addEntries("ID", ids);
 
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
         this.payload.setParameter("MY_ID", "672317892139");
         this.util = new DropOffUtil(cfg);
         String[] values = this.util.getExistingIds(this.payload);
@@ -354,7 +355,7 @@ class DropOffUtilTest extends UnitTest {
 
         cfg.addEntry("AUTO_GENERATED_ID_PREFIX", "ABCDEFGH");
 
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "", "UNKNOWN");// shortname is blank
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "", "UNKNOWN");// shortname is blank
 
         this.util = new DropOffUtil(cfg);
         values = this.util.getExistingIds(this.payload);
@@ -370,7 +371,7 @@ class DropOffUtilTest extends UnitTest {
 
         cfg.addEntry("AUTO_GENERATED_ID_PREFIX", "ABCDEFGH");
 
-        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "", "UNKNOWN");// shortname is blank
+        this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "", "UNKNOWN");// shortname is blank
 
         this.util = new DropOffUtil(cfg);
         values = this.util.getExistingIds(this.payload);
@@ -382,11 +383,11 @@ class DropOffUtilTest extends UnitTest {
     void testMetadataPreparation() {
         final List<IBaseDataObject> family = new ArrayList<>();
 
-        final IBaseDataObject parent = DataObjectFactory.getInstance("This is a test".getBytes(), "item1", "PARENT_FORM", "PARENT_FTYPE");
+        final IBaseDataObject parent = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "item1", "PARENT_FORM", "PARENT_FTYPE");
         parent.putParameter("FOO", "PARENT_FOO");
         parent.putParameter(ORIGINAL_FILENAME, "parent.tar.gz");
 
-        final IBaseDataObject child = DataObjectFactory.getInstance("This is a test".getBytes(), "item1-att-1", "CHILD_FORM", "CHILD_FTYPE");
+        final IBaseDataObject child = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "item1-att-1", "CHILD_FORM", "CHILD_FTYPE");
         child.putParameter(ORIGINAL_FILENAME, "child.docx");
         child.putParameter("FOO_FILETYPE", "myFoo");
         child.putParameter("BAR_FILETYPE", "myBar1");

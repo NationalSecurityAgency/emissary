@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,7 +40,7 @@ class DataFilterTest extends UnitTest {
         f.initialize(config, "FOO", config);
 
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the data".getBytes());
+        payload.setData("This is the data".getBytes(UTF_8));
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
 
@@ -51,8 +52,8 @@ class DataFilterTest extends UnitTest {
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Status of filter should be success");
         assertTrue(expected.exists(), "Output File should exist");
 
-        String output = new String(Executrix.readDataFromFile("/tmp/testfile.FTYPE"));
-        assertEquals(new String(payload.data()), output, "Output must be the payload and nothing else");
+        String output = new String(Executrix.readDataFromFile("/tmp/testfile.FTYPE"), UTF_8);
+        assertEquals(new String(payload.data(), UTF_8), output, "Output must be the payload and nothing else");
 
         expected.delete();
     }
