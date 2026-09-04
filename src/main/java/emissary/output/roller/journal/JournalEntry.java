@@ -44,7 +44,7 @@ public final class JournalEntry {
         b.get(keyBytes, 0, keyLen);
         validateSep(b.get());
         final long offset = b.getLong();
-        return new JournalEntry(new String(keyBytes), offset);
+        return new JournalEntry(new String(keyBytes, UTF_8), offset);
     }
 
     static void validateSep(final byte b) {

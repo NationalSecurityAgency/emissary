@@ -44,6 +44,7 @@ import static emissary.core.constants.Parameters.FILE_ABSOLUTEPATH;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
 import static emissary.util.TimeUtil.DATE_ISO_8601;
 import static emissary.util.TimeUtil.getDateOrdinalWithTime;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);
@@ -71,7 +72,7 @@ public class DropOffUtil {
 
     // Items for generating random filenames
     protected static final SecureRandom prng = new SecureRandom();
-    protected static final byte[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".getBytes();
+    protected static final byte[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".getBytes(UTF_8);
     protected String prefix = "TXT";
     protected boolean uuidInOutputFilenames = true;
     protected int maxFilextLen = Integer.MAX_VALUE;

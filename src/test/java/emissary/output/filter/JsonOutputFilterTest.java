@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,7 +47,7 @@ class JsonOutputFilterTest extends UnitTest {
         f = new JsonOutputFilter();
 
         payload = DataObjectFactory.getInstance();
-        payload.setData("This is the data".getBytes());
+        payload.setData("This is the data".getBytes(UTF_8));
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
         payload.appendParameter("FOO", "bar");
@@ -81,8 +82,8 @@ class JsonOutputFilterTest extends UnitTest {
         int status = f.filter(payloadList, params, output);
 
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
-        assertTrue(output.toString().contains("\"FILETYPE\":[\"FTYPE\"]"), "Filter output should have file type");
-        assertTrue(output.toString().contains("\"payload\":\"VGhpcyBpcyB0aGUgZGF0YQ==\""), "Filter should have payload");
+        assertTrue(output.toString(UTF_8).contains("\"FILETYPE\":[\"FTYPE\"]"), "Filter output should have file type");
+        assertTrue(output.toString(UTF_8).contains("\"payload\":\"VGhpcyBpcyB0aGUgZGF0YQ==\""), "Filter should have payload");
     }
 
     @Test
@@ -94,7 +95,7 @@ class JsonOutputFilterTest extends UnitTest {
         int status = f.filter(Collections.singletonList(payload), new HashMap<>(), output);
 
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
-        assertFalse(output.toString().contains("\"payload\":"), "Filter should not have payload");
+        assertFalse(output.toString(UTF_8).contains("\"payload\":"), "Filter should not have payload");
     }
 
 
@@ -104,7 +105,7 @@ class JsonOutputFilterTest extends UnitTest {
         f.initialize(config, "FOO", config);
 
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the data".getBytes());
+        payload.setData("This is the data".getBytes(UTF_8));
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
 
@@ -131,7 +132,7 @@ class JsonOutputFilterTest extends UnitTest {
         int status = f.filter(payloadList, params, output);
 
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
-        String s = output.toString();
+        String s = output.toString(UTF_8);
 
         assertEquals(10, StringUtils.countMatches(s, "creationTimestamp"), "Should emit line for parent and extracted records");
 
@@ -154,7 +155,7 @@ class JsonOutputFilterTest extends UnitTest {
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         int status = f.filter(payloadList, params, output);
-        String s = output.toString();
+        String s = output.toString(UTF_8);
 
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
         assertTrue(s.contains("\"BAR\":[\"foo\"]"), "Filter output should contain field BAR");
@@ -169,7 +170,7 @@ class JsonOutputFilterTest extends UnitTest {
         f.initialize(config, "FOO", config);
 
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the data".getBytes());
+        payload.setData("This is the data".getBytes(UTF_8));
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
         payload.putParameter("FOO", "myFoo");
@@ -186,7 +187,7 @@ class JsonOutputFilterTest extends UnitTest {
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         int status = f.filter(payloadList, params, output);
-        String s = output.toString();
+        String s = output.toString(UTF_8);
 
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
         assertTrue(s.contains("\"QUUX\":[\"myQuux\"]"), "Filter output should have allowlist field");
@@ -202,7 +203,7 @@ class JsonOutputFilterTest extends UnitTest {
         f.initialize(config, "FOO", config);
 
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the data".getBytes());
+        payload.setData("This is the data".getBytes(UTF_8));
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
         payload.putParameter("FOO", "myFoo");
@@ -219,7 +220,7 @@ class JsonOutputFilterTest extends UnitTest {
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         int status = f.filter(payloadList, params, output);
-        String s = output.toString();
+        String s = output.toString(UTF_8);
 
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
         assertTrue(s.contains("\"QUUX\":[\"myQuux\"]"), "Filter output should have allowlist field");
@@ -243,7 +244,7 @@ class JsonOutputFilterTest extends UnitTest {
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         int status = f.filter(payloadList, params, output);
-        String s = output.toString();
+        String s = output.toString(UTF_8);
 
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
         assertTrue(s.contains("\"parameters\":{}"), "Filter output should have no parameters");
@@ -257,7 +258,7 @@ class JsonOutputFilterTest extends UnitTest {
 
         // setup ibdo
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the dBAR_BARata".getBytes());
+        payload.setData("This is the dBAR_BARata".getBytes(UTF_8));
         payload.appendParameter("BAR_BAR", "bar");
         payload.appendParameter("BAR_BAZ", "baz");
         List<IBaseDataObject> payloadList = new ArrayList<>();
@@ -266,7 +267,7 @@ class JsonOutputFilterTest extends UnitTest {
         // run filter
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         f.filter(payloadList, new HashMap<>(), output);
-        String s = output.toString();
+        String s = output.toString(UTF_8);
 
         // assert
         assertFalse(s.contains("\"BAR_BAR\":[\"bar\"]"), "Filter output should not have denylist field BAR_BAR with value bar");
@@ -281,7 +282,7 @@ class JsonOutputFilterTest extends UnitTest {
 
         // setup ibdo
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the dBAR_BARata".getBytes());
+        payload.setData("This is the dBAR_BARata".getBytes(UTF_8));
         payload.appendParameter("BAR_BAR", "bar");
         payload.appendParameter("BAR_BAZ", "baz");
         List<IBaseDataObject> payloadList = new ArrayList<>();
@@ -290,7 +291,7 @@ class JsonOutputFilterTest extends UnitTest {
         // run filter
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         f.filter(payloadList, new HashMap<>(), output);
-        String s = output.toString();
+        String s = output.toString(UTF_8);
 
         // assert
         assertTrue(s.contains("\"BAR_BAR\":[\"bar\"]"), "Filter output should have field BAR_BAR with value bar");
@@ -305,7 +306,7 @@ class JsonOutputFilterTest extends UnitTest {
 
         // setup ibdo
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the dBAR_BARata".getBytes());
+        payload.setData("This is the dBAR_BARata".getBytes(UTF_8));
         payload.appendParameter("BAR", "bar");
         payload.appendParameter("BAR", "baz");
         List<IBaseDataObject> payloadList = new ArrayList<>();
@@ -314,7 +315,7 @@ class JsonOutputFilterTest extends UnitTest {
         // run filter
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         f.filter(payloadList, new HashMap<>(), output);
-        String s = output.toString();
+        String s = output.toString(UTF_8);
 
         // assert
         assertTrue(s.contains("\"BAR\":[\"bar\"]"), "Filter output should field BAR with value bar");
@@ -326,13 +327,13 @@ class JsonOutputFilterTest extends UnitTest {
         // setup
         IBaseDataObject parent = DataObjectFactory.getInstance();
         parent.setFilename("parent");
-        parent.setData("some data".getBytes());
+        parent.setData("some data".getBytes(UTF_8));
         IBaseDataObject child = DataObjectFactory.getInstance();
         child.setFilename("parent-att-1");
-        child.setData("some child data".getBytes());
+        child.setData("some child data".getBytes(UTF_8));
         IBaseDataObject child2 = DataObjectFactory.getInstance();
         child2.setFilename("parent-att-2");
-        child2.setData("some child data".getBytes());
+        child2.setData("some child data".getBytes(UTF_8));
 
         config.addEntry("EXTRA_PARAM", "DESCENDANT_COUNT");
         f.initialize(config, "FOO", config);
@@ -343,7 +344,7 @@ class JsonOutputFilterTest extends UnitTest {
         f.filter(Arrays.asList(parent, child, child2), new HashMap<>(), output);
 
         // verify
-        String s = output.toString();
+        String s = output.toString(UTF_8);
 
         assertTrue(s.contains("\"DESCENDANT_COUNT\":[2]"), "Filter output should have had DESCENDANT_COUNT");
         assertEquals(1, StringUtils.countMatches(s, "DESCENDANT_COUNT"), "Filter output should have only had DESCENDANT_COUNT once");
@@ -357,7 +358,7 @@ class JsonOutputFilterTest extends UnitTest {
         f.initialize(config, "FOO", config);
 
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the data".getBytes());
+        payload.setData("This is the data".getBytes(UTF_8));
         payload.setFileType("FTYPE");
         payload.putParameter("IGNORE_FOO", "ONE");
         payload.putParameter("IGNORE_BAR", "TWO");
@@ -376,7 +377,7 @@ class JsonOutputFilterTest extends UnitTest {
 
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
 
-        String s = output.toString();
+        String s = output.toString(UTF_8);
 
         assertTrue(s.contains("\"QUUX\":[\"THREE\"]"), "Output should have non-prefix parameter as normal " + s);
         assertTrue(s.contains("\"FOO\":[\"ONE\"]"), "Output should have prefix stripped parameter " + s);
