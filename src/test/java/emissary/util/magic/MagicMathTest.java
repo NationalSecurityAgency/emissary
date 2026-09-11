@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -146,13 +147,15 @@ class MagicMathTest extends UnitTest {
 
     @Test
     void testParseEscapedString() {
-        assertArrayEquals("A".getBytes(), MagicMath.parseEscapedString("\\101"), "up to three octal digits become one letter");
+        assertArrayEquals("A".getBytes(UTF_8), MagicMath.parseEscapedString("\\101"),
+                "up to three octal digits become one letter");
         assertArrayEquals(new byte[] {(byte) 0xCA}, MagicMath.parseEscapedString("\\xCA"), "\\x takes exactly two hex digits");
-        assertArrayEquals("A\nB".getBytes(), MagicMath.parseEscapedString("A\\nB"), "\\n is a real newline");
-        assertArrayEquals("t".getBytes(), MagicMath.parseEscapedString("\\t"),
+        assertArrayEquals("A\nB".getBytes(UTF_8), MagicMath.parseEscapedString("A\\nB"), "\\n is a real newline");
+        assertArrayEquals("t".getBytes(UTF_8), MagicMath.parseEscapedString("\\t"),
                 "unlike most languages, \\t here is just the letter t");
-        assertArrayEquals("q".getBytes(), MagicMath.parseEscapedString("\\q"), "unknown escapes drop only the backslash");
-        assertArrayEquals(" ".getBytes(), MagicMath.parseEscapedString("\\"), "a lone backslash at the very end counts as a space");
+        assertArrayEquals("q".getBytes(UTF_8), MagicMath.parseEscapedString("\\q"), "unknown escapes drop only the backslash");
+        assertArrayEquals(" ".getBytes(UTF_8), MagicMath.parseEscapedString("\\"),
+                "a lone backslash at the very end counts as a space");
     }
 
     @Test

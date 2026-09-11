@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,9 +43,9 @@ class MagicNumberFactoryTest extends UnitTest {
 
     @Test
     void testString() throws ParseException {
-        assertTrue(MagicNumberFactory.buildMagicNumber("0 string ABCD FOO").test("ABCD".getBytes()),
+        assertTrue(MagicNumberFactory.buildMagicNumber("0 string ABCD FOO").test("ABCD".getBytes(UTF_8)),
                 "string should match the exact bytes");
-        assertFalse(MagicNumberFactory.buildMagicNumber("0 string ABCD FOO").test("ABCE".getBytes()),
+        assertFalse(MagicNumberFactory.buildMagicNumber("0 string ABCD FOO").test("ABCE".getBytes(UTF_8)),
                 "string should not match a slightly different string");
     }
 
