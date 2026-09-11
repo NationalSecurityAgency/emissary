@@ -1,7 +1,7 @@
 package emissary.kff;
 
 import emissary.core.IBaseDataObject;
-import emissary.core.IBaseDataObject.MergePolicy;
+import emissary.core.IBaseRecord.MergePolicy;
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.core.channels.SeekableByteChannelHelper;
 
