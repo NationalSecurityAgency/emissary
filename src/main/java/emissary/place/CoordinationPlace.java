@@ -18,9 +18,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static emissary.core.constants.Configurations.OUTPUT_FORM;
 
@@ -50,6 +53,8 @@ public class CoordinationPlace extends ServiceProviderPlace {
 
     // set of coordination places that failed to be created/did not exist
     protected static final Set<String> failedCoordPlaceCreation = new LinkedHashSet<>();
+
+    protected boolean batchProcessingEnabled;
 
     /**
      * Create the place using the supplied configuration and location
@@ -143,6 +148,13 @@ public class CoordinationPlace extends ServiceProviderPlace {
                 }
             }
         }
+
+        batchProcessingEnabled = placeRefs.stream().anyMatch(IServiceProviderPlace::isBatchProcessingEnabled);
+    }
+
+    @Override
+    public boolean isBatchProcessingEnabled() {
+        return batchProcessingEnabled;
     }
 
     /**
@@ -268,6 +280,86 @@ public class CoordinationPlace extends ServiceProviderPlace {
     }
 
     /**
+     * Consume a list of data objects and coordinates their processing
+     *
+     * @param dList the payload list to process
+     * @return the list of sprouted data objects
+     */
+    protected List<IBaseDataObject> coordinateBatch(List<IBaseDataObject> dList) {
+        List<IBaseDataObject> active = new ArrayList<>(dList);
+        List<IBaseDataObject> sprouts = new ArrayList<>();
+        Set<IBaseDataObject> errors = Collections.newSetFromMap(new IdentityHashMap<>());
+
+        for (IServiceProviderPlace p : placeRefs) {
+            // Let derived classed decide to quit or continue this loop
+            active.removeIf(d -> !shouldContinue(d, p));
+            if (active.isEmpty()) {
+                break;
+            }
+
+            List<IBaseDataObject> selected = active.stream()
+                    .filter(d -> !shouldSkip(d, p))
+                    .collect(Collectors.toList());
+
+            if (selected.isEmpty()) {
+                continue;
+            }
+
+            try (TimedResource tr = resourceWatcherStart(p)) {
+                assert tr != null; // to silence an unused resource warning
+                sprouts.addAll(coordinateBatch(p, selected, errors));
+            } finally {
+                if (Thread.interrupted()) {
+                    logger.warn("Place {} was interrupted during execution", p);
+                }
+            }
+
+            selected.stream()
+                    .filter(d -> Form.ERROR.equals(d.currentForm()))
+                    .forEach(errors::add);
+
+            active.removeIf(d -> !shouldContinue(p, errors.contains(d)));
+            if (active.isEmpty()) {
+                break;
+            }
+        }
+
+        for (IBaseDataObject d : dList) {
+            applyForm(d, errors.contains(d));
+            cleanUpHook(d);
+        }
+
+        return sprouts;
+    }
+
+    private List<IBaseDataObject> coordinateBatch(IServiceProviderPlace p, List<IBaseDataObject> selected, Set<IBaseDataObject> errors) {
+        if (p.isBatchProcessingEnabled()) {
+            selected.forEach(d -> updateTransformHistory(d, p));
+            try {
+                return p.agentProcessHeavyDuty(selected);
+            } catch (Exception e) {
+                errors.addAll(selected);
+                handlePlaceException(p, true, e);
+                return new ArrayList<>();
+            }
+        } else {
+            List<IBaseDataObject> sprouts = new ArrayList<>();
+            for (IBaseDataObject d : selected) {
+                updateTransformHistory(d, p);
+                try {
+                    List<IBaseDataObject> s = p.agentProcessHeavyDuty(d);
+                    sprouts.addAll(s);
+                    sproutHook(s, d); // only calls hook when we know the sprout's parent
+                } catch (Exception e) {
+                    errors.add(d);
+                    handlePlaceException(p, true, e);
+                }
+            }
+            return sprouts;
+        }
+    }
+
+    /**
      * Allow derived classes a shot to handle a place exception
      *
      * @param p place that was processing when the exception was thrown
@@ -374,6 +466,23 @@ public class CoordinationPlace extends ServiceProviderPlace {
     @Override
     public List<IBaseDataObject> processHeavyDuty(IBaseDataObject d) throws ResourceException {
         return coordinate(d, true);
+    }
+
+    /**
+     * Process point for HDMobileAgent
+     *
+     * @param dList the payload list to process
+     * @return the list of sprouted data objects
+     */
+    @Override
+    public List<IBaseDataObject> processHeavyDuty(List<IBaseDataObject> dList) throws ResourceException {
+        if (dList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        if (dList.size() == 1) {
+            return processHeavyDuty(dList.get(0));
+        }
+        return coordinateBatch(dList);
     }
 
     /**
