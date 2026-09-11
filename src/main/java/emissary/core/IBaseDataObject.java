@@ -487,18 +487,6 @@ public interface IBaseDataObject {
     void setFileType(String arg1);
 
     /**
-     * Set FILETYPE parameter iff empty.
-     * 
-     * @param arg1 the value of the filetype to set
-     * @param arg2 the list of things caller considers equal to being empty
-     * @return true if it was empty and set
-     * @deprecated Use {@link #setFileType(String)} instead.
-     */
-    @Deprecated
-    @SuppressWarnings("AvoidObjectArrays")
-    boolean setFileTypeIfEmpty(String arg1, String[] arg2);
-
-    /**
      * Set FILETYPE parameter iff empty using the built-in definition of empty
      * 
      * @param arg1 the value of the filetype to set
