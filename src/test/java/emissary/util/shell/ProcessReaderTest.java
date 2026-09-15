@@ -53,7 +53,7 @@ class ProcessReaderTest extends UnitTest {
         appender.setContext(logger.getLoggerContext());
 
         logger.addAppender(appender);
-        logger.setLevel(Level.ALL);
+        logger.setLevel(Level.TRACE);
 
         MDC.put(SERVICE_LOCATION, SOME_LOCATION);
         MDC.put(SHORT_NAME, SOME_NAME);
