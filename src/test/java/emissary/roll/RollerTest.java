@@ -14,7 +14,7 @@ class RollerTest extends UnitTest {
     @Test
     void testRoller() {
         final RollableTest tr = new RollableTest();
-        final Roller r = new Roller(1, TimeUnit.DAYS, 1, tr);
+        final Roller r = new Roller(TimeUnit.DAYS, 1, tr, 1);
         r.addPropertyChangeListener(tr);
         r.incrementProgress();
 
@@ -27,7 +27,7 @@ class RollerTest extends UnitTest {
     @Test
     void testShouldRoll() {
         RollableTest tr = new RollableTest();
-        Roller r = new Roller(1, TimeUnit.MILLISECONDS, 1, tr);
+        Roller r = new Roller(TimeUnit.MILLISECONDS, 1, tr, 1);
         r.addPropertyChangeListener(tr);
         r.incrementProgress();
 
@@ -37,7 +37,7 @@ class RollerTest extends UnitTest {
         assertEquals(1, tr.getUpdateCount());
 
         tr = new RollableTest();
-        r = new Roller(100, TimeUnit.HOURS, 1, tr);
+        r = new Roller(TimeUnit.HOURS, 1, tr, 100);
         r.incrementProgress();
         r.run();
         assertTrue(tr.wasRolled);
