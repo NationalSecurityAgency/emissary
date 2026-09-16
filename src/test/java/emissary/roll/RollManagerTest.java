@@ -33,7 +33,7 @@ class RollManagerTest extends UnitTest {
     @Test
     void testObserve() throws IOException {
         RollManager rm = new RollManager(ConfigUtil.getConfigInfo(this.getClass()));
-        Roller r = new Roller(1, TimeUnit.DAYS, 1, new RollableTest());
+        Roller r = new Roller(TimeUnit.DAYS, 1, new RollableTest(), 1);
         RollTestObserver o = new RollTestObserver();
         r.addPropertyChangeListener(o);
         rm.addRoller(r);
