@@ -89,7 +89,7 @@ class LoggingPrintStreamTest {
                 new LoggingPrintStream(NullOutputStream.INSTANCE, logbackTester.name + "_WARN", logbackTester.logger,
                         org.slf4j.event.Level.WARN, 30, TimeUnit.SECONDS);
         try {
-            logbackTester.logger.setLevel(Level.ALL);
+            logbackTester.logger.setLevel(Level.TRACE);
 
             loggingPrintStreamDebug.print(LOG_MSG_1);
             EXCEPTION_ONE.printStackTrace(loggingPrintStreamDebug);
