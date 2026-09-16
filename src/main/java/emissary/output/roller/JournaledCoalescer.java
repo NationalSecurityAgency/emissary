@@ -244,7 +244,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
             // Check to see if we already rolled files successfully and crashed on deletion
             if (Files.exists(rolledOutputPath)) {
                 LOG.warn("Full output file already found {}. Deleting old part files.", rolledOutputPath);
-                finalizeRoll(journals, rolledOutputPath, finalOutputPath);
+                finalizeRoll(rolledOutputPath, finalOutputPath, journals);
                 return;
             }
 
@@ -264,7 +264,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
             Files.move(workingOutputPath, rolledOutputPath);
             LOG.info("Successfully coalesced {} files into: {}. Size: {}", journals.size(), rolledOutputPath, Files.size(rolledOutputPath));
 
-            finalizeRoll(journals, rolledOutputPath, finalOutputPath);
+            finalizeRoll(rolledOutputPath, finalOutputPath, journals);
         } catch (IOException ex) {
             LOG.error("IOException while processing journals for {}", key, ex);
         }
