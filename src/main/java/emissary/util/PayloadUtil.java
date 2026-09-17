@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 public class PayloadUtil {
     public static final Logger logger = LoggerFactory.getLogger(PayloadUtil.class);
 
-    private static final String LS = System.getProperty("line.separator");
+    private static final String LS = System.lineSeparator();
     private static final Pattern validFormRegex = Pattern.compile("^[\\w-)(/+]+$");
 
     protected static final Map<String, String> historyPreference = new HashMap<>();
@@ -68,7 +68,7 @@ public class PayloadUtil {
     }
 
     /**
-     * Check if fileType is already mapped to history preference. If not, set fileType -$gt; preference in map
+     * Check if fileType is already mapped to history preference. If not, set fileType -&gt; preference in map
      *
      * @param fileType current fileType pulled from cfg
      * @param preference preference associated with current cfg fileType
@@ -80,8 +80,10 @@ public class PayloadUtil {
                 logger.warn("FileType {} is assigned to {} in cfg more than once.", fileType, preference);
             } else {
                 // log if filetype already has previous preference assignment
-                logger.warn("FileType {} already has history preference {} assigned. {} will be ignored.", fileType,
-                        historyPreference.get(fileType), preference);
+                if (logger.isWarnEnabled()) {
+                    logger.warn("FileType {} already has history preference {} assigned. {} will be ignored.", fileType,
+                            historyPreference.get(fileType), preference);
+                }
             }
         } else {
             historyPreference.put(fileType, preference);
@@ -192,7 +194,7 @@ public class PayloadUtil {
             if (pos > 0) {
                 final String prefix = h.substring(0, pos);
                 if (!prev.equals(prefix)) {
-                    if (prev.length() != 0) {
+                    if (!prev.isEmpty()) {
                         sb.append(",");
                     }
                     sb.append(prefix);
@@ -232,7 +234,7 @@ public class PayloadUtil {
         }
         final Element meta = new Element("metadata");
         for (final String key : d.getParameters().keySet()) {
-            final Element m = JDOMUtil.protectedElement("param", d.getStringParameter(key));
+            final Element m = JDOMUtil.protectedElement("param", d.getParameterAsString(key));
             m.setAttribute("name", key);
             meta.addContent(m);
         }
@@ -312,7 +314,7 @@ public class PayloadUtil {
 
     /**
      * Checks whether the form complies with form rules established by a regex
-     *
+     * <p>
      * Approved forms can contain alpha-numerics, '-', '_', '()', '/', '+'
      *
      * @param form The form to be tested
