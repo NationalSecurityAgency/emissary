@@ -111,8 +111,8 @@ class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
     private void createWorkspace(String namespace, int maxCount, long maxBytes) throws Exception {
         // Create and configure a WorkSpace
         space =
-                new MyWorkSpace(FeedCommand.parse(FeedCommand.class, new String[] {"-nsname", namespace, "-c", TMPDIR, "-i",
-                        TMPDIR + "/test/space/in:10"}));
+                new MyWorkSpace(FeedCommand.parse(FeedCommand.class, "-nsname", namespace, "-c", TMPDIR, "-i",
+                        TMPDIR + "/test/space/in:10"));
         space.setEatPrefix(TMPDIR + "/test/space/in");
         space.setOutputRoot(TMPDIR + "/test/space/out");
         space.setCaseId("space1case");

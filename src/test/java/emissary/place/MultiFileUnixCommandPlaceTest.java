@@ -67,7 +67,7 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
             logger.error("Cannot create MultiFileUnixCommandPlace", ex);
         }
 
-        payload = DataObjectFactory.getInstance(new Object[] {PAYLOAD_STRING.getBytes(UTF_8), "myPayload", FORM});
+        payload = DataObjectFactory.getInstance(PAYLOAD_STRING.getBytes(UTF_8), "myPayload", FORM);
 
         payload.putParameter("COPY_THIS", "copy value");
         payload.putParameter("IGNORE_THIS", "ignore value");

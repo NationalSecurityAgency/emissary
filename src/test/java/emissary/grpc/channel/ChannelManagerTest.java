@@ -8,6 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.Locale;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,7 +42,7 @@ class ChannelManagerTest extends UnitTest {
     void testBadPortNumber(int port) {
         Runnable invocation = () -> new TestChannelManager("dns:///foo.bar", port).close();
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, invocation::run);
-        assertEquals(String.format("Port \"%d\" is outside valid range [1, 65535]", port), e.getMessage());
+        assertEquals(String.format(Locale.ROOT, "Port \"%d\" is outside valid range [1, 65535]", port), e.getMessage());
     }
 
     private static class TestChannelManager extends ChannelManager {

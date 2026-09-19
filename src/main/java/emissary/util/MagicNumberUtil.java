@@ -255,7 +255,7 @@ public final class MagicNumberUtil {
      * Load the magic number list globally.
      *
      * @param config the java.io.File pointing to the magic file
-     * @exception IOException if one occurs while reading the config file or if a security access error occurs
+     * @throws IOException if one occurs while reading the config file or if a security access error occurs
      */
     public void load(final File config) throws IOException {
         load(config, false);
@@ -266,7 +266,7 @@ public final class MagicNumberUtil {
      *
      * @param config the java.io.File pointing to the magic file
      * @param swallowParseException should we swallow Ignorable ParseException or bubble them up
-     * @exception IOException if one occurs while reading the config file or if a security access error occurs
+     * @throws IOException if one occurs while reading the config file or if a security access error occurs
      */
     public void load(final File config, final boolean swallowParseException) throws IOException {
         try {

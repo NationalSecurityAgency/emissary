@@ -87,7 +87,7 @@ public class ByteTokenizer implements Iterator<String> {
      * @param delim the delimiters.
      * @param returnDelims flag indicating whether to return the delimiters as tokens.
      * @param encoding the encoding for which to return the bytes.
-     * @exception UnsupportedEncodingException thrown if the supplied encoding is unsupported.
+     * @throws UnsupportedEncodingException thrown if the supplied encoding is unsupported.
      */
     public ByteTokenizer(byte[] bytes, int start, int len, String delim, boolean returnDelims, String encoding) throws UnsupportedEncodingException {
         this(bytes, start, len, delim, returnDelims);
@@ -121,7 +121,7 @@ public class ByteTokenizer implements Iterator<String> {
      * @param len the number of bytes to parse
      * @param delim the delimiters.
      * @param encoding the encoding for which to return the bytes.
-     * @exception UnsupportedEncodingException thrown if the supplied encoding is unsupported.
+     * @throws UnsupportedEncodingException thrown if the supplied encoding is unsupported.
      */
     public ByteTokenizer(byte[] bytes, int start, int len, String delim, String encoding) throws UnsupportedEncodingException {
         this(bytes, start, len, delim, false, encoding);
@@ -164,7 +164,7 @@ public class ByteTokenizer implements Iterator<String> {
      * @param delim the delimiters.
      * @param returnDelims flag indicating whether to return the delimiters as tokens.
      * @param encoding the encoding for which to return the bytes.
-     * @exception UnsupportedEncodingException thrown if the supplied encoding is unsupported.
+     * @throws UnsupportedEncodingException thrown if the supplied encoding is unsupported.
      */
     public ByteTokenizer(byte[] bytes, String delim, boolean returnDelims, String encoding) throws UnsupportedEncodingException {
         this(bytes, 0, bytes.length, delim, returnDelims, encoding);
@@ -187,7 +187,7 @@ public class ByteTokenizer implements Iterator<String> {
      * @param bytes a byte array to be parsed.
      * @param delim the delimiters.
      * @param encoding the encoding for which to return the bytes.
-     * @exception UnsupportedEncodingException thrown if the supplied encoding is unsupported.
+     * @throws UnsupportedEncodingException thrown if the supplied encoding is unsupported.
      */
     public ByteTokenizer(byte[] bytes, String delim, String encoding) throws UnsupportedEncodingException {
         this(bytes, 0, bytes.length, delim, encoding);
@@ -268,7 +268,7 @@ public class ByteTokenizer implements Iterator<String> {
      * Returns the next token from this string tokenizer.
      *
      * @return the next token from this string tokenizer.
-     * @exception NoSuchElementException if there are no more tokens in this tokenizer's string.
+     * @throws NoSuchElementException if there are no more tokens in this tokenizer's string.
      */
     @Override
     public String next() {
@@ -310,7 +310,7 @@ public class ByteTokenizer implements Iterator<String> {
      *
      * @param delim the new delimiters.
      * @return the next token, after switching to the new delimiter set.
-     * @exception NoSuchElementException if there are no more tokens in this tokenizer's string.
+     * @throws NoSuchElementException if there are no more tokens in this tokenizer's string.
      */
     public String next(String delim) {
         delimiters = delim;

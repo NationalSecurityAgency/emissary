@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -61,8 +62,9 @@ public class RegressionTestAnswerGenerator extends AnswerGenerator {
             final Path datFileUrl = Path.of(new ResourceReader().getResource(resource).toURI());
             final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
             if (!finalIbdo.currentForm().equals(datFile.getFinalForm())) {
-                final String format = "Final form from place [%s] didn't match final form in filename [%s]";
-                fail(String.format(format, finalIbdo.currentForm(), datFile.getFinalForm()));
+                fail(String.format(Locale.ROOT,
+                        "Final form from place [%s] didn't match final form in filename [%s]", finalIbdo.currentForm(),
+                        datFile.getFinalForm()));
             }
         } catch (final URISyntaxException e) {
             fail("Couldn't get path for resource: " + resource, e);
