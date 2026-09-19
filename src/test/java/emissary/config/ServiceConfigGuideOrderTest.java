@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -141,7 +142,7 @@ class ServiceConfigGuideOrderTest extends UnitTest {
     void testLargeEntryCount() throws IOException {
         int numEntries = 50;
         String[] configLines = IntStream.range(0, numEntries)
-                .mapToObj(i -> String.format("%s = value%03d", KEY, i))
+                .mapToObj(i -> String.format(Locale.ROOT, "%s = value%03d", KEY, i))
                 .toArray(String[]::new);
 
         var directEntries = new ServiceConfigGuide(toStream(configLines)).findEntries(KEY);

@@ -75,7 +75,7 @@ class InterruptibleCharSequenceTest extends UnitTest {
         sleep(1000);
         t.interrupt();
         Object result = blockingQueue.take();
-        assertEquals(Boolean.FALSE, result, "expected to not find a match");
+        assertEquals(false, result, "expected to not find a match");
     }
 
     @Test
