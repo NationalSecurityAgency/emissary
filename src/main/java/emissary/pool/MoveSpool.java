@@ -125,8 +125,8 @@ public class MoveSpool implements Runnable {
             for (String key : Namespace.keySet()) {
                 try {
                     Object value = Namespace.lookup(key);
-                    if (value instanceof IDirectoryPlace) {
-                        localDirectory = (IDirectoryPlace) value;
+                    if (value instanceof IDirectoryPlace directoryPlace) {
+                        localDirectory = directoryPlace;
                         break;
                     }
                 } catch (NamespaceException ex) {

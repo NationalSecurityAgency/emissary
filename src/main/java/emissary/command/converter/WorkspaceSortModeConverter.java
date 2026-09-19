@@ -17,30 +17,30 @@ public class WorkspaceSortModeConverter implements ITypeConverter<Comparator<Wor
 
     @Override
     public Comparator<WorkBundle> convert(String value) {
-        Comparator<WorkBundle> outbound = null;
-        switch (value) {
-            case YOUNGEST_FIRST:
+        final Comparator<WorkBundle> outbound = switch (value) {
+            case YOUNGEST_FIRST -> {
                 // The 11 is just the default initial capacity copied over in this case
                 // where the caller askes for a particular sort order in the queue
-                outbound = new YoungestFirstComparator();
                 LOG.info("Using youngest first feeder queue");
-                break;
-            case OLDEST_FIRST:
-                outbound = new OldestFirstComparator();
+                yield new YoungestFirstComparator();
+            }
+            case OLDEST_FIRST -> {
                 LOG.info("Using oldest first feeder queue");
-                break;
-            case SMALLEST_FIRST:
-                outbound = new SmallestFirstComparator();
+                yield new OldestFirstComparator();
+            }
+            case SMALLEST_FIRST -> {
                 LOG.info("Using smallest first feeder queue");
-                break;
-            case LARGEST_FIRST:
-                outbound = new LargestFirstComparator();
+                yield new SmallestFirstComparator();
+            }
+            case LARGEST_FIRST -> {
                 LOG.info("Using largest first feeder queue");
-                break;
-            default:
+                yield new LargestFirstComparator();
+            }
+            default -> {
                 LOG.warn("Unknown sort order. Using priority-based sort (if priorities are specified in the directory names)");
-                break;
-        }
+                yield null;
+            }
+        };
         return outbound;
     }
 

@@ -96,7 +96,7 @@ RUN git init --quiet \
     && git add . \
     && git commit --quiet -am.
 
-ARG java_compiler=11
+ARG java_compiler=21
 ARG maven_phases='clean verify'
 ARG maven_profiles='-Pdist'
 RUN --mount=type=cache,uid=${uid},gid=${gid},target=/home/${user}/.m2 \

@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.time.Duration;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -98,7 +99,7 @@ public abstract class FunctionalTest extends UnitTest {
 
         // Wait for jetty to come up
         try {
-            Thread.sleep(500);
+            Thread.sleep(Duration.ofMillis(500));
         } catch (InterruptedException ignored) {
             // Ignore
         }
@@ -153,9 +154,9 @@ public abstract class FunctionalTest extends UnitTest {
         for (String key : Namespace.keySet()) {
             try {
                 Object obj = Namespace.lookup(key);
-                if (obj instanceof IServiceProviderPlace) {
-                    logger.debug("Stopping {}", obj);
-                    ((IServiceProviderPlace) obj).shutDown();
+                if (obj instanceof IServiceProviderPlace serviceProviderPlace) {
+                    logger.debug("Stopping {}", serviceProviderPlace);
+                    serviceProviderPlace.shutDown();
                 }
             } catch (NamespaceException ignored) {
                 // empty catch block

@@ -5,6 +5,7 @@ import emissary.pickup.file.FilePickUpClient;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -52,7 +53,7 @@ public class BreakableFilePickUpClient extends FilePickUpClient {
             logger.debug("Simulating broken file pickup client, shutting down now");
             this.shutDown();
             try {
-                Thread.sleep(100);
+                Thread.sleep(Duration.ofMillis(100));
             } catch (InterruptedException ignored) {
                 // empty catch block
             }

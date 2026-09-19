@@ -21,6 +21,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
@@ -237,7 +238,7 @@ public class DropOffUtil {
                 }
                 if (!Files.exists(thePath)) {
                     try {
-                        Thread.sleep(50L * tryCount);
+                        Thread.sleep(Duration.ofMillis(50L * tryCount));
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
@@ -331,87 +332,76 @@ public class DropOffUtil {
 
                 if (x == c) {
                     switch (t) {
-                        case 'U':
+                        case 'U' -> {
                             if (tld != null) {
                                 sb.append(nvl(tld.getParameter("UserName"), "no-userid"));
                             } else if (d != null) {
                                 sb.append(nvl(d.getParameter("UserName"), "no-userid"));
                             }
-                            break;
-                        case 'S':
+                        }
+                        case 'S' -> {
                             if (d != null) {
                                 sb.append(d.shortName());
                             }
-                            break;
-                        case 'I':
+                        }
+                        case 'I' -> {
                             if (d != null) {
                                 sb.append(d.getFilename());
                             }
-                            break;
-                        case 'i':
+                        }
+                        case 'i' -> {
                             if (d != null) {
                                 sb.append(d.getFilename().replaceAll("[/\\\\]", "_"));
                             }
-                            break;
-                        case 'P':
+                        }
+                        case 'P' -> {
                             if (d != null) {
                                 sb.append(d.getFilename(), 0, d.getFilename().length() - d.shortName().length());
                             }
-                            break;
-                        case 'p':
+                        }
+                        case 'p' -> {
                             if (d != null) {
                                 sb.append(d.getFilename().substring(0, d.getFilename().length() - d.shortName().length()).replaceAll("[/\\\\]", "_"));
                             }
-                            break;
-                        case 'F':
+                        }
+                        case 'F' -> {
                             if (d != null) {
                                 sb.append(nvl(cleanSpecPath(d.getFileType()), "NONE"));
                             }
-                            break;
-                        case 'L':
+                        }
+                        case 'L' -> {
                             if (d != null) {
                                 sb.append(nvl(d.getParameter("LANGUAGE"), "NONE"));
                             }
-                            break;
-                        case 'G':
+                        }
+                        case 'G' -> {
                             if (tld != null) {
                                 sb.append(datePath(cleanSpecPath(tld.getParameterAsString("DTG"))));
                             } else if (d != null) {
                                 sb.append(datePath(cleanSpecPath(d.getParameterAsString("DTG"))));
                             }
-                            break;
-                        case 'R':
-                            sb.append(getRootPath());
-                            break;
-                        case 'B':
+                        }
+                        case 'R' -> sb.append(getRootPath());
+                        case 'B' -> {
                             if (tld != null) {
                                 sb.append(cleanSpecPath(getBestIdFrom(tld)));
                             } else if (d != null) {
                                 sb.append(cleanSpecPath(getBestIdFrom(d)));
                             }
-                            break;
-                        case 'b':
+                        }
+                        case 'b' -> {
                             sb.append(cleanSpecPath((tld != null) ? getBestIdFrom(tld) : getBestIdFrom(d)));
                             final String sn = d.shortName();
                             final int pos = sn.indexOf(Family.SEP);
                             if (pos > 0) {
                                 sb.append(sn.substring(pos));
                             }
-                            break;
-                        case 'Y':
-                            sb.append(TimeUtil.getDate("yyyy", "GMT"));
-                            break;
-                        case 'M':
-                            sb.append(TimeUtil.getDate("MM", "GMT"));
-                            break;
-                        case 'D':
-                            sb.append(TimeUtil.getDate("dd", "GMT"));
-                            break;
-                        case 'J':
-                            sb.append(TimeUtil.getDate("DDD", "GMT"));
-                            break;
-                        default:
-                            sb.append(c).append(t).append(x);
+                        }
+                        case 'Y' -> sb.append(TimeUtil.getDate("yyyy", "GMT"));
+                        case 'M' -> sb.append(TimeUtil.getDate("MM", "GMT"));
+                        case 'D' -> sb.append(TimeUtil.getDate("dd", "GMT"));
+                        case 'J' -> sb.append(TimeUtil.getDate("DDD", "GMT"));
+                        default -> sb.append(c).append(t).append(x);
                     }
                     i += 2; // SUPPRESS CHECKSTYLE ModifiedControlVariable
                 } else {

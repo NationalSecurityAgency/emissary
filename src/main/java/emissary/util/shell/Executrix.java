@@ -1440,7 +1440,7 @@ public class Executrix {
                 // Try 2
                 if (!deleted && dir.exists()) {
                     try {
-                        Thread.sleep(10);
+                        Thread.sleep(Duration.ofMillis(10));
                     } catch (InterruptedException ignore) {
                         Thread.currentThread().interrupt();
                     }
@@ -1452,7 +1452,7 @@ public class Executrix {
                 // Try 3
                 if (!deleted && dir.exists()) {
                     try {
-                        Thread.sleep(10);
+                        Thread.sleep(Duration.ofMillis(10));
                     } catch (InterruptedException ignore) {
                         Thread.currentThread().interrupt();
                     }
