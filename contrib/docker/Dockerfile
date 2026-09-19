@@ -7,7 +7,7 @@ FROM redhat/ubi8 AS base_ubi8
 ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 ENV PROJECT_BASE=/opt/emissary
 
-ARG java_version=11
+ARG java_version=21
 ARG user=emissary
 ARG group=emissary
 ARG uid=1000
@@ -28,7 +28,7 @@ FROM centos:7 AS base_centos7
 ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 ENV PROJECT_BASE=/opt/emissary
 
-ARG java_version=11
+ARG java_version=21
 ARG user=emissary
 ARG group=emissary
 ARG uid=1000
@@ -54,7 +54,7 @@ FROM alpine:3 AS base_alpine3
 ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 ENV PROJECT_BASE=/opt/emissary
 
-ARG java_version=11
+ARG java_version=21
 ARG user=emissary
 ARG group=emissary
 ARG uid=1000
