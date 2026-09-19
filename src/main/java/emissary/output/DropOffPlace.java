@@ -126,8 +126,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
 
             try {
                 final Object filter = emissary.core.Factory.create(clazz);
-                if (filter != null && filter instanceof IDropOffFilter) {
-                    final IDropOffFilter f = (IDropOffFilter) filter;
+                if (filter != null && filter instanceof IDropOffFilter f) {
                     f.initialize(configG, name, filterConfig);
                     addFilter(f);
                 } else {
@@ -412,8 +411,8 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
 
         IBaseDataObject doTarget = null;
         List<IBaseDataObject> listTarget = null;
-        if (target instanceof IBaseDataObject) {
-            doTarget = (IBaseDataObject) target;
+        if (target instanceof IBaseDataObject iBaseDataObject) {
+            doTarget = iBaseDataObject;
         } else if (target instanceof List) {
             listTarget = (List<IBaseDataObject>) target;
         } else {

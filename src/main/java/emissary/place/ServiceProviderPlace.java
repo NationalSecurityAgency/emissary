@@ -479,13 +479,12 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
         try {
             MobileAgent agent = getAgent();
 
-            if (agent instanceof HDMobileAgent) {
-                Object payload = ((HDMobileAgent) agent).getPayloadForTransport();
+            if (agent instanceof HDMobileAgent hdAgent) {
+                Object payload = hdAgent.getPayloadForTransport();
                 if (payload instanceof List) {
                     List<?> familyTree = (List<?>) payload;
                     for (Object familyMember : familyTree) {
-                        if (familyMember instanceof IBaseDataObject) {
-                            IBaseDataObject member = (IBaseDataObject) familyMember;
+                        if (familyMember instanceof IBaseDataObject member) {
                             if (!member.shortName().contains(Family.SEP)) {
                                 return member;
                             }

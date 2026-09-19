@@ -93,8 +93,8 @@ public class PayloadUtil {
      */
     public static String getName(final Object o) {
         String payloadName = o.getClass().getName();
-        if (o instanceof IBaseDataObject) {
-            payloadName = ((IBaseDataObject) o).shortName();
+        if (o instanceof IBaseDataObject ibdo) {
+            payloadName = ibdo.shortName();
         } else if (o instanceof Collection) {
             final Iterator<?> pi = ((Collection<?>) o).iterator();
             if (pi.hasNext()) {

@@ -7,6 +7,7 @@ import jakarta.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.time.Duration;
 import java.time.Instant;
 
 public class WatcherThread extends Thread {
@@ -47,7 +48,7 @@ public class WatcherThread extends Thread {
         while (flag && (ii++ < nTries)) {
             if (proc != null) {
                 try {
-                    sleep(partialDelay);
+                    sleep(Duration.ofMillis(partialDelay));
 
                     if (ii == nTries) {
                         try {

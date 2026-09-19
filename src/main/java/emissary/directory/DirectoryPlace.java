@@ -1370,8 +1370,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         final String name = "DirectoryPlace";
 
         final Object nsval = Namespace.lookup(name);
-        if (nsval instanceof IDirectoryPlace) {
-            return (IDirectoryPlace) nsval;
+        if (nsval instanceof IDirectoryPlace iDirectoryPlace) {
+            return iDirectoryPlace;
         }
 
         throw new EmissaryException("Bad directory place lookup found " + nsval);
