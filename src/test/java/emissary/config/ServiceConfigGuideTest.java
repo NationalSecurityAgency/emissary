@@ -771,7 +771,7 @@ class ServiceConfigGuideTest extends UnitTest {
                 config.addEntry(key, value);
                 // add non-prefixed entry to expected map (prefix gets stripped during findStringMatchMultiMap call)
                 // UPPERCASE the key to match findStringMatchMultiMap retrieval behavior
-                expected.computeIfAbsent(preserveCase ? k : k.toUpperCase(Locale.getDefault()), v -> new LinkedHashSet<>()).add(value);
+                expected.computeIfAbsent(preserveCase ? k : k.toUpperCase(Locale.ROOT), v -> new LinkedHashSet<>()).add(value);
             }
         }
         Map<String, Set<String>> actual = config.findStringMatchMultiMap(prefix, preserveCase, ORDERED);

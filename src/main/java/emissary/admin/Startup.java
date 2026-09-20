@@ -146,7 +146,7 @@ public class Startup {
         final String startupConfigFile;
         if (args.length == 1) {
             directoryAction = setAction(ACTIONSTART);
-            if (args[0].startsWith("/") || args[0].toUpperCase(Locale.getDefault()).startsWith("HTTP")) {
+            if (args[0].startsWith("/") || args[0].toUpperCase(Locale.ROOT).startsWith("HTTP")) {
                 startupConfigFile = args[0];
             } else {
                 startupConfigFile = ConfigUtil.getConfigFile(args[0]);

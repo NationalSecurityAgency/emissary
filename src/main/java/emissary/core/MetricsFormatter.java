@@ -55,7 +55,7 @@ public class MetricsFormatter {
     @SuppressWarnings("LongDoubleConversion")
     public String formatTimer(final String name, final Timer timer) {
         final Snapshot snapshot = timer.getSnapshot();
-        return String.format(Locale.getDefault(), "STAT: %s => min=%2.2f,  max=%2.2f, avg=%2.2f, events=%d", name, convertDuration(snapshot.getMin()),
+        return String.format(Locale.ROOT, "STAT: %s => min=%2.2f,  max=%2.2f, avg=%2.2f, events=%d", name, convertDuration(snapshot.getMin()),
                 convertDuration(snapshot.getMax()), convertDuration(snapshot.getMean()), timer.getCount());
     }
 
