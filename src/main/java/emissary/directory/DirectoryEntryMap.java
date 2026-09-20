@@ -4,6 +4,7 @@ import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryList> {
 
     // Serializable
+    @Serial
     static final long serialVersionUID = 9097156614421373808L;
 
     private static final Logger logger = LoggerFactory.getLogger(DirectoryEntryMap.class);

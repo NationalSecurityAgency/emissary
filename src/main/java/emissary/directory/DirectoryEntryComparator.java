@@ -1,5 +1,6 @@
 package emissary.directory;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Comparator;
 
@@ -10,6 +11,7 @@ import java.util.Comparator;
 public class DirectoryEntryComparator implements Comparator<DirectoryEntry>, Serializable {
 
     // Serializable
+    @Serial
     static final long serialVersionUID = -4275631999901887834L;
 
     @Override

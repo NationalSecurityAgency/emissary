@@ -5,6 +5,7 @@ import emissary.util.Hexl;
 
 import jakarta.annotation.Nullable;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +18,7 @@ import java.util.TreeSet;
 public class KffResult implements Serializable {
 
     // Serializable
+    @Serial
     static final long serialVersionUID = -5338535050376705502L;
 
     @Nullable

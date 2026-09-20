@@ -1,4 +1,4 @@
-/**
+/*
  * IPickUpPlace.java
  */
 package emissary.pickup;

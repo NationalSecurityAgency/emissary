@@ -255,7 +255,7 @@ public class PlaceStarter {
             }
             logger.warn("Multiple entries for {}, found {}", thePlaceName, classStringList);
         }
-        return classStringList.get(0);
+        return classStringList.getFirst();
     }
 
     /** This class is not meant to be instantiated. */

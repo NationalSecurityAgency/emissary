@@ -6,12 +6,14 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class Config implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 957308283685018516L;
 
     @XmlElement(name = "flavors")
