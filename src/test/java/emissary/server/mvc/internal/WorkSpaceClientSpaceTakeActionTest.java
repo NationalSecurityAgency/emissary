@@ -81,7 +81,7 @@ class WorkSpaceClientSpaceTakeActionTest extends EndpointTestBase {
             final int status = response.getStatus();
             assertEquals(500, status);
             final String result = response.readEntity(String.class);
-            assertTrue(result.isEmpty());
+            assertTrue(result.contains("HTTP ERROR 500 Request failed"));
             assertEquals("Server Error", response.getStatusInfo().getReasonPhrase());
         }
     }
