@@ -4,6 +4,7 @@ import emissary.util.Hexl;
 
 import jakarta.annotation.Nullable;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class ChecksumResults implements Serializable {
 
     // serializable
+    @Serial
     static final long serialVersionUID = -8187329704593435586L;
 
     private long crc = -1L;

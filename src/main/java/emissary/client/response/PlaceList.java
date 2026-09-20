@@ -6,6 +6,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Set;
 import java.util.SortedSet;
@@ -13,6 +14,7 @@ import java.util.TreeSet;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class PlaceList implements Serializable {
+    @Serial
     private static final long serialVersionUID = 996866694436011053L;
 
     private static final Logger logger = LoggerFactory.getLogger(PlaceList.class);

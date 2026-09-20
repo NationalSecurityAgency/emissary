@@ -6,11 +6,13 @@ import jakarta.xml.bind.annotation.XmlElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Set;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class PeerList implements Serializable {
+    @Serial
     private static final long serialVersionUID = -5236361363769379766L;
 
     private static final Logger logger = LoggerFactory.getLogger(PeerList.class);

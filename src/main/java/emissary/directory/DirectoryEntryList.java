@@ -6,6 +6,7 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,6 +22,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
     private static final Logger logger = LoggerFactory.getLogger(DirectoryEntryList.class);
 
     // Serializable
+    @Serial
     static final long serialVersionUID = -612273877522294443L;
 
     /** Xml value of entry list element */

@@ -1,7 +1,7 @@
-/***********************************************************
+/*
  * This place transforms &#xxxx; formatted HTML Escape
  * stuff into normal unicode (utf-8 characters)
- **/
+ */
 
 package emissary.transform;
 

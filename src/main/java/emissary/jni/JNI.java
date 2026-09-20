@@ -20,6 +20,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import java.util.Map;
 @SuppressWarnings("AvoidObjectArrays")
 public class JNI implements Serializable {
 
+    @Serial
     static final long serialVersionUID = 3037911106823343480L;
 
     /**
@@ -128,7 +130,7 @@ public class JNI implements Serializable {
             // Get the osname-dependent SAVE_PATH
             final List<String> iparms = this.configG.findEntries(arch + "_LIBRARY_SAVE_PATH");
             if (CollectionUtils.isNotEmpty(iparms)) {
-                this.savePath.put(arch, iparms.get(0));
+                this.savePath.put(arch, iparms.getFirst());
             }
         }
 
@@ -359,7 +361,7 @@ public class JNI implements Serializable {
             }
 
             // Just use the first one
-            final DirectoryEntry entry = entries.get(0);
+            final DirectoryEntry entry = entries.getFirst();
             String repositoryKey = entry.getKey();
 
             // No related place, try a bootstrapping repository

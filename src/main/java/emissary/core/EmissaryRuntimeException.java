@@ -1,11 +1,14 @@
 package emissary.core;
 
+import java.io.Serial;
+
 /**
  * This is the top of the exception hierarchy for Emissary All emissary exceptions extend from here
  */
 public class EmissaryRuntimeException extends RuntimeException {
 
     // Serializable
+    @Serial
     private static final long serialVersionUID = -1590114207784953305L;
 
     /**

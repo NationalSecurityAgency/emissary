@@ -30,6 +30,7 @@ import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
@@ -216,6 +217,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
      * Ibdo {@link Module} implementation that allows registration of serializers
      */
     class IbdoModule extends SimpleModule {
+        @Serial
         private static final long serialVersionUID = -8129967131240053241L;
 
         public IbdoModule() {
