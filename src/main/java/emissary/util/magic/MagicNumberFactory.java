@@ -375,7 +375,7 @@ public class MagicNumberFactory {
     }
 
     private static int lookupDataType(String arg) {
-        Integer dataTypeIdInt = typeMap.get(arg.toUpperCase(Locale.getDefault()));
+        Integer dataTypeIdInt = typeMap.get(arg.toUpperCase(Locale.ROOT));
         if (dataTypeIdInt == null) {
             return -1;
         }
@@ -412,7 +412,7 @@ public class MagicNumberFactory {
         if (unaryLen > 0) {
             subject = subject.substring(unaryLen);
         }
-        if (subject.toUpperCase(Locale.getDefault()).endsWith("L")) {
+        if (subject.toUpperCase(Locale.ROOT).endsWith("L")) {
             subject = subject.substring(0, subject.length() - 1);
         }
         byte[] valueArray = MagicMath.stringToByteArray(subject);

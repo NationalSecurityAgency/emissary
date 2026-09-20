@@ -15,7 +15,7 @@ public class AgentPoolHealthCheck extends HealthCheck {
         int idle = 0;
         try {
             for (int i = 0; i < AgentPool.lookup().getMaxTotal(); i++) {
-                String agentKey = MobileAgentFactory.AGENT_NAME + "-" + String.format(Locale.getDefault(), "%02d", i);
+                String agentKey = MobileAgentFactory.AGENT_NAME + "-" + String.format(Locale.ROOT, "%02d", i);
                 if (Namespace.exists(agentKey)) {
                     if (Namespace.lookup(agentKey).toString().startsWith("Idle")) {
                         idle++;
