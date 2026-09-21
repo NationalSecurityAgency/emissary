@@ -18,14 +18,14 @@ import java.util.Map;
  * Provide a factory for getting the proper type of input parser Provide the implementing classes for that match the
  * configured Data Identifier Engine in PARSER_NIO_IMPL_[type] variants if available. All configured parsers must
  * implement emissary.parser.SessionParser.
- *
+ * <p>
  * When no proper mappings are found or the specified parser cannot be instantiated, the SimpleNioParser is used
  * instead. If these cannot be instantiated, then something is likely seriously wrong.
- *
+ * <p>
  * If an NIO parser is requested, see makeSessionParser(FileChannel), but cannot be found for the data type, the Channel
  * is evaluated and if under MAX_NIO_FALLBACK_SIZE, then the bytes are consumed and a standard parser is produced if one
  * is available.
- *
+ * <p>
  * The ID engine is configured with the ID_ENGINE_CLASS in the configuration file and must be an instance of
  * emissary.parser.DataIdentifier.
  */
@@ -118,7 +118,7 @@ public class ParserFactory {
      */
     public SessionParser makeSessionParser(SeekableByteChannel channel) {
         String id = identify(channel);
-        return makeSessionParser(id, channel);
+        return makeSessionParser(channel, id);
     }
 
     /**
@@ -188,10 +188,9 @@ public class ParserFactory {
      */
     protected void makeIdEngine(String clazz) {
         try {
-            DataIdentifier d = (DataIdentifier) Factory.create(clazz);
-            idEngine = d;
+            idEngine = (DataIdentifier) Factory.create(clazz);
         } catch (RuntimeException ex) {
-            logger.warn("Cannot make data identifier from " + clazz, ex);
+            logger.warn("Cannot make data identifier from {}", clazz, ex);
         }
     }
 
