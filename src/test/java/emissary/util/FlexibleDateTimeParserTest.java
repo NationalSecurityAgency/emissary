@@ -25,7 +25,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
     private static final long EXPECTED_ALT_TIME_NO_SECS = 1451894520; // 2016-01-04 08:02:00
 
     @BeforeAll
-    public static void setupClass() {
+    static void setupClass() {
         // "warm-up" the class, but this runs before UnitTest has
         // a chance to set up, so do that first
         UnitTest.setupSystemProperties();
@@ -706,6 +706,6 @@ class FlexibleDateTimeParserTest extends UnitTest {
         assertNull(FlexibleDateTimeParser.parse("1234", Collections.singletonList(null)));
         test("17.Mar.2016", 0L, "UNKNOWN");
         test("Mon, 2 Feb 2017 06:20:30 PM +0000", 0L, "UNKNOWN");
-        test("2016:01:04 18:20:30 GMT+0000<" + RandomStringUtils.randomAlphanumeric(75) + ">", 0L, "UNKNOWN");
+        test("2016:01:04 18:20:30 GMT+0000<" + RandomStringUtils.secure().nextAlphanumeric(75) + ">", 0L, "UNKNOWN");
     }
 }
