@@ -81,7 +81,7 @@ public class HeartbeatManager {
      * @param intervalSeconds how often the timeer task kicks off
      */
     public HeartbeatManager(final String directoryKey, final int initialDelaySeconds, final int intervalSeconds) {
-        this(directoryKey, null, initialDelaySeconds, intervalSeconds);
+        this(directoryKey, initialDelaySeconds, intervalSeconds, null);
     }
 
     @Deprecated
