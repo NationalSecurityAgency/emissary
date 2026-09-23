@@ -5,6 +5,7 @@ import emissary.core.IBaseDataObject;
 
 import org.apache.commons.lang3.Validate;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Comparator;
 
@@ -15,6 +16,7 @@ import java.util.Comparator;
 public class ShortNameComparator implements Comparator<IBaseDataObject>, Serializable {
 
     // Serializable
+    @Serial
     static final long serialVersionUID = -7621558910791975422L;
 
     @Override

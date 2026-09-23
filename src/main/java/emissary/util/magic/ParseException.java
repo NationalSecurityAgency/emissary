@@ -1,10 +1,13 @@
 package emissary.util.magic;
 
+import java.io.Serial;
+
 /**
  * Exception used within the magic package - external clients never encounter this exception
  */
 
 public class ParseException extends Exception {
+    @Serial
     private static final long serialVersionUID = -58614520195826109L;
 
     public ParseException(String message) {

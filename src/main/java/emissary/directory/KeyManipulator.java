@@ -4,6 +4,7 @@ import emissary.place.IServiceProviderPlace;
 
 import jakarta.annotation.Nullable;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -68,6 +69,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class KeyManipulator implements Serializable {
 
     // Serializable
+    @Serial
     static final long serialVersionUID = 2456659383313218695L;
 
     /**

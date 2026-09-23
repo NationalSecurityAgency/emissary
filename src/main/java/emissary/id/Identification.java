@@ -2,6 +2,7 @@ package emissary.id;
 
 import jakarta.annotation.Nullable;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +17,7 @@ import java.util.TreeMap;
  */
 public class Identification implements Serializable {
     // Serializable
+    @Serial
     static final long serialVersionUID = 9212068103720124108L;
 
     protected List<String> types = new ArrayList<>();
@@ -95,7 +97,7 @@ public class Identification implements Serializable {
         if (this.types.isEmpty()) {
             return null;
         } else {
-            return this.types.get(0);
+            return this.types.getFirst();
         }
     }
 

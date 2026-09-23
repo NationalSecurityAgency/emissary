@@ -1,5 +1,7 @@
 package emissary.core;
 
+import java.io.Serial;
+
 /**
  * This exception is used for resource management within the emissary framework
  */
@@ -8,6 +10,7 @@ public class ResourceException extends EmissaryException {
     /**
      * provide uid for serialization
      */
+    @Serial
     private static final long serialVersionUID = 4707276767249682961L;
 
     /**

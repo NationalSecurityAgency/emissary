@@ -195,7 +195,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
             try {
                 // checking to see if any object in the tree is marked as not outputable
                 if (!d.isOutputable()) {
-                    logger.info("Skipping object since it is not able to be output ID:{}", this.dropOffUtil.getBestId(d, payloadList.get(0)));
+                    logger.info("Skipping object since it is not able to be output ID:{}", this.dropOffUtil.getBestId(d, payloadList.getFirst()));
                     return Collections.emptyList();
                 }
 
@@ -226,7 +226,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
             // Should have been sorted by the prefilter hook
 
             // Just report the TLD object ID
-            final IBaseDataObject tld = payloadList.get(0);
+            final IBaseDataObject tld = payloadList.getFirst();
 
 
             if (outputCompletionPayloadSize && tld.hasContent()) {
@@ -292,7 +292,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
         // Sort the list of records
         Collections.sort(payloadList, new ShortNameComparator());
         filterParams.put(IDropOffFilter.PRE_SORTED, true);
-        filterParams.put(IDropOffFilter.TLD_PARAM, payloadList.get(0));
+        filterParams.put(IDropOffFilter.TLD_PARAM, payloadList.getFirst());
 
         // Prepare the metadata
         this.dropOffUtil.processMetadata(payloadList);
