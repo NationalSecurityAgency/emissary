@@ -7,21 +7,27 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 10
+    groups:
+      all-non-major-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
     commit-message:
       prefix: dependencies
     labels:
       - "dependencies"
-    ignore:
-      - dependency-name: "*"
-        update-types:
-          - "version-update:semver-major"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
     groups:
-      github-codeql-action:
+      all-non-major-updates:
         patterns:
-          - "github/codeql-action*"
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
     labels:
       - "CI/CD"
