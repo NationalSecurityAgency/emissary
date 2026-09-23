@@ -90,13 +90,13 @@ public @interface TestAttempts {
             if (testAttempt.hasNext()) {
                 // trick junit into not failing the test by aborting the attempt
                 throw new TestAbortedException(
-                        String.format(Locale.getDefault(), "Test attempt %d of %d failed, retrying...", testAttempt.exceptions,
+                        String.format(Locale.ROOT, "Test attempt %d of %d failed, retrying...", testAttempt.exceptions,
                                 testAttempt.maxAttempts),
                         throwable);
             } else {
                 // all attempts failed, so fail the test
                 throw new AssertionError(
-                        String.format(Locale.getDefault(), "Test attempt %d of %d failed", testAttempt.exceptions, testAttempt.maxAttempts),
+                        String.format(Locale.ROOT, "Test attempt %d of %d failed", testAttempt.exceptions, testAttempt.maxAttempts),
                         throwable);
             }
         }

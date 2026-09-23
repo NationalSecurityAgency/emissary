@@ -130,7 +130,7 @@ public class UnixFilePlace extends IdPlace {
                 }
 
                 if (this.upcase && currentForm.length() > 0) {
-                    currentForm = currentForm.toUpperCase(Locale.getDefault());
+                    currentForm = currentForm.toUpperCase(Locale.ROOT);
                 }
 
                 if (this.removeCommas && currentForm.indexOf(",") > 0) {
