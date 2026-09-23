@@ -79,14 +79,6 @@ public class IBaseDataObjectDiffHelper {
      * @param differences the string list differences are to be added to.
      * @param options {@link DiffCheckConfiguration} containing config to specify whether to check data etc.
      */
-    /**
-     * This method compares two IBaseDataObject's and adds any differences to the provided string list.
-     *
-     * @param expected the first IBaseDataObject to compare.
-     * @param actual the second IBaseDataObject to compare.
-     * @param differences the string list differences are to be added to.
-     * @param options {@link DiffCheckConfiguration} containing config to specify whether to check data etc.
-     */
     public static void diff(final IBaseDataObject expected, final IBaseDataObject actual,
             final List<String> differences, final DiffCheckConfiguration options) {
         Validate.notNull(expected, "Required: \"expected\" ibdo not null");
@@ -211,8 +203,6 @@ public class IBaseDataObjectDiffHelper {
         } else if (expected != null && actual != null) {
             final List<String> childDifferences = new ArrayList<>();
             for (int i = 0; i < expected.size(); i++) {
-                childDifferences.clear();
-
                 diff(expected.get(i), actual.get(i), childDifferences, options);
 
                 final String prefix = String.format("%s[index %d] : ", identifier, i);
@@ -606,7 +596,7 @@ public class IBaseDataObjectDiffHelper {
                 if (key == null) {
                     differences.add(String.format("The element %s missing a child name element", PARAMETER));
                 } else {
-                    checkStringValue(meta, payload.getStringParameter(key), differences);
+                    checkStringValue(meta, payload.getParameterAsString(key), differences);
                 }
             }
         }
@@ -618,7 +608,7 @@ public class IBaseDataObjectDiffHelper {
                     differences.add(String.format("The element %s missing a child name element", NOMETA));
                 } else if (payload.hasParameter(key)) {
                     differences.add(
-                            String.format("Metadata element '%s' should not exist, but has value of '%s'", key, payload.getStringParameter(key)));
+                            String.format("Metadata element '%s' should not exist, but has value of '%s'", key, payload.getParameterAsString(key)));
                 }
             }
         }
