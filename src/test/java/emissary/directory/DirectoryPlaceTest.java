@@ -70,6 +70,7 @@ class DirectoryPlaceTest extends UnitTest {
 
     }
 
+    // safe: raw types only appear in Mockito stubbing, never in cast results
     @SuppressWarnings("unchecked")
     @Test
     void testAddEntryInPrimaryUsingFullKeys() {
@@ -88,6 +89,7 @@ class DirectoryPlaceTest extends UnitTest {
         assertEquals(5050, de.getExpense(), "Expense computation");
     }
 
+    // safe: raw types only appear in Mockito stubbing, never in cast results
     @SuppressWarnings("unchecked")
     @Test
     void testAddEntryInClientUsingFullKeys() {
