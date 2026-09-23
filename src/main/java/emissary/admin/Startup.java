@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -325,7 +326,7 @@ public class Startup {
             }
 
             try {
-                Thread.sleep(10);
+                Thread.sleep(Duration.ofMillis(10));
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -473,7 +474,7 @@ public class Startup {
             }
 
             try {
-                Thread.sleep(500);
+                Thread.sleep(Duration.ofMillis(500));
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

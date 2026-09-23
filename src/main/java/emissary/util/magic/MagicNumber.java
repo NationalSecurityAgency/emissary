@@ -290,33 +290,31 @@ public class MagicNumber {
         log.debug("Unary Operator: {}", unaryOperator);
 
         switch (unaryOperator) {
-            case MAGICOPERATOR_AND:
-            case MAGICOPERATOR_BWAND:
+            case MAGICOPERATOR_AND, MAGICOPERATOR_BWAND -> {
                 for (int i = 0; i < end; i++) {
                     if (data[i] != mValues[i]) {
                         return false;
                     }
                 }
                 return true;
-            case MAGICOPERATOR_OR:
+            }
+            case MAGICOPERATOR_OR -> {
                 for (int i = 0; i < end; i++) {
                     if ((data[i] & mValues[i]) != 0) {
                         return true;
                     }
                 }
                 return false;
-            case MAGICOPERATOR_NOT:
-            case MAGICOPERATOR_BWNOT:
+            }
+            case MAGICOPERATOR_NOT, MAGICOPERATOR_BWNOT -> {
                 for (int i = 0; i < end; i++) {
                     if (data[i] != mValues[i]) {
                         return true;
                     }
                 }
                 return false;
-            case MAGICOPERATOR_GTHAN:
-            case MAGICOPERATOR_EQUAL_GTHAN:
-            case MAGICOPERATOR_LTHAN:
-            case MAGICOPERATOR_EQUAL_LTHAN:
+            }
+            case MAGICOPERATOR_GTHAN, MAGICOPERATOR_EQUAL_GTHAN, MAGICOPERATOR_LTHAN, MAGICOPERATOR_EQUAL_LTHAN -> {
                 int cmp = 0;
                 if (isBigEndian) {
                     // Big Endian: MSB is at index 0
@@ -352,9 +350,9 @@ public class MagicNumber {
                     default:
                         return false;
                 }
-            default:
-                throw new IllegalStateException(
-                        "This MagicNumber instance is configured incorrectly. The unary operator is set to an unknown or unconfigured value.");
+            }
+            default -> throw new IllegalStateException(
+                    "This MagicNumber instance is configured incorrectly. The unary operator is set to an unknown or unconfigured value.");
         }
     }
 

@@ -737,29 +737,27 @@ public class IBaseDataObjectDiffHelper {
         String truncatedData = truncate(data);
 
         switch (matchMode.toLowerCase(Locale.getDefault())) {
-            case "equals":
+            case "equals" -> {
                 if (!Objects.equals(value, data)) {
                     differences.add(formatErr(meta, key, "does not equal", truncatedData, truncate(value)));
                 }
-                break;
-            case "index":
-            case "contains":
+            }
+            case "index", "contains" -> {
                 if (data == null || !data.contains(value)) {
                     differences.add(formatErr(meta, key, "does not contain", truncatedData, truncate(value)));
                 }
-                break;
-            case "!index":
-            case "!contains":
+            }
+            case "!index", "!contains" -> {
                 if (data != null && data.contains(value)) {
                     differences.add(formatErr(meta, key, "should not contain", truncatedData, truncate(value)));
                 }
-                break;
-            case "match":
+            }
+            case "match" -> {
                 if (data == null || !data.matches(value)) {
                     differences.add(formatErr(meta, key, "does not match regex", truncatedData, truncate(value)));
                 }
-                break;
-            case BASE64:
+            }
+            case BASE64 -> {
                 try {
                     value = new String(BASE64_DECODER.decode(value), UTF_8);
                     if (!Objects.equals(value, data)) {
@@ -768,13 +766,9 @@ public class IBaseDataObjectDiffHelper {
                 } catch (RuntimeException e) {
                     differences.add(String.format("%s element '%s': Base64 decoding failed.", meta.getName(), key));
                 }
-                break;
-            case "collection":
-                handleCollectionMatch(meta, data, value, key, differences);
-                break;
-            default:
-                differences.add(String.format("Problematic matchMode '%s' for test '%s' in %s", matchMode, key, meta.getName()));
-                break;
+            }
+            case "collection" -> handleCollectionMatch(meta, data, value, key, differences);
+            default -> differences.add(String.format("Problematic matchMode '%s' for test '%s' in %s", matchMode, key, meta.getName()));
         }
     }
 
@@ -803,22 +797,15 @@ public class IBaseDataObjectDiffHelper {
         String os = specifiedOs.getValue().toLowerCase(Locale.getDefault());
         boolean isMatchingOs;
         switch (os) {
-            case "ubuntu":
-                isMatchingOs = OSReleaseUtil.isUbuntu();
-                break;
-            case "centos":
-                isMatchingOs = OSReleaseUtil.isCentOs();
-                break;
-            case "rhel":
-                isMatchingOs = OSReleaseUtil.isRhel();
-                break;
-            case "mac":
-                isMatchingOs = OSReleaseUtil.isMac();
-                break;
-            default:
+            case "ubuntu" -> isMatchingOs = OSReleaseUtil.isUbuntu();
+            case "centos" -> isMatchingOs = OSReleaseUtil.isCentOs();
+            case "rhel" -> isMatchingOs = OSReleaseUtil.isRhel();
+            case "mac" -> isMatchingOs = OSReleaseUtil.isMac();
+            default -> {
                 differences.add(String.format("Unsupported or mistyped os-release target '%s' found in element <%s>",
                         specifiedOs.getValue(), element.getName()));
                 return false;
+            }
         }
 
         if (!isMatchingOs) {

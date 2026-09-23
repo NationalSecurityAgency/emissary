@@ -31,6 +31,7 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -644,7 +645,7 @@ public class WorkSpace implements Runnable {
             if (status.getStatus() != HttpStatus.SC_OK) {
                 logger.warn("Failed to notify {} on try {}: {}", pup, tryCount, status.getContentString());
                 try {
-                    Thread.sleep((tryCount + 1) * 100L);
+                    Thread.sleep(Duration.ofMillis((tryCount + 1) * 100L));
                 } catch (InterruptedException ignore) {
                     Thread.currentThread().interrupt();
                 }
@@ -971,7 +972,7 @@ public class WorkSpace implements Runnable {
             // Else sleep a while
             try {
                 for (int si = 0; si < 3000; si++) {
-                    Thread.sleep(10L);
+                    Thread.sleep(Duration.ofMillis(10L));
                     if (reallyQuit) {
                         break;
                     }
@@ -1093,7 +1094,7 @@ public class WorkSpace implements Runnable {
                 }
 
                 try {
-                    Thread.sleep(NOTIFIER_PAUSE_TIME);
+                    Thread.sleep(Duration.ofMillis(NOTIFIER_PAUSE_TIME));
                     rotatePickUps();
                 } catch (InterruptedException ignore) {
                     Thread.currentThread().interrupt();
@@ -1176,7 +1177,7 @@ public class WorkSpace implements Runnable {
                 if ((collectCount == 0) && WorkSpace.this.loop) {
                     // Wait pause time seconds and try again if looping
                     try {
-                        Thread.sleep(WorkSpace.this.loopPauseTime);
+                        Thread.sleep(Duration.ofMillis(WorkSpace.this.loopPauseTime));
                     } catch (InterruptedException ioex) {
                         Thread.currentThread().interrupt();
                     }
@@ -1355,7 +1356,7 @@ public class WorkSpace implements Runnable {
             while ((((double) heap.getUsed() / (double) heap.getCommitted()) > MEM_THRESHOLD) && (getOutboundQueueSize() > 500)) {
                 logger.debug("Collection memory threshold exceeded {}", heap);
                 try {
-                    Thread.sleep(intv);
+                    Thread.sleep(Duration.ofMillis(intv));
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
                 }

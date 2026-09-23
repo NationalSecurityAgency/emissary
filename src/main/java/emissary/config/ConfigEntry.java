@@ -64,11 +64,9 @@ public class ConfigEntry implements Serializable {
             return true;
         }
 
-        if (!(o instanceof ConfigEntry)) {
+        if (!(o instanceof ConfigEntry entry)) {
             return false;
         }
-
-        ConfigEntry entry = (ConfigEntry) o;
 
         return new EqualsBuilder().append(key, entry.key).append(value, entry.value).isEquals();
     }

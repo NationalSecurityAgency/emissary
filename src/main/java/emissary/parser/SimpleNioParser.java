@@ -87,8 +87,8 @@ public class SimpleNioParser extends NIOSessionParser {
             Object tmp = entry.getValue();
             if (tmp != null) {
                 String value;
-                if (tmp instanceof PositionRecord) {
-                    value = new String(makeDataSlice((PositionRecord) tmp), UTF_8).trim();
+                if (tmp instanceof PositionRecord positionRecord) {
+                    value = new String(makeDataSlice(positionRecord), UTF_8).trim();
                 } else {
                     value = tmp.toString();
                 }

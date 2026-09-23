@@ -132,9 +132,7 @@ public class LoggingPrintStream extends PrintStream {
      */
     @Override
     public void println(final Object object) {
-        if (object instanceof Throwable) {
-            final Throwable throwable = (Throwable) object;
-
+        if (object instanceof Throwable throwable) {
             try (StringWriter stringWriter = new StringWriter();
                     PrintWriter printWriter = new PrintWriter(stringWriter)) {
                 throwable.printStackTrace(printWriter);
@@ -198,21 +196,11 @@ public class LoggingPrintStream extends PrintStream {
         }
 
         switch (level) {
-            case DEBUG:
-                logger.debug(string, streamName, stringOrException);
-                break;
-            case ERROR:
-                logger.error(string, streamName, stringOrException);
-                break;
-            case INFO:
-                logger.info(string, streamName, stringOrException);
-                break;
-            case TRACE:
-                logger.trace(string, streamName, stringOrException);
-                break;
-            case WARN:
-                logger.warn(string, streamName, stringOrException);
-                break;
+            case DEBUG -> logger.debug(string, streamName, stringOrException);
+            case ERROR -> logger.error(string, streamName, stringOrException);
+            case INFO -> logger.info(string, streamName, stringOrException);
+            case TRACE -> logger.trace(string, streamName, stringOrException);
+            case WARN -> logger.warn(string, streamName, stringOrException);
         }
 
         MDC.clear();

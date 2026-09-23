@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -48,7 +49,7 @@ class ServiceProviderPlaceGetTLDTest extends UnitTest {
         // Hand payload to agent and wait for agent to be idle
         agent.arrive(payloadList, place, 0, new ArrayList<>());
         while (agent.isInUse()) {
-            Thread.sleep(10);
+            Thread.sleep(Duration.ofMillis(10));
         }
 
         assertEquals(payload.getParameterAsString("PARENT_INFO").toUpperCase(Locale.getDefault()),

@@ -87,9 +87,15 @@ class MobileAgentTest extends UnitTest {
         HDMobileAgent agent = new HDMobileAgent();
 
         // test accepted
-        byte[] configDeniedData = ("PLACE_NAME = \"DelayPlace\"\n" + "SERVICE_NAME = \"DELAY\"\n"
-                + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_COST = 99\n" + "SERVICE_QUALITY = 50\n"
-                + "SERVICE_PROXY = \"*\"\n" + "SERVICE_PROXY_DENY = \"FINI\"\n").getBytes(UTF_8);
+        byte[] configDeniedData = """
+                PLACE_NAME = "DelayPlace"
+                SERVICE_NAME = "DELAY"
+                SERVICE_TYPE = "ANALYZE"
+                SERVICE_COST = 99
+                SERVICE_QUALITY = 50
+                SERVICE_PROXY = "*"
+                SERVICE_PROXY_DENY = "FINI"
+                """.getBytes(UTF_8);
         InputStream config = new ByteArrayInputStream(configDeniedData);
         DirectoryPlace place = new PlaceTest("http://example.com:8001/DelayPlace", config);
         IBaseDataObject d1 = DataObjectFactory.getInstance();
@@ -97,9 +103,15 @@ class MobileAgentTest extends UnitTest {
         agent.getNextKey(place, d1);
 
         // test denied
-        byte[] configDeniedData2 = ("PLACE_NAME = \"DelayPlace2\"\n" + "SERVICE_NAME = \"DELAY2\"\n"
-                + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_COST = 99\n" + "SERVICE_QUALITY = 50\n"
-                + "SERVICE_PROXY = \"*\"\n" + "SERVICE_PROXY_DENY = \"FINI\"\n").getBytes(UTF_8);
+        byte[] configDeniedData2 = """
+                PLACE_NAME = "DelayPlace2"
+                SERVICE_NAME = "DELAY2"
+                SERVICE_TYPE = "ANALYZE"
+                SERVICE_COST = 99
+                SERVICE_QUALITY = 50
+                SERVICE_PROXY = "*"
+                SERVICE_PROXY_DENY = "FINI"
+                """.getBytes(UTF_8);
         InputStream config2 = new ByteArrayInputStream(configDeniedData2);
         DirectoryPlace place2 = new PlaceTest("http://example.com:8002/DelayPlace", config2);
         IBaseDataObject d2 = DataObjectFactory.getInstance();
