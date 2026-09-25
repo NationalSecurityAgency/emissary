@@ -13,60 +13,97 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 
+/**
+ * Represents a single matching rule from a file-type configuration file (magic file), along with any sub-rules
+ * (continuations) that follow it.
+ *
+ * <ul>
+ * <li>Column A: How deep the rule is nested and where in the file to look (e.g., {@code >&4})</li>
+ * <li>Column B: The data type to read, optionally with a bit mask (e.g., {@code belong&0xff000000})</li>
+ * <li>Column C: The comparison check and expected value (e.g., {@code >0xCAFEBABE})</li>
+ * <li>Column D: The text description to output, which can include dynamic value placeholders like {@code %d}</li>
+ * </ul>
+ */
 public class MagicNumber {
 
     private static final Logger log = LoggerFactory.getLogger(MagicNumber.class);
 
-    /** The default charset used when loading the config file and when sampling data */
+    /** The default text encoding (charset) used when reading config files and checking data. */
     public static final Charset DEFAULT_CHARSET = StandardCharsets.ISO_8859_1;
-    /** Byte data type */
-    public static final String TYPE_KEY_BYTE = "BYTE"; //
-    /** Short data type */
-    public static final String TYPE_KEY_SHORT = "SHORT"; //
-    /** Long data type */
-    public static final String TYPE_KEY_LONG = "LONG"; //
-    /** String data type */
-    public static final String TYPE_KEY_STRING = "STRING"; //
-    /** Date data type */
-    public static final String TYPE_KEY_DATE = "DATE"; // long integer - seconds since epoch
-    /** Big endian short data type */
-    public static final String TYPE_KEY_BESHORT = "BESHORT"; // big-endian 16-bit
-    /** Big endian long data type */
-    public static final String TYPE_KEY_BELONG = "BELONG"; // big-endian 32-bit
-    /** Big endian date data type */
-    public static final String TYPE_KEY_BEDATE = "BEDATE"; // big-endian 32-bit date
-    /** Little endian short data type */
-    public static final String TYPE_KEY_LESHORT = "LESHORT"; // little-end 16-bit
-    /** Little endian long data type */
-    public static final String TYPE_KEY_LELONG = "LELONG"; // little-end 32-bit
-    /** Little endian long data type */
-    public static final String TYPE_KEY_LEDATE = "LEDATE"; // little-end 32-bit date
 
-    /** Unknown data type id */
+    /** @deprecated use {@code MagicDataType.BYTE.getKey()} */
+    @Deprecated
+    public static final String TYPE_KEY_BYTE = MagicDataType.BYTE.getKey();
+    /** @deprecated use {@code MagicDataType.SHORT.getKey()} */
+    @Deprecated
+    public static final String TYPE_KEY_SHORT = MagicDataType.SHORT.getKey();
+    /** @deprecated use {@code MagicDataType.LONG.getKey()} */
+    @Deprecated
+    public static final String TYPE_KEY_LONG = MagicDataType.LONG.getKey();
+    /** @deprecated use {@code MagicDataType.STRING.getKey()} */
+    @Deprecated
+    public static final String TYPE_KEY_STRING = MagicDataType.STRING.getKey();
+    /** @deprecated use {@code MagicDataType.DATE.getKey()} */
+    @Deprecated
+    public static final String TYPE_KEY_DATE = MagicDataType.DATE.getKey();
+    /** @deprecated use {@code MagicDataType.BESHORT.getKey()} */
+    @Deprecated
+    public static final String TYPE_KEY_BESHORT = MagicDataType.BESHORT.getKey();
+    /** @deprecated use {@code MagicDataType.BELONG.getKey()} */
+    @Deprecated
+    public static final String TYPE_KEY_BELONG = MagicDataType.BELONG.getKey();
+    /** @deprecated use {@code MagicDataType.BEDATE.getKey()} */
+    @Deprecated
+    public static final String TYPE_KEY_BEDATE = MagicDataType.BEDATE.getKey();
+    /** @deprecated use {@code MagicDataType.LESHORT.getKey()} */
+    @Deprecated
+    public static final String TYPE_KEY_LESHORT = MagicDataType.LESHORT.getKey();
+    /** @deprecated use {@code MagicDataType.LELONG.getKey()} */
+    @Deprecated
+    public static final String TYPE_KEY_LELONG = MagicDataType.LELONG.getKey();
+    /** @deprecated use {@code MagicDataType.LEDATE.getKey()} */
+    @Deprecated
+    public static final String TYPE_KEY_LEDATE = MagicDataType.LEDATE.getKey();
+
+    /** @deprecated use {@link MagicDataType#fromLegacyId(int)} */
+    @Deprecated
     public static final int TYPE_UNKNOWN = -1;
-    /** Byte data type id */
-    public static final int TYPE_BYTE = 0;
-    /** Short data type id */
-    public static final int TYPE_SHORT = 1;
-    /** Long data type id */
-    public static final int TYPE_LONG = 2;
-    /** String data type id */
-    public static final int TYPE_STRING = 3;
-    /** Date data type id */
-    public static final int TYPE_DATE = 4;
-    /** Big endian short data type id */
-    public static final int TYPE_BESHORT = 5;
-    /** Big endian long data type id */
-    public static final int TYPE_BELONG = 6;
-    /** Big endian date data type id */
-    public static final int TYPE_BEDATE = 7;
-    /** Little endian short data type id */
-    public static final int TYPE_LESHORT = 8;
-    /** Little endian long data type id */
-    public static final int TYPE_LELONG = 9;
-    /** Little endian date data type id */
-    public static final int TYPE_LEDATE = 10;
-    /** Empty string constant */
+    /** @deprecated use {@link MagicDataType#BYTE} */
+    @Deprecated
+    public static final int TYPE_BYTE = MagicDataType.BYTE.getLegacyId();
+    /** @deprecated use {@link MagicDataType#SHORT} */
+    @Deprecated
+    public static final int TYPE_SHORT = MagicDataType.SHORT.getLegacyId();
+    /** @deprecated use {@link MagicDataType#LONG} */
+    @Deprecated
+    public static final int TYPE_LONG = MagicDataType.LONG.getLegacyId();
+    /** @deprecated use {@link MagicDataType#STRING} */
+    @Deprecated
+    public static final int TYPE_STRING = MagicDataType.STRING.getLegacyId();
+    /** @deprecated use {@link MagicDataType#DATE} */
+    @Deprecated
+    public static final int TYPE_DATE = MagicDataType.DATE.getLegacyId();
+    /** @deprecated use {@link MagicDataType#BESHORT} */
+    @Deprecated
+    public static final int TYPE_BESHORT = MagicDataType.BESHORT.getLegacyId();
+    /** @deprecated use {@link MagicDataType#BELONG} */
+    @Deprecated
+    public static final int TYPE_BELONG = MagicDataType.BELONG.getLegacyId();
+    /** @deprecated use {@link MagicDataType#BEDATE} */
+    @Deprecated
+    public static final int TYPE_BEDATE = MagicDataType.BEDATE.getLegacyId();
+    /** @deprecated use {@link MagicDataType#LESHORT} */
+    @Deprecated
+    public static final int TYPE_LESHORT = MagicDataType.LESHORT.getLegacyId();
+    /** @deprecated use {@link MagicDataType#LELONG} */
+    @Deprecated
+    public static final int TYPE_LELONG = MagicDataType.LELONG.getLegacyId();
+    /** @deprecated use {@link MagicDataType#LEDATE} */
+    @Deprecated
+    public static final int TYPE_LEDATE = MagicDataType.LEDATE.getLegacyId();
+
+    /** @deprecated use a plain string literal */
+    @Deprecated
     public static final String EMPTYSTRING = "";
 
     /** Unary Operator: Equals */
@@ -92,41 +129,82 @@ public class MagicNumber {
 
 
     // Column A Properties
-    protected int depth;
-    protected int offset = -1;
-    protected char offsetUnary = 0;
+    private final int depth;
+    private final int offset;
+    private final char offsetUnary;
 
     // Column B Properties
-    protected int dataType = -1;
-    protected int dataTypeLength = 0;
-    protected byte[] mask;
-    protected boolean signedValue;
+    private final MagicDataType dataType;
+    private final int dataTypeLength;
+    @Nullable
+    private final byte[] mask;
 
     // Column C Properties
-    protected char unaryOperator;
+    private final char unaryOperator;
     @Nullable
-    protected byte[] value = null;
-    protected boolean substitute = false;
+    private final byte[] value;
+    private final boolean substitute;
 
     // Column D Properties
     @Nullable
-    protected String description = null;
+    private final String description;
 
-    // Magic Number Properties
-    protected List<MagicNumber[]> dependencies;
+    private final List<List<MagicNumber>> dependencyLayers = new ArrayList<>();
 
     /**
-     * Recreates the string entry for this magic number plus its child continuations under new lines preceded by a '&gt;'
-     * character at the appropriate depth.
+     * Creates a fully specified rule. Intended to be called exclusively by the factory while parsing config files.
      *
-     * @return String
+     * @param depth how deeply nested this rule is (from column A)
+     * @param offset where to look in the file bytes (from column A)
+     * @param offsetUnary the relative offset symbol, or 0 if none
+     * @param dataType the data type being checked (from column B)
+     * @param dataTypeLength how many bytes this rule tests
+     * @param mask optional bit mask applied before testing
+     * @param unaryOperator the comparison sign (from column C)
+     * @param value the expected value to check against (from column C)
+     * @param substitute true if column C uses the wildcard 'x' to match anything and insert live values into the
+     *        description
+     * @param description the description text (from column D)
      */
-    public String toStringAll() {
-        return toString(null, 0);
+    MagicNumber(int depth, int offset, char offsetUnary, MagicDataType dataType, int dataTypeLength, @Nullable byte[] mask,
+            char unaryOperator, @Nullable byte[] value, boolean substitute, @Nullable String description) {
+        this.depth = depth;
+        this.offset = offset;
+        this.offsetUnary = offsetUnary;
+        this.dataType = dataType;
+        this.dataTypeLength = dataTypeLength;
+        this.mask = mask;
+        this.unaryOperator = unaryOperator;
+        this.value = value;
+        this.substitute = substitute;
+        this.description = description;
+    }
+
+    public boolean isSubstitute() {
+        return substitute;
     }
 
     /**
-     * Tests the sample and if successful provides the description
+     * Recreates the full config text for this rule plus all of its matching sub-rules
+     *
+     * @return the text representation of this rule and its children
+     */
+    public String toStringAll() {
+        StringBuilder sb = new StringBuilder(Objects.toString(description));
+        for (List<MagicNumber> layer : dependencyLayers) {
+            for (MagicNumber dependentItem : layer) {
+                sb.append('\n');
+                sb.append(dependentItem.toString());
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Tests the input data against this rule. If it matches, returns the description combined with any matching sub-rules.
+     *
+     * @param data the raw file bytes to check
+     * @return the combined description text, or null if the rule doesn't match
      */
     @Nullable
     public String describe(byte[] data) {
@@ -139,7 +217,7 @@ public class MagicNumber {
     }
 
     /**
-     * Private formatting method for escaping backspaces
+     * Processes backspace characters (\b) in the description text, deleting the previous character for each one found.
      */
     private static String escapeBackspace(String desc) {
         StringBuilder s = new StringBuilder();
@@ -157,7 +235,10 @@ public class MagicNumber {
     }
 
     /**
-     * Describe this instance only
+     * Tests this rule on its own, without checking sub-rules.
+     *
+     * @param data the raw file bytes
+     * @return the formatted description, or null if it doesn't match
      */
     @Nullable
     private String describeSelf(byte[] data) {
@@ -168,14 +249,15 @@ public class MagicNumber {
     }
 
     /**
-     * Private method to format output - mainly for description substitutions
+     * Fills in dynamic placeholders (like %d or %s) in the description text using values pulled straight from the file
+     * bytes.
      */
-    private String format(String desc, byte[] data) {
+    private String format(@Nullable String desc, byte[] data) {
 
-        if (!substitute) {
+        if (!substitute || desc == null) {
             return desc;
         }
-        Queue<Character> chars = new ArrayDeque<>();
+        Queue<Character> chars = new ArrayDeque<>(desc.length());
         for (int i = 0; i < desc.length(); i++) {
             chars.add(desc.charAt(i));
         }
@@ -185,14 +267,14 @@ public class MagicNumber {
             Character next = chars.poll();
             if (!chars.isEmpty() && next == '%') {
                 char subType = chars.poll();
-                if (dataType == TYPE_STRING) {
+                if (dataType == MagicDataType.STRING) {
                     if (offset < (data.length - 2)) {
-                        String sub = new String(Objects.requireNonNull(getElement(data, offset, 1)), DEFAULT_CHARSET);
+                        String sub = new String(Objects.requireNonNull(extractElement(data, offset, 1)), DEFAULT_CHARSET);
                         sb.append(sub);
                     }
                 } else if (subType == 'c' || subType == 's') {
 
-                    byte[] subData = getElement(data, offset, dataTypeLength);
+                    byte[] subData = extractElement(data, offset, dataTypeLength);
                     if (subData != null) {
                         String sub = new String(subData, DEFAULT_CHARSET);
                         sb.append(sub);
@@ -200,7 +282,7 @@ public class MagicNumber {
 
                 } else {
 
-                    byte[] subData = getElement(data, offset, dataTypeLength);
+                    byte[] subData = extractElement(data, offset, dataTypeLength);
                     if (subData != null) {
                         String sub = MagicMath.byteArrayToString(subData, 10);
                         sb.append(sub);
@@ -218,18 +300,19 @@ public class MagicNumber {
     }
 
     /**
-     * Tests dependent children
+     * Checks sub-rule layers one level at a time, continuing down the chain as long as at least one rule in the current
+     * layer matches.
      */
     private String describeDependents(byte[] data, StringBuilder sb, int layer) {
         log.debug("DESCRIBING DEPENDENTS at layer {}", layer);
-        if (dependencies == null || layer >= dependencies.size()) {
+        if (layer >= dependencyLayers.size()) {
             log.debug("Not enough dependents for layer {}", layer);
             return sb.toString();
         }
 
         boolean shouldContinue = false;
-        MagicNumber[] dependentItems = dependencies.get(layer);
-        log.debug("Found {} items at layer {}", dependentItems.length, layer);
+        List<MagicNumber> dependentItems = dependencyLayers.get(layer);
+        log.debug("Found {} items at layer {}", dependentItems.size(), layer);
         for (MagicNumber dependentItem : dependentItems) {
             String s = dependentItem.describeSelf(data);
 
@@ -249,121 +332,49 @@ public class MagicNumber {
     }
 
     /**
-     * Tests this magic number against the given data
+     * Checks if the file bytes match what this rule expects at the specified offset.
+     *
+     * @param data the raw file bytes
+     * @return true if the bytes match the rule's criteria
      */
     public boolean test(byte[] data) {
-        byte[] subject = getElement(data, offset, dataTypeLength);
-        if (subject == null) {
-            return false;
-        }
-        return testNumeric(subject);
+        byte[] subject = extractElement(data, offset, dataTypeLength);
+        return subject != null && matches(subject);
     }
 
-    /**
-     * Tests numeric byte data only
-     */
-    private boolean testNumeric(byte[] data) {
+    private boolean matches(byte[] subject) {
         if (substitute) {
             return true;
         }
 
-        if (mask != null && mask.length == data.length) {
-            for (int i = 0; i < data.length; i++) {
-                data[i] = (byte) (data[i] & mask[i]);
-            }
+        applyMask(subject);
+
+        if (dataType == MagicDataType.STRING) {
+            return Arrays.equals(subject, value);
         }
 
-        // Short-circuit instantly for strings
-        if (dataType == TYPE_STRING) {
-            return Arrays.equals(data, value);
-        }
-
-        byte[] mValues = value;
-        if (mValues == null || data.length != mValues.length) {
+        if (value == null || subject.length != value.length) {
             return false;
         }
 
-        int end = mValues.length;
-        boolean isBigEndian = dataType == TYPE_BESHORT || dataType == TYPE_BELONG || dataType == TYPE_BEDATE ||
-                dataType == TYPE_SHORT || dataType == TYPE_LONG || dataType == TYPE_BYTE;
-
         log.debug("Unary Operator: {}", unaryOperator);
+        return MatchOperator.forSymbol(unaryOperator).matches(subject, value, dataType.isBigEndian());
+    }
 
-        switch (unaryOperator) {
-            case MAGICOPERATOR_AND:
-            case MAGICOPERATOR_BWAND:
-                for (int i = 0; i < end; i++) {
-                    if (data[i] != mValues[i]) {
-                        return false;
-                    }
-                }
-                return true;
-            case MAGICOPERATOR_OR:
-                for (int i = 0; i < end; i++) {
-                    if ((data[i] & mValues[i]) != 0) {
-                        return true;
-                    }
-                }
-                return false;
-            case MAGICOPERATOR_NOT:
-            case MAGICOPERATOR_BWNOT:
-                for (int i = 0; i < end; i++) {
-                    if (data[i] != mValues[i]) {
-                        return true;
-                    }
-                }
-                return false;
-            case MAGICOPERATOR_GTHAN:
-            case MAGICOPERATOR_EQUAL_GTHAN:
-            case MAGICOPERATOR_LTHAN:
-            case MAGICOPERATOR_EQUAL_LTHAN:
-                int cmp = 0;
-                if (isBigEndian) {
-                    // Big Endian: MSB is at index 0
-                    for (int i = 0; i < end; i++) {
-                        int v1 = data[i] & 0xFF;
-                        int v2 = mValues[i] & 0xFF;
-                        if (v1 != v2) {
-                            cmp = Integer.compare(v1, v2);
-                            break;
-                        }
-                    }
-                } else {
-                    // Little Endian: MSB is at the last index
-                    for (int i = end - 1; i >= 0; i--) {
-                        int v1 = data[i] & 0xFF;
-                        int v2 = mValues[i] & 0xFF;
-                        if (v1 != v2) {
-                            cmp = Integer.compare(v1, v2);
-                            break;
-                        }
-                    }
-                }
-
-                switch (unaryOperator) {
-                    case MAGICOPERATOR_GTHAN:
-                        return cmp > 0;
-                    case MAGICOPERATOR_EQUAL_GTHAN:
-                        return cmp >= 0;
-                    case MAGICOPERATOR_LTHAN:
-                        return cmp < 0;
-                    case MAGICOPERATOR_EQUAL_LTHAN:
-                        return cmp <= 0;
-                    default:
-                        return false;
-                }
-            default:
-                throw new IllegalStateException(
-                        "This MagicNumber instance is configured incorrectly. The unary operator is set to an unknown or unconfigured value.");
+    private void applyMask(byte[] subject) {
+        if (mask != null && mask.length == subject.length) {
+            for (int i = 0; i < subject.length; i++) {
+                subject[i] &= mask[i];
+            }
         }
     }
 
     /**
-     * Retrieves the data sample
+     * Grabs a chunk of bytes from the input data starting at the given offset. Returns null if there aren't enough bytes
+     * available.
      */
     @Nullable
-    @SuppressWarnings("PMD.UnusedPrivateMethod")
-    private static byte[] getElement(@Nullable byte[] data, int offset, int length) {
+    private static byte[] extractElement(@Nullable byte[] data, int offset, int length) {
         if (data == null) {
             return null;
         }
@@ -376,24 +387,22 @@ public class MagicNumber {
     }
 
     /**
-     * Add child continuations
+     * Adds a group of sub-rules that should be checked if this rule succeeds.
+     *
+     * @param dependencyLayer an array of child rules for the next depth level
      */
     @SuppressWarnings("AvoidObjectArrays")
     public void addDependencyLayer(MagicNumber[] dependencyLayer) {
-        if (dependencies == null) {
-            dependencies = new ArrayList<>();
-        }
-        dependencies.add(dependencyLayer);
+        this.dependencyLayers.add(Arrays.asList(dependencyLayer));
     }
 
     /**
-     * Re-creates the string magic number entry for this number only
+     * Recreates the original config file line for this rule
      *
-     * @return a String represention of the entry
+     * @return the config line string
      */
     @Override
     public String toString() {
-
         StringBuilder sb = new StringBuilder();
         sb.append(">".repeat(Math.max(0, depth)));
         if (offsetUnary > 0) {
@@ -408,7 +417,7 @@ public class MagicNumber {
         }
 
         sb.append('\t');
-        sb.append(MagicNumberFactory.resolveReverseDataType(dataType));
+        sb.append(dataType.getKey());
         if (mask != null && mask.length > 0) {
             sb.append('&');
             sb.append(MagicMath.byteArrayToHexString(mask));
@@ -423,7 +432,7 @@ public class MagicNumber {
             sb.append(unaryOperator);
         }
 
-        if (dataType == TYPE_STRING && value != null) {
+        if (dataType == MagicDataType.STRING && value != null) {
             sb.append(new String(value, DEFAULT_CHARSET));
         } else {
             sb.append(MagicMath.byteArrayToHexString(value));
@@ -435,24 +444,85 @@ public class MagicNumber {
     }
 
     /**
-     * Private method to create the string plus continuations
+     * Handles the comparison logic (like equals, greater than, less than) used in rules.
      */
-    private String toString(@Nullable StringBuilder sbuf, int depth) {
-        StringBuilder sb = sbuf;
-        int d = depth;
-        if (sb == null) {
-            sb = new StringBuilder(description);
+    private enum MatchOperator {
+
+        EQUALS, NOT_EQUALS, ANY_BITS_SET, GREATER_THAN, LESS_THAN, GREATER_OR_EQUAL, LESS_OR_EQUAL;
+
+        static MatchOperator forSymbol(char symbol) {
+            switch (symbol) {
+                case MAGICOPERATOR_AND:
+                case MAGICOPERATOR_BWAND:
+                    return EQUALS;
+                case MAGICOPERATOR_NOT:
+                case MAGICOPERATOR_BWNOT:
+                    return NOT_EQUALS;
+                case MAGICOPERATOR_OR:
+                    return ANY_BITS_SET;
+                case MAGICOPERATOR_GTHAN:
+                    return GREATER_THAN;
+                case MAGICOPERATOR_LTHAN:
+                    return LESS_THAN;
+                case MAGICOPERATOR_EQUAL_GTHAN:
+                    return GREATER_OR_EQUAL;
+                case MAGICOPERATOR_EQUAL_LTHAN:
+                    return LESS_OR_EQUAL;
+                default:
+                    throw new IllegalStateException(
+                            "This MagicNumber instance is configured incorrectly. The unary operator is set to an unknown or unconfigured value.");
+            }
         }
-        if (dependencies == null || d >= dependencies.size()) {
-            return sb.toString();
+
+        boolean matches(byte[] subject, byte[] value, boolean mostSignificantByteFirst) {
+            switch (this) {
+                case EQUALS:
+                    return Arrays.equals(subject, value);
+                case NOT_EQUALS:
+                    return !Arrays.equals(subject, value);
+                case ANY_BITS_SET:
+                    for (int i = 0; i < subject.length; i++) {
+                        if ((subject[i] & value[i]) != 0) {
+                            return true;
+                        }
+                    }
+                    return false;
+                default:
+                    int cmp = compare(subject, value, mostSignificantByteFirst);
+                    switch (this) {
+                        case GREATER_THAN:
+                            return cmp > 0;
+                        case GREATER_OR_EQUAL:
+                            return cmp >= 0;
+                        case LESS_THAN:
+                            return cmp < 0;
+                        case LESS_OR_EQUAL:
+                            return cmp <= 0;
+                        default:
+                            throw new IllegalStateException("No comparison semantics for " + name());
+                    }
+            }
         }
-        MagicNumber[] dependentItems = dependencies.get(d);
-        for (MagicNumber dependentItem : dependentItems) {
-            sb.append('\n');
-            sb.append(dependentItem.toString());
+
+        private static int compare(byte[] left, byte[] right, boolean mostSignificantByteFirst) {
+            if (mostSignificantByteFirst) {
+                for (int i = 0; i < left.length; i++) {
+                    int l = left[i] & 0xFF;
+                    int r = right[i] & 0xFF;
+                    if (l != r) {
+                        return Integer.compare(l, r);
+                    }
+                }
+            } else {
+                for (int i = left.length - 1; i >= 0; i--) {
+                    int l = left[i] & 0xFF;
+                    int r = right[i] & 0xFF;
+                    if (l != r) {
+                        return Integer.compare(l, r);
+                    }
+                }
+            }
+            return 0;
         }
-        return toString(sb, d + 1);
     }
-
-
 }
