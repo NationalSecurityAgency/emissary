@@ -60,8 +60,8 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
     void setup() {
         ibdo1 = new BaseDataObject();
         ibdo2 = new BaseDataObject();
-        ibdoList1 = Arrays.asList(ibdo1);
-        ibdoList2 = Arrays.asList(ibdo2);
+        ibdoList1 = Collections.singletonList(ibdo1);
+        ibdoList2 = Collections.singletonList(ibdo2);
         mockPayload = mock(IBaseDataObject.class);
         mockOptions = mock(DiffCheckConfiguration.class);
         differences = new ArrayList<>();
@@ -214,7 +214,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         ibdo1.clearParameters();
         ibdo2.clearParameters();
         ibdo1.putParameter("STRING", "string");
-        ibdo1.putParameter("Integer", Integer.valueOf(1));
+        ibdo1.putParameter("Integer", 1);
         ibdo2.putParameter("STRING", "string");
 
         verifyDiff(List.of("meta key set mismatch -> Expected: [Integer], Actual: []"),
@@ -228,7 +228,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         ibdo2.clearParameters();
         ibdo1.putParameter("STRING", "string");
         ibdo2.putParameter("STRING", "string");
-        ibdo2.putParameter("Integer", Integer.valueOf(1));
+        ibdo2.putParameter("Integer", 1);
 
         verifyDiff(List.of("meta key set mismatch -> Expected: [], Actual: [Integer]"),
                 List.of("meta key set mismatch -> Expected: [Integer], Actual: []"));
@@ -527,7 +527,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         root.addContent(nometa);
 
         when(mockPayload.hasParameter("forbiddenKey")).thenReturn(true);
-        when(mockPayload.getStringParameter("forbiddenKey")).thenReturn("someValue");
+        when(mockPayload.getParameterAsString("forbiddenKey")).thenReturn("someValue");
 
         checkMetadata(root, mockPayload, differences);
 
