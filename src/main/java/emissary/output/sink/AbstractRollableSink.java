@@ -137,11 +137,6 @@ public abstract class AbstractRollableSink extends AbstractSink {
         RollManager.getManager().addRoller(this.roller);
     }
 
-    /** Output file path for a payload. */
-    public Path resolveOutputFile() {
-        return this.outputPath.resolve(this.fileNameGenerator.nextFileName());
-    }
-
     @Override
     public WriteStatus write(final List<IBaseDataObject> list, final Map<String, Object> params) {
         if (!accept(list)) {

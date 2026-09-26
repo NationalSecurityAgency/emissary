@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -105,8 +106,20 @@ public class JsonFormatter extends AbstractFormatter {
         }
 
         protected Collection<Object> filter(final String key, final Collection<Object> values) {
-            Set<Object> keep = new LinkedHashSet<>();
-            for (final Object value : values) {
+            final Iterator<Object> it = values.iterator();
+            if (!it.hasNext()) {
+                return List.of();
+            }
+            final Object first = it.next();
+            if (!it.hasNext()) {
+                return isMetadataAllowed(key, first) ? List.of(first) : List.of();
+            }
+            final Set<Object> keep = new LinkedHashSet<>();
+            if (isMetadataAllowed(key, first)) {
+                keep.add(first);
+            }
+            while (it.hasNext()) {
+                final Object value = it.next();
                 if (isMetadataAllowed(key, value)) {
                     keep.add(value);
                 }
