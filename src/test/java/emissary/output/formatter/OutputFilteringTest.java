@@ -3,7 +3,6 @@ package emissary.output.formatter;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
-import emissary.output.formatter.filter.OutputItem;
 import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -46,24 +45,24 @@ class OutputFilteringTest extends UnitTest {
     @Test
     void testAllowAllByDefault() {
         f.initialize(config, "TEST", config);
-        assertTrue(f.isOutputAllowed(payload, OutputItem.parameter("KEEP")), "parameter should be allowed");
-        assertTrue(f.isOutputAllowed(payload, OutputItem.view("PrimaryView")), "view should be allowed");
+        assertTrue(f.isMetadataAllowed("KEEP"), "parameter should be allowed");
+        assertTrue(f.isContentAllowed(payload, "PrimaryView"), "view should be allowed");
     }
 
     @Test
     void testEmitMetadata() {
         config.addEntry("EMIT", "metadata");
         f.initialize(config, "TEST", config);
-        assertTrue(f.isOutputAllowed(payload, OutputItem.parameter("KEEP")), "parameters should pass the metadata gate");
-        assertFalse(f.isOutputAllowed(payload, OutputItem.view("PrimaryView")), "views should be denied by the gate");
+        assertTrue(f.isMetadataAllowed("KEEP"), "parameters should pass the metadata gate");
+        assertFalse(f.isContentAllowed(payload, "PrimaryView"), "views should be denied by the gate");
     }
 
     @Test
     void testEmitContent() {
         config.addEntry("EMIT", "content");
         f.initialize(config, "TEST", config);
-        assertFalse(f.isOutputAllowed(payload, OutputItem.parameter("KEEP")), "parameters should be denied by the gate");
-        assertTrue(f.isOutputAllowed(payload, OutputItem.view("PrimaryView")), "views should pass the content gate");
+        assertFalse(f.isMetadataAllowed("KEEP"), "parameters should be denied by the gate");
+        assertTrue(f.isContentAllowed(payload, "PrimaryView"), "views should pass the content gate");
     }
 
     @Test
@@ -75,10 +74,10 @@ class OutputFilteringTest extends UnitTest {
         f.initialize(config, "TEST", config);
         payload.addAlternateView("JSON_PRETTY", "".getBytes(UTF_8));
 
-        assertTrue(f.isOutputAllowed(payload, OutputItem.view("JSON_PRETTY")), "listed view should be allowed");
-        assertFalse(f.isOutputAllowed(payload, OutputItem.view("PrimaryView")), "unlisted view should be denied");
-        assertTrue(f.isOutputAllowed(payload, OutputItem.parameter("FOO")), "listed parameter should be allowed");
-        assertFalse(f.isOutputAllowed(payload, OutputItem.parameter("BAR")), "unlisted parameter should be denied");
+        assertTrue(f.isContentAllowed(payload, "JSON_PRETTY"), "listed view should be allowed");
+        assertFalse(f.isContentAllowed(payload, "PrimaryView"), "unlisted view should be denied");
+        assertTrue(f.isMetadataAllowed("FOO"), "listed parameter should be allowed");
+        assertFalse(f.isMetadataAllowed("BAR"), "unlisted parameter should be denied");
     }
 
     @Test
@@ -89,11 +88,11 @@ class OutputFilteringTest extends UnitTest {
         f.initialize(config, "TEST", config);
 
         CountingOutputFilter.calls.set(0);
-        assertFalse(f.isOutputAllowed(payload, OutputItem.parameter("DROP")), "denied parameter should be dropped");
+        assertFalse(f.isMetadataAllowed("DROP"), "denied parameter should be dropped");
         assertEquals(0, CountingOutputFilter.calls.get(), "filters after the denying one should be skipped");
 
         CountingOutputFilter.calls.set(0);
-        assertTrue(f.isOutputAllowed(payload, OutputItem.parameter("KEEP")), "non-denied parameter should pass");
+        assertTrue(f.isMetadataAllowed("KEEP"), "non-denied parameter should pass");
         assertEquals(1, CountingOutputFilter.calls.get(), "a non-denied parameter should reach the filter after the list");
     }
 }

@@ -2,7 +2,8 @@ package emissary.output.formatter;
 
 import emissary.core.IBaseDataObject;
 import emissary.output.formatter.filter.AbstractItemFilter;
-import emissary.output.formatter.filter.OutputItem;
+
+import jakarta.annotation.Nullable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -14,7 +15,13 @@ public class CountingOutputFilter extends AbstractItemFilter {
     public static final AtomicInteger calls = new AtomicInteger();
 
     @Override
-    public boolean test(final IBaseDataObject d, final OutputItem item) {
+    public boolean test(@Nullable final IBaseDataObject d, final String key, @Nullable final Object value) {
+        calls.incrementAndGet();
+        return true;
+    }
+
+    @Override
+    public boolean test(@Nullable final IBaseDataObject d, final String viewName) {
         calls.incrementAndGet();
         return true;
     }

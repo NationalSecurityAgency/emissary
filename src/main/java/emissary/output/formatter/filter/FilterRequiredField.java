@@ -27,11 +27,11 @@ public class FilterRequiredField extends AbstractItemFilter {
     }
 
     @Override
-    public boolean test(@Nullable final IBaseDataObject d, final OutputItem item) {
-        if (!item.isView() || d == null) {
+    public boolean test(final IBaseDataObject d, final String viewName) {
+        if (d == null) {
             return true;
         }
-        if (this.requiredFields.isEmpty() || d.getAlternateView(item.name()) == null) {
+        if (this.requiredFields.isEmpty() || d.getAlternateView(viewName) == null) {
             return true;
         }
         return this.requiredFields.stream().anyMatch(d::hasParameter);

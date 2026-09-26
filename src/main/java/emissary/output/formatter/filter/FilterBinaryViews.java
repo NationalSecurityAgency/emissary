@@ -42,11 +42,11 @@ public class FilterBinaryViews extends AbstractItemFilter {
     }
 
     @Override
-    public boolean test(@Nullable final IBaseDataObject d, final OutputItem item) {
-        if (!this.rejectBinary || !item.isView() || d == null) {
+    public boolean test(final IBaseDataObject d, final String viewName) {
+        if (!this.rejectBinary || d == null) {
             return true;
         }
-        byte[] view = d.getAlternateView(item.name());
+        byte[] view = d.getAlternateView(viewName);
         if (view == null) {
             return true;
         }

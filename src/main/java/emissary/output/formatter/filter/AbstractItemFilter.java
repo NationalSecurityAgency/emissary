@@ -8,8 +8,13 @@ import jakarta.annotation.Nullable;
 /** Base for an item filter: one allow/deny test per parameter or view. */
 public abstract class AbstractItemFilter implements Filter {
 
-    /** Whether this item may be output. */
-    public boolean test(@Nullable final IBaseDataObject d, final OutputItem item) {
+    /** Whether this parameter value may be output; a null value is a key-level decision. */
+    public boolean test(@Nullable final IBaseDataObject d, final String key, @Nullable final Object value) {
+        return true;
+    }
+
+    /** Whether this view may be output. */
+    public boolean test(@Nullable final IBaseDataObject d, final String viewName) {
         return true;
     }
 

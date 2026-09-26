@@ -24,11 +24,11 @@ public class FilterMaxViewSize extends AbstractItemFilter {
     }
 
     @Override
-    public boolean test(@Nullable final IBaseDataObject d, final OutputItem item) {
-        if (!item.isView() || d == null) {
+    public boolean test(final IBaseDataObject d, final String viewName) {
+        if (d == null) {
             return true;
         }
-        byte[] view = d.getAlternateView(item.name());
+        byte[] view = d.getAlternateView(viewName);
         return view == null || view.length <= this.maxViewSize;
     }
 

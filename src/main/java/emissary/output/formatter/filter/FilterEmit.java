@@ -53,11 +53,13 @@ public class FilterEmit extends AbstractItemFilter {
     }
 
     @Override
-    public boolean test(@Nullable final IBaseDataObject d, final OutputItem item) {
-        if (item.isView()) {
-            return this.emitMode != EmitMode.METADATA;
-        }
+    public boolean test(@Nullable final IBaseDataObject d, final String key, @Nullable final Object value) {
         return this.emitMode != EmitMode.CONTENT;
+    }
+
+    @Override
+    public boolean test(final IBaseDataObject d, final String viewName) {
+        return this.emitMode != EmitMode.METADATA;
     }
 
     @Override

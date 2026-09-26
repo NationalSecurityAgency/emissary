@@ -24,11 +24,8 @@ public class FilterMaxValueSize extends AbstractItemFilter {
     }
 
     @Override
-    public boolean test(@Nullable final IBaseDataObject d, final OutputItem item) {
-        if (!item.isParameter() || item.value() == null) {
-            return true;
-        }
-        return String.valueOf(item.value()).length() <= this.maxValueSize;
+    public boolean test(@Nullable final IBaseDataObject d, final String key, @Nullable final Object value) {
+        return value == null || String.valueOf(value).length() <= this.maxValueSize;
     }
 
     @Override

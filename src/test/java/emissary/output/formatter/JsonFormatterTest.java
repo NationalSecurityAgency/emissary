@@ -137,6 +137,22 @@ class JsonFormatterTest extends UnitTest {
     }
 
     @Test
+    void testMultiValueParamKeepsAllowedValues() throws Exception {
+        config.addEntry("OUTPUT_FILTER", "emissary.output.formatter.filter.FilterOutput");
+        config.addEntry("PARAM_VALUE_FOO", "bad");
+        f.initialize(config, "FOO", config);
+
+        payload.appendParameter("FOO", "good");
+        payload.appendParameter("FOO", "bad");
+
+        byte[] json = f.convert(Collections.singletonList(payload), new HashMap<>());
+        String s = new String(json, UTF_8);
+
+        assertTrue(s.contains("\"good\""), "Allowed value should be present");
+        assertFalse(s.contains("\"bad\""), "Denied value should be omitted");
+    }
+
+    @Test
     void testMaxValueSize() throws Exception {
         config.addEntry("OUTPUT_FILTER", "emissary.output.formatter.filter.FilterMaxValueSize");
         config.addEntry("METADATA_MAX_VALUE_SIZE", "2");

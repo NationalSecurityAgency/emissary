@@ -44,10 +44,10 @@ class FilterOutputTest extends UnitTest {
         FilterOutput filter = getFilter(new ServiceConfigGuide());
         IBaseDataObject d = payload("JSON", Arrays.asList("JSON_PRETTY", "Geo"));
 
-        assertTrue(filter.test(d, OutputItem.view("PrimaryView")), "primary view should be allowed by default");
-        assertTrue(filter.test(d, OutputItem.view("JSON_PRETTY")), "alt view should be allowed by default");
-        assertTrue(filter.test(null, OutputItem.parameter("KEEP")), "parameter should be allowed by default");
-        assertTrue(filter.test(null, OutputItem.parameter("KEEP", "v")), "parameter value should be allowed by default");
+        assertTrue(filter.test(d, "PrimaryView"), "primary view should be allowed by default");
+        assertTrue(filter.test(d, "JSON_PRETTY"), "alt view should be allowed by default");
+        assertTrue(filter.test(null, "KEEP", null), "parameter should be allowed by default");
+        assertTrue(filter.test(null, "KEEP", "v"), "parameter value should be allowed by default");
     }
 
     @Test
@@ -58,15 +58,15 @@ class FilterOutputTest extends UnitTest {
         FilterOutput filter = getFilter(config);
         IBaseDataObject d = payload("JSON", Arrays.asList("JSON_PRETTY", "JSON_ML", "Geo", "GeoJSON", "JSON_LANG_ENG"));
 
-        assertFalse(filter.test(d, OutputItem.view("JSON_ML")), "view on the list should be denied");
-        assertFalse(filter.test(d, OutputItem.view("GeoJSON")), "filetype.view deny should apply for matching filetype");
-        assertFalse(filter.test(d, OutputItem.view("JSON_LANG_ENG")), "wildcard deny should apply");
+        assertFalse(filter.test(d, "JSON_ML"), "view on the list should be denied");
+        assertFalse(filter.test(d, "GeoJSON"), "filetype.view deny should apply for matching filetype");
+        assertFalse(filter.test(d, "JSON_LANG_ENG"), "wildcard deny should apply");
 
         for (String allowed : Arrays.asList("PrimaryView", "JSON_PRETTY", "Geo")) {
-            assertTrue(filter.test(d, OutputItem.view(allowed)), allowed + " should be allowed");
+            assertTrue(filter.test(d, allowed), allowed + " should be allowed");
         }
 
-        assertTrue(filter.test(payload("XML", Collections.emptyList()), OutputItem.view("GeoJSON")),
+        assertTrue(filter.test(payload("XML", Collections.emptyList()), "GeoJSON"),
                 "filetype.view deny is filetype specific");
     }
 
@@ -79,17 +79,17 @@ class FilterOutputTest extends UnitTest {
         FilterOutput filter = getFilter(config);
         IBaseDataObject d = payload("JSON", Arrays.asList("JSON_PRETTY", "JSON_ML", "Geo", "GeoJSON", "JSON_LANG_ENG"));
 
-        assertTrue(filter.test(d, OutputItem.view("JSON_ML")), "view on the list should be allowed");
-        assertTrue(filter.test(d, OutputItem.view("GeoJSON")), "filetype.view allow should apply for matching filetype");
-        assertTrue(filter.test(d, OutputItem.view("JSON_LANG_ENG")), "wildcard allow should apply");
+        assertTrue(filter.test(d, "JSON_ML"), "view on the list should be allowed");
+        assertTrue(filter.test(d, "GeoJSON"), "filetype.view allow should apply for matching filetype");
+        assertTrue(filter.test(d, "JSON_LANG_ENG"), "wildcard allow should apply");
 
         for (String denied : Arrays.asList("PrimaryView", "JSON_PRETTY", "Geo")) {
-            assertFalse(filter.test(d, OutputItem.view(denied)), denied + " should be denied");
+            assertFalse(filter.test(d, denied), denied + " should be denied");
         }
 
         IBaseDataObject xml = payload("XML", Collections.emptyList());
-        assertTrue(filter.test(xml, OutputItem.view("JSON_1_0")), "filetype.view allow should apply for matching filetype");
-        assertFalse(filter.test(xml, OutputItem.view("JSON_PRETTY")), "unlisted view should be denied regardless of filetype");
+        assertTrue(filter.test(xml, "JSON_1_0"), "filetype.view allow should apply for matching filetype");
+        assertFalse(filter.test(xml, "JSON_PRETTY"), "unlisted view should be denied regardless of filetype");
     }
 
     @Test
@@ -100,9 +100,9 @@ class FilterOutputTest extends UnitTest {
         FilterOutput filter = getFilter(config);
         IBaseDataObject d = payload("JSON", List.of("JSON_PRETTY"));
 
-        assertFalse(filter.test(d, OutputItem.view("PrimaryView")), "primary view should be denied");
-        assertFalse(filter.test(d, OutputItem.view("JSON_PRETTY")), "alternate view should be denied");
-        assertTrue(filter.test(null, OutputItem.parameter("KEEP")), "parameters should still pass");
+        assertFalse(filter.test(d, "PrimaryView"), "primary view should be denied");
+        assertFalse(filter.test(d, "JSON_PRETTY"), "alternate view should be denied");
+        assertTrue(filter.test(null, "KEEP", null), "parameters should still pass");
     }
 
     @Test
@@ -113,10 +113,10 @@ class FilterOutputTest extends UnitTest {
 
         FilterOutput filter = getFilter(config);
 
-        assertFalse(filter.test(null, OutputItem.parameter("DROP")), "listed field should be denied");
-        assertFalse(filter.test(null, OutputItem.parameter("DROP_ME")), "wildcard field should be denied");
-        assertTrue(filter.test(null, OutputItem.parameter("KEEP")), "unlisted field should be allowed");
-        assertTrue(filter.test(null, OutputItem.parameter("KEEP_ME")), "unlisted wildcard field should be allowed");
+        assertFalse(filter.test(null, "DROP", null), "listed field should be denied");
+        assertFalse(filter.test(null, "DROP_ME", null), "wildcard field should be denied");
+        assertTrue(filter.test(null, "KEEP", null), "unlisted field should be allowed");
+        assertTrue(filter.test(null, "KEEP_ME", null), "unlisted wildcard field should be allowed");
     }
 
     @Test
@@ -126,9 +126,9 @@ class FilterOutputTest extends UnitTest {
 
         FilterOutput filter = getFilter(config);
 
-        assertTrue(filter.test(null, OutputItem.parameter("KEY", "public")), "non-denied value should be allowed");
-        assertFalse(filter.test(null, OutputItem.parameter("KEY", "SECRET")), "denied value should be rejected");
-        assertTrue(filter.test(null, OutputItem.parameter("KEY")), "key-level decision should be unaffected");
+        assertTrue(filter.test(null, "KEY", "public"), "non-denied value should be allowed");
+        assertFalse(filter.test(null, "KEY", "SECRET"), "denied value should be rejected");
+        assertTrue(filter.test(null, "KEY", null), "key-level decision should be unaffected");
     }
 
     @Test
@@ -140,10 +140,10 @@ class FilterOutputTest extends UnitTest {
 
         FilterOutput filter = getFilter(config);
 
-        assertTrue(filter.test(null, OutputItem.parameter("KEEP")), "listed field should be allowed");
-        assertTrue(filter.test(null, OutputItem.parameter("KEEP_ME")), "wildcard field should be allowed");
-        assertFalse(filter.test(null, OutputItem.parameter("DROP")), "unlisted field should be denied");
-        assertFalse(filter.test(null, OutputItem.parameter("DROP_ME")), "unlisted wildcard field should be denied");
+        assertTrue(filter.test(null, "KEEP", null), "listed field should be allowed");
+        assertTrue(filter.test(null, "KEEP_ME", null), "wildcard field should be allowed");
+        assertFalse(filter.test(null, "DROP", null), "unlisted field should be denied");
+        assertFalse(filter.test(null, "DROP_ME", null), "unlisted wildcard field should be denied");
     }
 
     @Test
@@ -154,8 +154,8 @@ class FilterOutputTest extends UnitTest {
 
         FilterOutput filter = getFilter(config);
 
-        assertTrue(filter.test(null, OutputItem.parameter("KEEP")), "all fields should be allowed when '*' is listed");
-        assertTrue(filter.test(null, OutputItem.parameter("DROP")), "all fields should be allowed when '*' is listed");
+        assertTrue(filter.test(null, "KEEP", null), "all fields should be allowed when '*' is listed");
+        assertTrue(filter.test(null, "DROP", null), "all fields should be allowed when '*' is listed");
     }
 
     @Test
@@ -165,9 +165,9 @@ class FilterOutputTest extends UnitTest {
 
         FilterOutput filter = getFilter(config);
 
-        assertFalse(filter.test(null, OutputItem.parameter("ANY")), "every field should be denied");
-        assertFalse(filter.test(null, OutputItem.parameter("ANY", "value")), "every field should be denied");
-        assertTrue(filter.test(payload("JSON", List.of("TXT")), OutputItem.view("TXT")), "views should still pass");
+        assertFalse(filter.test(null, "ANY", null), "every field should be denied");
+        assertFalse(filter.test(null, "ANY", "value"), "every field should be denied");
+        assertTrue(filter.test(payload("JSON", List.of("TXT")), "TXT"), "views should still pass");
     }
 
     @Test
@@ -178,8 +178,8 @@ class FilterOutputTest extends UnitTest {
 
         FilterOutput filter = getFilter(config);
 
-        assertFalse(filter.test(null, OutputItem.parameter("APP_FOO")), "prefixed field should be matched after stripping");
-        assertTrue(filter.test(null, OutputItem.parameter("APP_KEEP")), "non-matching prefixed field should be allowed");
+        assertFalse(filter.test(null, "APP_FOO", null), "prefixed field should be matched after stripping");
+        assertTrue(filter.test(null, "APP_KEEP", null), "non-matching prefixed field should be allowed");
     }
 
     @Test

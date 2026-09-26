@@ -7,7 +7,6 @@ import emissary.output.formatter.filter.AbstractItemFilter;
 import emissary.output.formatter.filter.ConfigKeys;
 import emissary.output.formatter.filter.FilterEmit;
 import emissary.output.formatter.filter.FilterEmit.EmitMode;
-import emissary.output.formatter.filter.OutputItem;
 import emissary.output.formatter.filter.util.FilterClassFactory;
 import emissary.util.JavaCharSet;
 
@@ -136,27 +135,10 @@ public abstract class AbstractFormatter implements IDropOffFormatter {
 
     // output filtering
 
-    /**
-     * Whether a parameter or view may be emitted: every filter in order must allow it.
-     *
-     * @param d the payload, or null for parameters
-     * @param item the parameter or view
-     * @return true to allow, false to drop
-     */
-    protected boolean isOutputAllowed(@Nullable final IBaseDataObject d, final OutputItem item) {
-        for (final AbstractItemFilter filter : this.outputFilters) {
-            if (!filter.test(d, item)) {
-                traceDenial(filter, item);
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /** TRACE denial: filter name plus parameter key or view name. Values are never logged. */
-    private void traceDenial(final AbstractItemFilter filter, final OutputItem item) {
+    /** Log a denial: filter name plus parameter key or view name. Values are never logged. */
+    private void logDenied(final AbstractItemFilter filter, final boolean isView, final String name) {
         if (this.logger.isTraceEnabled()) {
-            this.logger.trace("Denied {} '{}' by {}", item.isView() ? "view" : "param", item.name(),
+            this.logger.trace("Denied {} '{}' by {}", isView ? "view" : "param", name,
                     filter.getClass().getSimpleName());
         }
     }
@@ -165,30 +147,39 @@ public abstract class AbstractFormatter implements IDropOffFormatter {
      * Whether the named view may be emitted for the payload.
      */
     protected boolean isContentAllowed(final IBaseDataObject d, final String viewName) {
-        if (this.outputFilters.isEmpty()) {
-            return true;
+        for (final AbstractItemFilter filter : this.outputFilters) {
+            if (!filter.test(d, viewName)) {
+                logDenied(filter, true, viewName);
+                return false;
+            }
         }
-        return isOutputAllowed(d, OutputItem.view(viewName));
+        return true;
     }
 
     /**
      * Whether the parameter key may be emitted.
      */
     protected boolean isMetadataAllowed(final String key) {
-        if (this.outputFilters.isEmpty()) {
-            return true;
+        for (final AbstractItemFilter filter : this.outputFilters) {
+            if (!filter.test(null, key, null)) {
+                logDenied(filter, false, key);
+                return false;
+            }
         }
-        return isOutputAllowed(null, OutputItem.parameter(key));
+        return true;
     }
 
     /**
      * Whether the parameter value may be emitted.
      */
     protected boolean isMetadataAllowed(final String key, final Object value) {
-        if (this.outputFilters.isEmpty()) {
-            return true;
+        for (final AbstractItemFilter filter : this.outputFilters) {
+            if (!filter.test(null, key, value)) {
+                logDenied(filter, false, key);
+                return false;
+            }
         }
-        return isOutputAllowed(null, OutputItem.parameter(key, value));
+        return true;
     }
 
     /** Strip the first configured prefix from a parameter name. */

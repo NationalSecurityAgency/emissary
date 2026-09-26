@@ -31,11 +31,8 @@ public class FilterFieldPattern extends AbstractItemFilter {
     }
 
     @Override
-    public boolean test(@Nullable final IBaseDataObject d, final OutputItem item) {
-        if (!item.isParameter()) {
-            return true;
-        }
-        return this.fieldPattern == null || this.fieldPattern.matcher(item.name()).matches();
+    public boolean test(@Nullable final IBaseDataObject d, final String key, @Nullable final Object value) {
+        return this.fieldPattern == null || this.fieldPattern.matcher(key).matches();
     }
 
     @Override

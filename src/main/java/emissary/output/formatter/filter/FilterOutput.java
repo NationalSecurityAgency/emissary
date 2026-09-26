@@ -48,15 +48,20 @@ public class FilterOutput extends AbstractItemFilter {
     }
 
     @Override
-    public boolean test(@Nullable final IBaseDataObject d, final OutputItem item) {
-        if (item.isView()) {
-            return viewAllowed(d, item.name());
-        }
-        String name = stripped(item.name());
-        return item.value() == null ? paramAllowed(name) : paramValueAllowed(name, item.value());
+    public boolean test(@Nullable final IBaseDataObject d, final String key, @Nullable final Object value) {
+        String name = stripped(key);
+        return value == null ? paramAllowed(name) : paramValueAllowed(name, value);
+    }
+
+    @Override
+    public boolean test(final IBaseDataObject d, final String viewName) {
+        return viewAllowed(d, viewName);
     }
 
     private boolean viewAllowed(@Nullable final IBaseDataObject d, final String viewName) {
+        if (this.views.isEmpty()) {
+            return this.deny;
+        }
         String fileType = d == null ? "" : DropOffUtil.getFileType(d);
         if (this.deny) {
             return !this.views.matches(fileType, viewName);
@@ -65,6 +70,9 @@ public class FilterOutput extends AbstractItemFilter {
     }
 
     private boolean paramAllowed(final String name) {
+        if (this.params.isEmpty()) {
+            return this.deny;
+        }
         if (this.deny) {
             return !this.params.matches(name);
         }
@@ -172,6 +180,10 @@ public class FilterOutput extends AbstractItemFilter {
                     this.wildcardEntries.describe().size());
         }
 
+        boolean isEmpty() {
+            return !this.matchAll && this.entries.isEmpty() && this.wildcardEntries.isEmpty();
+        }
+
         boolean matches(final String fileType, final String viewName) {
             if (this.matchAll) {
                 return true;
@@ -250,6 +262,10 @@ public class FilterOutput extends AbstractItemFilter {
                     this.exact.add(entry);
                 }
             }
+        }
+
+        boolean isEmpty() {
+            return !this.star && this.exact.isEmpty() && this.wildcards.isEmpty();
         }
 
         boolean matches(final String name) {
