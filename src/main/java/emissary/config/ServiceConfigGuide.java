@@ -124,7 +124,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         try {
             readConfigData(filename);
         } catch (ConfigSyntaxException ex) {
-            throw new IOException("Cannot parse configuration file " + ex.getMessage(), ex);
+            throw new IOException("Cannot parse configuration file " + filename + ": " + ex.getMessage(), ex);
         }
     }
 
@@ -205,7 +205,25 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     }
 
 
-    protected void readConfigData(final InputStream is, final String filename) throws IOException, ConfigSyntaxException {
+    /**
+     * Read config data, choosing the parser from the file suffix.
+     * <p>
+     * A structured suffix ({@code .yaml}, {@code .yml}, {@code .toml}) always uses the structured parser, and malformed
+     * structured input fails instead of falling back. Everything else, including unnamed streams and non-config names, uses
+     * the legacy tokenizer.
+     *
+     * @param is the stream to read; this method owns and closes it
+     * @param filename the name used to select the parser and in error messages
+     */
+    protected void readConfigData(final InputStream is, @Nullable final String filename) throws IOException, ConfigSyntaxException {
+        if (filename != null && StructuredConfigParser.isStructuredFile(filename)) {
+            new StructuredConfigParser(this).read(is, filename);
+        } else {
+            readLegacyConfig(is, filename);
+        }
+    }
+
+    private void readLegacyConfig(InputStream is, @Nullable String filename) throws IOException, ConfigSyntaxException {
         final Reader r = new BufferedReader(new InputStreamReader(is, UTF_8));
         final StreamTokenizer in = new StreamTokenizer(r);
         int nextToken = StreamTokenizer.TT_WORD;
@@ -220,10 +238,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         in.wordChars(123, 65536);
 
         while (nextToken != StreamTokenizer.TT_EOF) {
-            // Read three tokens at a time (X = Y)
             nextToken = in.nextToken();
-
-            // Make sure the first token in the tuple is a word
             if (nextToken == StreamTokenizer.TT_EOF) {
                 break;
             }
@@ -244,14 +259,13 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             }
 
             if (sval == null) {
-                // Problem is likely on previous line
                 throw new ConfigSyntaxException("Illegal token " + parmName + ", missing space or value on line " + (in.lineno() - 1) + "?");
             }
 
             handleNewEntry(parmName, sval, this.operator, filename, in.lineno() - 1, false);
         }
+        // Closing the reader closes the underlying stream too
         r.close();
-        is.close();
     }
 
     protected void readSingleConfigFile(final String filename) throws IOException, ConfigSyntaxException {
