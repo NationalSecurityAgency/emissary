@@ -260,6 +260,68 @@ or in offline mode:
 ./emissary config --place emissary.place.sample.ToLowerPlace --offline --detailed
 ```
 
+#### YAML and TOML configuration (.yaml/.yml/.toml)
+
+Places and services can alternatively be configured with YAML (`.yaml`/`.yml`) or TOML (`.toml`) files. A
+`.cfg` request resolves dir-first across formats, so a migrated deployment keeps working without touching the request:
+each location (config dir, then classpath, then old-style file) is checked for `.cfg` first, then `.yaml`, `.yml`,
+`.toml`. In particular a `Bar.yaml` in `emissary.config.dir` overrides a shipped `Bar.cfg` in the jar, while a
+`.cfg` still wins ties inside the same location — so pure-`.cfg` setups resolve exactly as before. A structured
+name (`Bar.yaml`, `Bar.toml`) is exact and never falls back. `ConfigUtil.getConfigInfo(MyPlace.class)` tries the
+cfg name first, so a place migrates by just dropping in the new file.
+
+Everything else — flavors, `IMPORT_FILE`,
+`@{VAR}` substitution, and the `config --place` inspection above — works the same.
+Flavor and import names keep their suffix (`base-FLAVOR.yaml`, `"!import": other.yaml`), so a YAML base pairs with YAML
+flavors/imports just like `.cfg` does today — migrate a base and its flavor files together, since a structured base only
+sees same-suffix flavors and silently skips a leftover `.cfg` flavor.
+
+Mapping to the cfg format (YAML first, TOML second):
+
+| YAML | TOML | `.cfg` |
+|---|---|---|
+| `KEY: value` | `KEY = value` | `KEY = value` |
+| `KEY: [a, b]` (sequence) | `KEY = ["a", "b"]` (array) | repeated `KEY = a` / `KEY = b` entries, in order |
+| `NESTED: {ONE: x}` | `[NESTED]` + `ONE = x` | `NESTED_ONE = x` (nested maps flatten with `_`) |
+| `"!remove": {KEY: v}` | `["!remove"]` + `KEY = v` | `KEY != v` (`"*"` removes all entries) |
+| `KEY: [a, {"!remove": v}, b]` | `KEY = ["a", {"!remove" = v}, "b"]` | positional removal, evaluated in order |
+| `"!import": file.yaml` | `"!import" = "file.toml"` | `IMPORT_FILE = file` |
+| `"!opt-import": [a, b]` | `"!opt-import" = [a, b]` | `OPT_IMPORT_FILE` entries |
+
+File-based flavors (`base-NAME.yaml` / `base-NAME.toml`, like `base-NAME.cfg`) work as with `.cfg`.
+
+Notes: 
+- Quote the `!` keys, since a bare `!` starts a YAML tag. 
+- Quote any value that must stay a string. YAML resolves unquoted scalars to non-string types where `.cfg` kept
+  every value as text: `yes`/`no`/`on`/`off` become booleans, `0xFF` becomes `255`, `1.10` becomes `1.1`, a leading-`0`
+  digit sequence is read as **octal** (`0755` becomes `493`, `0644` becomes `420`), and a leading `+` is dropped
+  (`+30` becomes `30`). Quoting preserves the value: `"0755"`, `"1.10"`, `"+30"`. Values that only *look* numeric are
+  left alone, so `1.2.3`, `12345678901234567890` and dates such as `2024-01-01` or `2024-01-01T10:00:00Z` all stay
+  strings; quoting them is still harmless and makes the intent explicit.
+- Octal is the coercion most likely to surprise, because permission, umask and mode-style values are common in place
+  configs and silently become different numbers rather than failing. TOML is stricter: it has no silent octal at all —
+  integers must be canonical, so `0755` is a startup error and octal must be written `0o755` (hex `0xFF` and `+30`
+  behave as in YAML).
+- Give each mapping key only once — a duplicated key is a startup error in both formats (TOML forbids them, and
+  the YAML parser is strict too).
+- Merge keys (`<<: *base` in YAML, and a `"<<"` key in TOML) are rejected rather than merged, so flatten the mapping
+  explicitly instead.
+- Every key needs a value. A valueless key (YAML `KEY:`) is a startup error rather than a silently nulled entry; use
+  `""` for a blank value and `"<null>"` to null the entry, as in cfgs.
+- In TOML, dotted keys nest (`a.b = 1` becomes `A_B`), so quote dotted keys to keep them literal — and note that keys 
+  after a `[table]` header belong to that table, while dotted keys never change the current table.
+- An empty file is a valid config with no entries, as in cfgs.
+- A YAML file is exactly one document. A second `---`-separated document is a startup error rather than a silently
+  dropped config; split it into separate files instead.
+- Every value must be a scalar. Nested mappings and sequences are only meaningful as keys' values; a tagged binary
+  value (`!!binary`) is rejected rather than stored as a Java object string.
+- Imports behave exactly like `.cfg` imports: `IMPORT_FILE`/`"!import"` failures are errors, `OPT_IMPORT_FILE` misses are
+  skipped. Name the file with its suffix (e.g. `"!import": other.yaml`).
+- Replace `ClassNameInventory` files rather than keeping both: inventory files are merged in filename order, and a key
+  present in two files causes the later file to be skipped with an error.
+- `ResourceReader.getConfigDataAsStream` still resolves only `.cfg`, so use `ConfigUtil.getConfigInfo` (or
+  `findConfigDataName`) for configs that may be structured.
+
 #### Server (Cluster)
 
 Emissary is fun in standalone, but running cluster is more appropriate for real work.  The way to run clustered

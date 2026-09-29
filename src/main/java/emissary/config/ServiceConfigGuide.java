@@ -124,7 +124,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         try {
             readConfigData(filename);
         } catch (ConfigSyntaxException ex) {
-            throw new IOException("Cannot parse configuration file " + ex.getMessage(), ex);
+            throw new IOException("Cannot parse configuration file " + filename + ": " + ex.getMessage(), ex);
         }
     }
 
@@ -205,7 +205,11 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     }
 
 
-    protected void readConfigData(final InputStream is, final String filename) throws IOException, ConfigSyntaxException {
+    protected void readConfigData(final InputStream is, @Nullable final String filename) throws IOException, ConfigSyntaxException {
+        if (filename != null && StructuredConfigParser.isStructuredFile(filename)) {
+            new StructuredConfigParser(this).read(is, filename);
+            return;
+        }
         final Reader r = new BufferedReader(new InputStreamReader(is, UTF_8));
         final StreamTokenizer in = new StreamTokenizer(r);
         int nextToken = StreamTokenizer.TT_WORD;

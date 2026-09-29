@@ -85,9 +85,10 @@ public class Configs {
      * @return the config response object
      */
     public static ConfigsResponseEntity getEmissaryConfig(final String cfg) throws IOException {
+        final String resolved = ConfigUtil.resolveConfigName(cfg);
         ConfigList list = new ConfigList();
-        list.addConfig(new Config(ConfigUtil.getFlavors(), combineConfigs(cfg, ConfigUtil.addFlavors(cfg)),
-                normalizeEntries(ConfigUtil.getConfigInfo(cfg))));
+        list.addConfig(new Config(ConfigUtil.getFlavors(), combineConfigs(resolved, ConfigUtil.addFlavors(resolved)),
+                normalizeEntries(ConfigUtil.getConfigInfo(resolved))));
         return new ConfigsResponseEntity(list);
     }
 
@@ -99,22 +100,23 @@ public class Configs {
      * @return the config response object
      */
     public static ConfigsResponseEntity getEmissaryConfigDetailed(final String cfg) throws IOException {
+        final String resolved = ConfigUtil.resolveConfigName(cfg);
         ConfigList detailed = new ConfigList();
         List<String> flavors = ConfigUtil.getFlavors();
 
         // default config
-        detailed.addConfig(new Config(Collections.emptyList(), Collections.singletonList(cfg),
-                normalizeEntries(new ServiceConfigGuide(ConfigUtil.getConfigStream(cfg), cfg))));
+        detailed.addConfig(new Config(Collections.emptyList(), Collections.singletonList(resolved),
+                normalizeEntries(new ServiceConfigGuide(ConfigUtil.getConfigStream(resolved), resolved))));
 
         // flavored configs
-        String[] flavoredCfgs = ConfigUtil.addFlavors(cfg);
+        String[] flavoredCfgs = ConfigUtil.addFlavors(resolved);
         for (final String flavoredName : flavoredCfgs) {
             String flavor = StringUtils.substringBeforeLast(StringUtils.substringAfterLast(flavoredName, "-"), ".");
             addDetail(detailed, Collections.singletonList(flavor), Collections.singletonList(flavoredName), flavoredName);
         }
 
         // all together now - same output as getEmissaryConfig
-        addDetail(detailed, flavors, combineConfigs(cfg, flavoredCfgs), cfg);
+        addDetail(detailed, flavors, combineConfigs(resolved, flavoredCfgs), resolved);
 
         return new ConfigsResponseEntity(detailed);
     }
@@ -129,7 +131,11 @@ public class Configs {
         if (!VALID_CONFIG_NAME.matcher(config).matches() || config.contains("..") || config.endsWith(".")) {
             throw new IllegalArgumentException("Invalid config name: " + config);
         }
-        return Strings.CS.appendIfMissing(config.trim(), CONFIG_FILE_ENDING);
+        final String trimmed = config.trim();
+        if (ConfigUtil.configFileSuffix(trimmed) != null) {
+            return trimmed;
+        }
+        return Strings.CS.appendIfMissing(trimmed, CONFIG_FILE_ENDING);
     }
 
     /**
