@@ -17,6 +17,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -115,12 +116,78 @@ class ConfigUtilTest extends UnitTest {
     }
 
     @Test
+    void testExplicitSuffix(@TempDir final Path dir) throws Exception {
+        // Suffixes are explicit: each file loads only under its own name.
+        Files.writeString(dir.resolve("both.cfg"), "FOO = legacy\n", UTF_8);
+        Files.writeString(dir.resolve("both.yaml"), "FOO: structured\n", UTF_8);
+        Files.writeString(dir.resolve("both.toml"), "FOO = \"toml\"\n", UTF_8);
+        final String origDir = System.getProperty(CONFIG_DIR_PROPERTY);
+        System.setProperty(CONFIG_DIR_PROPERTY, dir.toString());
+        ConfigUtil.initialize();
+        try {
+            assertEquals("legacy", ConfigUtil.getConfigInfo("both.cfg").findStringEntry("FOO"));
+            assertEquals("structured", ConfigUtil.getConfigInfo("both.yaml").findStringEntry("FOO"));
+            assertEquals("toml", ConfigUtil.getConfigInfo("both.toml").findStringEntry("FOO"));
+            assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo("both.yml"));
+            assertThrows(IOException.class, () -> ConfigUtil.getConfigStream("both.yml"));
+            // A legacy .cfg request resolves the deployment's structured file.
+            Files.writeString(dir.resolve("migrated.yaml"), "FOO: structured\n", UTF_8);
+            assertEquals("structured", ConfigUtil.getConfigInfo("migrated.cfg").findStringEntry("FOO"));
+        } finally {
+            if (origDir != null) {
+                System.setProperty(CONFIG_DIR_PROPERTY, origDir);
+            }
+            ConfigUtil.initialize();
+        }
+    }
+
+    @Test
     void testBadPreferences() {
         final List<String> prefs = new ArrayList<>();
         prefs.add("foo");
         prefs.add("bar");
         prefs.add("quuz");
         assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(prefs));
+    }
+
+    @Test
+    void testCorruptParseError(@TempDir final Path dir) throws Exception {
+        Files.writeString(dir.resolve(Dummy.class.getName() + ".cfg"), "- not a cfg line\n", UTF_8);
+        final String origDir = System.getProperty(CONFIG_DIR_PROPERTY);
+        System.setProperty(CONFIG_DIR_PROPERTY, dir.toString());
+        ConfigUtil.initialize();
+        try {
+            final IOException e = assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(Dummy.class));
+            assertTrue(e.getMessage().contains("Cannot parse"), "Was: " + e.getMessage());
+        } finally {
+            if (origDir != null) {
+                System.setProperty(CONFIG_DIR_PROPERTY, origDir);
+            }
+            ConfigUtil.initialize();
+        }
+    }
+
+
+    @Test
+    void testConfigStreamRejectsTraversalButAllowsAbsolutePaths(@TempDir final Path dir) throws Exception {
+        final Path configDir = Files.createDirectory(dir.resolve("configs"));
+        final Path outside = dir.resolve("evil.yaml");
+        Files.writeString(outside, "FOO = ok\n", UTF_8);
+        final String origDir = System.getProperty(CONFIG_DIR_PROPERTY);
+        System.setProperty(CONFIG_DIR_PROPERTY, configDir.toString());
+        ConfigUtil.initialize();
+        try {
+            assertThrows(IOException.class, () -> ConfigUtil.getConfigStream("../evil.yaml"));
+            // Absolute IMPORT_FILE-style names are still allowed
+            try (InputStream is = ConfigUtil.getConfigStream(outside.toAbsolutePath().toString())) {
+                assertEquals("FOO = ok\n", new String(is.readAllBytes(), UTF_8));
+            }
+        } finally {
+            if (origDir != null) {
+                System.setProperty(CONFIG_DIR_PROPERTY, origDir);
+            }
+            ConfigUtil.initialize();
+        }
     }
 
     @Test
@@ -704,6 +771,16 @@ class ConfigUtilTest extends UnitTest {
     void testClassInstantiationNotSubType() {
         String cfgFile = "emissary.config.ClassInstantiationTest.cfg";
         assertThrows(ClassCastException.class, () -> ConfigUtil.instantiateFromConfig(String.class, cfgFile));
+    }
+
+    @Test
+    void testSuffixCaseInsensitive() {
+        assertEquals(".yaml", ConfigUtil.configFileSuffix("Foo.YAML"));
+        assertEquals(".yml", ConfigUtil.configFileSuffix("Foo.Yml"));
+        assertEquals(".toml", ConfigUtil.configFileSuffix("Foo.TOML"));
+        assertEquals(".cfg", ConfigUtil.configFileSuffix("Foo.CFG"));
+        assertNull(ConfigUtil.configFileSuffix("Foo.txt"));
+        assertTrue(ConfigUtil.isConfigFile("emissary.admin.ClassNameInventory.YAML"));
     }
 
     abstract static class SomeBaseClass {
