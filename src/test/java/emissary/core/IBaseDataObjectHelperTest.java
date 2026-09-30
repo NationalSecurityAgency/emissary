@@ -63,17 +63,15 @@ class IBaseDataObjectHelperTest extends UnitTest {
         try {
             final Method method = IBaseDataObject.class.getMethod(methodName);
             final boolean isArrayType = "[B".equals(method.getReturnType().getName());
-            final IBaseDataObject cloneFalseObj = IBaseDataObjectHelper.clone(origObj, false);
-            final IBaseDataObject cloneTrueObj = IBaseDataObjectHelper.clone(origObj, true);
-            verifyCloneAssertions(method, origObj, cloneFalseObj, isSame, isEquals);
+            final IBaseDataObject cloneObj = IBaseDataObjectHelper.clone(origObj);
             if (switchWithFullClone) {
                 if (isArrayType) {
-                    verifyCloneAssertions(method, origObj, cloneTrueObj, isSame, isEquals == null ? null : !isEquals);
+                    verifyCloneAssertions(method, origObj, cloneObj, isSame, isEquals == null ? null : !isEquals);
                 } else {
-                    verifyCloneAssertions(method, origObj, cloneTrueObj, isSame == null ? null : !isSame, isEquals == null ? null : !isEquals);
+                    verifyCloneAssertions(method, origObj, cloneObj, isSame == null ? null : !isSame, isEquals == null ? null : !isEquals);
                 }
             } else {
-                verifyCloneAssertions(method, origObj, cloneTrueObj, isSame, isEquals);
+                verifyCloneAssertions(method, origObj, cloneObj, isSame, isEquals);
             }
         } catch (final NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             fail("Test error - couldn't invoke specified method", e);
@@ -123,8 +121,8 @@ class IBaseDataObjectHelperTest extends UnitTest {
 
     @Test
     void testCloneArguments() {
-        assertNotNull(IBaseDataObjectHelper.clone(new BaseDataObject(), false));
-        checkThrowsNull(() -> IBaseDataObjectHelper.clone(null, false));
+        assertNotNull(IBaseDataObjectHelper.clone(new BaseDataObject()));
+        checkThrowsNull(() -> IBaseDataObjectHelper.clone(null));
     }
 
     @Test
@@ -147,11 +145,8 @@ class IBaseDataObjectHelperTest extends UnitTest {
         ibdo1.appendTransformHistory("BBB", true);
         verifyClone("getTransformHistory", ibdo1, IS_NOT_SAME, DONT_CHECK, EQUAL_WITHOUT_FULL_CLONE);
 
-        final IBaseDataObject cloneFalseIbdo = IBaseDataObjectHelper.clone(ibdo1, false);
-        assertEquals(ibdo1.getTransformHistory().getHistory(), cloneFalseIbdo.getTransformHistory().getHistory());
-
-        final IBaseDataObject cloneTrueIbdo = IBaseDataObjectHelper.clone(ibdo1, true);
-        assertEquals(ibdo1.getTransformHistory().getHistory(), cloneTrueIbdo.getTransformHistory().getHistory());
+        final IBaseDataObject cloneIbdo = IBaseDataObjectHelper.clone(ibdo1);
+        assertEquals(ibdo1.getTransformHistory().getHistory(), cloneIbdo.getTransformHistory().getHistory());
     }
 
     @Test
