@@ -142,7 +142,7 @@ class DecomposedSessionTest extends UnitTest {
         assertFalse(d.hasMetaData(), "Null keyed metadata must not be added");
 
         Map<String, List<Object>> m = new HashMap<>();
-        m.put("foo", Arrays.asList(new Object[] {"bar1", "bar2"}));
+        m.put("foo", Arrays.asList("bar1", "bar2"));
         d.addMetaData(m);
         assertTrue(d.hasMetaData(), "Mapped metadata must be present");
         assertEquals(2, d.getMetaDataItem("foo").size(), "Mapped metadata values must be present");

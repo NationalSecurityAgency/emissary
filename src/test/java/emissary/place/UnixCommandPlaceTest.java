@@ -58,7 +58,7 @@ class UnixCommandPlaceTest extends UnitTest {
             logger.error("Cannot create UnixCommandPlace", ex);
         }
 
-        payload = DataObjectFactory.getInstance(new Object[] {"abcdefg".getBytes(UTF_8), "myPayload", FORM});
+        payload = DataObjectFactory.getInstance("abcdefg".getBytes(UTF_8), "myPayload", FORM);
     }
 
     @Override

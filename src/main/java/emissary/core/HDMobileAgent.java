@@ -156,6 +156,7 @@ public class HDMobileAgent extends MobileAgent {
     }
 
     @Override
+    // The cast to Collection<IBaseDataObject> is safe here since the Collection branch was validated above
     @SuppressWarnings("unchecked")
     public synchronized void go(final Object payload, final IServiceProviderPlace arrivalPlace) {
         if (payload instanceof IBaseDataObject) {
@@ -228,7 +229,7 @@ public class HDMobileAgent extends MobileAgent {
                     for (final IBaseDataObject slug : this.payloadList) {
                         final DirectoryEntry slugLastPlaceVisited = slug.getLastPlaceVisited();
 
-                        if (slug != mypayload
+                        if (!slug.equals(mypayload)
                                 && slug.searchCurrentForm(primaryCurrentForm) > -1
                                 && ((primaryLastEntry == null && slugLastPlaceVisited == null) || (primaryLastEntry != null
                                         && slugLastPlaceVisited != null && slugLastPlaceVisited.getKey().equals(primaryLastEntry.getKey())))) {
@@ -293,7 +294,7 @@ public class HDMobileAgent extends MobileAgent {
                 logger.debug("Got null newEntry for {} looking for a better payload...", mypayload.shortName());
                 for (int i = 0; i < payloadCount(); i++) {
                     final IBaseDataObject p = getPayload(i);
-                    if (p == mypayload) {
+                    if (p.equals(mypayload)) {
                         continue;
                     }
                     setParallelTrackingInfoFor(p);

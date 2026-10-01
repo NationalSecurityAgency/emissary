@@ -594,16 +594,16 @@ public class ConfigUtil {
             } else {
                 final Set<String> existingKeys = scg.entryKeys();
                 final Configurator scgToMerge = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "ClassNameInventory");
-                boolean noErrorsForFile = true;
+                boolean hasErrorsForFile = false;
                 for (final String key : scgToMerge.entryKeys()) {
                     if (existingKeys.contains(key)) {
                         logger.error("Tried to overwrite existing key from ClassNameInventory:{} in {}", key, f.getAbsolutePath());
-                        noErrorsForFile = false;
+                        hasErrorsForFile = true;
                         // System.exit(43); // this is swallowed in JettyServer in jetty 6
                     }
                 }
                 // only merge if there are no errors
-                if (noErrorsForFile) {
+                if (!hasErrorsForFile) {
                     scg.merge(scgToMerge);
                 }
             }

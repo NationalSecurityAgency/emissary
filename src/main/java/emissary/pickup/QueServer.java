@@ -83,7 +83,6 @@ public abstract class QueServer extends Pausable {
 
             if (checkPaused()) {
                 // check to see if we want to stop taking work
-                continue;
             } else if (space.getSpaceCount() > 0 && queue.canHold(1)) {
                 // If pull mode and we have room for one more.
                 logger.debug("Que can hold more, trying take()");
@@ -94,7 +93,6 @@ public abstract class QueServer extends Pausable {
                     } catch (InterruptedException ignore) {
                         Thread.currentThread().interrupt();
                     }
-                    continue;
                 }
             } else {
                 // We must be in push mode or the queue is full,

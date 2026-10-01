@@ -493,6 +493,7 @@ public class EmissaryServer {
         stopServer(true);
     }
 
+    // The dump threadcount entry is always a Map<String, Object>, so the unchecked cast is safe
     @SuppressWarnings("unchecked")
     private static void logThreadDump(String initialLog) {
         if (LOG.isTraceEnabled()) {
