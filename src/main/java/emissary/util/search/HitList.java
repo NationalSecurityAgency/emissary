@@ -1,5 +1,6 @@
 package emissary.util.search;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -11,6 +12,7 @@ public class HitList extends ArrayList<Hit> implements List<Hit> {
     /**
      * provide uid for serialization
      */
+    @Serial
     private static final long serialVersionUID = -7099799510085720979L;
 
     public HitList() {

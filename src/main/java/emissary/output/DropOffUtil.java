@@ -992,7 +992,7 @@ public class DropOffUtil {
 
         // Keep track of parent's filetype to output; relies on the attachments being sorted
         final Map<String, String> parentTypes = new HashMap<>();
-        final IBaseDataObject tld = payloadList.get(0);
+        final IBaseDataObject tld = payloadList.getFirst();
         final List<String> extendedFileTypes = new ArrayList<>();
         parentTypes.put("1", tld.getFileType());
         for (int i = 0; i < parentParams.size(); i++) {

@@ -6,6 +6,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import jakarta.annotation.Nullable;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Map;
 public class DecomposedSession {
 
     // Serializable
+    @Serial
     static final long serialVersionUID = 8714610712515636160L;
 
     // Keys for the decomposed session map

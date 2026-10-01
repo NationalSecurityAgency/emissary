@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -47,6 +48,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public static final int MAX_BYTE_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     /* Including this here make serialization of this object faster. */
+    @Serial
     private static final long serialVersionUID = 7362181964652092657L;
 
     /* Actual data - migrate away from this towards byte channels. */

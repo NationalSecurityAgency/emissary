@@ -2,12 +2,15 @@ package emissary.parser;
 
 import emissary.core.EmissaryException;
 
+import java.io.Serial;
+
 /**
  * Exceptions thrown during input parsing
  */
 public class ParserException extends EmissaryException {
 
     // Serializable
+    @Serial
     static final long serialVersionUID = 2829172862630282553L;
 
     /**

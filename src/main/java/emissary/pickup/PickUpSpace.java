@@ -112,7 +112,7 @@ public abstract class PickUpSpace extends PickUpPlace implements IPickUpSpace {
     @Nullable
     public String getSpaceName() {
         if (!openSpaceNames.isEmpty()) {
-            return openSpaceNames.get(0);
+            return openSpaceNames.getFirst();
         } else {
             return null;
         }

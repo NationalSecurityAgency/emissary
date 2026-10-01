@@ -17,6 +17,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
 import java.time.Duration;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -337,6 +338,8 @@ public class ChannelPoolFactory extends BasePooledObjectFactory<ManagedChannel> 
      * Exception type for failures with handling the gRPC connection pool, such as failed borrows.
      */
     public static class PoolException extends RuntimeException {
+
+        @Serial
 
         private static final long serialVersionUID = 1495483102825486040L;
 

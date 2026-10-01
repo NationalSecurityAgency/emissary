@@ -1,6 +1,7 @@
 package emissary.util.io;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import java.security.SecureRandom;
 
@@ -9,6 +10,7 @@ import java.security.SecureRandom;
  */
 public class FileManipulator implements Serializable {
 
+    @Serial
     static final long serialVersionUID = 365259266882118692L;
 
     /**

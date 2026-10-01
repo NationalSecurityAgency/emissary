@@ -216,7 +216,7 @@ public class ConfigUtil {
      * If there is only one config dir, it just returned
      */
     public static String getFirstConfigDir() {
-        return getConfigDirs().get(0);
+        return getConfigDirs().getFirst();
     }
 
     /**
@@ -244,8 +244,8 @@ public class ConfigUtil {
             } else if (candidates.size() > 1) {
                 logger.error("Multiple files found in the configured directories: {}, returning the first.", file);
             }
-            logger.trace("Returning {}", candidates.get(0));
-            return candidates.get(0);
+            logger.trace("Returning {}", candidates.getFirst());
+            return candidates.getFirst();
         } else { // much more efficient to do this, no file check each time
             final String cfgFile = getFirstConfigDir() + "/" + file;
             logger.trace("Returning {}", cfgFile);
