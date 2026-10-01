@@ -45,6 +45,7 @@ public abstract class AbstractJDOMUtil {
             builder.setFeature("http://xml.org/sax/features/validation", false);
             builder.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
             builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
         }
 
         // If you can't completely disable DTDs, then at least do the following:
