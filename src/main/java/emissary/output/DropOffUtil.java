@@ -51,7 +51,7 @@ public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);
 
     protected static final String SEPARATOR = FileSystems.getDefault().getSeparator();
-    protected static final String OS_NAME = System.getProperty("os.name").toUpperCase(Locale.getDefault());
+    protected static final String OS_NAME = System.getProperty("os.name").toUpperCase(Locale.ROOT);
 
     protected String unixRoot;
 
@@ -926,7 +926,7 @@ public class DropOffUtil {
             // add the file extension if it is smaller than maxFilextLen
             final String fext = FilenameUtils.getExtension(filename);
             if (StringUtils.isNotBlank(fext) && fext.length() <= maxFilextLen) {
-                extensions.add(fext.toLowerCase(Locale.getDefault()));
+                extensions.add(fext.toLowerCase(Locale.ROOT));
             }
         }
         return extensions;

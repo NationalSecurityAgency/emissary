@@ -183,7 +183,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         }
 
         protected String transform(String name) {
-            return normalize(strip(name.toUpperCase(Locale.getDefault())));
+            return normalize(strip(name.toUpperCase(Locale.ROOT)));
         }
 
         protected String strip(String name) {

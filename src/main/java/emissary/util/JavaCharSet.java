@@ -43,7 +43,7 @@ public class JavaCharSet {
         }
 
         // Look up in the hash
-        String s = cs.toUpperCase(Locale.getDefault());
+        String s = cs.toUpperCase(Locale.ROOT);
         String charSet = charsets.get(s);
 
         String enc = null;

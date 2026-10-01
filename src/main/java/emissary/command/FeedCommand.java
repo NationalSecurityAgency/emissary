@@ -128,7 +128,7 @@ public class FeedCommand extends ServiceCommand {
         // Must maintain insertion order
         Set<String> flavorSet = new LinkedHashSet<>();
         for (String f : flavorMode.split(",")) {
-            flavorSet.add(f.toUpperCase(Locale.getDefault()));
+            flavorSet.add(f.toUpperCase(Locale.ROOT));
         }
 
         overrideFlavor(String.join(",", flavorSet));

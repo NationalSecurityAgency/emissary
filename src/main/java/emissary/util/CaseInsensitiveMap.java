@@ -50,7 +50,7 @@ public class CaseInsensitiveMap<K, V> extends HashMap<K, V> {
     // @SuppressWarnings("unchecked")
     public V put(K key, V value) {
         if (key instanceof String s) {
-            String uckey = s.toLowerCase(Locale.getDefault());
+            String uckey = s.toLowerCase(Locale.ROOT);
             if (remap.containsKey(uckey)) {
                 this.remove(uckey);
             }
@@ -69,7 +69,7 @@ public class CaseInsensitiveMap<K, V> extends HashMap<K, V> {
         Object realkey = key;
 
         if (key instanceof String s) {
-            String strkey = remap.get(s.toLowerCase(Locale.getDefault()));
+            String strkey = remap.get(s.toLowerCase(Locale.ROOT));
             if (strkey != null) {
                 realkey = strkey;
             }
@@ -96,7 +96,7 @@ public class CaseInsensitiveMap<K, V> extends HashMap<K, V> {
         Object realkey = key;
 
         if (key instanceof String s) {
-            String strkey = remap.get(s.toLowerCase(Locale.getDefault()));
+            String strkey = remap.get(s.toLowerCase(Locale.ROOT));
             if (strkey != null) {
                 realkey = strkey;
             }
@@ -113,7 +113,7 @@ public class CaseInsensitiveMap<K, V> extends HashMap<K, V> {
         Object realkey = key;
 
         if (key instanceof String s) {
-            String uckey = s.toLowerCase(Locale.getDefault());
+            String uckey = s.toLowerCase(Locale.ROOT);
             String strkey = remap.get(uckey);
             if (strkey != null) {
                 realkey = strkey;

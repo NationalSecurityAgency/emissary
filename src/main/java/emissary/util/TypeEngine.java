@@ -93,16 +93,16 @@ public class TypeEngine {
         // Look up an override mapping
         Map<String, String> extra = extraMapping.get(engine);
         if (extra != null) {
-            ret = extra.get(label.toUpperCase(Locale.getDefault()));
+            ret = extra.get(label.toUpperCase(Locale.ROOT));
         }
 
         // Grab the specified engine and do the default lookup
         if (ret == null) {
             Configurator c = contextMapping.get(engine);
             if (c != null) {
-                ret = c.findStringEntry(label.toUpperCase(Locale.getDefault()), null);
+                ret = c.findStringEntry(label.toUpperCase(Locale.ROOT), null);
                 if (logger.isDebugEnabled() && ret != null) {
-                    logger.debug("Found {} while looking up type for {}", ret, label.toUpperCase(Locale.getDefault()));
+                    logger.debug("Found {} while looking up type for {}", ret, label.toUpperCase(Locale.ROOT));
                 }
             }
         }
