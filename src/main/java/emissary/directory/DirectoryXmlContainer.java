@@ -123,10 +123,10 @@ public class DirectoryXmlContainer {
     public static String toXmlString(final IDirectoryPlace dir, @Nullable final String proxyKey, final String requester) {
         logger.debug("Building xml string for {}", requester);
         final String xml;
-        if ((proxyKey == null) || !(dir instanceof IRemoteDirectory)) {
+        if ((proxyKey == null) || !(dir instanceof IRemoteDirectory iRemoteDirectory)) {
             xml = toXmlString(dir);
         } else {
-            final Document jdom = buildProxyDocument((IRemoteDirectory) dir, requester);
+            final Document jdom = buildProxyDocument(iRemoteDirectory, requester);
             xml = SaferJDOMUtil.toString(jdom);
         }
         return xml;

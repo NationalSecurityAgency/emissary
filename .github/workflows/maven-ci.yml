@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java-compiler: ['11']
+        java-compiler: ['21']
         java-version: ['21']
     continue-on-error: true
 

@@ -39,9 +39,16 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class ServiceConfigGuideTest extends UnitTest {
 
-    private static final String cdata = "PLACE_NAME = TestPlace\n" + "SERVICE_NAME = TEST_PLACE\n" + "SERVICE_TYPE = \"INITIAL\"\n"
-            + "SERVICE_DESCRIPTION = \"Test Place\"\n" + "SERVICE_COST = 50\n" + "SERVICE_QUALITY = 50\n" + "INITIAL_FORM = \"UNKNOWN\"\n"
-            + "SERVICE_PROXY = \"TESTJUNK\"\n";
+    private static final String cdata = """
+            PLACE_NAME = TestPlace
+            SERVICE_NAME = TEST_PLACE
+            SERVICE_TYPE = "INITIAL"
+            SERVICE_DESCRIPTION = "Test Place"
+            SERVICE_COST = 50
+            SERVICE_QUALITY = 50
+            INITIAL_FORM = "UNKNOWN"
+            SERVICE_PROXY = "TESTJUNK"
+            """;
 
     private final InputStream cis = new ByteArrayInputStream(cdata.getBytes(UTF_8));
 
@@ -174,8 +181,12 @@ class ServiceConfigGuideTest extends UnitTest {
 
     @Test
     void testStringMatchList() throws IOException {
-        final byte[] configData =
-                ("FOO_ONE = \"BAR ONE\"\n" + "FOO_ONE = \"BAR TWO\"\n" + "FOO_TWO = \"BAZ\"\n" + "FOO_THREE = \"SHAZAM\"\n").getBytes(UTF_8);
+        final byte[] configData = """
+                FOO_ONE = "BAR ONE"
+                FOO_ONE = "BAR TWO"
+                FOO_TWO = "BAZ"
+                FOO_THREE = "SHAZAM"
+                """.getBytes(UTF_8);
         final ByteArrayInputStream str = new ByteArrayInputStream(configData);
         final Configurator c = ConfigUtil.getConfigInfo(str);
 
@@ -196,7 +207,11 @@ class ServiceConfigGuideTest extends UnitTest {
 
     @Test
     void testEntryManipulation() throws IOException {
-        byte[] configData = ("FOO = \"BAR\"\n" + "FOO = \"BAZ\"\n" + "FOO = \"SHAZAM\"\n").getBytes(UTF_8);
+        byte[] configData = """
+                FOO = "BAR"
+                FOO = "BAZ"
+                FOO = "SHAZAM"
+                """.getBytes(UTF_8);
         ByteArrayInputStream str = new ByteArrayInputStream(configData);
         Configurator c = ConfigUtil.getConfigInfo(str);
         assertEquals("BAR", c.findStringEntry("FOO"), "String entry finds first");
@@ -225,7 +240,12 @@ class ServiceConfigGuideTest extends UnitTest {
         assertEquals("BUZ", c.findStringEntry("ZUB", "BUZ"), "Get with default no val");
 
         // Now with an entry removed
-        configData = ("FOO = \"BAR\"\n" + "FOO = \"BAZ\"\n" + "FOO = \"SHAZAM\"\n" + "FOO != \"SHAZAM\"\n").getBytes(UTF_8);
+        configData = """
+                FOO = "BAR"
+                FOO = "BAZ"
+                FOO = "SHAZAM"
+                FOO != "SHAZAM"
+                """.getBytes(UTF_8);
         str = new ByteArrayInputStream(configData);
         c = ConfigUtil.getConfigInfo(str);
         assertEquals("BAR", c.findStringEntry("FOO"), "String entry finds first");
@@ -240,7 +260,12 @@ class ServiceConfigGuideTest extends UnitTest {
         assertFalse(set.contains("SHAZAM"), "Entry not in set");
 
         // Now with all entries removed
-        configData = ("FOO = \"BAR\"\n" + "FOO = \"BAZ\"\n" + "FOO = \"SHAZAM\"\n" + "FOO != \"*\"\n").getBytes(UTF_8);
+        configData = """
+                FOO = "BAR"
+                FOO = "BAZ"
+                FOO = "SHAZAM"
+                FOO != "*"
+                """.getBytes(UTF_8);
         str = new ByteArrayInputStream(configData);
         c = ConfigUtil.getConfigInfo(str);
         assertNull(c.findStringEntry("FOO"), "No entry for string match");
@@ -255,7 +280,12 @@ class ServiceConfigGuideTest extends UnitTest {
         assertFalse(set.contains("SHAZAM"), "Entry not in set");
 
         // Test out the mapping methods
-        configData = ("FOO_ONE = \"BAR\"\n" + "FOO_TWO = \"BAZ\"\n" + "FOO_THREE = \"SHAZAM\"\n" + "FOO_four = \"blaze\"\n").getBytes(UTF_8);
+        configData = """
+                FOO_ONE = "BAR"
+                FOO_TWO = "BAZ"
+                FOO_THREE = "SHAZAM"
+                FOO_four = "blaze"
+                """.getBytes(UTF_8);
         str = new ByteArrayInputStream(configData);
         c = ConfigUtil.getConfigInfo(str);
         assertEquals("BAR", c.findStringEntry("FOO_ONE"), "Get entry");
@@ -305,14 +335,39 @@ class ServiceConfigGuideTest extends UnitTest {
 
     @Test
     void testEntryPrimitives() throws IOException {
-        final byte[] configData =
-                ("INTEGER = \"123\"\n" + "LONG = \"123456\"\n" + "DOUBLE = \"12345678\"\n" + "BOOLEANT = \"TRUE\"\n" + "BOOLEANF = \"FALSE\"\n"
-                        + "BOOLEANQ = \"BOGUS\"\n" + "SZP = \"123\"\n" + "SZB = \"123b\"\n" + "SZK = \"123k\"\n" + "SZM = \"123m\"\n"
-                        + "SZG = \"123g\"\n" + "SZT = \"123t\"\n" + "SZQ = \"red balloons\"\n" + "SZ1 = \"111\"\n" + "SZ2 = \"222\"\n"
-                        + "SZ3 = \"333\"\n" + "SZ4 = \"444\"\n" + "SZ5 = \"555\"\n" + "SZ6 = \"666\"\n" + "SZ7 = \"777\"\n" + "SZ8 = \"888\"\n"
-                        + "SZ9 = \"999\"\n" + "SZ0 = \"000\"\n" + "STRING = \"chars\"\n" + "LONG2 = 12345678901234\n"
-                        + "OBJECTM = \"MATCH_VALUE\"\n" + "DOUBLE1 = 0.5\n" + "DOUBLE2 = \"0.5\"\n"
-                        + "DOUBLE3 = \"1.0E7\"\n" + "DOUBLE4 = \"10000000.0\"\n" + "DOUBLE5 = 10000000.0\n").getBytes(UTF_8);
+        final byte[] configData = """
+                INTEGER = "123"
+                LONG = "123456"
+                DOUBLE = "12345678"
+                BOOLEANT = "TRUE"
+                BOOLEANF = "FALSE"
+                BOOLEANQ = "BOGUS"
+                SZP = "123"
+                SZB = "123b"
+                SZK = "123k"
+                SZM = "123m"
+                SZG = "123g"
+                SZT = "123t"
+                SZQ = "red balloons"
+                SZ1 = "111"
+                SZ2 = "222"
+                SZ3 = "333"
+                SZ4 = "444"
+                SZ5 = "555"
+                SZ6 = "666"
+                SZ7 = "777"
+                SZ8 = "888"
+                SZ9 = "999"
+                SZ0 = "000"
+                STRING = "chars"
+                LONG2 = 12345678901234
+                OBJECTM = "MATCH_VALUE"
+                DOUBLE1 = 0.5
+                DOUBLE2 = "0.5"
+                DOUBLE3 = "1.0E7"
+                DOUBLE4 = "10000000.0"
+                DOUBLE5 = 10000000.0
+                """.getBytes(UTF_8);
         final ByteArrayInputStream str = new ByteArrayInputStream(configData);
         final Configurator c = ConfigUtil.getConfigInfo(str);
         assertEquals(123, c.findIntEntry("INTEGER", 456), "Int entry with def");
@@ -401,11 +456,19 @@ class ServiceConfigGuideTest extends UnitTest {
 
     @Test
     void testMagicSubstitutions() throws IOException {
-        final String s =
-                "TGT_HOST = \"MYHOST\"\n" + "TGT_DOMAIN = \"MYDOMAIN\"\n" + "TGT_PORT = \"9999\"\n" + "DEBUG = \"true\"\n" + "MYHOST = \"@{HOST}\"\n"
-                        + "MYPROJ = \"@{PRJ_BASE}/bin\"\n" + "MYTMP = \"@{TMPDIR}\"\n" + "MYBOGUS = \"@{HEREITIS}\"\n"
-                        + "MYURL = \"http://@{TGT_HOST}.@{TGT_DOMAIN}:@{TGT_PORT}/\"\n" + "MYLIB = \"thelib-@{OS.NAME}-@{OS.VER}-@{OS.ARCH}.so\"\n"
-                        + "MYCFG = \"@{CONFIG_DIR}@{/}TheStuff.cfg\"\n";
+        final String s = """
+                TGT_HOST = "MYHOST"
+                TGT_DOMAIN = "MYDOMAIN"
+                TGT_PORT = "9999"
+                DEBUG = "true"
+                MYHOST = "@{HOST}"
+                MYPROJ = "@{PRJ_BASE}/bin"
+                MYTMP = "@{TMPDIR}"
+                MYBOGUS = "@{HEREITIS}"
+                MYURL = "http://@{TGT_HOST}.@{TGT_DOMAIN}:@{TGT_PORT}/"
+                MYLIB = "thelib-@{OS.NAME}-@{OS.VER}-@{OS.ARCH}.so"
+                MYCFG = "@{CONFIG_DIR}@{/}TheStuff.cfg"
+                """;
         final ServiceConfigGuide sc = new ServiceConfigGuide(new ByteArrayInputStream(s.getBytes(UTF_8)));
 
         assertEquals("@{HEREITIS}", sc.findStringEntry("MYBOGUS"), "Replacement of bogus key is unexpected");
@@ -454,10 +517,20 @@ class ServiceConfigGuideTest extends UnitTest {
 
     @Test
     void testMerge() throws IOException {
-        final byte[] configData = ("FOO = \"BAR\"\n" + "FOO = \"CAT\"\n" + "FOO = \"BAZ\"\n" + "KEY1 = \"VAL1\"\n").getBytes(UTF_8);
+        final byte[] configData = """
+                FOO = "BAR"
+                FOO = "CAT"
+                FOO = "BAZ"
+                KEY1 = "VAL1"
+                """.getBytes(UTF_8);
         final ByteArrayInputStream str = new ByteArrayInputStream(configData);
         final Configurator c1 = ConfigUtil.getConfigInfo(str);
-        final byte[] configData2 = ("FOO = \"BAR2\"\n" + "FOO = \"CAT2\"\n" + "FOO = \"BAZ2\"\n" + "KEY2 = \"VAL2\"\n").getBytes(UTF_8);
+        final byte[] configData2 = """
+                FOO = "BAR2"
+                FOO = "CAT2"
+                FOO = "BAZ2"
+                KEY2 = "VAL2"
+                """.getBytes(UTF_8);
         final ByteArrayInputStream str2 = new ByteArrayInputStream(configData2);
         final Configurator c2 = ConfigUtil.getConfigInfo(str2);
 
@@ -476,10 +549,19 @@ class ServiceConfigGuideTest extends UnitTest {
 
     @Test
     void testMergeRemoval() throws IOException {
-        final byte[] configData = ("FOO = \"BAR\"\n" + "FOO = \"BAZ\"\n" + "KEY1 = \"VAL1\"\n" + "KEY1 = \"VAL2\"\n").getBytes(UTF_8);
+        final byte[] configData = """
+                FOO = "BAR"
+                FOO = "BAZ"
+                KEY1 = "VAL1"
+                KEY1 = "VAL2"
+                """.getBytes(UTF_8);
         final ByteArrayInputStream str = new ByteArrayInputStream(configData);
         final Configurator c1 = ConfigUtil.getConfigInfo(str);
-        final byte[] configData2 = ("FOO != \"*\"\n" + "FOO = \"ZUB\"\n" + "KEY1 != \"VAL2\"\n").getBytes(UTF_8);
+        final byte[] configData2 = """
+                FOO != "*"
+                FOO = "ZUB"
+                KEY1 != "VAL2"
+                """.getBytes(UTF_8);
         final ByteArrayInputStream str2 = new ByteArrayInputStream(configData2);
         final Configurator c2 = ConfigUtil.getConfigInfo(str2);
 

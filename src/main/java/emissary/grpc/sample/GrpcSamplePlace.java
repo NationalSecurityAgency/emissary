@@ -33,8 +33,8 @@ public class GrpcSamplePlace extends GrpcRoutingPlace {
 
     @Override
     protected boolean retryOnResult(Object response) {
-        if (response instanceof SampleResponse) {
-            ByteString result = ((SampleResponse) response).getResult();
+        if (response instanceof SampleResponse sampleResponse) {
+            ByteString result = sampleResponse.getResult();
             return new String(result.toByteArray(), UTF_8).equals("retry");
         }
         return false;

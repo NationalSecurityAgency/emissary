@@ -120,11 +120,9 @@ public class AgentTracker implements Tracker, Comparable<AgentTracker> {
             return true;
         }
 
-        if (!(o instanceof AgentTracker)) {
+        if (!(o instanceof AgentTracker that)) {
             return false;
         }
-
-        AgentTracker that = (AgentTracker) o;
 
         return new EqualsBuilder()
                 .append(getTimer(), that.getTimer())

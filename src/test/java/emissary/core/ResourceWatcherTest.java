@@ -10,6 +10,7 @@ import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -90,7 +91,7 @@ class ResourceWatcherTest extends UnitTest {
                 for (int i = 0; i < this.times; i++) {
                     try (TimedResource tr = ResourceWatcherTest.this.resourceWatcher.starting(this, ResourceWatcherTest.this.place)) {
                         assert tr != null;
-                        Thread.sleep(rand.nextInt(100));
+                        Thread.sleep(Duration.ofMillis(rand.nextInt(100)));
                     } catch (InterruptedException ignored) {
                         // empty catch block
                     }

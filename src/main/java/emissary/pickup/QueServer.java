@@ -5,6 +5,7 @@ import emissary.core.Pausable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.Iterator;
 
 /**
@@ -89,7 +90,7 @@ public abstract class QueServer extends Pausable {
                 boolean status = space.take();
                 if (status) {
                     try {
-                        Thread.sleep(pollingInterval);
+                        Thread.sleep(Duration.ofMillis(pollingInterval));
                     } catch (InterruptedException ignore) {
                         Thread.currentThread().interrupt();
                     }

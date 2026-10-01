@@ -3,6 +3,7 @@ package emissary.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Pausable extends Thread implements IPausable {
@@ -68,7 +69,7 @@ public abstract class Pausable extends Thread implements IPausable {
         if (isPaused()) {
             try {
                 logger.info("{} currently paused, sleeping for {}", getClass().getName(), getPauseInterval());
-                sleep(getPauseInterval());
+                sleep(Duration.ofMillis(getPauseInterval()));
             } catch (InterruptedException ignore) {
                 Thread.currentThread().interrupt();
             }

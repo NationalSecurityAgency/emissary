@@ -25,8 +25,8 @@ public class RollScheduledExecutor extends ScheduledThreadPoolExecutor {
 
     @Override
     protected <V> RunnableScheduledFuture<V> decorateTask(Runnable runnable, RunnableScheduledFuture<V> task) {
-        if (runnable instanceof Roller) {
-            return new RollFuture<>(task, (Roller) runnable);
+        if (runnable instanceof Roller roller) {
+            return new RollFuture<>(task, roller);
         } else {
             return super.decorateTask(runnable, task);
         }

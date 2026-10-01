@@ -352,23 +352,12 @@ public class KffDataObjectHandler {
         }
 
         switch (hl) {
-            case 32:
-                setMd5Value(d, hash);
-                break;
-            case 40:
-                setSha1Value(d, hash);
-                break;
-            case 64:
-                setSha256Value(d, hash);
-                break;
-            case 96:
-                setSha384Value(d, hash);
-                break;
-            case 128:
-                setSha512Value(d, hash);
-                break;
-            default:
-                logger.warn("Hash value {} doesn't work here", hl);
+            case 32 -> setMd5Value(d, hash);
+            case 40 -> setSha1Value(d, hash);
+            case 64 -> setSha256Value(d, hash);
+            case 96 -> setSha384Value(d, hash);
+            case 128 -> setSha512Value(d, hash);
+            default -> logger.warn("Hash value {} doesn't work here", hl);
         }
     }
 

@@ -379,14 +379,10 @@ public class MagicNumberFactory {
         if (dataTypeIdInt == null) {
             return -1;
         }
-        switch (dataTypeIdInt) {
-            case MagicNumber.TYPE_DATE:
-            case MagicNumber.TYPE_BEDATE:
-            case MagicNumber.TYPE_LEDATE:
-                return -1;
-            default:
-                return dataTypeIdInt;
-        }
+        return switch (dataTypeIdInt) {
+            case MagicNumber.TYPE_DATE, MagicNumber.TYPE_BEDATE, MagicNumber.TYPE_LEDATE -> -1;
+            default -> dataTypeIdInt;
+        };
     }
 
     @Nullable
@@ -439,43 +435,29 @@ public class MagicNumberFactory {
         char op = s.charAt(0);
         int len = s.length();
         if (!Character.isDigit(op)) {
-            switch (op) {
-                case MagicNumber.MAGICOPERATOR_AND:
-                case MagicNumber.MAGICOPERATOR_OR:
-                case MagicNumber.MAGICOPERATOR_BWAND:
-                case MagicNumber.MAGICOPERATOR_BWNOT:
-                case MagicNumber.MAGICOPERATOR_NOT:
-                    return 1;
-                case MagicNumber.MAGICOPERATOR_GTHAN:
-                case MagicNumber.MAGICOPERATOR_LTHAN:
-                    return len > 1 && s.charAt(1) == MagicNumber.MAGICOPERATOR_AND ? 2 : 1;
-                default:
-                    return 0;
-            }
+            return switch (op) {
+                case MagicNumber.MAGICOPERATOR_AND, MagicNumber.MAGICOPERATOR_OR, MagicNumber.MAGICOPERATOR_BWAND,
+                        MagicNumber.MAGICOPERATOR_BWNOT, MagicNumber.MAGICOPERATOR_NOT ->
+                    1;
+                case MagicNumber.MAGICOPERATOR_GTHAN, MagicNumber.MAGICOPERATOR_LTHAN ->
+                    len > 1 && s.charAt(1) == MagicNumber.MAGICOPERATOR_AND ? 2 : 1;
+                default -> 0;
+            };
         }
         return 0;
     }
 
     private static int getDataTypeByteLength(MagicNumber item) {
         int dataTypeId = item.dataType;
-        switch (dataTypeId) {
-            case MagicNumber.TYPE_STRING:
-                return (item.value == null) ? -1 : item.value.length;
-            case MagicNumber.TYPE_BYTE:
-                return 1;
-            case MagicNumber.TYPE_SHORT:
-            case MagicNumber.TYPE_BESHORT:
-            case MagicNumber.TYPE_LESHORT:
-                return 2;
-            case MagicNumber.TYPE_LONG:
-            case MagicNumber.TYPE_BELONG:
-            case MagicNumber.TYPE_LELONG:
-            case MagicNumber.TYPE_BEDATE:
-            case MagicNumber.TYPE_LEDATE:
-                return 4;
-            default:
-                return -1;
-        }
+        return switch (dataTypeId) {
+            case MagicNumber.TYPE_STRING -> (item.value == null) ? -1 : item.value.length;
+            case MagicNumber.TYPE_BYTE -> 1;
+            case MagicNumber.TYPE_SHORT, MagicNumber.TYPE_BESHORT, MagicNumber.TYPE_LESHORT -> 2;
+            case MagicNumber.TYPE_LONG, MagicNumber.TYPE_BELONG, MagicNumber.TYPE_LELONG, MagicNumber.TYPE_BEDATE,
+                    MagicNumber.TYPE_LEDATE ->
+                4;
+            default -> -1;
+        };
     }
 
     private static char resolveUnary(String[] columns, MagicNumber item) throws ParseException {

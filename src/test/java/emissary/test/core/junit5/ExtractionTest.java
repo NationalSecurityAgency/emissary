@@ -209,20 +209,15 @@ public abstract class ExtractionTest extends UnitTest {
             return false;
         }
 
-        switch (generateAnswerFiles) {
-            case "all":
-            case "true":
-                return true;
-            case "strict":
-            case "regression":
-                return isStrict();
-            case "lenient":
-            case "extraction":
-                return !isStrict();
-            default:
+        return switch (generateAnswerFiles) {
+            case "all", "true" -> true;
+            case "strict", "regression" -> isStrict();
+            case "lenient", "extraction" -> !isStrict();
+            default -> {
                 logger.warn("Unknown generateAnswers mode: '{}'. Defaulting to false.", generateAnswerFiles);
-                return false;
-        }
+                yield false;
+            }
+        };
     }
 
     @Nullable

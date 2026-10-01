@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.management.ThreadInfo;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -226,7 +227,7 @@ public abstract class UnitTest {
     protected void pause(long millis) {
         Thread.yield();
         try {
-            Thread.sleep(millis);
+            Thread.sleep(Duration.ofMillis(millis));
         } catch (Exception ex) {
             // empty exception block
             if (ex instanceof InterruptedException) {

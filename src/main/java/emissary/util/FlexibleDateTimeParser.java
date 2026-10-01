@@ -174,14 +174,14 @@ public final class FlexibleDateTimeParser {
                 // try for a zoned date (has timezone), local date time (no time zone), or just a local date (no time)
                 TemporalAccessor accessor =
                         formatter.parseBest(cleanedDateString, ZonedDateTime::from, OffsetDateTime::from, LocalDateTime::from, LocalDate::from);
-                if (accessor instanceof ZonedDateTime) {
-                    return (ZonedDateTime) accessor; // return the date time w/ timezone
-                } else if (accessor instanceof OffsetDateTime) {
-                    return ((OffsetDateTime) accessor).atZoneSameInstant(timezone);
-                } else if (accessor instanceof LocalDateTime) {
-                    return ((LocalDateTime) accessor).atZone(timezone); // set the timezone
-                } else if (accessor instanceof LocalDate) {
-                    return ((LocalDate) accessor).atStartOfDay(timezone); // add zeroed out time
+                if (accessor instanceof ZonedDateTime zdt) {
+                    return zdt; // return the date time w/ timezone
+                } else if (accessor instanceof OffsetDateTime odt) {
+                    return odt.atZoneSameInstant(timezone);
+                } else if (accessor instanceof LocalDateTime ldt) {
+                    return ldt.atZone(timezone); // set the timezone
+                } else if (accessor instanceof LocalDate ld) {
+                    return ld.atStartOfDay(timezone); // add zeroed out time
                 }
 
             } catch (NullPointerException | IllegalArgumentException | DateTimeParseException e) {

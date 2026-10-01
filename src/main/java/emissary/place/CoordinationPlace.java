@@ -117,9 +117,9 @@ public class CoordinationPlace extends ServiceProviderPlace {
             try {
                 // See if the place already exists
                 Object ref = Namespace.lookup(s);
-                if (ref instanceof IServiceProviderPlace) {
-                    placeRefs.add((IServiceProviderPlace) ref);
-                    logger.debug("Added reference for {}:{}", s, ref);
+                if (ref instanceof IServiceProviderPlace placeRef) {
+                    placeRefs.add(placeRef);
+                    logger.debug("Added reference for {}:{}", s, placeRef);
                 } else {
                     logger.error("Referenced place {} is of the wrong type: {}", s, ref.getClass().getName());
                 }

@@ -5,6 +5,8 @@ import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -72,7 +74,7 @@ class PickupQueueTest extends UnitTest {
         t.setDaemon(true);
         t.start();
         try {
-            Thread.sleep(100);
+            Thread.sleep(Duration.ofMillis(100));
         } catch (InterruptedException ignored) {
             // ignored
         }
@@ -80,7 +82,7 @@ class PickupQueueTest extends UnitTest {
         wb.addFileName("file1.txt");
         p.enque(wb);
         try {
-            Thread.sleep(100);
+            Thread.sleep(Duration.ofMillis(100));
         } catch (InterruptedException ignored) {
             // ignored
         }

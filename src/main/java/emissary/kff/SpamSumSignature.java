@@ -91,11 +91,11 @@ public class SpamSumSignature {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof SpamSumSignature)) {
+        if (!(obj instanceof SpamSumSignature spamSumSignature)) {
             return false;
         }
 
-        return this.isEqual((SpamSumSignature) obj);
+        return this.isEqual(spamSumSignature);
     }
 
     @Override

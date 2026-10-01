@@ -240,7 +240,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
                 logger.debug("Killed {} agents this round, {} total killed", killedThisRound, numberKilled);
                 // give some space for working agents to be returned
                 setMaxIdle(numberToKill - numberKilled);
-                Thread.sleep(5000);
+                Thread.sleep(Duration.ofSeconds(5));
             }
             logger.info("Pool is now empty");
         } catch (InterruptedException e) {
