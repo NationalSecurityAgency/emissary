@@ -14,6 +14,7 @@ import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.AbstractBlockingStub;
 import io.grpc.stub.AbstractFutureStub;
+import io.grpc.stub.AbstractStub;
 import jakarta.annotation.Nullable;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -49,8 +51,10 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
 
     public static final String GRPC_HOST = "GRPC_HOST_";
     public static final String GRPC_PORT = "GRPC_PORT_";
+    public static final String GRPC_CALL_DEADLINE_MILLIS = "GRPC_CALL_DEADLINE_MILLIS";
 
     protected final Map<String, GrpcInvoker> invokerTable = new HashMap<>();
+    private long callDeadlineMillis;
 
     protected GrpcRoutingPlace() throws IOException {
         super();
@@ -114,6 +118,8 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
             GrpcInvoker grpcInvoker = new GrpcInvoker(channelManager, retryHandler);
             invokerTable.put(id, grpcInvoker);
         }
+
+        callDeadlineMillis = configG.findLongEntry(GRPC_CALL_DEADLINE_MILLIS, 0L);
     }
 
     protected Map<String, String> getHostnameConfigs() {
@@ -167,7 +173,7 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
      */
     protected <Q extends Message, R extends Message, S extends AbstractBlockingStub<S>> R invokeGrpc(
             String targetId, Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, R> callLogic, Q request) {
-        return getInvoker(targetId).invoke(stubFactory, callLogic, request);
+        return getInvoker(targetId).invoke(withCallDeadline(stubFactory), callLogic, request);
     }
 
     /**
@@ -185,7 +191,24 @@ public abstract class GrpcRoutingPlace extends ServiceProviderPlace implements I
      */
     protected <Q extends Message, R extends Message, S extends AbstractFutureStub<S>> CompletableFuture<R> invokeGrpcAsync(
             String targetId, Function<ManagedChannel, S> stubFactory, BiFunction<S, Q, ListenableFuture<R>> callLogic, Q request) {
-        return getInvoker(targetId).invokeAsync(stubFactory, callLogic, request);
+        return getInvoker(targetId).invokeAsync(withCallDeadline(stubFactory), callLogic, request);
+    }
+
+    /**
+     * Applies the configured per-attempt deadline to a stub provider. The deadline is measured from the moment the gRPC
+     * method is called. A non-positive {@link #callDeadlineMillis} leaves the stub unchanged and does not enforce a
+     * deadline.
+     *
+     * @param stubFactory the original stub provider method
+     * @return a new stub provider method with an enforced deadline
+     * @param <S> the stub type
+     */
+    private <S extends AbstractStub<S>> Function<ManagedChannel, S> withCallDeadline(Function<ManagedChannel, S> stubFactory) {
+        if (callDeadlineMillis <= 0L) {
+            return stubFactory;
+        }
+        return channel -> stubFactory.apply(channel)
+                .withDeadlineAfter(callDeadlineMillis, TimeUnit.MILLISECONDS);
     }
 
     public String getHostname(String targetId) {
