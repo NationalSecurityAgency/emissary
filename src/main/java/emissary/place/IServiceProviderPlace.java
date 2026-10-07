@@ -111,11 +111,35 @@ public interface IServiceProviderPlace {
     List<IBaseDataObject> processHeavyDuty(IBaseDataObject payload) throws ResourceException;
 
     /**
+     * Override point for HD Agent calls
+     *
+     * @param payloadList list of sibling payloads to be processed
+     * @return list of IBaseDataObject result attachments
+     */
+    List<IBaseDataObject> processHeavyDuty(List<IBaseDataObject> payloadList) throws ResourceException;
+
+    /**
+     * Whether this place overrides {@link #processHeavyDuty(List)} to handle the full sibling payload list at once.
+     *
+     * @return {@code true} if the place should be handed the full payload batch
+     */
+    default boolean isBatchProcessingEnabled() {
+        return false;
+    }
+
+    /**
      * Override point for non-HD agent calls
      * 
      * @param payload the payload to be processed
      */
     void process(IBaseDataObject payload) throws ResourceException;
+
+    /**
+     * Override point for non-HD agent calls
+     *
+     * @param payloadList list of sibling payloads to be processed
+     */
+    void process(List<IBaseDataObject> payloadList) throws ResourceException;
 
     /**
      * Get key for place, first one on list with '*' as service proxy if there are multiple entries
