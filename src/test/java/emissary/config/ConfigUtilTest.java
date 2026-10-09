@@ -27,14 +27,15 @@ import java.util.Properties;
 
 import static emissary.config.ConfigUtil.CONFIG_DIR_PROPERTY;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class ConfigUtilTest extends UnitTest {
 
@@ -222,7 +223,7 @@ class ConfigUtilTest extends UnitTest {
 
     @Test
     void testPropertyInfo() {
-        try {
+        assertDoesNotThrow(() -> {
             // A bogus prop object
             Properties p = ConfigUtil.getPropertyInfo("foo.properties");
             assertNotNull(p, "Empty properties returned");
@@ -231,10 +232,8 @@ class ConfigUtilTest extends UnitTest {
             // A real prop object
             p = ConfigUtil.getPropertyInfo("emissary.config.fake.properties");
             assertNotNull(p, "Properties returned");
-            assertTrue(p.size() > 0, "Non-empty properties returned");
-        } catch (IOException iox) {
-            fail("Should not throw on property info get", iox);
-        }
+            assertFalse(p.isEmpty(), "Non-empty properties returned");
+        }, "Should not throw on property info get");
     }
 
     @Test
@@ -634,7 +633,7 @@ class ConfigUtilTest extends UnitTest {
 
         try {
             Executrix.writeDataToFile(primary, priname);
-            ConfigUtil.getConfigInfo(files);
+            ConfigUtil.getConfigInfo(Arrays.asList(files));
         } catch (IOException iox) {
             // will catch as IMPORT_FILE is not created/found, String result will be thrown IO Exception Message
             result = iox.getMessage();
@@ -655,7 +654,7 @@ class ConfigUtilTest extends UnitTest {
         return dir;
     }
 
-    private Path createFileAndPopulate(final Path dir, final String name, final String contents) {
+    private void createFileAndPopulate(final Path dir, final String name, final String contents) {
         final Path file = Path.of(dir.toString(), name);
         testFilesAndDirectories.add(file);
         try (OutputStream ros = Files.newOutputStream(file)) {
@@ -664,7 +663,6 @@ class ConfigUtilTest extends UnitTest {
             logger.error("Problem making {}", file, ex);
             throw new EmissaryRuntimeException(ex);
         }
-        return file;
     }
 
     @Test
