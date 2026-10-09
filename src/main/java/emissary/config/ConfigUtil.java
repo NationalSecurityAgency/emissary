@@ -35,6 +35,9 @@ public class ConfigUtil {
     /** Constant string for files that end with {@value} */
     public static final String CONFIG_FILE_ENDING = ResourceReader.CONFIG_SUFFIX;
 
+    /** Config file endings in lookup order: legacy first, then structured formats. */
+    public static final List<String> CONFIG_FILE_ENDINGS = ResourceReader.CONFIG_SUFFIXES;
+
     /** Constant string for files that end with {@value} */
     public static final String PROP_FILE_ENDING = ResourceReader.PROP_SUFFIX;
 
@@ -272,9 +275,12 @@ public class ConfigUtil {
      */
     private static String getOldStyleConfigFile(final String name) {
         String file = name;
+        String suffix = CONFIG_FILE_ENDING;
         // Chomp the file suffix
-        if (file.endsWith(CONFIG_FILE_ENDING)) {
-            file = file.substring(0, file.length() - CONFIG_FILE_ENDING.length());
+        final String requested = configFileSuffix(file);
+        if (requested != null) {
+            file = file.substring(0, file.length() - requested.length());
+            suffix = requested;
         }
 
         if (file.contains("$")) {
@@ -283,16 +289,20 @@ public class ConfigUtil {
         if (file.contains(".")) {
             file = file.substring(file.lastIndexOf(".") + 1);
         }
-        return getConfigFile(file + CONFIG_FILE_ENDING);
+        return getConfigFile(file + suffix);
     }
 
     /**
      * Get the ServiceConfigGuide for the named class
      */
     public static Configurator getConfigInfo(final Class<?> c) throws IOException {
-        final String name = c.getName() + CONFIG_FILE_ENDING;
-        logger.debug("Loading config for (class) {}", name);
-        return getConfigInfo(getConfigStream(name), name);
+        final String base = c.getName();
+        final List<String> prefs = new ArrayList<>();
+        for (final String ending : CONFIG_FILE_ENDINGS) {
+            prefs.add(base + ending);
+        }
+        logger.debug("Loading config for (class) {}", prefs);
+        return getConfigInfo(prefs);
     }
 
     /**
@@ -319,22 +329,37 @@ public class ConfigUtil {
      */
     public static Configurator getConfigInfo(final List<String> preferences) throws IOException {
         Configurator c;
+        IOException loadFailure = null;
         for (final String s : preferences) {
             try {
                 c = getConfigInfo(s);
                 return c;
+            } catch (ConfigNotFoundException ex) {
+                logger.debug("Preference {} not found", s);
             } catch (IOException ex) {
                 String exception = ex.getMessage();
+                if (exception == null) {
+                    exception = "";
+                }
                 if (exception.contains("IMPORT_FILE")) {
                     exception = exception.replace("<none>", s);
                     logger.debug("IMPORT_FILE not found in {}", s);
                     throw new IOException(exception);
+                }
+                // Found but failed to load (e.g., a parse error): log it now and remember the first
+                // one so the thrown exception is the real problem, not a "not found" summary
+                logger.warn("Preference {} failed to load", s, ex);
+                if (loadFailure == null) {
+                    loadFailure = ex;
                 } else {
-                    logger.debug("Preference {} not found", s);
+                    loadFailure.addSuppressed(ex);
                 }
             }
         }
-        throw new IOException("None of the " + preferences.size() + " preferences could be found: " + preferences);
+        if (loadFailure != null) {
+            throw loadFailure;
+        }
+        throw new IOException("None of the " + preferences.size() + " preferences could be found/loaded: " + preferences);
     }
 
     /**
@@ -344,7 +369,8 @@ public class ConfigUtil {
      */
     public static Configurator getConfigInfo(final String name) throws IOException {
         logger.debug("Loading config for (string) {}", name);
-        return getConfigInfo(getConfigStream(name), name);
+        final String resolved = resolveConfigName(name);
+        return getConfigInfo(getConfigStream(resolved), resolved);
     }
 
     /**
@@ -379,6 +405,54 @@ public class ConfigUtil {
             }
         }
         return scg;
+    }
+
+    /**
+     * Resolve the requested config name to an existing file across formats, falling back to the request unchanged.
+     *
+     * @param name the requested config name
+     * @return the resolved config name, or the requested name when no other format holds it
+     */
+    public static String resolveConfigName(final String name) {
+        final String resolved = resolveName(name);
+        return resolved != null ? resolved : name;
+    }
+
+    /**
+     * Resolve the requested config name
+     *
+     * @param name the requested config name
+     * @return the resolved config name, or null when no fallback applies
+     */
+    @Nullable
+    private static String resolveName(final String name) {
+        if (!CONFIG_FILE_ENDING.equals(configFileSuffix(name))) {
+            return null;
+        }
+        final String base = name.substring(0, name.length() - CONFIG_FILE_ENDING.length());
+        // Config-dir files first, so a deployment override wins over a shipped default in any format
+        for (final String ending : CONFIG_FILE_ENDINGS) {
+            final File f = new File(getConfigFile(base + ending));
+            if (f.exists() && f.canRead()) {
+                return base + ending;
+            }
+        }
+        // Then the classpath, same order
+        for (final String ending : CONFIG_FILE_ENDINGS) {
+            for (final String rezname : toResourceName(base + ending)) {
+                if (new ResourceReader().getResource(rezname) != null) {
+                    return base + ending;
+                }
+            }
+        }
+        // Then old-style files, same order
+        for (final String ending : CONFIG_FILE_ENDINGS) {
+            final File f = new File(getOldStyleConfigFile(base + ending));
+            if (f.exists() && f.canRead()) {
+                return base + ending;
+            }
+        }
+        return null;
     }
 
     /**
@@ -441,7 +515,7 @@ public class ConfigUtil {
         }
         logger.debug("No file config found using old style {}", f.getName());
 
-        throw new IOException("No config stream available for " + name);
+        throw new ConfigNotFoundException("No config stream available for " + name);
     }
 
     /**
@@ -452,14 +526,21 @@ public class ConfigUtil {
      */
     private static List<String> toResourceName(final String name) {
         String r = name.replace('.', '/');
-        if (r.toUpperCase(Locale.getDefault()).endsWith("/CFG")) {
-            r = r.substring(0, r.length() - CONFIG_FILE_ENDING.length()) + CONFIG_FILE_ENDING;
-        } else if (r.toUpperCase(Locale.getDefault()).endsWith("/XML")) {
-            r = r.substring(0, r.length() - XML_FILE_ENDING.length()) + XML_FILE_ENDING;
-        } else if (r.toUpperCase(Locale.getDefault()).endsWith("/PROPERTIES")) {
-            r = r.substring(0, r.length() - PROP_FILE_ENDING.length()) + PROP_FILE_ENDING;
-        } else if (r.toUpperCase(Locale.getDefault()).endsWith("/JS")) {
-            r = r.substring(0, r.length() - JS_FILE_ENDING.length()) + JS_FILE_ENDING;
+        final String[][] suffixRepairs = {
+                {"/CFG", CONFIG_FILE_ENDING},
+                {"/YAML", ResourceReader.YAML_SUFFIX},
+                {"/YML", ResourceReader.YML_SUFFIX},
+                {"/TOML", ResourceReader.TOML_SUFFIX},
+                {"/XML", XML_FILE_ENDING},
+                {"/PROPERTIES", PROP_FILE_ENDING},
+                {"/JS", JS_FILE_ENDING},
+        };
+        final String upper = r.toUpperCase(Locale.ROOT);
+        for (final String[] repair : suffixRepairs) {
+            if (upper.endsWith(repair[0])) {
+                r = r.substring(0, r.length() - repair[0].length()) + repair[1];
+                break;
+            }
         }
         final List<String> prefs = new ArrayList<>();
         if (configPkg != null) {
@@ -564,7 +645,8 @@ public class ConfigUtil {
     public static Configurator getClassNameInventory() throws IOException, EmissaryException {
         final List<File> classNameInventory = new ArrayList<>();
         for (final String dir : getConfigDirs()) {
-            final File[] files = new File(dir).listFiles((dir1, name) -> name.startsWith(INVENTORY_FILE_PREFIX) && name.endsWith(CONFIG_FILE_ENDING));
+            final File[] files = new File(dir).listFiles(
+                    (dir1, name) -> name.startsWith(INVENTORY_FILE_PREFIX) && isConfigFile(name));
             // sort the files, to put emissary.admin.ClassNameInventory.cfg before emissary.admin.ClassNameInventory-blah.cfg
             if (files != null) {
                 Arrays.sort(files);
@@ -573,7 +655,8 @@ public class ConfigUtil {
         }
         // check to make sure we have at least one
         if (classNameInventory.isEmpty()) {
-            throw new EmissaryException(String.format("No %s%s files found.  No places to start.", INVENTORY_FILE_PREFIX, CONFIG_FILE_ENDING));
+            throw new EmissaryException(String.format("No %s{.cfg,.yaml,.yml,.toml} files found.  No places to start.",
+                    INVENTORY_FILE_PREFIX));
         }
 
         ServiceConfigGuide scg = null;
@@ -590,10 +673,10 @@ public class ConfigUtil {
                 }
             }
             if (scg == null) { // first one
-                scg = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "ClassNameInventory");
+                scg = new ServiceConfigGuide(Files.newInputStream(f.toPath()), f.getName());
             } else {
                 final Set<String> existingKeys = scg.entryKeys();
-                final Configurator scgToMerge = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "ClassNameInventory");
+                final Configurator scgToMerge = new ServiceConfigGuide(Files.newInputStream(f.toPath()), f.getName());
                 boolean noErrorsForFile = true;
                 for (final String key : scgToMerge.entryKeys()) {
                     if (existingKeys.contains(key)) {
@@ -612,17 +695,45 @@ public class ConfigUtil {
     }
 
     /**
+     * Whether a filename is a config file
+     *
+     * @param filename the config name to check
+     * @return true for config file names
+     */
+    static boolean isConfigFile(final String filename) {
+        return configFileSuffix(filename) != null;
+    }
+
+    /**
+     * The config suffix of a filename
+     *
+     * @param filename the config name to check
+     * @return the lowercase suffix, or null if it has none.
+     */
+    @Nullable
+    public static String configFileSuffix(final String filename) {
+        final String lower = filename.toLowerCase(Locale.ROOT);
+        for (final String ending : CONFIG_FILE_ENDINGS) {
+            if (lower.endsWith(ending)) {
+                return ending;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Gets the flavors as specified by the filename.
      * <p>
-     * Returns the portion between the last - and .cfg in the file name
+     * Returns the portion between the last - and the config suffix in the file name
      *
      * @param f The file of interest.
      * @return String with parsed flavor name(s)
      */
     static String getFlavorsFromCfgFile(final File f) {
         final String filename = f.getName();
-        if (!filename.endsWith(".cfg")) {
-            logger.warn("Not a cfg file: {}", filename);
+        final String suffix = configFileSuffix(filename);
+        if (suffix == null) {
+            logger.warn("Not a config file: {}", filename);
             return "";
         }
         final String[] parts = filename.split("-");
@@ -633,7 +744,7 @@ public class ConfigUtil {
         if (parts.length > 2) {
             logger.warn("Filename {} had multiple - characters, using the last to determine the flavor", filename);
         }
-        return parts[parts.length - 1].replaceAll(".cfg", "");
+        return parts[parts.length - 1].substring(0, parts[parts.length - 1].length() - suffix.length());
     }
 
     /**
@@ -710,6 +821,18 @@ public class ConfigUtil {
             } catch (IOException e) {
                 logger.error("Cannot process {}: {}", arg, e.getLocalizedMessage());
             }
+        }
+    }
+
+    /**
+     * Thrown when a config name exists in no configured location, so callers can tell "nothing there" apart from "found but
+     * could not be loaded" (e.g., a parse error).
+     */
+    static final class ConfigNotFoundException extends IOException {
+        private static final long serialVersionUID = 1L;
+
+        ConfigNotFoundException(final String message) {
+            super(message);
         }
     }
 }
