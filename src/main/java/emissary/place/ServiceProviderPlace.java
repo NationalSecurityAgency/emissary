@@ -66,10 +66,13 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
     protected KffDataObjectHandler kff = null;
 
     /**
-     * These are used to track process vs processHD implementations to know whether one can proxy for the other one
+     * These are used to track process vs processHD and single vs batch implementations to know whether one can proxy for
+     * the other one
      */
     protected boolean processMethodImplemented = false;
     protected boolean heavyDutyMethodImplemented = false;
+    protected boolean processBatchMethodImplemented = false;
+    protected boolean heavyDutyBatchMethodImplemented = false;
 
     /**
      * Create a place and register it in the local directory. The default config must contain at least one SERVICE_KEY
@@ -263,28 +266,36 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
      */
     @Override
     public List<IBaseDataObject> agentProcessHeavyDuty(List<IBaseDataObject> payloadList) throws Exception {
-
         logger.debug("Entering agentProcessHeavyDuty with {} payload items", payloadList.size());
 
         List<IBaseDataObject> list = new ArrayList<>();
 
-        // For each incoming payload object
-        for (IBaseDataObject dataObject : payloadList) {
+        if (isBatchProcessingEnabled()) {
             try {
-                // Process the payload item
-                List<IBaseDataObject> l = agentProcessHeavyDuty(dataObject);
-                if (!l.isEmpty()) {
-                    dataObject.setNumChildren(dataObject.getNumChildren() + l.size());
-                }
-
-                // Accumulate results in a list to return
-                list.addAll(l);
+                MDC.put(MDCConstants.SERVICE_LOCATION, this.getKey());
+                list = processHeavyDuty(payloadList);
+                payloadList.forEach(this::rehash);
             } catch (Exception e) {
-                logger.error("Place.process exception", e);
-                dataObject.addProcessingError("agentProcessHD(" + keys.get(0) + "): " + e);
-                dataObject.replaceCurrentForm(Form.ERROR);
+                payloadList.forEach(d -> handleProcessingError(d, e));
+            }
+        } else {
+            // For each incoming payload object
+            for (IBaseDataObject dataObject : payloadList) {
+                try {
+                    // Process the payload item
+                    List<IBaseDataObject> l = agentProcessHeavyDuty(dataObject);
+                    if (!l.isEmpty()) {
+                        dataObject.setNumChildren(dataObject.getNumChildren() + l.size());
+                    }
+
+                    // Accumulate results in a list to return
+                    list.addAll(l);
+                } catch (Exception e) {
+                    handleProcessingError(dataObject, e);
+                }
             }
         }
+
 
         // Some debug output
         if (logger.isDebugEnabled()) {
@@ -329,6 +340,11 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
         }
     }
 
+    private void handleProcessingError(IBaseDataObject payload, Exception e) {
+        logger.error("Place.process exception", e);
+        payload.addProcessingError("agentProcessHD(" + keys.get(0) + "): " + e);
+        payload.replaceCurrentForm(Form.ERROR);
+    }
 
     /**
      * Convenience method to process a single payload when there is no expecation of decomposing any new payload objects
@@ -338,6 +354,22 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
     public void process(IBaseDataObject payload) throws ResourceException {
         if (heavyDutyMethodImplemented) {
             List<IBaseDataObject> children = processHeavyDuty(payload);
+            if (children != null && !children.isEmpty()) {
+                logger.error("Sprouting is no longer supported, lost {} children", children.size());
+            }
+        } else {
+            throw new IllegalStateException("Neither process nor processHeavyDuty appears to be implemented");
+        }
+    }
+
+    /**
+     * Convenience method to process a single payload when there is no expecation of decomposing any new payload objects
+     * from what was provided
+     */
+    @Override
+    public void process(List<IBaseDataObject> payloadList) throws ResourceException {
+        if (heavyDutyBatchMethodImplemented) {
+            List<IBaseDataObject> children = processHeavyDuty(payloadList);
             if (children != null && !children.isEmpty()) {
                 logger.error("Sprouting is no longer supported, lost {} children", children.size());
             }
@@ -365,25 +397,30 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
     }
 
     /**
+     * Override point for HD Agent calls
+     *
+     * @param payloadList list of sibling payloads to be processed
+     * @return list of IBaseDataObject result attachments
+     */
+    @Override
+    public List<IBaseDataObject> processHeavyDuty(List<IBaseDataObject> payloadList) throws ResourceException {
+        if (processBatchMethodImplemented) {
+            process(payloadList);
+            return Collections.emptyList();
+        } else {
+            throw new IllegalStateException("Neither process nor processHeavyDuty appears to be implemented");
+        }
+    }
+
+    /**
      * This method must be called during setup of the place to ensure that one of the two implementations is provided by the
-     * declaring class.
+     * declaring class. Batch method implementations are optional.
      */
     protected void verifyProcessImplementationProvided() {
-
         Class<?> c = this.getClass();
         while (!c.isAssignableFrom(ServiceProviderPlace.class)) {
             for (Method m : c.getDeclaredMethods()) {
-                String mname = m.getName();
-                String rname = m.getReturnType().getName();
-                Class<?>[] params = m.getParameterTypes();
-
-                if (params.length == 1 && params[0].isAssignableFrom(IBaseDataObject.class)) {
-                    if (mname.equals("process") && rname.equals("void")) {
-                        processMethodImplemented = true;
-                    } else if (mname.equals("processHeavyDuty") && rname.equals(List.class.getName())) {
-                        heavyDutyMethodImplemented = true;
-                    }
-                }
+                verifyProcessImplementationProvided(m);
             }
 
             if (heavyDutyMethodImplemented || processMethodImplemented) {
@@ -399,6 +436,27 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
                     + "If that is incorrect you can directly set one of the corresponding "
                     + "boolean flags or override verifyProcessImplementationProvided or "
                     + "implement AgentsNotSupported to turn this message off");
+        }
+    }
+
+    private void verifyProcessImplementationProvided(Method m) {
+        Class<?>[] params = m.getParameterTypes();
+        if (params.length != 1) {
+            return;
+        }
+        Class<?> param = params[0];
+        if (m.getName().equals("process") && m.getReturnType().isAssignableFrom(void.class)) {
+            if (param.isAssignableFrom(IBaseDataObject.class)) {
+                processMethodImplemented = true;
+            } else if (param.isAssignableFrom(List.class)) {
+                processBatchMethodImplemented = true;
+            }
+        } else if (m.getName().equals("processHeavyDuty") && m.getReturnType().isAssignableFrom(List.class)) {
+            if (param.isAssignableFrom(IBaseDataObject.class)) {
+                heavyDutyMethodImplemented = true;
+            } else if (param.isAssignableFrom(List.class)) {
+                heavyDutyBatchMethodImplemented = true;
+            }
         }
     }
 
