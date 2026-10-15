@@ -83,7 +83,7 @@ public class ComparisonPlace extends ServiceProviderPlace {
 
     @Override
     public List<IBaseDataObject> processHeavyDuty(final IBaseDataObject ibdoA) throws ResourceException {
-        final IBaseDataObject ibdoB = IBaseDataObjectHelper.clone(ibdoA, true);
+        final IBaseDataObject ibdoB = IBaseDataObjectHelper.clone(ibdoA);
         final List<IBaseDataObject> attachmentsA;
         final List<IBaseDataObject> attachmentsB;
 
