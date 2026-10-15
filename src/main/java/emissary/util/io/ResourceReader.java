@@ -25,11 +25,17 @@ public class ResourceReader {
     private static final Logger logger = LoggerFactory.getLogger(ResourceReader.class);
 
     public static final String CONFIG_SUFFIX = ".cfg";
+    public static final String YAML_SUFFIX = ".yaml";
+    public static final String YML_SUFFIX = ".yml";
+    public static final String TOML_SUFFIX = ".toml";
     public static final String XML_SUFFIX = ".xml";
     public static final String DATA_SUFFIX = ".dat";
     public static final String JS_SUFFIX = ".js";
     public static final String PROP_SUFFIX = ".properties";
     public static final String CLASS_SUFFIX = ".class";
+
+    /** Config file suffixes in lookup order: legacy first, then structured formats. */
+    public static final List<String> CONFIG_SUFFIXES = List.of(CONFIG_SUFFIX, YAML_SUFFIX, YML_SUFFIX, TOML_SUFFIX);
 
     /**
      * Create a resource reader for use
@@ -47,12 +53,12 @@ public class ResourceReader {
 
     /**
      * Return the config stream for the class config file Caller must close the stream
-     * 
+     *
      * @param c the class name matching the desired resource
      */
+    @Nullable
     public InputStream getConfigDataAsStream(Class<?> c) {
-        String name = getConfigDataName(c);
-        return getResourceAsStream(name);
+        return getResourceAsStream(getConfigDataName(c));
     }
 
     /**
@@ -60,6 +66,48 @@ public class ResourceReader {
      */
     public String getConfigDataName(Class<?> c) {
         return getResourceName(c) + CONFIG_SUFFIX;
+    }
+
+    /**
+     * Existing config resource name for the class, {@code .cfg} preferred.
+     *
+     * @param o the object whose class name matches the resource
+     * @return the first existing resource name, or null when none exists
+     */
+    @Nullable
+    public String findConfigDataName(Object o) {
+        return findConfigDataName(o.getClass());
+    }
+
+    /**
+     * Existing config resource name for the class, {@code .cfg} preferred.
+     *
+     * @param c the class name matching the desired resource
+     * @return the first existing resource name, or null when none exists
+     */
+    @Nullable
+    public String findConfigDataName(Class<?> c) {
+        for (final String name : getConfigDataNames(c)) {
+            if (getResource(name) != null) {
+                return name;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Config resource names for the class
+     *
+     * @param c the class
+     * @return list of names in {@link #CONFIG_SUFFIXES} order
+     */
+    public List<String> getConfigDataNames(Class<?> c) {
+        final String base = getResourceName(c);
+        final List<String> names = new ArrayList<>();
+        for (final String suffix : CONFIG_SUFFIXES) {
+            names.add(base + suffix);
+        }
+        return names;
     }
 
     /**
@@ -155,13 +203,18 @@ public class ResourceReader {
     }
 
     /**
-     * Find all the config resources present for the specified class
-     * 
+     * Find all the config resources present for the specified class, across all config suffixes.
+     *
      * @param c the class
      * @return sorted list of resources found or an empty list if none
      */
     public List<String> findConfigResourcesFor(Class<?> c) {
-        return findResourcesFor(c, CONFIG_SUFFIX);
+        final List<String> results = new ArrayList<>();
+        for (final String suffix : CONFIG_SUFFIXES) {
+            results.addAll(findResourcesFor(c, suffix));
+        }
+        Collections.sort(results);
+        return results;
     }
 
     /**
@@ -300,5 +353,4 @@ public class ResourceReader {
         logger.debug("Found {} file resources for {}", results.size(), cmatch);
         return results;
     }
-
 }
