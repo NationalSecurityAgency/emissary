@@ -420,13 +420,17 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
 
     protected TimedResource resourceWatcherStart(final IServiceProviderPlace place) {
         TimedResource tr = TimedResource.EMPTY;
-        // CoordinationPlaces are tracked individually
-        if (!(place instanceof CoordinationPlace)) {
-            try {
-                tr = ResourceWatcher.lookup().starting(this, place);
-            } catch (EmissaryException ex) {
-                logger.debug("No resource monitoring enabled");
+        try {
+            ResourceWatcher watcher = ResourceWatcher.lookup();
+            if (place instanceof CoordinationPlace) {
+                // Stats-only: child places are already tracked/interruptible individually,
+                // so don't subject the outer coordination to a second watchdog timeout.
+                tr = watcher.startingWithoutTracking(this, place);
+            } else {
+                tr = watcher.starting(this, place);
             }
+        } catch (EmissaryException ex) {
+            logger.debug("No resource monitoring enabled");
         }
         return (tr == null) ? TimedResource.EMPTY : tr;
     }
