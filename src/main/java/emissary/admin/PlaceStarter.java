@@ -63,7 +63,7 @@ public class PlaceStarter {
 
         final Object[] constructorArgs = {theConfigFile, directory, theLocation};
 
-        return createPlace(theLocation, constructorArgs, theClassStr);
+        return createPlace(theLocation, Arrays.asList(constructorArgs), theClassStr);
     }
 
     /**
@@ -79,7 +79,7 @@ public class PlaceStarter {
             final String directory) {
         // generate constructor args
         final Object[] constructorArgs = {theConfigStream, directory, theLocation};
-        return createPlace(theLocation, constructorArgs, theClassStr);
+        return createPlace(theLocation, Arrays.asList(constructorArgs), theClassStr);
     }
 
     /**
@@ -96,7 +96,7 @@ public class PlaceStarter {
             final String directory, final EmissaryNode node) {
         // generate constructor args
         final Object[] constructorArgs = {theConfigStream, directory, theLocation, node};
-        return createPlace(theLocation, constructorArgs, theClassStr);
+        return createPlace(theLocation, Arrays.asList(constructorArgs), theClassStr);
     }
 
 
