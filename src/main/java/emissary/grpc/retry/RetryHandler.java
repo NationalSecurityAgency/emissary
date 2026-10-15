@@ -101,7 +101,14 @@ public final class RetryHandler {
     private void logMessageOnRetry(RetryOnRetryEvent event) {
         int attemptNumber = event.getNumberOfRetryAttempts();
         Level level = attemptNumber <= numFailsBeforeWarn ? Level.INFO : Level.WARN;
-        logger.atLevel(level).log("{} failed gRPC connection attempt #{} with event error: {}", internalName, attemptNumber, event);
+        Throwable cause = event.getLastThrowable();
+        if (cause == null) {
+            logger.atLevel(level).log(
+                    "{} received bad response for gRPC connection attempt #{}", internalName, attemptNumber);
+        } else {
+            logger.atLevel(level).log(
+                    "{} failed gRPC connection attempt #{} with event error: {}", internalName, attemptNumber, cause.toString());
+        }
     }
 
     private void logMessageOnError(RetryOnErrorEvent event) {
