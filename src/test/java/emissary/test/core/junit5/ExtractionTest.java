@@ -164,7 +164,7 @@ public abstract class ExtractionTest extends UnitTest {
      */
     public String getGenerateAnswerFiles() {
         if (generateAnswerFiles == null) {
-            generateAnswerFiles = System.getProperty("generateAnswers", "false").toLowerCase(Locale.getDefault());
+            generateAnswerFiles = System.getProperty("generateAnswers", "false").toLowerCase(Locale.ROOT);
         }
         return generateAnswerFiles;
     }
@@ -177,7 +177,7 @@ public abstract class ExtractionTest extends UnitTest {
      * @see #getGenerateAnswerFiles() for detailed descriptions of each mode's behavioral impact.
      */
     public void setGenerateAnswerFiles(String generateAnswerFiles) {
-        this.generateAnswerFiles = (generateAnswerFiles != null) ? generateAnswerFiles.toLowerCase(Locale.getDefault()) : "false";
+        this.generateAnswerFiles = (generateAnswerFiles != null) ? generateAnswerFiles.toLowerCase(Locale.ROOT) : "false";
     }
 
     /**

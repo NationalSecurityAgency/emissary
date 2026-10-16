@@ -114,7 +114,7 @@ public class EmissaryNode {
         }
         this.nodeScheme = System.getProperty(NODE_SCHEME_PROPERTY, "http");
         this.nodePort = Integer.getInteger(NODE_PORT_PROPERTY, -1).intValue();
-        this.nodeType = System.getProperty("os.name", DEFAULT_NODE_TYPE).toLowerCase(Locale.getDefault()).replace(' ', '_');
+        this.nodeType = System.getProperty("os.name", DEFAULT_NODE_TYPE).toLowerCase(Locale.ROOT).replace(' ', '_');
         this.nodeServiceType = System.getProperty(NODE_SERVICE_TYPE_PROPERTY, DEFAULT_NODE_SERVICE_TYPE);
         this.nodeRefreshTimeout = Long.getLong(NODE_REFRESH_TIMEOUT_PROPERTY, DEFAULT_REFRESH_TIMEOUT);
         this.strictStartupMode = Boolean.parseBoolean(System.getProperty(STRICT_STARTUP_MODE, String.valueOf(false)));

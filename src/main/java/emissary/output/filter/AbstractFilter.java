@@ -477,13 +477,13 @@ public abstract class AbstractFilter implements IDropOffFilter {
      */
     protected String getCharset(final IBaseDataObject d, final String defaultCharset) {
         String lang = d.getFontEncoding();
-        if (lang == null || lang.toUpperCase(Locale.getDefault()).contains("ASCII") || lang.toUpperCase(Locale.getDefault()).contains("8859-1")) {
+        if (lang == null || lang.toUpperCase(Locale.ROOT).contains("ASCII") || lang.toUpperCase(Locale.ROOT).contains("8859-1")) {
             final String s = d.getParameterAsString("HTML_CHARSET");
             if (s != null) {
                 lang = s;
             }
         }
-        if (lang == null || lang.toUpperCase(Locale.getDefault()).contains("ASCII") || lang.toUpperCase(Locale.getDefault()).contains("8859-1")) {
+        if (lang == null || lang.toUpperCase(Locale.ROOT).contains("ASCII") || lang.toUpperCase(Locale.ROOT).contains("8859-1")) {
             final String s = d.getParameterAsString("MIME_CHARSET");
             if (s != null) {
                 lang = s;

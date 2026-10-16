@@ -734,7 +734,7 @@ public class IBaseDataObjectDiffHelper {
 
         String truncatedData = truncate(data);
 
-        switch (matchMode.toLowerCase(Locale.getDefault())) {
+        switch (matchMode.toLowerCase(Locale.ROOT)) {
             case "equals" -> {
                 if (!Objects.equals(value, data)) {
                     differences.add(formatErr(meta, key, "does not equal", truncatedData, truncate(value)));
@@ -792,7 +792,7 @@ public class IBaseDataObjectDiffHelper {
             return true;
         }
 
-        String os = specifiedOs.getValue().toLowerCase(Locale.getDefault());
+        String os = specifiedOs.getValue().toLowerCase(Locale.ROOT);
         boolean isMatchingOs;
         switch (os) {
             case "ubuntu" -> isMatchingOs = OSReleaseUtil.isUbuntu();

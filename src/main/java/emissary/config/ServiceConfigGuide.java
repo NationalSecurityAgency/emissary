@@ -804,7 +804,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             String key = el.getKey();
             key = key.substring(theParameter.length());
             if (!preserveCase) {
-                key = key.toUpperCase(Locale.getDefault());
+                key = key.toUpperCase(Locale.ROOT);
             }
             theHash.put(key, el.getValue());
         }
@@ -912,7 +912,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         for (final ConfigEntry el : parameters) {
             String keyBase = el.getKey().substring(param.length());
-            final String key = preserveCase ? keyBase : keyBase.toUpperCase(Locale.getDefault());
+            final String key = preserveCase ? keyBase : keyBase.toUpperCase(Locale.ROOT);
 
             if (theHash.containsKey(key)) {
                 theHash.get(key).add(el.getValue());
@@ -1113,7 +1113,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         if (!matchingEntries.isEmpty()) {
             String el = matchingEntries.get(0);
-            el = el.toUpperCase(Locale.getDefault());
+            el = el.toUpperCase(Locale.ROOT);
             if (el.startsWith("F")) {
                 return false;
             } else if (el.startsWith("T")) {

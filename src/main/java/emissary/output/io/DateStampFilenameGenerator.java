@@ -53,6 +53,6 @@ public class DateStampFilenameGenerator implements FileNameGenerator {
         String dateFileName = formatter.format(Instant.now());
         seq = Strings.CS.startsWith(lastFileName, dateFileName) ? seq + 1 : 0;
         lastFileName = dateFileName;
-        return dateFileName + String.format(Locale.getDefault(), "%03d", seq) + identifier + fileSuffix;
+        return dateFileName + String.format(Locale.ROOT, "%03d", seq) + identifier + fileSuffix;
     }
 }
