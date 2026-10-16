@@ -227,6 +227,14 @@ public class PlaceStarter {
         return getClassString(theLocation, false);
     }
 
+    /**
+     * Look up the class name for a place location in the ClassNameInventory
+     *
+     * @param theLocation key for the place
+     * @param isStrictMode when true, a missing or duplicate entry is an error instead of a warning
+     * @return the class name, or {@link #defaultClassName} if no entry is found and not in strict mode
+     * @throws EmissaryRuntimeException in strict mode if the entry is missing or duplicated
+     */
     public static String getClassString(final String theLocation, boolean isStrictMode) {
         final String thePlaceName = Startup.placeName(theLocation);
         if (StringUtils.isBlank(thePlaceName)) {
@@ -234,6 +242,10 @@ public class PlaceStarter {
         }
         final List<String> classStringList = classConf.findEntries(thePlaceName);
         if (classStringList.isEmpty()) {
+            if (isStrictMode) {
+                throw new EmissaryRuntimeException("Need a CLASS config entry for " + thePlaceName
+                        + " check entry in emissary.admin.ClassNameInventory.cfg");
+            }
             logger.error("Need a CLASS config entry for {} check entry in emissary.admin.ClassNameInventory.cfg, using default "
                     + "{} which is probably not what you want.", thePlaceName, defaultClassName);
             return defaultClassName;
