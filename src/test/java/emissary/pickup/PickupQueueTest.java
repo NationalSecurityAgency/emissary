@@ -74,6 +74,7 @@ class PickupQueueTest extends UnitTest {
         try {
             Thread.sleep(100);
         } catch (InterruptedException ignored) {
+            // ignored
         }
         WorkBundle wb = new WorkBundle("/output/root", "/eat/prefix");
         wb.addFileName("file1.txt");
@@ -81,6 +82,7 @@ class PickupQueueTest extends UnitTest {
         try {
             Thread.sleep(100);
         } catch (InterruptedException ignored) {
+            // ignored
         }
         int hitCount = pqt.getHitCount();
         assertTrue(hitCount > 0, "Waiter was notified " + hitCount + " times");

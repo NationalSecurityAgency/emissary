@@ -92,7 +92,7 @@ public class SessionProducer {
             sName = defaultSessionName;
         }
 
-        IBaseDataObject dataObject = DataObjectFactory.getInstance(new Object[] {theData, sName});
+        IBaseDataObject dataObject = DataObjectFactory.getInstance(theData, sName);
 
         // Pop default form if we have something to say
         if (initialForms != null && !initialForms.isEmpty()) {

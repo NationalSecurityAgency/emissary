@@ -174,7 +174,7 @@ class EmissaryTest extends UnitTest {
         }
     }
 
-    @Command()
+    @Command
     static class JunkCommand implements EmissaryCommand {
         static final Logger LOG = LoggerFactory.getLogger(JunkCommand.class);
 
@@ -200,7 +200,7 @@ class EmissaryTest extends UnitTest {
         }
     }
 
-    @Command()
+    @Command
     static class BrokeCommand implements EmissaryCommand {
 
         @Override
@@ -225,7 +225,7 @@ class EmissaryTest extends UnitTest {
         }
     }
 
-    @Command()
+    @Command
     static class AnotherBaseCommand extends BaseCommand {
         // need to extend BaseCommand to get verbose options
         static final Logger LOG = LoggerFactory.getLogger(AnotherBaseCommand.class);

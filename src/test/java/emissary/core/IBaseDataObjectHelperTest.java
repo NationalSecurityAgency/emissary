@@ -48,8 +48,8 @@ class IBaseDataObjectHelperTest extends UnitTest {
     private static final Boolean IS_NOT_EQUALS = false;
     @Nullable
     private static final Boolean DONT_CHECK = null;
-    private static final Boolean EQUAL_WITHOUT_FULL_CLONE = false;
-    private static final Boolean EQUAL_AFTER_FULL_CLONE = true;
+    private static final boolean EQUAL_WITHOUT_FULL_CLONE = false;
+    private static final boolean EQUAL_AFTER_FULL_CLONE = true;
     private static final Pattern EXCLUDED_PARAMETERS = Pattern.compile("FILETYPE|WILDCARDED_.*");
 
     @BeforeEach

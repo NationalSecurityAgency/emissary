@@ -118,6 +118,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         public void serializeAsField(Object pojo, JsonGenerator jgen, SerializerProvider provider, PropertyWriter writer) throws Exception {
 
             String key = writer.getName();
+            // Serialized map values are stored as a Collection, so the unchecked cast is safe
             @SuppressWarnings("unchecked")
             Collection<Object> values = (Collection<Object>) ((Map<?, ?>) pojo).get(key);
 

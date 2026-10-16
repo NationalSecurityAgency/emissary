@@ -404,7 +404,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     protected final void checkInterrupt(final IServiceProviderPlace place) {
         if (Thread.interrupted()) {
             // this should NEVER happen. if it does, we've done something bad
-            if (this.thread != Thread.currentThread()) {
+            if (!this.thread.equals(Thread.currentThread())) {
                 logger.error("MobileAgent thread instance is not the current thread. Instance thread: {} \tCurrent thread: {}", this.thread,
                         Thread.currentThread());
             }

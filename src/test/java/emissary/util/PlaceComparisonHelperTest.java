@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -162,11 +163,11 @@ class PlaceComparisonHelperTest extends UnitTest {
         // Add multiple children with different data
         for (int i = 0; i < 3; i++) {
             final IBaseDataObject oldChild = new BaseDataObject();
-            oldChild.setData(String.format("old-data-%d", i).getBytes(UTF_8));
+            oldChild.setData(String.format(Locale.ROOT, "old-data-%d", i).getBytes(UTF_8));
             oldChildren.add(oldChild);
 
             final IBaseDataObject newChild = new BaseDataObject();
-            newChild.setData(String.format("old-data-%d", i).getBytes(UTF_8));
+            newChild.setData(String.format(Locale.ROOT, "old-data-%d", i).getBytes(UTF_8));
             newChildren.add(newChild);
         }
 

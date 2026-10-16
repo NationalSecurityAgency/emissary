@@ -124,8 +124,8 @@ class FTestMultipleWorkSpaces extends FunctionalTest {
 
         // Create and configure a WorkSpace
         space1 =
-                new WorkSpace(FeedCommand.parse(FeedCommand.class, new String[] {"-ns", "WorkSpace1", "-c", TMPDIR, "-i",
-                        TMPDIR + "/multipicktest/space1/in:10"}));
+                new WorkSpace(FeedCommand.parse(FeedCommand.class, "-ns", "WorkSpace1", "-c", TMPDIR, "-i",
+                        TMPDIR + "/multipicktest/space1/in:10"));
         space1.setEatPrefix(TMPDIR + "/multipicktest/space1/in");
         space1.setOutputRoot(TMPDIR + "/multipicktest/space1/out");
         space1.setCaseId("space1case");
@@ -136,8 +136,8 @@ class FTestMultipleWorkSpaces extends FunctionalTest {
 
         // Create and configure a second WorkSpace
         space2 =
-                new WorkSpace(FeedCommand.parse(FeedCommand.class, new String[] {"-ns", "WorkSpace2", "-c", TMPDIR, "-i",
-                        TMPDIR + "/multipicktest/space2/in:10"}));
+                new WorkSpace(FeedCommand.parse(FeedCommand.class, "-ns", "WorkSpace2", "-c", TMPDIR, "-i",
+                        TMPDIR + "/multipicktest/space2/in:10"));
         space2.setEatPrefix(TMPDIR + "/multipicktest/space2/in");
         space2.setOutputRoot(TMPDIR + "/multipicktest/space2/out");
         space2.setCaseId("space2case");

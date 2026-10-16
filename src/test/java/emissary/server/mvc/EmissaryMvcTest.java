@@ -67,6 +67,7 @@ class EmissaryMvcTest extends EndpointTestBase {
     }
 
     @Test
+    // safe: the unchecked cast is guarded by the assertInstanceOf above it
     @SuppressWarnings("unchecked")
     void namespace() {
         Namespace.bind("TestDirectoryPlace", new DirectoryEntry("TEST", "TESTSERVICEPLACE", "TRANSFORM", "http://localhost:8001/TestServicePlace",

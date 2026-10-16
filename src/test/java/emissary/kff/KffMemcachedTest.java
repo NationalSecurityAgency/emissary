@@ -65,7 +65,7 @@ class KffMemcachedTest extends UnitTest {
 
     @Test
     void testKffMemcachedCreation() throws Exception {
-        KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.TRUE, TEST_ID_WITH_SPACES);
+        KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, true, TEST_ID_WITH_SPACES);
         mcdFilter.setPreferredAlgorithm("SHA-256");
         assertEquals("SHA-256", mcdFilter.getPreferredAlgorithm());
         assertEquals("KFF", mcdFilter.getName());
@@ -74,7 +74,7 @@ class KffMemcachedTest extends UnitTest {
 
     @Test
     void testThrowsWithNonAsciiAndDups() throws Exception {
-        KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.TRUE, TEST_ID_WITH_SPACES);
+        KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, true, TEST_ID_WITH_SPACES);
         ChecksumResults results = createSums(mcdFilter);
         assertThrows(IllegalArgumentException.class, () -> {
             mcdFilter.check(TEST_ID_WITH_SPACES, results);
@@ -84,26 +84,26 @@ class KffMemcachedTest extends UnitTest {
 
     @Test
     void testNoHitNoStoreIdDupe() throws Exception {
-        KffMemcached mcdFilter = createTestFilter(Boolean.FALSE, Boolean.FALSE, TEST_UNFORMATTED_ID_HASH);
+        KffMemcached mcdFilter = createTestFilter(Boolean.FALSE, false, TEST_UNFORMATTED_ID_HASH);
         assertFalse(mcdFilter.check(TEST_ID_WITH_SPACES, createSums(mcdFilter)), "Filter should not hit");
     }
 
     @Test
     void testHitNoStoreIdDupe() throws Exception {
-        KffMemcached mcdFilter = createTestFilter(Boolean.FALSE, Boolean.TRUE, null);
+        KffMemcached mcdFilter = createTestFilter(Boolean.FALSE, true, null);
         assertTrue(mcdFilter.check(TEST_ID_WITH_SPACES, createSums(mcdFilter)), "Filter should hit");
     }
 
     @Test
     void testNoHitWithStoreIdDupe() throws Exception {
-        KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.FALSE, TEST_UNFORMATTED_ID_HASH);
+        KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, false, TEST_UNFORMATTED_ID_HASH);
         assertFalse(mcdFilter.check(TEST_ID_WITH_SPACES, createSums(mcdFilter)), "Filter should not hit");
     }
 
     @Test
     void testHitWithStoreIdDupe() throws Exception {
         isBinaryConnection = true;
-        KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.TRUE, TEST_ID_WITH_SPACES);
+        KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, true, TEST_ID_WITH_SPACES);
         assertTrue(mcdFilter.check(TEST_ID_WITH_SPACES, createSums(mcdFilter)), "Filter should hit");
     }
 
@@ -193,6 +193,7 @@ class KffMemcachedTest extends UnitTest {
         }
 
         @Override
+        // unchecked cast is intentional; cacheResult is set as a String only when non-null
         @SuppressWarnings("unchecked")
         public T get(long duration, TimeUnit units) throws InterruptedException, TimeoutException, ExecutionException {
             return (T) cacheResult;

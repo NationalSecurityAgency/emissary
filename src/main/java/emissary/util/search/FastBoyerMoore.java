@@ -222,8 +222,6 @@ public class FastBoyerMoore {
      * @version 1.0
      */
     public static class BackwardsTreeScanner {
-        /** Original list of keywords storred in byte array form. */
-        // byte[][] keywords;
         /** Root node of tree state diagram. Always start a search from here! */
         State root = new State((byte) 0);
         @Nullable
