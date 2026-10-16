@@ -33,12 +33,20 @@ class RegisterPeerActionTest extends EndpointTestBase {
     private static final String PEER_KEY_BAD = "EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://otherRemoteHost:8888/DirectoryPlace";
     private static final String DIRNAME = "EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:9999/DirectoryPlace$5050";
     private static final String REGISTER_PEER_ACTION = "RegisterPeer.action";
-    private static final String SUCCESS_RESULT = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
-            + "<directory location=\"EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:9999/DirectoryPlace\">\r\n"
-            + "  <entryList dataid=\"EMISSARY_DIRECTORY_SERVICES::STUDY\">\r\n" + "    <entry>\r\n"
-            + "      <key>EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:9999/DirectoryPlace</key>\r\n" + "      <description />\r\n"
-            + "      <cost>50</cost>\r\n" + "      <quality>50</quality>\r\n" + "      <expense>5050</expense>\r\n" + "    </entry>\r\n"
-            + "  </entryList>\r\n" + "</directory>\r\n";
+    private static final String SUCCESS_RESULT = """
+            <?xml version="1.0" encoding="UTF-8"?>\r
+            <directory location="EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:9999/DirectoryPlace">\r
+              <entryList dataid="EMISSARY_DIRECTORY_SERVICES::STUDY">\r
+                <entry>\r
+                  <key>EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:9999/DirectoryPlace</key>\r
+                  <description />\r
+                  <cost>50</cost>\r
+                  <quality>50</quality>\r
+                  <expense>5050</expense>\r
+                </entry>\r
+              </entryList>\r
+            </directory>\r
+            """;
     private EmissaryNode node;
 
     @BeforeEach

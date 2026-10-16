@@ -9,6 +9,7 @@ import com.codahale.metrics.Timer;
 import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +45,7 @@ class TimedResourceTest extends UnitTest {
         TestMobileAgent tma = new TestMobileAgent();
         // timeout almost immediately
         try (TimedResource tr = new TimedResource(tma, tp, 1, new Timer())) {
-            Thread.sleep(100);
+            Thread.sleep(Duration.ofMillis(100));
             // still running, but should be interrupted by this
             assertFalse(tr.checkState(System.currentTimeMillis()));
             tma.latch.await(5, TimeUnit.SECONDS);
@@ -89,7 +90,7 @@ class TimedResourceTest extends UnitTest {
             try {
                 while (latch == null) {
                     // make the object is created
-                    Thread.sleep(100);
+                    Thread.sleep(Duration.ofMillis(100));
                 }
                 latch.await();
             } catch (InterruptedException ex) {

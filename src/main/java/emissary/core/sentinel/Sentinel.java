@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.time.Duration;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Track mobile agents and take action on suspicious behavior
@@ -101,7 +101,7 @@ public class Sentinel implements Runnable {
         while (!this.timeToQuit) {
             // Delay this loop
             try {
-                Thread.sleep(TimeUnit.MINUTES.toMillis(pollingInterval));
+                Thread.sleep(Duration.ofMinutes(pollingInterval));
                 logger.debug("Sentinel is still watching");
                 protocols.forEach(this::run);
             } catch (InterruptedException ignore) {

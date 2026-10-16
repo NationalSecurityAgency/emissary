@@ -999,47 +999,20 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     public long findSizeEntry(final String theParameter, final long dflt) {
         final List<String> matchingEntries = findEntries(theParameter);
         if (!matchingEntries.isEmpty()) {
-            long val = dflt;
             final String s = matchingEntries.get(0);
             final char c = Character.toUpperCase(s.charAt(s.length() - 1));
             final String ss = s.substring(0, s.length() - 1);
-            boolean broken = false;
-            switch (c) {
-                case 'T':
-                    val = Long.parseLong(ss) * 1024 * 1024 * 1024 * 1024;
-                    break;
-                case 'G':
-                    val = Long.parseLong(ss) * 1024 * 1024 * 1024;
-                    break;
-                case 'M':
-                    val = Long.parseLong(ss) * 1024 * 1024;
-                    break;
-                case 'K':
-                    val = Long.parseLong(ss) * 1024;
-                    break;
-                case 'B':
-                    val = Long.parseLong(ss);
-                    break;
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                    val = Long.parseLong(s);
-                    break;
-                default:
-                    broken = true;
-            }
+            final long val = switch (c) {
+                case 'T' -> Long.parseLong(ss) * 1024 * 1024 * 1024 * 1024;
+                case 'G' -> Long.parseLong(ss) * 1024 * 1024 * 1024;
+                case 'M' -> Long.parseLong(ss) * 1024 * 1024;
+                case 'K' -> Long.parseLong(ss) * 1024;
+                case 'B' -> Long.parseLong(ss);
+                case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> Long.parseLong(s);
+                default -> dflt;
+            };
 
-            if (!broken) {
-                return val;
-            }
-            return dflt;
+            return val;
         }
         return dflt;
     }
@@ -1219,8 +1192,8 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         int i = 1;
 
         // First handle the remove entries from "other"
-        if (other instanceof ServiceConfigGuide) {
-            for (final ConfigEntry entry : ((ServiceConfigGuide) other).getRemoveEntries()) {
+        if (other instanceof ServiceConfigGuide guide) {
+            for (final ConfigEntry entry : guide.getRemoveEntries()) {
                 handleNewEntry(entry.getKey(), entry.getValue(), "!=", "<merge>", i++, true);
             }
         }

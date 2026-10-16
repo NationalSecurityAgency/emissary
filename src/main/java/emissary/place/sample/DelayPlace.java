@@ -4,6 +4,7 @@ import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 
 import java.io.IOException;
+import java.time.Duration;
 
 /**
  * This place performs no action other than holding everything it processes for a configurable amount of milliseconds
@@ -41,7 +42,7 @@ public class DelayPlace extends ServiceProviderPlace {
             logger.debug("Delay starting {}", tData.getAllCurrentForms());
         }
         try {
-            Thread.sleep(delayTimeMillis);
+            Thread.sleep(Duration.ofMillis(delayTimeMillis));
         } catch (InterruptedException e) {
             logger.warn("Interrupted before delay expired", e);
             Thread.currentThread().interrupt();

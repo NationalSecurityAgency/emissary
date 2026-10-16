@@ -434,9 +434,9 @@ public class EmissaryServer {
         for (String key : Namespace.keySet()) {
             try {
                 Object obj = Namespace.lookup(key);
-                if (obj instanceof IServiceProviderPlace) {
-                    LOG.info("Stopping {} ", obj);
-                    ((IServiceProviderPlace) obj).shutDown();
+                if (obj instanceof IServiceProviderPlace place) {
+                    LOG.info("Stopping {} ", place);
+                    place.shutDown();
                     // make sure key is removed from namespace
                     Namespace.unbind(key);
                     LOG.info("Done stopping place: {}", key);

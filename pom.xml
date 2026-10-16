@@ -98,10 +98,10 @@
     <dep.webjars.popper.version>2.9.3</dep.webjars.popper.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
     <git.useNative>false</git.useNative>
-    <maven.compiler.release>11</maven.compiler.release>
+    <maven.compiler.release>21</maven.compiler.release>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
     <maven.javadoc.doclint>all,-missing</maven.javadoc.doclint>
     <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
     <maven.javadoc.failOnWarnings>false</maven.javadoc.failOnWarnings>
@@ -113,7 +113,7 @@
     <plugin.exec-maven.version>3.6.3</plugin.exec-maven.version>
     <plugin.formatter-maven.version>2.23.0</plugin.formatter-maven.version>
     <plugin.git-commit-id-maven.version>9.2.0</plugin.git-commit-id-maven.version>
-    <plugin.impsort-maven.version>1.9.0</plugin.impsort-maven.version>
+    <plugin.impsort-maven.version>1.12.0</plugin.impsort-maven.version>
     <plugin.jacoco-maven.version>0.8.15</plugin.jacoco-maven.version>
     <plugin.maven-assembly.version>3.8.0</plugin.maven-assembly.version>
     <plugin.maven-checkstyle.version>3.6.0</plugin.maven-checkstyle.version>
@@ -981,7 +981,7 @@
                     <version>[${maven.min-version},)</version>
                   </requireMavenVersion>
                   <requireJavaVersion>
-                    <version>[11,)</version>
+                    <version>[21,)</version>
                   </requireJavaVersion>
                   <dependencyConvergence/>
                 </rules>
@@ -1061,6 +1061,7 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>${plugin.maven-javadoc.version}</version>
           <configuration>
+            <release>${maven.compiler.release}</release>
             <doclint>${maven.javadoc.doclint}</doclint>
             <failOnError>${maven.javadoc.failOnError}</failOnError>
             <failOnWarnings>${maven.javadoc.failOnWarnings}</failOnWarnings>
@@ -1761,7 +1762,7 @@
       <!-- on by default, but disable with '-P !errorprone' or '-DskipErrorProne' -->
       <id>errorprone</id>
       <activation>
-        <jdk>[11,)</jdk>
+        <jdk>[21,)</jdk>
         <property>
           <name>!skipErrorProne</name>
         </property>
@@ -1850,7 +1851,7 @@
       </activation>
       <properties>
         <!-- enable compiler compliance when building in Eclipse -->
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
       </properties>
       <build>
         <!--  different build directory for eclipse, so running maven and clicking in IDE don't conflict -->
@@ -1990,10 +1991,10 @@
     <profile>
       <id>jdk-release-flag</id>
       <activation>
-        <jdk>[11,)</jdk>
+        <jdk>[21,)</jdk>
       </activation>
       <properties>
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
       </properties>
     </profile>
     <profile>
