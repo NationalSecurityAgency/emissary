@@ -1,5 +1,6 @@
 package emissary.util;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -8,6 +9,7 @@ import java.io.Serializable;
 public class Pair implements Serializable {
 
     // Serializable
+    @Serial
     static final long serialVersionUID = 6629601505549278155L;
 
     String key;

@@ -1,7 +1,10 @@
 package emissary.core;
 
+import java.io.Serial;
+
 public class InterruptedByTimeoutException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 9219052337699630060L;
 
     /**

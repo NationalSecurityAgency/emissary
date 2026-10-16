@@ -7,10 +7,13 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
+
 @XmlRootElement(name = "configs")
 @XmlAccessorType(XmlAccessType.NONE)
 public class ConfigsResponseEntity extends BaseResponseEntity {
 
+    @Serial
     private static final long serialVersionUID = -4303550651362965501L;
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigsResponseEntity.class);

@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import java.io.Serial;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
@@ -30,6 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
 
     // Serializable
+    @Serial
     static final long serialVersionUID = 2656898442450171891L;
 
     // Our logger

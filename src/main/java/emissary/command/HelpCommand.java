@@ -31,7 +31,7 @@ public class HelpCommand implements EmissaryCommand {
     }
 
     public String getSubcommand() {
-        return subcommands.get(0);
+        return subcommands.getFirst();
     }
 
     @Override

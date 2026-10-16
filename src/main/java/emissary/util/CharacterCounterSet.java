@@ -1,11 +1,13 @@
 package emissary.util;
 
+import java.io.Serial;
 import java.util.List;
 
 /**
  * A set of named counters for keeping counts on various classes of characters encountered
  */
 public class CharacterCounterSet extends CounterSet {
+    @Serial
     private static final long serialVersionUID = -7111758159975960091L;
     public static final List<String> CHARACTER_TYPE_KEYS =
             List.of("CHARACTER_LETTER", "CHARACTER_DIGIT", "CHARACTER_BLANK_SPACE", "CHARACTER_ISO_CONTROL",

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.Serial;
 import java.io.Serializable;
 import java.io.StreamTokenizer;
 import java.io.Writer;
@@ -45,6 +46,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ServiceConfigGuide implements Configurator, Serializable {
 
+    @Serial
     static final long serialVersionUID = 3906838615422657150L;
     public static final char SLASH = '/';
     public static final char COLON = ':';
@@ -999,7 +1001,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     public long findSizeEntry(final String theParameter, final long dflt) {
         final List<String> matchingEntries = findEntries(theParameter);
         if (!matchingEntries.isEmpty()) {
-            final String s = matchingEntries.get(0);
+            final String s = matchingEntries.getFirst();
             final char c = Character.toUpperCase(s.charAt(s.length() - 1));
             final String ss = s.substring(0, s.length() - 1);
             final long val = switch (c) {
@@ -1050,7 +1052,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         if (!matchingEntries.isEmpty()) {
             try {
-                return Integer.parseInt(matchingEntries.get(0));
+                return Integer.parseInt(matchingEntries.getFirst());
             } catch (NumberFormatException e) {
                 logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
@@ -1071,7 +1073,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         if (!matchingEntries.isEmpty()) {
             try {
-                return Long.parseLong(matchingEntries.get(0));
+                return Long.parseLong(matchingEntries.getFirst());
             } catch (NumberFormatException e) {
                 logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
@@ -1092,7 +1094,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         if (!matchingEntries.isEmpty()) {
             try {
-                return Double.parseDouble(matchingEntries.get(0));
+                return Double.parseDouble(matchingEntries.getFirst());
             } catch (NumberFormatException e) {
                 logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
@@ -1112,7 +1114,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         final List<String> matchingEntries = findEntries(theParameter);
 
         if (!matchingEntries.isEmpty()) {
-            String el = matchingEntries.get(0);
+            String el = matchingEntries.getFirst();
             el = el.toUpperCase(Locale.ROOT);
             if (el.startsWith("F")) {
                 return false;
@@ -1148,7 +1150,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     public <T> T findObjectEntry(String theParameter, Function<String, T> parser, T dflt) {
         final List<String> matchingEntries = findEntries(theParameter);
         if (!matchingEntries.isEmpty()) {
-            String el = matchingEntries.get(0);
+            String el = matchingEntries.getFirst();
             return parser.apply(el);
         }
         return dflt;

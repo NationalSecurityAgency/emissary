@@ -7,6 +7,7 @@ package emissary.config;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -15,6 +16,7 @@ import java.io.Serializable;
 public class ConfigEntry implements Serializable {
 
     // Serializable
+    @Serial
     static final long serialVersionUID = 876727639402334458L;
 
     private String key;

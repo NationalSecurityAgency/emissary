@@ -182,7 +182,7 @@ public class SimpleNioParser extends NIOSessionParser {
             return null;
         }
         if (records.size() == 1) {
-            return makeDataSlice(records.get(0));
+            return makeDataSlice(records.getFirst());
         }
 
         int total = 0;

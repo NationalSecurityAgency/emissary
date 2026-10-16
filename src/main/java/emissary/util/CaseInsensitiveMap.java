@@ -1,5 +1,6 @@
 package emissary.util;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map;
  */
 public class CaseInsensitiveMap<K, V> extends HashMap<K, V> {
     // serializable
+    @Serial
     static final long serialVersionUID = -8692638820306464417L;
 
     // For remapping string keys to through a case-insensitive layer

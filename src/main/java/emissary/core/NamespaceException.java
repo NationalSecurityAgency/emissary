@@ -6,6 +6,8 @@
 
 package emissary.core;
 
+import java.io.Serial;
+
 /**
  * An exception in the namespace mechanism
  *
@@ -14,6 +16,7 @@ package emissary.core;
 public class NamespaceException extends EmissaryException {
 
     // Serializable
+    @Serial
     static final long serialVersionUID = 3860002960394131834L;
 
     /**

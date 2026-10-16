@@ -6,11 +6,13 @@ import jakarta.xml.bind.annotation.XmlElement;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class Agent implements Comparable<Agent>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 2428511052308449193L;
 
     @XmlElement(name = "name")

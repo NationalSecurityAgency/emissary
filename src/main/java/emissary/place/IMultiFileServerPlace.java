@@ -1,4 +1,4 @@
-/**
+/*
  * IMultiFileServerPlace.java
  */
 package emissary.place;

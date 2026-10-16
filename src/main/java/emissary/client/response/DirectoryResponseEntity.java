@@ -7,9 +7,12 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
+
 @XmlRootElement(name = "directories")
 @XmlAccessorType(XmlAccessType.NONE)
 public class DirectoryResponseEntity extends BaseResponseEntity {
+    @Serial
     private static final long serialVersionUID = 5686691885767273319L;
 
     private static final Logger logger = LoggerFactory.getLogger(DirectoryResponseEntity.class);

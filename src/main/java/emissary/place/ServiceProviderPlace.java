@@ -281,7 +281,7 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
                 list.addAll(l);
             } catch (Exception e) {
                 logger.error("Place.process exception", e);
-                dataObject.addProcessingError("agentProcessHD(" + keys.get(0) + "): " + e);
+                dataObject.addProcessingError("agentProcessHD(" + keys.getFirst() + "): " + e);
                 dataObject.replaceCurrentForm(Form.ERROR);
             }
         }

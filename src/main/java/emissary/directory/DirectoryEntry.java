@@ -10,6 +10,7 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import static emissary.directory.KeyManipulator.CLASSSEPARATOR;
@@ -25,6 +26,7 @@ import static emissary.directory.KeyManipulator.DOLLAR;
 public class DirectoryEntry implements Serializable {
 
     // Serializable
+    @Serial
     static final long serialVersionUID = 2629953887545857011L;
 
     /** The key for this entry as a string */
