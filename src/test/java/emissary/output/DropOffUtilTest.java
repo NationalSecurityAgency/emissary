@@ -107,7 +107,6 @@ class DropOffUtilTest extends UnitTest {
         this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
         String id = this.util.getBestId(this.payload, tld);
         assertTrue(id.startsWith("ABCD"), "auto gen id should start with a (truncated to 4 char) prefix");
-        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
 
@@ -118,7 +117,6 @@ class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
         assertNotNull(this.util.getBestId(this.payload, tld));
-        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
 
@@ -136,7 +134,6 @@ class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestId(this.payload, tld);
 
-        assertNull(this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
         assertNull(this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
         assertNull(this.payload.getParameterAsString("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
         assertEquals("672317892139", id, "the MY_ID parameter should have been used");
@@ -154,7 +151,6 @@ class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestId(this.payload, tld);
 
-        assertNull(this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
         assertNull(this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
         assertNull(this.payload.getParameterAsString("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
         assertEquals("testPath", id, "the SHORTNAME parameter should have been used");
@@ -175,7 +171,6 @@ class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestId(this.payload, tld);
 
-        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertNotEquals("testPath", id, "the SHORTNAME parameter should NOT have been used");
@@ -196,7 +191,6 @@ class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestId(this.payload, tld);
 
-        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertNotEquals("testPath", id, "the SHORTNAME parameter should NOT have been used");
@@ -224,7 +218,6 @@ class DropOffUtilTest extends UnitTest {
         this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
         String id = this.util.getBestIdFrom(this.payload);
         assertTrue(id.startsWith("ABCD"), "auto gen id should start with a (truncated to 4 char) prefix");
-        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
 
@@ -236,7 +229,6 @@ class DropOffUtilTest extends UnitTest {
         this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
         id = this.util.getBestIdFrom(this.payload);
         assertFalse(id.startsWith("ABCD"), "auto gen id should NOT start with a (truncated to 4 char) prefix");
-        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
 
@@ -254,7 +246,6 @@ class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestIdFrom(this.payload);
 
-        assertNull(this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
         assertNull(this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
         assertNull(this.payload.getParameterAsString("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
         assertEquals("672317892139", id, "the MY_ID parameter should have been used");
@@ -272,7 +263,6 @@ class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestIdFrom(this.payload);
 
-        assertNull(this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
         assertNull(this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
         assertNull(this.payload.getParameterAsString("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
         assertEquals("testPath", id, "the SHORTNAME parameter should have been used");
@@ -293,7 +283,6 @@ class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestIdFrom(this.payload);
 
-        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertNotEquals("testPath", id, "the SHORTNAME parameter should NOT have been used");
@@ -314,7 +303,6 @@ class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestIdFrom(this.payload);
 
-        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertEquals("yes", this.payload.getParameterAsString("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
         assertNotEquals("testPath", id, "the SHORTNAME parameter should NOT have been used");
@@ -338,7 +326,6 @@ class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         List<String> values = this.util.getExistingIdsList(this.payload);
 
-        assertNull(this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should not have been set");
         assertNull(this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should not have been set");
         assertNull(this.payload.getParameterAsString("AUTO_GENERATED_ID"), "an auto gen id parameter should not have been set");
         assertEquals("672317892139", values.get(0), "the MY_ID parameter should have been used FIRST");
@@ -400,18 +387,13 @@ class DropOffUtilTest extends UnitTest {
 
         this.util.processMetadata(family);
 
-        assertEquals("gz", parent.getStringParameter("FILEXT"), "Parent should have filext of gz");
         assertEquals("gz", parent.getParameterAsConcatString("FILEXT"), "Parent should have filext of gz");
         assertEquals("gz", parent.getParameterAsString("FILEXT"), "Parent should have filext of gz");
-        assertEquals("docx", child.getStringParameter("FILEXT"), "Child should have filext of docx");
         assertEquals("docx", child.getParameterAsConcatString("FILEXT"), "Child should have filext of docx");
         assertEquals("docx", child.getParameterAsString("FILEXT"), "Child should have filext of docx");
 
         assertNull(parent.getParameter("EXTENDED_FILETYPE"), "Parent should not have extended filetype");
 
-        assertEquals("CHILD_FTYPE//myFoo//myBar1//myBar2",
-                child.getStringParameter("EXTENDED_FILETYPE"),
-                "Child EXTENDED_FILETYPE should handle deduplication and collections");
         assertEquals("CHILD_FTYPE//myFoo//myBar1//myBar2",
                 child.getParameterAsConcatString("EXTENDED_FILETYPE"),
                 "Child EXTENDED_FILETYPE should handle deduplication and collections");
@@ -421,13 +403,10 @@ class DropOffUtilTest extends UnitTest {
 
 
         assertNull(parent.getParameter("PARENT_FOO"), "Parent should not get PARENT_* values");
-        assertEquals("PARENT_FOO", child.getStringParameter("PARENT_FOO"), "Child should get PARENT_FOO type");
         assertEquals("PARENT_FOO", child.getParameterAsConcatString("PARENT_FOO"), "Child should get PARENT_FOO type");
         assertEquals("PARENT_FOO", child.getParameterAsString("PARENT_FOO"), "Child should get PARENT_FOO type");
-        assertEquals("PARENT_FOO", parent.getStringParameter("FOO"), "Parent FOO should not be changed");
         assertEquals("PARENT_FOO", parent.getParameterAsConcatString("FOO"), "Parent FOO should not be changed");
         assertEquals("PARENT_FOO", parent.getParameterAsString("FOO"), "Parent FOO should not be changed");
-        assertEquals("CHILD_FOO", child.getStringParameter("FOO"), "Child FOO should not be changed");
         assertEquals("CHILD_FOO", child.getParameterAsConcatString("FOO"), "Child FOO should not be changed");
         assertEquals("CHILD_FOO", child.getParameterAsString("FOO"), "Child FOO should not be changed");
     }
@@ -468,32 +447,23 @@ class DropOffUtilTest extends UnitTest {
 
         // Child 1 subtree has a FOO param
         assertEquals("FOO",
-                child.getStringParameter("PARENT_FOO"),
-                "Propagation of configured parent type must use closest available entry on child");
-        assertEquals("FOO",
                 child.getParameterAsConcatString("PARENT_FOO"),
                 "Propagation of configured parent type must use closest available entry on child");
         assertEquals("FOO",
                 child.getParameterAsString("PARENT_FOO"),
                 "Propagation of configured parent type must use closest available entry on child");
         assertEquals("CHILD_FOO", childRecords.get(0)
-                .getStringParameter("PARENT_FOO"), "Propagation of configured parent type must use closest available entry on child records");
-        assertEquals("CHILD_FOO", childRecords.get(0)
                 .getParameterAsConcatString("PARENT_FOO"), "Propagation of configured parent type must use closest available entry on child records");
         assertEquals("CHILD_FOO", childRecords.get(0)
                 .getParameterAsString("PARENT_FOO"), "Propagation of configured parent type must use closest available entry on child records");
 
         // Child 2 subtree only has the TLD FOO param to use
-        assertEquals("FOO", child2.getStringParameter("PARENT_FOO"), "Propagation of configured parent type must fall back to TLD on child");
         assertEquals("FOO", child2.getParameterAsConcatString("PARENT_FOO"), "Propagation of configured parent type must fall back to TLD on child");
         assertEquals("FOO", child2.getParameterAsString("PARENT_FOO"), "Propagation of configured parent type must fall back to TLD on child");
-        assertEquals("FOO", grandchild.getStringParameter("PARENT_FOO"), "Propagation of configured parent type must fall back to TLD on grandchild");
         assertEquals("FOO", grandchild.getParameterAsConcatString("PARENT_FOO"),
                 "Propagation of configured parent type must fall back to TLD on grandchild");
         assertEquals("FOO", grandchild.getParameterAsString("PARENT_FOO"),
                 "Propagation of configured parent type must fall back to TLD on grandchild");
-        assertEquals("FOO", gchildRecords.get(0)
-                .getStringParameter("PARENT_FOO"), "Propagation of configured parent type must use closest available entry on grandchild records");
         assertEquals("FOO", gchildRecords.get(0).getParameterAsConcatString("PARENT_FOO"),
                 "Propagation of configured parent type must use closest available entry on grandchild records");
         assertEquals("FOO", gchildRecords.get(0).getParameterAsString("PARENT_FOO"),
