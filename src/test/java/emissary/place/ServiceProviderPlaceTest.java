@@ -9,6 +9,7 @@ import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
+import emissary.place.sample.BatchPlace;
 import emissary.test.core.junit5.UnitTest;
 
 import jakarta.annotation.Nullable;
@@ -24,8 +25,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -566,6 +570,30 @@ class ServiceProviderPlaceTest extends UnitTest {
         } catch (IOException iox) {
             fail("Place should have configured with SERVICE_KEY", iox);
         }
+    }
+
+    @Test
+    void testBatchProcessing() throws Exception {
+        Configurator singleCfg = new ServiceConfigGuide();
+        singleCfg.addEntry("SERVICE_KEY", "CFGTEST.ID.CFG_TEST_PLACE.http://myhost.example.com:9999/CfgTestPlace");
+        IServiceProviderPlace singlePlace = new BatchPlace(singleCfg);
+
+        Configurator batchCfg = new ServiceConfigGuide();
+        batchCfg.addEntry("SERVICE_KEY", "CFGTEST.ID.CFG_TEST_PLACE.http://myhost.example.com:9999/CfgTestPlace");
+        batchCfg.addEntry(BatchPlace.ENABLE_BATCH_PROCESSING, "true");
+        IServiceProviderPlace batchPlace = new BatchPlace(batchCfg);
+
+        List<IBaseDataObject> dList = Stream.generate(BaseDataObject::new)
+                .limit(3)
+                .collect(Collectors.toList());
+
+        singlePlace.agentProcessHeavyDuty(dList);
+        assertAll(dList.stream()
+                .map(d -> () -> assertEquals(BatchPlace.SINGLE, d.getParameterAsString(BatchPlace.PROCESSED))));
+
+        batchPlace.agentProcessHeavyDuty(dList);
+        assertAll(dList.stream()
+                .map(d -> () -> assertEquals(BatchPlace.BATCH, d.getParameterAsString(BatchPlace.PROCESSED))));
     }
 
     private static final class PlaceTest extends ServiceProviderPlace {

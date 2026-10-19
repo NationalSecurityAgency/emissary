@@ -1,26 +1,34 @@
 package emissary.place;
 
 import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.core.BaseDataObject;
 import emissary.core.DataObjectFactory;
 import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
 import emissary.core.MobileAgent;
 import emissary.core.Namespace;
 import emissary.core.ResourceWatcher;
+import emissary.place.sample.BatchPlace;
 import emissary.test.core.junit5.UnitTest;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -141,5 +149,37 @@ class CoordinationPlaceTest extends UnitTest {
         assertEquals(1, CoordinationPlace.getFailedCoordinationPlaces().size());
 
         place.configG.removeEntry("SERVICE_COORDINATION", "fakePlace");
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {
+            "false" + "," + BatchPlace.SINGLE,
+            "true" + "," + BatchPlace.BATCH})
+    void testNonBatchedCoordination(boolean enable, String param) throws Exception {
+        String batchPlaceName = BatchPlace.class.getName();
+
+        Configurator batchCfg = new ServiceConfigGuide();
+        batchCfg.addEntry("SERVICE_KEY", "BATCH.ANALYZE.BATCH_PLACE.http://myhost.example.com:9999/BatchPlace");
+        batchCfg.addEntry(BatchPlace.ENABLE_BATCH_PROCESSING, Boolean.toString(enable));
+
+        try {
+            Namespace.bind(batchPlaceName, new BatchPlace(batchCfg)); // Allows CoordinationPlace to find existing place
+
+            place.configG = ConfigUtil.getConfigInfo(CoordinationPlaceTest.class);
+            place.configG.addEntry("SERVICE_COORDINATION", batchPlaceName);
+            place.configurePlace();
+
+            List<IBaseDataObject> dList = Stream.generate(BaseDataObject::new)
+                    .limit(3)
+                    .collect(Collectors.toList());
+
+            place.agentProcessHeavyDuty(dList);
+            assertAll(dList.stream()
+                    .map(d -> () -> assertAll(
+                            () -> assertEquals(param, d.getParameterAsString(BatchPlace.PROCESSED)),
+                            () -> assertTrue(d.getAllCurrentForms().contains("TESTCOORDINATE")))));
+        } finally {
+            Namespace.unbind(batchPlaceName);
+        }
     }
 }
