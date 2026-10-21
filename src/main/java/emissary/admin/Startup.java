@@ -383,7 +383,7 @@ public class Startup {
 
                 // Get the class name and Class object for what we want to make
                 final String thePlaceLocName = getLocationName(thePlaceLocation);
-                final String thePlaceClassString = PlaceStarter.getClassString(thePlaceLocation);
+                final String thePlaceClassString = getPlaceClassString(thePlaceLocation);
                 StringBuilder startupBuilder =
                         new StringBuilder("Doing local startup on ")
                                 .append(thePlaceLocName)
@@ -391,8 +391,9 @@ public class Startup {
                                 .append(thePlaceClassString).append(")...");
                 if (thePlaceClassString == null) {
                     startupBuilder.append("skipping, no class string!!");
+                    failedPlaces.add(thePlaceLocation);
                     placesToStart.remove(thePlaceLocation);
-                    logger.warn(startupBuilder.toString());
+                    logger.error(startupBuilder.toString());
                     return;
                 }
                 logger.debug("Starting place {}", thePlaceLocation);
@@ -511,7 +512,7 @@ public class Startup {
     protected void sortPlaces(final List<String> placeList) {
 
         for (final String location : placeList) {
-            final String className = PlaceStarter.getClassString(location);
+            final String className = getPlaceClassString(location);
             if (className == null) {
                 continue;
             }
@@ -519,8 +520,27 @@ public class Startup {
             try {
                 sortPickupOrPlace(location, PickUpPlace.implementsPickUpPlace(Class.forName(className)) ? this.pickupLists : this.placeLists);
             } catch (ClassNotFoundException e) {
+                failedPlaces.add(location);
                 logger.error("Could not create place {}", className, e);
             }
+        }
+    }
+
+    /**
+     * Look up the class name for a place location, honoring strict mode. In strict mode a missing or duplicate
+     * ClassNameInventory entry records the place as failed instead of falling back to a default class.
+     *
+     * @param location key for the place
+     * @return the class name, or null if the lookup failed in strict mode
+     */
+    @Nullable
+    protected String getPlaceClassString(final String location) {
+        try {
+            return PlaceStarter.getClassString(location, this.node.isStrictStartupMode());
+        } catch (EmissaryRuntimeException e) {
+            failedPlaces.add(location);
+            logger.error("Unable to determine class for {}", getLocationName(location), e);
+            return null;
         }
     }
 

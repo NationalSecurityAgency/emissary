@@ -11,6 +11,7 @@ import emissary.core.ResourceWatcher;
 import emissary.core.TimedResource;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
+import emissary.server.EmissaryServer;
 
 import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
@@ -128,7 +129,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
                 try {
                     String skey = KeyManipulator.getServiceHostUrl(keys.get(0)) + s;
                     logger.debug("No such place {}, creating as {}", s, skey, ex);
-                    String sclz = PlaceStarter.getClassString(skey);
+                    String sclz = PlaceStarter.getClassString(skey, isStrictStartupMode());
                     IServiceProviderPlace p = PlaceStarter.createPlace(skey, null, sclz, dirPlace);
                     if (p != null) {
                         placeRefs.add(p);
@@ -390,5 +391,16 @@ public class CoordinationPlace extends ServiceProviderPlace {
      */
     public static Set<String> getFailedCoordinationPlaces() {
         return failedCoordPlaceCreation;
+    }
+
+    /**
+     * Whether the node this place is running on was started in strict mode. Uses the same
+     * {@link emissary.directory.EmissaryNode} that {@link emissary.admin.Startup} uses, so coordinated places are created
+     * with the same strictness as the rest of the node.
+     *
+     * @return true if the server's node is in strict startup mode, false if not or if no server is running
+     */
+    protected boolean isStrictStartupMode() {
+        return EmissaryServer.isInitialized() && EmissaryServer.getInstance().getNode().isStrictStartupMode();
     }
 }
