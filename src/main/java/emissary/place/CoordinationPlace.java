@@ -345,7 +345,14 @@ public class CoordinationPlace extends ServiceProviderPlace {
     protected TimedResource resourceWatcherStart(final IServiceProviderPlace place) {
         TimedResource tr = TimedResource.EMPTY;
         try {
-            tr = ResourceWatcher.lookup().starting(getAgent(), place);
+            ResourceWatcher watcher = ResourceWatcher.lookup();
+            if (place instanceof CoordinationPlace) {
+                // Stats-only, mirroring MobileAgent: nested coordination gets no watchdog,
+                // only the leaf coordinated places are interruptible.
+                tr = watcher.startingWithoutTracking(getAgent(), place);
+            } else {
+                tr = watcher.starting(getAgent(), place);
+            }
         } catch (EmissaryException ex) {
             logger.debug("No resource monitoring enabled");
         }
