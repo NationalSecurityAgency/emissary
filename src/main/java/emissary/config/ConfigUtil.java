@@ -296,6 +296,30 @@ public class ConfigUtil {
     }
 
     /**
+     * Get the configuration for a class, preferring an instance-named resource over the class default. This is the single
+     * lookup used when an object (sink, formatter, ...) may ship its own configuration, and always supports the startup
+     * flavor overrides (e.g. {@code SomeClass-NAME-CLUSTER.cfg}).
+     *
+     * @param type the class whose configuration is being looked up
+     * @param instanceName the instance name to prefer over the class default, or null for only the class-level resource
+     * @return the configuration, or null when no resource could be found
+     */
+    @Nullable
+    public static Configurator getConfigInfo(final Class<?> type, @Nullable final String instanceName) {
+        final List<String> preferences = new ArrayList<>();
+        if (instanceName != null) {
+            preferences.add(type.getPackage().getName() + "." + instanceName + CONFIG_FILE_ENDING);
+            preferences.add(type.getName() + "-" + instanceName + CONFIG_FILE_ENDING);
+        }
+        preferences.add(type.getName() + CONFIG_FILE_ENDING);
+        try {
+            return getConfigInfo(preferences);
+        } catch (IOException iox) {
+            return null;
+        }
+    }
+
+    /**
      * Get configurator by trying the list of preferences in order and using the first one that is found. Sometimes and
      * array signature can be easier to use from a static context.
      *
