@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -35,6 +36,9 @@ public class ConfigUtil {
     /** Constant string for files that end with {@value} */
     public static final String CONFIG_FILE_ENDING = ResourceReader.CONFIG_SUFFIX;
 
+    /** Config file endings in lookup order: legacy first, then structured formats. */
+    public static final List<String> CONFIG_FILE_ENDINGS = ResourceReader.CONFIG_SUFFIXES;
+
     /** Constant string for files that end with {@value} */
     public static final String PROP_FILE_ENDING = ResourceReader.PROP_SUFFIX;
 
@@ -43,6 +47,20 @@ public class ConfigUtil {
 
     /** Constant string for files that end with {@value} */
     public static final String JS_FILE_ENDING = ResourceReader.JS_SUFFIX;
+
+    /**
+     * Uppercase resource suffix to canonical suffix, used to repair classpath resource names. These are the file-ending
+     * spellings that may appear after the dot-to-slash conversion in {@link #toResourceName(String)}.
+     */
+    @SuppressWarnings("ImmutableMemberCollection")
+    private static final Map<String, String> RESOURCE_SUFFIX_REPAIRS = Map.of(
+            "/CFG", CONFIG_FILE_ENDING,
+            "/YAML", ResourceReader.YAML_SUFFIX,
+            "/YML", ResourceReader.YML_SUFFIX,
+            "/TOML", ResourceReader.TOML_SUFFIX,
+            "/XML", XML_FILE_ENDING,
+            "/PROPERTIES", PROP_FILE_ENDING,
+            "/JS", JS_FILE_ENDING);
 
     /** Constant string for inventory files name prefix */
     public static final String INVENTORY_FILE_PREFIX = "emissary.admin.ClassNameInventory";
@@ -268,31 +286,39 @@ public class ConfigUtil {
     }
 
     /**
-     * Get the config file for the specified name without package naming
+     * Convert a fully qualified config name to its old-style relative form, which drops the package and keeps only the last
+     * dot-separated segment. For example, {@code emissary.pkg.Foo$Bar.yaml} becomes {@code Foo_Bar.yaml}.
+     *
+     * @param name the config name to convert
+     * @return the old-style relative name, or null when the name is empty or attempts traversal
      */
-    private static String getOldStyleConfigFile(final String name) {
+    @Nullable
+    private static String oldStyleName(@Nullable final String name) {
+        if (name == null || name.isEmpty() || name.contains("..")) {
+            return null;
+        }
         String file = name;
-        // Chomp the file suffix
-        if (file.endsWith(CONFIG_FILE_ENDING)) {
-            file = file.substring(0, file.length() - CONFIG_FILE_ENDING.length());
+        String suffix = CONFIG_FILE_ENDING;
+        final String requested = configFileSuffix(file);
+        if (requested != null) {
+            file = file.substring(0, file.length() - requested.length());
+            suffix = requested;
         }
-
-        if (file.contains("$")) {
-            file = file.replace('$', '_');
-        }
+        file = file.replace('$', '_');
         if (file.contains(".")) {
             file = file.substring(file.lastIndexOf(".") + 1);
         }
-        return getConfigFile(file + CONFIG_FILE_ENDING);
+        return file + suffix;
     }
 
     /**
-     * Get the ServiceConfigGuide for the named class
+     * Get the ServiceConfigGuide for the named class. All supported formats are considered, so the class only needs to name
+     * its config once.
      */
     public static Configurator getConfigInfo(final Class<?> c) throws IOException {
         final String name = c.getName() + CONFIG_FILE_ENDING;
         logger.debug("Loading config for (class) {}", name);
-        return getConfigInfo(getConfigStream(name), name);
+        return getConfigInfo(name);
     }
 
     /**
@@ -312,29 +338,36 @@ public class ConfigUtil {
 
     /**
      * Get configurator by trying the list of preferences in order and using the first one that is found.
+     * <p>
+     * A preference that does not exist is skipped. A preference that exists but cannot be loaded (for example, because it
+     * contains a syntax error) fails immediately instead of silently falling through to a lower-priority config.
      *
      * @param preferences string names of configs to try
      * @return the configurator
-     * @throws IOException if none of the prefs can be found
+     * @throws IOException if a preference is found but cannot be loaded, or if none of the preferences can be found
      */
     public static Configurator getConfigInfo(final List<String> preferences) throws IOException {
-        Configurator c;
         for (final String s : preferences) {
             try {
-                c = getConfigInfo(s);
-                return c;
+                return getConfigInfo(s);
+            } catch (ConfigNotFoundException ex) {
+                logger.debug("Preference {} not found", s);
             } catch (IOException ex) {
-                String exception = ex.getMessage();
-                if (exception.contains("IMPORT_FILE")) {
-                    exception = exception.replace("<none>", s);
-                    logger.debug("IMPORT_FILE not found in {}", s);
-                    throw new IOException(exception);
-                } else {
-                    logger.debug("Preference {} not found", s);
+                String message = ex.getMessage();
+                if (message == null) {
+                    message = "";
                 }
+                if (message.contains("IMPORT_FILE")) {
+                    message = message.replace("<none>", s);
+                    logger.debug("IMPORT_FILE not found in {}", s);
+                    throw new IOException(message);
+                }
+                // Found but failed to load: surface the real problem instead of trying the next preference
+                logger.warn("Preference {} failed to load", s, ex);
+                throw new IOException("Preference " + s + " failed to load: " + message, ex);
             }
         }
-        throw new IOException("None of the " + preferences.size() + " preferences could be found: " + preferences);
+        throw new IOException("None of the " + preferences.size() + " preferences could be found/loaded: " + preferences);
     }
 
     /**
@@ -344,7 +377,8 @@ public class ConfigUtil {
      */
     public static Configurator getConfigInfo(final String name) throws IOException {
         logger.debug("Loading config for (string) {}", name);
-        return getConfigInfo(getConfigStream(name), name);
+        final String resolved = resolveConfigName(name);
+        return getConfigInfo(getConfigStream(resolved), resolved);
     }
 
     /**
@@ -382,6 +416,112 @@ public class ConfigUtil {
     }
 
     /**
+     * Resolve the requested config name to an existing file across formats, falling back to the request unchanged.
+     *
+     * @param name the requested config name
+     * @return the resolved config name, or the requested name when no other format holds it
+     */
+    public static String resolveConfigName(final String name) {
+        final String resolved = resolveName(name);
+        return resolved != null ? resolved : name;
+    }
+
+    /**
+     * Resolve the requested config name across all supported formats and locations.
+     * <p>
+     * Only names ending in {@value #CONFIG_FILE_ENDING} are resolved, and the search order is: config directories, then the
+     * classpath, then old-style (package-less) names. Within each location the format order from
+     * {@link #CONFIG_FILE_ENDINGS} applies, so {@code .cfg} wins any tie. This makes a deployment override in any format
+     * win over a shipped default, while an explicit structured name is never replaced.
+     *
+     * @param name the requested config name
+     * @return the resolved config name, or null when no fallback applies
+     */
+    @Nullable
+    private static String resolveName(final String name) {
+        if (!CONFIG_FILE_ENDING.equals(configFileSuffix(name))) {
+            return null;
+        }
+        final String base = name.substring(0, name.length() - CONFIG_FILE_ENDING.length());
+        // Config-dir files first, so a deployment override wins over a shipped default in any format
+        for (final String ending : CONFIG_FILE_ENDINGS) {
+            if (findReadableInConfigDirs(base + ending) != null) {
+                return base + ending;
+            }
+        }
+        // Then the classpath, same order
+        for (final String ending : CONFIG_FILE_ENDINGS) {
+            for (final String rezname : toResourceName(base + ending)) {
+                if (new ResourceReader().getResource(rezname) != null) {
+                    return base + ending;
+                }
+            }
+        }
+        // Then old-style files, same order
+        for (final String ending : CONFIG_FILE_ENDINGS) {
+            final String oldStyle = oldStyleName(base + ending);
+            if (oldStyle != null && findReadableInConfigDirs(oldStyle) != null) {
+                return base + ending;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find a readable file for an absolute path, or for a relative name that resolves inside a configured config directory.
+     * <p>
+     * Relative names are normalized and must remain within the config directory, which prevents traversal out of it.
+     * Absolute names are used as-is so that absolute {@code IMPORT_FILE} values keep working.
+     *
+     * @param name the config file name, absolute or relative to a config directory
+     * @return the readable file, or null when it does not exist or is not permitted
+     */
+    @Nullable
+    private static File resolveConfigFile(@Nullable final String name) {
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+        if (name.startsWith("/")) {
+            final File absolute = new File(name);
+            return absolute.exists() && absolute.canRead() ? absolute : null;
+        }
+        final String found = findReadableInConfigDirs(name);
+        return found == null ? null : new File(found);
+    }
+
+    /**
+     * Find a readable file inside one of the configured config directories.
+     *
+     * @param fileName the relative file name to look for
+     * @return the absolute path of the readable file, or null when it is absent or not permitted
+     */
+    @Nullable
+    private static String findReadableInConfigDirs(final String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return null;
+        }
+        if (fileName.startsWith("/") || fileName.startsWith("\\") || fileName.contains("..")) {
+            return null;
+        }
+        for (final String dir : getConfigDirs()) {
+            try {
+                final Path baseDir = Path.of(dir).toAbsolutePath().normalize();
+                final Path candidatePath = baseDir.resolve(fileName).normalize();
+                if (!candidatePath.startsWith(baseDir)) {
+                    continue;
+                }
+                final File candidateFile = candidatePath.toFile();
+                if (candidateFile.exists() && candidateFile.canRead()) {
+                    return candidatePath.toString();
+                }
+            } catch (RuntimeException ignored) {
+                // Fall through to next directory
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get the last modified time of a config file resource
      *
      * @param name the name of the config resource
@@ -397,20 +537,24 @@ public class ConfigUtil {
     }
 
     /**
-     * Get input stream of config data for name
+     * Get an input stream of config data for the requested name.
+     * <p>
+     * The search order is: the config directories (for an absolute path, or a relative name contained in a config
+     * directory), then the classpath, then the old-style package-less file in the config directories. Relative names may
+     * not escape a config directory.
      *
      * @param name the name of the stream to look for
-     * @return an InputStream caller must close
+     * @return an InputStream the caller must close
+     * @throws ConfigNotFoundException when no file or classpath resource holds the config
      */
     public static InputStream getConfigStream(final String name) throws IOException {
         // Try the new style override name first ( with package )
-        String sname = getConfigFile(name);
-        File f = new File(sname);
-        if (f.exists() && f.canRead()) {
+        final File f = resolveConfigFile(name);
+        if (f != null) {
             logger.debug("Found config data as file {}", f.getPath());
             return Files.newInputStream(f.toPath());
         }
-        logger.debug("No file config found using new style {}", f.getName());
+        logger.debug("No file config found using new style {}", name);
 
         // Try the classpath loader
         final List<String> reznames = toResourceName(name);
@@ -433,15 +577,15 @@ public class ConfigUtil {
         logger.trace("No stream config found using {}", reznames);
 
         // Try the old style override name ( no package )
-        sname = getOldStyleConfigFile(name);
-        f = new File(sname);
-        if (f.exists() && f.canRead()) {
-            logger.debug("Found config data as file old style {}", f.getPath());
-            return Files.newInputStream(f.toPath());
+        final String oldStyle = oldStyleName(name);
+        final File oldStyleFile = resolveConfigFile(oldStyle);
+        if (oldStyleFile != null) {
+            logger.debug("Found config data as file old style {}", oldStyleFile.getPath());
+            return Files.newInputStream(oldStyleFile.toPath());
         }
-        logger.debug("No file config found using old style {}", f.getName());
+        logger.debug("No file config found using old style {}", oldStyle);
 
-        throw new IOException("No config stream available for " + name);
+        throw new ConfigNotFoundException("No config stream available for " + name);
     }
 
     /**
@@ -452,14 +596,12 @@ public class ConfigUtil {
      */
     private static List<String> toResourceName(final String name) {
         String r = name.replace('.', '/');
-        if (r.toUpperCase(Locale.getDefault()).endsWith("/CFG")) {
-            r = r.substring(0, r.length() - CONFIG_FILE_ENDING.length()) + CONFIG_FILE_ENDING;
-        } else if (r.toUpperCase(Locale.getDefault()).endsWith("/XML")) {
-            r = r.substring(0, r.length() - XML_FILE_ENDING.length()) + XML_FILE_ENDING;
-        } else if (r.toUpperCase(Locale.getDefault()).endsWith("/PROPERTIES")) {
-            r = r.substring(0, r.length() - PROP_FILE_ENDING.length()) + PROP_FILE_ENDING;
-        } else if (r.toUpperCase(Locale.getDefault()).endsWith("/JS")) {
-            r = r.substring(0, r.length() - JS_FILE_ENDING.length()) + JS_FILE_ENDING;
+        final String upper = r.toUpperCase(Locale.ROOT);
+        for (final Map.Entry<String, String> repair : RESOURCE_SUFFIX_REPAIRS.entrySet()) {
+            if (upper.endsWith(repair.getKey())) {
+                r = r.substring(0, r.length() - repair.getKey().length()) + repair.getValue();
+                break;
+            }
         }
         final List<String> prefs = new ArrayList<>();
         if (configPkg != null) {
@@ -564,7 +706,8 @@ public class ConfigUtil {
     public static Configurator getClassNameInventory() throws IOException, EmissaryException {
         final List<File> classNameInventory = new ArrayList<>();
         for (final String dir : getConfigDirs()) {
-            final File[] files = new File(dir).listFiles((dir1, name) -> name.startsWith(INVENTORY_FILE_PREFIX) && name.endsWith(CONFIG_FILE_ENDING));
+            final File[] files = new File(dir).listFiles(
+                    (dir1, name) -> name.startsWith(INVENTORY_FILE_PREFIX) && isConfigFile(name));
             // sort the files, to put emissary.admin.ClassNameInventory.cfg before emissary.admin.ClassNameInventory-blah.cfg
             if (files != null) {
                 Arrays.sort(files);
@@ -573,7 +716,8 @@ public class ConfigUtil {
         }
         // check to make sure we have at least one
         if (classNameInventory.isEmpty()) {
-            throw new EmissaryException(String.format("No %s%s files found.  No places to start.", INVENTORY_FILE_PREFIX, CONFIG_FILE_ENDING));
+            throw new EmissaryException(String.format("No %s{.cfg,.yaml,.yml,.toml} files found.  No places to start.",
+                    INVENTORY_FILE_PREFIX));
         }
 
         ServiceConfigGuide scg = null;
@@ -590,10 +734,10 @@ public class ConfigUtil {
                 }
             }
             if (scg == null) { // first one
-                scg = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "ClassNameInventory");
+                scg = new ServiceConfigGuide(Files.newInputStream(f.toPath()), f.getName());
             } else {
                 final Set<String> existingKeys = scg.entryKeys();
-                final Configurator scgToMerge = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "ClassNameInventory");
+                final Configurator scgToMerge = new ServiceConfigGuide(Files.newInputStream(f.toPath()), f.getName());
                 boolean noErrorsForFile = true;
                 for (final String key : scgToMerge.entryKeys()) {
                     if (existingKeys.contains(key)) {
@@ -612,17 +756,45 @@ public class ConfigUtil {
     }
 
     /**
+     * Whether a filename is a config file
+     *
+     * @param filename the config name to check
+     * @return true for config file names
+     */
+    static boolean isConfigFile(final String filename) {
+        return configFileSuffix(filename) != null;
+    }
+
+    /**
+     * The config suffix of a filename
+     *
+     * @param filename the config name to check
+     * @return the lowercase suffix, or null if it has none.
+     */
+    @Nullable
+    public static String configFileSuffix(final String filename) {
+        final String lower = filename.toLowerCase(Locale.ROOT);
+        for (final String ending : CONFIG_FILE_ENDINGS) {
+            if (lower.endsWith(ending)) {
+                return ending;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Gets the flavors as specified by the filename.
      * <p>
-     * Returns the portion between the last - and .cfg in the file name
+     * Returns the portion between the last - and the config suffix in the file name
      *
      * @param f The file of interest.
      * @return String with parsed flavor name(s)
      */
     static String getFlavorsFromCfgFile(final File f) {
         final String filename = f.getName();
-        if (!filename.endsWith(".cfg")) {
-            logger.warn("Not a cfg file: {}", filename);
+        final String suffix = configFileSuffix(filename);
+        if (suffix == null) {
+            logger.warn("Not a config file: {}", filename);
             return "";
         }
         final String[] parts = filename.split("-");
@@ -633,7 +805,7 @@ public class ConfigUtil {
         if (parts.length > 2) {
             logger.warn("Filename {} had multiple - characters, using the last to determine the flavor", filename);
         }
-        return parts[parts.length - 1].replaceAll(".cfg", "");
+        return parts[parts.length - 1].substring(0, parts[parts.length - 1].length() - suffix.length());
     }
 
     /**
@@ -710,6 +882,18 @@ public class ConfigUtil {
             } catch (IOException e) {
                 logger.error("Cannot process {}: {}", arg, e.getLocalizedMessage());
             }
+        }
+    }
+
+    /**
+     * Thrown when a config name exists in no configured location, so callers can tell "nothing there" apart from "found but
+     * could not be loaded" (e.g., a parse error).
+     */
+    static final class ConfigNotFoundException extends IOException {
+        private static final long serialVersionUID = 1L;
+
+        ConfigNotFoundException(final String message) {
+            super(message);
         }
     }
 }
