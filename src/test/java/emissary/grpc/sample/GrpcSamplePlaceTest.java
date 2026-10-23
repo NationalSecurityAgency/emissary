@@ -412,6 +412,27 @@ class GrpcSamplePlaceTest extends UnitTest {
         }
 
         @Test
+        void testBlockedCallDeadlineExceeded() throws InterruptedException {
+            CountDownLatch startedLatch = new CountDownLatch(1);
+            CountDownLatch releaseLatch = new CountDownLatch(1);
+
+            try (GrpcSampleServer serverOne = GrpcSampleServer.blockUntilReleased(startedLatch, releaseLatch);
+                    GrpcSampleServer serverTwo = GrpcSampleServer.defaultBehavior()) {
+
+                startPlaceWithEndpoints(serverOne, serverTwo,
+                        new ConfigEntry(GrpcRoutingPlace.GRPC_CALL_DEADLINE_MILLIS, "500"),
+                        new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_ATTEMPTS, "1"));
+
+                Runnable invocation = () -> Objects.requireNonNull(place).processEndpoint(o, ENDPOINT_1);
+                StatusRuntimeException e = assertThrows(StatusRuntimeException.class, invocation::run);
+
+                assertEquals(Status.Code.DEADLINE_EXCEEDED, e.getStatus().getCode());
+                assertTrue(releaseLatch.await(1, TimeUnit.SECONDS));
+                assertTrue(o.getAlternateViews().isEmpty());
+            }
+        }
+
+        @Test
         void testBlockedResponsesAreProcessedSequentially() throws InterruptedException {
             CountDownLatch startedLatchOne = new CountDownLatch(1);
             CountDownLatch releaseLatchOne = new CountDownLatch(1);
@@ -513,6 +534,27 @@ class GrpcSamplePlaceTest extends UnitTest {
                 Throwable error = errorRef.get();
                 assertInstanceOf(StatusRuntimeException.class, error);
                 assertEquals(Status.Code.CANCELLED, Status.fromThrowable(error).getCode());
+                assertTrue(o.getAlternateViews().isEmpty());
+            }
+        }
+
+        @Test
+        void testFutureCallDeadlineExceeded() throws InterruptedException {
+            CountDownLatch startedLatch = new CountDownLatch(1);
+            CountDownLatch releaseLatch = new CountDownLatch(1);
+
+            try (GrpcSampleServer serverOne = GrpcSampleServer.blockUntilReleased(startedLatch, releaseLatch);
+                    GrpcSampleServer serverTwo = GrpcSampleServer.defaultBehavior()) {
+
+                startPlaceWithEndpoints(serverOne, serverTwo,
+                        new ConfigEntry(GrpcRoutingPlace.GRPC_CALL_DEADLINE_MILLIS, "500"),
+                        new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_ATTEMPTS, "1"));
+
+                Runnable invocation = () -> Objects.requireNonNull(place).processEndpointsInParallel(o, null);
+                StatusRuntimeException e = assertThrows(StatusRuntimeException.class, invocation::run);
+
+                assertEquals(Status.Code.DEADLINE_EXCEEDED, e.getStatus().getCode());
+                assertTrue(releaseLatch.await(1, TimeUnit.SECONDS));
                 assertTrue(o.getAlternateViews().isEmpty());
             }
         }
