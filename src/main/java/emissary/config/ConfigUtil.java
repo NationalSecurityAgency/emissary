@@ -270,11 +270,22 @@ public class ConfigUtil {
     /**
      * Get the config file for the specified name without package naming
      */
+    @Nullable
     private static String getOldStyleConfigFile(final String name) {
+        // Package-name fallback is not a fallback for an explicit filesystem path.
+        if (name.contains("/") || name.contains("\\") || name.contains("..")) {
+            return null;
+        }
         String file = name;
         // Chomp the file suffix
-        if (file.endsWith(CONFIG_FILE_ENDING)) {
+        if (file.toLowerCase(Locale.ROOT).endsWith(CONFIG_FILE_ENDING)) {
+            final String suffix = file.substring(file.length() - CONFIG_FILE_ENDING.length());
             file = file.substring(0, file.length() - CONFIG_FILE_ENDING.length());
+            file = file.replace('$', '_');
+            if (file.contains(".")) {
+                file = file.substring(file.lastIndexOf(".") + 1);
+            }
+            return getConfigFile(file + suffix);
         }
 
         if (file.contains("$")) {
@@ -404,13 +415,15 @@ public class ConfigUtil {
      */
     public static InputStream getConfigStream(final String name) throws IOException {
         // Try the new style override name first ( with package )
-        String sname = getConfigFile(name);
-        File f = new File(sname);
-        if (f.exists() && f.canRead()) {
+        File f = findConfigFile(name);
+        if (f != null) {
             logger.debug("Found config data as file {}", f.getPath());
             return Files.newInputStream(f.toPath());
         }
-        logger.debug("No file config found using new style {}", f.getName());
+        logger.debug("No file config found using new style {}", name);
+        if (name.startsWith("/")) {
+            throw new IOException("No config stream available for " + name);
+        }
 
         // Try the classpath loader
         final List<String> reznames = toResourceName(name);
@@ -433,15 +446,45 @@ public class ConfigUtil {
         logger.trace("No stream config found using {}", reznames);
 
         // Try the old style override name ( no package )
-        sname = getOldStyleConfigFile(name);
-        f = new File(sname);
-        if (f.exists() && f.canRead()) {
+        final String oldStyle = getOldStyleConfigFile(name);
+        f = oldStyle == null ? null : findConfigFile(oldStyle);
+        if (f != null) {
             logger.debug("Found config data as file old style {}", f.getPath());
             return Files.newInputStream(f.toPath());
         }
-        logger.debug("No file config found using old style {}", f.getName());
+        logger.debug("No file config found using old style {}", oldStyle);
 
         throw new IOException("No config stream available for " + name);
+    }
+
+    /** Find a readable file, keeping relative names within their configured directory. */
+    @Nullable
+    private static File findConfigFile(final String name) {
+        if (name.isEmpty() || name.startsWith("\\")) {
+            return null;
+        }
+        try {
+            if (name.startsWith("/")) {
+                final File file = Path.of(name).normalize().toFile();
+                return file.exists() && file.canRead() ? file : null;
+            }
+            if (name.contains("..")) {
+                return null;
+            }
+            for (final String dir : getConfigDirs()) {
+                final Path base = Path.of(dir).toAbsolutePath().normalize();
+                final Path candidate = base.resolve(name).normalize();
+                if (candidate.startsWith(base) && !candidate.equals(base)) {
+                    final File file = candidate.toFile();
+                    if (file.exists() && file.canRead()) {
+                        return file;
+                    }
+                }
+            }
+        } catch (RuntimeException e) {
+            return null;
+        }
+        return null;
     }
 
     /**
