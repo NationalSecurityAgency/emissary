@@ -77,6 +77,17 @@ class StructuredConfigResolutionTest extends LegacyConfigLoadingTest {
     }
 
     @Test
+    void tomlUsesTheSameStrictConsumerAndOptionalImportPolicy() throws Exception {
+        Files.writeString(dir.resolve("emissary.parser.ParserFactory.toml"), "FOO = [unclosed\n");
+        assertThrows(IllegalStateException.class, ParserFactory::new);
+        Files.writeString(dir.resolve("main.cfg"), "OPT_IMPORT_FILE = emissary.parser.ParserFactory.toml\n");
+        assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo("main.cfg"));
+        Files.writeString(dir.resolve("main.yaml"), "\"!import\": shared.toml\n");
+        Files.writeString(dir.resolve("shared.toml"), "FROM_TOML = \"yes\"\n");
+        assertEquals("yes", ConfigUtil.getConfigInfo("main.yaml").findStringEntry("FROM_TOML"));
+    }
+
+    @Test
     void readerAndCentralDiscoveryAgreeOnClasspathAmbiguity() {
         assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(StructuredConfigResolutionTest.class));
         assertThrows(IllegalStateException.class, () -> new ResourceReader().findConfigDataName(StructuredConfigResolutionTest.class));
