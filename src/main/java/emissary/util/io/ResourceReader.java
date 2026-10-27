@@ -25,6 +25,8 @@ public class ResourceReader {
     private static final Logger logger = LoggerFactory.getLogger(ResourceReader.class);
 
     public static final String CONFIG_SUFFIX = ".cfg";
+    /** Supported config suffixes. */
+    public static final List<String> CONFIG_SUFFIXES = List.of(CONFIG_SUFFIX);
     public static final String XML_SUFFIX = ".xml";
     public static final String DATA_SUFFIX = ".dat";
     public static final String JS_SUFFIX = ".js";
