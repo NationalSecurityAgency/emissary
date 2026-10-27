@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Output Policy Test</title>
+    <base href="{{baseResourcePath}}/">
+    <link rel="stylesheet" href="css/lib/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="css/emissary.css"/>
+  </head>
+
+  <body>
+  <header></header>
+  <main class="container">
+    <h2>Output Policy Test</h2>
+    <p class="text-muted">
+      Simulate a payload against the policy of a sink running in this server. The response explains whether the
+      target would be emitted and which rule decided.
+    </p>
+
+    <form id="output-test-form">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label" for="place">Place</label>
+          <input class="form-control" id="place" value="OutputDispatchPlace" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label" for="sink">Sink</label>
+          <input class="form-control" id="sink" value="JSON" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label class="form-label" for="target">Target</label>
+          <select class="form-select" id="target">
+            <option value="payload">payload</option>
+            <option value="primaryContent">primaryContent</option>
+            <option value="view">view</option>
+            <option value="parameter">parameter</option>
+            <option value="parameterValue">parameterValue</option>
+          </select>
+        </div>
+        <div class="col-md-4 mb-3" id="name-group">
+          <label class="form-label" for="name">Name</label>
+          <input class="form-control" id="name" placeholder="TEXT, EMAIL, ...">
+        </div>
+        <div class="col-md-4 mb-3" id="value-group">
+          <label class="form-label" for="value">Value</label>
+          <input class="form-control" id="value">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label class="form-label" for="fileType">File type</label>
+          <input class="form-control" id="fileType" value="UNKNOWN">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label" for="form">Form</label>
+          <input class="form-control" id="form" value="UNKNOWN">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label" for="shortName">Short name</label>
+          <input class="form-control" id="shortName" value="trace">
+        </div>
+      </div>
+
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="outputable" checked>
+        <label class="form-check-label" for="outputable">Outputable</label>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="content">Content (optional, UTF-8)</label>
+        <textarea class="form-control" id="content" rows="2"></textarea>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label" for="parameters">Parameters (optional JSON object)</label>
+          <textarea class="form-control font-monospace" id="parameters" rows="3"
+                    placeholder='{"EMAIL":["person@example.com"]}'></textarea>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label" for="views">Views (optional JSON object, base64 values)</label>
+          <textarea class="form-control font-monospace" id="views" rows="3"
+                    placeholder='{"TEXT":"aGVsbG8="}'></textarea>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="members">Children (optional JSON array of payloads)</label>
+        <textarea class="form-control font-monospace" id="members" rows="3"
+                  placeholder='[{"shortName":"child","form":"TEXT"}]'></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Trace</button>
+    </form>
+
+    <div id="output-test-status" class="alert mt-3" role="status" style="display:none"></div>
+    <pre id="output-test-result" class="mt-3 p-3 bg-light border rounded" style="display:none"></pre>
+  </main>
+
+  <script src="js/lib/jquery.min.js"></script>
+  <script src="js/lib/popper.min.js"></script>
+  <script src="js/lib/bootstrap.min.js"></script>
+  <script src="js/emissary.js" type="text/javascript"></script>
+
+  <script>
+    function outputTestBase64(text) {
+      return btoa(unescape(encodeURIComponent(text)));
+    }
+
+    function outputTestJson(selector) {
+      var raw = $(selector).val().trim();
+      return raw.length === 0 ? null : JSON.parse(raw);
+    }
+
+    function outputTestStatus(message, level) {
+      $('#output-test-status')
+        .removeClass('alert-info alert-success alert-warning alert-danger')
+        .addClass('alert alert-' + level)
+        .text(message)
+        .show();
+    }
+
+    function outputTestSyncFields() {
+      var target = $('#target').val();
+      var needsName = target === 'view' || target === 'parameter' || target === 'parameterValue';
+      $('#name-group').toggle(needsName);
+      $('#value-group').toggle(target === 'parameterValue');
+    }
+
+    $(document).ready(function () {
+      $('#target').on('change', outputTestSyncFields);
+      outputTestSyncFields();
+
+      $('#output-test-form').on('submit', function (event) {
+        event.preventDefault();
+
+        var target = $('#target').val();
+        var place = $('#place').val().trim();
+        var sink = $('#sink').val().trim();
+        var payload = {
+          target: target,
+          fileType: $('#fileType').val().trim() || 'UNKNOWN',
+          form: $('#form').val().trim() || 'UNKNOWN',
+          shortName: $('#shortName').val().trim() || 'trace',
+          outputable: $('#outputable').is(':checked')
+        };
+
+        if (target === 'view' || target === 'parameter' || target === 'parameterValue') {
+          var name = $('#name').val().trim();
+          if (name.length === 0) {
+            outputTestStatus('A name is required for ' + target + '.', 'warning');
+            return;
+          }
+          payload.name = name;
+        }
+        if (target === 'parameterValue') {
+          payload.value = $('#value').val();
+        }
+
+        try {
+          var content = $('#content').val();
+          if (content.length > 0) {
+            payload.content = outputTestBase64(content);
+          }
+          var parameters = outputTestJson('#parameters');
+          if (parameters !== null) {
+            payload.parameters = parameters;
+          }
+          var views = outputTestJson('#views');
+          if (views !== null) {
+            payload.views = views;
+          }
+          var members = outputTestJson('#members');
+          if (members !== null) {
+            payload.members = members;
+          }
+        } catch (e) {
+          outputTestStatus('Invalid JSON: ' + e.message, 'warning');
+          return;
+        }
+
+        $('#output-test-result').hide().text('');
+        outputTestStatus('Tracing...', 'info');
+
+        $.ajax({
+          url: 'api/output/' + encodeURIComponent(place) + '/sinks/' + encodeURIComponent(sink) + '/trace',
+          type: 'POST',
+          contentType: 'application/json',
+          dataType: 'json',
+          data: JSON.stringify(payload)
+        }).done(function (data) {
+          var level = 'success';
+          var message = 'Would emit';
+          if (data.complete === false) {
+            level = 'warning';
+            message = 'Incomplete request: ' + (data.missingContext || []).join(', ');
+          } else if (!data.wouldEmit) {
+            level = 'danger';
+            message = 'Would not emit';
+          }
+          outputTestStatus(message + ' (' + data.posture + ')', level);
+          $('#output-test-result').text(JSON.stringify(data, null, 2)).show();
+        }).fail(function (xhr) {
+          var body = xhr.responseJSON || xhr.responseText || xhr.statusText;
+          outputTestStatus('Request failed (' + xhr.status + '): ' + JSON.stringify(body), 'danger');
+        });
+      });
+    });
+  </script>
+
+  </body>
+</html>
