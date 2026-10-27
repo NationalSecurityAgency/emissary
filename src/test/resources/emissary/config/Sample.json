@@ -1,0 +1,15 @@
+{
+  "!import": "emissary.config.TestYamlClasspath.yaml",
+  "PLACE_NAME": "SamplePlace",
+  "SERVICE_NAME": "SampleService",
+  "RENDEZVOUS_PEER": [
+    "*.*.*.http://h1:7001/DirectoryPlace",
+    "*.*.*.http://h2:8001/DirectoryPlace"
+  ],
+  "MYPROPS": {"ONE": "AAA", "TWO": "BBB"},
+  "BASE": "hello",
+  "GREETING": "@{BASE} world",
+  "COLORS": ["red", {"!remove": "red"}, "blue"],
+  "NULL_ENTRY": "<null>",
+  "!opt-import": "missing-sample-config.json"
+}
