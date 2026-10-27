@@ -124,7 +124,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         try {
             readConfigData(filename);
         } catch (ConfigSyntaxException ex) {
-            throw new IOException("Cannot parse configuration file " + ex.getMessage(), ex);
+            throw new IOException("Cannot parse configuration file " + filename + ": " + ex.getMessage(), ex);
         }
     }
 
@@ -154,7 +154,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             readConfigData(is, name);
         } catch (ConfigSyntaxException ex) {
             logger.error("Caught ConfigSytaxException {}", ex.getMessage());
-            throw new IOException("Cannot parse configuration file " + ex.getMessage(), ex);
+            throw new IOException("Cannot parse configuration file " + name + ": " + ex.getMessage(), ex);
         }
     }
 
@@ -206,52 +206,51 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
 
     protected void readConfigData(final InputStream is, final String filename) throws IOException, ConfigSyntaxException {
-        final Reader r = new BufferedReader(new InputStreamReader(is, UTF_8));
-        final StreamTokenizer in = new StreamTokenizer(r);
-        int nextToken = StreamTokenizer.TT_WORD;
-        String parmName;
-        String sval;
+        try (Reader r = new BufferedReader(new InputStreamReader(is, UTF_8))) {
+            final StreamTokenizer in = new StreamTokenizer(r);
+            int nextToken = StreamTokenizer.TT_WORD;
+            String parmName;
+            String sval;
 
-        in.commentChar('#');
-        in.wordChars(33, 33);
-        in.wordChars(36, 47);
-        in.wordChars(58, 64);
-        in.wordChars(91, 96);
-        in.wordChars(123, 65536);
+            in.commentChar('#');
+            in.wordChars(33, 33);
+            in.wordChars(36, 47);
+            in.wordChars(58, 64);
+            in.wordChars(91, 96);
+            in.wordChars(123, 65536);
 
-        while (nextToken != StreamTokenizer.TT_EOF) {
-            // Read three tokens at a time (X = Y)
-            nextToken = in.nextToken();
+            while (nextToken != StreamTokenizer.TT_EOF) {
+                // Read three tokens at a time (X = Y)
+                nextToken = in.nextToken();
 
-            // Make sure the first token in the tuple is a word
-            if (nextToken == StreamTokenizer.TT_EOF) {
-                break;
+                // Make sure the first token in the tuple is a word
+                if (nextToken == StreamTokenizer.TT_EOF) {
+                    break;
+                }
+                if (nextToken == StreamTokenizer.TT_NUMBER) {
+                    throw new ConfigSyntaxException("Illegal token " + in.sval + ", missing quote on line " + in.lineno() + "?");
+                }
+
+                parmName = in.sval;
+
+                nextToken = in.nextToken();
+                this.operator = in.sval;
+
+                nextToken = in.nextToken();
+                if (nextToken == StreamTokenizer.TT_NUMBER) {
+                    sval = BigDecimal.valueOf(in.nval).stripTrailingZeros().toPlainString();
+                } else {
+                    sval = in.sval;
+                }
+
+                if (sval == null) {
+                    // Problem is likely on previous line
+                    throw new ConfigSyntaxException("Illegal token " + parmName + ", missing space or value on line " + (in.lineno() - 1) + "?");
+                }
+
+                handleNewEntry(parmName, sval, this.operator, filename, in.lineno() - 1, false);
             }
-            if (nextToken == StreamTokenizer.TT_NUMBER) {
-                throw new ConfigSyntaxException("Illegal token " + in.sval + ", missing quote on line " + in.lineno() + "?");
-            }
-
-            parmName = in.sval;
-
-            nextToken = in.nextToken();
-            this.operator = in.sval;
-
-            nextToken = in.nextToken();
-            if (nextToken == StreamTokenizer.TT_NUMBER) {
-                sval = BigDecimal.valueOf(in.nval).stripTrailingZeros().toPlainString();
-            } else {
-                sval = in.sval;
-            }
-
-            if (sval == null) {
-                // Problem is likely on previous line
-                throw new ConfigSyntaxException("Illegal token " + parmName + ", missing space or value on line " + (in.lineno() - 1) + "?");
-            }
-
-            handleNewEntry(parmName, sval, this.operator, filename, in.lineno() - 1, false);
         }
-        r.close();
-        is.close();
     }
 
     protected void readSingleConfigFile(final String filename) throws IOException, ConfigSyntaxException {
