@@ -2,6 +2,7 @@ package emissary.config;
 
 import emissary.util.io.ResourceReader;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
@@ -21,10 +22,10 @@ import java.util.Map;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- * Parses YAML configs into {@link Configurator} entries (see {@code Sample.yaml}). Keys become strings, a blank or
- * comment-only file loads as no entries, and a file may hold only one document. A duplicated mapping key is a startup
- * error; use a sequence for multi-valued entries. YAML merge keys ({@code <<}) are rejected, so flatten the mapping
- * explicitly instead.
+ * Parses YAML and JSON configs into {@link Configurator} entries (see the {@code Sample} config files). Keys become
+ * strings, a blank file loads as no entries, and a file may hold only one document. A duplicated mapping key is a
+ * startup error in every format; use a sequence or array for multi-valued entries. YAML merge keys ({@code <<}) are
+ * rejected, so flatten the mapping explicitly instead.
  */
 public final class StructuredConfigParser {
 
@@ -32,11 +33,15 @@ public final class StructuredConfigParser {
 
     /**
      * A config file holds exactly one document, so a trailing token is an error rather than dropped content. Duplicate
-     * mapping keys are likewise an error; sequences represent multi-valued entries.
+     * mapping keys are likewise an error; sequences or arrays represent multi-valued entries.
      */
     private static final ObjectMapper YAML_MAPPER = new ObjectMapper(
             new YAMLFactory().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION))
             .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper(
+            new JsonFactory().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION))
+            .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+            .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
 
     private final ServiceConfigGuide configG;
 
@@ -57,15 +62,17 @@ public final class StructuredConfigParser {
      */
     enum Format {
         /** YAML files. */
-        YAML;
+        YAML,
+        /** JSON files. */
+        JSON;
 
         /**
-         * Collection kind name for error messages.
+         * Collection kind name for error messages: JSON calls them arrays.
          *
-         * @return {@code sequence}
+         * @return {@code sequence} for YAML, else {@code array}
          */
         String collectionKind() {
-            return "sequence";
+            return this == YAML ? "sequence" : "array";
         }
     }
 
@@ -81,13 +88,23 @@ public final class StructuredConfigParser {
     }
 
     /**
-     * Whether the named config file uses a structured format.
+     * Whether the named config file is JSON.
+     *
+     * @param filename the config name to check
+     * @return true for {@code .json} names
+     */
+    public static boolean isJsonFile(final String filename) {
+        return filename.toLowerCase(Locale.ROOT).endsWith(ResourceReader.JSON_SUFFIX);
+    }
+
+    /**
+     * Whether the named config file is YAML or JSON.
      *
      * @param filename the config name to check
      * @return true for structured config names
      */
     public static boolean isStructuredFile(final String filename) {
-        return isYamlFile(filename);
+        return isYamlFile(filename) || isJsonFile(filename);
     }
 
     /**
@@ -100,6 +117,8 @@ public final class StructuredConfigParser {
     public void read(final InputStream is, final String filename) throws IOException {
         if (isYamlFile(filename)) {
             readStructured(is, filename, YAML_MAPPER, Format.YAML);
+        } else if (isJsonFile(filename)) {
+            readStructured(is, filename, JSON_MAPPER, Format.JSON);
         } else {
             is.close();
             throw new IOException("Cannot parse " + filename + ": unknown structured config suffix");
@@ -119,7 +138,7 @@ public final class StructuredConfigParser {
             throws IOException {
         try {
             final byte[] content = is.readAllBytes();
-            if (!hasContent(content)) {
+            if (!hasContent(content, format)) {
                 logger.debug("{} config {} has no entries", format, filename);
                 return;
             }
@@ -148,15 +167,29 @@ public final class StructuredConfigParser {
     }
 
     /**
-     * Whether a file holds any entry. A blank or comment-only file is an empty config, not a parse error.
+     * Whether a file holds any entry. Blank files are empty configs; comment-only files are allowed only in YAML.
      *
      * @param content the raw file bytes
+     * @param format the config format
      * @return false when there is nothing to load
      */
-    private static boolean hasContent(final byte[] content) {
-        for (final String line : new String(content, UTF_8).split("\\R", -1)) {
+    private static boolean hasContent(final byte[] content, final Format format) {
+        final String text = new String(content, UTF_8);
+        if (format == Format.JSON) {
+            // Only JSON whitespace (and an optional leading BOM) may bypass parsing. In particular, '#', '//', and
+            // block comments must reach the strict JSON parser rather than being mistaken for an empty config.
+            final int start = !text.isEmpty() && text.charAt(0) == BYTE_ORDER_MARK ? 1 : 0;
+            for (int i = start; i < text.length(); i++) {
+                final char c = text.charAt(i);
+                if (c != ' ' && c != '\t' && c != '\r' && c != '\n') {
+                    return true;
+                }
+            }
+            return false;
+        }
+        for (final String line : text.split("\\R", -1)) {
             final String s = line.trim();
-            // Skip an optional byte order mark, then a comment introducer, which is '#' in both formats
+            // Skip an optional byte order mark, then YAML's '#' comment introducer.
             final int start = !s.isEmpty() && s.charAt(0) == BYTE_ORDER_MARK ? 1 : 0;
             if (s.length() > start && s.charAt(start) != '#') {
                 return true;
