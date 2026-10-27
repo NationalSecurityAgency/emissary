@@ -334,11 +334,17 @@ public class ConfigUtil {
                 c = getConfigInfo(s);
                 return c;
             } catch (IOException ex) {
+                if (isStrictConfigFailure(ex)) {
+                    throw ex;
+                }
                 String exception = ex.getMessage();
+                if (exception == null) {
+                    exception = "";
+                }
                 if (exception.contains("IMPORT_FILE")) {
                     exception = exception.replace("<none>", s);
                     logger.debug("IMPORT_FILE not found in {}", s);
-                    throw new IOException(exception);
+                    throw new IOException(exception, ex);
                 } else {
                     logger.debug("Preference {} not found", s);
                 }
@@ -388,14 +394,19 @@ public class ConfigUtil {
     public static Configurator getConfigInfo(final InputStream is, final String name) throws IOException {
         final ServiceConfigGuide scg = new ServiceConfigGuide(is, name);
 
-        final String[] flavoredNames = addFlavors(name);
+        final boolean configFilename = configFileSuffix(name) != null;
+        final String[] flavoredNames = configFilename ? getFlavorConfigNames(name) : addFlavors(name);
         for (final String flavoredName : flavoredNames) {
             try {
                 logger.debug("Attempting flavor merge on {}", flavoredName);
-                final Configurator flavoredConfig = getConfigInfo(flavoredName);
+                final ResolvedConfig source = configFilename ? resolveLogicalConfig(flavoredName) : resolveConfig(flavoredName);
+                final Configurator flavoredConfig = getConfigInfo(source);
                 scg.merge(flavoredConfig);
                 logger.debug("Merged config with {}", flavoredName);
             } catch (IOException iox) {
+                if (isStrictConfigFailure(iox)) {
+                    throw iox;
+                }
                 logger.debug("Unable to opt import flavor config {}", flavoredName);
             }
         }
@@ -707,6 +718,44 @@ public class ConfigUtil {
             flavoredNames[i] = base + "-" + flavor[i] + suffix;
         }
         return flavoredNames;
+    }
+
+    /**
+     * Flavor layer names for discovery, preserving arbitrary legacy filename extensions.
+     *
+     * @param name the base config name
+     * @return logical flavor names for supported suffixes, or exact legacy flavor filenames otherwise
+     */
+    @SuppressWarnings("AvoidObjectArrays")
+    public static String[] getFlavorConfigNames(final String name) {
+        final String suffix = configFileSuffix(name);
+        if (suffix == null) {
+            return addFlavors(name);
+        }
+        if (configFlavors == null || configFlavors.isEmpty()) {
+            return new String[0];
+        }
+        final String base = name.substring(0, name.length() - suffix.length());
+        final String[] flavors = configFlavors.split(",");
+        for (int i = 0; i < flavors.length; i++) {
+            flavors[i] = base + "-" + flavors[i];
+        }
+        return flavors;
+    }
+
+    /**
+     * Identify failures optional loading must not hide.
+     *
+     * @param failure the loading failure
+     * @return true for ambiguous discovery, including wrapped causes
+     */
+    public static boolean isStrictConfigFailure(final Throwable failure) {
+        for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
+            if (cause instanceof AmbiguousConfigException) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

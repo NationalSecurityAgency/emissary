@@ -308,7 +308,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             final List<String> fileFlavorList = new ArrayList<>();
             // Add the base file and then add all the flavor versions
             fileFlavorList.add(sval);
-            final String[] fileFlavors = ConfigUtil.addFlavors(sval);
+            final String[] fileFlavors = ConfigUtil.getFlavorConfigNames(sval);
             if (ArrayUtils.isNotEmpty(fileFlavors)) {
                 fileFlavorList.addAll(Arrays.asList(fileFlavors));
             }
@@ -319,11 +319,17 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                 final String fileFlavor = fileFlavorList.get(i);
                 // recursion alert: This could lead to getFile being called
                 try {
-                    readConfigData(ConfigUtil.getConfigStream(fileFlavor), fileFlavor);
+                    final ConfigUtil.ResolvedConfig source = i > 0 && ConfigUtil.configFileSuffix(sval) != null
+                            ? ConfigUtil.resolveLogicalConfig(fileFlavor)
+                            : ConfigUtil.resolveConfig(fileFlavor);
+                    readConfigData(source.openStream(), source.getName());
                 } catch (ConfigSyntaxException e) {
                     // whether opt or not, syntax errors are a problem
                     throw new IOException(parmName + " = " + sval + " from " + filename + " failed " + e.getMessage(), e);
                 } catch (IOException e) {
+                    if (ConfigUtil.isStrictConfigFailure(e)) {
+                        throw e;
+                    }
                     // Throw exception if it is an IMPORT_FILE and the base file is not found
                     if ("IMPORT_FILE".equals(parmName) && i == 0) {
                         String importFileName = Path.of(svalArg).getFileName().toString();
