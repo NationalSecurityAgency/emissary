@@ -213,6 +213,18 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
 
     protected void readConfigData(final InputStream is, final String filename) throws IOException, ConfigSyntaxException {
+        if (filename != null && StructuredConfigParser.isStructuredFile(filename)) {
+            try {
+                new StructuredConfigParser(this).read(is, filename);
+            } catch (IOException e) {
+                throw new ConfigUtil.StructuredConfigException(e.getMessage(), e);
+            }
+        } else {
+            readLegacyConfig(is, filename);
+        }
+    }
+
+    private void readLegacyConfig(final InputStream is, final String filename) throws IOException, ConfigSyntaxException {
         try (Reader r = new BufferedReader(new InputStreamReader(is, UTF_8))) {
             final StreamTokenizer in = new StreamTokenizer(r);
             int nextToken = StreamTokenizer.TT_WORD;
@@ -312,10 +324,20 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         }
 
         if (IMPORT_FILE.equals(parmName) || OPT_IMPORT_FILE.equals(parmName)) {
+            ConfigUtil.ResolvedConfig baseSource = null;
+            try {
+                baseSource = ConfigUtil.resolveConfig(sval);
+            } catch (IOException e) {
+                if (ConfigUtil.isStrictConfigFailure(e)) {
+                    throw e;
+                }
+                // The loop below preserves required/optional missing-base behavior and still tries optional flavors.
+            }
+            final String flavorBase = baseSource == null ? sval : baseSource.getName();
             final List<String> fileFlavorList = new ArrayList<>();
             // Add the base file and then add all the flavor versions
             fileFlavorList.add(sval);
-            final String[] fileFlavors = ConfigUtil.getFlavorConfigNames(sval);
+            final String[] fileFlavors = ConfigUtil.getFlavorConfigNames(flavorBase);
             if (ArrayUtils.isNotEmpty(fileFlavors)) {
                 fileFlavorList.addAll(Arrays.asList(fileFlavors));
             }
@@ -324,18 +346,28 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             // loop through the files and attempt to read/merger the configurations.
             for (int i = 0; i < fileFlavorList.size(); i++) {
                 final String fileFlavor = fileFlavorList.get(i);
+                String resolvedName = fileFlavor;
                 // recursion alert: This could lead to getFile being called
                 try {
-                    final ConfigUtil.ResolvedConfig source = i > 0 && ConfigUtil.configFileSuffix(sval) != null
-                            ? ConfigUtil.resolveLogicalConfig(fileFlavor)
-                            : ConfigUtil.resolveConfig(fileFlavor);
-                    readConfigData(source.openStream(), source.getName());
+                    final ConfigUtil.ResolvedConfig source;
+                    if (i == 0 && baseSource != null) {
+                        source = baseSource;
+                    } else if (i > 0 && ConfigUtil.configFileSuffix(flavorBase) != null) {
+                        source = ConfigUtil.resolveLogicalConfig(fileFlavor);
+                    } else {
+                        source = ConfigUtil.resolveConfig(fileFlavor);
+                    }
+                    resolvedName = source.getName();
+                    readConfigData(source.openStream(), resolvedName);
                 } catch (ConfigSyntaxException e) {
                     // whether opt or not, syntax errors are a problem
                     throw new IOException(parmName + " = " + sval + " from " + filename + " failed " + e.getMessage(), e);
                 } catch (IOException e) {
                     if (ConfigUtil.isStrictConfigFailure(e)) {
                         throw e;
+                    }
+                    if (!(e instanceof ConfigUtil.ConfigNotFoundException) && StructuredConfigParser.isStructuredFile(resolvedName)) {
+                        throw new ConfigUtil.StructuredConfigException("Cannot load structured import " + resolvedName, e);
                     }
                     // Throw exception if it is an IMPORT_FILE and the base file is not found
                     if (IMPORT_FILE.equals(parmName) && i == 0) {

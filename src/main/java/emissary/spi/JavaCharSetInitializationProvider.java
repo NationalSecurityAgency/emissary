@@ -20,6 +20,7 @@ public class JavaCharSetInitializationProvider implements InitializationProvider
                 final Configurator config = ConfigUtil.getConfigInfo(JavaCharSet.class);
                 JavaCharSet.initialize(config.findStringMatchMap("CHARSET_", true));
             } catch (IOException e) {
+                ConfigUtil.rethrowStrictConfigFailure(e);
                 logger.error("Error initializing JavaCharSet: ", e);
                 JavaCharSet.initialize(new HashMap<>());
             }

@@ -69,6 +69,7 @@ public class DirectoryAdapter extends EmissaryClient {
             disableAddPlaces = c.findBooleanEntry("DISABLE_ADD_PLACES", true);
             filterDirectoryEntryMap = c.findBooleanEntry("FILTER_DIRECTORY_ENTRY_MAP", true);
         } catch (IOException e) {
+            ConfigUtil.rethrowStrictConfigFailure(e);
             logger.info("Failed to find or read DirectoryAdapter config. Using default values.");
             logger.debug(e.toString());
         }

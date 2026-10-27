@@ -266,6 +266,28 @@ do not fall back to unrelated files in the config directory. Relative paths must
 directory and may not contain `..`; absolute paths remain supported. Legacy optional-import and preference-list
 fallback behavior is preserved.
 
+#### YAML configuration (.yaml/.yml)
+
+Class-based and suffixless logical requests discover a unique supported format at the first matching location.
+Config directories are searched in order, then configured/default resource packages, then package-less config names.
+A deployment YAML file may override a shipped `.cfg` default. Multiple formats for the same base or flavor at one
+location are an error. Explicit `.cfg`, `.yaml`, and `.yml` requests retain their suffix.
+
+YAML mappings become config entries; nested maps flatten keys with `_`, and sequences become repeated entries.
+`"!import"` and `"!opt-import"` support explicit filenames or suffixless discovery. `"!remove"` maps to legacy `!=`;
+positional removals in sequences preserve ordering. Flavors may use different formats. See
+`src/test/resources/emissary/config/Sample.yaml` for examples.
+
+Existing YAML files with syntax or structure errors are fatal, including optional imports and flavors. Duplicate
+mapping keys, multiple documents, aliases, merge keys, null values, and unsupported nested sequences are rejected.
+Missing optional files are skipped; legacy `.cfg` failure behavior remains unchanged. Quote values whose textual
+spelling matters, since YAML coerces unquoted booleans and numbers. Use `""` for a blank value and `"<null>"` for
+a legacy null entry.
+
+Inventory module files continue to merge, but one module may not have multiple formats in a directory.
+`ResourceReader.findConfigDataName` also requires unique classpath discovery; `getConfigDataAsStream` retains its
+legacy `.cfg`-only contract. Config inspection and extraction accept explicit YAML suffixes.
+
 #### Server (Cluster)
 
 Emissary is fun in standalone, but running cluster is more appropriate for real work.  The way to run clustered

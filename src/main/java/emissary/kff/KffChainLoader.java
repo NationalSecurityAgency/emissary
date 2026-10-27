@@ -56,6 +56,7 @@ public class KffChainLoader {
                 Set<String> algs = configG.findEntriesAsSet("KFF_ALG");
                 chain.setAlgorithms(algs);
             } catch (IOException iox) {
+                ConfigUtil.rethrowStrictConfigFailure(iox);
                 logger.debug("No configuration for Known File Filter. Continuing...");
             }
             theInstance = chain;
@@ -92,6 +93,7 @@ public class KffChainLoader {
                 try {
                     k = (KffFilter) Factory.create(clazz, name, key, filterType);
                 } catch (RuntimeException x) {
+                    ConfigUtil.rethrowStrictConfigFailure(x);
                     logger.warn("Cannot create KffFilter, using default", x);
                     k = new KffFile(name, key, filterType);
                 }

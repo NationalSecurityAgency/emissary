@@ -115,6 +115,9 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
                     try {
                         filterConfig = ConfigUtil.getConfigInfo(filterConfigName);
                     } catch (IOException configError) {
+                        if (ConfigUtil.isStrictConfigFailure(configError)) {
+                            throw new IllegalStateException("Invalid output filter configuration " + filterConfigName, configError);
+                        }
                         logger.warn("Specified filter configuration {} cannot be loaded", filterConfigName);
                         continue;
                     }
@@ -134,6 +137,9 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
                     logger.error("Misconfigured filter {} is not an IDropOffFilter instance, ignoring it", clazz);
                 }
             } catch (RuntimeException ex) {
+                if (ConfigUtil.isStrictConfigFailure(ex)) {
+                    throw ex;
+                }
                 logger.error("Unable to create or initialize {}", clazz, ex);
             }
         }

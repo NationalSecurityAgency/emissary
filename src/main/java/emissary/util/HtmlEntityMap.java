@@ -30,6 +30,7 @@ public class HtmlEntityMap {
             Map<String, String> emap = configG.findStringMatchMap("ENTITY_", true);
             entityMap.putAll(emap);
         } catch (IOException ex) {
+            ConfigUtil.rethrowStrictConfigFailure(ex);
             logger.warn("Cannot read configuration", ex);
         }
     }

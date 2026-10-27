@@ -93,6 +93,7 @@ public class MetricsManager {
         try {
             this.conf = ConfigUtil.getConfigInfo(MetricsManager.class);
         } catch (IOException e) {
+            ConfigUtil.rethrowStrictConfigFailure(e);
             logger.warn("Cannot read MetricsManager.cfg, taking default values");
         }
     }

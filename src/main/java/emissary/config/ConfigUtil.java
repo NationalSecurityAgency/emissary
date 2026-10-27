@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -312,9 +313,9 @@ public class ConfigUtil {
      * Get the ServiceConfigGuide for the named class
      */
     public static Configurator getConfigInfo(final Class<?> c) throws IOException {
-        final String name = c.getName() + CONFIG_FILE_ENDING;
+        final String name = c.getName();
         logger.debug("Loading config for (class) {}", name);
-        return getConfigInfo(resolveConfig(name));
+        return getConfigInfo(resolveLogicalConfig(name));
     }
 
     /**
@@ -382,7 +383,14 @@ public class ConfigUtil {
      * @throws IOException when loading fails
      */
     public static Configurator getConfigInfo(final ResolvedConfig source) throws IOException {
-        return getConfigInfo(source.openStream(), source.getName());
+        try {
+            return getConfigInfo(source.openStream(), source.getName());
+        } catch (IOException e) {
+            if (StructuredConfigParser.isStructuredFile(source.getName()) && !isStrictConfigFailure(e)) {
+                throw new StructuredConfigException("Cannot load structured config " + source.getName(), e);
+            }
+            throw e;
+        }
     }
 
     /**
@@ -789,11 +797,23 @@ public class ConfigUtil {
      */
     public static boolean isStrictConfigFailure(final Throwable failure) {
         for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
-            if (cause instanceof AmbiguousConfigException) {
+            if (cause instanceof AmbiguousConfigException || cause instanceof StructuredConfigException) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Propagate strict config failures through consumers that historically defaulted after legacy IO errors.
+     *
+     * @param failure the loading failure
+     * @throws IllegalStateException when the failure is a strict config error
+     */
+    public static void rethrowStrictConfigFailure(final Throwable failure) {
+        if (isStrictConfigFailure(failure)) {
+            throw new IllegalStateException("Invalid configuration: " + failure.getMessage(), failure);
+        }
     }
 
     /**
@@ -823,16 +843,24 @@ public class ConfigUtil {
     public static Configurator getClassNameInventory() throws IOException, EmissaryException {
         final List<File> classNameInventory = new ArrayList<>();
         for (final String dir : getConfigDirs()) {
-            final File[] files = new File(dir).listFiles((dir1, name) -> name.startsWith(INVENTORY_FILE_PREFIX) && name.endsWith(CONFIG_FILE_ENDING));
+            final File[] files = new File(dir).listFiles((dir1, name) -> name.startsWith(INVENTORY_FILE_PREFIX) && configFileSuffix(name) != null);
             // sort the files, to put emissary.admin.ClassNameInventory.cfg before emissary.admin.ClassNameInventory-blah.cfg
             if (files != null) {
                 Arrays.sort(files);
+                final Set<String> modules = new HashSet<>();
+                for (final File file : files) {
+                    final String filename = file.getName();
+                    final String module = filename.substring(0, filename.length() - configFileSuffix(filename).length());
+                    if (!modules.add(module)) {
+                        throw new AmbiguousConfigException("Ambiguous inventory configuration for " + module + " in " + dir);
+                    }
+                }
                 classNameInventory.addAll(Arrays.asList(files));
             }
         }
         // check to make sure we have at least one
         if (classNameInventory.isEmpty()) {
-            throw new EmissaryException(String.format("No %s%s files found.  No places to start.", INVENTORY_FILE_PREFIX, CONFIG_FILE_ENDING));
+            throw new EmissaryException(String.format("No %s config files found.  No places to start.", INVENTORY_FILE_PREFIX));
         }
 
         ServiceConfigGuide scg = null;
@@ -849,10 +877,10 @@ public class ConfigUtil {
                 }
             }
             if (scg == null) { // first one
-                scg = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "ClassNameInventory");
+                scg = new ServiceConfigGuide(Files.newInputStream(f.toPath()), f.getName());
             } else {
                 final Set<String> existingKeys = scg.entryKeys();
-                final Configurator scgToMerge = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "ClassNameInventory");
+                final Configurator scgToMerge = new ServiceConfigGuide(Files.newInputStream(f.toPath()), f.getName());
                 boolean noErrorsForFile = true;
                 for (final String key : scgToMerge.entryKeys()) {
                     if (existingKeys.contains(key)) {
@@ -880,7 +908,8 @@ public class ConfigUtil {
      */
     static String getFlavorsFromCfgFile(final File f) {
         final String filename = f.getName();
-        if (!filename.endsWith(".cfg")) {
+        final String suffix = configFileSuffix(filename);
+        if (suffix == null) {
             logger.warn("Not a cfg file: {}", filename);
             return "";
         }
@@ -892,7 +921,7 @@ public class ConfigUtil {
         if (parts.length > 2) {
             logger.warn("Filename {} had multiple - characters, using the last to determine the flavor", filename);
         }
-        return parts[parts.length - 1].replaceAll(".cfg", "");
+        return parts[parts.length - 1].substring(0, parts[parts.length - 1].length() - suffix.length());
     }
 
     /**
@@ -1028,6 +1057,14 @@ public class ConfigUtil {
 
         AmbiguousConfigException(final String message) {
             super(message);
+        }
+    }
+
+    static final class StructuredConfigException extends IOException {
+        private static final long serialVersionUID = 1L;
+
+        StructuredConfigException(final String message, final IOException cause) {
+            super(message, cause);
         }
     }
 

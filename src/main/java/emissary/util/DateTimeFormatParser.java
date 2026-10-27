@@ -55,6 +55,7 @@ public class DateTimeFormatParser {
         try {
             configG = ConfigUtil.getConfigInfo(DateTimeFormatParser.class);
         } catch (IOException e) {
+            ConfigUtil.rethrowStrictConfigFailure(e);
             logger.error("Cannot open default config file", e);
             return;
         }

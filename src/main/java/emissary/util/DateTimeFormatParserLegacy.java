@@ -40,6 +40,7 @@ public class DateTimeFormatParserLegacy {
             }
             logger.debug("Loaded {} DATE_FORMAT entries", dateFormats.size());
         } catch (IOException e) {
+            ConfigUtil.rethrowStrictConfigFailure(e);
             logger.error("Cannot open default config file", e);
         }
     }

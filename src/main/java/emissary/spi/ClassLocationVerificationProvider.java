@@ -23,6 +23,7 @@ public class ClassLocationVerificationProvider implements InitializationProvider
             Map<String, String> classNameLocationMap = configG.findStringMatchMap("CLASS_NAME_", true);
             classNameLocationMap.forEach(ClassLocationVerificationProvider::verify);
         } catch (IOException e) {
+            ConfigUtil.rethrowStrictConfigFailure(e);
             logger.debug("Failed to load config", e);
         }
 

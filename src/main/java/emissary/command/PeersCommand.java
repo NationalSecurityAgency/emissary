@@ -18,7 +18,7 @@ public class PeersCommand extends HttpCommand {
 
     public static final String COMMAND_NAME = "peers";
 
-    private static final String PEER_CONFIG = "peer.cfg";
+    private static final String PEER_CONFIG = "peer";
 
     @Option(names = {"-d", "--delimiter"},
             description = "delimiter to use when writing host output (note: newline needs to be \\n\nDefault: ${DEFAULT-VALUE}")
@@ -42,6 +42,7 @@ public class PeersCommand extends HttpCommand {
         try {
             System.out.print(String.join(delimiter, getPeers(HostAndPort.fromString(ignoreHost), this.withPort)));
         } catch (IOException e) {
+            ConfigUtil.rethrowStrictConfigFailure(e);
             LOG.debug("Problem reading file", e);
         }
     }
