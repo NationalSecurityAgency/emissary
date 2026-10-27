@@ -67,6 +67,7 @@ public class TypeEngine {
                 logger.debug("TypeEngine loaded {} as {}", name, engineName);
                 contextMapping.put(engineName, c);
             } catch (IOException e) {
+                ConfigUtil.rethrowStrictConfigFailure(e);
                 logger.error("TypeEngine unable to read {}", name, e);
             }
         }

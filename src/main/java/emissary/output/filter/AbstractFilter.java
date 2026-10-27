@@ -146,6 +146,9 @@ public abstract class AbstractFilter implements IDropOffFilter {
                     try {
                         filterConfig = ConfigUtil.getConfigInfo(filterConfigName);
                     } catch (IOException configError) {
+                        if (ConfigUtil.isStrictConfigFailure(configError)) {
+                            throw new IllegalStateException("Invalid filter condition configuration " + filterConfigName, configError);
+                        }
                         logger.warn("Specified filter configuration {} cannot be loaded", filterConfigName);
                         return;
                     }
@@ -287,15 +290,18 @@ public abstract class AbstractFilter implements IDropOffFilter {
         final List<String> configPreferences = new ArrayList<>();
 
         if (getFilterName() != null) {
-            configPreferences.add(this.getClass().getPackage().getName() + "." + getFilterName() + ConfigUtil.CONFIG_FILE_ENDING);
-            configPreferences.add(this.getClass().getName() + "-" + getFilterName() + ConfigUtil.CONFIG_FILE_ENDING);
+            configPreferences.add(this.getClass().getPackage().getName() + "." + getFilterName());
+            configPreferences.add(this.getClass().getName() + "-" + getFilterName());
         }
-        configPreferences.add(this.getClass().getName() + ConfigUtil.CONFIG_FILE_ENDING);
+        configPreferences.add(this.getClass().getName());
 
         this.logger.debug("Looking for filter configuration preferences {}", configPreferences);
         try {
             this.filterConfig = ConfigUtil.getConfigInfo(configPreferences);
         } catch (IOException iox) {
+            if (ConfigUtil.isStrictConfigFailure(iox)) {
+                throw new IllegalStateException("Invalid filter configuration for " + getFilterName(), iox);
+            }
             this.logger.debug("Could not find filter configuration for {}", getFilterName(), iox);
         }
     }

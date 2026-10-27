@@ -107,6 +107,7 @@ public class ExtractResource {
 
     @SuppressWarnings("SystemOut")
     private static void printUsage() {
-        System.out.println("Usage: scripts/run.sh " + ExtractResource.class.getName() + " [ -o output_directory ] package/to/Resource[.cfg] ...");
+        System.out.println("Usage: scripts/run.sh " + ExtractResource.class.getName()
+                + " [ -o output_directory ] package/to/Resource[.cfg|.yaml|.yml] ...");
     }
 }

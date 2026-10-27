@@ -25,13 +25,16 @@ public class ResourceReader {
     private static final Logger logger = LoggerFactory.getLogger(ResourceReader.class);
 
     public static final String CONFIG_SUFFIX = ".cfg";
-    /** Supported config suffixes. */
-    public static final List<String> CONFIG_SUFFIXES = List.of(CONFIG_SUFFIX);
+    public static final String YAML_SUFFIX = ".yaml";
+    public static final String YML_SUFFIX = ".yml";
     public static final String XML_SUFFIX = ".xml";
     public static final String DATA_SUFFIX = ".dat";
     public static final String JS_SUFFIX = ".js";
     public static final String PROP_SUFFIX = ".properties";
     public static final String CLASS_SUFFIX = ".class";
+
+    /** Supported config suffixes; automatic discovery requires a unique match. */
+    public static final List<String> CONFIG_SUFFIXES = List.of(CONFIG_SUFFIX, YAML_SUFFIX, YML_SUFFIX);
 
     /**
      * Create a resource reader for use
@@ -48,20 +51,76 @@ public class ResourceReader {
     }
 
     /**
-     * Return the config stream for the class config file Caller must close the stream
-     * 
+     * Return the legacy {@code .cfg} config stream for the class. Caller must close the stream.
+     * <p>
+     * This method intentionally ignores structured formats for backward compatibility; use
+     * {@link #findConfigDataName(Class)} and {@link #getResourceAsStream(String)} to support them.
+     *
      * @param c the class name matching the desired resource
+     * @return the stream, or null when no {@code .cfg} resource exists
      */
+    @Nullable
     public InputStream getConfigDataAsStream(Class<?> c) {
-        String name = getConfigDataName(c);
-        return getResourceAsStream(name);
+        return getResourceAsStream(getConfigDataName(c));
     }
 
     /**
-     * Get the config name
+     * Get the legacy config resource name for the class. This is always a {@code .cfg} name and does not consider
+     * structured formats; use {@link #findConfigDataName(Class)} to discover whichever format exists.
+     *
+     * @param c the class name matching the desired resource
+     * @return the {@code .cfg} resource name for the class
      */
     public String getConfigDataName(Class<?> c) {
         return getResourceName(c) + CONFIG_SUFFIX;
+    }
+
+    /**
+     * Unique config resource name for the class.
+     *
+     * @param o the object whose class name matches the resource
+     * @return the existing resource name, or null when none exists
+     * @throws IllegalStateException when multiple formats exist for the class
+     */
+    @Nullable
+    public String findConfigDataName(Object o) {
+        return findConfigDataName(o.getClass());
+    }
+
+    /**
+     * Unique config resource name for the class.
+     *
+     * @param c the class name matching the desired resource
+     * @return the existing resource name, or null when none exists
+     * @throws IllegalStateException when multiple formats exist for the class
+     */
+    @Nullable
+    public String findConfigDataName(Class<?> c) {
+        final List<String> matches = new ArrayList<>();
+        for (final String name : getConfigDataNames(c)) {
+            if (getResource(name) != null) {
+                matches.add(name);
+            }
+        }
+        if (matches.size() > 1) {
+            throw new IllegalStateException("Ambiguous config resources for " + c.getName() + ": " + matches);
+        }
+        return matches.isEmpty() ? null : matches.get(0);
+    }
+
+    /**
+     * Config resource names for the class
+     *
+     * @param c the class
+     * @return list of names in {@link #CONFIG_SUFFIXES} order
+     */
+    public List<String> getConfigDataNames(Class<?> c) {
+        final String base = getResourceName(c);
+        final List<String> names = new ArrayList<>();
+        for (final String suffix : CONFIG_SUFFIXES) {
+            names.add(base + suffix);
+        }
+        return names;
     }
 
     /**
@@ -157,13 +216,18 @@ public class ResourceReader {
     }
 
     /**
-     * Find all the config resources present for the specified class
-     * 
+     * Find all the config resources present for the specified class, across all config suffixes.
+     *
      * @param c the class
      * @return sorted list of resources found or an empty list if none
      */
     public List<String> findConfigResourcesFor(Class<?> c) {
-        return findResourcesFor(c, CONFIG_SUFFIX);
+        final List<String> results = new ArrayList<>();
+        for (final String suffix : CONFIG_SUFFIXES) {
+            results.addAll(findResourcesFor(c, suffix));
+        }
+        Collections.sort(results);
+        return results;
     }
 
     /**
@@ -302,5 +366,4 @@ public class ResourceReader {
         logger.debug("Found {} file resources for {}", results.size(), cmatch);
         return results;
     }
-
 }

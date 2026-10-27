@@ -19,7 +19,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -29,7 +28,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static emissary.config.ConfigUtil.CONFIG_FILE_ENDING;
 import static emissary.core.constants.Configurations.RESERVED_SERVICE_CONFIG_KEYS;
 
 @Path("")
@@ -129,9 +127,11 @@ public class Configs {
      * @return the config response object
      */
     public static ConfigsResponseEntity getEmissaryConfig(final String cfg, boolean includeSensitive) throws IOException {
+        final ConfigUtil.ResolvedConfig source = ConfigUtil.resolveConfig(cfg);
+        final String resolved = source.getName();
         ConfigList list = new ConfigList();
-        list.addConfig(new Config(ConfigUtil.getFlavors(), combineConfigs(cfg, ConfigUtil.addFlavors(cfg)),
-                normalizeEntries(ConfigUtil.getConfigInfo(cfg), includeSensitive)));
+        list.addConfig(new Config(ConfigUtil.getFlavors(), combineConfigs(resolved, resolveFlavorNames(resolved)),
+                normalizeEntries(ConfigUtil.getConfigInfo(source), includeSensitive)));
         return new ConfigsResponseEntity(list);
     }
 
@@ -155,15 +155,17 @@ public class Configs {
      * @return the config response object
      */
     public static ConfigsResponseEntity getEmissaryConfigDetailed(final String cfg, boolean includeSensitive) throws IOException {
+        final ConfigUtil.ResolvedConfig source = ConfigUtil.resolveConfig(cfg);
+        final String resolved = source.getName();
         ConfigList detailed = new ConfigList();
         List<String> flavors = ConfigUtil.getFlavors();
 
         // default config
-        detailed.addConfig(new Config(Collections.emptyList(), Collections.singletonList(cfg),
-                normalizeEntries(new ServiceConfigGuide(ConfigUtil.getConfigStream(cfg), cfg), includeSensitive)));
+        detailed.addConfig(new Config(Collections.emptyList(), Collections.singletonList(resolved),
+                normalizeEntries(new ServiceConfigGuide(source.openStream(), resolved), includeSensitive)));
 
         // flavored configs
-        String[] flavoredCfgs = ConfigUtil.addFlavors(cfg);
+        String[] flavoredCfgs = resolveFlavorNames(resolved);
         for (final String flavoredName : flavoredCfgs) {
             String flavor = StringUtils.substringBeforeLast(StringUtils.substringAfterLast(flavoredName, "-"), ".");
             addDetail(detailed, Collections.singletonList(flavor), Collections.singletonList(flavoredName), flavoredName,
@@ -171,7 +173,7 @@ public class Configs {
         }
 
         // all together now - same output as getEmissaryConfig
-        addDetail(detailed, flavors, combineConfigs(cfg, flavoredCfgs), cfg, includeSensitive);
+        addDetail(detailed, flavors, combineConfigs(resolved, flavoredCfgs), resolved, includeSensitive);
 
         return new ConfigsResponseEntity(detailed);
     }
@@ -186,7 +188,23 @@ public class Configs {
         if (!VALID_CONFIG_NAME.matcher(config).matches() || config.contains("..") || config.endsWith(".")) {
             throw new IllegalArgumentException("Invalid config name: " + config);
         }
-        return Strings.CS.appendIfMissing(config.trim(), CONFIG_FILE_ENDING);
+        return config.trim();
+    }
+
+    private static String[] resolveFlavorNames(final String name) throws IOException {
+        final String[] names = ConfigUtil.getFlavorConfigNames(name);
+        for (int i = 0; i < names.length; i++) {
+            try {
+                names[i] = ConfigUtil.resolveLogicalConfig(names[i]).getName();
+            } catch (IOException e) {
+                if (ConfigUtil.isStrictConfigFailure(e)) {
+                    throw e;
+                }
+                // Preserve an empty inspection layer for a missing optional legacy flavor.
+                names[i] += ConfigUtil.configFileSuffix(name);
+            }
+        }
+        return names;
     }
 
     /**
@@ -240,11 +258,14 @@ public class Configs {
      * @param includeSensitive true to return sensitive values, false to redact them
      */
     protected static void addDetail(ConfigList detailed, List<String> flavors, List<String> configs, String cfgFile,
-            boolean includeSensitive) {
+            boolean includeSensitive) throws IOException {
         try {
             detailed.addConfig(new Config(flavors, configs,
                     normalizeEntries(ConfigUtil.getConfigInfo(cfgFile), includeSensitive)));
         } catch (IOException e) {
+            if (ConfigUtil.isStrictConfigFailure(e)) {
+                throw e;
+            }
             detailed.addConfig(new Config(flavors, configs, Collections.emptyList()));
         }
     }
