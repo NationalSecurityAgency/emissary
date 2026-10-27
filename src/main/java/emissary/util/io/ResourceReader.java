@@ -27,6 +27,7 @@ public class ResourceReader {
     public static final String CONFIG_SUFFIX = ".cfg";
     public static final String YAML_SUFFIX = ".yaml";
     public static final String YML_SUFFIX = ".yml";
+    public static final String TOML_SUFFIX = ".toml";
     public static final String JSON_SUFFIX = ".json";
     public static final String XML_SUFFIX = ".xml";
     public static final String DATA_SUFFIX = ".dat";
@@ -35,7 +36,7 @@ public class ResourceReader {
     public static final String CLASS_SUFFIX = ".class";
 
     /** Supported config suffixes; automatic discovery requires a unique match. */
-    public static final List<String> CONFIG_SUFFIXES = List.of(CONFIG_SUFFIX, YAML_SUFFIX, YML_SUFFIX, JSON_SUFFIX);
+    public static final List<String> CONFIG_SUFFIXES = List.of(CONFIG_SUFFIX, YAML_SUFFIX, YML_SUFFIX, TOML_SUFFIX, JSON_SUFFIX);
 
     /**
      * Create a resource reader for use

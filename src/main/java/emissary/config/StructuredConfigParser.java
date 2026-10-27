@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.toml.TomlFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 import org.slf4j.Logger;
@@ -22,9 +23,9 @@ import java.util.Map;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- * Parses YAML and JSON configs into {@link Configurator} entries (see the {@code Sample} config files). Keys become
- * strings, a blank file loads as no entries, and a file may hold only one document. A duplicated mapping key is a
- * startup error in every format; use a sequence or array for multi-valued entries. YAML merge keys ({@code <<}) are
+ * Parses YAML, TOML, and JSON configs into {@link Configurator} entries (see the {@code Sample} config files). Keys
+ * become strings, a blank file loads as no entries, and a file may hold only one document. A duplicated mapping key is
+ * a startup error in every format; use a sequence or array for multi-valued entries. YAML merge keys ({@code <<}) are
  * rejected, so flatten the mapping explicitly instead.
  */
 public final class StructuredConfigParser {
@@ -33,10 +34,12 @@ public final class StructuredConfigParser {
 
     /**
      * A config file holds exactly one document, so a trailing token is an error rather than dropped content. Duplicate
-     * mapping keys are likewise an error; sequences or arrays represent multi-valued entries.
+     * mapping keys are likewise an error in every format, matching the TOML spec.
      */
     private static final ObjectMapper YAML_MAPPER = new ObjectMapper(
             new YAMLFactory().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION))
+            .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+    private static final ObjectMapper TOML_MAPPER = new ObjectMapper(new TomlFactory())
             .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper(
             new JsonFactory().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION))
@@ -63,11 +66,13 @@ public final class StructuredConfigParser {
     enum Format {
         /** YAML files. */
         YAML,
+        /** TOML files. */
+        TOML,
         /** JSON files. */
         JSON;
 
         /**
-         * Collection kind name for error messages: JSON calls them arrays.
+         * Collection kind name for error messages: TOML and JSON call them arrays.
          *
          * @return {@code sequence} for YAML, else {@code array}
          */
@@ -88,6 +93,16 @@ public final class StructuredConfigParser {
     }
 
     /**
+     * Whether the named config file is TOML.
+     *
+     * @param filename the config name to check
+     * @return true for {@code .toml} names
+     */
+    public static boolean isTomlFile(final String filename) {
+        return filename.toLowerCase(Locale.ROOT).endsWith(ResourceReader.TOML_SUFFIX);
+    }
+
+    /**
      * Whether the named config file is JSON.
      *
      * @param filename the config name to check
@@ -98,13 +113,13 @@ public final class StructuredConfigParser {
     }
 
     /**
-     * Whether the named config file is YAML or JSON.
+     * Whether the named config file is YAML, TOML, or JSON.
      *
      * @param filename the config name to check
      * @return true for structured config names
      */
     public static boolean isStructuredFile(final String filename) {
-        return isYamlFile(filename) || isJsonFile(filename);
+        return isYamlFile(filename) || isTomlFile(filename) || isJsonFile(filename);
     }
 
     /**
@@ -115,7 +130,9 @@ public final class StructuredConfigParser {
      * @throws IOException on syntax errors or unsupported structure
      */
     public void read(final InputStream is, final String filename) throws IOException {
-        if (isYamlFile(filename)) {
+        if (isTomlFile(filename)) {
+            readStructured(is, filename, TOML_MAPPER, Format.TOML);
+        } else if (isYamlFile(filename)) {
             readStructured(is, filename, YAML_MAPPER, Format.YAML);
         } else if (isJsonFile(filename)) {
             readStructured(is, filename, JSON_MAPPER, Format.JSON);
@@ -167,7 +184,7 @@ public final class StructuredConfigParser {
     }
 
     /**
-     * Whether a file holds any entry. Blank files are empty configs; comment-only files are allowed only in YAML.
+     * Whether a file holds any entry. Blank files are empty configs; comment-only files are allowed only in YAML/TOML.
      *
      * @param content the raw file bytes
      * @param format the config format
@@ -189,7 +206,7 @@ public final class StructuredConfigParser {
         }
         for (final String line : text.split("\\R", -1)) {
             final String s = line.trim();
-            // Skip an optional byte order mark, then YAML's '#' comment introducer.
+            // Skip an optional byte order mark, then a comment introducer, which is '#' in both formats
             final int start = !s.isEmpty() && s.charAt(0) == BYTE_ORDER_MARK ? 1 : 0;
             if (s.length() > start && s.charAt(start) != '#') {
                 return true;

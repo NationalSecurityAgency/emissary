@@ -266,12 +266,12 @@ do not fall back to unrelated files in the config directory. Relative paths must
 directory and may not contain `..`; absolute paths remain supported. Legacy optional-import and preference-list
 fallback behavior is preserved.
 
-#### YAML and JSON configuration (.yaml/.yml/.json)
+#### YAML, TOML, and JSON configuration (.yaml/.yml/.toml/.json)
 
 Class-based and suffixless logical requests discover a unique supported format at the first matching location.
 Config directories are searched in order, then configured/default resource packages, then package-less config names.
 A deployment YAML file may override a shipped `.cfg` default. Multiple formats for the same base or flavor at one
-location are an error. Explicit `.cfg`, `.yaml`, `.yml`, and `.json` requests retain their suffix.
+location are an error. Explicit `.cfg`, `.yaml`, `.yml`, `.toml`, and `.json` requests retain their suffix.
 
 YAML mappings become config entries; nested maps flatten keys with `_`, and sequences become repeated entries.
 `"!import"` and `"!opt-import"` support explicit filenames or suffixless discovery. `"!remove"` maps to legacy `!=`;
@@ -287,6 +287,21 @@ a legacy null entry.
 Inventory module files continue to merge, but one module may not have multiple formats in a directory.
 `ResourceReader.findConfigDataName` also requires unique classpath discovery; `getConfigDataAsStream` retains its
 legacy `.cfg`-only contract. Config inspection and extraction accept explicit structured suffixes.
+
+TOML uses the same discovery, import, flavor, substitution, and removal rules. See
+`src/test/resources/emissary/config/Sample.toml` for a complete example.
+
+| TOML | Legacy `.cfg` |
+|---|---|
+| `KEY = "value"` | `KEY = value` |
+| `KEY = ["a", "b"]` | repeated entries, in order |
+| `[NESTED]` followed by `ONE = "x"` | `NESTED_ONE = x` |
+| `["!remove"]` followed by `KEY = "*"` | `KEY != "*"` |
+| `"!import" = "shared.yaml"` | `IMPORT_FILE = shared.yaml` |
+
+Quote dotted keys to keep them literal; unquoted `a.b = 1` flattens to `a_b`. Keys following a table header belong
+to that table. TOML rejects duplicate keys and leading-zero integers such as `0755`; quote text whose spelling
+matters. Imports can cross formats in either direction.
 
 JSON uses the same mapping and directive rules, with a single object at the top level. It uses the existing Jackson
 dependencies. See `src/test/resources/emissary/config/Sample.json` for an example.

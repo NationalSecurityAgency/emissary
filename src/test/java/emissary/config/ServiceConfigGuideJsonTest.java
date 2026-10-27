@@ -162,9 +162,10 @@ class ServiceConfigGuideJsonTest extends LegacyConfigLoadingTest {
         Files.writeString(dir.resolve("legacy.cfg"), "FROM_CFG = yes\nIMPORT_FILE = shared.json\n");
         Files.writeString(dir.resolve("shared.json"), "{\"FROM_JSON\":\"yes\"}");
         Files.writeString(dir.resolve("shared.yaml"), "FROM_YAML: 'yes'\n\"!import\": shared.json\n");
-        Files.writeString(dir.resolve("main.json"), "{\"!import\":[\"legacy.cfg\",\"shared.yaml\"]}");
+        Files.writeString(dir.resolve("shared.toml"), "FROM_TOML = \"yes\"\n\"!import\" = \"shared.json\"\n");
+        Files.writeString(dir.resolve("main.json"), "{\"!import\":[\"legacy.cfg\",\"shared.yaml\",\"shared.toml\"]}");
         final Configurator config = ConfigUtil.getConfigInfo("main.json");
-        for (final String key : List.of("FROM_CFG", "FROM_JSON", "FROM_YAML")) {
+        for (final String key : List.of("FROM_CFG", "FROM_JSON", "FROM_YAML", "FROM_TOML")) {
             assertEquals("yes", config.findStringEntry(key));
         }
     }
@@ -172,7 +173,7 @@ class ServiceConfigGuideJsonTest extends LegacyConfigLoadingTest {
     @Test
     void logicalJsonImportsUseTheSelectedNameForMixedFormatFlavors() throws Exception {
         Files.writeString(dir.resolve("example.Shared.json"), "{\"FOO\":\"base\"}");
-        Files.writeString(dir.resolve("example.Shared-PROD.yaml"), "OVERLAY: present\n");
+        Files.writeString(dir.resolve("example.Shared-PROD.toml"), "OVERLAY = \"present\"\n");
         Files.writeString(dir.resolve("main.cfg"), "IMPORT_FILE = example.Shared\n");
         useFlavor();
         assertEquals("present", ConfigUtil.getConfigInfo("main.cfg").findStringEntry("OVERLAY"));
@@ -227,7 +228,7 @@ class ServiceConfigGuideJsonTest extends LegacyConfigLoadingTest {
         Files.writeString(dir.resolve("emissary.admin.ClassNameInventory.cfg"), "Alpha = example.Alpha\n");
         Files.writeString(dir.resolve("emissary.admin.ClassNameInventory-extra.json"), "{\"Beta\":\"example.Beta\"}");
         assertEquals(2, ConfigUtil.getClassNameInventory().entryKeys().size());
-        Files.writeString(dir.resolve("emissary.admin.ClassNameInventory-extra.yaml"), "Gamma: example.Gamma\n");
+        Files.writeString(dir.resolve("emissary.admin.ClassNameInventory-extra.toml"), "Gamma = \"example.Gamma\"\n");
         assertThrows(IOException.class, ConfigUtil::getClassNameInventory);
     }
 

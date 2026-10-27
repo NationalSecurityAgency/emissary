@@ -793,7 +793,7 @@ public class ConfigUtil {
      * Identify failures optional loading must not hide.
      *
      * @param failure the loading failure
-     * @return true for ambiguous discovery, including wrapped causes
+     * @return true for ambiguous discovery or a malformed structured config, including wrapped causes
      */
     public static boolean isStrictConfigFailure(final Throwable failure) {
         for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
