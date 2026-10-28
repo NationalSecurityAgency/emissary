@@ -1,7 +1,5 @@
 package emissary.config;
 
-import emissary.util.io.ResourceReader;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,10 +37,7 @@ public class ExtractResource {
     }
 
     public String getResource(final String theResource) throws IOException {
-        String resource = theResource;
-        if (!hasFileEnding(resource)) {
-            resource += ConfigUtil.CONFIG_FILE_ENDING;
-        }
+        final String resource = ConfigUtil.resolveConfigName(theResource);
         logger.debug("Reading " + resource);
         final String result;
         try (InputStream is = ConfigUtil.getConfigStream(resource);
@@ -58,21 +53,13 @@ public class ExtractResource {
     }
 
     public void writeResource(final String theResource) throws IOException {
-        String resource = theResource;
-        if (!hasFileEnding(resource)) {
-            resource += ConfigUtil.CONFIG_FILE_ENDING;
-        }
+        final String resource = ConfigUtil.resolveConfigName(theResource);
         final String rezdata = getResource(resource);
         final String outputPath = this.outputDirectory + "/" + resource.replaceAll("/", ".");
         logger.debug("Writing " + outputPath);
         try (BufferedOutputStream os = new BufferedOutputStream(Files.newOutputStream(Path.of(outputPath)))) {
             os.write(rezdata.getBytes(UTF_8));
         }
-    }
-
-    private static boolean hasFileEnding(final String resource) {
-        return resource.endsWith(ResourceReader.CONFIG_SUFFIX) || resource.endsWith(ResourceReader.PROP_SUFFIX)
-                || resource.endsWith(ResourceReader.XML_SUFFIX) || resource.endsWith(ResourceReader.JS_SUFFIX);
     }
 
     /**
