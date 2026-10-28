@@ -1,6 +1,7 @@
 package emissary.config;
 
 import emissary.core.EmissaryException;
+import emissary.util.io.ConfigFormat;
 import emissary.util.io.ResourceReader;
 
 import jakarta.annotation.Nullable;
@@ -34,7 +35,7 @@ public class ConfigUtil {
     /** Our logger */
     protected static final Logger logger = LoggerFactory.getLogger(ConfigUtil.class);
 
-    /** Constant string for files that end with {@value} */
+    /** Constant string for files that end with {@code .cfg} */
     public static final String CONFIG_FILE_ENDING = ResourceReader.CONFIG_SUFFIX;
 
     /** Supported config suffixes; discovery requires a unique candidate at each location. */
@@ -56,7 +57,7 @@ public class ConfigUtil {
     private static final List<String> RESOURCE_SUFFIXES = buildResourceSuffixes();
 
     private static List<String> buildResourceSuffixes() {
-        final List<String> suffixes = new ArrayList<>(ResourceReader.CONFIG_SUFFIXES);
+        final List<String> suffixes = new ArrayList<>(ConfigFormat.suffixes());
         suffixes.add(XML_FILE_ENDING);
         suffixes.add(PROP_FILE_ENDING);
         suffixes.add(JS_FILE_ENDING);
@@ -386,7 +387,7 @@ public class ConfigUtil {
         try {
             return getConfigInfo(source.openStream(), source.getName());
         } catch (IOException e) {
-            if (StructuredConfigParser.isStructuredFile(source.getName()) && !isStrictConfigFailure(e)) {
+            if (ConfigParser.isStructuredFile(source.getName()) && !isStrictConfigFailure(e)) {
                 throw new StructuredConfigException("Cannot load structured config " + source.getName(), e);
             }
             throw e;
@@ -536,9 +537,9 @@ public class ConfigUtil {
 
     @Nullable
     private static ResolvedConfig findNamedResource(final String name) throws IOException {
-        final File f = findConfigFile(name);
+        final Path f = findConfigFile(name);
         if (f != null) {
-            return new ResolvedConfig(name, f.toPath());
+            return new ResolvedConfig(name, f);
         }
         if (name.startsWith("/")) {
             return null;
@@ -558,9 +559,9 @@ public class ConfigUtil {
             return source;
         }
         final String oldStyle = oldStyleName(name);
-        final File f = oldStyle == null ? null : findConfigFile(oldStyle);
+        final Path f = oldStyle == null ? null : findConfigFile(oldStyle);
         if (f != null) {
-            return new ResolvedConfig(name, f.toPath());
+            return new ResolvedConfig(name, f);
         }
         throw new ConfigNotFoundException("No config stream available for " + name);
     }
@@ -576,7 +577,8 @@ public class ConfigUtil {
             return null;
         }
         final String filenameStem = stem.getFileName().toString();
-        final File[] files = stem.getParent().toFile().listFiles((parent, filename) -> {
+        final Path parent = stem.getParent();
+        final File[] files = parent.toFile().listFiles((unused, filename) -> {
             final String suffix = configFileSuffix(filename);
             return suffix != null && filename.substring(0, filename.length() - suffix.length()).equals(filenameStem);
         });
@@ -584,7 +586,10 @@ public class ConfigUtil {
         if (files != null) {
             Arrays.sort(files);
             for (final File file : files) {
-                candidates.add(new ResolvedConfig(name + file.getName().substring(filenameStem.length()), file.toPath()));
+                final Path candidate = parent.resolve(file.getName()).normalize();
+                if (candidate.startsWith(base) && !candidate.equals(base)) {
+                    candidates.add(new ResolvedConfig(name + file.getName().substring(filenameStem.length()), candidate));
+                }
             }
         }
         return uniqueConfig(name, candidates);
@@ -610,25 +615,24 @@ public class ConfigUtil {
      */
     @Nullable
     public static String configFileSuffix(final String name) {
-        final String lower = name.toLowerCase(Locale.ROOT);
-        for (final String suffix : CONFIG_FILE_ENDINGS) {
-            if (lower.endsWith(suffix)) {
-                return suffix;
-            }
-        }
-        return null;
+        final ConfigFormat format = ConfigFormat.fromName(name);
+        return format == null ? null : format.getSuffix();
     }
 
     /** Find a readable file, keeping relative names within their configured directory. */
     @Nullable
-    private static File findConfigFile(final String name) {
+    private static Path findConfigFile(final String name) {
         if (name.isEmpty() || name.startsWith("\\")) {
             return null;
         }
         try {
             if (name.startsWith("/")) {
-                final File file = Path.of(name).normalize().toFile();
-                return file.exists() && file.canRead() ? file : null;
+                final Path candidate = Path.of(name).normalize();
+                final Path root = candidate.getRoot();
+                if (root == null || !candidate.startsWith(root)) {
+                    return null;
+                }
+                return Files.isRegularFile(candidate) && Files.isReadable(candidate) ? candidate : null;
             }
             if (name.contains("..")) {
                 return null;
@@ -636,11 +640,9 @@ public class ConfigUtil {
             for (final String dir : getConfigDirs()) {
                 final Path base = Path.of(dir).toAbsolutePath().normalize();
                 final Path candidate = base.resolve(name).normalize();
-                if (candidate.startsWith(base) && !candidate.equals(base)) {
-                    final File file = candidate.toFile();
-                    if (file.exists() && file.canRead()) {
-                        return file;
-                    }
+                if (candidate.startsWith(base) && !candidate.equals(base) && Files.isRegularFile(candidate)
+                        && Files.isReadable(candidate)) {
+                    return candidate;
                 }
             }
         } catch (RuntimeException e) {
@@ -1015,7 +1017,10 @@ public class ConfigUtil {
          * @throws IOException when opening fails
          */
         public InputStream openStream() throws IOException {
-            return path == null ? location.openStream() : Files.newInputStream(path);
+            if (path == null) {
+                return location.openStream();
+            }
+            return Files.newInputStream(path.normalize());
         }
 
         /**
@@ -1026,7 +1031,7 @@ public class ConfigUtil {
         public long getLastModified() {
             try {
                 if (path != null) {
-                    return Files.getLastModifiedTime(path).toMillis();
+                    return Files.getLastModifiedTime(path.normalize()).toMillis();
                 }
                 final URLConnection connection = location.openConnection();
                 return connection.getLastModified();

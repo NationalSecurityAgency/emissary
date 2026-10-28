@@ -35,10 +35,16 @@ class ServiceConfigGuideYamlTest extends UnitTest {
 
     @Test
     void testFlattening() throws IOException {
-        final String yaml = "FOO: bar\nCOUNT: 42\nRENDEZVOUS_PEER:\n"
-                + "  - \"*.*.*.http://h1:7001/DirectoryPlace\"\n"
-                + "  - \"*.*.*.http://h2:8001/DirectoryPlace\"\n"
-                + "NESTED:\n  ONE: AAA\n  TWO: BBB\n";
+        final String yaml = """
+                FOO: bar
+                COUNT: 42
+                RENDEZVOUS_PEER:
+                  - "*.*.*.http://h1:7001/DirectoryPlace"
+                  - "*.*.*.http://h2:8001/DirectoryPlace"
+                NESTED:
+                  ONE: AAA
+                  TWO: BBB
+                """;
         final ServiceConfigGuide scg = parse(yaml, "test.yaml");
         assertEquals("bar", scg.findStringEntry("FOO"));
         assertEquals("42", scg.findStringEntry("COUNT"));
@@ -133,11 +139,11 @@ class ServiceConfigGuideYamlTest extends UnitTest {
 
     @Test
     void testSuffixDetection() {
-        assertTrue(StructuredConfigParser.isYamlFile("foo.yaml"));
-        assertTrue(StructuredConfigParser.isYamlFile("foo.yml"));
-        assertTrue(StructuredConfigParser.isYamlFile("foo.YAML"));
-        assertFalse(StructuredConfigParser.isYamlFile("foo.cfg"));
-        assertFalse(StructuredConfigParser.isYamlFile("foo.ycfg"));
+        assertTrue(ConfigParser.isYamlFile("foo.yaml"));
+        assertTrue(ConfigParser.isYamlFile("foo.yml"));
+        assertTrue(ConfigParser.isYamlFile("foo.YAML"));
+        assertFalse(ConfigParser.isYamlFile("foo.cfg"));
+        assertFalse(ConfigParser.isYamlFile("foo.ycfg"));
     }
 
     @Test
@@ -393,10 +399,12 @@ class ServiceConfigGuideYamlTest extends UnitTest {
         try (InputStream is = Files.newInputStream(cfgPath)) {
             fromCfg = new ServiceConfigGuide(is, "peer.cfg");
         }
-        final String yaml = "RENDEZVOUS_PEER:\n"
-                + "  - \"*.*.*.http://@{emissary.node.name}:7001/DirectoryPlace\"\n"
-                + "  - \"*.*.*.http://@{emissary.node.name}:8001/DirectoryPlace\"\n"
-                + "  - \"*.*.*.http://@{emissary.node.name}:9001/DirectoryPlace\"\n";
+        final String yaml = """
+                RENDEZVOUS_PEER:
+                  - "*.*.*.http://@{emissary.node.name}:7001/DirectoryPlace"
+                  - "*.*.*.http://@{emissary.node.name}:8001/DirectoryPlace"
+                  - "*.*.*.http://@{emissary.node.name}:9001/DirectoryPlace"
+                """;
         final ServiceConfigGuide fromYaml = parse(yaml, "peer.yaml");
         assertEquals(entriesAsStrings(fromCfg), entriesAsStrings(fromYaml));
     }

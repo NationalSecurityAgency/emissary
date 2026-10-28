@@ -69,6 +69,14 @@ class ResourceReaderTest extends UnitTest {
     }
 
     @Test
+    void testResourceNamesCannotEscapeTheClasspathRoot() {
+        final ResourceReader rr = new ResourceReader();
+        assertNull(rr.getResource("../emissary/util/Version.cfg"));
+        assertNull(rr.getResourceAsStream("emissary/../../etc/passwd"));
+        assertNull(rr.getResource("/emissary/util/Version.cfg"));
+    }
+
+    @Test
     void testNaming() {
         ResourceReader rr = new ResourceReader();
         assertEquals("emissary/util/Version", rr.getResourceName(Version.class), "Resource naming");
@@ -103,6 +111,16 @@ class ResourceReaderTest extends UnitTest {
         }
     }
 
+
+    @Test
+    void testConfigFormatIsTheSuffixSourceOfTruth() {
+        assertEquals(List.of(".cfg", ".yaml", ".yml", ".toml", ".json"), ConfigFormat.suffixes());
+        assertEquals(ConfigFormat.JSON, ConfigFormat.fromName("Alpha.JSON"));
+        assertEquals(ConfigFormat.YML, ConfigFormat.fromName("Alpha.yml"));
+        assertEquals(ConfigFormat.CFG, ConfigFormat.fromName("Alpha.CFG"));
+        assertNull(ConfigFormat.fromName("Alpha.properties"));
+        assertEquals(List.of(".cfg", ".yaml", ".yml", ".toml", ".json"), ResourceReader.CONFIG_SUFFIXES);
+    }
 
     @Test
     void testFindConfigResourcesStructured() {

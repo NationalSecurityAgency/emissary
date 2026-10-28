@@ -29,9 +29,14 @@ class ServiceConfigGuideTomlTest extends UnitTest {
 
     @Test
     void testFlattening() throws IOException {
-        final String toml = "FOO = \"bar\"\nCOUNT = 42\n"
-                + "RENDEZVOUS_PEER = [\"*.*.*.http://h1:7001/DirectoryPlace\", \"*.*.*.http://h2:8001/DirectoryPlace\"]\n"
-                + "[NESTED]\nONE = \"AAA\"\nTWO = \"BBB\"\n";
+        final String toml = """
+                FOO = "bar"
+                COUNT = 42
+                RENDEZVOUS_PEER = ["*.*.*.http://h1:7001/DirectoryPlace", "*.*.*.http://h2:8001/DirectoryPlace"]
+                [NESTED]
+                ONE = "AAA"
+                TWO = "BBB"
+                """;
         final ServiceConfigGuide scg = parse(toml, "test.toml");
         assertEquals("bar", scg.findStringEntry("FOO"));
         assertEquals("42", scg.findStringEntry("COUNT"));
@@ -82,10 +87,10 @@ class ServiceConfigGuideTomlTest extends UnitTest {
 
     @Test
     void testIsTomlFile() {
-        assertTrue(StructuredConfigParser.isTomlFile("foo.toml"));
-        assertTrue(StructuredConfigParser.isTomlFile("foo.TOML"));
-        assertFalse(StructuredConfigParser.isTomlFile("foo.cfg"));
-        assertFalse(StructuredConfigParser.isTomlFile("foo.yaml"));
+        assertTrue(ConfigParser.isTomlFile("foo.toml"));
+        assertTrue(ConfigParser.isTomlFile("foo.TOML"));
+        assertFalse(ConfigParser.isTomlFile("foo.cfg"));
+        assertFalse(ConfigParser.isTomlFile("foo.yaml"));
     }
 
     @Test

@@ -286,7 +286,8 @@ a legacy null entry.
 
 Inventory module files continue to merge, but one module may not have multiple formats in a directory.
 `ResourceReader.findConfigDataName` also requires unique classpath discovery; `getConfigDataAsStream` retains its
-legacy `.cfg`-only contract. Config inspection and extraction accept explicit structured suffixes.
+legacy `.cfg`-only contract. Config inspection and extraction accept explicit structured suffixes and discover a unique
+structured config from a suffixless name.
 
 TOML uses the same discovery, import, flavor, substitution, and removal rules. See
 `src/test/resources/emissary/config/Sample.toml` for a complete example.

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,11 +25,11 @@ public class ResourceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(ResourceReader.class);
 
-    public static final String CONFIG_SUFFIX = ".cfg";
-    public static final String YAML_SUFFIX = ".yaml";
-    public static final String YML_SUFFIX = ".yml";
-    public static final String TOML_SUFFIX = ".toml";
-    public static final String JSON_SUFFIX = ".json";
+    public static final String CONFIG_SUFFIX = ConfigFormat.CFG.getSuffix();
+    public static final String YAML_SUFFIX = ConfigFormat.YAML.getSuffix();
+    public static final String YML_SUFFIX = ConfigFormat.YML.getSuffix();
+    public static final String TOML_SUFFIX = ConfigFormat.TOML.getSuffix();
+    public static final String JSON_SUFFIX = ConfigFormat.JSON.getSuffix();
     public static final String XML_SUFFIX = ".xml";
     public static final String DATA_SUFFIX = ".dat";
     public static final String JS_SUFFIX = ".js";
@@ -36,7 +37,7 @@ public class ResourceReader {
     public static final String CLASS_SUFFIX = ".class";
 
     /** Supported config suffixes; automatic discovery requires a unique match. */
-    public static final List<String> CONFIG_SUFFIXES = List.of(CONFIG_SUFFIX, YAML_SUFFIX, YML_SUFFIX, TOML_SUFFIX, JSON_SUFFIX);
+    public static final List<String> CONFIG_SUFFIXES = ConfigFormat.suffixes();
 
     /**
      * Create a resource reader for use
@@ -178,11 +179,40 @@ public class ResourceReader {
      * @param name name of the resource
      * @return url to the resource
      */
+    @Nullable
     public URL getResource(@Nullable String name) {
-        if (name != null && name.length() > 1 && name.charAt(1) == ':') {
-            name = name.substring(2);
+        name = safeResourceName(name);
+        if (name == null) {
+            return null;
         }
         return Thread.currentThread().getContextClassLoader().getResource(name);
+    }
+
+    /**
+     * Normalize a classpath resource name and keep it relative to the classpath root.
+     *
+     * @param name the requested resource name
+     * @return a safe relative resource name, or null when the name escapes the classpath root
+     */
+    @Nullable
+    private static String safeResourceName(@Nullable final String name) {
+        if (name == null) {
+            return null;
+        }
+        String resource = name;
+        if (resource.length() > 1 && resource.charAt(1) == ':') {
+            resource = resource.substring(2);
+        }
+        try {
+            final Path base = Path.of("").toAbsolutePath().normalize();
+            final Path candidate = base.resolve(resource).normalize();
+            if (candidate.equals(base) || !candidate.startsWith(base)) {
+                return null;
+            }
+            return base.relativize(candidate).toString();
+        } catch (RuntimeException e) {
+            return null;
+        }
     }
 
     /**
@@ -191,9 +221,11 @@ public class ResourceReader {
      * @param name name of resource
      * @return stream, caller must close
      */
+    @Nullable
     public InputStream getResourceAsStream(@Nullable String name) {
-        if (name != null && name.length() > 1 && name.charAt(1) == ':') {
-            name = name.substring(2);
+        name = safeResourceName(name);
+        if (name == null) {
+            return null;
         }
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
     }
