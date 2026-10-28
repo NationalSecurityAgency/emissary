@@ -159,6 +159,17 @@ class ConfigUtilTest extends UnitTest {
 
 
     @Test
+    void testGetFlavorsReturnsEachConfiguredFlavor() throws EmissaryException {
+        System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "CHOCOLATE,PEANUTBUTTER");
+        ConfigUtil.initialize();
+
+        assertEquals(List.of("CHOCOLATE", "PEANUTBUTTER"), ConfigUtil.getFlavors());
+
+        System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
+        ConfigUtil.initialize();
+    }
+
+    @Test
     void testFlavorMerge() throws IOException, EmissaryException {
         // Set up a flavor for the test
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTFLAVOR");

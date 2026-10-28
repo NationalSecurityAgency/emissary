@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -49,6 +50,17 @@ public class ConfigUtil {
 
     /** Constant string for inventory files name prefix */
     public static final String INVENTORY_FILE_PREFIX = "emissary.admin.ClassNameInventory";
+
+    /** Suffixes that resource-name normalization recognizes; config formats plus non-config resources. */
+    private static final List<String> RESOURCE_SUFFIXES = buildResourceSuffixes();
+
+    private static List<String> buildResourceSuffixes() {
+        final List<String> suffixes = new ArrayList<>(ResourceReader.CONFIG_SUFFIXES);
+        suffixes.add(XML_FILE_ENDING);
+        suffixes.add(PROP_FILE_ENDING);
+        suffixes.add(JS_FILE_ENDING);
+        return Collections.unmodifiableList(suffixes);
+    }
 
     /**
      * This property specifies the config override directory. When present, we look here first for config info. If not
@@ -210,7 +222,7 @@ public class ConfigUtil {
         if (configDirs == null) {
             throw new IllegalStateException("No config directory specified");
         }
-        return configDirs;
+        return Collections.unmodifiableList(configDirs);
     }
 
     /**
@@ -335,19 +347,18 @@ public class ConfigUtil {
                 return c;
             } catch (IOException ex) {
                 if (isStrictConfigFailure(ex)) {
-                    throw ex;
+                    throw new IOException("Preference " + s + " failed to load: " + ex.getMessage(), ex);
                 }
-                String exception = ex.getMessage();
-                if (exception == null) {
-                    exception = "";
-                }
-                if (exception.contains("IMPORT_FILE")) {
+                if (findImportFailure(ex) != null) {
+                    String exception = ex.getMessage();
+                    if (exception == null) {
+                        exception = "";
+                    }
                     exception = exception.replace("<none>", s);
                     logger.debug("IMPORT_FILE not found in {}", s);
                     throw new IOException(exception, ex);
-                } else {
-                    logger.debug("Preference {} not found", s);
                 }
+                logger.debug("Preference {} not found", s);
             }
         }
         throw new IOException("None of the " + preferences.size() + " preferences could be found: " + preferences);
@@ -420,12 +431,11 @@ public class ConfigUtil {
      * @return the lastModified timestamp or -1L if it doesn't exist
      */
     public static long getConfigFileLastModified(final String name) {
-        final String sname = getConfigFile(name);
-        final File f = new File(sname);
-        if (f.exists() && f.canRead()) {
-            return f.lastModified();
+        try {
+            return resolveConfig(name).getLastModified();
+        } catch (IOException e) {
+            return -1L;
         }
-        return -1L;
     }
 
     /**
@@ -639,14 +649,9 @@ public class ConfigUtil {
      */
     private static List<String> toResourceName(final String name) {
         String r = name.replace('.', '/');
-        if (r.toUpperCase(Locale.getDefault()).endsWith("/CFG")) {
-            r = r.substring(0, r.length() - CONFIG_FILE_ENDING.length()) + CONFIG_FILE_ENDING;
-        } else if (r.toUpperCase(Locale.getDefault()).endsWith("/XML")) {
-            r = r.substring(0, r.length() - XML_FILE_ENDING.length()) + XML_FILE_ENDING;
-        } else if (r.toUpperCase(Locale.getDefault()).endsWith("/PROPERTIES")) {
-            r = r.substring(0, r.length() - PROP_FILE_ENDING.length()) + PROP_FILE_ENDING;
-        } else if (r.toUpperCase(Locale.getDefault()).endsWith("/JS")) {
-            r = r.substring(0, r.length() - JS_FILE_ENDING.length()) + JS_FILE_ENDING;
+        final String suffix = resourceSuffix(name);
+        if (suffix != null) {
+            r = r.substring(0, r.length() - suffix.length()) + suffix;
         }
         final List<String> prefs = new ArrayList<>();
         if (configPkg != null) {
@@ -654,6 +659,23 @@ public class ConfigUtil {
         }
         prefs.add(r);
         return prefs;
+    }
+
+    /**
+     * Find a recognized resource suffix without changing the caller's spelling.
+     *
+     * @param name the resource name
+     * @return the canonical suffix, or null when no known suffix is present
+     */
+    @Nullable
+    private static String resourceSuffix(final String name) {
+        final String lower = name.toLowerCase(Locale.ROOT);
+        for (final String suffix : RESOURCE_SUFFIXES) {
+            if (lower.endsWith(suffix)) {
+                return suffix;
+            }
+        }
+        return null;
     }
 
     /**
@@ -690,10 +712,10 @@ public class ConfigUtil {
      */
     @Nullable
     public static List<String> getFlavors() {
-        if (configFlavors == null) {
+        if (configFlavors == null || configFlavors.isEmpty()) {
             return null;
         }
-        return Collections.singletonList(configFlavors);
+        return List.of(configFlavors.split(","));
     }
 
     /**
@@ -744,6 +766,22 @@ public class ConfigUtil {
     }
 
     /**
+     * Find a required-import failure in the cause chain.
+     *
+     * @param failure the loading failure
+     * @return the import failure, or null when the failure is unrelated
+     */
+    @Nullable
+    private static ImportNotFoundException findImportFailure(final Throwable failure) {
+        for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
+            if (cause instanceof ImportNotFoundException) {
+                return (ImportNotFoundException) cause;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Identify failures optional loading must not hide.
      *
      * @param failure the loading failure
@@ -766,11 +804,7 @@ public class ConfigUtil {
      */
     public static InputStream getConfigData(final String f) throws IOException {
         logger.debug("Request for config data from {}", f);
-
-        // Add config.dir part if not already absolute
-        final String filename = f.startsWith("/") ? f : getConfigFile(f);
-
-        return Files.newInputStream(Path.of(filename));
+        return resolveExactConfig(f).openStream();
     }
 
     /**
@@ -954,6 +988,23 @@ public class ConfigUtil {
         public InputStream openStream() throws IOException {
             return path == null ? location.openStream() : Files.newInputStream(path);
         }
+
+        /**
+         * Get the resource modification time.
+         *
+         * @return the last-modified timestamp in milliseconds, or -1 when unavailable
+         */
+        public long getLastModified() {
+            try {
+                if (path != null) {
+                    return Files.getLastModifiedTime(path).toMillis();
+                }
+                final URLConnection connection = location.openConnection();
+                return connection.getLastModified();
+            } catch (IOException e) {
+                return -1L;
+            }
+        }
     }
 
     static final class ConfigNotFoundException extends IOException {
@@ -961,6 +1012,14 @@ public class ConfigUtil {
 
         ConfigNotFoundException(final String message) {
             super(message);
+        }
+    }
+
+    static final class ImportNotFoundException extends IOException {
+        private static final long serialVersionUID = 1L;
+
+        ImportNotFoundException(final String message, final IOException cause) {
+            super(message, cause);
         }
     }
 

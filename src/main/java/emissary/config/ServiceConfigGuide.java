@@ -37,6 +37,13 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 
+import static emissary.config.ConfigDirectives.ASSIGN;
+import static emissary.config.ConfigDirectives.CREATE_DIRECTORY;
+import static emissary.config.ConfigDirectives.CREATE_FILE;
+import static emissary.config.ConfigDirectives.IMPORT_FILE;
+import static emissary.config.ConfigDirectives.OPT_IMPORT_FILE;
+import static emissary.config.ConfigDirectives.REMOVE;
+import static emissary.config.ConfigDirectives.REMOVE_ALL;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -57,7 +64,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
     // Used on the RHS to make a null assignment
     // Obsolete, use @{NULL}
-    protected static final String NULL_VALUE = "<null>";
+    protected static final String NULL_VALUE = ConfigDirectives.NULL_VALUE;
 
     // Hold all service specific parameters in a list
     protected List<ConfigEntry> serviceParameters = new ArrayList<>();
@@ -187,7 +194,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         this.values.put("HOST", hostname);
         this.values.put("/", File.separator);
         this.values.put("TMPDIR", System.getProperty("java.io.tmpdir"));
-        this.values.put("NULL", null);
+        this.values.put(ConfigDirectives.NULL_SUBSTITUTION, null);
         this.values.put("OS.NAME", System.getProperty("os.name").replace(' ', '_'));
         this.values.put("OS.VER", System.getProperty("os.version").replace(' ', '_'));
         this.values.put("OS.ARCH", System.getProperty("os.arch").replace(' ', '_'));
@@ -281,8 +288,8 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         // Create a config entry from this
         final ConfigEntry anEntry = new ConfigEntry(parmName, sval);
 
-        if ("!=".equals(operatorArg)) {
-            if ("*".equals(sval)) {
+        if (REMOVE.equals(operatorArg)) {
+            if (REMOVE_ALL.equals(sval)) {
                 removeAllEntries(parmName);
                 this.values.remove(parmName);
             } else {
@@ -304,7 +311,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             this.values.put(parmName, sval);
         }
 
-        if ("IMPORT_FILE".equals(parmName) || "OPT_IMPORT_FILE".equals(parmName)) {
+        if (IMPORT_FILE.equals(parmName) || OPT_IMPORT_FILE.equals(parmName)) {
             final List<String> fileFlavorList = new ArrayList<>();
             // Add the base file and then add all the flavor versions
             fileFlavorList.add(sval);
@@ -331,18 +338,18 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                         throw e;
                     }
                     // Throw exception if it is an IMPORT_FILE and the base file is not found
-                    if ("IMPORT_FILE".equals(parmName) && i == 0) {
+                    if (IMPORT_FILE.equals(parmName) && i == 0) {
                         String importFileName = Path.of(svalArg).getFileName().toString();
-                        throw new IOException("In " + filename + ", cannot find IMPORT_FILE: " + sval
+                        throw new ConfigUtil.ImportNotFoundException("In " + filename + ", cannot find IMPORT_FILE: " + sval
                                 + " on the specified path. Make sure IMPORT_FILE (" + importFileName + ") exists, and the file path is correct.",
                                 e);
                     }
                 }
             }
             return anEntry;
-        } else if ("CREATE_DIRECTORY".equals(parmName) && !createDirectory(sval)) {
+        } else if (CREATE_DIRECTORY.equals(parmName) && !createDirectory(sval)) {
             logger.warn("{}: Cannot create directory {}", filename, sval);
-        } else if ("CREATE_FILE".equals(parmName) && !createFile(sval)) {
+        } else if (CREATE_FILE.equals(parmName) && !createFile(sval)) {
             logger.warn("{}: Cannot create file {}", filename, sval);
         }
 
@@ -573,7 +580,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     public ConfigEntry addEntry(final String key, final String value) {
         ConfigEntry entry = null;
         try {
-            entry = handleNewEntry(key, value, "=", "<user>", 1, false);
+            entry = handleNewEntry(key, value, ASSIGN, "<user>", 1, false);
         } catch (IOException ex) {
             logger.error("Could not add entry for {}", key, ex);
         }
@@ -593,7 +600,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         try {
             int i = 1;
             for (final String value : values) {
-                final ConfigEntry entry = handleNewEntry(key, value, "=", "<user>", i++, false);
+                final ConfigEntry entry = handleNewEntry(key, value, ASSIGN, "<user>", i++, false);
                 list.add(entry);
             }
         } catch (IOException ex) {
@@ -611,7 +618,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     @Override
     public void removeEntry(final String key, final String value) {
         try {
-            handleNewEntry(key, value, "!=", "<user>", 1, false);
+            handleNewEntry(key, value, REMOVE, "<user>", 1, false);
         } catch (IOException ex) {
             logger.warn("Cannot remove entry", ex);
         }
@@ -732,9 +739,9 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public List<ConfigEntry> findStringMatchList(final String theParameter) {
-        final List<ConfigEntry> list = findStringMatchEntries(theParameter);
-        for (final ConfigEntry entry : list) {
-            entry.setKey(entry.getKey().substring(theParameter.length()));
+        final List<ConfigEntry> list = new ArrayList<>();
+        for (final ConfigEntry entry : findStringMatchEntries(theParameter)) {
+            list.add(new ConfigEntry(entry.getKey().substring(theParameter.length()), entry.getValue()));
         }
         return list;
     }
@@ -1226,13 +1233,13 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         // First handle the remove entries from "other"
         if (other instanceof ServiceConfigGuide) {
             for (final ConfigEntry entry : ((ServiceConfigGuide) other).getRemoveEntries()) {
-                handleNewEntry(entry.getKey(), entry.getValue(), "!=", "<merge>", i++, true);
+                handleNewEntry(entry.getKey(), entry.getValue(), REMOVE, "<merge>", i++, true);
             }
         }
 
         // Add in new entries from "other" at the top of the list
         for (final ConfigEntry entry : other.getEntries()) {
-            handleNewEntry(entry.getKey(), entry.getValue(), "=", "<merge>", i++, true);
+            handleNewEntry(entry.getKey(), entry.getValue(), ASSIGN, "<merge>", i++, true);
         }
     }
 
