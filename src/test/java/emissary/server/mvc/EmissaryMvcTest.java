@@ -164,6 +164,17 @@ class EmissaryMvcTest extends EndpointTestBase {
     }
 
     @Test
+    void configs() {
+        try (Response response = target("Configs.action").request().get()) {
+            assertEquals(200, response.getStatus());
+            String out = response.readEntity(String.class);
+            assertTrue(out.contains("<h2>Configuration Viewer</h2>"));
+            assertTrue(out.contains("id=\"configs-form\""));
+            assertTrue(out.contains("api/configuration/"));
+        }
+    }
+
+    @Test
     void shutdown() {
         // test template is src/test/resources/environment.mustache
         try (Response response = target("Shutdown.action").request().get()) {
