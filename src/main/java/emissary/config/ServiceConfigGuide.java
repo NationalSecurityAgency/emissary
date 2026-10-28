@@ -213,9 +213,9 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
 
     protected void readConfigData(final InputStream is, final String filename) throws IOException, ConfigSyntaxException {
-        if (filename != null && StructuredConfigParser.isStructuredFile(filename)) {
+        if (filename != null && ConfigParser.isStructuredFile(filename)) {
             try {
-                new StructuredConfigParser(this).read(is, filename);
+                new ConfigParser(this).read(is, filename);
             } catch (IOException e) {
                 throw new ConfigUtil.StructuredConfigException(e.getMessage(), e);
             }
@@ -366,7 +366,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                     if (ConfigUtil.isStrictConfigFailure(e)) {
                         throw e;
                     }
-                    if (!(e instanceof ConfigUtil.ConfigNotFoundException) && StructuredConfigParser.isStructuredFile(resolvedName)) {
+                    if (!(e instanceof ConfigUtil.ConfigNotFoundException) && ConfigParser.isStructuredFile(resolvedName)) {
                         throw new ConfigUtil.StructuredConfigException("Cannot load structured import " + resolvedName, e);
                     }
                     // Throw exception if it is an IMPORT_FILE and the base file is not found

@@ -133,11 +133,11 @@ class ServiceConfigGuideYamlTest extends UnitTest {
 
     @Test
     void testSuffixDetection() {
-        assertTrue(StructuredConfigParser.isYamlFile("foo.yaml"));
-        assertTrue(StructuredConfigParser.isYamlFile("foo.yml"));
-        assertTrue(StructuredConfigParser.isYamlFile("foo.YAML"));
-        assertFalse(StructuredConfigParser.isYamlFile("foo.cfg"));
-        assertFalse(StructuredConfigParser.isYamlFile("foo.ycfg"));
+        assertTrue(ConfigParser.isYamlFile("foo.yaml"));
+        assertTrue(ConfigParser.isYamlFile("foo.yml"));
+        assertTrue(ConfigParser.isYamlFile("foo.YAML"));
+        assertFalse(ConfigParser.isYamlFile("foo.cfg"));
+        assertFalse(ConfigParser.isYamlFile("foo.ycfg"));
     }
 
     @Test

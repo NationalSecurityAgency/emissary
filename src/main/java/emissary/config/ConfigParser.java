@@ -1,6 +1,6 @@
 package emissary.config;
 
-import emissary.util.io.ResourceReader;
+import emissary.util.io.ConfigFormat;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -17,9 +17,14 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
+import static emissary.config.ConfigDirectives.IMPORT_FILE;
+import static emissary.config.ConfigDirectives.OPT_IMPORT_FILE;
+import static emissary.config.ConfigDirectives.REMOVE;
+import static emissary.config.ConfigDirectives.STRUCTURED_IMPORT;
+import static emissary.config.ConfigDirectives.STRUCTURED_OPT_IMPORT;
+import static emissary.config.ConfigDirectives.STRUCTURED_REMOVE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -28,9 +33,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * a startup error in every format; use a sequence or array for multi-valued entries. YAML merge keys ({@code <<}) are
  * rejected, so flatten the mapping explicitly instead.
  */
-public final class StructuredConfigParser {
+public final class ConfigParser {
 
-    private static final Logger logger = LoggerFactory.getLogger(StructuredConfigParser.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigParser.class);
 
     /**
      * A config file holds exactly one document, so a trailing token is an error rather than dropped content. Duplicate
@@ -56,7 +61,7 @@ public final class StructuredConfigParser {
      *
      * @param configG the service config guide
      */
-    public StructuredConfigParser(final ServiceConfigGuide configG) {
+    public ConfigParser(final ServiceConfigGuide configG) {
         this.configG = configG;
     }
 
@@ -88,8 +93,8 @@ public final class StructuredConfigParser {
      * @return true for {@code .yaml} and {@code .yml} names
      */
     public static boolean isYamlFile(final String filename) {
-        final String lower = filename.toLowerCase(Locale.ROOT);
-        return lower.endsWith(ResourceReader.YAML_SUFFIX) || lower.endsWith(ResourceReader.YML_SUFFIX);
+        final ConfigFormat format = ConfigFormat.fromName(filename);
+        return format == ConfigFormat.YAML || format == ConfigFormat.YML;
     }
 
     /**
@@ -99,7 +104,7 @@ public final class StructuredConfigParser {
      * @return true for {@code .toml} names
      */
     public static boolean isTomlFile(final String filename) {
-        return filename.toLowerCase(Locale.ROOT).endsWith(ResourceReader.TOML_SUFFIX);
+        return ConfigFormat.fromName(filename) == ConfigFormat.TOML;
     }
 
     /**
@@ -109,7 +114,7 @@ public final class StructuredConfigParser {
      * @return true for {@code .json} names
      */
     public static boolean isJsonFile(final String filename) {
-        return filename.toLowerCase(Locale.ROOT).endsWith(ResourceReader.JSON_SUFFIX);
+        return ConfigFormat.fromName(filename) == ConfigFormat.JSON;
     }
 
     /**
@@ -119,7 +124,8 @@ public final class StructuredConfigParser {
      * @return true for structured config names
      */
     public static boolean isStructuredFile(final String filename) {
-        return isYamlFile(filename) || isTomlFile(filename) || isJsonFile(filename);
+        final ConfigFormat format = ConfigFormat.fromName(filename);
+        return format != null && format.isStructured();
     }
 
     /**
@@ -130,15 +136,25 @@ public final class StructuredConfigParser {
      * @throws IOException on syntax errors or unsupported structure
      */
     public void read(final InputStream is, final String filename) throws IOException {
-        if (isTomlFile(filename)) {
-            readStructured(is, filename, TOML_MAPPER, Format.TOML);
-        } else if (isYamlFile(filename)) {
-            readStructured(is, filename, YAML_MAPPER, Format.YAML);
-        } else if (isJsonFile(filename)) {
-            readStructured(is, filename, JSON_MAPPER, Format.JSON);
-        } else {
+        final ConfigFormat format = ConfigFormat.fromName(filename);
+        if (format == null) {
             is.close();
             throw new IOException("Cannot parse " + filename + ": unknown structured config suffix");
+        }
+        switch (format) {
+            case TOML:
+                readStructured(is, filename, TOML_MAPPER, Format.TOML);
+                break;
+            case YAML:
+            case YML:
+                readStructured(is, filename, YAML_MAPPER, Format.YAML);
+                break;
+            case JSON:
+                readStructured(is, filename, JSON_MAPPER, Format.JSON);
+                break;
+            default:
+                is.close();
+                throw new IOException("Cannot parse " + filename + ": unknown structured config suffix");
         }
     }
 
@@ -271,8 +287,8 @@ public final class StructuredConfigParser {
      * @return true when the key is an operator key
      */
     private static boolean isOperatorKey(final String rawKey) {
-        return "!remove".equals(rawKey) || "!import".equals(rawKey) || "!opt-import".equals(rawKey)
-                || "!=".equals(rawKey);
+        return STRUCTURED_REMOVE.equals(rawKey) || STRUCTURED_IMPORT.equals(rawKey) || STRUCTURED_OPT_IMPORT.equals(rawKey)
+                || REMOVE.equals(rawKey);
     }
 
     /**
@@ -298,25 +314,25 @@ public final class StructuredConfigParser {
                 throw new IOException(format + " " + filename + " key \"<<\" at " + itemPath
                         + " is a merge key, which is not supported; flatten the mapping explicitly instead.");
             }
-            final boolean insideRemove = prefix.isEmpty() && "!=".equals(operatorArg);
+            final boolean insideRemove = prefix.isEmpty() && REMOVE.equals(operatorArg);
             if ((insideRemove || !prefix.isEmpty()) && isOperatorKey(rawKey)) {
                 throw new IOException(format + " " + filename + " key \"" + rawKey + "\" at " + itemPath
                         + (insideRemove ? " is not allowed inside a !remove block" : " is only allowed at the top level"));
             }
-            if (prefix.isEmpty() && "!=".equals(rawKey)) {
+            if (prefix.isEmpty() && REMOVE.equals(rawKey)) {
                 throw new IOException(format + " " + filename + " key \"" + rawKey + "\" at " + itemPath
                         + " is an operator, not a key");
             }
-            if (prefix.isEmpty() && "!remove".equals(rawKey)) {
+            if (prefix.isEmpty() && STRUCTURED_REMOVE.equals(rawKey)) {
                 if (!(v instanceof Map)) {
                     throw new IOException(
                             format + " " + filename + " key \"!remove\" at " + itemPath + " must be a mapping, found " + valueKind(v, format));
                 }
-                flattenEntries("", itemPath, (Map<String, Object>) v, filename, format, "!=");
+                flattenEntries("", itemPath, (Map<String, Object>) v, filename, format, REMOVE);
                 continue;
             }
-            if (prefix.isEmpty() && ("!import".equals(rawKey) || "!opt-import".equals(rawKey))) {
-                final String importKey = "!import".equals(rawKey) ? "IMPORT_FILE" : "OPT_IMPORT_FILE";
+            if (prefix.isEmpty() && (STRUCTURED_IMPORT.equals(rawKey) || STRUCTURED_OPT_IMPORT.equals(rawKey))) {
+                final String importKey = STRUCTURED_IMPORT.equals(rawKey) ? IMPORT_FILE : OPT_IMPORT_FILE;
                 if (v instanceof List) {
                     int i = 0;
                     for (final Object item : (List<Object>) v) {
@@ -373,8 +389,8 @@ public final class StructuredConfigParser {
     private void applySequenceOp(final String key, final String elementPath, final Object item,
             final String filename, final Format format) throws IOException {
         final Map<String, Object> op = (Map<String, Object>) item;
-        if (op.size() == 1 && op.containsKey("!remove")) {
-            final Object target = op.get("!remove");
+        if (op.size() == 1 && op.containsKey(STRUCTURED_REMOVE)) {
+            final Object target = op.get(STRUCTURED_REMOVE);
             if (target instanceof List) {
                 int i = 0;
                 for (final Object sub : (List<Object>) target) {
@@ -382,10 +398,10 @@ public final class StructuredConfigParser {
                         throw new IOException(format + " " + filename + " key \"" + key + "\" at " + elementPath + "[" + i + "]"
                                 + " must be a scalar or " + format.collectionKind() + " of scalars, found nested " + valueKind(sub, format));
                     }
-                    addMappedEntry(key, sub, "!=", filename, format, elementPath + "[" + i++ + "]");
+                    addMappedEntry(key, sub, REMOVE, filename, format, elementPath + "[" + i++ + "]");
                 }
             } else if (!(target instanceof Map)) {
-                addMappedEntry(key, target, "!=", filename, format, elementPath);
+                addMappedEntry(key, target, REMOVE, filename, format, elementPath);
             } else {
                 throw new IOException(format + " " + filename + " key \"" + key + "\" at " + elementPath
                         + " has an unsupported positional operation;"

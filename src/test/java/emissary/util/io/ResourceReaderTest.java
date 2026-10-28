@@ -105,6 +105,16 @@ class ResourceReaderTest extends UnitTest {
 
 
     @Test
+    void testConfigFormatIsTheSuffixSourceOfTruth() {
+        assertEquals(List.of(".cfg", ".yaml", ".yml", ".toml", ".json"), ConfigFormat.suffixes());
+        assertEquals(ConfigFormat.JSON, ConfigFormat.fromName("Alpha.JSON"));
+        assertEquals(ConfigFormat.YML, ConfigFormat.fromName("Alpha.yml"));
+        assertEquals(ConfigFormat.CFG, ConfigFormat.fromName("Alpha.CFG"));
+        assertNull(ConfigFormat.fromName("Alpha.properties"));
+        assertEquals(List.of(".cfg", ".yaml", ".yml", ".toml", ".json"), ResourceReader.CONFIG_SUFFIXES);
+    }
+
+    @Test
     void testFindConfigResourcesStructured() {
         // The reviewer's repro: single-format resources must all be discoverable from one suffix list.
         ResourceReader rr = new ResourceReader();

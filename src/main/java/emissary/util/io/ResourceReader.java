@@ -24,11 +24,11 @@ public class ResourceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(ResourceReader.class);
 
-    public static final String CONFIG_SUFFIX = ".cfg";
-    public static final String YAML_SUFFIX = ".yaml";
-    public static final String YML_SUFFIX = ".yml";
-    public static final String TOML_SUFFIX = ".toml";
-    public static final String JSON_SUFFIX = ".json";
+    public static final String CONFIG_SUFFIX = ConfigFormat.CFG.getSuffix();
+    public static final String YAML_SUFFIX = ConfigFormat.YAML.getSuffix();
+    public static final String YML_SUFFIX = ConfigFormat.YML.getSuffix();
+    public static final String TOML_SUFFIX = ConfigFormat.TOML.getSuffix();
+    public static final String JSON_SUFFIX = ConfigFormat.JSON.getSuffix();
     public static final String XML_SUFFIX = ".xml";
     public static final String DATA_SUFFIX = ".dat";
     public static final String JS_SUFFIX = ".js";
@@ -36,7 +36,7 @@ public class ResourceReader {
     public static final String CLASS_SUFFIX = ".class";
 
     /** Supported config suffixes; automatic discovery requires a unique match. */
-    public static final List<String> CONFIG_SUFFIXES = List.of(CONFIG_SUFFIX, YAML_SUFFIX, YML_SUFFIX, TOML_SUFFIX, JSON_SUFFIX);
+    public static final List<String> CONFIG_SUFFIXES = ConfigFormat.suffixes();
 
     /**
      * Create a resource reader for use

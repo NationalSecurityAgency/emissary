@@ -107,9 +107,9 @@ class ServiceConfigGuideJsonTest extends LegacyConfigLoadingTest {
 
     @Test
     void suffixesSelectTheParserWithoutSniffingLegacyStreams() throws Exception {
-        assertTrue(StructuredConfigParser.isJsonFile("Alpha.JSON"));
-        assertTrue(StructuredConfigParser.isStructuredFile("Alpha.json"));
-        assertFalse(StructuredConfigParser.isJsonFile("Alpha.cfg"));
+        assertTrue(ConfigParser.isJsonFile("Alpha.JSON"));
+        assertTrue(ConfigParser.isStructuredFile("Alpha.json"));
+        assertFalse(ConfigParser.isJsonFile("Alpha.cfg"));
         assertEquals(".json", ConfigUtil.configFileSuffix("Alpha.JSON"));
         assertThrows(IOException.class,
                 () -> new ServiceConfigGuide(new ByteArrayInputStream("{\"FOO\":\"bar\"}".getBytes(UTF_8)), "Alpha.cfg"));

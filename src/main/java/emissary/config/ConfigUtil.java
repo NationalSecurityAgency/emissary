@@ -1,6 +1,7 @@
 package emissary.config;
 
 import emissary.core.EmissaryException;
+import emissary.util.io.ConfigFormat;
 import emissary.util.io.ResourceReader;
 
 import jakarta.annotation.Nullable;
@@ -34,7 +35,7 @@ public class ConfigUtil {
     /** Our logger */
     protected static final Logger logger = LoggerFactory.getLogger(ConfigUtil.class);
 
-    /** Constant string for files that end with {@value} */
+    /** Constant string for files that end with {@code .cfg} */
     public static final String CONFIG_FILE_ENDING = ResourceReader.CONFIG_SUFFIX;
 
     /** Supported config suffixes; discovery requires a unique candidate at each location. */
@@ -56,7 +57,7 @@ public class ConfigUtil {
     private static final List<String> RESOURCE_SUFFIXES = buildResourceSuffixes();
 
     private static List<String> buildResourceSuffixes() {
-        final List<String> suffixes = new ArrayList<>(ResourceReader.CONFIG_SUFFIXES);
+        final List<String> suffixes = new ArrayList<>(ConfigFormat.suffixes());
         suffixes.add(XML_FILE_ENDING);
         suffixes.add(PROP_FILE_ENDING);
         suffixes.add(JS_FILE_ENDING);
@@ -386,7 +387,7 @@ public class ConfigUtil {
         try {
             return getConfigInfo(source.openStream(), source.getName());
         } catch (IOException e) {
-            if (StructuredConfigParser.isStructuredFile(source.getName()) && !isStrictConfigFailure(e)) {
+            if (ConfigParser.isStructuredFile(source.getName()) && !isStrictConfigFailure(e)) {
                 throw new StructuredConfigException("Cannot load structured config " + source.getName(), e);
             }
             throw e;
@@ -610,13 +611,8 @@ public class ConfigUtil {
      */
     @Nullable
     public static String configFileSuffix(final String name) {
-        final String lower = name.toLowerCase(Locale.ROOT);
-        for (final String suffix : CONFIG_FILE_ENDINGS) {
-            if (lower.endsWith(suffix)) {
-                return suffix;
-            }
-        }
-        return null;
+        final ConfigFormat format = ConfigFormat.fromName(name);
+        return format == null ? null : format.getSuffix();
     }
 
     /** Find a readable file, keeping relative names within their configured directory. */
