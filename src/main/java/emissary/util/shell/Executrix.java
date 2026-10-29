@@ -84,6 +84,13 @@ public class Executrix {
     protected static final Pattern INVALID_FILE_ENDING_CHARS = Pattern.compile("[^a-zA-Z0-9_.\\-]");
 
     /**
+     * Allowlist for temp directory values. Permits absolute path characters (alphanumerics, underscore, hyphen, dot,
+     * slash); every other character is replaced with {@code _} so that shell metacharacters cannot pass through into
+     * the {@code /bin/sh -c} string built by {@link #getCommand(String[], String, int, int)}.
+     */
+    protected static final Pattern INVALID_TEMP_DIR_CHARS = Pattern.compile("[^a-zA-Z0-9_./\\-]");
+
+    /**
      * Create using all defaults
      */
     public Executrix() {
@@ -129,7 +136,7 @@ public class Executrix {
         this.output = configG.findStringEntry("OUTPUT_TYPE", "STD");
         this.order = configG.findStringEntry("ORDER", "NORMAL");
         this.numArgs = configG.findStringEntry("NUM_ARGS", "");
-        this.tmpDir = configG.findStringEntry("TEMP_DIR", System.getProperty("java.io.tmpdir", "/tmp"));
+        this.tmpDir = cleanTempDir(configG.findStringEntry("TEMP_DIR", System.getProperty("java.io.tmpdir", "/tmp")));
         this.tmpDirFile = new File(this.tmpDir);
         this.minimumDataSize = configG.findIntEntry("MINIMUM_DATA_SIZE", 0);
         this.maximumDataSize = configG.findIntEntry("MAXIMUM_DATA_SIZE", 64 * 1024);
@@ -163,6 +170,21 @@ public class Executrix {
      */
     protected static String cleanFileEnding(final String fileEnding) {
         return INVALID_FILE_ENDING_CHARS.matcher(fileEnding).replaceAll("_");
+    }
+
+    /**
+     * Remove invalid characters from a temp directory value, see {@link Executrix#INVALID_TEMP_DIR_CHARS}.
+     * <p>
+     * The {@code TEMP_DIR} configuration value is concatenated into the {@code /bin/sh -c "...; cd TEMP_DIR; ..."}
+     * command argument built by {@link #getCommand(String[], String, int, int)}, so any shell metacharacter in the raw
+     * value would be interpreted by the shell. Replacing disallowed characters with {@code _} preserves normal
+     * absolute-path values while removing the injection primitive.
+     *
+     * @param tempDir the raw temp directory value
+     * @return a cleaned string with shell-unsafe characters replaced by {@code _}
+     */
+    protected static String cleanTempDir(final String tempDir) {
+        return INVALID_TEMP_DIR_CHARS.matcher(tempDir).replaceAll("_");
     }
 
     /**
@@ -1294,11 +1316,11 @@ public class Executrix {
 
     /**
      * Sets the value of tmpDir
-     * 
+     *
      * @param argTmpDir Value to assign to this.tempDir
      */
     public void setTmpDir(final String argTmpDir) {
-        this.tmpDir = argTmpDir;
+        this.tmpDir = cleanTempDir(argTmpDir);
     }
 
     /**

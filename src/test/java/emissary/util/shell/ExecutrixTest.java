@@ -701,6 +701,86 @@ class ExecutrixTest extends UnitTest {
         assertEquals(".json", ex.getOutFileEnding());
     }
 
+    // -----------------------------------------------------------------------
+    // cleanTempDir – covers INVALID_TEMP_DIR_CHARS and cleanTempDir()
+    // -----------------------------------------------------------------------
+
+    @Test
+    void testCleanTempDirAllowedCharsPassThrough() {
+        // Normal absolute paths must survive unchanged
+        assertEquals("/tmp", Executrix.cleanTempDir("/tmp"));
+        assertEquals("/var/tmp", Executrix.cleanTempDir("/var/tmp"));
+        assertEquals("/opt/emissary/work-1_a", Executrix.cleanTempDir("/opt/emissary/work-1_a"));
+        assertEquals("./relative/dir", Executrix.cleanTempDir("./relative/dir"));
+        assertEquals("", Executrix.cleanTempDir(""));
+    }
+
+    @Test
+    void testCleanTempDirShellMetacharacters() {
+        // Every shell-special character must be individually replaced with '_'
+        assertEquals("_", Executrix.cleanTempDir("`"));
+        assertEquals("_", Executrix.cleanTempDir("$"));
+        assertEquals("_", Executrix.cleanTempDir(";"));
+        assertEquals("_", Executrix.cleanTempDir("&"));
+        assertEquals("_", Executrix.cleanTempDir("|"));
+        assertEquals("_", Executrix.cleanTempDir(">"));
+        assertEquals("_", Executrix.cleanTempDir("<"));
+        assertEquals("_", Executrix.cleanTempDir("!"));
+        assertEquals("_", Executrix.cleanTempDir(" "));
+        assertEquals("_", Executrix.cleanTempDir("("));
+        assertEquals("_", Executrix.cleanTempDir(")"));
+        assertEquals("_", Executrix.cleanTempDir("'"));
+        assertEquals("_", Executrix.cleanTempDir("\""));
+        assertEquals("_", Executrix.cleanTempDir("\\"));
+        assertEquals("_", Executrix.cleanTempDir("\n"));
+        assertEquals("_", Executrix.cleanTempDir("\t"));
+    }
+
+    @Test
+    void testCleanTempDirInjectionPayload() {
+        // Concrete shell-injection payload — the cd-target escape used in the GHSA-6vwh-7rp4-464p PoC.
+        // Slash is allowed because it is a legitimate path separator, so absolute paths inside the
+        // payload survive; the shell metacharacters (`;`, space) are the bits that get neutralized.
+        assertEquals("/tmp/safe__touch_/tmp/pwned__/tmp/safe",
+                Executrix.cleanTempDir("/tmp/safe; touch /tmp/pwned; /tmp/safe"));
+    }
+
+    // -----------------------------------------------------------------------
+    // setTmpDir – sanitization enforced by setter
+    // -----------------------------------------------------------------------
+
+    @Test
+    void testSetTmpDirNormalValueUnchanged() {
+        e.setTmpDir("/tmp");
+        assertEquals("/tmp", e.getTmpDir());
+    }
+
+    @Test
+    void testSetTmpDirSanitizesInjectionPayload() {
+        e.setTmpDir("/tmp/safe; touch /tmp/pwned; /tmp/safe");
+        assertEquals("/tmp/safe__touch_/tmp/pwned__/tmp/safe", e.getTmpDir());
+    }
+
+    @Test
+    void testConfigureTempDirSanitizedFromConfig() {
+        // Injection payload in config must be neutralized at construction time
+        final Configurator cfg = new ServiceConfigGuide();
+        cfg.addEntry("TEMP_DIR", "/tmp/safe; touch /tmp/pwned; /tmp/safe");
+
+        final Executrix ex = new Executrix(cfg);
+        assertEquals("/tmp/safe__touch_/tmp/pwned__/tmp/safe", ex.getTmpDir());
+    }
+
+    @Test
+    void testConfigureNormalTempDirUnchanged() {
+        // Normal absolute paths must pass through configure() without modification
+        final Configurator cfg = new ServiceConfigGuide();
+        cfg.addEntry("TEMP_DIR", "/var/tmp");
+
+        final Executrix ex = new Executrix(cfg);
+        assertEquals("/var/tmp", ex.getTmpDir());
+    }
+
     private static void readAndNuke(final String name) throws IOException {
         final File f = new File(name);
         assertTrue(f.exists(), "File " + name + " must exist");
