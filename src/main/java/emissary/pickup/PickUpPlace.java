@@ -530,8 +530,8 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
     protected boolean handleOversizePayload(File theFile, String fixedName, boolean simpleMode) throws EmissaryException {
         // Send it away, blocks until an agent is ready
         IBaseDataObject dataObject =
-                DataObjectFactory.getInstance(new Object[] {("The file is oversize at " + theFile.length() + " bytes").getBytes(UTF_8), fixedName,
-                        "OVERSIZE"});
+                DataObjectFactory.getInstance(("The file is oversize at " + theFile.length() + " bytes").getBytes(UTF_8), fixedName,
+                        "OVERSIZE");
         dataObject.setParameter("SIMPLE_MODE", Boolean.toString(simpleMode));
         dataObjectCreated(dataObject, theFile);
         logger.info("**Deploying an agent for oversized {} and object {} simple={}", fixedName, dataObject.getInternalId(),
