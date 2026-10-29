@@ -19,16 +19,14 @@ class FactoryTest extends UnitTest {
     @Override
     @BeforeEach
     public void setUp() throws Exception {
-
+        Namespace.clear();
     }
 
     @Override
     @AfterEach
     public void tearDown() throws Exception {
+        Namespace.clear();
         super.tearDown();
-        for (String s : Namespace.keySet()) {
-            Namespace.unbind(s);
-        }
     }
 
     @Test

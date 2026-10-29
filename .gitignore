@@ -33,6 +33,7 @@ nbactions*.xml
 *.checkstyle
 .vscode/
 /logs/
+*credentials.log
 
 # Formatter cache
 .cache

@@ -3,6 +3,7 @@ package emissary.place;
 import emissary.core.DataObjectFactory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
+import emissary.core.Namespace;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 import emissary.util.io.UnitTestFileUtils;
@@ -49,6 +50,8 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
 
     @BeforeEach
     public void setUp(@TempDir Path workDir) throws Exception {
+        Namespace.clear();
+
 
         this.scriptFile = new File(TMPDIR, "testMultiFileUnixCommand.sh");
 
@@ -76,6 +79,7 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
     @Override
     @AfterEach
     public void tearDown() throws Exception {
+        Namespace.clear();
         super.tearDown();
         place = null;
         payload = null;
