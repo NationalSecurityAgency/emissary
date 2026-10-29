@@ -37,9 +37,19 @@ rotated before any production or shared deployment**. See the `[!CAUTION]` block
 in `README.md` for the complete list of default accounts and instructions for
 replacing them.
 
-Accounts that require access to destructive operations (e.g., `/api/shutdown`)
-must be assigned the `admin` role. Neither default account carries the `admin`
-role by design.
+### Authentication and Authorization
+
+The web console and REST API are protected by a single authentication
+constraint. Emissary does not enforce authorization per role: every
+authenticated account, whatever role it is assigned in `jetty-users.properties`,
+has the same access to every endpoint. That includes destructive and diagnostic
+operations such as `/api/shutdown`, `/api/pause`, `/api/unpause`, and the
+environment and configuration endpoints.
+
+Treat every account that can authenticate to a node as a trusted administrator
+of that node. Operators who need privilege separation must provide it outside
+the framework, for example with an authenticating reverse proxy that restricts
+paths, or with their own realm and constraint configuration.
 
 ### TLS / SSL
 
@@ -75,9 +85,9 @@ encrypted transport.
   and navigation link values are validated with allowlist regular expressions
   rather than blacklists, rejecting unexpected characters before they reach
   sensitive sinks.
-- **Role-based constraints on destructive endpoints:** the `/api/shutdown`
-  endpoints require the `admin` role at both the container constraint and
-  application layer.
+- **Authentication on the web console and REST API:** all endpoints except
+  `/api/health` require HTTP Digest authentication. Role-based authorization
+  is not provided; see [Authentication and Authorization](#authentication-and-authorization).
 - **Sanitization of CI/CD inputs:** GitHub Actions workflow inputs are passed
   through environment variable indirection and validated against strict regexes
   before use in shell commands.
