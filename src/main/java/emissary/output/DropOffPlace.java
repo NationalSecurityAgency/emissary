@@ -5,42 +5,22 @@ import emissary.config.Configurator;
 import emissary.core.DataObjectFactory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
-import emissary.directory.DirectoryEntry;
 import emissary.output.filter.IDropOffFilter;
-import emissary.place.EmptyFormPlace;
-import emissary.place.ServiceProviderPlace;
-import emissary.util.DataUtil;
-import emissary.util.DisposeHelper;
-import emissary.util.ShortNameComparator;
 
 import jakarta.annotation.Nullable;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * DropOffPlace manages the output from the system It has evolved into a controller of sorts with way too many options,
  * that controls which types of output are desired and called the appropriate output helper for the desired output.
  **/
-public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace {
+public class DropOffPlace extends AbstractDropOffPlace {
 
-    protected boolean doSynchronized = false;
-    protected Set<String> elideContentForms;
-    protected Set<String> noNukeForms;
     protected List<IDropOffFilter> outputFilters = new ArrayList<>();
-    protected boolean failurePolicyTerminate = true;
-    protected DropOffUtil dropOffUtil;
-    private boolean outputCompletionPayloadSize = false;
 
     /**
      * Primary place constructor
@@ -70,7 +50,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
     }
 
     public DropOffPlace(final Configurator configInfo) throws IOException {
-        this.configG = configInfo;
+        super(configInfo);
         configurePlace();
     }
 
@@ -85,15 +65,18 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
      * Setup configuration items we need and build the output filter
      */
     protected void configurePlace() {
-        // Set configuration info on file paths
-        this.dropOffUtil = new DropOffUtil(configG);
-        this.doSynchronized = configG.findBooleanEntry("SYNCHRONIZED_PROCESS", false);
-        this.failurePolicyTerminate = configG.findBooleanEntry("FAILURE_TERMINATES_CHAIN", true);
-        this.outputCompletionPayloadSize = configG.findBooleanEntry("OUTPUT_COMPLETION_PAYLOAD_SIZE", false);
-        // Build and store all the filter that are desired IN THE ORDER SPECIFIED
-        final List<String> filterClasses = configG.findEntries("OUTPUT_FILTER");
-        initializeFilters(filterClasses);
+        configureOutput();
+    }
 
+    @Override
+    protected void initializeOutputs() {
+        // Build and store all the filter that are desired IN THE ORDER SPECIFIED
+        initializeFilters(configG.findEntries("OUTPUT_FILTER"));
+    }
+
+    @Override
+    protected boolean acceptForOutput(final IBaseDataObject data, final List<IBaseDataObject> family) {
+        return data.isOutputable();
     }
 
     /**
@@ -138,12 +121,6 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
             }
         }
 
-        // Collect the set of content types to elide
-        this.elideContentForms = configG.findEntriesAsSet("ELIDE_CONTENT");
-
-        // collect the set of no-nuke forms
-        this.noNukeForms = configG.findEntriesAsSet("NO_NUKE_FORM");
-
         if (logger.isInfoEnabled()) {
             logger.debug("Setting ELIDE_CONTENT forms to " + this.elideContentForms);
             final StringBuilder sb = new StringBuilder("Output Filters:");
@@ -169,118 +146,17 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
         }
     }
 
-    /** {@inheritDoc } */
     @Override
-    public void shutDown() {
-        super.shutDown();
+    protected void closeOutputs() {
         for (final IDropOffFilter filter : this.outputFilters) {
             logger.debug("Shutdown filter {}", filter.getFilterName());
             filter.close();
         }
     }
 
-    /**
-     * "HD" agent calls this method when visiting the place. If you use {@link emissary.core.MobileAgent} this method is
-     * never called. This method overrides {@link ServiceProviderPlace} and allows this processing place to have access to
-     * all payloads wanting to be dropped off in a single list.
-     * 
-     * @param payloadList list of IBaseDataObject from an {@link emissary.core.HDMobileAgent}
-     */
     @Override
-    public List<IBaseDataObject> agentProcessHeavyDuty(final List<IBaseDataObject> payloadList) throws Exception {
-
-        logger.debug("Entering DropOffPlace.agentProcessHeavyDuty with {} payload items", payloadList.size());
-
-        // Prepare each incoming payload object
-        for (final IBaseDataObject d : payloadList) {
-            try {
-                // checking to see if any object in the tree is marked as not outputable
-                if (!d.isOutputable()) {
-                    logger.info("Skipping object since it is not able to be output ID:{}", this.dropOffUtil.getBestId(d, payloadList.get(0)));
-                    return Collections.emptyList();
-                }
-
-                // Process the payload item with HDcontext=true
-                processData(d, true);
-            } catch (RuntimeException e) {
-                logger.error("Place.process threw:", e);
-                d.addProcessingError("agentProcessHD(" + myKey + "): " + e);
-
-                if (!d.currentForm().equals(Form.ERROR)) {
-                    d.pushCurrentForm(Form.ERROR);
-                }
-            }
-        }
-
-        // Prepare the data and metadata for filter output
-        final Map<String, Object> filterParams = new HashMap<>();
-        preFilterHook(payloadList, filterParams);
-
-        // Run the filter on the output, indicating that
-        // the records are pre-sorted, if the filter cares
-        runOutputFilters(payloadList, filterParams);
-
-        // Any cleanup operations needed
-        postFilterHook(payloadList, filterParams);
-
-        if (!payloadList.isEmpty()) {
-            // Should have been sorted by the prefilter hook
-
-            // Just report the TLD object ID
-            final IBaseDataObject tld = payloadList.get(0);
-
-
-            if (outputCompletionPayloadSize && tld.hasContent()) {
-                logger.info(
-                        "Finished DropOff for object {}, with external id: {}, with total processing time: {}ms, with filetype: {}, payload size: {} bytes",
-                        tld.getInternalId(), this.dropOffUtil.getBestId(tld, tld),
-                        Duration.between(tld.getCreationTimestamp(), Instant.now()).toMillis(),
-                        tld.getFileType(), tld.getChannelSize());
-            } else {
-                logger.info("Finished DropOff for object {}, with external id: {}, with total processing time: {}ms, with filetype: {}",
-                        tld.getInternalId(), this.dropOffUtil.getBestId(tld, tld),
-                        Duration.between(tld.getCreationTimestamp(), Instant.now()).toMillis(),
-                        tld.getFileType());
-            }
-
-        }
-
-        // Execute 'Dispose Runnables' to tidy up resources used with SeekableByteChannelFactory implementations
-        DisposeHelper.execute(payloadList);
-
-        // This place does not sprout, return an empty list
-        return Collections.emptyList();
-    }
-
-    /**
-     * Called by MobileAgent through ServiceProviderPlace to handle a single payload
-     * 
-     * @param tData the payload to work on
-     */
-    @Override
-    public void process(final IBaseDataObject tData) {
-        if (DataUtil.isEmpty(tData)) {
-            logger.warn("null/empty data object");
-            return;
-        }
-
-        // checking to see if the object is marked as not outputable
-        if (!tData.isOutputable()) {
-            logger.warn("Skipping object since it is not able to be output ID:{}", this.dropOffUtil.getBestId(tData, tData));
-            return;
-        }
-
-        // synchronization can be set by config file entry
-        if (this.doSynchronized) {
-            synchronized (this) {
-                processData(tData, false);
-            }
-        } else {
-            processData(tData, false);
-        }
-
-        // Execute 'Dispose Runnables' to tidy up resources used with SeekableByteChannelFactory implementations
-        DisposeHelper.execute(tData);
+    protected void runOutput(final Object target, final Map<String, Object> params) {
+        runOutputFilters(target, params);
     }
 
     /**
@@ -290,13 +166,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
      * @param filterParams metadata needed for the output filter
      */
     public void preFilterHook(final List<IBaseDataObject> payloadList, final Map<String, Object> filterParams) {
-        // Sort the list of records
-        Collections.sort(payloadList, new ShortNameComparator());
-        filterParams.put(IDropOffFilter.PRE_SORTED, Boolean.TRUE);
-        filterParams.put(IDropOffFilter.TLD_PARAM, payloadList.get(0));
-
-        // Prepare the metadata
-        this.dropOffUtil.processMetadata(payloadList);
+        preWriteHook(payloadList, filterParams);
     }
 
     /**
@@ -306,99 +176,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
      * @param filterParams metadata needed for the output filter
      */
     public void postFilterHook(final List<IBaseDataObject> payloadList, final Map<String, Object> filterParams) {
-        // remove the current forms we used or could have used
-        for (final IBaseDataObject dataObject : payloadList) {
-            // Save off no-nuke forms
-            final List<String> saveForms = new ArrayList<>();
-            for (final String nnf : this.noNukeForms) {
-                if (dataObject.searchCurrentForm(nnf) > -1) {
-                    saveForms.add(nnf);
-                }
-            }
-            // nuke 'em
-            this.nukeMyProxies(dataObject);
-
-            // Restore the no-nukes
-            for (final String sf : saveForms) {
-                dataObject.pushCurrentForm(sf);
-            }
-        }
-
-    }
-
-    /**
-     * Internal method to process a single data object
-     * 
-     * @param tData the payload to work on or prepare
-     * @param haveList true if in HD context
-     */
-    protected void processData(final IBaseDataObject tData, final boolean haveList) {
-
-        logger.debug("DropOff is working on {}, current form is {}", tData.shortName(), tData.getAllCurrentForms());
-
-        final StringBuilder poppedForms = new StringBuilder();
-
-        String prevBin = "";
-
-        // skip the I/O for some types for all filter
-        for (int i = 0; i < tData.currentFormSize(); i++) {
-            final String cf = tData.currentFormAt(i);
-            if (this.elideContentForms.contains(cf)) {
-                tData.setData(("[[ " + tData.getAllCurrentForms() + " content elided in DropOffPlace. ]]").getBytes(UTF_8));
-            }
-        }
-
-        // Write out data for all the destinations we area proxy for, popping
-        // them off the stack as they are handled.
-
-        final Set<String> serviceProxies = getProxies();
-        final Set<String> cfSet = new HashSet<>();
-        for (int i = 0; i < tData.currentFormSize(); i++) {
-            final String cf = tData.currentFormAt(i);
-
-            if (serviceProxies.contains(cf) || serviceProxies.contains("*")) {
-                // Record extra drop offs in the transform history since
-                // we are taking precedence over the normal agent/directory mechanism
-                // Do this before popping the extra destination so that it
-                // is not just lost forever. Since the agent appends
-                // one entry to the history when it sends the agent here,
-                // that's the top current form and
-                // we don't want to duplicate that one
-
-                if (!prevBin.equals(cf) && (i > 0) && !cfSet.contains(cf) && !("UNKNOWN".equals(cf) || cf.endsWith("-PROCESSED"))) {
-                    // e.g.: [dataType].DROP_OFF.IO.host.dom:port/DropOffPlace
-                    final DirectoryEntry de = getDirectoryEntry();
-                    de.setDataType("[" + cf + "]");
-                    tData.appendTransformHistory(de.getKey());
-                }
-
-                // Accumulate forms we have handled in poppedForms
-                if (poppedForms.length() > 0) {
-                    poppedForms.append(" ");
-                }
-                poppedForms.append(cf);
-                cfSet.add(cf);
-
-                prevBin = cf;
-            }
-        }
-
-        // Record the list of forms
-        tData.setParameter("POPPED_FORMS", poppedForms.toString());
-
-        // Do the output filtering now if we aren't in HD mode
-        if (!haveList) {
-
-            // There currently are no extra params needed
-            final Map<String, Object> filterParams = new HashMap<>();
-
-            runOutputFilters(tData, filterParams);
-
-            // Actually remove the current forms we used or could have used
-            this.nukeMyProxies(tData);
-
-            logger.debug("DropOff finished with {}", tData.shortName());
-        }
+        postWriteHook(payloadList, filterParams);
     }
 
     /**
@@ -496,10 +274,6 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
             }
         }
         return null;
-    }
-
-    public DropOffUtil getDropOffUtil() {
-        return this.dropOffUtil;
     }
 
     /**

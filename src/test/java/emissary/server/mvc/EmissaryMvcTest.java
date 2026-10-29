@@ -164,6 +164,18 @@ class EmissaryMvcTest extends EndpointTestBase {
     }
 
     @Test
+    void outputTest() {
+        try (Response response = target("OutputTest.action").request().get()) {
+            assertEquals(200, response.getStatus());
+            String out = response.readEntity(String.class);
+            assertTrue(out.contains("<h2>Output Policy Test</h2>"));
+            assertTrue(out.contains("id=\"output-test-form\""));
+            assertTrue(out.contains("id=\"target\""));
+            assertTrue(out.contains("api/output/"));
+        }
+    }
+
+    @Test
     void shutdown() {
         // test template is src/test/resources/environment.mustache
         try (Response response = target("Shutdown.action").request().get()) {
