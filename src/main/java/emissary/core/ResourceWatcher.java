@@ -95,6 +95,20 @@ public class ResourceWatcher implements Runnable {
     }
 
     /**
+     * Start timing a place for stats purposes only, without enrolling the agent in watchdog interruption for this resource.
+     * Used for coordination places, where the coordinated child places are already tracked (and interruptible)
+     * individually, so an outer watchdog would double-enforce timeouts and interrupt the agent while children are still
+     * within their own limits.
+     *
+     * @param agent the agent to associate with the timer
+     * @param place place executing
+     * @return TimedResource that records stats on close but never triggers interruption
+     */
+    public TimedResource startingWithoutTracking(final IMobileAgent agent, final IServiceProviderPlace place) {
+        return new TimedResource(agent, place, -1, metrics.timer(place.getPlaceName()));
+    }
+
+    /**
      * Lookup the default ResourceWatcher in the Namespace
      * 
      * @return The registered ResourceWatcher

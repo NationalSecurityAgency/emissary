@@ -1,6 +1,9 @@
 package emissary.admin;
 
+import emissary.config.ServiceConfigGuide;
+import emissary.core.EmissaryRuntimeException;
 import emissary.core.Namespace;
+import emissary.core.NamespaceException;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
@@ -25,8 +28,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -55,6 +60,84 @@ class StartupIT extends UnitTest {
         assertIterableEquals(Arrays.asList(location + "/" + "FilePickUpPlace", location + "/" + "FilePickUpClient"), pickups);
         assertIterableEquals(Arrays.asList(location + "/" + "CoordinationPlace", location + "/" + "DelayPlace", location + "/" + "DevNullPlace"),
                 places);
+    }
+
+    @Test
+    void testSortPlacesMissingClassEntryStrictMode() throws IOException {
+        EmissaryNode node = new EmissaryNode();
+        node.setStrictStartupMode(true);
+        String location = "http://" + node.getNodeName() + ":" + node.getNodePort();
+        String missing = location + "/NoSuchInventoryEntryPlace";
+
+        Startup startup = new Startup(node.getNodeConfigurator(), node);
+        startup.sortPlaces(Arrays.asList(location + "/" + DelayPlace.class.getSimpleName(), missing));
+
+        assertIterableEquals(List.of(location + "/DelayPlace"), startup.placeLists.get(""));
+        assertTrue(startup.failedPlaces.contains(missing));
+    }
+
+    @Test
+    void testSortPlacesMissingClassEntryNonStrictMode() throws IOException {
+        EmissaryNode node = new EmissaryNode();
+        node.setStrictStartupMode(false);
+        String location = "http://" + node.getNodeName() + ":" + node.getNodePort();
+        String missing = location + "/NoSuchInventoryEntryPlace";
+
+        Startup startup = new Startup(node.getNodeConfigurator(), node);
+        startup.sortPlaces(List.of(missing));
+
+        // falls back to the default class and is still sorted for startup
+        assertIterableEquals(List.of(missing), startup.placeLists.get(""));
+        assertTrue(startup.failedPlaces.isEmpty());
+    }
+
+    @Test
+    void testLocalDirectorySetupMissingClassEntryStrictMode() {
+        EmissaryNode node = new EmissaryNode();
+        node.setStrictStartupMode(true);
+        String missing = "http://" + node.getNodeName() + ":" + node.getNodePort() + "/NoSuchInventoryEntryPlace";
+
+        ServiceConfigGuide config = new ServiceConfigGuide();
+        config.addEntry("LOCAL_DIRECTORY", missing);
+        Startup startup = new Startup(config, node);
+
+        assertFalse(startup.localDirectorySetup(startup.localDirectories));
+        assertTrue(startup.failedPlaces.contains(missing));
+        assertTrue(startup.failedLocalDirectories.containsValue(missing));
+        assertTrue(startup.localDirectories.isEmpty());
+        // no DevNullPlace stand-in was constructed at the directory location
+        assertThrows(NamespaceException.class, () -> Namespace.lookup(missing));
+    }
+
+    @Test
+    void testLocalDirectorySetupMissingClassEntryNonStrictMode() {
+        EmissaryNode node = new EmissaryNode();
+        node.setStrictStartupMode(false);
+        String missing = "http://" + node.getNodeName() + ":" + node.getNodePort() + "/NoSuchInventoryEntryPlace";
+
+        ServiceConfigGuide config = new ServiceConfigGuide();
+        config.addEntry("LOCAL_DIRECTORY", missing);
+        Startup startup = new Startup(config, node);
+
+        try {
+            // non-strict mode keeps the old behavior: fall back to the default class and carry on
+            assertTrue(startup.localDirectorySetup(startup.localDirectories));
+            assertTrue(startup.failedPlaces.isEmpty());
+            // the default class has no directory constructor, so the failed directory is recorded for placeSetup to skip
+            assertTrue(startup.failedLocalDirectories.containsValue(missing));
+        } finally {
+            for (String s : Namespace.keySet()) {
+                Namespace.unbind(s);
+            }
+        }
+    }
+
+    @Test
+    void testGetClassStringMissingEntry() {
+        String missing = "http://localhost:8001/NoSuchInventoryEntryPlace";
+        assertEquals(PlaceStarter.defaultClassName, PlaceStarter.getClassString(missing));
+        assertEquals(PlaceStarter.defaultClassName, PlaceStarter.getClassString(missing, false));
+        assertThrows(EmissaryRuntimeException.class, () -> PlaceStarter.getClassString(missing, true));
     }
 
     @Test

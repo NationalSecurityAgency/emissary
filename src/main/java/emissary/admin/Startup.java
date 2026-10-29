@@ -14,7 +14,6 @@ import emissary.directory.KeyManipulator;
 import emissary.pickup.PickUpPlace;
 import emissary.place.CoordinationPlace;
 import emissary.place.IServiceProviderPlace;
-import emissary.server.EmissaryServer;
 
 import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
@@ -215,6 +214,9 @@ public class Startup {
 
         if (!status) {
             logger.warn("Startup: local directory setup failed.");
+            if (this.node.isStrictStartupMode()) {
+                shutdownForStrictMode();
+            }
             return false;
         }
 
@@ -291,22 +293,27 @@ public class Startup {
 
         final long start = System.currentTimeMillis();
         final Map<String, String> dirStarts = new HashMap<>();
-        EmissaryNode emissaryNode = EmissaryServer.getInstance().getNode();
         for (final String thePlaceLocation : hostParameters) {
 
             final String host = placeHost(thePlaceLocation);
 
             if (KeyManipulator.isLocalTo(thePlaceLocation, "http://" + this.node.getNodeName() + ":" + this.node.getNodePort() + "/StartupEngine")) {
-                final String thePlaceClassStr = PlaceStarter.getClassString(thePlaceLocation);
+                final String thePlaceClassStr = getPlaceClassString(thePlaceLocation);
+                if (thePlaceClassStr == null) {
+                    this.failedLocalDirectories.put(host, thePlaceLocation);
+                    logger.error("Giving up on directory {}, no class string!!", thePlaceLocation);
+                    continue;
+                }
                 if (logger.isInfoEnabled()) {
                     logger.info("Doing local startup for directory {}({}) ", getLocationName(thePlaceLocation), thePlaceClassStr);
                 }
-                final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, null, thePlaceClassStr, null, emissaryNode);
+                final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, null, thePlaceClassStr, null, this.node);
                 if (p != null) {
                     dirStarts.put(host, thePlaceLocation);
                     localDirectoriesArg.put(host, p.toString());
                 } else {
-                    localDirectoriesArg.remove(thePlaceLocation);
+                    localDirectoriesArg.remove(host);
+                    this.failedLocalDirectories.put(host, thePlaceLocation);
                     logger.warn("Giving up on directory {}", thePlaceLocation);
                 }
             } else {
@@ -333,6 +340,11 @@ public class Startup {
 
         if (logger.isDebugEnabled()) {
             logger.debug("Directories all up in {}s", (System.currentTimeMillis() - start) / 1000.0);
+        }
+
+        if (this.node.isStrictStartupMode() && !this.failedLocalDirectories.isEmpty()) {
+            logger.error("The following local directories have failed to start: {}", String.join("; ", this.failedLocalDirectories.values()));
+            return false;
         }
 
         return true;
@@ -383,7 +395,7 @@ public class Startup {
 
                 // Get the class name and Class object for what we want to make
                 final String thePlaceLocName = getLocationName(thePlaceLocation);
-                final String thePlaceClassString = PlaceStarter.getClassString(thePlaceLocation);
+                final String thePlaceClassString = getPlaceClassString(thePlaceLocation);
                 StringBuilder startupBuilder =
                         new StringBuilder("Doing local startup on ")
                                 .append(thePlaceLocName)
@@ -391,8 +403,9 @@ public class Startup {
                                 .append(thePlaceClassString).append(")...");
                 if (thePlaceClassString == null) {
                     startupBuilder.append("skipping, no class string!!");
+                    failedPlaces.add(thePlaceLocation);
                     placesToStart.remove(thePlaceLocation);
-                    logger.warn(startupBuilder.toString());
+                    logger.error(startupBuilder.toString());
                     return;
                 }
                 logger.debug("Starting place {}", thePlaceLocation);
@@ -461,10 +474,7 @@ public class Startup {
 
                 // check if strict startup & places/coordination places failed, if yes, shut down server
                 if (this.node.isStrictStartupMode() && failedPlaceStartups) {
-                    logger.error("Server failed to start due to Strict mode being enabled.  To disable strict mode, " +
-                            "run server start command without the --strict flag");
-                    logger.error("Server shutting down");
-                    System.exit(1);
+                    shutdownForStrictMode();
                 }
 
                 // normal termination of the loop
@@ -511,7 +521,7 @@ public class Startup {
     protected void sortPlaces(final List<String> placeList) {
 
         for (final String location : placeList) {
-            final String className = PlaceStarter.getClassString(location);
+            final String className = getPlaceClassString(location);
             if (className == null) {
                 continue;
             }
@@ -519,8 +529,37 @@ public class Startup {
             try {
                 sortPickupOrPlace(location, PickUpPlace.implementsPickUpPlace(Class.forName(className)) ? this.pickupLists : this.placeLists);
             } catch (ClassNotFoundException e) {
+                failedPlaces.add(location);
                 logger.error("Could not create place {}", className, e);
             }
+        }
+    }
+
+    /**
+     * Shut the server down because a startup failure occurred while strict mode is enabled.
+     */
+    protected void shutdownForStrictMode() {
+        logger.error("Server failed to start due to Strict mode being enabled.  To disable strict mode, " +
+                "run server start command without the --strict flag");
+        logger.error("Server shutting down");
+        System.exit(1);
+    }
+
+    /**
+     * Look up the class name for a place location, honoring strict mode. In strict mode a missing or duplicate
+     * ClassNameInventory entry records the place as failed instead of falling back to a default class.
+     *
+     * @param location key for the place
+     * @return the class name, or null if the lookup failed in strict mode
+     */
+    @Nullable
+    protected String getPlaceClassString(final String location) {
+        try {
+            return PlaceStarter.getClassString(location, this.node.isStrictStartupMode());
+        } catch (EmissaryRuntimeException e) {
+            failedPlaces.add(location);
+            logger.error("Unable to determine class for {}", getLocationName(location), e);
+            return null;
         }
     }
 

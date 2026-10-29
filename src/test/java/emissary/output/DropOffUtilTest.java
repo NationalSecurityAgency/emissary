@@ -336,14 +336,14 @@ class DropOffUtilTest extends UnitTest {
         this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "/eat/prefix/testPath", "UNKNOWN");
         this.payload.setParameter("MY_ID", "672317892139");
         this.util = new DropOffUtil(cfg);
-        String[] values = this.util.getExistingIds(this.payload);
+        List<String> values = this.util.getExistingIdsList(this.payload);
 
         assertNull(this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should not have been set");
         assertNull(this.payload.getParameterAsConcatString("AUTO_GENERATED_ID"), "an auto gen id parameter should not have been set");
         assertNull(this.payload.getParameterAsString("AUTO_GENERATED_ID"), "an auto gen id parameter should not have been set");
-        assertEquals("672317892139", values[0], "the MY_ID parameter should have been used FIRST");
-        assertEquals("testPath", values[1], "the SHORTNAME should have been used SECOND");
-        assertEquals(2, values.length, "the size of the return values is incorrect");
+        assertEquals("672317892139", values.get(0), "the MY_ID parameter should have been used FIRST");
+        assertEquals("testPath", values.get(1), "the SHORTNAME should have been used SECOND");
+        assertEquals(2, values.size(), "the size of the return values is incorrect");
 
         // Test empty return value by specifying a blank shortname
 
@@ -358,9 +358,9 @@ class DropOffUtilTest extends UnitTest {
         this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "", "UNKNOWN");// shortname is blank
 
         this.util = new DropOffUtil(cfg);
-        values = this.util.getExistingIds(this.payload);
+        values = this.util.getExistingIdsList(this.payload);
 
-        assertEquals(0, values.length, "the size of the return values is incorrect");
+        assertEquals(0, values.size(), "the size of the return values is incorrect");
 
         // Test empty values by specifying nothing
 
@@ -374,9 +374,9 @@ class DropOffUtilTest extends UnitTest {
         this.payload = DataObjectFactory.getInstance("This is a test".getBytes(UTF_8), "", "UNKNOWN");// shortname is blank
 
         this.util = new DropOffUtil(cfg);
-        values = this.util.getExistingIds(this.payload);
+        values = this.util.getExistingIdsList(this.payload);
 
-        assertEquals(0, values.length, "the size of the return values is incorrect");
+        assertEquals(0, values.size(), "the size of the return values is incorrect");
     }
 
     @Test
@@ -691,7 +691,7 @@ class DropOffUtilTest extends UnitTest {
         IBaseDataObject ibdo = new BaseDataObject();
         ibdo.setParameter("CustomField", "customName.txt");
         ibdo.setParameter(ORIGINAL_FILENAME, "groceries.xml");
-        List<String> bestFilenames = DropOffUtil.getFullFilepathsFromParams(ibdo, new String[] {"CustomField"});
+        List<String> bestFilenames = DropOffUtil.getFullFilepathsFromParams(ibdo, List.of("CustomField"));
 
         assertEquals(1, bestFilenames.size(), "Only one filename should have been extracted");
         assertEquals("customName.txt", bestFilenames.get(0), "Only the value in CustomField should have been extracted");

@@ -950,7 +950,7 @@ public class DropOffUtil {
      * @return The list of filenames found in the field Original-Filename or FILE_ABSOLUTEPATH
      */
     public static List<String> getFullFilepathsFromParams(IBaseDataObject d) {
-        return getFullFilepathsFromParams(d, new String[] {ORIGINAL_FILENAME, FILE_ABSOLUTEPATH});
+        return getFullFilepathsFromParams(d, Arrays.asList(ORIGINAL_FILENAME, FILE_ABSOLUTEPATH));
     }
 
     /**
@@ -1005,8 +1005,7 @@ public class DropOffUtil {
         final IBaseDataObject tld = payloadList.get(0);
         final List<String> extendedFileTypes = new ArrayList<>();
         parentTypes.put("1", tld.getFileType());
-        for (int i = 0; i < parentParams.size(); i++) {
-            final String param = parentParams.get(i);
+        for (final String param : parentParams) {
             if (tld.hasParameter(param)) {
                 parentTypes.put("1" + param, tld.getParameterAsString(param));
             }
@@ -1015,7 +1014,7 @@ public class DropOffUtil {
         for (final IBaseDataObject p : payloadList) {
             final int level = StringUtils.countMatches(p.shortName(), Family.SEP) + 1;
             // save specified metadata items for children to grab
-            parentTypes.put("" + level, p.getFileType());
+            parentTypes.put(String.valueOf(level), p.getFileType());
 
             extractUniqueFileExtensions(p);
 
@@ -1034,21 +1033,19 @@ public class DropOffUtil {
                 }
                 if (!extendedFileTypes.isEmpty()) {
                     final StringBuilder extft = new StringBuilder(getFileType(p));
-                    for (int j = 0; j < extendedFileTypes.size(); j++) {
-                        final String s = extendedFileTypes.get(j);
+                    for (final String s : extendedFileTypes) {
                         extft.append("//").append(s);
                     }
                     p.setParameter(EXTENDED_FILETYPE, extft.toString());
                 }
             }
 
-            for (int j = 0; j < parentParams.size(); j++) {
-                final String param = parentParams.get(j);
+            for (final String param : parentParams) {
                 if (p.hasParameter(param)) {
-                    parentTypes.put("" + level + param, p.getParameterAsString(param));
+                    parentTypes.put(level + param, p.getParameterAsString(param));
                 } else {
                     // Must clear to keep my children from getting their uncle's value
-                    parentTypes.remove("" + level + param);
+                    parentTypes.remove(level + param);
                 }
 
             }
@@ -1057,16 +1054,15 @@ public class DropOffUtil {
                 // then it might want some PARENT info
 
                 final int parentLevel = level - 1;
-                final String pType = parentTypes.get("" + parentLevel);
+                final String pType = parentTypes.get(String.valueOf(parentLevel));
                 if (StringUtils.isNotBlank(pType)) {
                     p.setParameter(PARENT_FILETYPE, pType);
                 } else if (StringUtils.isNotBlank(parentTypes.get("1"))) {
                     p.setParameter(PARENT_FILETYPE, parentTypes.get("1"));
                 }
-                for (int j = 0; j < parentParams.size(); j++) {
-                    final String param = parentParams.get(j);
+                for (final String param : parentParams) {
                     int plvl = parentLevel;
-                    while (plvl > 1 && !parentTypes.containsKey("" + plvl + param)) {
+                    while (plvl > 1 && !parentTypes.containsKey(plvl + param)) {
                         plvl--;
                     }
                     if (StringUtils.isNotBlank(parentTypes.get(plvl + param))) {
@@ -1080,14 +1076,13 @@ public class DropOffUtil {
                 childObjList.sort(new ShortNameComparator());
                 for (final IBaseDataObject child : childObjList) {
                     final int parentLevel = StringUtils.countMatches(child.shortName(), Family.SEP);
-                    final String parentFileType = parentTypes.get("" + parentLevel);
+                    final String parentFileType = parentTypes.get(String.valueOf(parentLevel));
                     if (StringUtils.isNotBlank(parentFileType)) {
                         child.setParameter(PARENT_FILETYPE, parentFileType);
                     }
-                    for (int k = 0; k < parentParams.size(); k++) {
-                        final String param = parentParams.get(k);
+                    for (final String param : parentParams) {
                         int plvl = parentLevel;
-                        while (plvl > 1 && !parentTypes.containsKey("" + plvl + param)) {
+                        while (plvl > 1 && !parentTypes.containsKey(plvl + param)) {
                             plvl--;
                         }
                         if (StringUtils.isNotBlank(parentTypes.get(plvl + param))) {
