@@ -85,8 +85,8 @@ public class Executrix {
 
     /**
      * Allowlist for temp directory values. Permits absolute path characters (alphanumerics, underscore, hyphen, dot,
-     * slash); every other character is replaced with {@code _} so that shell metacharacters cannot pass through into
-     * the {@code /bin/sh -c} string built by {@link #getCommand(String[], String, int, int)}.
+     * slash); every other character is replaced with {@code _} so that shell metacharacters cannot pass through into the
+     * {@code /bin/sh -c} string built by {@link #getCommand(String[], String, int, int)}.
      */
     protected static final Pattern INVALID_TEMP_DIR_CHARS = Pattern.compile("[^a-zA-Z0-9_./\\-]");
 
@@ -175,10 +175,10 @@ public class Executrix {
     /**
      * Remove invalid characters from a temp directory value, see {@link Executrix#INVALID_TEMP_DIR_CHARS}.
      * <p>
-     * The {@code TEMP_DIR} configuration value is concatenated into the {@code /bin/sh -c "...; cd TEMP_DIR; ..."}
-     * command argument built by {@link #getCommand(String[], String, int, int)}, so any shell metacharacter in the raw
-     * value would be interpreted by the shell. Replacing disallowed characters with {@code _} preserves normal
-     * absolute-path values while removing the injection primitive.
+     * The {@code TEMP_DIR} configuration value is concatenated into the {@code /bin/sh -c "...; cd TEMP_DIR; ..."} command
+     * argument built by {@link #getCommand(String[], String, int, int)}, so any shell metacharacter in the raw value would
+     * be interpreted by the shell. Replacing disallowed characters with {@code _} preserves normal absolute-path values
+     * while removing the injection primitive.
      *
      * @param tempDir the raw temp directory value
      * @return a cleaned string with shell-unsafe characters replaced by {@code _}
