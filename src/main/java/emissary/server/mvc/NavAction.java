@@ -3,6 +3,7 @@ package emissary.server.mvc;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 
+import com.google.common.base.CharMatcher;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -12,9 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Path("")
@@ -44,7 +48,10 @@ public class NavAction {
 
     public static class EmissaryNav {
 
-        private static final Pattern VALID_LINK = Pattern.compile("^(https?:/)?\\.?/.*");
+        private static final CharMatcher SAFE_LINK_CHARS = CharMatcher.inRange('a', 'z')
+                .or(CharMatcher.inRange('A', 'Z'))
+                .or(CharMatcher.inRange('0', '9'))
+                .or(CharMatcher.anyOf("/.=?&-_"));
 
         String appName;
         String appVersion;
@@ -93,12 +100,63 @@ public class NavAction {
                     .collect(Collectors.toList());
         }
 
-        private static boolean isValidLink(String link) {
-            if (!VALID_LINK.matcher(link).matches()) {
-                logger.warn("Skipping invalid navigation link '{}'", link);
+        protected static boolean isValidLink(String link) {
+            if (link == null || link.isBlank()) {
+                logInvalidLink(link);
                 return false;
             }
-            return true;
+
+            try {
+                var decoded = link.indexOf('%') == -1 ? link : URLDecoder.decode(link, StandardCharsets.UTF_8);
+
+                // Check basic character safety and obvious bad patterns first
+                if (decoded.isEmpty() || decoded.contains("//") || decoded.contains(":/") || !SAFE_LINK_CHARS.matchesAllOf(decoded)) {
+                    logInvalidLink(link);
+                    return false;
+                }
+
+                // Allow starting with either '/' or './'
+                boolean startsWithSlash = decoded.charAt(0) == '/';
+                boolean startsWithDotSlash = decoded.startsWith("./");
+                if (!startsWithSlash && !startsWithDotSlash) {
+                    logInvalidLink(link);
+                    return false;
+                }
+
+                // Block directory traversal (../) or hidden files (/.)
+                String pathToCheck = startsWithDotSlash ? decoded.substring(2) : decoded;
+                if (pathToCheck.contains("/.")) {
+                    logInvalidLink(link);
+                    return false;
+                }
+
+                // Normalize and validate using URI
+                var uri = new URI(decoded).normalize();
+
+                // Ensure normalization didn't escape the intended directory scope (e.g., if someone snuck a relative path in)
+                if (uri.toString().contains("..")) {
+                    logInvalidLink(link);
+                    return false;
+                }
+
+                if (uri.isAbsolute() || uri.getScheme() != null) {
+                    logInvalidLink(link);
+                    return false;
+                }
+
+                logger.trace("Valid navigation link {}", decoded);
+                return true;
+            } catch (URISyntaxException | IllegalArgumentException e) {
+                logInvalidLink(link);
+                return false;
+            }
+        }
+
+        private static void logInvalidLink(String link) {
+            if (logger.isWarnEnabled()) {
+                var cleaned = link == null ? null : SAFE_LINK_CHARS.negate().replaceFrom(link.substring(0, Math.min(link.length(), 300)), '*');
+                logger.warn("Rejecting invalid navigation link '{}'", cleaned);
+            }
         }
 
         public static class NavItem {
