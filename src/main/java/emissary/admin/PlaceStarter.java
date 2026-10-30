@@ -59,7 +59,7 @@ public class PlaceStarter {
      */
     public static IServiceProviderPlace createPlace(final String theLocation, final String theClassStr, final String directory) {
         // generate constructor args
-        final String theConfigFile = theClassStr + ConfigUtil.CONFIG_FILE_ENDING;
+        final String theConfigFile = resolveConfigFile(theClassStr);
 
         final Object[] constructorArgs = {theConfigFile, directory, theLocation};
 
@@ -256,6 +256,21 @@ public class PlaceStarter {
             logger.warn("Multiple entries for {}, found {}", thePlaceName, classStringList);
         }
         return classStringList.get(0);
+    }
+
+    /**
+     * Resolve the config name so structured formats are discovered. Preserve the historical {@code .cfg} name when no
+     * config exists yet, since some callers use this method before their config is installed.
+     */
+    private static String resolveConfigFile(final String theClassStr) {
+        try {
+            return ConfigUtil.resolveConfigName(theClassStr);
+        } catch (IOException e) {
+            if (ConfigUtil.isStrictConfigFailure(e)) {
+                throw new IllegalStateException("Invalid configuration: " + e.getMessage(), e);
+            }
+            return theClassStr + ConfigUtil.CONFIG_FILE_ENDING;
+        }
     }
 
     /** This class is not meant to be instantiated. */

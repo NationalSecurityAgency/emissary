@@ -35,6 +35,7 @@ public class SafeUsageChecker {
 
             enabledFromConfiguration = configurator.findBooleanEntry(ENABLED_KEY, enabledFromConfiguration);
         } catch (IOException e) {
+            ConfigUtil.rethrowStrictConfigFailure(e);
             LOGGER.debug("Could not get configuration!", e);
         }
 

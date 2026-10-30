@@ -55,6 +55,7 @@ public class DataIdentifier {
             typesMap = config.findStringMatchMap("TYPE_", Configurator.PRESERVE_CASE);
             logger.debug("Configured with " + typesMap.size() + " identifiction types");
         } catch (IOException iox) {
+            ConfigUtil.rethrowStrictConfigFailure(iox);
             logger.debug("No configuration info found");
         }
     }

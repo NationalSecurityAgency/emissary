@@ -192,6 +192,12 @@ class ServiceConfigGuideTest extends UnitTest {
             }
         }
         assertTrue(seenBar1 && seenBar2, "Must preserve multiple values for same key");
+
+        // Rewriting keys for the returned entries must not corrupt the loaded config.
+        assertEquals(2, c.findEntries("FOO_ONE").size(), "Original key must remain unchanged");
+        final List<ConfigEntry> again = c.findStringMatchList("FOO_");
+        assertEquals(4, again.size(), "Repeated calls must see all entries");
+        assertTrue(again.stream().anyMatch(e -> "ONE".equals(e.getKey()) && "BAR ONE".equals(e.getValue())));
     }
 
     @Test
