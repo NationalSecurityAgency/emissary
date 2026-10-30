@@ -10,12 +10,18 @@ import org.glassfish.jersey.server.mvc.mustache.MustacheMvcFeature;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.glassfish.jersey.test.jetty.JettyTestContainerFactory;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class EndpointTestBase extends JerseyTest {
 
-    @AfterAll
-    public static void tearDownClass() {
+    @BeforeEach
+    public void clearNamespaceBeforeTest() {
+        Namespace.clear();
+    }
+
+    @AfterEach
+    public void clearNamespaceAfterTest() {
         Namespace.clear();
     }
 

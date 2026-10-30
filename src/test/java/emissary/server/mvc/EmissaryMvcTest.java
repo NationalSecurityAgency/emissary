@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,9 +35,11 @@ class EmissaryMvcTest extends EndpointTestBase {
         when(dir.getEntryKeys()).thenReturn(Collections.singleton("THE_KEY"));
         when(dir.getEntryList("THE_KEY")).thenReturn(list);
 
-        Namespace.bind("DirectoryPlace", dir);
-        // test template is src/test/resources/dump_directory.mustache
-        try (Response response = target("DumpDirectory.action").request().get()) {
+        final String directoryKey = "directory-" + UUID.randomUUID();
+        Namespace.bind(directoryKey, dir);
+        // Use an isolated key rather than the global default DirectoryPlace binding.
+        try (Response response = target("DumpDirectory.action").queryParam("targetDir", directoryKey).request().get()) {
+
             assertEquals(200, response.getStatus());
             String out = response.readEntity(String.class);
             assertTrue(out.contains("THE_KEY"));
@@ -46,7 +49,7 @@ class EmissaryMvcTest extends EndpointTestBase {
             assertTrue(out.contains("<td class=\"num\">9090</td>"));
             assertTrue(out.contains("<td class=\"num\">00:00:00</td>"));
         } finally {
-            Namespace.unbind("DirectoryPlace");
+            Namespace.unbind(directoryKey);
         }
     }
 
