@@ -104,7 +104,8 @@ public class Sentinel implements Runnable {
                 Thread.sleep(TimeUnit.MINUTES.toMillis(pollingInterval));
                 logger.debug("Sentinel is still watching");
                 protocols.forEach(this::run);
-            } catch (InterruptedException ignore) {
+            } catch (InterruptedException e) {
+                logger.debug("Sentinel polling was interrupted", e);
                 Thread.currentThread().interrupt();
             }
         }
@@ -115,8 +116,8 @@ public class Sentinel implements Runnable {
     protected void run(final Protocol<?> protocol) {
         try {
             protocol.run();
-        } catch (IOException e) {
-            logger.error("There was an error running protocol", e);
+        } catch (IOException | RuntimeException e) {
+            logger.error("There was an error running protocol {}", protocol, e);
         }
     }
 
@@ -133,7 +134,7 @@ public class Sentinel implements Runnable {
             this.config = ConfigUtil.getConfigInfo(Sentinel.class);
             init();
         } catch (IOException e) {
-            logger.warn("Cannot read Sentinel.cfg, taking default values");
+            logger.warn("Cannot read Sentinel.cfg, taking default values", e);
         }
     }
 
@@ -156,7 +157,7 @@ public class Sentinel implements Runnable {
                         logger.debug("Sentinel protocol disabled {}", protocol);
                     }
                 } catch (RuntimeException e) {
-                    logger.warn("Unable to configure Sentinel Protocol[{}]: {}", protocolConfig, e.getMessage());
+                    logger.warn("Unable to configure Sentinel Protocol[{}]", protocolConfig, e);
                 }
             }
             if (this.protocols.isEmpty()) {
