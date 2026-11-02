@@ -292,7 +292,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
     public void preFilterHook(final List<IBaseDataObject> payloadList, final Map<String, Object> filterParams) {
         // Sort the list of records
         Collections.sort(payloadList, new ShortNameComparator());
-        filterParams.put(IDropOffFilter.PRE_SORTED, Boolean.TRUE);
+        filterParams.put(IDropOffFilter.PRE_SORTED, true);
         filterParams.put(IDropOffFilter.TLD_PARAM, payloadList.get(0));
 
         // Prepare the metadata

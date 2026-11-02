@@ -120,7 +120,7 @@ class FTestMovingAgent extends FunctionalTest {
 
         // Create a payload and send it to the spool for UpperPlace
         IBaseDataObject payload =
-                DataObjectFactory.getInstance(new Object[] {"abcdefghijklmnopqrstuvwxyz".getBytes(UTF_8), "test_load", "LOWER_CASE"});
+                DataObjectFactory.getInstance("abcdefghijklmnopqrstuvwxyz".getBytes(UTF_8), "test_load", "LOWER_CASE");
         payload.setFileType(TEXT);
 
         spool.send(payload);

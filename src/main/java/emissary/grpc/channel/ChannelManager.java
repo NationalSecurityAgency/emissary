@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -92,7 +93,7 @@ public abstract class ChannelManager implements AutoCloseable {
         }
         if (port <= 0 || port > MAX_PORT_NUMBER) {
             throw new IllegalArgumentException(
-                    String.format("Port \"%d\" is outside valid range [1, %d]", port, MAX_PORT_NUMBER));
+                    String.format(Locale.ROOT, "Port \"%d\" is outside valid range [1, %d]", port, MAX_PORT_NUMBER));
         }
         return host + ":" + port;
     }

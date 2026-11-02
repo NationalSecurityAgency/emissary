@@ -151,7 +151,7 @@ public final class ComplexUnicodeSamples {
      */
     public static int countGraphemesUsingJavaBuiltInBreakIterator(String text) {
 
-        java.text.BreakIterator breakIterator = java.text.BreakIterator.getCharacterInstance(Locale.getDefault());
+        java.text.BreakIterator breakIterator = java.text.BreakIterator.getCharacterInstance(Locale.ROOT);
         breakIterator.setText(text);
 
         int count = 0;

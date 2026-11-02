@@ -94,7 +94,7 @@ public abstract class ServiceProviderRefreshablePlace extends ServiceProviderPla
             Preconditions.checkNotNull(this.configG, "The configurator is null");
             final var path = configG.findStringEntry("MONITORING_PATH");
             if (StringUtils.isNotBlank(path)) {
-                final var intervalMinutes = configG.findLongEntry("MONITORING_INTERVAL_MINUTES", 15);
+                final long intervalMinutes = configG.findLongEntry("MONITORING_INTERVAL_MINUTES", 15);
                 this.monitor = new Monitor(this, path, intervalMinutes);
                 logger.info("Monitoring [{}] for changes every {} minutes", path, intervalMinutes);
             }

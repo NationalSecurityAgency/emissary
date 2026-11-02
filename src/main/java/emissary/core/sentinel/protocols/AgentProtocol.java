@@ -48,6 +48,7 @@ public class AgentProtocol extends Protocol<AgentTracker> {
             if (!(ruleImpl instanceof Rule<?>)) {
                 throw new IOException("Configured rule [" + rule + "] is not a Rule implementation");
             }
+            // The cast is safe because ruleImpl was validated to be a Rule<?> instance above
             @SuppressWarnings("unchecked")
             Rule<AgentTracker> typedRule = (Rule<AgentTracker>) ruleImpl;
             return typedRule;

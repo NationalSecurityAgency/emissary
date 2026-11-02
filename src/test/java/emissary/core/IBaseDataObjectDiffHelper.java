@@ -199,13 +199,13 @@ public class IBaseDataObjectDiffHelper {
         final int actualSize = (actual == null) ? 0 : actual.size();
 
         if (expectedSize != actualSize) {
-            differences.add(String.format("%s list size mismatch -> Expected: %d, Actual: %d", identifier, expectedSize, actualSize));
+            differences.add(String.format(Locale.ROOT, "%s list size mismatch -> Expected: %d, Actual: %d", identifier, expectedSize, actualSize));
         } else if (expected != null && actual != null) {
             final List<String> childDifferences = new ArrayList<>();
             for (int i = 0; i < expected.size(); i++) {
                 diff(expected.get(i), actual.get(i), childDifferences, options);
 
-                final String prefix = String.format("%s[index %d] : ", identifier, i);
+                final String prefix = String.format(Locale.ROOT, "%s[index %d] : ", identifier, i);
                 while (!childDifferences.isEmpty()) {
                     differences.add(prefix + childDifferences.remove(0)); // NOSONAR Used correctly
                 }
@@ -239,7 +239,7 @@ public class IBaseDataObjectDiffHelper {
 
                     diff(attel, actual.get(i), childDifferences, options);
 
-                    final String prefix = String.format("%s[index %d] : ", identifier, i);
+                    final String prefix = String.format(Locale.ROOT, "%s[index %d] : ", identifier, i);
                     for (String diff : childDifferences) {
                         differences.add(prefix + diff);
                     }
@@ -277,7 +277,7 @@ public class IBaseDataObjectDiffHelper {
                     InputStream is1 = Channels.newInputStream(sbc1);
                     InputStream is2 = Channels.newInputStream(sbc2)) {
                 if (!IOUtils.contentEquals(is1, is2)) {
-                    differences.add(String.format("%s content mismatch -> Expected size: %d, Actual size: %d",
+                    differences.add(String.format(Locale.ROOT, "%s content mismatch -> Expected size: %d, Actual size: %d",
                             identifier, sbc1.size(), sbc2.size()));
                 }
             } catch (IOException e) {
@@ -323,7 +323,7 @@ public class IBaseDataObjectDiffHelper {
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
         if (expected != actual) {
-            differences.add(String.format("%s value mismatch -> Expected: %d, Actual: %d", identifier, expected, actual));
+            differences.add(String.format(Locale.ROOT, "%s value mismatch -> Expected: %d, Actual: %d", identifier, expected, actual));
         }
     }
 
@@ -498,15 +498,18 @@ public class IBaseDataObjectDiffHelper {
             int numAtt = NumberUtils.toInt(numAttEl.getValue(), -1);
             if (numAtt != payloadSize) {
                 differences
-                        .add(String.format("Expected <numAttachments> %d not equal to number of attachments in payload (%d).", numAtt, payloadSize));
+                        .add(String.format(Locale.ROOT, "Expected <numAttachments> %d not equal to number of attachments in payload (%d).", numAtt,
+                                payloadSize));
             }
         } else if (numAttElements > 0) {
             if (numAttElements != payloadSize) {
                 differences.add(
-                        String.format("Expected <att#> count %d not equal to number of attachments in payload (%d).", numAttElements, payloadSize));
+                        String.format(Locale.ROOT, "Expected <att#> count %d not equal to number of attachments in payload (%d).", numAttElements,
+                                payloadSize));
             }
         } else if (payloadSize > 0) {
-            differences.add(String.format("%d attachments in payload with no count in answer xml. Add matching <numAttachments>", payloadSize));
+            differences.add(
+                    String.format(Locale.ROOT, "%d attachments in payload with no count in answer xml. Add matching <numAttachments>", payloadSize));
         }
     }
 
@@ -521,8 +524,9 @@ public class IBaseDataObjectDiffHelper {
                             int idxVal = index.getIntValue();
                             String actualForm = payload.currentFormAt(idxVal);
                             if (!cf.equals(actualForm)) {
-                                differences.add(String.format("Current form '%s' not found at position [%d]. Actual: %s, All: %s", cf, idxVal,
-                                        actualForm, payload.getAllCurrentForms()));
+                                differences.add(
+                                        String.format(Locale.ROOT, "Current form '%s' not found at position [%d]. Actual: %s, All: %s", cf, idxVal,
+                                                actualForm, payload.getAllCurrentForms()));
                             }
                         } catch (Exception e) {
                             differences.add("Invalid index integer value parsing currentForm rule: " + index.getValue());
@@ -622,7 +626,7 @@ public class IBaseDataObjectDiffHelper {
                 if (verifyOs(dataEl, differences)) {
                     int length = NumberUtils.toInt(dataEl.getChildTextTrim("length"), -1);
                     if (length > -1 && length != payload.dataLength()) {
-                        differences.add(String.format("Data length mismatch -> Expected: %d, Actual: %d", length, payload.dataLength()));
+                        differences.add(String.format(Locale.ROOT, "Data length mismatch -> Expected: %d, Actual: %d", length, payload.dataLength()));
                     }
                     checkStringValue(dataEl, primaryDataStr, differences);
                 }
@@ -638,8 +642,9 @@ public class IBaseDataObjectDiffHelper {
                 } else {
                     String lengthStr = view.getChildTextTrim("length");
                     if (lengthStr != null && Integer.parseInt(lengthStr) != viewData.length) {
-                        differences.add(String.format("Length of Alternate View '%s' mismatch -> Expected: %s, Actual: %d", viewName, lengthStr,
-                                viewData.length));
+                        differences.add(
+                                String.format(Locale.ROOT, "Length of Alternate View '%s' mismatch -> Expected: %s, Actual: %d", viewName, lengthStr,
+                                        viewData.length));
                     }
                     checkStringValue(view, new String(viewData, StandardCharsets.UTF_8), differences);
                 }
@@ -686,7 +691,7 @@ public class IBaseDataObjectDiffHelper {
             List<String> childDiffs = new ArrayList<>();
             diff(extel, extractedChildren.get(i), childDiffs, options);
 
-            String prefix = String.format("extract%d :: ", extNum);
+            String prefix = String.format(Locale.ROOT, "extract%d :: ", extNum);
             childDiffs.stream()
                     .map(diff -> prefix + diff)
                     .forEach(differences::add);
@@ -699,15 +704,18 @@ public class IBaseDataObjectDiffHelper {
         if (extractCount > -1) {
             if (extractCount != payloadSize) {
                 differences
-                        .add(String.format("Expected <extractCount> %d not equal to number of extracts in payload (%d).", extractCount, payloadSize));
+                        .add(String.format(Locale.ROOT, "Expected <extractCount> %d not equal to number of extracts in payload (%d).", extractCount,
+                                payloadSize));
             }
         } else if (numExtractElements > 0) {
             if (numExtractElements != payloadSize) {
-                differences.add(String.format("Expected <extract#> count %d not equal to number of extracts in payload (%d).", numExtractElements,
+                differences.add(String.format(Locale.ROOT, "Expected <extract#> count %d not equal to number of extracts in payload (%d).",
+                        numExtractElements,
                         payloadSize));
             }
         } else if (payloadSize > 0) {
-            differences.add(String.format("%d extracts in payload with no count in answer xml. Add matching <extractCount>", payloadSize));
+            differences
+                    .add(String.format(Locale.ROOT, "%d extracts in payload with no count in answer xml. Add matching <extractCount>", payloadSize));
         }
     }
 

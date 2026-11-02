@@ -37,6 +37,7 @@ public class MetricsManager {
 
     public static final String DEFAULT_NAMESPACE_NAME = "MetricsManager";
 
+    // Raw map types are intentional so these empty constants can serve as untyped fallbacks across the codebase
     @SuppressWarnings("rawtypes")
     public static final SortedMap<String, Gauge> EMPTY_GUAGES = new TreeMap<>();
     public static final SortedMap<String, Counter> EMPTY_COUNTERS = new TreeMap<>();
