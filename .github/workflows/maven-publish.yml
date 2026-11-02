@@ -10,7 +10,7 @@ on: # yamllint disable-line rule:truthy
 #     types: [created]
 
 env:
-  JAVA_VERSION: "11"
+  JAVA_VERSION: "21"
   JAVA_DISTRIBUTION: "corretto"
 
 jobs:
