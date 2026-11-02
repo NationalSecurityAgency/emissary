@@ -1066,6 +1066,11 @@
             <failOnError>${maven.javadoc.failOnError}</failOnError>
             <failOnWarnings>${maven.javadoc.failOnWarnings}</failOnWarnings>
             <quiet>true</quiet>
+            <additionalOptions>
+              <!-- don't bundle the JDK's legal/ notices (GPLv2+CPE, jQuery MIT) in the javadoc jars -->
+              <additionalOption>--legal-notices</additionalOption>
+              <additionalOption>none</additionalOption>
+            </additionalOptions>
           </configuration>
           <executions>
             <execution>
