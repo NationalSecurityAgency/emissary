@@ -1,0 +1,114 @@
+{
+  "index_patterns": [
+    "agents-*"
+  ],
+  "_meta": {
+    "description": "Emissary agent snapshot logs"
+  },
+  "template": {
+    "settings": {
+      "index.default_pipeline": "emissary-agents"
+    },
+    "mappings": {
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "agent": {
+          "properties": {
+            "timestamp": {
+              "type": "date"
+            },
+            "host": {
+              "type": "keyword"
+            },
+            "name": {
+              "type": "keyword"
+            },
+            "status": {
+              "type": "keyword",
+              "ignore_above": 1024
+            },
+            "state": {
+              "type": "keyword"
+            },
+            "payload": {
+              "properties": {
+                "short_name": {
+                  "type": "keyword"
+                },
+                "count": {
+                  "type": "integer"
+                }
+              }
+            },
+            "last_place": {
+              "properties": {
+                "key": {
+                  "type": "keyword",
+                  "ignore_above": 1024
+                },
+                "name": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "event": {
+          "properties": {
+            "dataset": {
+              "type": "keyword"
+            },
+            "kind": {
+              "type": "keyword"
+            },
+            "category": {
+              "type": "keyword"
+            },
+            "ingested": {
+              "type": "date"
+            },
+            "ingest_lag_ms": {
+              "type": "long"
+            }
+          }
+        },
+        "service": {
+          "properties": {
+            "name": {
+              "type": "keyword"
+            }
+          }
+        },
+        "emissary": {
+          "properties": {
+            "node": {
+              "properties": {
+                "name": {
+                  "type": "keyword"
+                },
+                "port": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        "error": {
+          "properties": {
+            "message": {
+              "type": "text"
+            },
+            "type": {
+              "type": "keyword"
+            },
+            "stack_trace": {
+              "type": "text"
+            }
+          }
+        }
+      }
+    }
+  }
+}

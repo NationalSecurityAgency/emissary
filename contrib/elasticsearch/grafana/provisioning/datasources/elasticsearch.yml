@@ -1,0 +1,25 @@
+apiVersion: 1
+
+datasources:
+  - name: Emissary Sentinel
+    uid: sentinel-es
+    type: elasticsearch
+    access: proxy
+    url: http://elasticsearch:9200
+    isDefault: true
+    jsonData:
+      index: sentinel-*
+      timeField: "@timestamp"
+      esVersion: "8.0.0"
+      timeInterval: 10s
+
+  - name: Emissary Agents
+    uid: agents-es
+    type: elasticsearch
+    access: proxy
+    url: http://elasticsearch:9200
+    jsonData:
+      index: agents-*
+      timeField: "@timestamp"
+      esVersion: "8.0.0"
+      timeInterval: 10s

@@ -1,0 +1,147 @@
+---
+# Local ELK stack for exploring Emissary Sentinel output.
+#
+# Usage (from the repository root):
+#   docker compose -f contrib/elasticsearch/docker-compose.yml up -d
+#
+# Security is intentionally disabled for local development only.
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION:-8.15.3}
+    container_name: emissary-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS 'http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=1s' >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${ELK_VERSION:-8.15.3}
+    container_name: emissary-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - TELEMETRY_ENABLED=false
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=emissary-local-dev-encryption-key-0001
+    ports:
+      - "5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:5601/api/status >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+
+  # Install the ingest pipelines and index templates before Filebeat starts.
+  elasticsearch-setup:
+    image: curlimages/curl:8.10.1
+    container_name: emissary-elasticsearch-setup
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - ./ingest:/ingest:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >
+        curl -fsS -X PUT "http://elasticsearch:9200/_ingest/pipeline/emissary-sentinel"
+        -H "Content-Type: application/json"
+        --data-binary @/ingest/sentinel-pipeline.json &&
+        curl -fsS -X PUT "http://elasticsearch:9200/_index_template/emissary-sentinel"
+        -H "Content-Type: application/json"
+        --data-binary @/ingest/sentinel-index-template.json &&
+        curl -fsS -X PUT "http://elasticsearch:9200/_ingest/pipeline/emissary-agents"
+        -H "Content-Type: application/json"
+        --data-binary @/ingest/agents-pipeline.json &&
+        curl -fsS -X PUT "http://elasticsearch:9200/_index_template/emissary-agents"
+        -H "Content-Type: application/json"
+        --data-binary @/ingest/agents-index-template.json
+
+  # Import the starter Kibana dashboards once Kibana is ready.
+  kibana-setup:
+    image: curlimages/curl:8.10.1
+    container_name: emissary-kibana-setup
+    depends_on:
+      kibana:
+        condition: service_healthy
+    volumes:
+      - ./dashboards:/dashboards:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >
+        curl -fsS -X POST "http://kibana:5601/api/saved_objects/_import?overwrite=true"
+        -H "kbn-xsrf: true"
+        --form file=@/dashboards/sentinel.ndjson &&
+        curl -fsS -X POST "http://kibana:5601/api/saved_objects/_import?overwrite=true"
+        -H "kbn-xsrf: true"
+        --form file=@/dashboards/agents.ndjson
+
+  # Seed deterministic demo data into sentinel-demo and agents-demo so both
+  # Kibana and Grafana have something to show immediately.
+  demo-data:
+    image: python:3.12-alpine
+    container_name: emissary-demo-data
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      elasticsearch-setup:
+        condition: service_completed_successfully
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    volumes:
+      - ./seed:/seed:ro
+    command: ["python", "/seed/seed_demo_data.py"]
+    restart: "no"
+
+  # Ships Sentinel and agent JSON logs to Elasticsearch. Override
+  # SENTINEL_LOG_DIR or AGENTS_LOG_DIR if the logs are written elsewhere.
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:${ELK_VERSION:-8.15.3}
+    container_name: emissary-filebeat
+    user: root
+    command: ["filebeat", "-e", "--strict.perms=false"]
+    volumes:
+      - ./filebeat.sentinel.docker.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ${SENTINEL_LOG_DIR:-../../logs}:/var/log/emissary:ro
+      - ${AGENTS_LOG_DIR:-../../target/out}:/var/log/emissary-agents:ro
+      - filebeat-data:/usr/share/filebeat/data
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      elasticsearch-setup:
+        condition: service_completed_successfully
+
+  # Optional Grafana dashboards backed by the same Elasticsearch indices.
+  grafana:
+    image: grafana/grafana:${GRAFANA_VERSION:-11.3.0}
+    container_name: emissary-grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+volumes:
+  elasticsearch-data:
+  filebeat-data:
+  grafana-data:
