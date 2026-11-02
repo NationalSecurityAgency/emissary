@@ -142,10 +142,9 @@ public class LogbackTester implements Closeable {
                 return true;
             }
 
-            if (!(obj instanceof SimplifiedLogEvent)) {
+            if (!(obj instanceof SimplifiedLogEvent other)) {
                 return false;
             }
-            SimplifiedLogEvent other = (SimplifiedLogEvent) obj;
 
             return Objects.equals(level, other.level) &&
                     Objects.equals(message, other.message) &&

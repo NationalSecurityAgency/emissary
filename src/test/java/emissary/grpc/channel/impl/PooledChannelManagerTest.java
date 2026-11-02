@@ -158,7 +158,7 @@ class PooledChannelManagerTest extends UnitTest {
             ManagedChannel dead = manager.acquire();
 
             manager.release(alive);
-            Thread.sleep(Duration.ofMillis(250).toMillis());
+            Thread.sleep(Duration.ofMillis(250));
             manager.release(dead);
 
             assertFalse(alive.isShutdown());

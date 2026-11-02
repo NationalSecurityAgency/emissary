@@ -49,12 +49,12 @@ public class CaseInsensitiveMap<K, V> extends HashMap<K, V> {
     @Override
     // @SuppressWarnings("unchecked")
     public V put(K key, V value) {
-        if (key instanceof String) {
-            String uckey = ((String) key).toLowerCase(Locale.getDefault());
+        if (key instanceof String s) {
+            String uckey = s.toLowerCase(Locale.getDefault());
             if (remap.containsKey(uckey)) {
                 this.remove(uckey);
             }
-            remap.put(uckey, (String) key);
+            remap.put(uckey, s);
         }
 
         return super.put(key, value);
@@ -68,8 +68,8 @@ public class CaseInsensitiveMap<K, V> extends HashMap<K, V> {
     public V get(Object key) {
         Object realkey = key;
 
-        if (key instanceof String) {
-            String strkey = remap.get(((String) key).toLowerCase(Locale.getDefault()));
+        if (key instanceof String s) {
+            String strkey = remap.get(s.toLowerCase(Locale.getDefault()));
             if (strkey != null) {
                 realkey = strkey;
             }
@@ -95,8 +95,8 @@ public class CaseInsensitiveMap<K, V> extends HashMap<K, V> {
     public boolean containsKey(Object key) {
         Object realkey = key;
 
-        if (key instanceof String) {
-            String strkey = remap.get(((String) key).toLowerCase(Locale.getDefault()));
+        if (key instanceof String s) {
+            String strkey = remap.get(s.toLowerCase(Locale.getDefault()));
             if (strkey != null) {
                 realkey = strkey;
             }
@@ -112,8 +112,8 @@ public class CaseInsensitiveMap<K, V> extends HashMap<K, V> {
     public V remove(Object key) {
         Object realkey = key;
 
-        if (key instanceof String) {
-            String uckey = ((String) key).toLowerCase(Locale.getDefault());
+        if (key instanceof String s) {
+            String uckey = s.toLowerCase(Locale.getDefault());
             String strkey = remap.get(uckey);
             if (strkey != null) {
                 realkey = strkey;
