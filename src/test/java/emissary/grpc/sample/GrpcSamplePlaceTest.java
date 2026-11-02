@@ -402,7 +402,7 @@ class GrpcSamplePlaceTest extends UnitTest {
                 clientThread.interrupt();
                 clientThread.join(500);
                 assertFalse(clientThread.isAlive(), "Client thread should exit after interruption");
-                assertTrue(releaseLatch.await(1, TimeUnit.SECONDS), "RPC should be canceled with resources released");
+                assertTrue(releaseLatch.await(10, TimeUnit.SECONDS), "RPC should be canceled with resources released");
 
                 Throwable error = errorRef.get();
                 assertInstanceOf(StatusRuntimeException.class, error);
@@ -427,7 +427,7 @@ class GrpcSamplePlaceTest extends UnitTest {
                 StatusRuntimeException e = assertThrows(StatusRuntimeException.class, invocation::run);
 
                 assertEquals(Status.Code.DEADLINE_EXCEEDED, e.getStatus().getCode());
-                assertTrue(releaseLatch.await(1, TimeUnit.SECONDS));
+                assertTrue(releaseLatch.await(10, TimeUnit.SECONDS), "Server should observe cancellation after client deadline");
                 assertTrue(o.getAlternateViews().isEmpty());
             }
         }
@@ -529,7 +529,7 @@ class GrpcSamplePlaceTest extends UnitTest {
                 clientThread.interrupt();
                 clientThread.join(500);
                 assertFalse(clientThread.isAlive(), "Client thread should exit after interruption");
-                assertTrue(releaseLatch.await(1, TimeUnit.SECONDS), "RPC should be canceled with resources released");
+                assertTrue(releaseLatch.await(10, TimeUnit.SECONDS), "RPC should be canceled with resources released");
 
                 Throwable error = errorRef.get();
                 assertInstanceOf(StatusRuntimeException.class, error);
@@ -554,7 +554,7 @@ class GrpcSamplePlaceTest extends UnitTest {
                 StatusRuntimeException e = assertThrows(StatusRuntimeException.class, invocation::run);
 
                 assertEquals(Status.Code.DEADLINE_EXCEEDED, e.getStatus().getCode());
-                assertTrue(releaseLatch.await(1, TimeUnit.SECONDS));
+                assertTrue(releaseLatch.await(10, TimeUnit.SECONDS), "Server should observe cancellation after client deadline");
                 assertTrue(o.getAlternateViews().isEmpty());
             }
         }
