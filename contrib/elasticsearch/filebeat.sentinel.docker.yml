@@ -1,0 +1,39 @@
+---
+# Ingest Sentinel JSON logs written by the "sentinel" logger and agent snapshots
+# written by the /api/agents/log endpoint.
+# See LOG_SENTINEL in src/main/config/logback.xml.
+filebeat.inputs:
+  - type: filestream
+    id: emissary-sentinel
+    enabled: true
+    paths:
+      - /var/log/emissary/sentinel-*.json
+    parsers:
+      - ndjson:
+          target: ""
+          overwrite_keys: true
+          add_error_key: true
+    index: "sentinel-%{+yyyy.MM.dd}"
+    pipeline: emissary-sentinel
+
+  - type: filestream
+    id: emissary-agents
+    enabled: true
+    paths:
+      - /var/log/emissary-agents/agents*.json
+    parsers:
+      - ndjson:
+          target: ""
+          overwrite_keys: true
+          add_error_key: true
+    index: "agents-%{+yyyy.MM.dd}"
+    pipeline: emissary-agents
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+
+setup.ilm.enabled: false
+setup.template.enabled: false
+setup.dashboards.enabled: false
+
+logging.level: info
