@@ -31,6 +31,7 @@ import emissary.spi.SPILoader;
 import ch.qos.logback.classic.ViewStatusMessagesServlet;
 import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.Nullable;
+import jakarta.servlet.DispatcherType;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.security.ConstraintMapping;
@@ -48,6 +49,7 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
@@ -71,6 +73,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -616,7 +619,8 @@ public class EmissaryServer {
         return (EmissaryServer) Namespace.lookup(name);
     }
 
-    private static ConstraintSecurityHandler buildSecurityHandler() {
+    @VisibleForTesting
+    static ConstraintSecurityHandler buildSecurityHandler() {
         ConstraintSecurityHandler handler = new ConstraintSecurityHandler();
 
         Constraint authConstraint = new Constraint();
@@ -675,6 +679,7 @@ public class EmissaryServer {
 
         ServletContextHandler homeContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         homeContextHandler.addServlet(homeHolder, "/*");
+        addSecurityHeadersFilter(homeContextHandler, false);
 
         return homeContextHandler;
     }
@@ -692,6 +697,7 @@ public class EmissaryServer {
 
         ServletContextHandler apiHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
         apiHolderContext.addServlet(apiHolder, "/*");
+        addSecurityHeadersFilter(apiHolderContext, true);
 
         return apiHolderContext;
     }
@@ -711,6 +717,7 @@ public class EmissaryServer {
 
         ServletContextHandler mvcHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
         mvcHolderContext.addServlet(mvcHolder, "/*");
+        addSecurityHeadersFilter(mvcHolderContext, true);
 
         return mvcHolderContext;
     }
@@ -745,8 +752,15 @@ public class EmissaryServer {
         ServletHolder lbHolder = new ServletHolder("logback-config-holder", ViewStatusMessagesServlet.class);
         ServletContextHandler lbHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
         lbHolderContext.addServlet(lbHolder, "/*");
+        addSecurityHeadersFilter(lbHolderContext, true);
 
         return lbHolderContext;
+    }
+
+    private static void addSecurityHeadersFilter(final ServletContextHandler context, final boolean noStore) {
+        FilterHolder holder = new FilterHolder(new SecurityHeadersFilter());
+        holder.setInitParameter("noStore", Boolean.toString(noStore));
+        context.addFilter(holder, "/*", EnumSet.of(DispatcherType.REQUEST));
     }
 
     @VisibleForTesting
