@@ -15,15 +15,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
 
+/**
+ * Parses file-type configuration rules (magic style) into ready-to-use {@link MagicNumber} objects.
+ *
+ * <p>
+ * Each rule line is made up of four columns separated by spaces or tabs: the file location/nesting depth, the data type
+ * and optional mask, the comparison check and value, and the description text. Rules with a depth greater than zero act
+ * as sub-rules (continuations) linked to a parent rule.
+ * </p>
+ */
 public class MagicNumberFactory {
 
     private static final Logger log = LoggerFactory.getLogger(MagicNumberFactory.class);
 
-    @Nullable
-    @SuppressWarnings("NonFinalStaticField")
-    private static Map<String, Integer> typeMap = null;
     public static final String EMPTYSTRING = "";
     public static final String ENTRY_NOT_NULL_RULE = "Entry cannot be null";
     public static final String ENTRY_4COLUMN_RULE = "Entry must have four tab separated columns";
@@ -38,29 +43,27 @@ public class MagicNumberFactory {
 
 
     /**
-     * Public method to parse a byte array representing the magic file into a list containing MagicNumber objects which are
-     * also nested with continuations as child MagicNumber instances.
+     * Reads a byte array of configuration data and turns it into a list of organized, nested rule objects.
      *
-     * @param configData the byte[] representing the magic file
-     * @param zeroDepthErrorList logs errors with zero depth entries
-     * @param continuationErrorMap logs errors with continuations - these are entries with depths &gt; 0
-     * @return a {@link List}.
+     * @param configData the raw bytes of the config file
+     * @param zeroDepthErrorList collects error messages for main rules that fail to parse
+     * @param continuationErrorMap collects error messages for sub-rules that fail to parse
+     * @return a list of top-level magic rules
      */
     public static List<MagicNumber> buildMagicNumberList(byte[] configData, List<String> zeroDepthErrorList,
             Map<String, List<String>> continuationErrorMap) {
-        // preserve the old way
         return buildMagicNumberList(configData, zeroDepthErrorList, continuationErrorMap, false);
     }
 
     /**
-     * Public method to parse a byte array representing the magic file into a list containing MagicNumber objects which are
-     * also nested with continuations as child MagicNumber instances.
+     * Reads a byte array of configuration data and turns it into a list of organized, nested rule objects, with an option
+     * to ignore unsupported data types.
      *
-     * @param configData the byte[] representing the magic file
-     * @param zeroDepthErrorList logs errors with zero depth entries
-     * @param continuationErrorMap logs errors with continuations - these are entries with depths &gt; 0
-     * @param swallowParseException boolean whether to swallow or propagate ParseExceptions that are IGNORABLE_DATATYPE_MSGS
-     * @return a {@link List}.
+     * @param configData the raw bytes of the config file
+     * @param zeroDepthErrorList collects error messages for main rules that fail to parse
+     * @param continuationErrorMap collects error messages for sub-rules that fail to parse
+     * @param swallowParseException true to quietly skip unsupported data type errors instead of throwing them
+     * @return a list of top-level magic rules
      */
     public static List<MagicNumber> buildMagicNumberList(byte[] configData, @Nullable List<String> zeroDepthErrorList,
             @Nullable Map<String, List<String>> continuationErrorMap, boolean swallowParseException) {
@@ -129,7 +132,6 @@ public class MagicNumberFactory {
                     if (swallowParseException &&
                             (e.getClass() == ParseException.class) &&
                             IGNORABLE_DATATYPE_MSGS.contains(e.getMessage())) {
-                        // swallow this cause said we don't care
                         continue;
                     }
 
@@ -140,7 +142,6 @@ public class MagicNumberFactory {
                         List<String> failedExtensions = continuationErrorMap.computeIfAbsent(signature, k -> new ArrayList<>());
                         failedExtensions.add("[MAGIC LINE# " + counter + "] " + s);
                     } else {
-                        // depth = 0
                         zeroDepthErrorList.add("[MAGIC LINE# " + counter + "] " + s);
                     }
                 }
@@ -150,22 +151,19 @@ public class MagicNumberFactory {
             }
         } catch (IOException ioe) {
             log.error("Caught IOException on buildMagicNumberList (throwing a runtime exception): {}", ioe.getMessage(), ioe);
-            // Doing all of this in memory - yes, one could erroneously use one of the IO objects but ...
             throw new EmissaryRuntimeException(ioe);
         }
         return magicNumberList;
     }
 
     /**
-     * Private method for parsing entries and storing them into the target storage data structure which is a list.
+     * Parses a single rule line and adds it to the target storage list.
      *
-     *
-     * @param entry the magic number String entry
-     * @param storage a {@link List} where the MagicNumber instances will be placed
-     * @param swallowParseException should we swallow Ignorable ParseException or bubble them up
-     * @return the MagicNumber instance created
-     * @throws Exception if one occurs while parsing the entry
-     * @see #buildMagicNumber(java.lang.String, boolean)
+     * @param storage the list to add the rule to
+     * @param entry the raw text line of the rule
+     * @param swallowParseException whether to ignore unsupported type errors
+     * @return the created rule object, or null if skipped
+     * @throws Exception if parsing fails
      */
     private static MagicNumber parseAndStore(List<MagicNumber> storage, String entry, boolean swallowParseException) throws Exception {
         MagicNumber item = buildMagicNumber(entry, swallowParseException);
@@ -176,54 +174,58 @@ public class MagicNumberFactory {
     }
 
     /**
-     * Private method to store the list of MagicNumber instances and adds them a new layer of continuations in the target
-     * MagicNumber
+     * Attaches a group of sub-rules as a new evaluation layer onto a parent rule.
      *
-     * @param target the MagicNumber instance acting as the parent for the continuations
-     * @param extensions a {@link List} of continuations which are MagicNumber instances
+     * @param extensions the list of child rule objects
+     * @param target the parent rule object
      */
     private static void addExtensionsLayer(List<MagicNumber> extensions, MagicNumber target) {
-        MagicNumber[] extensionArray = extensions.toArray(new MagicNumber[0]);
-        target.addDependencyLayer(extensionArray);
+        target.addDependencyLayer(extensions.toArray(new MagicNumber[0]));
     }
 
     /**
-     * Parses a magic number entry and prepares a magic number item
-     * 
-     * @param entry line to parse
+     * Parses a single configuration line into a rule object.
+     *
+     * @param entry the rule text line
+     * @return the parsed rule object
+     * @throws ParseException if the line format is invalid
      */
     public static MagicNumber buildMagicNumber(String entry) throws ParseException {
         return buildMagicNumber(entry, false);
     }
 
     /**
-     * Parses a magic number entry and prepares a magic number item
-     * 
-     * @param entry line to parse
-     * @param swallowParseException should we swallow Ignorable ParseException or bubble them up
+     * Parses a single configuration line into a rule object, with an option to ignore unsupported data types.
+     *
+     * @param entry the rule text line
+     * @param swallowParseException whether to ignore unsupported types
+     * @return the parsed rule object
+     * @throws ParseException if the line format is invalid
      */
     public static MagicNumber buildMagicNumber(String entry, boolean swallowParseException) throws ParseException {
 
         String[] columns = prepareEntry(entry);
-        MagicNumber item = new MagicNumber();
 
+        int depth;
+        int offset;
+        char offsetUnary;
         try {
-            // column A parsing
-            item.depth = getEntryDepth(columns[0]);
-            item.offsetUnary = resolveOffsetUnary(columns);
-            item.offset = resolveOffset(columns, item);
+            depth = getEntryDepth(columns[0]);
+            offsetUnary = resolveOffsetUnary(columns);
+            offset = resolveOffset(columns, depth);
         } catch (Exception e) {
             throw new ParseException("Error on column 0:" + columns[0] + ". " + e.getMessage());
         }
+
+        MagicDataType dataType;
+        int dataTypeLength;
+        byte[] mask;
         try {
-            // column B parsing
-            item.dataType = resolveDataType(columns);
-            item.dataTypeLength = getDataTypeByteLength(item);
-            item.mask = resolveMask(columns, item);
+            dataType = resolveDataType(columns);
+            dataTypeLength = dataType.getFixedByteLength();
+            mask = resolveMask(columns, dataTypeLength);
         } catch (Exception e) {
             if (swallowParseException) {
-                // This means you put TRUE in SWALLOW_IGNORABLE_EXCEPTIONS in a UnixFilePlace.cfg file
-                // so let's log at debug level, so you can hide these message easily
                 log.debug("Warning unable to read column 1\t: {} - {}", columns[1], e.getMessage());
             } else {
                 log.error("original entry   \t: {}", entry);
@@ -231,24 +233,28 @@ public class MagicNumberFactory {
             }
             throw new ParseException("Parse Error on column 1:" + columns[1] + ". " + e.getMessage());
         }
-        try {
-            // column C parsing
-            item.unaryOperator = resolveUnary(columns, item);
-            item.value = resolveValue(columns, item);
 
-            if (item.dataType == MagicNumber.TYPE_STRING && item.value != null) {
-                item.dataTypeLength = item.value.length;
+        char unaryOperator;
+        byte[] value;
+        boolean substitute;
+        try {
+            unaryOperator = resolveUnary(columns, dataType);
+            value = resolveValue(columns, dataType, dataTypeLength);
+            substitute = isAnyValuePlaceholder(columns[2]);
+
+            if (dataType == MagicDataType.STRING && value != null) {
+                dataTypeLength = value.length;
             }
         } catch (Exception e) {
             throw new ParseException("Error on column 2:" + columns[2] + ". " + e.getMessage());
         }
-        // column D parsing
-        item.description = columns[3];
-        return item;
+
+        return new MagicNumber(depth, offset, offsetUnary, dataType, dataTypeLength, mask, unaryOperator, value,
+                substitute, columns[3]);
     }
 
     /**
-     * Tokenizes an entry into four columns by tab or space while recognizing escape sequences.
+     * Splits a configuration line into four distinct columns by spaces or tabs, taking escape characters into account.
      */
     private static String[] tokenizeEntry(String entry) {
         int index = 0;
@@ -283,7 +289,7 @@ public class MagicNumberFactory {
     }
 
     /**
-     * Corrects some known/common erroneous syntax errors
+     * Cleans up common syntax mistakes or formatting issues in a raw rule line before parsing.
      */
     private static String[] prepareEntry(String entry) throws ParseException {
         if (entry == null) {
@@ -305,13 +311,10 @@ public class MagicNumberFactory {
         return columns;
     }
 
-    // -----------------------------------------------------------------------
-    // COLUMN A: >&offsetValue
-    // -----------------------------------------------------------------------
-    private static int resolveOffset(String[] columns, MagicNumber item) throws ParseException {
+    private static int resolveOffset(String[] columns, int depth) throws ParseException {
         String entry = columns[0];
-        if (item.depth > 0) {
-            entry = entry.substring(item.depth);
+        if (depth > 0) {
+            entry = entry.substring(depth);
         }
         if (entry.charAt(0) == '&') {
             entry = entry.substring(1);
@@ -332,6 +335,12 @@ public class MagicNumberFactory {
         return (char) 0;
     }
 
+    /**
+     * Determines how deeply nested a rule line is based on how many greater-than symbols (&gt;) start the line.
+     *
+     * @param entry the rule line text
+     * @return the nesting depth number, or -1 if invalid
+     */
     public static int getEntryDepth(String entry) {
         if (entry.isEmpty() || (entry.charAt(0) != '>' && !Character.isDigit(entry.charAt(0)))) {
             return -1;
@@ -345,12 +354,7 @@ public class MagicNumberFactory {
         return depth;
     }
 
-    // -----------------------------------------------------------------------
-    // COLUMN B: BYTE&maskValue
-    // -----------------------------------------------------------------------
-    private static int resolveDataType(String[] columns) throws ParseException {
-        initTypeMap();
-
+    private static MagicDataType resolveDataType(String[] columns) throws ParseException {
         String subject = columns[1];
         if (subject.startsWith("search")) {
             throw new ParseException(UNSUPPORTED_DATATYPE_MSG_SEARCH);
@@ -362,53 +366,30 @@ public class MagicNumberFactory {
             throw new ParseException(UNSUPPORTED_DATATYPE_MSG_UNSIGNED);
         }
 
-        // parse out any masking
         int ix = subject.indexOf("&") > 0 ? subject.indexOf("&") : subject.indexOf("/");
-        if (ix > 0) {
-            subject = columns[1].substring(0, ix);
-        }
-        int dataTypeId = lookupDataType(subject);
-        if (dataTypeId < 0) {
-            throw new ParseException("Unsupported Data Type: " + subject);
-        }
-        return dataTypeId;
-    }
+        String typeName = ix > 0 ? columns[1].substring(0, ix) : subject;
 
-    private static int lookupDataType(String arg) {
-        Integer dataTypeIdInt = typeMap.get(arg.toUpperCase(Locale.getDefault()));
-        if (dataTypeIdInt == null) {
-            return -1;
-        }
-        switch (dataTypeIdInt) {
-            case MagicNumber.TYPE_DATE:
-            case MagicNumber.TYPE_BEDATE:
-            case MagicNumber.TYPE_LEDATE:
-                return -1;
-            default:
-                return dataTypeIdInt;
-        }
+        return MagicDataType.fromKey(typeName)
+                .filter(MagicDataType::isSupported)
+                .orElseThrow(() -> new ParseException("Unsupported Data Type: " + typeName));
     }
 
     @Nullable
-    private static byte[] resolveMask(String[] columns, MagicNumber item) {
+    private static byte[] resolveMask(String[] columns, int dataTypeLength) {
         int ix = columns[1].indexOf("&");
         if (ix > 0) {
             byte[] maskValues = MagicMath.stringToByteArray(columns[1].substring(ix + 1));
-            return MagicMath.setLength(maskValues, item.dataTypeLength);
+            return MagicMath.setLength(maskValues, dataTypeLength);
         }
         return null;
     }
 
-    // -----------------------------------------------------------------------
-    // COLUMN C: [UNARY_OPERATOR][Some value like 0x00]
-    // -----------------------------------------------------------------------
-    private static byte[] resolveValue(String[] columns, MagicNumber item) {
+    private static byte[] resolveValue(String[] columns, MagicDataType dataType, int dataTypeLength) {
         String subject = columns[2];
 
-        if (item.dataType == MagicNumber.TYPE_STRING && !(subject.length() == 1 && subject.charAt(0) == 'x')) {
+        if (dataType == MagicDataType.STRING && !isAnyValuePlaceholder(subject)) {
             return MagicMath.parseEscapedString(subject);
-        } else if (subject.length() == 1 && subject.charAt(0) == 'x') {
-            item.substitute = true;
+        } else if (isAnyValuePlaceholder(subject)) {
             return new byte[0];
         }
 
@@ -416,18 +397,22 @@ public class MagicNumberFactory {
         if (unaryLen > 0) {
             subject = subject.substring(unaryLen);
         }
-        if (subject.toUpperCase(Locale.getDefault()).endsWith("L")) {
+        if (subject.toUpperCase(Locale.ROOT).endsWith("L")) {
             subject = subject.substring(0, subject.length() - 1);
         }
         byte[] valueArray = MagicMath.stringToByteArray(subject);
-        valueArray = MagicMath.setLength(valueArray, item.dataTypeLength);
+        valueArray = MagicMath.setLength(valueArray, dataTypeLength);
 
-        if (item.dataType == MagicNumber.TYPE_LELONG) {
+        if (dataType == MagicDataType.LELONG) {
             MagicMath.longEndianSwap(valueArray, 0);
-        } else if (item.dataType == MagicNumber.TYPE_LESHORT) {
+        } else if (dataType == MagicDataType.LESHORT) {
             MagicMath.shortEndianSwap(valueArray, 0);
         }
         return valueArray;
+    }
+
+    private static boolean isAnyValuePlaceholder(String subject) {
+        return subject.length() == 1 && subject.charAt(0) == 'x';
     }
 
     private static int unaryPrefixLength(@Nullable String s) {
@@ -456,31 +441,9 @@ public class MagicNumberFactory {
         return 0;
     }
 
-    private static int getDataTypeByteLength(MagicNumber item) {
-        int dataTypeId = item.dataType;
-        switch (dataTypeId) {
-            case MagicNumber.TYPE_STRING:
-                return (item.value == null) ? -1 : item.value.length;
-            case MagicNumber.TYPE_BYTE:
-                return 1;
-            case MagicNumber.TYPE_SHORT:
-            case MagicNumber.TYPE_BESHORT:
-            case MagicNumber.TYPE_LESHORT:
-                return 2;
-            case MagicNumber.TYPE_LONG:
-            case MagicNumber.TYPE_BELONG:
-            case MagicNumber.TYPE_LELONG:
-            case MagicNumber.TYPE_BEDATE:
-            case MagicNumber.TYPE_LEDATE:
-                return 4;
-            default:
-                return -1;
-        }
-    }
-
-    private static char resolveUnary(String[] columns, MagicNumber item) throws ParseException {
+    private static char resolveUnary(String[] columns, MagicDataType dataType) throws ParseException {
         int unaryLen = unaryPrefixLength(columns[2]);
-        if (item.dataType == MagicNumber.TYPE_STRING || unaryLen == 0) {
+        if (dataType == MagicDataType.STRING || unaryLen == 0) {
             return MagicNumber.MAGICOPERATOR_DEFAULT;
         } else if (unaryLen == 1) {
             return columns[2].charAt(0);
@@ -493,32 +456,14 @@ public class MagicNumberFactory {
         }
     }
 
+    /**
+     * Finds the text name of a data type using its old legacy numeric ID.
+     *
+     * @param legacyTypeId the historical numeric type ID
+     * @return the text key name, or null if unknown
+     */
     @Nullable
-    public static String resolveReverseDataType(int dataTypeId) {
-        initTypeMap();
-        for (Map.Entry<String, Integer> entry : typeMap.entrySet()) {
-            if (entry.getValue() == dataTypeId) {
-                return entry.getKey();
-            }
-        }
-        return null;
-    }
-
-    private static void initTypeMap() {
-        if (typeMap != null) {
-            return;
-        }
-        typeMap = new TreeMap<>();
-        typeMap.put(MagicNumber.TYPE_KEY_BYTE, MagicNumber.TYPE_BYTE);
-        typeMap.put(MagicNumber.TYPE_KEY_SHORT, MagicNumber.TYPE_SHORT);
-        typeMap.put(MagicNumber.TYPE_KEY_LONG, MagicNumber.TYPE_LONG);
-        typeMap.put(MagicNumber.TYPE_KEY_STRING, MagicNumber.TYPE_STRING);
-        typeMap.put(MagicNumber.TYPE_KEY_DATE, MagicNumber.TYPE_DATE);
-        typeMap.put(MagicNumber.TYPE_KEY_BESHORT, MagicNumber.TYPE_BESHORT);
-        typeMap.put(MagicNumber.TYPE_KEY_BELONG, MagicNumber.TYPE_BELONG);
-        typeMap.put(MagicNumber.TYPE_KEY_BEDATE, MagicNumber.TYPE_BEDATE);
-        typeMap.put(MagicNumber.TYPE_KEY_LESHORT, MagicNumber.TYPE_LESHORT);
-        typeMap.put(MagicNumber.TYPE_KEY_LELONG, MagicNumber.TYPE_LELONG);
-        typeMap.put(MagicNumber.TYPE_KEY_LEDATE, MagicNumber.TYPE_LEDATE);
+    public static String resolveReverseDataType(int legacyTypeId) {
+        return MagicDataType.fromLegacyId(legacyTypeId).map(MagicDataType::getKey).orElse(null);
     }
 }

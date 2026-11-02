@@ -9,17 +9,17 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Behaves like the UNIX file command. Magic number entries are loaded from one or more magic configuration files and
+ * samples are evaluated against them, falling back to a simple ASCII or binary test when nothing matches.
+ */
 public class UnixFile {
 
     private static final Logger log = LoggerFactory.getLogger(UnixFile.class);
 
-    /** The magic number configuration file. The file which contains all magic number entries */
-    private final List<File> magicFiles = new ArrayList<>();
-
-    /** The Magic number helper class */
+    /** The magic number helper class */
     private final MagicNumberUtil util = new MagicNumberUtil();
 
     /** The Binary file type description */
@@ -38,7 +38,7 @@ public class UnixFile {
      * @param magicFile the <code>File</code> containing magic number entries
      */
     public UnixFile(File magicFile) throws IOException {
-        new UnixFile(magicFile, false);
+        this(magicFile, false);
     }
 
     /**
@@ -53,7 +53,6 @@ public class UnixFile {
             throw new IllegalArgumentException("Magic file not found at: " + magicFile.getAbsolutePath());
         }
 
-        this.magicFiles.add(magicFile);
         util.load(magicFile, swallowParseException);
     }
 
@@ -63,12 +62,12 @@ public class UnixFile {
      * @param magicPaths the String names of magic files to load
      */
     public UnixFile(List<String> magicPaths) throws IOException {
-        new UnixFile(magicPaths, false);
+        this(magicPaths, false);
     }
 
     /**
      * Load multiple magic files into one identification engine
-     * 
+     *
      * @param magicPaths the String names of magic files to load
      * @param swallowParseException should we swallow Ignorable ParseException or bubble them up
      */
@@ -78,11 +77,9 @@ public class UnixFile {
             if (!mFile.exists() || !mFile.canRead()) {
                 throw new IllegalArgumentException("Magic file not found at " + mFile.getAbsolutePath());
             }
-            this.magicFiles.add(mFile);
             util.load(mFile, swallowParseException);
         }
     }
-
 
     public int magicEntryCount() {
         return util.size();
@@ -90,9 +87,11 @@ public class UnixFile {
 
     /**
      * Behaves just like the UNIX file command. First performs a magic number test, then an ascii or binary file test. This
-     * is also the same as calling <code>evaluateByMagicNumber (bytes :
-     * byte[])</code> and then calling <code>evaluateBinaryProperty
-     * (bytes : byte[])</code>
+     * is also the same as calling {@link #evaluateByMagicNumber(byte[])} and then calling
+     * {@link #evaluateBinaryProperty(byte[])}.
+     *
+     * @param bytes the data to identify
+     * @return the identified description or null when no entry matched and the data is not empty
      */
     public String execute(@Nullable byte[] bytes) throws IOException {
         if (bytes == null || bytes.length < 1) {
@@ -109,8 +108,11 @@ public class UnixFile {
     }
 
     /**
-     * Statically tests a byte array to determine if the file representation can be of type ASCII or is binary. Simply
-     * checks each byte value to be less then greater/equal then 127.
+     * Statically tests a byte array to determine if the file representation can be of type ASCII or is binary. Any byte
+     * value below 32 marks the data as binary.
+     *
+     * @param bytes the data to test
+     * @return the empty, binary or ascii file type description
      */
     public static String evaluateBinaryProperty(@Nullable byte[] bytes) {
         if (bytes == null || bytes.length < 1) {
@@ -127,6 +129,9 @@ public class UnixFile {
 
     /**
      * Evaluates the byte array against the collection of Magic numbers
+     *
+     * @param bytes the data to identify
+     * @return the matching description or null when no entry matched
      */
     public String evaluateByMagicNumber(byte[] bytes) throws IOException {
         return util.describe(bytes);
