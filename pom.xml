@@ -64,7 +64,7 @@
     <!-- Error Prone 2.32+ requires JDK17-->
     <dep.errorprone.version>2.23.0</dep.errorprone.version>
     <dep.grpc.version>1.65.0</dep.grpc.version>
-    <dep.gson.version>2.14.0</dep.gson.version>
+    <dep.gson.version>2.15.0</dep.gson.version>
     <dep.guava.version>33.7.2-jre</dep.guava.version>
     <dep.httpclient.version>5.6.4</dep.httpclient.version>
     <dep.httpcore.version>5.4.4</dep.httpcore.version>
