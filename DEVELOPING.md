@@ -204,9 +204,9 @@ Preferred operating systems are Linux or macOS.
 Java 11 is no longer supported in this codebase, only 
 [Java 21](https://docs.aws.amazon.com/corretto/latest/corretto-21-ug/downloads-list.html). 
 
-### Apache Maven 3.6+
+### Apache Maven 3.9.12+
 
-Download and install [Apache Maven 3.6+](http://maven.apache.org).
+Download and install [Apache Maven 3.9.12+](http://maven.apache.org).
 
 We recommend being familiar with the following Maven concepts:
 

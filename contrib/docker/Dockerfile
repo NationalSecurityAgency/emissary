@@ -51,7 +51,7 @@ FROM base_${target_os} AS build
 ENV MAVEN_OPTS="-Xms512M -Xmx1024M -Xss1M -Djava.awt.headless=true"
 ENV MAVEN_HOME=/opt/maven
 
-ARG maven_version=3.9.10
+ARG maven_version=3.9.12
 RUN curl -L -o /tmp/maven.tar.gz https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/${maven_version}/apache-maven-${maven_version}-bin.tar.gz \
      && tar xvf /tmp/maven.tar.gz -C /opt \
      && ln -s /opt/apache-maven-${maven_version} ${MAVEN_HOME} \
