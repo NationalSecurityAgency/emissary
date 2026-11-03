@@ -78,19 +78,6 @@ public class OSReleaseUtil {
     }
 
     /**
-     * Use the /etc/os-release file to determine if the OS is CentOS
-     *
-     * @return true if CentOS is found, false otherwise
-     */
-    public static boolean isCentOs() {
-        return isCentOs(OS_RELEASE_PATH);
-    }
-
-    static boolean isCentOs(Path osReleasePath) {
-        return isOsName(osReleasePath, "centos");
-    }
-
-    /**
      * Use the /etc/os-release file to determine if the OS is RHEL
      *
      * @return true if RHEL is found, false otherwise

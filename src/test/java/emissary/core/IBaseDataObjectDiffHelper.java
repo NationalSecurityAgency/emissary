@@ -796,7 +796,6 @@ public class IBaseDataObjectDiffHelper {
         boolean isMatchingOs;
         switch (os) {
             case "ubuntu" -> isMatchingOs = OSReleaseUtil.isUbuntu();
-            case "centos" -> isMatchingOs = OSReleaseUtil.isCentOs();
             case "rhel" -> isMatchingOs = OSReleaseUtil.isRhel();
             case "mac" -> isMatchingOs = OSReleaseUtil.isMac();
             default -> {

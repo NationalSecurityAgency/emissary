@@ -2,11 +2,9 @@
     <answers>
     	<numAttachments os-release="mac">0</numAttachments>
         <numAttachments os-release="rhel">0</numAttachments>
-        <numAttachments os-release="centos">0</numAttachments>
         <numAttachments os-release="ubuntu">0</numAttachments>
     
         <dataLength os-release="ubuntu">22</dataLength>
-        <dataLength os-release="centos">51</dataLength>
         <dataLength os-release="rhel">20</dataLength>
         <dataLength os-release="mac">19</dataLength>
 
@@ -17,10 +15,6 @@
         <meta matchMode="equals" os-release="ubuntu">
             <name>ubuntu-test</name>
             <value>ubuntu-test</value>
-        </meta>
-        <meta matchMode="equals" os-release="centos">
-            <name>centos-test</name>
-            <value>centos-test</value>
         </meta>
         <meta matchMode="equals" os-release="rhel">
             <name>rhel-test</name>
