@@ -23,32 +23,6 @@ RUN rpm --import https://yum.corretto.aws/corretto.key \
 
 
 
-FROM centos:7 AS base_centos7
-
-ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
-ENV PROJECT_BASE=/opt/emissary
-
-ARG java_version=21
-ARG user=emissary
-ARG group=emissary
-ARG uid=1000
-ARG gid=1000
-RUN sed -i s/mirrorlist.centos.org/vault.centos.org/g /etc/yum.repos.d/CentOS-*.repo \
-     && sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/CentOS-*.repo \
-     && sed -i s/#baseurl/baseurl/g /etc/yum.repos.d/CentOS-*.repo \
-     && yum update -y \
-     && yum upgrade -y \
-     && rpm --import https://yum.corretto.aws/corretto.key \
-     && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
-     && yum install -y java-${java_version}-amazon-corretto-devel \
-     && yum install -y which lsof git \
-     && groupadd -g ${gid} ${group} \
-     && useradd -u ${uid} -g ${group} -m -s /bin/bash ${user} \
-     && yum clean all -y \
-     && rm -rf /var/cache/yum
-
-
-
 FROM alpine:3 AS base_alpine3
 
 ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
