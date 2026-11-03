@@ -15,10 +15,10 @@ public class ProtocolFactory {
             Configurator config = ConfigUtil.getConfigInfo(conf);
             String protocolType = config.findStringEntry("PROTOCOL_CLASS", DEFAULT_PROTOCOL_CLASS);
             Object protocolImpl = Factory.create(protocolType, config);
-            if (!(protocolImpl instanceof Protocol<?>)) {
+            if (!(protocolImpl instanceof Protocol<?> protocol)) {
                 throw new IllegalArgumentException("Configured protocol [" + protocolType + "] is not a Protocol implementation");
             }
-            return (Protocol<?>) protocolImpl;
+            return protocol;
         } catch (IOException e) {
             throw new IllegalArgumentException("There was a problem with the supplied config [" + conf + "]", e);
         }

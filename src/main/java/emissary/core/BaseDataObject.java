@@ -868,8 +868,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public void putParameter(final String key, final Object val) {
         this.parameters.removeAll(key);
 
-        if (val instanceof Iterable) {
-            this.parameters.putAll(key, (Iterable<?>) val);
+        if (val instanceof Iterable<?> iterable) {
+            this.parameters.putAll(key, iterable);
         } else {
             this.parameters.put(key, val);
         }
@@ -909,8 +909,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
                 continue;
             }
 
-            if (value instanceof Iterable) {
-                for (final Object v : (Iterable<?>) value) {
+            if (value instanceof Iterable<?> iterable) {
+                for (final Object v : iterable) {
                     if (policy == MergePolicy.KEEP_ALL || policy == MergePolicy.KEEP_EXISTING) {
                         this.parameters.put(name, v);
                     } else if (policy == MergePolicy.DISTINCT) {

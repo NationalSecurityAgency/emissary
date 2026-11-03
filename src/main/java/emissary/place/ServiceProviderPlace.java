@@ -481,8 +481,7 @@ public abstract class ServiceProviderPlace extends DirectoryProviderPlace implem
 
             if (agent instanceof HDMobileAgent hdAgent) {
                 Object payload = hdAgent.getPayloadForTransport();
-                if (payload instanceof List) {
-                    List<?> familyTree = (List<?>) payload;
+                if (payload instanceof List<?> familyTree) {
                     for (Object familyMember : familyTree) {
                         if (familyMember instanceof IBaseDataObject member) {
                             if (!member.shortName().contains(Family.SEP)) {
