@@ -97,10 +97,10 @@ public class PayloadUtil {
         String payloadName = o.getClass().getName();
         if (o instanceof IBaseDataObject ibdo) {
             payloadName = ibdo.shortName();
-        } else if (o instanceof Collection) {
-            final Iterator<?> pi = ((Collection<?>) o).iterator();
+        } else if (o instanceof Collection<?> collection) {
+            final Iterator<?> pi = collection.iterator();
             if (pi.hasNext()) {
-                payloadName = ((IBaseDataObject) pi.next()).shortName() + "(" + ((Collection<?>) o).size() + ")";
+                payloadName = ((IBaseDataObject) pi.next()).shortName() + "(" + collection.size() + ")";
             }
         }
         return payloadName;

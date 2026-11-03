@@ -383,8 +383,8 @@ public interface IBaseDataObject {
             return null;
         } else if (obj.isEmpty()) {
             return null;
-        } else if ((obj.size() == 1) && (obj.get(0) instanceof String)) {
-            return (String) obj.get(0);
+        } else if ((obj.size() == 1) && (obj.get(0) instanceof String s)) {
+            return s;
         } else if ((obj.size() == 1) && (obj.get(0) == null)) {
             return null;
         } else {
@@ -409,8 +409,8 @@ public interface IBaseDataObject {
         final var obj = getParameter(key);
         if (CollectionUtils.isEmpty(obj) || ((obj.size() == 1) && (obj.get(0) == null))) {
             return Collections.emptyList();
-        } else if ((obj.size() == 1) && (obj.get(0) instanceof String)) {
-            return Collections.singletonList((String) obj.get(0));
+        } else if ((obj.size() == 1) && (obj.get(0) instanceof String s)) {
+            return Collections.singletonList(s);
         } else {
             return obj.stream().map(String::valueOf).collect(Collectors.toList());
         }
