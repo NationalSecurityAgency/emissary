@@ -529,7 +529,7 @@ class GrpcSamplePlaceTest extends UnitTest {
                 assertNull(errorRef.get());
 
                 clientThread.interrupt();
-                clientThread.join(TEST_THREAD_JOIN_MILLIS);  // Wait for thread to die
+                clientThread.join(TEST_THREAD_JOIN_MILLIS); // Wait for thread to die
                 assertFalse(clientThread.isAlive(), "Client thread should exit after interruption");
                 assertTrue(releaseLatch.await(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS), "RPC should be canceled with resources released");
 
