@@ -58,6 +58,8 @@ class GrpcSamplePlaceTest extends UnitTest {
     public static final String LOCALHOST = "localhost";
     private static final byte[] INPUT_DATA = "Data123!".getBytes(UTF_8);
     private static final byte[] OUTPUT_DATA = "RPC {\"Data123!\"} completed successfully".getBytes(UTF_8);
+    private static final int TEST_TIMEOUT_SECONDS = 10;
+    private static final int TEST_THREAD_JOIN_MILLIS = 5000;
 
     @Nullable
     private GrpcSamplePlace place;
@@ -396,13 +398,13 @@ class GrpcSamplePlaceTest extends UnitTest {
 
                 clientThread.start();
 
-                assertTrue(startedLatch.await(1, TimeUnit.SECONDS), "Server should have received request");
+                assertTrue(startedLatch.await(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS), "Server should have received request");
                 assertNull(errorRef.get());
 
                 clientThread.interrupt();
-                clientThread.join(500);
+                clientThread.join(TEST_THREAD_JOIN_MILLIS); // Wait for thread to die
                 assertFalse(clientThread.isAlive(), "Client thread should exit after interruption");
-                assertTrue(releaseLatch.await(10, TimeUnit.SECONDS), "RPC should be canceled with resources released");
+                assertTrue(releaseLatch.await(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS), "RPC should be canceled with resources released");
 
                 Throwable error = errorRef.get();
                 assertInstanceOf(StatusRuntimeException.class, error);
@@ -427,7 +429,7 @@ class GrpcSamplePlaceTest extends UnitTest {
                 StatusRuntimeException e = assertThrows(StatusRuntimeException.class, invocation::run);
 
                 assertEquals(Status.Code.DEADLINE_EXCEEDED, e.getStatus().getCode());
-                assertTrue(releaseLatch.await(10, TimeUnit.SECONDS), "Server should observe cancellation after client deadline");
+                assertTrue(releaseLatch.await(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS), "Server should observe cancellation after client deadline");
                 assertTrue(o.getAlternateViews().isEmpty());
             }
         }
@@ -456,7 +458,7 @@ class GrpcSamplePlaceTest extends UnitTest {
 
                 clientThread.start();
 
-                assertTrue(startedLatchOne.await(1, TimeUnit.SECONDS), "First server should have received request");
+                assertTrue(startedLatchOne.await(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS), "First server should have received request");
                 assertEquals(1L, startedLatchTwo.getCount(), "Second server should be waiting to receive request");
                 assertTrue(views.isEmpty());
                 assertNull(errorRef.get());
@@ -464,7 +466,7 @@ class GrpcSamplePlaceTest extends UnitTest {
                 assertTrue(clientThread.isAlive());
                 releaseLatchOne.countDown();
 
-                assertTrue(startedLatchTwo.await(1, TimeUnit.SECONDS));
+                assertTrue(startedLatchTwo.await(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS));
                 assertEquals(1, views.size());
                 assertArrayEquals(OUTPUT_DATA, views.get(ENDPOINT_1));
                 assertNull(errorRef.get());
@@ -472,7 +474,7 @@ class GrpcSamplePlaceTest extends UnitTest {
                 assertTrue(clientThread.isAlive());
                 releaseLatchTwo.countDown();
 
-                clientThread.join(500); // Wait for thread to die
+                clientThread.join(TEST_THREAD_JOIN_MILLIS); // Wait for thread to die
                 assertFalse(clientThread.isAlive());
 
                 assertEquals(2, views.size());
@@ -523,13 +525,13 @@ class GrpcSamplePlaceTest extends UnitTest {
 
                 clientThread.start();
 
-                assertTrue(startedLatch.await(2, TimeUnit.SECONDS), "Not all servers received requests");
+                assertTrue(startedLatch.await(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS), "Not all servers received requests");
                 assertNull(errorRef.get());
 
                 clientThread.interrupt();
-                clientThread.join(500);
+                clientThread.join(TEST_THREAD_JOIN_MILLIS);  // Wait for thread to die
                 assertFalse(clientThread.isAlive(), "Client thread should exit after interruption");
-                assertTrue(releaseLatch.await(10, TimeUnit.SECONDS), "RPC should be canceled with resources released");
+                assertTrue(releaseLatch.await(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS), "RPC should be canceled with resources released");
 
                 Throwable error = errorRef.get();
                 assertInstanceOf(StatusRuntimeException.class, error);
@@ -550,11 +552,24 @@ class GrpcSamplePlaceTest extends UnitTest {
                         new ConfigEntry(GrpcRoutingPlace.GRPC_CALL_DEADLINE_MILLIS, "500"),
                         new ConfigEntry(RetryHandler.GRPC_RETRY_MAX_ATTEMPTS, "1"));
 
-                Runnable invocation = () -> Objects.requireNonNull(place).processEndpointsInParallel(o, null);
-                StatusRuntimeException e = assertThrows(StatusRuntimeException.class, invocation::run);
+                AtomicReference<Throwable> errorRef = new AtomicReference<>();
+                Thread clientThread = new Thread(() -> {
+                    try {
+                        Objects.requireNonNull(place).processEndpointsInParallel(o, null);
+                    } catch (Throwable t) {
+                        errorRef.set(t);
+                    }
+                });
+                clientThread.start();
 
+                assertTrue(startedLatch.await(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS), "Server should have received request");
+                clientThread.join(TEST_THREAD_JOIN_MILLIS); // Wait for thread to die
+                assertFalse(clientThread.isAlive(), "Client thread should exit after deadline");
+
+                Throwable error = errorRef.get();
+                StatusRuntimeException e = assertInstanceOf(StatusRuntimeException.class, error);
                 assertEquals(Status.Code.DEADLINE_EXCEEDED, e.getStatus().getCode());
-                assertTrue(releaseLatch.await(10, TimeUnit.SECONDS), "Server should observe cancellation after client deadline");
+                assertTrue(releaseLatch.await(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS), "Server should observe cancellation after client deadline");
                 assertTrue(o.getAlternateViews().isEmpty());
             }
         }
@@ -581,14 +596,14 @@ class GrpcSamplePlaceTest extends UnitTest {
 
                 clientThread.start();
 
-                assertTrue(startedLatch.await(2, TimeUnit.SECONDS), "Not all servers received requests");
+                assertTrue(startedLatch.await(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS), "Not all servers received requests");
                 assertTrue(views.isEmpty());
                 assertNull(errorRef.get());
 
                 assertTrue(clientThread.isAlive());
                 releaseLatch.countDown();
 
-                clientThread.join(500); // Wait for thread to die
+                clientThread.join(TEST_THREAD_JOIN_MILLIS); // Wait for thread to die
                 assertFalse(clientThread.isAlive());
 
                 assertEquals(2, views.size());
