@@ -158,7 +158,6 @@
         <xs:simpleType>
             <xs:restriction base="xs:string">
                 <xs:enumeration value="rhel"/>
-                <xs:enumeration value="centos"/>
                 <xs:enumeration value="ubuntu"/>
                 <xs:enumeration value="mac"/>
             </xs:restriction>
