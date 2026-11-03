@@ -615,15 +615,11 @@ Alternatively, we can use Docker directly. First run a full maven build and then
 mvn clean install -Pdist
 docker build -f contrib/docker/Dockerfile . -t emissary
 ```
-There are three os profiles in the Dockerfile that can be used to build Emissary docker
+Different OS profiles in the Dockerfile can be used to build Emissary docker
  - default - ubi8 docker image
- - centos7 - centos7 docker image
  - alpine3 - alpine3 docker image
 
- centos7 and alpine images can be selected by using ```--build-arg target_os=[centos7|apline3]``` in the ``docker build``` command
-
-For example, a lightweight emissary docker can use the alpine3 image from the Dockerfile. 
-This image is much smaller than the Dockerfile default ubi8 based image
+Other profiles can be used to make a more lightweight image than the default ubi8 based image
 ```
 mvn clean install -Pdist
 docker build -f contrib/docker/Dockerfile . --build-arg target_os=alpine3 -t emissary-light
@@ -721,7 +717,7 @@ Let's use the alpine image to build Emissary with Maven and Java:
 ```
 docker build . -t emissary:test --build-arg target_os=alpine3 -f contrib/docker/Dockerfile 
 ```
-Once the build succeeds, we can start a container:
+Once the build succeeds, start a container:
 ```
 docker run -it --rm -p 8001:8001 --hostname emissary --name emissary emissary:test
 ```
