@@ -91,7 +91,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
      */
     protected void initFilenameGenerator() {
         this.fileNameGenerator =
-                new DateStampFilenameGenerator(StringUtils.isNotBlank(filterName) ? "." + filterName.toLowerCase(Locale.getDefault()) : "");
+                new DateStampFilenameGenerator(StringUtils.isNotBlank(filterName) ? "." + filterName.toLowerCase(Locale.ROOT) : "");
     }
 
     /**

@@ -102,7 +102,7 @@ public abstract class HttpCommand extends BaseCommand {
             // Must maintain insertion order
             Set<String> flavorSet = new LinkedHashSet<>();
             for (String f : flavorMode.split(",")) {
-                flavorSet.add(f.toUpperCase(Locale.getDefault()));
+                flavorSet.add(f.toUpperCase(Locale.ROOT));
             }
             overrideFlavor(String.join(",", flavorSet));
 
