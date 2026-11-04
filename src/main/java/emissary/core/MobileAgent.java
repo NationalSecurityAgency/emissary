@@ -127,7 +127,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      */
     @Override
     public long getThreadId() {
-        return this.thread.getId();
+        return this.thread.threadId();
     }
 
     /**

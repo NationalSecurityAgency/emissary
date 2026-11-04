@@ -81,7 +81,7 @@ public class WatcherThread extends Thread {
 
         System.out.println(name + " begins at " + Instant.now());
 
-        Process proc = Runtime.getRuntime().exec(args[1]);
+        Process proc = new ProcessBuilder(args[1]).start();
 
         wt.setProcess(proc);
 

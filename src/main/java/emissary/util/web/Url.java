@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -148,7 +149,7 @@ public class Url {
         OutputStream os = null;
         BufferedReader dis = null;
         try {
-            final URL theUrl = new URL(urlString);
+            final URL theUrl = URI.create(urlString).toURL();
             final HttpURLConnection conn = (HttpURLConnection) theUrl.openConnection();
 
             // Set up for POST or other
@@ -208,12 +209,14 @@ public class Url {
 
                 response.setTheContent(theOutput.toString().getBytes(UTF_8));
             }
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | IllegalArgumentException e) {
             logger.warn("Bad URL " + urlString, e);
         } catch (IOException e) {
             logger.warn("Read error on " + urlString, e);
         } catch (OutOfMemoryError e) {
             logger.warn("Not enough space for read on " + urlString, e);
+        } catch (NullPointerException e) {
+            logger.warn("Provided url string was null", e);
         } finally {
             if (os != null) {
                 try {
