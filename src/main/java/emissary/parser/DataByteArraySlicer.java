@@ -41,7 +41,7 @@ public class DataByteArraySlicer {
 
         // Use higher performing impl when only one record
         if (list.size() == 1) {
-            return makeDataSlice(data, list.get(0));
+            return makeDataSlice(data, list.getFirst());
         }
 
 

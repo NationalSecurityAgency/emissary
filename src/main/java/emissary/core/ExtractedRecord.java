@@ -2,11 +2,13 @@ package emissary.core;
 
 import jakarta.annotation.Nullable;
 
+import java.io.Serial;
 import java.util.Collections;
 import java.util.List;
 
 public class ExtractedRecord extends BaseDataObject implements IExtractedRecord {
 
+    @Serial
     private static final long serialVersionUID = -6716572014928830135L;
 
     public ExtractedRecord() {

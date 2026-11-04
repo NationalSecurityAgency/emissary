@@ -383,9 +383,9 @@ public interface IBaseDataObject {
             return null;
         } else if (obj.isEmpty()) {
             return null;
-        } else if ((obj.size() == 1) && (obj.get(0) instanceof String s)) {
+        } else if ((obj.size() == 1) && (obj.getFirst() instanceof String s)) {
             return s;
-        } else if ((obj.size() == 1) && (obj.get(0) == null)) {
+        } else if ((obj.size() == 1) && (obj.getFirst() == null)) {
             return null;
         } else {
             final StringBuilder sb = new StringBuilder();
@@ -407,9 +407,9 @@ public interface IBaseDataObject {
      */
     default Collection<String> getParameterAsStrings(final String key) {
         final var obj = getParameter(key);
-        if (CollectionUtils.isEmpty(obj) || ((obj.size() == 1) && (obj.get(0) == null))) {
+        if (CollectionUtils.isEmpty(obj) || ((obj.size() == 1) && (obj.getFirst() == null))) {
             return Collections.emptyList();
-        } else if ((obj.size() == 1) && (obj.get(0) instanceof String s)) {
+        } else if ((obj.size() == 1) && (obj.getFirst() instanceof String s)) {
             return Collections.singletonList(s);
         } else {
             return obj.stream().map(String::valueOf).collect(Collectors.toList());

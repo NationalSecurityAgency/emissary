@@ -1,7 +1,7 @@
-/***********************************************************
+/*
  * This place transforms \\uxxxx Json escape 
  * stuff into normal unicode (utf-8 characters)
- **/
+ */
 
 package emissary.transform;
 

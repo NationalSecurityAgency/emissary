@@ -7,6 +7,7 @@ import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import static emissary.place.IServiceProviderPlace.SPROUT_KEY;
 
 public class TransformHistory implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -7252497842562281631L;
 
     private final List<History> history;

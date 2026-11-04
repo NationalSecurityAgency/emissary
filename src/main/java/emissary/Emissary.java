@@ -103,7 +103,7 @@ public class Emissary {
                 HelpCommand.dumpCommands(cli);
                 exit(1);
             }
-            String commandName = commandNames.get(0);
+            String commandName = commandNames.getFirst();
             EmissaryCommand cmd = commands.get(commandName);
             dumpBanner(cmd);
             if (Arrays.asList(args).contains(ServerCommand.COMMAND_NAME)) {

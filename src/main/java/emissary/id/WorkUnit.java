@@ -1,5 +1,6 @@
 package emissary.id;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map;
  */
 public class WorkUnit implements Serializable {
     // Serializable
+    @Serial
     static final long serialVersionUID = -990149336476881472L;
 
     protected String filename;

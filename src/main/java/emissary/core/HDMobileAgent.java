@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,6 +29,7 @@ public class HDMobileAgent extends MobileAgent {
     protected static final Logger logger = LoggerFactory.getLogger(HDMobileAgent.class);
 
     // Serializability
+    @Serial
     static final long serialVersionUID = 786319119844306571L;
 
     // What we carry around with us
@@ -564,7 +566,7 @@ public class HDMobileAgent extends MobileAgent {
         if (this.payloadList != null && !this.payloadList.isEmpty()) {
             // Avoid synchronizing this [don't call getPayload()]
             try {
-                sn = this.payloadList.get(0).shortName();
+                sn = this.payloadList.getFirst().shortName();
                 sz = this.payloadList.size();
             } catch (Throwable ignored) {
                 // empty catch block

@@ -1,5 +1,6 @@
 package emissary.util;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.Set;
  * A set of named counters that can be easily incremented
  */
 public class CounterSet extends HashMap<String, Integer> {
+    @Serial
     private static final long serialVersionUID = 3741872528399600810L;
     // Controls whether unknown keys will be counted, no if false
     protected boolean flexentry = false;
