@@ -1,0 +1,4 @@
+ignore:
+  # code-quality is a new permission scope added with actions/upload-code-coverage (public preview, 2026-05-26).
+  # Remove this entry once actionlint recognizes the scope.
+  - 'unknown permission scope "code-quality"'
