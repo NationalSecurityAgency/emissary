@@ -114,15 +114,26 @@ class EmissaryTest extends UnitTest {
 
     @Test
     void testVerbose() {
-        Map<String, EmissaryCommand> cmds = new HashMap<>();
-        // like is done in the emissary script
-        System.setProperty("set.picocli.debug", "true");
-        cmds.put("another", new AnotherBaseCommand());
+        final String previousDebugProperty = System.getProperty("set.picocli.debug");
+        final CommandLine.TraceLevel previousTraceLevel = CommandLine.tracer().getLevel();
+        try {
+            // like is done in the emissary script
+            System.setProperty("set.picocli.debug", "true");
+            Map<String, EmissaryCommand> cmds = new HashMap<>();
+            cmds.put("another", new AnotherBaseCommand());
 
-        Emissary2 emissary = new Emissary2(cmds);
+            Emissary2 emissary = new Emissary2(cmds);
 
-        emissary.execute(makeArgs("another"));
-        assertTrue(emissary.getErr().contains("picocli INFO] Parsing 1 command line args [another]"));
+            emissary.execute(makeArgs("another"));
+            assertTrue(emissary.getErr().contains("picocli INFO] Parsing 1 command line args [another]"));
+        } finally {
+            if (previousDebugProperty == null) {
+                System.clearProperty("set.picocli.debug");
+            } else {
+                System.setProperty("set.picocli.debug", previousDebugProperty);
+            }
+            CommandLine.tracer().setLevel(previousTraceLevel);
+        }
     }
 
     private static String[] makeArgs(String... args) {

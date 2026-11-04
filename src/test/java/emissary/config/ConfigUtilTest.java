@@ -54,6 +54,7 @@ class ConfigUtilTest extends UnitTest {
     @Override
     @BeforeEach
     public void setUp() throws Exception {
+        setupSystemProperties();
         configDir = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY, ".");
         testFilesAndDirectories = new ArrayList<>();
         configPath = Path.of(configDir);
@@ -78,7 +79,7 @@ class ConfigUtilTest extends UnitTest {
         }
         configPath = null;
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
-        ConfigUtil.initialize();
+        setupSystemProperties();
     }
 
 
