@@ -141,7 +141,8 @@ public class EditDistance {
     /*
      * returns the edit distance between two strings, or -1 on failure
      */
-    public static int calculateEditDistance(@Nullable byte[] from, int fromLen, @Nullable byte[] to, int toLen) {
+    public static synchronized int calculateEditDistance(@Nullable byte[] from, int fromLen, @Nullable byte[] to, int toLen) {
+        index = 0;
         EditDistance.fromLen = fromLen;
         EditDistance.toLen = toLen;
 
