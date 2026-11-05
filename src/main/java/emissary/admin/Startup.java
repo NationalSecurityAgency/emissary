@@ -31,7 +31,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -450,7 +449,7 @@ public class Startup {
         int numPlacesFoundPreviously = 0;
 
         logger.info("Waiting for {} places to start {}", placesToStart.size(),
-                placesToStart.stream().map(s -> StringUtils.substringAfterLast(s, "/")).sorted().collect(Collectors.toList()));
+                placesToStart.stream().map(s -> StringUtils.substringAfterLast(s, "/")).sorted().toList());
         do {
             if (this.placesToStart.size() != numPlacesExpected) {
                 logger.info("Now waiting for {} places to start. (originally {} places)", this.placesToStart.size(), numPlacesExpected);

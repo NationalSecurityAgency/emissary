@@ -23,7 +23,6 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -313,7 +312,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             fileFlavorList.add(sval);
             final String[] fileFlavors = ConfigUtil.addFlavors(sval);
             if (ArrayUtils.isNotEmpty(fileFlavors)) {
-                fileFlavorList.addAll(Arrays.asList(fileFlavors));
+                fileFlavorList.addAll(List.of(fileFlavors));
             }
             logger.debug("ServiceConfigGuide::handleNewEntry -- FileFlavorList = {}", fileFlavorList);
 

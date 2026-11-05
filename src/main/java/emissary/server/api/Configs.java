@@ -19,12 +19,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static emissary.config.ConfigUtil.CONFIG_FILE_ENDING;
 import static emissary.core.constants.Configurations.RESERVED_SERVICE_CONFIG_KEYS;
@@ -141,7 +139,7 @@ public class Configs {
      */
     protected static List<String> combineConfigs(final String cfg, String[] flavoredConfigs) {
         List<String> configs = Lists.newArrayList(cfg);
-        configs.addAll(Arrays.asList(flavoredConfigs));
+        configs.addAll(List.of(flavoredConfigs));
         return configs;
     }
 
@@ -157,7 +155,7 @@ public class Configs {
                         .thenComparing(ConfigEntry::getKey)
                         .thenComparing(ConfigEntry::getValue))
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Base class for analyzers
@@ -73,7 +72,7 @@ public abstract class Analyzer extends ServiceProviderPlace {
         this.preferredViews = configG.findEntries("PREFERRED_VIEW", "TEXT");
         this.findPreferredViewByRegex = configG.findBooleanEntry("FIND_PREFERRED_VIEW_BY_REGEX", false);
         if (findPreferredViewByRegex) {
-            preferredViewPatternList = preferredViews.stream().map(Pattern::compile).collect(Collectors.toList());
+            preferredViewPatternList = preferredViews.stream().map(Pattern::compile).toList();
         }
         this.analyzedDataName = configG.findStringEntry("ANALYZED_DATA_NAME", null);
     }

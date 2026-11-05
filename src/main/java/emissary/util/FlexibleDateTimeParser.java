@@ -28,8 +28,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.stream.Collectors.toList;
-
 /**
  * Attempt to parse a date in an unknown format. This will loop through a set of configured formats and convert it into
  * a {@link ZonedDateTime}.
@@ -266,7 +264,7 @@ public final class FlexibleDateTimeParser {
     private static List<DateTimeFormatter> setupDateFormats(final List<ConfigEntry> configEntries, final List<DateTimeFormatter> dateTimeFormats) {
         List<DateTimeFormatter> dateFormats;
         if (CollectionUtils.isNotEmpty(dateTimeFormats)) {
-            dateFormats = Collections.unmodifiableList(dateTimeFormats);
+            dateFormats = List.copyOf(dateTimeFormats);
             logger.debug("Created successfully. Created {} of {} formats from config", dateFormats.size(), configEntries.size());
             return dateFormats;
         } else {
@@ -286,7 +284,7 @@ public final class FlexibleDateTimeParser {
         if (CollectionUtils.isEmpty(configEntries)) {
             return null;
         }
-        return configEntries.stream().map(FlexibleDateTimeParser::getFormatter).filter(Objects::nonNull).collect(toList());
+        return configEntries.stream().map(FlexibleDateTimeParser::getFormatter).filter(Objects::nonNull).toList();
     }
 
     /**
