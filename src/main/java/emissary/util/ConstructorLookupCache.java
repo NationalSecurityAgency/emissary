@@ -26,32 +26,13 @@ public final class ConstructorLookupCache {
 
     /**
      * Represents a known result for looking up a class constructor that can handle a specific set of argument types.
+     *
+     * @param clazz The class being constructed.
+     * @param argTypes The argument types that will be passed to the constructor.
+     * @param constructor A constructor for {@code clazz} that can accept the argument types specified in {@code argTypes}.
      */
-    private static final class KnownConstructor {
-
-        /** The class being constructed. */
-        private final Class<?> clazz;
-
-        /** The argument types that will be passed to the constructor. */
-        private final Class<?>[] argTypes;
-
-        /**
-         * A constructor for {@link #clazz} that accepts the argument types from {@link #argTypes}.
-         */
-        private final Constructor<?> constructor;
-
-        /**
-         * Create a binding between a class, some constructor argument types, and a constructor.
-         *
-         * @param clazz The class being constructed.
-         * @param argTypes The argument types that will be passed to the constructor.
-         * @param constructor A constructor for {@code clazz} that can accept the argument types specified in {@code argTypes}.
-         */
-        public KnownConstructor(final Class<?> clazz, final Class<?>[] argTypes, final Constructor<?> constructor) {
-            this.clazz = clazz;
-            this.argTypes = argTypes;
-            this.constructor = constructor;
-        }
+    @SuppressWarnings("ArrayRecordComponent")
+    private record KnownConstructor(Class<?> clazz, Class<?>[] argTypes, Constructor<?> constructor) {
 
         /**
          * Get the stored constructor if it matches the given class and argument types.
@@ -65,13 +46,13 @@ public final class ConstructorLookupCache {
         @Nullable
         public Constructor<?> getConstructor(final Class<?> desiredClazz, final Class<?>[] desiredArgTypes) {
             // The stored class has to match the desired class.
-            if (!this.clazz.equals(desiredClazz)) {
+            if (!clazz().equals(desiredClazz)) {
                 return null; // Non-matching class.
             }
 
             // The stored argument count has to match the desired
             // argument count.
-            final Class<?>[] myArgTypes = this.argTypes;
+            final Class<?>[] myArgTypes = argTypes();
             if (myArgTypes.length != desiredArgTypes.length) {
                 return null; // The number of arguments doesn't match.
             }
@@ -90,7 +71,7 @@ public final class ConstructorLookupCache {
 
             // At this point we know that we have the desired class
             // and arguments.
-            return this.constructor;
+            return constructor();
         }
     }
 
