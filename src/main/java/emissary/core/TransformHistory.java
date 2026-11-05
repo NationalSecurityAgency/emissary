@@ -145,7 +145,7 @@ public class TransformHistory implements Serializable {
         if (CollectionUtils.isEmpty(history)) {
             return null;
         }
-        return history.get(history.size() - 1);
+        return history.getLast();
     }
 
     /**
@@ -184,7 +184,7 @@ public class TransformHistory implements Serializable {
         if (history.isEmpty()) {
             return true;
         }
-        final String s = history.get(history.size() - 1).getKey();
+        final String s = history.getLast().getKey();
         return s.contains(IServiceProviderPlace.SPROUT_KEY);
     }
 

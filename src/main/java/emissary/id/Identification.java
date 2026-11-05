@@ -105,14 +105,7 @@ public class Identification implements Serializable {
      * Get a comma separated string list of all the types
      */
     public String getTypeString() {
-        final StringBuilder b = new StringBuilder();
-        for (final String t : this.types) {
-            if (b.length() > 0) {
-                b.append(',');
-            }
-            b.append(t);
-        }
-        return b.toString();
+        return String.join(",", this.types);
     }
 
     /**
@@ -161,7 +154,7 @@ public class Identification implements Serializable {
         if (this.types.isEmpty()) {
             return null;
         } else {
-            return this.types.remove(0);
+            return this.types.removeFirst();
         }
     }
 
@@ -169,7 +162,7 @@ public class Identification implements Serializable {
      * Add the type to the front of the list and return it
      */
     public void pushType(String s) {
-        this.types.add(0, s);
+        this.types.addFirst(s);
     }
 
     /**

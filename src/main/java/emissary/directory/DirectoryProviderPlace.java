@@ -443,7 +443,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
         if (!de.getDataType().equals(serviceProxy)) {
             // Clear out the placeholder
             if (de.getDataType().equals(UNUSED_PROXY)) {
-                keys.remove(0);
+                keys.removeFirst();
             }
 
             de.setDataType(serviceProxy);
@@ -473,7 +473,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
         if (KeyManipulator.isValid(key)) {
             DirectoryEntry de = new DirectoryEntry(keys.getFirst());
             if (de.getDataType().equals(UNUSED_PROXY)) {
-                keys.remove(0);
+                keys.removeFirst();
             }
 
             logger.debug("Adding and registering new key {}", key);

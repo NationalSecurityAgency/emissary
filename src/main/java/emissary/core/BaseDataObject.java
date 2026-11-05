@@ -625,7 +625,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         if (this.currentForm.isEmpty()) {
             return null;
         } else {
-            return this.currentForm.remove(0);
+            return this.currentForm.removeFirst();
         }
     }
 
@@ -729,7 +729,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
             // If deleted, add it back on top
             if (count > 0) {
-                this.currentForm.add(0, curForm);
+                this.currentForm.addFirst(curForm);
             }
         }
     }
