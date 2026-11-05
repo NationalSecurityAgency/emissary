@@ -277,7 +277,7 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
                 return "Cound not find element " + xmlPathElementName;
             }
 
-            element = elements.get(0);
+            element = elements.getFirst();
         }
 
         String lengthElement = element.getAttributeValue(IBaseDataObjectXmlCodecs.LENGTH_ATTRIBUTE_NAME);
@@ -311,7 +311,7 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
                 return "Cound not find element " + xmlPathElementName;
             }
 
-            element = elements.get(0);
+            element = elements.getFirst();
         }
 
         List<Element> keyValueElements = element.getChildren(xmlPathElementNames[xmlPathElementNames.length - 1]);

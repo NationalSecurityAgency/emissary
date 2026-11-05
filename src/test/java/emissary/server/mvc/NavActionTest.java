@@ -88,9 +88,9 @@ class NavActionTest {
     void navItems() {
         nav.setNavItems(navItems);
         assertEquals(3, nav.getNavItems().size());
-        assertEquals("Relative path", nav.getNavItems().get(0).getDisplay());
+        assertEquals("Relative path", nav.getNavItems().getFirst().getDisplay());
         // TODO: Revert this test to "/path/to/resource" NavAction.java:91 is removed
-        assertEquals("./path/to/resource", nav.getNavItems().get(0).getLink());
+        assertEquals("./path/to/resource", nav.getNavItems().getFirst().getLink());
         assertEquals("Path to action", nav.getNavItems().get(1).getDisplay());
         assertEquals("./testing.action", nav.getNavItems().get(1).getLink());
         assertEquals("Path with safe dots", nav.getNavItems().get(2).getDisplay());

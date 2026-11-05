@@ -102,10 +102,10 @@ class DisposeHelperTest extends UnitTest {
         assertEquals(0, DisposeHelper.get(bdo).size());
         DisposeHelper.set(bdo, FIRST);
         assertEquals(1, DisposeHelper.get(bdo).size());
-        assertEquals(FIRST, DisposeHelper.get(bdo).get(0));
+        assertEquals(FIRST, DisposeHelper.get(bdo).getFirst());
         DisposeHelper.set(bdo, SECOND);
         assertEquals(1, DisposeHelper.get(bdo).size());
-        assertEquals(SECOND, DisposeHelper.get(bdo).get(0));
+        assertEquals(SECOND, DisposeHelper.get(bdo).getFirst());
     }
 
     @Test
@@ -113,7 +113,7 @@ class DisposeHelperTest extends UnitTest {
         DisposeHelper.add(bdo, FIRST);
         List<Runnable> lr = DisposeHelper.get(bdo);
         assertEquals(1, lr.size());
-        assertEquals(FIRST, lr.get(0));
+        assertEquals(FIRST, lr.getFirst());
 
         DisposeHelper.add(bdo, SECOND);
         lr = DisposeHelper.get(bdo);
@@ -129,7 +129,7 @@ class DisposeHelperTest extends UnitTest {
         DisposeHelper.add(bdo, runnableList);
         final List<Runnable> lr = DisposeHelper.get(bdo);
         assertEquals(2, lr.size());
-        assertEquals(FIRST, lr.get(0));
+        assertEquals(FIRST, lr.getFirst());
         assertEquals(SECOND, lr.get(1));
     }
 
@@ -141,13 +141,13 @@ class DisposeHelperTest extends UnitTest {
         DisposeHelper.add(bdo, runnableList);
         List<Runnable> lr = DisposeHelper.get(bdo);
         assertEquals(2, lr.size());
-        assertEquals(FIRST, lr.get(0));
+        assertEquals(FIRST, lr.getFirst());
         assertEquals(SECOND, lr.get(1));
 
         DisposeHelper.add(bdo, THIRD);
         lr = DisposeHelper.get(bdo);
         assertEquals(3, DisposeHelper.get(bdo).size());
-        assertEquals(FIRST, lr.get(0));
+        assertEquals(FIRST, lr.getFirst());
         assertEquals(SECOND, lr.get(1));
         assertEquals(THIRD, lr.get(2));
     }
@@ -160,13 +160,13 @@ class DisposeHelperTest extends UnitTest {
         DisposeHelper.add(bdo, runnableList);
         List<Runnable> lr = DisposeHelper.get(bdo);
         assertEquals(2, lr.size());
-        assertEquals(FIRST, lr.get(0));
+        assertEquals(FIRST, lr.getFirst());
         assertEquals(SECOND, lr.get(1));
 
         DisposeHelper.add(bdo, Collections.singletonList(THIRD));
         lr = DisposeHelper.get(bdo);
         assertEquals(3, lr.size());
-        assertEquals(FIRST, lr.get(0));
+        assertEquals(FIRST, lr.getFirst());
         assertEquals(SECOND, lr.get(1));
         assertEquals(THIRD, lr.get(2));
     }
