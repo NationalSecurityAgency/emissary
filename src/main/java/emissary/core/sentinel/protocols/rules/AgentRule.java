@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public abstract class AgentRule extends Rule<AgentTracker> {
 
@@ -65,7 +64,7 @@ public abstract class AgentRule extends Rule<AgentTracker> {
     @Override
     public boolean condition(Collection<AgentTracker> agentTrackers) {
         List<AgentTracker> filtered =
-                agentTrackers.stream().filter(p -> place.matcher(p.getPlaceName()).matches()).collect(Collectors.toList());
+                agentTrackers.stream().filter(p -> place.matcher(p.getPlaceName()).matches()).toList();
         return overThreshold(filtered) && overTimeLimit(filtered);
     }
 
