@@ -413,8 +413,8 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
         List<IBaseDataObject> listTarget = null;
         if (target instanceof IBaseDataObject iBaseDataObject) {
             doTarget = iBaseDataObject;
-        } else if (target instanceof List) {
-            listTarget = (List<IBaseDataObject>) target;
+        } else if (target instanceof List<?> list) {
+            listTarget = (List<IBaseDataObject>) list;
         } else {
             logger.error("Cannot run filter on {}", target.getClass().getName());
             return;

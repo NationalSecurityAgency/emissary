@@ -207,7 +207,7 @@ public class IBaseDataObjectDiffHelper {
 
                 final String prefix = String.format(Locale.ROOT, "%s[index %d] : ", identifier, i);
                 while (!childDifferences.isEmpty()) {
-                    differences.add(prefix + childDifferences.remove(0)); // NOSONAR Used correctly
+                    differences.add(prefix + childDifferences.removeFirst()); // NOSONAR Used correctly
                 }
             }
         }

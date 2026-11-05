@@ -708,8 +708,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         // Allow this to be null to that derived classes
         // can handle the setting of their payload and still
         // be able to use this method
-        if (dataObject != null) {
-            final IBaseDataObject d = (IBaseDataObject) dataObject;
+        if (dataObject instanceof IBaseDataObject d) {
             logger.debug("Setting payload {}", d.shortName());
             setPayload(d);
             setAgentId(d.shortName());
