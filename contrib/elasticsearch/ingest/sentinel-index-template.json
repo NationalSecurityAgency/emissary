@@ -1,0 +1,211 @@
+{
+  "index_patterns": [
+    "sentinel-*"
+  ],
+  "_meta": {
+    "description": "Emissary Sentinel JSON logs"
+  },
+  "template": {
+    "settings": {
+      "index.default_pipeline": "emissary-sentinel"
+    },
+    "mappings": {
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "timestamp": {
+          "type": "date",
+          "format": "epoch_millis"
+        },
+        "level": {
+          "type": "keyword"
+        },
+        "loggerName": {
+          "type": "keyword"
+        },
+        "threadName": {
+          "type": "keyword"
+        },
+        "message": {
+          "type": "text"
+        },
+        "throwable": {
+          "type": "object",
+          "enabled": false
+        },
+        "context": {
+          "type": "object",
+          "enabled": false
+        },
+        "mdc": {
+          "properties": {
+            "shortName": {
+              "type": "keyword"
+            },
+            "serviceLocation": {
+              "type": "keyword"
+            }
+          }
+        },
+        "sentinel": {
+          "properties": {
+            "event": {
+              "properties": {
+                "type": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "action": {
+              "type": "keyword"
+            },
+            "agent": {
+              "properties": {
+                "name": {
+                  "type": "keyword"
+                },
+                "names": {
+                  "type": "keyword"
+                },
+                "short_name": {
+                  "type": "keyword"
+                },
+                "current_form": {
+                  "type": "keyword"
+                },
+                "count": {
+                  "type": "integer"
+                },
+                "duration_minutes": {
+                  "type": "integer"
+                }
+              }
+            },
+            "place": {
+              "properties": {
+                "key": {
+                  "type": "keyword"
+                },
+                "name": {
+                  "type": "keyword"
+                },
+                "names": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "rule": {
+              "properties": {
+                "name": {
+                  "type": "keyword"
+                },
+                "names": {
+                  "type": "keyword"
+                },
+                "places": {
+                  "type": "keyword"
+                },
+                "count": {
+                  "type": "integer"
+                }
+              }
+            },
+            "stack_trace": {
+              "type": "text"
+            },
+            "agents_raw": {
+              "type": "object",
+              "enabled": false
+            },
+            "rules_raw": {
+              "type": "object",
+              "enabled": false
+            },
+            "error": {
+              "properties": {
+                "signature": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "stack_trace_signature": {
+              "type": "keyword"
+            }
+          }
+        },
+        "emissary": {
+          "properties": {
+            "node": {
+              "properties": {
+                "name": {
+                  "type": "keyword"
+                },
+                "port": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        "host": {
+          "properties": {
+            "name": {
+              "type": "keyword"
+            }
+          }
+        },
+        "log": {
+          "properties": {
+            "file": {
+              "properties": {
+                "path": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "input": {
+          "properties": {
+            "type": {
+              "type": "keyword"
+            }
+          }
+        },
+        "event": {
+          "properties": {
+            "dataset": {
+              "type": "keyword"
+            },
+            "kind": {
+              "type": "keyword"
+            },
+            "category": {
+              "type": "keyword"
+            },
+            "ingested": {
+              "type": "date"
+            },
+            "ingest_lag_ms": {
+              "type": "long"
+            }
+          }
+        },
+        "error": {
+          "properties": {
+            "message": {
+              "type": "text"
+            },
+            "type": {
+              "type": "keyword"
+            },
+            "stack_trace": {
+              "type": "text"
+            }
+          }
+        }
+      }
+    }
+  }
+}

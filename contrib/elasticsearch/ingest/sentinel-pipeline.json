@@ -1,0 +1,344 @@
+{
+  "description": "Enrich Emissary Sentinel JSON logs",
+  "processors": [
+    {
+      "set": {
+        "field": "event.dataset",
+        "value": "emissary.sentinel"
+      }
+    },
+    {
+      "set": {
+        "field": "event.kind",
+        "value": "event"
+      }
+    },
+    {
+      "set": {
+        "field": "event.category",
+        "value": [
+          "process"
+        ]
+      }
+    },
+    {
+      "set": {
+        "field": "service.name",
+        "value": "emissary"
+      }
+    },
+    {
+      "set": {
+        "field": "event.ingested",
+        "value": "{{{_ingest.timestamp}}}",
+        "ignore_failure": true
+      }
+    },
+    {
+      "grok": {
+        "field": "log.file.path",
+        "patterns": [
+          "^.*/sentinel-%{DATA:emissary.node.name}-%{INT:emissary.node.port}\\.\\d{4}-\\d{2}-\\d{2}-\\d{2}\\.json$",
+          "^.*/sentinel-%{DATA:emissary.node.name}-%{INT:emissary.node.port}\\.json$"
+        ],
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "convert": {
+        "field": "emissary.node.port",
+        "type": "integer",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "set": {
+        "field": "emissary.node.name",
+        "value": "unknown",
+        "if": "ctx.emissary == null || ctx.emissary.node == null || ctx.emissary.node.name == null"
+      }
+    },
+    {
+      "set": {
+        "field": "emissary.node.port",
+        "value": 0,
+        "if": "ctx.emissary == null || ctx.emissary.node == null || ctx.emissary.node.port == null"
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.event.type",
+        "value": "log"
+      }
+    },
+    {
+      "date": {
+        "field": "timestamp",
+        "formats": [
+          "UNIX_MS"
+        ],
+        "target_field": "@timestamp",
+        "ignore_failure": true
+      }
+    },
+    {
+      "script": {
+        "lang": "painless",
+        "source": "if (ctx.event != null && ctx.event.ingested != null && ctx['@timestamp'] != null) { try { def ingested = java.time.Instant.parse(ctx.event.ingested.toString()).toEpochMilli(); def eventTime = java.time.Instant.parse(ctx['@timestamp'].toString()).toEpochMilli(); ctx.event.ingest_lag_ms = ingested - eventTime; } catch (Exception e) { } }"
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.place.key",
+        "copy_from": "mdc.serviceLocation",
+        "ignore_failure": true
+      }
+    },
+    {
+      "grok": {
+        "field": "mdc.serviceLocation",
+        "patterns": [
+          "^%{GREEDYDATA}/%{DATA:sentinel.place.name}$"
+        ],
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.agent.short_name",
+        "copy_from": "mdc.shortName",
+        "ignore_failure": true
+      }
+    },
+    {
+      "grok": {
+        "field": "message",
+        "patterns": [
+          "^Sentinel detected possible locked agents -- %{GREEDYDATA:raw_agents}$"
+        ],
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.event.type",
+        "value": "action_triggered",
+        "if": "ctx.raw_agents != null"
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.action",
+        "value": "report",
+        "if": "ctx.raw_agents != null"
+      }
+    },
+    {
+      "json": {
+        "field": "raw_agents",
+        "target_field": "sentinel.agents_raw",
+        "ignore_failure": true,
+        "if": "ctx.raw_agents != null"
+      }
+    },
+    {
+      "script": {
+        "if": "ctx.sentinel != null && ctx.sentinel.agents_raw instanceof List",
+        "lang": "painless",
+        "source": "def agents = ctx.sentinel.agents_raw; def names = new ArrayList(); def places = new ArrayList(); int maxDuration = 0; for (def agent : agents) { if (agent.agentName != null) { names.add(agent.agentName); } if (agent.directoryEntry != null) { def key = agent.directoryEntry; int slash = key.lastIndexOf('/'); places.add(slash >= 0 ? key.substring(slash + 1) : key); } if (agent.timeInMinutes != null) { int duration = ((Number) agent.timeInMinutes).intValue(); if (duration > maxDuration) { maxDuration = duration; } } } ctx.sentinel.agent = ['count': agents.size(), 'duration_minutes': maxDuration, 'names': names]; if (!names.isEmpty()) { ctx.sentinel.agent.name = names.get(0); } if (ctx.sentinel.place == null) { ctx.sentinel.place = [:]; } ctx.sentinel.place.names = places; if (!places.isEmpty() && ctx.sentinel.place.name == null) { ctx.sentinel.place.name = places.get(0); }"
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.event.type",
+        "value": "action_triggered",
+        "if": "ctx.message != null && ctx.message.startsWith('Sentinel detected locked agents')"
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.action",
+        "value": "recover",
+        "if": "ctx.message != null && ctx.message.startsWith('Sentinel detected locked agents')"
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.event.type",
+        "value": "action_triggered",
+        "if": "ctx.message != null && (ctx.message.contains('initiating graceful shutdown') || ctx.message.contains('initiating forceful shutdown') || ctx.message.contains('exiting now'))"
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.action",
+        "value": "stop",
+        "if": "ctx.message != null && ctx.message.contains('initiating graceful shutdown')"
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.action",
+        "value": "kill",
+        "if": "ctx.message != null && ctx.message.contains('initiating forceful shutdown')"
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.action",
+        "value": "exit",
+        "if": "ctx.message != null && ctx.message.contains('exiting now')"
+      }
+    },
+    {
+      "grok": {
+        "field": "message",
+        "patterns": [
+          "^Sentinel rules matched -- %{GREEDYDATA:raw_rules}$"
+        ],
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.event.type",
+        "value": "rules_matched",
+        "if": "ctx.raw_rules != null"
+      }
+    },
+    {
+      "json": {
+        "field": "raw_rules",
+        "target_field": "sentinel.rules_raw",
+        "ignore_failure": true,
+        "if": "ctx.raw_rules != null"
+      }
+    },
+    {
+      "script": {
+        "if": "ctx.sentinel != null && ctx.sentinel.rules_raw instanceof List",
+        "lang": "painless",
+        "source": "def rules = ctx.sentinel.rules_raw; def names = new ArrayList(); def places = new ArrayList(); for (def rule : rules) { if (rule.name != null) { names.add(rule.name); } if (rule.place != null) { places.add(rule.place); } } ctx.sentinel.rule = ['count': rules.size(), 'names': names, 'places': places]; if (!names.isEmpty()) { ctx.sentinel.rule.name = names.get(0); }"
+      }
+    },
+    {
+      "grok": {
+        "field": "message",
+        "patterns": [
+          "^In agent %{DATA:agent_name} with currentForm %{DATA:current_form} for %{NUMBER:duration_minutes} minute\\(s\\)\\n(?<stack_trace_text>[\\s\\S]*)$"
+        ],
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.event.type",
+        "value": "agent_snapshot",
+        "if": "ctx.agent_name != null"
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.agent.name",
+        "copy_from": "agent_name",
+        "ignore_failure": true
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.agent.current_form",
+        "copy_from": "current_form",
+        "ignore_failure": true
+      }
+    },
+    {
+      "convert": {
+        "field": "duration_minutes",
+        "type": "integer",
+        "ignore_failure": true
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.agent.duration_minutes",
+        "copy_from": "duration_minutes",
+        "ignore_failure": true
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.stack_trace",
+        "copy_from": "stack_trace_text",
+        "ignore_failure": true
+      }
+    },
+    {
+      "script": {
+        "if": "ctx.sentinel != null && ctx.sentinel.agent != null && ctx.sentinel.agent.names == null && ctx.sentinel.agent.name != null",
+        "lang": "painless",
+        "source": "ctx.sentinel.agent.names = [ctx.sentinel.agent.name];"
+      }
+    },
+    {
+      "script": {
+        "if": "ctx.sentinel != null && ctx.sentinel.place != null && ctx.sentinel.place.names == null && ctx.sentinel.place.name != null",
+        "lang": "painless",
+        "source": "ctx.sentinel.place.names = [ctx.sentinel.place.name];"
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.event.type",
+        "value": "heartbeat",
+        "if": "ctx.message == 'Sentinel is watching'"
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.event.type",
+        "value": "lifecycle",
+        "if": "ctx.message != null && (ctx.message == 'Sentinel stopped' || ctx.message == 'Sentinel is disabled' || ctx.message.startsWith('Sentinel initialized'))"
+      }
+    },
+    {
+      "set": {
+        "field": "sentinel.event.type",
+        "value": "error",
+        "if": "ctx.level == 'ERROR'"
+      }
+    },
+    {
+      "script": {
+        "if": "ctx.level == 'ERROR' && ctx.message != null",
+        "lang": "painless",
+        "source": "if (ctx.sentinel == null) { ctx.sentinel = [:]; } if (ctx.sentinel.error == null) { ctx.sentinel.error = [:]; } if (ctx.sentinel.error.signature == null) { String msg = ctx.message.toString(); if (msg.length() > 240) { msg = msg.substring(0, 240); } ctx.sentinel.error.signature = msg; }"
+      }
+    },
+    {
+      "script": {
+        "if": "ctx.sentinel != null && ctx.sentinel.stack_trace != null && ctx.sentinel.stack_trace_signature == null",
+        "lang": "painless",
+        "source": "if (ctx.sentinel.stack_trace_signature == null) { String st = ctx.sentinel.stack_trace.toString(); if (st.length() > 240) { st = st.substring(0, 240); } ctx.sentinel.stack_trace_signature = st; }"
+      }
+    },
+    {
+      "remove": {
+        "field": [
+          "raw_agents",
+          "raw_rules",
+          "agent_name",
+          "current_form",
+          "duration_minutes",
+          "stack_trace_text"
+        ],
+        "ignore_missing": true
+      }
+    }
+  ]
+}
