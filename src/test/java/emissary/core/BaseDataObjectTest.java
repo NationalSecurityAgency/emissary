@@ -50,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -110,6 +111,19 @@ class BaseDataObjectTest extends UnitTest {
         assertNotNull(b5.getCreationTimestamp());
         assertEquals(tld, b5.getTld());
 
+    }
+
+    @Test
+    void testSetTld() {
+        final IBaseDataObject tld = new BaseDataObject();
+        final BaseDataObject child = new BaseDataObject("content".getBytes(UTF_8), "aChild", "UNKNOWN");
+        assertNull(child.getTld());
+
+        child.setTld(tld);
+        assertSame(tld, child.getTld());
+
+        child.setTld(null);
+        assertNull(child.getTld());
     }
 
     @Test

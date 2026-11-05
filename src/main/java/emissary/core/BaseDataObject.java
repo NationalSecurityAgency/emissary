@@ -195,7 +195,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     protected SeekableByteChannelFactory seekableByteChannelFactory;
 
     @Nullable
-    protected final IBaseDataObject tld;
+    protected IBaseDataObject tld;
 
     protected enum DataState {
         NO_DATA, CHANNEL_ONLY, BYTE_ARRAY_ONLY, BYTE_ARRAY_AND_CHANNEL
@@ -1498,8 +1498,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    @Nullable
     public IBaseDataObject getTld() {
         return tld;
     }
 
+    @Override
+    public void setTld(@Nullable IBaseDataObject tld) {
+        this.tld = tld;
+    }
 }
