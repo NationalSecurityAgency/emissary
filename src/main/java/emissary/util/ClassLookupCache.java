@@ -23,54 +23,39 @@ public final class ClassLookupCache {
     /**
      * A binding from a name string to a {@link Class} object.
      *
+     * @param className the class name.
+     * @param clazz A class object that matches {@code className}.
      * @param <T> The object type that will be produced by the class.
      */
-    private static final class NamedClass<T> {
+    private record NamedClass<T>(String className, Class<T>clazz)
+    {
 
-        /** The class name. */
-        private final String className;
-
-        /** A class object that matches {@link #className}. */
-        private final Class<T> clazz;
-
-        /**
-         * Create a new binding between a class name and a matching object.
-         *
-         * @param className the class name.
-         * @param clazz A class object that matches {@code className}.
-         */
-        private NamedClass(final String className, final Class<T> clazz) {
-            this.className = className;
-            this.clazz = clazz;
-        }
-
-        /**
-         * Get the class object, if it has the given name.
-         *
-         * @param desiredName The class name to check.
-         * @return If this instance has the given {@code desiredName}, this returns its {@link Class} object. Otherwise
-         *         {@code null}.
-         */
-        @Nullable
-        public Class<T> getClass(final String desiredName) {
-            return this.className.equals(desiredName) ? this.clazz : null;
-        }
-
-        /**
-         * Get a binding between a class name and a matching object.
-         *
-         * <p>
-         * The reason we use a static builder method is that it can handle wildcards such as {@code <?>} more easily than when
-         * calling the constructor directly.
-         *
-         * @param className the class name.
-         * @param clazz A class object that matches {@code className}.
-         * @return A binding between the given name and class object.
-         */
-        public static <T> NamedClass<T> getInstance(final String className, final Class<T> clazz) {
-            return new NamedClass<>(className, clazz);
-        }
+    /**
+     * Get the class object, if it has the given name.
+     *
+     * @param desiredName The class name to check.
+     * @return If this instance has the given {@code desiredName}, this returns its {@link Class} object. Otherwise
+     *         {@code null}.
+     */
+    @Nullable
+    public Class<T> getClass(final String desiredName) {
+        return className().equals(desiredName) ? clazz() : null;
     }
+
+    /**
+     * Get a binding between a class name and a matching object.
+     *
+     * <p>
+     * The reason we use a static builder method is that it can handle wildcards such as {@code <?>} more easily than when
+     * calling the constructor directly.
+     *
+     * @param className the class name.
+     * @param clazz A class object that matches {@code className}.
+     * @return A binding between the given name and class object.
+     */
+    public static <T> NamedClass<T> getInstance(final String className, final Class<T> clazz) {
+        return new NamedClass<>(className, clazz);
+    }}
 
     /**
      * A cached class object. If a thread is asked to repeatedly construct the same type of object, we can cache the class
