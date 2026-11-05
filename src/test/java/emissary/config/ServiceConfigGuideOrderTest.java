@@ -115,7 +115,7 @@ class ServiceConfigGuideOrderTest extends UnitTest {
         List<String> coords = baseGuide.findEntries(KEY);
 
         assertEquals(3, coords.size());
-        assertTrue(coords.get(0).contains("host3"));
+        assertTrue(coords.getFirst().contains("host3"));
         assertTrue(coords.get(1).contains("host2"));
         assertTrue(coords.get(2).contains("host1"));
     }
@@ -196,7 +196,7 @@ class ServiceConfigGuideOrderTest extends UnitTest {
 
         assertTrue(commonEntries.contains("rightOverride"));
         assertTrue(commonEntries.contains("leftOverride"));
-        assertEquals("rootValue", commonEntries.get(0));
+        assertEquals("rootValue", commonEntries.getFirst());
     }
 
     @Test
@@ -216,9 +216,9 @@ class ServiceConfigGuideOrderTest extends UnitTest {
         assertIterableEquals(List.of("test", "tls", "push", "auth-v2", "coalesce"), configG.findEntries("FEATURE_FLAGS"));
         assertIterableEquals(List.of("s3://emissary2", "s3://emissary"), configG.findEntries("STORAGE_BUCKET"));
 
-        assertEquals("Emissary", configG.findEntries("APP_NAME").get(0));
-        assertEquals("7d", configG.findEntries("DATA_AGE").get(0));
-        assertEquals("off", configG.findEntries("OBJECT_TRACE").get(0));
+        assertEquals("Emissary", configG.findEntries("APP_NAME").getFirst());
+        assertEquals("7d", configG.findEntries("DATA_AGE").getFirst());
+        assertEquals("off", configG.findEntries("OBJECT_TRACE").getFirst());
     }
 
     @Test
@@ -245,8 +245,8 @@ class ServiceConfigGuideOrderTest extends UnitTest {
 
         assertIterableEquals(List.of("debug", "push", "tls"), configG.findEntries("FEATURE_FLAGS"));
         assertTrue(configG.findEntries("TIMEOUT").isEmpty());
-        assertEquals("DEBUG", configG.findEntries("LOG_LEVEL").get(0));
-        assertEquals("off", configG.findEntries("OBJECT_TRACE").get(0));
+        assertEquals("DEBUG", configG.findEntries("LOG_LEVEL").getFirst());
+        assertEquals("off", configG.findEntries("OBJECT_TRACE").getFirst());
     }
 
     @Test

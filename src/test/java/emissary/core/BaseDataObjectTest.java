@@ -701,7 +701,7 @@ class BaseDataObjectTest extends UnitTest {
     void testGetAllForms() {
         final List<String> al = this.b.getAllCurrentForms();
         assertEquals(3, al.size(), "Forms returned");
-        assertEquals("THREE", al.get(0), "Form order");
+        assertEquals("THREE", al.getFirst(), "Form order");
     }
 
     @Test

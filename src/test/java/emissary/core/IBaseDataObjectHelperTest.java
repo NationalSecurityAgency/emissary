@@ -376,7 +376,7 @@ class IBaseDataObjectHelperTest extends UnitTest {
         IBaseDataObjectHelper.addParentInformationToChildExcluding(parentIbdo, childIbdo, EXCLUDED_PARAMETERS);
         assertNull(childIbdo.getFileType(), "Child should not contain simple excluded parameter from parent");
         assertNull(childIbdo.getParameter("WILDCARDED_KEYNAME"), "Child should not contain wildcard excluded parameter from parent");
-        assertEquals(parentIbdo.getParameter("NON_EXCLUDED").get(0), childIbdo.getParameter("NON_EXCLUDED").get(0),
+        assertEquals(parentIbdo.getParameter("NON_EXCLUDED").getFirst(), childIbdo.getParameter("NON_EXCLUDED").getFirst(),
                 "Child should have non-excluded parent parameter");
     }
 

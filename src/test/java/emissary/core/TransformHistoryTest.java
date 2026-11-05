@@ -76,7 +76,7 @@ class TransformHistoryTest extends UnitTest {
         assertEquals(2, th.getHistory().size());
         assertFalse(th.get().contains(key3)); // does not include coordinated results
         assertTrue(th.get(true).contains(key3));
-        assertEquals(key3, th.getHistory().get(1).getCoordinated().get(0));
+        assertEquals(key3, th.getHistory().get(1).getCoordinated().getFirst());
     }
 
     @Test
@@ -234,6 +234,6 @@ class TransformHistoryTest extends UnitTest {
         TransformHistory th = new TransformHistory();
         th.append(key1);
 
-        assertEquals("UNKNOWN.FILE_PICK_UP.INPUT", th.getHistory().get(0).getKey(true));
+        assertEquals("UNKNOWN.FILE_PICK_UP.INPUT", th.getHistory().getFirst().getKey(true));
     }
 }

@@ -55,7 +55,7 @@ class MultiFileServerPlaceTest extends UnitTest {
     void testClassificationCopy() {
         parent.setClassification("FOO//BAR//BAZ");
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
-        assertEquals(parent.getClassification(), children.get(0).getClassification(), "Classification must be copied");
+        assertEquals(parent.getClassification(), children.getFirst().getClassification(), "Classification must be copied");
     }
 
 
@@ -63,14 +63,14 @@ class MultiFileServerPlaceTest extends UnitTest {
     void testMetadataCopy() {
         parent.setParameter("FOO", "BAR");
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
-        assertNull(children.get(0).getParameterAsString("FOO"), "Metadata must not be copied unless configured");
+        assertNull(children.getFirst().getParameterAsString("FOO"), "Metadata must not be copied unless configured");
     }
 
     @Test
     void testCurrentForms() {
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
         assertEquals("PARENT_FORM", parent.currentForm(), "Parent form should not change");
-        assertEquals("CHILD_FORM", children.get(0).currentForm(), "Child form is wrong");
+        assertEquals("CHILD_FORM", children.getFirst().currentForm(), "Child form is wrong");
     }
 
     @Test
@@ -78,7 +78,7 @@ class MultiFileServerPlaceTest extends UnitTest {
         parent.appendParameter("COPY_ME", "BAR1");
         parent.appendParameter("COPY_ME", "BAR2");
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
-        assertEquals(2, children.get(0).getParameter("COPY_ME").size(), "Child parameter copy must maintain separate multi-valued values");
+        assertEquals(2, children.getFirst().getParameter("COPY_ME").size(), "Child parameter copy must maintain separate multi-valued values");
     }
 
     @Test
@@ -86,21 +86,21 @@ class MultiFileServerPlaceTest extends UnitTest {
         mfsp.cft = "CHILD_WOW";
         parent.setFileType("PARENT_WOW");
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
-        assertEquals("CHILD_WOW", children.get(0).getFileType(), "Child filetype must be preserved for default call");
+        assertEquals("CHILD_WOW", children.getFirst().getFileType(), "Child filetype must be preserved for default call");
     }
 
     @Test
     void testTransformHistoryCopy() {
         parent.appendTransformHistory("a.b.c.http://localhost:8888/defg");
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
-        assertTrue(children.get(0).hasVisited("a.b.c.*"), "Child must have parent transform history");
+        assertTrue(children.getFirst().hasVisited("a.b.c.*"), "Child must have parent transform history");
     }
 
     @Test
     void testFileTypeRemoval() {
         parent.setFileType("PARENT_FT");
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
-        assertNull(children.get(0).getFileType(), "Child must not have parent file type");
+        assertNull(children.getFirst().getFileType(), "Child must not have parent file type");
     }
 
     private static final class MFSPlace extends MultiFileServerPlace {

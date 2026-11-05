@@ -164,13 +164,13 @@ class DecomposedSessionTest extends UnitTest {
         d.addInitialForm("foo");
         assertNotNull(d.getInitialForms(), "Initial forms set");
         assertEquals(1, d.getInitialForms().size(), "Proper number of initial forms");
-        assertEquals("foo", d.getInitialForms().get(0), "Proper initial form set");
+        assertEquals("foo", d.getInitialForms().getFirst(), "Proper initial form set");
         List<String> newForms = new ArrayList<>();
         newForms.add("bar");
         newForms.add("baz");
         d.setInitialForms(newForms);
         assertEquals(2, d.getInitialForms().size(), "Proper number of initial forms in list");
-        assertEquals("bar", d.getInitialForms().get(0), "Propert initial form set");
+        assertEquals("bar", d.getInitialForms().getFirst(), "Propert initial form set");
 
         d.addInitialForm(null);
         assertEquals(2, d.getInitialForms().size(), "Null form does not get added to list");

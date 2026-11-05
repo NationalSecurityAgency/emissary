@@ -96,7 +96,7 @@ class ServiceConfigGuideTest extends UnitTest {
         sc.addEntry("FOO", "BAR");
         final List<String> entries = sc.findEntries("FOO");
         assertEquals(1, entries.size(), "Only one entry may be returned");
-        assertEquals("BAR", entries.get(0), "Added entry must be stored and retrieved");
+        assertEquals("BAR", entries.getFirst(), "Added entry must be stored and retrieved");
     }
 
     @Test
@@ -127,7 +127,7 @@ class ServiceConfigGuideTest extends UnitTest {
         sc.removeEntry("FOO", "BAR");
         sc.addEntry("BLUB", "@{FOO}");
         final List<String> entries = sc.findEntries("BLUB");
-        assertEquals("@{FOO}", entries.get(0), "Removed entry may not be used in expansion");
+        assertEquals("@{FOO}", entries.getFirst(), "Removed entry may not be used in expansion");
     }
 
     @Test
@@ -146,7 +146,7 @@ class ServiceConfigGuideTest extends UnitTest {
         sc.removeEntry("FOO", "QUUZ");
         sc.addEntry("BLUB", "@{FOO}");
         final List<String> entries = sc.findEntries("BLUB");
-        assertEquals("BAR", entries.get(0), "Entry must remain in map after non-matching remove");
+        assertEquals("BAR", entries.getFirst(), "Entry must remain in map after non-matching remove");
     }
 
     @Test
@@ -157,7 +157,7 @@ class ServiceConfigGuideTest extends UnitTest {
         sc.addEntry("XYZ", "ZYX");
         sc.removeEntry("FOO", "*");
         final List<String> entries = sc.findEntries("XYZ");
-        assertEquals("ZYX", entries.get(0), "Entry must remain in map after remove all of other parameter");
+        assertEquals("ZYX", entries.getFirst(), "Entry must remain in map after remove all of other parameter");
     }
 
     @Test
@@ -167,7 +167,7 @@ class ServiceConfigGuideTest extends UnitTest {
         sc.addEntry("@{FOO}", "QUUZ");
         final List<String> entries = sc.findEntries("BAR");
         assertEquals(1, entries.size(), "Substitution must take place on LHS");
-        assertEquals("QUUZ", entries.get(0), "Substitution must take place on LHS");
+        assertEquals("QUUZ", entries.getFirst(), "Substitution must take place on LHS");
     }
 
     @Test
@@ -314,8 +314,8 @@ class ServiceConfigGuideTest extends UnitTest {
         List<String> values = new ArrayList<>(map.values());
         assertNotNull(map, "Mapped entries");
         assertEquals(4, map.size(), "Mapped all entries");
-        assertEquals("ONE", keys.get(0), "Mapped key one");
-        assertEquals("BAR", values.get(0), "Mapped value one");
+        assertEquals("ONE", keys.getFirst(), "Mapped key one");
+        assertEquals("BAR", values.getFirst(), "Mapped value one");
         assertEquals("TWO", keys.get(1), "Mapped key two");
         assertEquals("BAZ", values.get(1), "Mapped value two");
         assertEquals("THREE", keys.get(2), "Mapped key three");
@@ -537,7 +537,7 @@ class ServiceConfigGuideTest extends UnitTest {
         c1.merge(c2);
         assertEquals("BAZ2", c1.findStringEntry("FOO"), "Newly merged entry is first");
         // #997 -- Would expect the ordering to be [BAR2,CAT2,BAZ2,BAR,CAT,BAZ]
-        assertEquals("BAZ2", c1.findEntries("FOO").get(0), "Merge contains union of values");
+        assertEquals("BAZ2", c1.findEntries("FOO").getFirst(), "Merge contains union of values");
         assertEquals("CAT2", c1.findEntries("FOO").get(1), "Merge contains union of values");
         assertEquals("BAR2", c1.findEntries("FOO").get(2), "Merge contains union of values");
         assertEquals("BAR", c1.findEntries("FOO").get(3), "Merge contains union of values");
