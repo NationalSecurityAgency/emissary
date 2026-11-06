@@ -47,6 +47,7 @@ public final class FlexibleDateTimeParser {
     private static final String CFG_FORMAT_MAIN = "FORMAT_DATETIME_MAIN";
     private static final String CFG_FORMAT_EXTRA = "FORMAT_DATETIME_EXTRA";
     private static final String CFG_TIMEZONE = "TIMEZONE";
+    private static final String CFG_LOCALE = "LOCALE";
     private static final String CFG_REMOVE_REGEX = "REMOVE_REGEX";
     private static final String CFG_EXTRA_TEXT_REMOVE_REGEX = "EXTRA_TEXT_REMOVE_REGEX";
     private static final String DEFAULT_TIMEZONE = "GMT";
@@ -77,12 +78,16 @@ public final class FlexibleDateTimeParser {
     /* Extra date time formats - list to try if our main list has failed - vars: FORMAT_DATETIME_EXTRA */
     private static final List<DateTimeFormatter> dateFormatsExtra;
 
+    /* ordered locales to try - config var: LOCALE */
+    private static final List<Locale> locales;
+
     /* init */
     static {
         try {
             // fire up the configurator
             Configurator configurator = ConfigUtil.getConfigInfo(FlexibleDateTimeParser.class);
             timezone = setupTimezone(configurator.findStringEntry(CFG_TIMEZONE, DEFAULT_TIMEZONE));
+            locales = TimeUtil.parseLocales(configurator.findEntries(CFG_LOCALE));
 
             List<ConfigEntry> configEntriesMain = configurator.findStringMatchEntries(CFG_FORMAT_MAIN);
             dateFormatsMain = setupDateFormats(configEntriesMain, getConfigFormats(configEntriesMain));
@@ -91,7 +96,8 @@ public final class FlexibleDateTimeParser {
             dateFormatsExtra = setupDateFormats(configEntriesExtra, getConfigFormats(configEntriesExtra));
 
             String removeRegex = configurator.findStringEntry(CFG_REMOVE_REGEX, "<.+?>$|=0D$|\\(|\\)|\"|\\[|]|\\W+$|^\\W+");
-            remove = Pattern.compile(removeRegex, Pattern.DOTALL);
+            // Keep non-ASCII date text (for example, Chinese AM/PM markers) when removing surrounding punctuation.
+            remove = Pattern.compile(removeRegex, Pattern.DOTALL | Pattern.UNICODE_CHARACTER_CLASS);
 
             // last ditch parsing effort if we failed to parse the string - remove all extra text after the numeric timezone offset
             String extraTextRemoveRegex = configurator.findStringEntry(CFG_EXTRA_TEXT_REMOVE_REGEX, "((\\+|-)\\d{4}).*$");
@@ -129,18 +135,23 @@ public final class FlexibleDateTimeParser {
      * @return the parsed immutable and thread-safe zoned-date, or null if it failed to parse
      */
     public static ZonedDateTime parse(final String dateString, boolean tryExtensiveParsing) {
-        ZonedDateTime zdt = parseToZonedDateTime(dateString, tryExtensiveParsing);
+        return parse(dateString, tryExtensiveParsing, locales);
+    }
+
+    @Nullable
+    static ZonedDateTime parse(final String dateString, boolean tryExtensiveParsing, final List<Locale> parsingLocales) {
+        ZonedDateTime zdt = parseToZonedDateTime(dateString, tryExtensiveParsing, parsingLocales);
 
         if (zdt != null || !tryExtensiveParsing) {
             return zdt;
         } else {
             // if that all failed and we want to attempt extensive parsing, attempt the last ditch efforts we can try
-            return lastDitchParsingEffort(dateString);
+            return lastDitchParsingEffort(dateString, parsingLocales);
         }
     }
 
     /**
-     * Attempts to parse a string date
+     * Attempts to parse a string date using the supplied formatter's locale, without configured locale fallbacks
      *
      * @param dateString the string to parse
      * @param format the date/time formats to use
@@ -151,7 +162,7 @@ public final class FlexibleDateTimeParser {
     }
 
     /**
-     * Attempts to parse a string date
+     * Attempts to parse a string date using each supplied formatter's locale, without configured locale fallbacks
      *
      * @param dateString the string to parse
      * @param formats the date/time formats to use
@@ -166,28 +177,65 @@ public final class FlexibleDateTimeParser {
         }
 
         for (DateTimeFormatter formatter : formats) {
-            if (formatter == null) {
-                continue;
+            ZonedDateTime parsed = parseWithFormatter(cleanedDateString, formatter);
+            if (parsed != null) {
+                return parsed;
             }
+        }
+        return null;
+    }
 
-            try {
-                // try for a zoned date (has timezone), local date time (no time zone), or just a local date (no time)
-                TemporalAccessor accessor =
-                        formatter.parseBest(cleanedDateString, ZonedDateTime::from, OffsetDateTime::from, LocalDateTime::from, LocalDate::from);
-                if (accessor instanceof ZonedDateTime zdt) {
-                    return zdt; // return the date time w/ timezone
-                } else if (accessor instanceof OffsetDateTime odt) {
-                    return odt.atZoneSameInstant(timezone);
-                } else if (accessor instanceof LocalDateTime ldt) {
-                    return ldt.atZone(timezone); // set the timezone
-                } else if (accessor instanceof LocalDate ld) {
-                    return ld.atStartOfDay(timezone); // add zeroed out time
+    /**
+     * Retry the formats with each supplied locale. Used for the configured locales and, when {@code LOCALE = "*"}, every
+     * locale available in the JVM.
+     *
+     * @param dateString the date string to parse
+     * @param formats the date/time formats to use
+     * @param locales the locales to try
+     * @return the parsed zoned-date, or null if no locale matched
+     */
+    @Nullable
+    static ZonedDateTime parseWithLocales(final String dateString, final List<DateTimeFormatter> formats,
+            final List<Locale> locales) {
+        String cleanedDateString = cleanDateString(dateString);
+        if (StringUtils.isBlank(cleanedDateString) || CollectionUtils.isEmpty(formats)) {
+            return null;
+        }
+        for (Locale locale : locales) {
+            for (DateTimeFormatter formatter : formats) {
+                if (formatter == null) {
+                    continue;
                 }
-
-            } catch (NullPointerException | IllegalArgumentException | DateTimeParseException e) {
-                // Ignore b/c failures are expected -> set to trace otherwise will be noisy
-                logger.trace("Error parsing date {} with format {}", dateString, formatter);
+                ZonedDateTime parsed = parseWithFormatter(cleanedDateString, formatter.withLocale(locale));
+                if (parsed != null) {
+                    return parsed;
+                }
             }
+        }
+        return null;
+    }
+
+    @Nullable
+    private static ZonedDateTime parseWithFormatter(final String cleanedDateString, @Nullable final DateTimeFormatter formatter) {
+        if (formatter == null) {
+            return null;
+        }
+        try {
+            // Try a zoned date, offset date, local date/time, or date without a time.
+            TemporalAccessor accessor =
+                    formatter.parseBest(cleanedDateString, ZonedDateTime::from, OffsetDateTime::from, LocalDateTime::from, LocalDate::from);
+            if (accessor instanceof ZonedDateTime zdt) {
+                return zdt;
+            } else if (accessor instanceof OffsetDateTime odt) {
+                return odt.atZoneSameInstant(timezone);
+            } else if (accessor instanceof LocalDateTime ldt) {
+                return ldt.atZone(timezone);
+            } else if (accessor instanceof LocalDate ld) {
+                return ld.atStartOfDay(timezone);
+            }
+        } catch (NullPointerException | IllegalArgumentException | DateTimeParseException e) {
+            // Failures are expected when trying multiple patterns.
+            logger.trace("Error parsing date {} with format {}", cleanedDateString, formatter);
         }
         return null;
     }
@@ -206,6 +254,14 @@ public final class FlexibleDateTimeParser {
      */
     @Nullable
     static ZonedDateTime lastDitchParsingEffort(final String date) {
+        return lastDitchParsingEffort(date, locales);
+    }
+
+    @Nullable
+    private static ZonedDateTime lastDitchParsingEffort(final String date, final List<Locale> parsingLocales) {
+        if (StringUtils.isBlank(date)) {
+            return null;
+        }
 
         // Attempt to remove all text after the numeric offset and try again - this should give us a valid date string
         // to work with
@@ -213,7 +269,7 @@ public final class FlexibleDateTimeParser {
         if (matcher.find()) {
             String secondChanceDate = matcher.replaceAll(matcher.group(1));
             // if we removed text, attempt to parse again to see if we are more successful this time
-            return parseToZonedDateTime(secondChanceDate, true);
+            return parseToZonedDateTime(secondChanceDate, true, parsingLocales);
         }
         return null;
     }
@@ -224,17 +280,18 @@ public final class FlexibleDateTimeParser {
      *
      * @param dateString The string we are attempting to parse
      * @param tryExtensiveParsing Whether to use the extensive set of date formats
+     * @param parsingLocales the ordered locales to try
      * @return The ZonedDateTime object if our parsing was successful, or null if not
      */
-    private static ZonedDateTime parseToZonedDateTime(final String dateString, boolean tryExtensiveParsing) {
-        ZonedDateTime zdt = parse(dateString, dateFormatsMain);
+    private static ZonedDateTime parseToZonedDateTime(final String dateString, boolean tryExtensiveParsing,
+            final List<Locale> parsingLocales) {
+        ZonedDateTime zdt = parseWithLocales(dateString, dateFormatsMain, parsingLocales);
 
         // if we got a successful parse or we don't want to attempt "extensive parsing", return here
         if (!tryExtensiveParsing || zdt != null) {
             return zdt;
         }
-        zdt = parse(dateString, dateFormatsExtra);
-        return zdt;
+        return parseWithLocales(dateString, dateFormatsExtra, parsingLocales);
     }
 
     /**
@@ -299,7 +356,7 @@ public final class FlexibleDateTimeParser {
     private static DateTimeFormatter getFormatter(ConfigEntry entry) {
         try {
             return new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(entry.getValue())
-                    .toFormatter(Locale.getDefault());
+                    .toFormatter(TimeUtil.DEFAULT_DATE_LOCALE);
         } catch (IllegalArgumentException e) {
             // log the bad one and move on because there could be other possible patterns
             logger.error("Error parsing pattern [{}]: {}", entry.getValue(), e.getLocalizedMessage());

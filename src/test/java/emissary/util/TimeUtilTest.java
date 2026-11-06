@@ -11,8 +11,13 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.zone.ZoneRulesException;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -57,20 +62,6 @@ class TimeUtilTest extends UnitTest {
     @Test
     void testGetDateAsISO8601Long() {
         assertEquals("2016-12-25 15:30:25", TimeUtil.getDateAsISO8601(testUtilDate), "GetDateAsISO8601Long");
-    }
-
-    @Deprecated
-    @Test
-    void testGetZonedDateFromISO8601() {
-        ZonedDateTime zdt = TimeUtil.getZonedDateFromISO8601("2016-12-25 15:30:25");
-        assertEquals(15, zdt.getHour());
-        assertEquals(30, zdt.getMinute());
-        assertEquals(25, zdt.getSecond());
-        assertEquals(2016, zdt.getYear());
-        assertEquals(12, zdt.getMonthValue());
-        assertEquals(25, zdt.getDayOfMonth());
-        assertEquals(360, zdt.getDayOfYear());
-        assertEquals("GMT", zdt.getZone().getId());
     }
 
     @Test
@@ -121,5 +112,58 @@ class TimeUtilTest extends UnitTest {
     @Test
     void testGetDateOrdinalWithTime() {
         assertEquals("2016360153025", TimeUtil.getDateOrdinalWithTime(testUtilDate), "Date Ordinal with Time did not match");
+    }
+
+    @Test
+    void testParseLocalesDefaultsToEnglish() {
+        assertEquals(List.of(TimeUtil.DEFAULT_DATE_LOCALE), TimeUtil.parseLocales(null));
+        assertEquals(List.of(TimeUtil.DEFAULT_DATE_LOCALE), TimeUtil.parseLocales(List.of()));
+        assertEquals(List.of(TimeUtil.DEFAULT_DATE_LOCALE), TimeUtil.parseLocales(List.of(" ", "not a tag")));
+    }
+
+    @Test
+    void testParseLocales() {
+        assertEquals(List.of(Locale.ENGLISH, Locale.FRENCH, Locale.GERMAN),
+                TimeUtil.parseLocales(List.of("en", "fr", "de")));
+        assertEquals(List.of(Locale.forLanguageTag("en-US")), TimeUtil.parseLocales(List.of("en-US", "en-US")));
+    }
+
+    @Test
+    void testGetDateWithLocale() {
+        assertEquals("December", TimeUtil.getDate(testZoneDate, "MMMM", GMT, Locale.ENGLISH));
+        assertEquals("décembre", TimeUtil.getDate(testZoneDate, "MMMM", GMT, Locale.FRENCH));
+        assertEquals("December", TimeUtil.getDate(testZoneDate, "MMMM", GMT));
+    }
+
+    @Test
+    void testGenericLocaleRequest() {
+        List<Locale> generic = TimeUtil.parseLocales(List.of(" * "));
+        assertTrue(generic.stream().anyMatch(locale -> "en".equals(locale.getLanguage())), "Generic locales should include English");
+        assertTrue(generic.stream().anyMatch(locale -> "fr".equals(locale.getLanguage())), "Generic locales should include French");
+    }
+
+    @Test
+    void testAvailableTextLocales() {
+        List<Locale> locales = TimeUtil.getAvailableTextLocales();
+        assertEquals(Locale.ENGLISH, locales.getFirst());
+        assertTrue(locales.containsAll(Arrays.stream(Locale.getAvailableLocales())
+                .filter(locale -> !locale.getLanguage().isEmpty()).toList()), "All regional variants must be retained");
+        assertEquals(locales.stream().skip(1).sorted(Comparator.comparing(Locale::toLanguageTag)).toList(), locales.subList(1, locales.size()));
+        assertEquals(locales.size(), locales.stream().distinct().count());
+        assertFalse(locales.isEmpty(), "Available locales should not be empty");
+    }
+
+    @Test
+    void testWildcardKeepsExplicitLocalesFirst() {
+        List<Locale> locales = TimeUtil.parseLocales(List.of("*", "fr-CA", "en-GB", "fr-CA", "*"));
+        assertEquals(List.of(Locale.CANADA_FRENCH, Locale.UK), locales.subList(0, 2));
+        assertTrue(locales.containsAll(TimeUtil.getAvailableTextLocales()));
+        assertEquals(locales.size(), locales.stream().distinct().count());
+        assertThrows(UnsupportedOperationException.class, () -> locales.add(Locale.GERMAN));
+    }
+
+    @Test
+    void testInvalidLocalesDoNotDiscardValidEntries() {
+        assertEquals(List.of(Locale.FRENCH, Locale.UK), TimeUtil.parseLocales(Arrays.asList(null, " ", "fr", "not a tag", "en-GB")));
     }
 }
