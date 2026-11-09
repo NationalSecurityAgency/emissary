@@ -71,6 +71,13 @@ jobs:
           cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max' || '' }}
 
   macos-build:
+    # Dependabot changes receive the required RHEL validation only.  In
+    # particular, do not request a macOS hosted runner for Dependabot PRs.
+    # Use the PR author rather than github.actor: a maintainer can manually
+    # re-run or update a Dependabot PR, making github.actor unreliable here.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.user.login != 'dependabot[bot]'
     name: MacOS non-standard build on Java 21
     runs-on: macos-26
     steps:
