@@ -50,7 +50,19 @@ jobs:
         with:
           java-version: '21'
           distribution: 'corretto'
-          maven-version: '3.9.12'
+
+      - name: Install Maven
+        env:
+          MAVEN_VERSION: "3.9.12"
+        shell: bash
+        run: |
+          archive="apache-maven-${MAVEN_VERSION}-bin.tar.gz"
+          base_url="https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries"
+          curl --fail --location --show-error --silent "${base_url}/${archive}" -o "${archive}"
+          curl --fail --location --show-error --silent "${base_url}/${archive}.sha512" -o "${archive}.sha512"
+          echo "$(tr -d '\n' < "${archive}.sha512")  ${archive}" | sha512sum --check --status -
+          tar --extract --gzip --file "${archive}"
+          echo "${GITHUB_WORKSPACE}/apache-maven-${MAVEN_VERSION}/bin" >> "$GITHUB_PATH"
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
