@@ -36,6 +36,7 @@ public final class BaseResourcePathUtil {
             }
             return baseResourcePath;
         } catch (IOException e) {
+            ConfigUtil.rethrowStrictConfigFailure(e);
             logger.info("Unable to load configuration for BaseResourcePathUtil; using default values", e);
             return DEFAULT_BASE_RESOURCE_PATH;
         }

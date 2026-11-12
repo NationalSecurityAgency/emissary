@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Configuration Viewer</title>
+    <base href="{{baseResourcePath}}/">
+    <link rel="stylesheet" href="css/lib/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="css/emissary.css"/>
+  </head>
+
+  <body>
+  <header></header>
+  <main class="container">
+    <h2>Configuration Viewer</h2>
+    <p class="text-muted">
+      Load the effective configuration for a class or config file, including flavors and the combined result.
+    </p>
+
+    <form id="configs-form">
+      <div class="row">
+        <div class="col-md-8 mb-3">
+          <label class="form-label" for="config-name">Config name or class</label>
+          <input class="form-control" id="config-name" value="emissary.place.VersionPlace"
+                 placeholder="emissary.place.VersionPlace" required>
+        </div>
+        <div class="col-md-4 d-flex align-items-end mb-3">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="config-detailed">
+            <label class="form-check-label" for="config-detailed">Detailed (one section per flavor)</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="config-sensitive">
+            <label class="form-check-label" for="config-sensitive">Include sensitive values (admin only)</label>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Load</button>
+    </form>
+
+    <div id="configs-status" class="alert mt-3" role="status" style="display:none"></div>
+    <div id="configs-result" class="mt-3"></div>
+    <pre id="configs-raw" class="mt-3 p-3 bg-light border rounded" style="display:none"></pre>
+  </main>
+
+  <script src="js/lib/jquery.min.js"></script>
+  <script src="js/lib/popper.min.js"></script>
+  <script src="js/lib/bootstrap.min.js"></script>
+  <script src="js/emissary.js" type="text/javascript"></script>
+
+  <script>
+    function configsStatus(message, level) {
+      $('#configs-status')
+        .removeClass('alert-info alert-success alert-warning alert-danger')
+        .addClass('alert alert-' + level)
+        .text(message)
+        .show();
+    }
+
+    function configsCell(text) {
+      return $('<td>').addClass('font-monospace').css({
+        'white-space': 'pre-wrap',
+        'word-break': 'break-all'
+      }).text(text);
+    }
+
+    function configsRender(data) {
+      var $result = $('#configs-result').empty();
+      var configs = (data.local && data.local.configs) || [];
+
+      configs.forEach(function (config, index) {
+        var $section = $('<div>').addClass('card mb-3');
+        var $body = $('<div>').addClass('card-body');
+
+        var sources = (config.configs || []).join(', ');
+        var flavors = (config.flavors || []).join(', ');
+        $body.append($('<h3>').addClass('h5').text('Loaded configuration ' + (index + 1)));
+        $body.append($('<p>').addClass('mb-1').text('Sources: ' + (sources || '(none)')));
+        $body.append($('<p>').addClass('mb-3').text('Flavors: ' + (flavors || '(none)')));
+
+        var $table = $('<table>').addClass('table table-sm table-striped mb-0');
+        $table.append(
+          $('<thead>').append(
+            $('<tr>').append($('<th>').text('Key'), $('<th>').text('Value'))
+          )
+        );
+        var $tbody = $('<tbody>');
+        (config.entries || []).forEach(function (entry) {
+          $tbody.append($('<tr>').append(configsCell(entry.key), configsCell(entry.value)));
+        });
+        $table.append($tbody);
+
+        $body.append($('<div>').addClass('table-responsive').css('max-height', '60vh').append($table));
+        $section.append($body);
+        $result.append($section);
+      });
+
+      if (configs.length === 0) {
+        $result.append($('<p>').addClass('text-muted').text('No configuration entries returned.'));
+      }
+
+      if (data.errors && data.errors.length > 0) {
+        configsStatus('Errors: ' + data.errors.join('; '), 'warning');
+      } else {
+        configsStatus('Loaded ' + configs.length + ' configuration section(s).', 'success');
+      }
+
+      $('#configs-raw').text(JSON.stringify(data, null, 2)).show();
+    }
+
+    $(document).ready(function () {
+      $('#configs-form').on('submit', function (event) {
+        event.preventDefault();
+
+        var name = $('#config-name').val().trim();
+        if (name.length === 0) {
+          configsStatus('A config name or class is required.', 'warning');
+          return;
+        }
+
+        var detailed = $('#config-detailed').is(':checked');
+        var sensitive = $('#config-sensitive').is(':checked');
+        var url = 'api/configuration/' + (detailed ? 'detailed/' : '') + encodeURIComponent(name);
+        if (sensitive) {
+          url += '?includeSensitive=true';
+        }
+
+        $('#configs-result').empty();
+        $('#configs-raw').hide().text('');
+        configsStatus('Loading...', 'info');
+
+        $.ajax({
+          url: url,
+          type: 'GET',
+          dataType: 'json'
+        }).done(configsRender).fail(function (xhr) {
+          var body = xhr.responseJSON || xhr.responseText || xhr.statusText;
+          configsStatus('Request failed (' + xhr.status + '): ' + JSON.stringify(body), 'danger');
+        });
+      });
+    });
+  </script>
+
+  </body>
+</html>

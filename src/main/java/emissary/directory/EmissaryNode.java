@@ -238,19 +238,19 @@ public class EmissaryNode {
      */
     protected Configurator internalGetConfigurator(final String prefix) throws IOException {
         final List<String> configPrefs = new ArrayList<>();
-        configPrefs.add(prefix + "-" + getNodeName() + "-" + getNodePort() + ConfigUtil.CONFIG_FILE_ENDING);
+        configPrefs.add(prefix + "-" + getNodeName() + "-" + getNodePort());
         if (this.nodeNameIsDefault) {
-            configPrefs.add(prefix + "-" + getNodeName().replace('.', '_') + "-" + getNodePort() + ConfigUtil.CONFIG_FILE_ENDING);
+            configPrefs.add(prefix + "-" + getNodeName().replace('.', '_') + "-" + getNodePort());
         }
-        configPrefs.add(prefix + "-" + getNodeName() + ConfigUtil.CONFIG_FILE_ENDING);
+        configPrefs.add(prefix + "-" + getNodeName());
         if (this.nodeNameIsDefault) {
-            configPrefs.add(prefix + "-" + getNodeName().replace('.', '_') + ConfigUtil.CONFIG_FILE_ENDING);
+            configPrefs.add(prefix + "-" + getNodeName().replace('.', '_'));
         }
 
-        configPrefs.add(prefix + "-" + getNodePort() + ConfigUtil.CONFIG_FILE_ENDING);
+        configPrefs.add(prefix + "-" + getNodePort());
 
-        configPrefs.add(prefix + "-" + getNodeType() + ConfigUtil.CONFIG_FILE_ENDING);
-        configPrefs.add(prefix + ConfigUtil.CONFIG_FILE_ENDING);
+        configPrefs.add(prefix + "-" + getNodeType());
+        configPrefs.add(prefix);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Searching for {} config in preferences {}", prefix, configPrefs);

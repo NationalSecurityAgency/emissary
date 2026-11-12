@@ -1,0 +1,57 @@
+# Sample TOML (.toml) emissary configuration.
+#
+# Mapping to the legacy .cfg format:
+#   KEY = value             <=>  KEY = value
+#   KEY = [a, b]            <=>  KEY = a  +  KEY = b   (repeated entries, order preserved)
+#   [NESTED] + ONE = AAA    <=>  NESTED_ONE = AAA      (tables flatten with '_',
+#                                                      matching findStringMatchMap("NESTED_"))
+#   "@{VAR}" strings        <=>  same @{VAR} substitution as .cfg (applied to keys and values)
+#
+# Operators (quote the key: a bare ! starts no valid TOML key):
+#   ["!remove"] + KEY = val <=>  KEY != val        (value "*" removes all entries for KEY)
+#   KEY = [a, {"!remove" = v}, b]  <=>  positional removal inside an array,
+#                                       evaluated in order (e.g. add, remove, re-add)
+#   "!import" = file.toml   <=>  IMPORT_FILE = file.toml
+#   "!opt-import" = [a, b]  <=>  OPT_IMPORT_FILE entries (missing files are silent)
+#
+# File-based flavors (base-NAME.toml) work as with .cfg.
+#
+# Gotchas:
+#   - Bare TOML values are only numbers and booleans; everything else is quoted.
+#     Quote anything that must stay a string: unquoted yes/no/on/off are invalid TOML,
+#     and 0xFF parses to 255 while legacy config kept it literal.
+#   - Dotted keys nest: quote them to stay literal ("a.b" stays a.b, a.b becomes a_b).
+#   - Duplicate keys are always an error (the TOML spec forbids them); use arrays.
+#   - TOML has no null literal; use "<null>" for null assignments.
+#   - Mapping keys cannot repeat: unlike legacy FOO = a / FOO = b (two entries),
+#     writing FOO twice fails to parse. Use an array for multi-valued entries.
+#   - Nested tables flatten with '_', so [NESTED] B_C = x and a literal NESTED_B_C = y
+#     key collide: both entries are kept (with a warning),
+#     lookups return the first while substitution sees the last. Rename one side.
+#   - "!import"/"!remove" only work as top-level keys; nested tables flatten instead.
+#   - Only flat scalars and flat arrays are supported; nested collections throw.
+
+PLACE_NAME = "SamplePlace"
+SERVICE_NAME = "SAMPLE_PLACE"
+SERVICE_TYPE = "INITIAL"
+SERVICE_COST = 50
+
+# Repeated entries: one array item per config entry, in order.
+RENDEZVOUS_PEER = [
+  "*.*.*.http://@{emissary.node.name}:7001/DirectoryPlace",
+  "*.*.*.http://@{emissary.node.name}:8001/DirectoryPlace",
+]
+
+# Nested tables flatten to MYPROPS_ONE, MYPROPS_TWO. Dotted keys keep later keys
+# top-level; a [MYPROPS] header would swallow everything below it into the table.
+MYPROPS.ONE = "AAA"
+MYPROPS.TWO = "BBB"
+
+# "@{BASE} world" => substitution still applies.
+BASE = "hello"
+GREETING = "@{BASE} world"
+
+"!import" = "emissary.config.TestYamlClasspath.yaml"
+"!opt-import" = ["no-such-optional-file.yaml"]
+
+"!remove".UNWANTED = "*"
