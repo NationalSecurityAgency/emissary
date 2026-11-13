@@ -60,10 +60,20 @@ jobs:
           # Prefix the list here with "+" to use these queries and those in the config file.
           # queries: ./path/to/local/query, your-org/your-repo/queries@main
 
-      # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
-      # If this step fails, then you should remove it and run the build manually (see below)
+      # Build Java manually so the Maven version used for CodeQL extraction is pinned.
       - name: Autobuild
-        uses: github/codeql-action/autobuild@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        if: matrix.language == 'java'
+        env:
+          MAVEN_VERSION: "3.9.12"
+        shell: bash
+        run: |
+          archive="apache-maven-${MAVEN_VERSION}-bin.tar.gz"
+          base_url="https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries"
+          curl --fail --location --show-error --silent "${base_url}/${archive}" -o "${archive}"
+          curl --fail --location --show-error --silent "${base_url}/${archive}.sha512" -o "${archive}.sha512"
+          echo "$(tr -d '\n' < "${archive}.sha512")  ${archive}" | sha512sum --check --status -
+          tar --extract --gzip --file "${archive}"
+          "${GITHUB_WORKSPACE}/apache-maven-${MAVEN_VERSION}/bin/mvn" -B -e -ntp package -DskipTests
 
       # ℹ️ Command-line programs to run using the OS shell.
       # 📚 https://git.io/JvXDl
