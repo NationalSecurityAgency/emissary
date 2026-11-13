@@ -383,17 +383,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     @SuppressWarnings("UnnecessaryDefaultInEnumSwitch")
     public SeekableByteChannelFactory getChannelFactory() {
-        switch (getDataState()) {
-            case BYTE_ARRAY_AND_CHANNEL:
-                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
-            case CHANNEL_ONLY:
-                return seekableByteChannelFactory;
-            case BYTE_ARRAY_ONLY:
-                return SeekableByteChannelHelper.memory(this.theData);
-            case NO_DATA:
-            default:
-                return null;
-        }
+        return switch (getDataState()) {
+            case BYTE_ARRAY_AND_CHANNEL -> throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
+            case CHANNEL_ONLY -> seekableByteChannelFactory;
+            case BYTE_ARRAY_ONLY -> SeekableByteChannelHelper.memory(this.theData);
+            case NO_DATA -> null;
+            default -> null;
+        };
     }
 
     /**
@@ -430,18 +426,16 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     @SuppressWarnings("UnnecessaryDefaultInEnumSwitch")
     public byte[] data() {
-        switch (getDataState()) {
-            case BYTE_ARRAY_AND_CHANNEL:
-                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
-            case BYTE_ARRAY_ONLY:
-                return theData;
-            case CHANNEL_ONLY:
+        return switch (getDataState()) {
+            case BYTE_ARRAY_AND_CHANNEL -> throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
+            case BYTE_ARRAY_ONLY -> theData;
+            case CHANNEL_ONLY -> {
                 // Max size here is slightly less than the true max size to avoid memory issues
-                return SeekableByteChannelHelper.getByteArrayFromBdo(this, MAX_BYTE_ARRAY_SIZE);
-            case NO_DATA:
-            default:
-                return null; // NOSONAR maintains backwards compatibility
-        }
+                yield SeekableByteChannelHelper.getByteArrayFromBdo(this, MAX_BYTE_ARRAY_SIZE);
+            }
+            case NO_DATA -> null;
+            default -> null; // NOSONAR maintains backwards compatibility
+        };
     }
 
     /**
@@ -497,19 +491,17 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     @SuppressWarnings("UnnecessaryDefaultInEnumSwitch")
     public long getChannelSize() throws IOException {
-        switch (getDataState()) {
-            case BYTE_ARRAY_AND_CHANNEL:
-                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
-            case BYTE_ARRAY_ONLY:
-                return ArrayUtils.getLength(theData);
-            case CHANNEL_ONLY:
+        return switch (getDataState()) {
+            case BYTE_ARRAY_AND_CHANNEL -> throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
+            case BYTE_ARRAY_ONLY -> ArrayUtils.getLength(theData);
+            case CHANNEL_ONLY -> {
                 try (SeekableByteChannel sbc = this.seekableByteChannelFactory.create()) {
-                    return sbc.size();
+                    yield sbc.size();
                 }
-            case NO_DATA:
-            default:
-                return 0;
-        }
+            }
+            case NO_DATA -> 0L;
+            default -> 0L;
+        };
     }
 
     /**
@@ -521,22 +513,20 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     @SuppressWarnings("UnnecessaryDefaultInEnumSwitch")
     public int dataLength() {
-        switch (getDataState()) {
-            case BYTE_ARRAY_AND_CHANNEL:
-                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
-            case BYTE_ARRAY_ONLY:
-                return ArrayUtils.getLength(theData);
-            case CHANNEL_ONLY:
+        return switch (getDataState()) {
+            case BYTE_ARRAY_AND_CHANNEL -> throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
+            case BYTE_ARRAY_ONLY -> ArrayUtils.getLength(theData);
+            case CHANNEL_ONLY -> {
                 try {
-                    return (int) Math.min(getChannelSize(), MAX_BYTE_ARRAY_SIZE);
+                    yield (int) Math.min(getChannelSize(), MAX_BYTE_ARRAY_SIZE);
                 } catch (final IOException ioe) {
                     logger.error("Couldn't get size of channel on object {}", shortName(), ioe);
-                    return 0;
+                    yield 0;
                 }
-            case NO_DATA:
-            default:
-                return 0;
-        }
+            }
+            case NO_DATA -> 0;
+            default -> 0;
+        };
     }
 
     @Override
