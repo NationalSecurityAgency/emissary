@@ -44,24 +44,9 @@ public final class IBaseDataObjectHelper {
      * @return the clone of the IBaseDataObject passed in.
      */
     public static IBaseDataObject clone(final IBaseDataObject iBaseDataObject) {
-        return clone(iBaseDataObject, true);
-    }
-
-    /**
-     * Clones an IBaseDataObject equivalently to emissary.core.BaseDataObject.clone(), which duplicates some attributes.
-     * 
-     * A "fullClone" duplicates all attributes.
-     * 
-     * @deprecated prefer {@link #clone(IBaseDataObject)}
-     * @param iBaseDataObject the IBaseDataObject to be cloned.
-     * @param fullClone specifies if all fields should be cloned.
-     * @return the clone of the IBaseDataObject passed in.
-     */
-    @Deprecated
-    public static IBaseDataObject clone(final IBaseDataObject iBaseDataObject, final boolean fullClone) {
         Validate.notNull(iBaseDataObject, "Required: iBaseDataObject not null");
 
-        final IBaseDataObject bdo = fullClone ? new InternalIdBaseDataObject(iBaseDataObject.getInternalId()) : DataObjectFactory.getInstance();
+        final IBaseDataObject bdo = new InternalIdBaseDataObject(iBaseDataObject.getInternalId());
 
         final SeekableByteChannelFactory sbcf = iBaseDataObject.getChannelFactory();
         if (sbcf != null) {
@@ -69,8 +54,8 @@ public final class IBaseDataObjectHelper {
         }
 
         final List<String> allCurrentForms = iBaseDataObject.getAllCurrentForms();
-        for (int i = 0; i < allCurrentForms.size(); i++) {
-            bdo.enqueueCurrentForm(allCurrentForms.get(i));
+        for (String allCurrentForm : allCurrentForms) {
+            bdo.enqueueCurrentForm(allCurrentForm);
         }
         bdo.setHistory(iBaseDataObject.getTransformHistory());
         bdo.putParameters(iBaseDataObject.getParameters());
@@ -86,25 +71,23 @@ public final class IBaseDataObjectHelper {
             bdo.setFilename(iBaseDataObject.getFilename());
         }
 
-        if (fullClone) {
-            final String processingError = iBaseDataObject.getProcessingError();
-            if (processingError != null) {
-                bdo.addProcessingError(processingError.substring(0, processingError.length() - 1));
-            }
-            bdo.setFontEncoding(iBaseDataObject.getFontEncoding());
-            bdo.setNumChildren(iBaseDataObject.getNumChildren());
-            bdo.setNumSiblings(iBaseDataObject.getNumSiblings());
-            bdo.setBirthOrder(iBaseDataObject.getBirthOrder());
-            bdo.setHeader(iBaseDataObject.header() == null ? null : iBaseDataObject.header().clone());
-            bdo.setFooter(iBaseDataObject.footer() == null ? null : iBaseDataObject.footer().clone());
-            bdo.setHeaderEncoding(iBaseDataObject.getHeaderEncoding());
-            bdo.setClassification(iBaseDataObject.getClassification());
-            bdo.setBroken(iBaseDataObject.getBroken());
-            bdo.setOutputable(iBaseDataObject.isOutputable());
-            bdo.setId(iBaseDataObject.getId());
-            bdo.setWorkBundleId(iBaseDataObject.getWorkBundleId());
-            bdo.setTransactionId(iBaseDataObject.getTransactionId());
+        final String processingError = iBaseDataObject.getProcessingError();
+        if (processingError != null) {
+            bdo.addProcessingError(processingError.substring(0, processingError.length() - 1));
         }
+        bdo.setFontEncoding(iBaseDataObject.getFontEncoding());
+        bdo.setNumChildren(iBaseDataObject.getNumChildren());
+        bdo.setNumSiblings(iBaseDataObject.getNumSiblings());
+        bdo.setBirthOrder(iBaseDataObject.getBirthOrder());
+        bdo.setHeader(iBaseDataObject.header() == null ? null : iBaseDataObject.header().clone());
+        bdo.setFooter(iBaseDataObject.footer() == null ? null : iBaseDataObject.footer().clone());
+        bdo.setHeaderEncoding(iBaseDataObject.getHeaderEncoding());
+        bdo.setClassification(iBaseDataObject.getClassification());
+        bdo.setBroken(iBaseDataObject.getBroken());
+        bdo.setOutputable(iBaseDataObject.isOutputable());
+        bdo.setId(iBaseDataObject.getId());
+        bdo.setWorkBundleId(iBaseDataObject.getWorkBundleId());
+        bdo.setTransactionId(iBaseDataObject.getTransactionId());
 
         return bdo;
     }
