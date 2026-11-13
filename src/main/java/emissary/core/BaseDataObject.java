@@ -1026,7 +1026,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public Map<String, String> getCookedParameters() {
         final Map<String, String> ext = new TreeMap<>();
         for (final String key : this.parameters.keySet()) {
-            ext.put(key.toString(), getStringParameter(key));
+            ext.put(key.toString(), getParameterAsString(key));
         }
         return ext;
     }
@@ -1183,7 +1183,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public String getFileType() {
-        return getStringParameter(FILETYPE);
+        return getParameterAsString(FILETYPE);
     }
 
     @Override

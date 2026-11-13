@@ -130,23 +130,17 @@ class KffDataObjectHandlerTest extends UnitTest {
         kff = new KffDataObjectHandler(true, true, true);
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, "test.filter");
         kff.hash(payload);
-        assertEquals("test.filter", payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
         assertEquals("test.filter", payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
         assertEquals("test.filter", payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
         assertTrue(KffDataObjectHandler.hashPresent(payload));
-        assertEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
         assertEquals(DATA_MD5, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_MD5));
         assertEquals(DATA_MD5, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_MD5));
-        assertEquals(DATA_CRC32, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_CRC32));
         assertEquals(DATA_CRC32, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_CRC32));
         assertEquals(DATA_CRC32, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_CRC32));
-        assertEquals(DATA_SSDEEP, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertEquals(DATA_SSDEEP, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertEquals(DATA_SSDEEP, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
-        assertEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertEquals(DATA_SHA1, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertEquals(DATA_SHA1, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA1));
-        assertEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(DATA_SHA256, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(DATA_SHA256, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
@@ -160,8 +154,6 @@ class KffDataObjectHandlerTest extends UnitTest {
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, "test.filter");
         kff.hash(payload);
 
-        assertNull(payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL),
-                "MD5_ORIGINAL should only be populated if hashing more than once");
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.MD5_ORIGINAL),
                 "MD5_ORIGINAL should only be populated if hashing more than once");
         assertNull(payload.getParameterAsString(KffDataObjectHandler.MD5_ORIGINAL),
@@ -171,28 +163,20 @@ class KffDataObjectHandlerTest extends UnitTest {
         // none of the parameters should have a duplicated value
 
         kff.hash(payload);
-        assertEquals("test.filter", payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
         assertEquals("test.filter", payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
         assertEquals("test.filter", payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
         assertTrue(KffDataObjectHandler.hashPresent(payload));
-        assertEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
         assertEquals(DATA_MD5, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_MD5));
         assertEquals(DATA_MD5, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_MD5));
-        assertEquals(DATA_CRC32, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_CRC32));
         assertEquals(DATA_CRC32, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_CRC32));
         assertEquals(DATA_CRC32, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_CRC32));
-        assertEquals(DATA_SSDEEP, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertEquals(DATA_SSDEEP, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertEquals(DATA_SSDEEP, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
-        assertEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertEquals(DATA_SHA1, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertEquals(DATA_SHA1, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA1));
-        assertEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(DATA_SHA256, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(DATA_SHA256, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
-        assertNull(payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL),
-                "MD5_ORIGINAL should not be populated if hash called more than once but data hasn't changed");
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.MD5_ORIGINAL),
                 "MD5_ORIGINAL should not be populated if hash called more than once but data hasn't changed");
         assertNull(payload.getParameterAsString(KffDataObjectHandler.MD5_ORIGINAL),
@@ -206,27 +190,19 @@ class KffDataObjectHandlerTest extends UnitTest {
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, "test.filter");
         kff.hash(payload);
 
-        assertEquals("test.filter", payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
         assertEquals("test.filter", payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
         assertEquals("test.filter", payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
         assertTrue(KffDataObjectHandler.hashPresent(payload));
-        assertEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
         assertEquals(DATA_MD5, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_MD5));
         assertEquals(DATA_MD5, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_MD5));
-        assertEquals(DATA_CRC32, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_CRC32));
         assertEquals(DATA_CRC32, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_CRC32));
         assertEquals(DATA_CRC32, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_CRC32));
-        assertEquals(DATA_SSDEEP, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertEquals(DATA_SSDEEP, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertEquals(DATA_SSDEEP, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
-        assertEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertEquals(DATA_SHA1, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertEquals(DATA_SHA1, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA1));
-        assertEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(DATA_SHA256, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(DATA_SHA256, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA256));
-        assertNull(payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL),
-                "MD5_ORIGINAL should only be populated if hashing more than once and data has changed");
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.MD5_ORIGINAL),
                 "MD5_ORIGINAL should only be populated if hashing more than once and data has changed");
         assertNull(payload.getParameterAsString(KffDataObjectHandler.MD5_ORIGINAL),
@@ -237,50 +213,36 @@ class KffDataObjectHandlerTest extends UnitTest {
         // none of the parameters should have a duplicated value
 
         kff.hash(payload);
-        assertEquals("test.filter", payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
         assertEquals("test.filter", payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
         assertEquals("test.filter", payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME));
         assertTrue(KffDataObjectHandler.hashPresent(payload));
-        assertNotNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
         assertNotNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_MD5));
         assertNotNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_MD5));
-        assertNotNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_CRC32));
         assertNotNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_CRC32));
         assertNotNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_CRC32));
-        assertNotNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertNotNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertNotNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
-        assertNotNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertNotNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertNotNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA1));
-        assertNotNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertNotNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertNotNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA256));
-        assertNotEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
         assertNotEquals(DATA_MD5, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_MD5));
         assertNotEquals(DATA_MD5, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_MD5));
-        assertNotEquals(DATA_CRC32, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_CRC32));
         assertNotEquals(DATA_CRC32, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_CRC32));
         assertNotEquals(DATA_CRC32, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_CRC32));
-        assertNotEquals(DATA_SSDEEP, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertNotEquals(DATA_SSDEEP, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertNotEquals(DATA_SSDEEP, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
-        assertNotEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertNotEquals(DATA_SHA1, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertNotEquals(DATA_SHA1, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA1));
-        assertNotEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertNotEquals(DATA_SHA256, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertNotEquals(DATA_SHA256, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
 
         // make sure we've correctly populated MD5_ORIGINAL
-        assertNotNull(payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL),
-                "MD5_ORIGINAL should be populated if hash called more than once");
         assertNotNull(payload.getParameterAsConcatString(KffDataObjectHandler.MD5_ORIGINAL),
                 "MD5_ORIGINAL should be populated if hash called more than once");
         assertNotNull(payload.getParameterAsString(KffDataObjectHandler.MD5_ORIGINAL),
                 "MD5_ORIGINAL should be populated if hash called more than once");
-        assertEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL));
         assertEquals(DATA_MD5, payload.getParameterAsConcatString(KffDataObjectHandler.MD5_ORIGINAL));
         assertEquals(DATA_MD5, payload.getParameterAsString(KffDataObjectHandler.MD5_ORIGINAL));
     }
@@ -289,7 +251,6 @@ class KffDataObjectHandlerTest extends UnitTest {
     void testParentToChildMethod() {
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_DUPE_HIT, payload);
         KffDataObjectHandler.parentToChild(payload);
-        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_DUPE_HIT));
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_DUPE_HIT));
         assertNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_DUPE_HIT));
     }
@@ -320,23 +281,17 @@ class KffDataObjectHandlerTest extends UnitTest {
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, "test.filter");
         payload.setChannelFactory(SBC_DATA);
         kff.hash(payload);
-        assertEquals("test.filter", payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
         assertEquals("test.filter", payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
         assertEquals("test.filter", payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
         assertTrue(KffDataObjectHandler.hashPresent(payload));
-        assertEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
         assertEquals(DATA_MD5, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_MD5));
         assertEquals(DATA_MD5, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_MD5));
-        assertEquals(DATA_CRC32, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
         assertEquals(DATA_CRC32, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
         assertEquals(DATA_CRC32, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
-        assertEquals(DATA_SSDEEP, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertEquals(DATA_SSDEEP, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertEquals(DATA_SSDEEP, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
-        assertEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertEquals(DATA_SHA1, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertEquals(DATA_SHA1, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA1));
-        assertEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(DATA_SHA256, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(DATA_SHA256, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
@@ -349,23 +304,17 @@ class KffDataObjectHandlerTest extends UnitTest {
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, "test.filter");
         payload.setChannelFactory(SeekableByteChannelHelper.EMPTY_CHANNEL_FACTORY);
         kff.hash(payload);
-        assertEquals("test.filter", payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
         assertEquals("test.filter", payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
         assertEquals("test.filter", payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
         assertFalse(KffDataObjectHandler.hashPresent(payload));
-        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_MD5));
         assertNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_MD5));
-        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
         assertNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
-        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
-        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA1));
-        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals("test", payload.getFileType());
@@ -399,23 +348,17 @@ class KffDataObjectHandlerTest extends UnitTest {
 
         payload.setChannelFactory(exceptionSbcf);
         kff.hash(payload);
-        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
         assertNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
         assertFalse(KffDataObjectHandler.hashPresent(payload));
-        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_MD5));
         assertNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_MD5));
-        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
         assertNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
-        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
-        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA1));
-        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertNull(payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertNull(payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertNotEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
@@ -423,23 +366,17 @@ class KffDataObjectHandlerTest extends UnitTest {
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, "test.filter");
         payload.setChannelFactory(SBC_DATA);
         kff.hash(payload);
-        assertEquals("test.filter", payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
         assertEquals("test.filter", payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
         assertEquals("test.filter", payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
         assertTrue(KffDataObjectHandler.hashPresent(payload));
-        assertEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
         assertEquals(DATA_MD5, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_MD5));
         assertEquals(DATA_MD5, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_MD5));
-        assertEquals(DATA_CRC32, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
         assertEquals(DATA_CRC32, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
         assertEquals(DATA_CRC32, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
-        assertEquals(DATA_SSDEEP, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertEquals(DATA_SSDEEP, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
         assertEquals(DATA_SSDEEP, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SSDEEP));
-        assertEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertEquals(DATA_SHA1, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertEquals(DATA_SHA1, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA1));
-        assertEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(DATA_SHA256, payload.getParameterAsConcatString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(DATA_SHA256, payload.getParameterAsString(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
