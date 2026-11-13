@@ -122,7 +122,7 @@ class PooledChannelManagerTest extends UnitTest {
 
             assertTrue(channel.isShutdown());
 
-            ILoggingEvent log = listAppender.list.get(0);
+            ILoggingEvent log = listAppender.list.getFirst();
             assertEquals(Level.ERROR, log.getLevel());
             assertEquals("Unable to cleanly return gRPC connection channel to the pool: " +
                     "Object has already been returned to this pool or is invalid", log.getFormattedMessage());
@@ -142,7 +142,7 @@ class PooledChannelManagerTest extends UnitTest {
 
             manager.shutdown(channel);
 
-            ILoggingEvent log = listAppender.list.get(0);
+            ILoggingEvent log = listAppender.list.getFirst();
             assertEquals(Level.ERROR, log.getLevel());
             assertEquals("Unable to invalidate existing gRPC connection: " +
                     "Invalidated object not currently part of this pool", log.getFormattedMessage());

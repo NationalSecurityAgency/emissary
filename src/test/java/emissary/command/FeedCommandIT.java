@@ -78,14 +78,14 @@ class FeedCommandIT extends UnitTest {
     void requiredArgumentsDefaultValues() throws Exception {
         // setup
         // Add the required parameters
-        arguments.addAll(Arrays.asList(PROJECT_BASE_ARGS.get(0), baseDir.toString(), INPUT_ARGS.get(0), inputDir.toString()));
+        arguments.addAll(Arrays.asList(PROJECT_BASE_ARGS.getFirst(), baseDir.toString(), INPUT_ARGS.getFirst(), inputDir.toString()));
 
         // test
         command = FeedCommand.parse(FeedCommand.class, arguments);
 
         // verify required
         assertEquals(1, command.getPriorityDirectories().size());
-        assertEquals(inputDir.toString() + "/", command.getPriorityDirectories().get(0).getDirectoryName());
+        assertEquals(inputDir.toString() + "/", command.getPriorityDirectories().getFirst().getDirectoryName());
         assertEquals(baseDir, command.getProjectBase());
 
         // verify defaults

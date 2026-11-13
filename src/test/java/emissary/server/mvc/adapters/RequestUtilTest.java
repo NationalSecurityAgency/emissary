@@ -80,7 +80,7 @@ class RequestUtilTest extends UnitTest {
         List<String> testStrings = Arrays.asList(testOk, null, testBad);
 
         List<String> resultStrings = RequestUtil.sanitizeParametersStringList(testStrings);
-        assertEquals(testOk, resultStrings.get(0));
+        assertEquals(testOk, resultStrings.getFirst());
         assertNull(resultStrings.get(1));
         assertEquals("this_is__not_fine__", resultStrings.get(2));
 

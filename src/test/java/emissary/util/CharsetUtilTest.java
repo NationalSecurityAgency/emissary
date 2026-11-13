@@ -76,7 +76,7 @@ class CharsetUtilTest extends UnitTest {
 
     @Test
     void byteToCharArrayDecodesMultibyteUtf8() {
-        final String s = S.get(0);
+        final String s = S.getFirst();
         assertArrayEquals(s.toCharArray(), CharsetUtil.byteToCharArray(s.getBytes(UTF_8)), "utf8 bytes decode");
     }
 

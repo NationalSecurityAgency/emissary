@@ -439,7 +439,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         checkAttachmentCounts(root, attachments, diffs);
 
         assertEquals(1, diffs.size());
-        assertEquals("Expected <numAttachments> 2 not equal to number of attachments in payload (1).", diffs.get(0));
+        assertEquals("Expected <numAttachments> 2 not equal to number of attachments in payload (1).", diffs.getFirst());
     }
 
     @Test
@@ -456,7 +456,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         diff(new BaseDataObject(), actual, "test", diffs, diffs, options);
 
         assertEquals(1, diffs.size());
-        assertEquals("Expected <numAttachments> 3 not equal to number of attachments in payload (1).", diffs.get(0));
+        assertEquals("Expected <numAttachments> 3 not equal to number of attachments in payload (1).", diffs.getFirst());
     }
 
 
@@ -493,7 +493,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         checkAttachmentCounts(root, attachments, differences);
 
         assertEquals(1, differences.size());
-        assertTrue(differences.get(0).contains("Expected <numAttachments> 5 not equal to number of attachments in payload (2)."));
+        assertTrue(differences.getFirst().contains("Expected <numAttachments> 5 not equal to number of attachments in payload (2)."));
     }
 
     @Test
@@ -504,7 +504,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         checkAttachmentCounts(root, attachments, differences);
 
         assertEquals(1, differences.size());
-        assertTrue(differences.get(0).contains("1 attachments in payload with no count in answer xml"));
+        assertTrue(differences.getFirst().contains("1 attachments in payload with no count in answer xml"));
     }
 
     @Test
@@ -516,7 +516,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         checkMetadata(root, mockPayload, differences);
 
         assertEquals(1, differences.size());
-        assertTrue(differences.get(0).contains("missing a child name element"));
+        assertTrue(differences.getFirst().contains("missing a child name element"));
     }
 
     @Test
@@ -532,7 +532,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         checkMetadata(root, mockPayload, differences);
 
         assertEquals(1, differences.size());
-        assertTrue(differences.get(0).contains("Metadata element 'forbiddenKey' should not exist, but has value of 'someValue'"));
+        assertTrue(differences.getFirst().contains("Metadata element 'forbiddenKey' should not exist, but has value of 'someValue'"));
     }
 
     @Test
@@ -547,7 +547,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         checkViews(root, mockPayload, differences);
 
         assertEquals(1, differences.size());
-        assertTrue(differences.get(0).contains("Alternate View 'TEXT_VIEW' is missing from payload"));
+        assertTrue(differences.getFirst().contains("Alternate View 'TEXT_VIEW' is missing from payload"));
     }
 
     @Test
@@ -562,7 +562,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         checkViews(root, mockPayload, differences);
 
         assertEquals(1, differences.size());
-        assertTrue(differences.get(0).contains("Alternate View 'SECRET_VIEW' is present, but was flagged as forbidden (noview)"));
+        assertTrue(differences.getFirst().contains("Alternate View 'SECRET_VIEW' is present, but was flagged as forbidden (noview)"));
     }
 
     @Test
@@ -579,7 +579,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         checkStringValue(meta, "world", differences);
 
         assertEquals(1, differences.size());
-        assertTrue(differences.get(0).contains("does not equal"));
+        assertTrue(differences.getFirst().contains("does not equal"));
     }
 
     @Test
@@ -596,7 +596,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         checkStringValue(meta, "abc1234", differences);
 
         assertEquals(1, differences.size());
-        assertTrue(differences.get(0).contains("does not match regex"));
+        assertTrue(differences.getFirst().contains("does not match regex"));
     }
 
     @Test
@@ -616,7 +616,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         checkStringValue(meta, "anything", differences);
 
         assertEquals(1, differences.size());
-        assertTrue(differences.get(0).contains("Base64 mismatch"));
+        assertTrue(differences.getFirst().contains("Base64 mismatch"));
     }
 
     @Test
@@ -631,7 +631,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         // Missing element triggers error
         checkStringValue(meta, "A|B", differences);
         assertEquals(1, differences.size());
-        assertTrue(differences.get(0).contains("collections not equal"));
+        assertTrue(differences.getFirst().contains("collections not equal"));
     }
 
     @Test
@@ -652,7 +652,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
 
         assertFalse(result);
         assertEquals(1, differences.size());
-        assertTrue(differences.get(0).contains("Unsupported or mistyped os-release target 'windows'"));
+        assertTrue(differences.getFirst().contains("Unsupported or mistyped os-release target 'windows'"));
     }
 
     private static Element buildMetaElement(String mode, String valueStr) {
@@ -708,6 +708,6 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         assertEquals(1, differences.size(), "Should log exactly one difference error");
 
         String expectedError = "Unsupported or mistyped os-release target 'windows' found in element <test-node>";
-        assertEquals(expectedError, differences.get(0));
+        assertEquals(expectedError, differences.getFirst());
     }
 }
