@@ -104,6 +104,7 @@ public final class IBaseDataObjectHelper {
             bdo.setId(iBaseDataObject.getId());
             bdo.setWorkBundleId(iBaseDataObject.getWorkBundleId());
             bdo.setTransactionId(iBaseDataObject.getTransactionId());
+            bdo.setTld(iBaseDataObject.getTld());
         }
 
         return bdo;

@@ -97,6 +97,7 @@ public class HDMobileAgent extends MobileAgent {
      * @return true
      */
     public synchronized boolean addPayload(final IBaseDataObject p) {
+        backfillTld(Collections.singleton(p));
         return this.payloadList.add(p);
     }
 
@@ -107,7 +108,33 @@ public class HDMobileAgent extends MobileAgent {
      * @return true
      */
     public synchronized boolean addPayload(final Collection<IBaseDataObject> c) {
+        backfillTld(c);
         return this.payloadList.addAll(c);
+    }
+
+    private void backfillTld(final Collection<IBaseDataObject> incoming) {
+        IBaseDataObject root = findFamilyRoot(this.payloadList);
+        if (root == null) {
+            root = findFamilyRoot(incoming);
+        }
+        if (root == null) {
+            return;
+        }
+        for (final IBaseDataObject member : incoming) {
+            if (member != null && member.getTld() == null && member.shortName().contains(Family.SEP)) {
+                member.setTld(root);
+            }
+        }
+    }
+
+    @Nullable
+    private static IBaseDataObject findFamilyRoot(final Collection<IBaseDataObject> family) {
+        for (final IBaseDataObject member : family) {
+            if (member != null && !member.shortName().contains(Family.SEP)) {
+                return member;
+            }
+        }
+        return null;
     }
 
     /**

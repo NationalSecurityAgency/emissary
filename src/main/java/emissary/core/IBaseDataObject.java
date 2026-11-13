@@ -1019,10 +1019,23 @@ public interface IBaseDataObject {
     void setTransactionId(String transactionId);
 
     /**
-     * Return the top level document or null if there is none for this IBaseDataObject
+     * Returns the top level document (TLD) of this object.
+     * <p>
+     * This is a run-time only state: it is populated either at construction or by the framework during processing. It is
+     * not serialized, and it is null on the top level document itself.
      *
-     * @return The TLD IBaseDataObject
+     * @return The TLD IBaseDataObject, or null if not known or this object *is* the top level document.
      */
     IBaseDataObject getTld();
 
+    /**
+     * Sets the top level document (TLD) of this object.
+     * <p>
+     * This is a run-time only state maintained by the framework during processing. The default implementation does nothing.
+     *
+     * @param ignored the top level document this object descends from
+     */
+    default void setTld(@Nullable IBaseDataObject ignored) {
+        /* Default no-op */
+    }
 }

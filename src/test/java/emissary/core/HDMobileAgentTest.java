@@ -11,6 +11,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  *
@@ -36,6 +39,37 @@ class HDMobileAgentTest extends UnitTest {
         children.add(ibdo);
         ret = ma.atPlaceHD(place, Collections.emptyList());
         assertEquals(2, ret.size());
+    }
+
+    @Test
+    void testAddPayloadBackfillsTld() {
+        final HDMobileAgent agent = new HDMobileAgent();
+        final IBaseDataObject root = DataObjectFactory.getInstance(new byte[] {}, "testFile");
+        agent.addPayload(root);
+
+        assertNull(root.getTld());
+
+        final IBaseDataObject child = DataObjectFactory.getInstance(new byte[] {}, "testFile-att-1");
+        final IBaseDataObject grandchild = DataObjectFactory.getInstance(new byte[] {}, "testFile-att-1-att-1");
+        agent.addPayload(List.of(child, grandchild));
+
+        assertSame(root, child.getTld());
+        assertSame(root, grandchild.getTld());
+        assertNull(root.getTld());
+    }
+
+    @Test
+    void testAddPayloadKeepsExistingTld() {
+        final HDMobileAgent agent = new HDMobileAgent();
+        final IBaseDataObject root = DataObjectFactory.getInstance(new byte[] {}, "testFile");
+        agent.addPayload(root);
+
+        final IBaseDataObject actualTld = DataObjectFactory.getInstance(new byte[] {}, "otherFile");
+        final IBaseDataObject child = DataObjectFactory.getInstance(new byte[] {}, "testFile-att-1", "", actualTld);
+        agent.addPayload(child);
+
+        assertSame(actualTld, child.getTld());
+        assertNotSame(root, child.getTld());
     }
 
     static final class SimplePlace extends ServiceProviderPlace {
