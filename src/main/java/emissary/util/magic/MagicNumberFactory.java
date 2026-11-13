@@ -31,7 +31,7 @@ public class MagicNumberFactory {
     public static final String UNSUPPORTED_DATATYPE_MSG_SEARCH = "Data Type 'search/N' not supported - e.g. search/1";
     public static final String UNSUPPORTED_DATATYPE_MSG_REGEX = "Data Type 'regex' not supported";
     public static final String UNSUPPORTED_DATATYPE_MSG_UNSIGNED = "Signed Data Types unsupported - e.g. UBELONG";
-    protected static final List<String> IGNORABLE_DATATYPE_MSGS = Arrays.asList(UNSUPPORTED_DATATYPE_MSG_UNSIGNED,
+    protected static final List<String> IGNORABLE_DATATYPE_MSGS = List.of(UNSUPPORTED_DATATYPE_MSG_UNSIGNED,
             UNSUPPORTED_DATATYPE_MSG_REGEX, UNSUPPORTED_DATATYPE_MSG_SEARCH);
 
     private MagicNumberFactory() {}

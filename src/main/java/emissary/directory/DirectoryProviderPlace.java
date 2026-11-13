@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import static emissary.core.constants.Configurations.PLACE_NAME;
 import static emissary.core.constants.Configurations.SERVICE_COST;
@@ -640,7 +639,7 @@ public abstract class DirectoryProviderPlace implements IServiceProviderPlace {
         logger.debug("Called shutDown()");
 
         // Remove from directory a list of keys without expense
-        deregisterFromDirectory(keys.stream().map(KeyManipulator::removeExpense).collect(Collectors.toList()));
+        deregisterFromDirectory(keys.stream().map(KeyManipulator::removeExpense).toList());
 
         // Unbind from namespace
         unbindFromNamespace();

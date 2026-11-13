@@ -30,7 +30,6 @@ import picocli.CommandLine.MissingParameterException;
 import picocli.CommandLine.UnmatchedArgumentException;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +54,7 @@ public class Emissary {
 
     static {
         List<Class<? extends EmissaryCommand>> commandClasses =
-                Arrays.asList(ServerCommand.class, HelpCommand.class, TopologyCommand.class, FeedCommand.class,
+                List.of(ServerCommand.class, HelpCommand.class, TopologyCommand.class, FeedCommand.class,
                         AgentsCommand.class, PoolCommand.class, VersionCommand.class, EnvCommand.class,
                         PeersCommand.class, ConfigCommand.class, DirectoryCommand.class);
         Map<String, EmissaryCommand> staticCopy = new HashMap<>();
@@ -68,7 +67,7 @@ public class Emissary {
                 System.exit(1);
             }
         }
-        EMISSARY_COMMANDS = Collections.unmodifiableMap(staticCopy);
+        EMISSARY_COMMANDS = Map.copyOf(staticCopy);
     }
 
     @VisibleForTesting
@@ -81,7 +80,7 @@ public class Emissary {
     }
 
     protected Emissary(Map<String, EmissaryCommand> cmds) {
-        commands = Collections.unmodifiableMap(cmds);
+        commands = Map.copyOf(cmds);
         // sort by command name and then add to Picocli
         for (String key : new TreeSet<>(commands.keySet())) {
             cli.addSubcommand(key, commands.get(key));
@@ -106,7 +105,7 @@ public class Emissary {
             String commandName = commandNames.getFirst();
             EmissaryCommand cmd = commands.get(commandName);
             dumpBanner(cmd);
-            if (Arrays.asList(args).contains(ServerCommand.COMMAND_NAME)) {
+            if (List.of(args).contains(ServerCommand.COMMAND_NAME)) {
                 dumpVersionInfo();
             }
             cmd.run(cli);
