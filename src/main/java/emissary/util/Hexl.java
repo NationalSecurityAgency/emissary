@@ -1,6 +1,5 @@
 package emissary.util;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 
 import java.io.DataInputStream;
@@ -8,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HexFormat;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -24,7 +24,7 @@ public class Hexl {
      * Unformatted hex string
      */
     public static String toUnformattedHexString(byte[] data) {
-        return Hex.encodeHexString(data);
+        return HexFormat.of().formatHex(data);
     }
 
 

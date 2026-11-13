@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -327,16 +328,7 @@ public class ByteUtil {
             final MessageDigest md = MessageDigest.getInstance("SHA-256");
             final byte[] hash = md.digest(bytes);
 
-            final StringBuilder hexString = new StringBuilder(2 * hash.length);
-            for (byte b : hash) {
-                final String hex = Integer.toHexString(0xff & b);
-
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
+            return HexFormat.of().formatHex(hash);
         } catch (NoSuchAlgorithmException e) {
             return null;
         }
