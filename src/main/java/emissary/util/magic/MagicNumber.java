@@ -289,6 +289,9 @@ public class MagicNumber {
 
                     byte[] subData = extractElement(data, offset, dataTypeLength);
                     if (subData != null) {
+                        if (!dataType.isBigEndian()) {
+                            reverseBytes(subData);
+                        }
                         String sub = MagicMath.byteArrayToString(subData, 10);
                         sb.append(sub);
                     }
@@ -302,6 +305,14 @@ public class MagicNumber {
             sb.append(next);
         }
         return sb.toString();
+    }
+
+    private static void reverseBytes(byte[] bytes) {
+        for (int left = 0, right = bytes.length - 1; left < right; left++, right--) {
+            byte value = bytes[left];
+            bytes[left] = bytes[right];
+            bytes[right] = value;
+        }
     }
 
     /**
