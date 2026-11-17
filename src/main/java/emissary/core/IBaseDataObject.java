@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public interface IBaseDataObject {
 
@@ -412,7 +411,7 @@ public interface IBaseDataObject {
         } else if ((obj.size() == 1) && (obj.getFirst() instanceof String s)) {
             return Collections.singletonList(s);
         } else {
-            return obj.stream().map(String::valueOf).collect(Collectors.toList());
+            return obj.stream().map(String::valueOf).toList();
         }
     }
 

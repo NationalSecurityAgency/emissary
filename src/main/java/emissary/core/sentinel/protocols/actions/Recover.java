@@ -7,7 +7,6 @@ import emissary.core.sentinel.protocols.trackers.Tracker;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Attempts to recover the mobile agents by interrupting the thread
@@ -22,7 +21,7 @@ public class Recover extends Action {
                 .filter(AgentTracker.class::isInstance)
                 .map(t -> ((AgentTracker) t).getAgentName())
                 .sorted()
-                .collect(Collectors.toList());
+                .toList();
 
         for (String agentName : agentNames) {
             try {

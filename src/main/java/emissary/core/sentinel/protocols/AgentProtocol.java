@@ -85,7 +85,7 @@ public class AgentProtocol extends Protocol<AgentTracker> {
             List<String> agentKeys = Namespace.keySet().stream()
                     .filter(k -> k.startsWith(MobileAgentFactory.AGENT_NAME))
                     .sorted()
-                    .collect(Collectors.toList());
+                    .toList();
             for (String agentKey : agentKeys) {
                 updateTracker(agentKey);
             }

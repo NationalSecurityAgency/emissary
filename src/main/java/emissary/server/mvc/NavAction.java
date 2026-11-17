@@ -19,7 +19,6 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Path("")
 // context is emissary
@@ -97,7 +96,7 @@ public class NavAction {
                     // required.
                     .map(e -> Map.entry(e.getKey(), e.getValue().startsWith("/") ? "." + e.getValue() : e.getValue()))
                     .map(e -> new NavItem(e.getKey(), e.getValue()))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         protected static boolean isValidLink(String link) {

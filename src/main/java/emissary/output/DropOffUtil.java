@@ -26,7 +26,6 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -940,7 +939,7 @@ public class DropOffUtil {
      * @return The list of filenames found in the field Original-Filename or FILE_ABSOLUTEPATH
      */
     public static List<String> getFullFilepathsFromParams(IBaseDataObject d) {
-        return getFullFilepathsFromParams(d, Arrays.asList(ORIGINAL_FILENAME, FILE_ABSOLUTEPATH));
+        return getFullFilepathsFromParams(d, List.of(ORIGINAL_FILENAME, FILE_ABSOLUTEPATH));
     }
 
     /**
@@ -955,7 +954,7 @@ public class DropOffUtil {
     @Deprecated
     @SuppressWarnings("AvoidObjectArrays")
     public static List<String> getFullFilepathsFromParams(IBaseDataObject d, String[] filenameFields) {
-        return getFullFilepathsFromParams(d, Arrays.asList(filenameFields));
+        return getFullFilepathsFromParams(d, List.of(filenameFields));
     }
 
     /**

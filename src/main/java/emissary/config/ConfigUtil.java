@@ -307,7 +307,7 @@ public class ConfigUtil {
     @Deprecated
     @SuppressWarnings("AvoidObjectArrays")
     public static Configurator getConfigInfo(final String[] preferences) throws IOException {
-        return getConfigInfo(Arrays.asList(preferences));
+        return getConfigInfo(List.of(preferences));
     }
 
     /**
@@ -568,7 +568,7 @@ public class ConfigUtil {
             // sort the files, to put emissary.admin.ClassNameInventory.cfg before emissary.admin.ClassNameInventory-blah.cfg
             if (files != null) {
                 Arrays.sort(files);
-                classNameInventory.addAll(Arrays.asList(files));
+                classNameInventory.addAll(List.of(files));
             }
         }
         // check to make sure we have at least one
@@ -585,7 +585,7 @@ public class ConfigUtil {
             }
             if (null != configFlavors) {
                 final String cfgFlavor = getFlavorsFromCfgFile(f);
-                if (configFlavors.equals(cfgFlavor) || Arrays.asList(configFlavors.split(",")).contains(cfgFlavor)) {
+                if (configFlavors.equals(cfgFlavor) || List.of(configFlavors.split(",")).contains(cfgFlavor)) {
                     logger.warn("Config file {} appeared to be flavored with {}.", f.getName(), cfgFlavor);
                 }
             }

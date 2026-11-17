@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public abstract class Action {
 
@@ -23,7 +22,7 @@ public abstract class Action {
     public abstract void trigger(Map<String, Tracker> trackers);
 
     public List<Tracker> format(Map<String, Tracker> trackers) {
-        return trackers.values().stream().sorted().collect(Collectors.toList());
+        return trackers.values().stream().sorted().toList();
     }
 
     @Override
@@ -36,6 +35,6 @@ public abstract class Action {
                 .filter(AgentTracker.class::isInstance)
                 .map(t -> (AgentTracker) t)
                 .sorted()
-                .collect(Collectors.toList());
+                .toList();
     }
 }

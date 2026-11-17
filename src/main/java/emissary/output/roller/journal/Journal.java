@@ -4,7 +4,6 @@ import jakarta.annotation.Nullable;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -41,7 +40,7 @@ public final class Journal {
     }
 
     public List<JournalEntry> getEntries() {
-        return Collections.unmodifiableList(entries);
+        return List.copyOf(entries);
     }
 
     void setVersion(byte b) {

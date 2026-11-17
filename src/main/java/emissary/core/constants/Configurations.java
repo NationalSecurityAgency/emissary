@@ -1,8 +1,5 @@
 package emissary.core.constants;
 
-import com.google.common.collect.Lists;
-
-import java.util.Collections;
 import java.util.List;
 
 public class Configurations {
@@ -27,17 +24,16 @@ public class Configurations {
     /**
      * The list of reserved service config keys for service/place creation
      */
-    public static final List<String> RESERVED_SERVICE_CONFIG_KEYS = Collections.unmodifiableList(
-            Lists.newArrayList(
-                    PLACE_NAME,
-                    SERVICE_COST,
-                    SERVICE_DESCRIPTION,
-                    SERVICE_KEY,
-                    SERVICE_NAME,
-                    SERVICE_PROXY,
-                    SERVICE_PROXY_DENY,
-                    SERVICE_QUALITY,
-                    SERVICE_TYPE));
+    public static final List<String> RESERVED_SERVICE_CONFIG_KEYS = List.of(
+            PLACE_NAME,
+            SERVICE_COST,
+            SERVICE_DESCRIPTION,
+            SERVICE_KEY,
+            SERVICE_NAME,
+            SERVICE_PROXY,
+            SERVICE_PROXY_DENY,
+            SERVICE_QUALITY,
+            SERVICE_TYPE);
 
     private Configurations() {}
 }

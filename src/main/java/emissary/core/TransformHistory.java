@@ -11,7 +11,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,7 +39,7 @@ public class TransformHistory implements Serializable {
      */
     public void set(List<String> keys) {
         clear();
-        addAll(keys.stream().map(History::new).collect(Collectors.toList()));
+        addAll(keys.stream().map(History::new).toList());
     }
 
     /**
@@ -122,7 +121,7 @@ public class TransformHistory implements Serializable {
         } else {
             return history.stream()
                     .map(History::getKey)
-                    .collect(Collectors.toList());
+                    .toList();
         }
     }
 
@@ -132,7 +131,7 @@ public class TransformHistory implements Serializable {
      * @return history object
      */
     public List<History> getHistory() {
-        return Collections.unmodifiableList(history);
+        return List.copyOf(history);
     }
 
     /**
@@ -275,8 +274,8 @@ public class TransformHistory implements Serializable {
         }
 
         public List<String> getCoordinated(boolean stripUrl) {
-            return stripUrl ? coordinated.stream().map(History::stripUrl).collect(Collectors.toUnmodifiableList())
-                    : Collections.unmodifiableList(coordinated);
+            return stripUrl ? coordinated.stream().map(History::stripUrl).toList()
+                    : List.copyOf(coordinated);
         }
 
         public void addCoordinated(String key) {
