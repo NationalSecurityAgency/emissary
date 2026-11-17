@@ -63,7 +63,7 @@ public abstract class Protocol<T> {
                 this.rules.put(ruleId, ruleImpl);
                 logger.debug("Sentinel loaded rule[{}] - {}", ruleId, ruleImpl);
             } catch (Exception e) {
-                logger.warn("Sentinel rule[{}] is invalid: {}", ruleId, e.getMessage());
+                logger.warn("Sentinel rule[{}] is invalid", ruleId, e);
             }
         }
 
