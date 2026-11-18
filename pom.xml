@@ -1100,7 +1100,7 @@
             <failurePriority>5</failurePriority>
             <maxAllowedViolations>0</maxAllowedViolations>
             <format>xml</format>
-            <includeTests>true</includeTests>
+            <includeTests>false</includeTests>
             <minimumTokens>100</minimumTokens>
             <targetJdk>${maven.compiler.target}</targetJdk>
             <rulesets>
@@ -1111,7 +1111,7 @@
             <execution>
               <goals>
                 <goal>check</goal>
-                <!--<goal>cpd-check</goal>-->
+                <goal>cpd-check</goal>
               </goals>
               <phase>verify</phase>
             </execution>
