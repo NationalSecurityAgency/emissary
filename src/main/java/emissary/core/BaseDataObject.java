@@ -1392,6 +1392,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             }
         }
 
+        final IBaseDataObject currentTld = this.getTld() == null ? this : this.getTld();
+        for (final IBaseDataObject r : records) {
+            r.setTld(currentTld);
+        }
+
         this.extractedRecords = new ArrayList<>(records);
     }
 
@@ -1405,6 +1410,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             this.extractedRecords = new ArrayList<>();
         }
 
+        final IBaseDataObject currentTld = this.getTld() == null ? this : this.getTld();
+        record.setTld(currentTld);
         this.extractedRecords.add(record);
     }
 
@@ -1422,6 +1429,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
         if (this.extractedRecords == null) {
             this.extractedRecords = new ArrayList<>();
+        }
+
+        final IBaseDataObject currentTld = this.getTld() == null ? this : this.getTld();
+        for (final IBaseDataObject r : records) {
+            r.setTld(currentTld);
         }
 
         this.extractedRecords.addAll(records);

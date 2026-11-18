@@ -1367,6 +1367,56 @@ class BaseDataObjectTest extends UnitTest {
     }
 
     @Test
+    void testSetExtractedRecordsPopulatesTld() {
+        final BaseDataObject child = new BaseDataObject();
+        final ExtractedRecord sibling = new ExtractedRecord();
+        this.b.setExtractedRecords(List.of(child, sibling));
+
+        assertSame(this.b, child.getTld());
+        assertSame(this.b, sibling.getTld());
+        assertNull(this.b.getTld());
+
+        final ExtractedRecord grandchild = new ExtractedRecord();
+        final ExtractedRecord grandchildSibling = new ExtractedRecord();
+        child.setExtractedRecords(List.of(grandchild, grandchildSibling));
+
+        assertSame(this.b, grandchild.getTld());
+        assertSame(this.b, grandchildSibling.getTld());
+    }
+
+    @Test
+    void testAddExtractedRecordPopulatesTld() {
+        final BaseDataObject child = new BaseDataObject();
+        this.b.addExtractedRecord(child);
+
+        assertSame(this.b, child.getTld());
+        assertNull(this.b.getTld());
+
+        final ExtractedRecord grandchild = new ExtractedRecord();
+        child.addExtractedRecord(grandchild);
+
+        assertSame(this.b, grandchild.getTld());
+    }
+
+    @Test
+    void testAddExtractedRecordsPopulatesTld() {
+        final BaseDataObject child = new BaseDataObject();
+        final ExtractedRecord sibling = new ExtractedRecord();
+        this.b.addExtractedRecords(List.of(child, sibling));
+
+        assertSame(this.b, child.getTld());
+        assertSame(this.b, sibling.getTld());
+        assertNull(this.b.getTld());
+
+        final ExtractedRecord grandchild = new ExtractedRecord();
+        final ExtractedRecord grandchildSibling = new ExtractedRecord();
+        child.addExtractedRecords(List.of(grandchild, grandchildSibling));
+
+        assertSame(this.b, grandchild.getTld());
+        assertSame(this.b, grandchildSibling.getTld());
+    }
+
+    @Test
     void testSetCurrentFormWithBoolean() {
         IBaseDataObject testIbdo = DataObjectFactory.getInstance(null, "dummy", "FORM-1");
         testIbdo.enqueueCurrentForm("FORM-2");
