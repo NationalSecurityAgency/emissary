@@ -23,6 +23,10 @@ import org.glassfish.jersey.server.mvc.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -116,15 +120,37 @@ public class DumpDirectoryAction {
     // TODO: move these to proper response objects
     public static class PeerInfo {
         final String link;
+        final boolean linkAvailable;
         final String peerkey;
         final String status;
 
         public PeerInfo(String peerkey, boolean healthy) {
             this.peerkey = peerkey;
-            this.link =
-                    KeyManipulator.getServiceHostUrl(peerkey) + "emissary/DumpDirectory.action?targetDir="
-                            + KeyManipulator.getServiceLocation(peerkey);
+            this.link = createPeerLink(peerkey);
+            this.linkAvailable = !this.link.isEmpty();
             this.status = healthy ? "" : "DOWN";
+        }
+
+        private static String createPeerLink(String peerkey) {
+            final String serviceHostUrl = KeyManipulator.getServiceHostUrl(peerkey);
+            final String serviceLocation = KeyManipulator.getServiceLocation(peerkey);
+            try {
+                final URI serviceUri = new URI(serviceHostUrl);
+                final String scheme = serviceUri.getScheme();
+                if (!("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme))
+                        || serviceUri.getHost() == null
+                        || serviceUri.getRawUserInfo() != null
+                        || serviceUri.getRawQuery() != null
+                        || serviceUri.getRawFragment() != null
+                        || serviceUri.getRawPath() == null
+                        || !serviceUri.getRawPath().endsWith("/")) {
+                    return "";
+                }
+                final String encodedLocation = URLEncoder.encode(serviceLocation, StandardCharsets.UTF_8);
+                return serviceUri.resolve("emissary/DumpDirectory.action?targetDir=" + encodedLocation).toASCIIString();
+            } catch (URISyntaxException e) {
+                return "";
+            }
         }
     }
 
