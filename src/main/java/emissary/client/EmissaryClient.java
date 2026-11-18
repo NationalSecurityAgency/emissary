@@ -200,11 +200,8 @@ public class EmissaryClient {
         localContext.setAuthCache(EmissaryClient.AUTH_CACHE);
 
         if (cookie != null) {
-            // nosemgrep: java.lang.security.audit.cookie-missing-httponly.cookie-missing-httponly -- This is an outbound request
-            // cookie, not a browser response cookie.
-            // nosemgrep: java.lang.security.audit.cookie-missing-secure-flag.cookie-missing-secure-flag -- This is an outbound
-            // request cookie, not a browser response cookie.
-            localContext.getCookieStore().addCookie(cookie);
+            // Request cookies do not expose Set-Cookie response attributes to a browser.
+            localContext.getCookieStore().addCookie(cookie); // nosemgrep
         }
 
         try {

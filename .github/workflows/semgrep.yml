@@ -29,7 +29,7 @@ jobs:
       - name: Install Semgrep
         run: pipx install semgrep==1.186.0
 
-      # Report findings without --error so security findings do not fail this job.
+      # Fail the job when Semgrep reports a security finding.
       - name: Scan source code and configuration
         run: >-
           semgrep scan
@@ -38,6 +38,7 @@ jobs:
           --config p/security-audit
           --exclude target
           --exclude node_modules
+          --error
           --json
           --output semgrep-report.json
           .
