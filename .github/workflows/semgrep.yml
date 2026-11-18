@@ -1,0 +1,51 @@
+---
+name: Semgrep Security Scan
+
+on: # yamllint disable-line rule:truthy
+  push:
+    branches: [main, release/**, patch/**]
+  pull_request:
+    branches: [main, release/**, patch/**]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  semgrep:
+    name: Semgrep security scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+
+      - name: Install Semgrep
+        run: pipx install semgrep==1.186.0
+
+      # Report findings without --error so security findings do not fail this job.
+      - name: Scan source code and configuration
+        run: >-
+          semgrep scan
+          --config p/java
+          --config p/javascript
+          --config p/security-audit
+          --exclude target
+          --exclude node_modules
+          --json
+          --output semgrep-report.json
+          .
+
+      - name: Upload Semgrep report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: semgrep-report
+          path: semgrep-report.json
+          if-no-files-found: ignore
