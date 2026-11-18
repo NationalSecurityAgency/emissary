@@ -905,12 +905,7 @@
           <version>${plugin.maven-checkstyle.version}</version>
           <configuration>
             <configLocation>${checkstyleFormatter}</configLocation>
-            <!-- this combination of these two configurations
-              (failOnViolation=true and violationSeverity=error) means
-              any checks with severity=error will fail the build -->
-            <!-- TODO enforce more checkstyle categories as the	build gets cleaned up -->
-            <!-- As you fix checkstyle warning categories, change the severity of that category
-              to "error" so it will fail the build if new violations of that category get introduced. -->
+            <!-- Fail the build for every enabled Checkstyle error. -->
             <failOnViolation>true</failOnViolation>
             <violationSeverity>error</violationSeverity>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
@@ -928,6 +923,7 @@
               <goals>
                 <goal>check</goal>
               </goals>
+              <phase>verify</phase>
             </execution>
           </executions>
         </plugin>
@@ -1327,6 +1323,7 @@
               <goals>
                 <goal>check</goal>
               </goals>
+              <phase>verify</phase>
               <configuration>
                 <rules>
                   <rule>
@@ -1335,9 +1332,7 @@
                       <limit>
                         <counter>COMPLEXITY</counter>
                         <value>COVEREDRATIO</value>
-                        <!--
                         <minimum>0.37</minimum>
-                        -->
                       </limit>
                     </limits>
                   </rule>
@@ -1584,10 +1579,11 @@
   </reporting>
   <profiles>
     <profile>
+      <!-- On by default; skip with -DskipCoverage or -P !coverage. -->
       <id>coverage</id>
       <activation>
         <property>
-          <name>code-quality</name>
+          <name>!skipCoverage</name>
         </property>
       </activation>
       <build>
@@ -1608,10 +1604,10 @@
       </reporting>
     </profile>
     <profile>
+      <!-- On by default; skip with -DskipCheckstyle or -P !checkstyle. -->
       <id>checkstyle</id>
       <activation>
         <property>
-          <!-- skip with -DskipCheckstyle -->
           <name>!skipCheckstyle</name>
         </property>
       </activation>
@@ -1743,7 +1739,7 @@
       </build>
     </profile>
     <profile>
-      <!-- on by default, but disable with '-P !autoformat' or '-DskipFormat' -->
+      <!-- On by default; skip with -DskipFormat or -P !autoformat. -->
       <id>autoformat</id>
       <activation>
         <property>
@@ -1768,7 +1764,7 @@
       </build>
     </profile>
     <profile>
-      <!-- on by default, but disable with '-P !errorprone' or '-DskipErrorProne' -->
+      <!-- On by default; skip with -DskipErrorProne or -P !errorprone. -->
       <id>errorprone</id>
       <activation>
         <jdk>[21,)</jdk>
