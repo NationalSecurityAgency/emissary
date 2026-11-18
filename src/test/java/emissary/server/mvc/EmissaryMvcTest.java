@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,6 +52,19 @@ class EmissaryMvcTest extends EndpointTestBase {
         } finally {
             Namespace.unbind(directoryKey);
         }
+    }
+
+    @Test
+    void peerDirectoryLinksAreValidatedAndEncoded() {
+        DumpDirectoryAction.PeerInfo peer = new DumpDirectoryAction.PeerInfo(
+                "UNKNOWN.service.TYPE.http://localhost:8001/DirectoryPlace$0", true);
+        assertEquals("http://localhost:8001/emissary/DumpDirectory.action?targetDir=http%3A%2F%2Flocalhost%3A8001%2FDirectoryPlace", peer.link);
+        assertTrue(peer.linkAvailable);
+
+        DumpDirectoryAction.PeerInfo invalidPeer = new DumpDirectoryAction.PeerInfo(
+                "UNKNOWN.service.TYPE.javascript:alert(1)/DirectoryPlace", true);
+        assertEquals("", invalidPeer.link);
+        assertFalse(invalidPeer.linkAvailable);
     }
 
     @Test

@@ -53,7 +53,16 @@
     <h4>Peer Directories</h4>
     <ul>
       {{#peers}}
-        <li> <a href="{{link}}">{{peerkey}}</a> {{status}}</li>
+        <li>
+          {{#linkAvailable}}
+            <!-- nosemgrep: generic.html-templates.security.var-in-href.var-in-href -- PeerInfo permits only validated http(s) URLs and URL-encodes targetDir. -->
+            <a href="{{link}}">{{peerkey}}</a>
+          {{/linkAvailable}}
+          {{^linkAvailable}}
+            {{peerkey}}
+          {{/linkAvailable}}
+          {{status}}
+        </li>
       {{/peers}}
     </ul>
   </main>
