@@ -1508,5 +1508,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public void setTld(@Nullable IBaseDataObject tld) {
         this.tld = tld;
+        if (this.extractedRecords != null) {
+            final IBaseDataObject currentTld = tld == null ? this : tld;
+            for (final IBaseDataObject record : this.extractedRecords) {
+                record.setTld(currentTld);
+            }
+        }
     }
 }

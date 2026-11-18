@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
@@ -1414,6 +1415,43 @@ class BaseDataObjectTest extends UnitTest {
 
         assertSame(this.b, grandchild.getTld());
         assertSame(this.b, grandchildSibling.getTld());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"setExtractedRecords", "addExtractedRecord", "addExtractedRecords"})
+    void testAttachExistingExtractedSubtreePopulatesTld(String attachmentMethod) {
+        final BaseDataObject child = new BaseDataObject();
+        final BaseDataObject grandchild = new BaseDataObject();
+        final ExtractedRecord greatGrandchild = new ExtractedRecord();
+        grandchild.addExtractedRecord(greatGrandchild);
+        child.addExtractedRecord(grandchild);
+
+        switch (attachmentMethod) {
+            case "setExtractedRecords" -> this.b.setExtractedRecords(List.of(child));
+            case "addExtractedRecord" -> this.b.addExtractedRecord(child);
+            case "addExtractedRecords" -> this.b.addExtractedRecords(List.of(child));
+            default -> throw new IllegalArgumentException(attachmentMethod);
+        }
+
+        assertNull(this.b.getTld());
+        assertSame(this.b, child.getTld());
+        assertSame(this.b, grandchild.getTld());
+        assertSame(this.b, greatGrandchild.getTld());
+    }
+
+    @Test
+    void testSetTldPropagatesToExistingExtractedRecords() {
+        final BaseDataObject child = new BaseDataObject();
+        final ExtractedRecord grandchild = new ExtractedRecord();
+        child.addExtractedRecord(grandchild);
+
+        child.setTld(this.b);
+        assertSame(this.b, child.getTld());
+        assertSame(this.b, grandchild.getTld());
+
+        child.setTld(null);
+        assertNull(child.getTld());
+        assertSame(child, grandchild.getTld());
     }
 
     @Test

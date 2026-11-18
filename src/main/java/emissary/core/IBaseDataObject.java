@@ -1028,7 +1028,8 @@ public interface IBaseDataObject {
     IBaseDataObject getTld();
 
     /**
-     * Sets the top level document (TLD) of this object.
+     * Sets the top level document (TLD) of this object and propagates it to existing extracted records. If null, this
+     * object becomes the top level document for its extracted records.
      * <p>
      * This is a run-time only state maintained by the framework during processing. The default implementation does nothing.
      *
