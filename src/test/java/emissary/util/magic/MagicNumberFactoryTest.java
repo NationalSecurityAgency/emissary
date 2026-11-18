@@ -9,6 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.Locale;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -158,6 +160,31 @@ class MagicNumberFactoryTest extends UnitTest {
     void testStringSubstitution() throws ParseException {
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string x SUBST");
         assertTrue(m.isSubstitute(), "the 'x' value should set the substitute flag");
+    }
+
+    @Test
+    void testMagicTypeParsingIsIndependentOfTurkishLocale() {
+        final Locale originalLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+
+            assertEquals(MagicDataType.STRING, MagicDataType.fromKey("string").orElseThrow());
+        } finally {
+            Locale.setDefault(originalLocale);
+        }
+    }
+
+    @Test
+    void testLongSuffixParsingIsIndependentOfTurkishLocale() throws ParseException, DecoderException {
+        final Locale originalLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+
+            MagicNumber magic = MagicNumberFactory.buildMagicNumber("0 long 0x41424344L FOO");
+            assertTrue(magic.test(Hex.decodeHex("41424344")));
+        } finally {
+            Locale.setDefault(originalLocale);
+        }
     }
 
     @Test

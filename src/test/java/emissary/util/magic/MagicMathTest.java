@@ -4,6 +4,7 @@ import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -101,6 +102,19 @@ class MagicMathTest extends UnitTest {
     void testBytesToDebugHexString() {
         assertEquals("0x4142", MagicMath.byteArrayToHexString(new byte[] {0x41, 0x42}));
         assertEquals("0x41bb", MagicMath.byteArrayToHexString(new byte[] {0x41, (byte) 0xBB}));
+    }
+
+    @Test
+    void testBytesToDebugHexStringIsIndependentOfTurkishLocale() {
+        final Locale originalLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+
+            assertEquals("0x4142", MagicMath.byteArrayToHexString(new byte[] {0x41, 0x42}));
+            assertEquals("0x41bb", MagicMath.byteArrayToHexString(new byte[] {0x41, (byte) 0xBB}));
+        } finally {
+            Locale.setDefault(originalLocale);
+        }
     }
 
     @Test
