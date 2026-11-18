@@ -23,7 +23,9 @@
               <tr class='{{clz}}'>
                 {{#isDir}}
                   <td>
+                    <!-- nosemgrep: generic.html-templates.security.var-in-href.var-in-href -- NamespaceAction uses a trusted context path and URL-encodes targetDir. -->
                     <a href="{{dumpUrl}}">{{key}}</a>
+                    <!-- nosemgrep: generic.html-templates.security.var-in-href.var-in-href -- NamespaceAction uses a trusted context path and URL-encodes targetDir. -->
                     (<a href="{{transferUrl}}">xml</a>)
                   </td>
                   <td>

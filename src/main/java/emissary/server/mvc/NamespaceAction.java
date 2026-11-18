@@ -12,6 +12,8 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import org.glassfish.jersey.server.mvc.Template;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -65,8 +67,9 @@ public class NamespaceAction {
             this.value = tempValue;
             this.valueClassName = this.value.getClass().getName();
             this.isDir = key.contains("DirectoryPlace");
-            this.dumpUrl = context + "/DumpDirectory.action?targetDir=" + key;
-            this.transferUrl = context + "/TransferDirectory.action?targetDir=" + key;
+            final String encodedKey = URLEncoder.encode(key, StandardCharsets.UTF_8);
+            this.dumpUrl = context + "/DumpDirectory.action?targetDir=" + encodedKey;
+            this.transferUrl = context + "/TransferDirectory.action?targetDir=" + encodedKey;
         }
 
     }

@@ -94,6 +94,8 @@ class EmissaryMvcTest extends EndpointTestBase {
                     assertEquals("TEST.TESTSERVICEPLACE.TRANSFORM.http://localhost:8001/TestServicePlace$9090 (emissary.test.TestServicePlace)",
                             info.value.toString());
                     assertEquals("emissary.directory.DirectoryEntry", info.valueClassName);
+                    assertEquals("/emissary/DumpDirectory.action?targetDir=TestDirectoryPlace", info.dumpUrl);
+                    assertEquals("/emissary/TransferDirectory.action?targetDir=TestDirectoryPlace", info.transferUrl);
                     assertTrue(info.isDir);
                     found.set(true);
                 }
@@ -104,6 +106,14 @@ class EmissaryMvcTest extends EndpointTestBase {
         } finally {
             Namespace.unbind("TestDirectoryPlace");
         }
+    }
+
+    @Test
+    void namespaceUrlsEncodeTargetDirectory() {
+        NamespaceAction.NamespaceInfo info = new NamespaceAction.NamespaceInfo("DirectoryPlace & value=1", "even", "/emissary");
+
+        assertEquals("/emissary/DumpDirectory.action?targetDir=DirectoryPlace+%26+value%3D1", info.dumpUrl);
+        assertEquals("/emissary/TransferDirectory.action?targetDir=DirectoryPlace+%26+value%3D1", info.transferUrl);
     }
 
     @Test
