@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
@@ -50,6 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -110,6 +112,19 @@ class BaseDataObjectTest extends UnitTest {
         assertNotNull(b5.getCreationTimestamp());
         assertEquals(tld, b5.getTld());
 
+    }
+
+    @Test
+    void testSetTld() {
+        final IBaseDataObject tld = new BaseDataObject();
+        final BaseDataObject child = new BaseDataObject("content".getBytes(UTF_8), "aChild", "UNKNOWN");
+        assertNull(child.getTld());
+
+        child.setTld(tld);
+        assertSame(tld, child.getTld());
+
+        child.setTld(null);
+        assertNull(child.getTld());
     }
 
     @Test
@@ -1350,6 +1365,93 @@ class BaseDataObjectTest extends UnitTest {
         this.b.addExtractedRecords(elist);
         assertEquals(4, this.b.getExtractedRecordCount(), "Expected extended records to be added");
 
+    }
+
+    @Test
+    void testSetExtractedRecordsPopulatesTld() {
+        final BaseDataObject child = new BaseDataObject();
+        final ExtractedRecord sibling = new ExtractedRecord();
+        this.b.setExtractedRecords(List.of(child, sibling));
+
+        assertSame(this.b, child.getTld());
+        assertSame(this.b, sibling.getTld());
+        assertNull(this.b.getTld());
+
+        final ExtractedRecord grandchild = new ExtractedRecord();
+        final ExtractedRecord grandchildSibling = new ExtractedRecord();
+        child.setExtractedRecords(List.of(grandchild, grandchildSibling));
+
+        assertSame(this.b, grandchild.getTld());
+        assertSame(this.b, grandchildSibling.getTld());
+    }
+
+    @Test
+    void testAddExtractedRecordPopulatesTld() {
+        final BaseDataObject child = new BaseDataObject();
+        this.b.addExtractedRecord(child);
+
+        assertSame(this.b, child.getTld());
+        assertNull(this.b.getTld());
+
+        final ExtractedRecord grandchild = new ExtractedRecord();
+        child.addExtractedRecord(grandchild);
+
+        assertSame(this.b, grandchild.getTld());
+    }
+
+    @Test
+    void testAddExtractedRecordsPopulatesTld() {
+        final BaseDataObject child = new BaseDataObject();
+        final ExtractedRecord sibling = new ExtractedRecord();
+        this.b.addExtractedRecords(List.of(child, sibling));
+
+        assertSame(this.b, child.getTld());
+        assertSame(this.b, sibling.getTld());
+        assertNull(this.b.getTld());
+
+        final ExtractedRecord grandchild = new ExtractedRecord();
+        final ExtractedRecord grandchildSibling = new ExtractedRecord();
+        child.addExtractedRecords(List.of(grandchild, grandchildSibling));
+
+        assertSame(this.b, grandchild.getTld());
+        assertSame(this.b, grandchildSibling.getTld());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"setExtractedRecords", "addExtractedRecord", "addExtractedRecords"})
+    void testAttachExistingExtractedSubtreePopulatesTld(String attachmentMethod) {
+        final BaseDataObject child = new BaseDataObject();
+        final BaseDataObject grandchild = new BaseDataObject();
+        final ExtractedRecord greatGrandchild = new ExtractedRecord();
+        grandchild.addExtractedRecord(greatGrandchild);
+        child.addExtractedRecord(grandchild);
+
+        switch (attachmentMethod) {
+            case "setExtractedRecords" -> this.b.setExtractedRecords(List.of(child));
+            case "addExtractedRecord" -> this.b.addExtractedRecord(child);
+            case "addExtractedRecords" -> this.b.addExtractedRecords(List.of(child));
+            default -> throw new IllegalArgumentException(attachmentMethod);
+        }
+
+        assertNull(this.b.getTld());
+        assertSame(this.b, child.getTld());
+        assertSame(this.b, grandchild.getTld());
+        assertSame(this.b, greatGrandchild.getTld());
+    }
+
+    @Test
+    void testSetTldPropagatesToExistingExtractedRecords() {
+        final BaseDataObject child = new BaseDataObject();
+        final ExtractedRecord grandchild = new ExtractedRecord();
+        child.addExtractedRecord(grandchild);
+
+        child.setTld(this.b);
+        assertSame(this.b, child.getTld());
+        assertSame(this.b, grandchild.getTld());
+
+        child.setTld(null);
+        assertNull(child.getTld());
+        assertSame(child, grandchild.getTld());
     }
 
     @Test
