@@ -8,6 +8,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.junit.jupiter.api.Test;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -225,6 +226,20 @@ class MagicNumberTest extends UnitTest {
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string ABC\\x44 FOO");
         assertTrue(m.test("ABCD".getBytes(UTF_8)), "Greater than magic operator failed");
         assertFalse(m.test("ABCC".getBytes(UTF_8)), "Greater than magic operator failed");
+    }
+
+    @Test
+    void testHighBitNumericSubstitutionIsUnsigned() throws ParseException {
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("0 byte x Value: %d");
+
+        assertEquals("Value: 255", m.describe(new byte[] {(byte) 0xFF}));
+    }
+
+    @Test
+    void testLittleEndianNumericSubstitutionUsesLittleEndianValue() throws ParseException, DecoderException {
+        MagicNumber m = MagicNumberFactory.buildMagicNumber("0 lelong x Value: %d");
+
+        assertEquals("Value: 305419896", m.describe(Hex.decodeHex("78563412")));
     }
 
     @Test
