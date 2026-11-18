@@ -270,6 +270,9 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         abstract List<IBaseDataObject> getExtractedRecords();
 
         @JsonIgnore
+        abstract IBaseDataObject getTld();
+
+        @JsonIgnore
         abstract SeekableByteChannelFactory getChannelFactory();
 
         @JsonIgnore

@@ -11,6 +11,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,6 +28,7 @@ import java.util.Map;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JsonOutputFilterTest extends UnitTest {
@@ -99,9 +102,11 @@ class JsonOutputFilterTest extends UnitTest {
     }
 
 
-    @Test
-    void testMetadataRecordOutput() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void testMetadataRecordOutput(boolean emitPayload) {
         config.addEntry("EXTRA_PARAM", "*");
+        config.addEntry("EMIT_PAYLOAD", Boolean.toString(emitPayload));
         f.initialize(config, "FOO", config);
 
         IBaseDataObject payload = DataObjectFactory.getInstance();
@@ -118,6 +123,9 @@ class JsonOutputFilterTest extends UnitTest {
             nested.add(record);
         }
         payload.setExtractedRecords(nested);
+        for (IBaseDataObject record : nested) {
+            assertSame(payload, record.getTld(), "Extracted records should retain their runtime TLD reference");
+        }
 
         List<IBaseDataObject> payloadList = new ArrayList<>();
         payloadList.add(payload);
@@ -135,6 +143,8 @@ class JsonOutputFilterTest extends UnitTest {
         String s = output.toString(UTF_8);
 
         assertEquals(10, StringUtils.countMatches(s, "creationTimestamp"), "Should emit line for parent and extracted records");
+        assertFalse(s.contains("\"tld\":"), "Runtime TLD references should not be emitted");
+        assertEquals(emitPayload, s.contains("\"payload\":"), "Payload output should follow EMIT_PAYLOAD");
 
     }
 
