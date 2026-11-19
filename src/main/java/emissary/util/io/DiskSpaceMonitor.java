@@ -165,20 +165,20 @@ public class DiskSpaceMonitor {
      * Checks percentage-based thresholds.
      */
     private void checkPercentageThresholds(DiskSpaceInfo info) {
-        if (!isPaused && info.usedPercent >= pauseThresholdPercent) {
+        if (!isPaused && info.usedPercent() >= pauseThresholdPercent) {
             // Threshold exceeded - transition to paused state
             isPaused = true;
             if (logger.isDebugEnabled()) {
                 logger.debug("Disk space threshold exceeded: {}% used (threshold: {}%)",
-                        String.format(Locale.ROOT, "%.2f", info.usedPercent), pauseThresholdPercent);
+                        String.format(Locale.ROOT, "%.2f", info.usedPercent()), pauseThresholdPercent);
             }
             notifyListenersExceeded(info);
-        } else if (isPaused && info.usedPercent < resumeThresholdPercent) {
+        } else if (isPaused && info.usedPercent() < resumeThresholdPercent) {
             // Below resume threshold - transition to not paused state
             isPaused = false;
             if (logger.isDebugEnabled()) {
                 logger.debug("Disk space recovered: {}% used (threshold: {}%)",
-                        String.format(Locale.ROOT, "%.2f", info.usedPercent), resumeThresholdPercent);
+                        String.format(Locale.ROOT, "%.2f", info.usedPercent()), resumeThresholdPercent);
             }
             notifyListenersRecovered(info);
         }
@@ -188,17 +188,17 @@ public class DiskSpaceMonitor {
      * Checks absolute size-based thresholds.
      */
     private void checkAbsoluteSizeThresholds(DiskSpaceInfo info) {
-        if (!isPaused && info.freeBytes < pauseThresholdBytes) {
+        if (!isPaused && info.freeBytes() < pauseThresholdBytes) {
             // Free space too low - transition to paused state
             isPaused = true;
             logger.debug("Disk space threshold exceeded: {} bytes free (threshold: {} bytes)",
-                    info.freeBytes, pauseThresholdBytes);
+                    info.freeBytes(), pauseThresholdBytes);
             notifyListenersExceeded(info);
-        } else if (isPaused && info.freeBytes >= resumeThresholdBytes) {
+        } else if (isPaused && info.freeBytes() >= resumeThresholdBytes) {
             // Free space recovered - transition to not paused state
             isPaused = false;
             logger.debug("Disk space recovered: {} bytes free (threshold: {} bytes)",
-                    info.freeBytes, resumeThresholdBytes);
+                    info.freeBytes(), resumeThresholdBytes);
             notifyListenersRecovered(info);
         }
     }
@@ -209,7 +209,7 @@ public class DiskSpaceMonitor {
     private void notifyListenersExceeded(DiskSpaceInfo info) {
         for (DiskSpaceListener listener : listeners) {
             try {
-                listener.onDiskSpaceExceeded(monitoredPath, info.usedPercent, info.freeBytes);
+                listener.onDiskSpaceExceeded(monitoredPath, info.usedPercent(), info.freeBytes());
             } catch (RuntimeException e) {
                 logger.error("Exception in DiskSpaceListener.onDiskSpaceExceeded for {}",
                         listener.getClass().getName(), e);
@@ -224,7 +224,7 @@ public class DiskSpaceMonitor {
     private void notifyListenersRecovered(DiskSpaceInfo info) {
         for (DiskSpaceListener listener : listeners) {
             try {
-                listener.onDiskSpaceRecovered(monitoredPath, info.usedPercent, info.freeBytes);
+                listener.onDiskSpaceRecovered(monitoredPath, info.usedPercent(), info.freeBytes());
             } catch (RuntimeException e) {
                 logger.error("Exception in DiskSpaceListener.onDiskSpaceRecovered for {}",
                         listener.getClass().getName(), e);
@@ -270,15 +270,7 @@ public class DiskSpaceMonitor {
     /**
      * Container for disk space information.
      */
-    private static class DiskSpaceInfo {
-        final long freeBytes;
-        final double usedPercent;
-
-        DiskSpaceInfo(long freeBytes, double usedPercent) {
-            this.freeBytes = freeBytes;
-            this.usedPercent = usedPercent;
-        }
-    }
+    private record DiskSpaceInfo(long freeBytes, double usedPercent) {}
 
     /**
      * Builder for creating DiskSpaceMonitor instances.
