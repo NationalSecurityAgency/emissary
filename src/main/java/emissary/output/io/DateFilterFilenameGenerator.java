@@ -17,7 +17,7 @@ import java.util.UUID;
  */
 public class DateFilterFilenameGenerator implements FileNameGenerator {
 
-    protected static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("yyyyDDDHHmm", Locale.getDefault());
+    protected static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("yyyyDDDHHmm", Locale.ROOT);
     public static final char DELIMITER = '_';
     public static final char DASH = '-';
     private final String filterNamePart;

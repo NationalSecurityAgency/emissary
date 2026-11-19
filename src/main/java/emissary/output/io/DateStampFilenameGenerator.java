@@ -45,7 +45,7 @@ public class DateStampFilenameGenerator implements FileNameGenerator {
     public DateStampFilenameGenerator(String fileSuffix, String identifier, String datePattern) {
         this.fileSuffix = fileSuffix;
         this.identifier = identifier;
-        this.formatter = DateTimeFormatter.ofPattern(datePattern, Locale.getDefault()).withZone(TimeUtil.getTimezone());
+        this.formatter = DateTimeFormatter.ofPattern(datePattern, Locale.ROOT).withZone(TimeUtil.getTimezone());
     }
 
     @Override
