@@ -103,29 +103,13 @@ public class FastBoyerMoore {
             BackwardsTreeScanner.State state = this.root.nextStates[ch];
             int curPos = pos - 1;
             while ((state != null) && (curPos >= 0)) {
-                if (state.matches != null) {
-                    for (int i = 0; i < state.matches.length; i++) {
-                        final int id = state.matches[i];
-                        final int[] tmp = new int[3];
-                        tmp[0] = curPos + 1;
-                        tmp[1] = id;
-                        tmp[2] = pos - curPos;
-                        result.add(tmp);
-                    }
-                }
+                addMatches(state, curPos, pos, result);
                 final int ch2 = this.data[curPos] & 0x7f;
                 state = state.nextStates[ch2];
                 curPos--;
             }
-            if ((state != null) && (curPos == -1)) {
-                for (int i = 0; i < state.matches.length; i++) {
-                    final int id = state.matches[i];
-                    final int[] tmp = new int[3];
-                    tmp[0] = curPos + 1;
-                    tmp[1] = id;
-                    tmp[2] = pos - curPos;
-                    result.add(tmp);
-                }
+            if (curPos == -1) {
+                addMatches(state, curPos, pos, result);
             }
             pos += jump;
         }
@@ -141,35 +125,28 @@ public class FastBoyerMoore {
             BackwardsTreeScanner.State state = this.root.nextStates[ch];
             int curPos = pos - 1;
             while ((state != null) && (curPos >= 0)) {
-                if (state.matches != null) {
-                    for (int i = 0; i < state.matches.length; i++) {
-                        final int id = state.matches[i];
-                        final int[] tmp = new int[3];
-                        tmp[0] = curPos + 1;
-                        tmp[1] = id;
-                        tmp[2] = pos - curPos;
-                        result.add(tmp);
-                        found = true;
-                    }
-                }
+                found |= addMatches(state, curPos, pos, result);
                 final int ch2 = dataArg[curPos] & 0x7f;
                 state = state.nextStates[ch2];
                 curPos--;
             }
-            if ((state != null) && (state.matches != null) && (curPos == -1)) {
-                for (int i = 0; i < state.matches.length; i++) {
-                    final int id = state.matches[i];
-                    final int[] tmp = new int[3];
-                    tmp[0] = curPos + 1;
-                    tmp[1] = id;
-                    tmp[2] = pos - curPos;
-                    result.add(tmp);
-                    found = true;
-                }
+            if (curPos == -1) {
+                found |= addMatches(state, curPos, pos, result);
             }
             pos += jump;
         }
         return pos;
+    }
+
+    private static boolean addMatches(@Nullable BackwardsTreeScanner.State state, int curPos, int pos, Collection<int[]> result) {
+        if (state == null || state.matches == null) {
+            return false;
+        }
+        for (int id : state.matches) {
+            final int[] match = {curPos + 1, id, pos - curPos};
+            result.add(match);
+        }
+        return state.matches.length > 0;
     }
 
     public static final int ID = 1;
