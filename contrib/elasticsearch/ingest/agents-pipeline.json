@@ -1,0 +1,93 @@
+{
+  "description": "Enrich Emissary agent snapshot logs",
+  "processors": [
+    {
+      "set": {
+        "field": "event.dataset",
+        "value": "emissary.agents"
+      }
+    },
+    {
+      "set": {
+        "field": "event.kind",
+        "value": "event"
+      }
+    },
+    {
+      "set": {
+        "field": "event.category",
+        "value": [
+          "process"
+        ]
+      }
+    },
+    {
+      "set": {
+        "field": "service.name",
+        "value": "emissary"
+      }
+    },
+    {
+      "set": {
+        "field": "event.ingested",
+        "value": "{{{_ingest.timestamp}}}",
+        "ignore_failure": true
+      }
+    },
+    {
+      "grok": {
+        "field": "agent.host",
+        "patterns": [
+          "^%{DATA:emissary.node.name}:%{INT:emissary.node.port}$"
+        ],
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "convert": {
+        "field": "emissary.node.port",
+        "type": "integer",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "set": {
+        "field": "emissary.node.name",
+        "value": "unknown",
+        "if": "ctx.emissary == null || ctx.emissary.node == null || ctx.emissary.node.name == null"
+      }
+    },
+    {
+      "set": {
+        "field": "emissary.node.port",
+        "value": 0,
+        "if": "ctx.emissary == null || ctx.emissary.node == null || ctx.emissary.node.port == null"
+      }
+    },
+    {
+      "date": {
+        "field": "agent.timestamp",
+        "formats": [
+          "ISO8601"
+        ],
+        "target_field": "@timestamp",
+        "ignore_failure": true
+      }
+    },
+    {
+      "script": {
+        "lang": "painless",
+        "source": "if (ctx.event != null && ctx.event.ingested != null && ctx['@timestamp'] != null) { try { def ingested = java.time.Instant.parse(ctx.event.ingested.toString()).toEpochMilli(); def eventTime = java.time.Instant.parse(ctx['@timestamp'].toString()).toEpochMilli(); ctx.event.ingest_lag_ms = ingested - eventTime; } catch (Exception e) { } }"
+      }
+    },
+    {
+      "script": {
+        "if": "ctx.agent != null && ctx.agent.status != null",
+        "lang": "painless",
+        "source": "def status = ctx.agent.status.toString(); if (status == 'Idle') { ctx.agent.state = 'idle'; } else if (status == 'Closed') { ctx.agent.state = 'closed'; } else { ctx.agent.state = 'busy'; int open = status.indexOf('('); int close = status.indexOf(') - '); if (open > 0 && close > open) { ctx.agent.payload = [:]; ctx.agent.payload.short_name = status.substring(0, open); try { ctx.agent.payload.count = Integer.parseInt(status.substring(open + 1, close)); } catch (Exception e) { ctx.agent.payload.count = 0; } def place = status.substring(close + 4); ctx.agent.last_place = [:]; ctx.agent.last_place.key = place; int slash = place.lastIndexOf('/'); ctx.agent.last_place.name = slash >= 0 ? place.substring(slash + 1) : place; } }"
+      }
+    }
+  ]
+}
