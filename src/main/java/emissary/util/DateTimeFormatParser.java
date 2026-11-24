@@ -21,7 +21,6 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Function;
 
 /**
  * Class for Parsing Dates using DateTimeFormatter. Attempts to parse a date of an unknown format with a predefined set
@@ -35,11 +34,14 @@ public class DateTimeFormatParser {
     protected static final List<DateTimeFormatter> dateFormats = new ArrayList<>();
     @SuppressWarnings("NonFinalStaticField")
     protected static ZoneId zone;
+    @SuppressWarnings("NonFinalStaticField")
+    private static List<Locale> locales = List.of(TimeUtil.DEFAULT_DATE_LOCALE);
 
     private static final String DATE_TIME_ZONE_FORMAT = "DATE_TIME_ZONE_FORMAT";
     private static final String DATE_TIME_OFFSET_FORMAT = "DATE_TIME_OFFSET_FORMAT";
     private static final String DATE_TIME_FORMAT = "DATE_TIME_FORMAT";
     private static final String DATE_FORMAT = "DATE_FORMAT";
+    private static final String LOCALE = "LOCALE";
 
     protected static final Logger logger = LoggerFactory.getLogger(DateTimeFormatParser.class);
 
@@ -65,6 +67,8 @@ public class DateTimeFormatParser {
             return;
         }
 
+        List<String> localeTags = configG.findEntries(LOCALE);
+        locales = TimeUtil.parseLocales(localeTags);
         loadDateTimeEntries(configG, DATE_TIME_ZONE_FORMAT, dateTimeZoneFormats);
         loadDateTimeEntries(configG, DATE_TIME_OFFSET_FORMAT, dateTimeOffsetFormats);
         loadDateTimeEntries(configG, DATE_TIME_FORMAT, dateTimeFormats);
@@ -85,7 +89,7 @@ public class DateTimeFormatParser {
             try {
                 DateTimeFormatter initialDtf =
                         new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(dateFormatEntry)
-                                .toFormatter(Locale.getDefault());
+                                .toFormatter(TimeUtil.DEFAULT_DATE_LOCALE);
                 if (entryType.equals(DATE_TIME_ZONE_FORMAT)) {
                     initialDtf = initialDtf.withZone(zone);
                 }
@@ -95,7 +99,7 @@ public class DateTimeFormatParser {
                 logger.debug("{} entry '{}' cannot be parsed", entryType, dateFormatEntry, ex);
             }
         }
-        logger.debug("Loaded {} {} entries", dateTimeZoneFormats.size(), entryType);
+        logger.debug("Loaded {} {} entries", dateFormats.size(), entryType);
     }
 
     /**
@@ -124,21 +128,18 @@ public class DateTimeFormatParser {
      */
     @Nullable
     public static LocalDateTime parseDate(final String dateString, final boolean supplyDefaultOnBad) {
+        return parseDate(dateString, supplyDefaultOnBad, locales);
+    }
+
+    @Nullable
+    static LocalDateTime parseDate(final String dateString, final boolean supplyDefaultOnBad, final List<Locale> parsingLocales) {
 
         if (StringUtils.isNotEmpty(dateString)) {
             String cleanedDateString = cleanDate(dateString);
 
-            List<Function<String, LocalDateTime>> methodList = new ArrayList<>();
-            methodList.add(date -> tryParseWithDateTimeZoneFormats(date));
-            methodList.add(date -> tryParseWithDateTimeOffsetFormats(date));
-            methodList.add(date -> tryParseWithDateTimeFormats(date));
-            methodList.add(date -> tryParseWithDateFormats(date));
-
-            for (Function<String, LocalDateTime> method : methodList) {
-                LocalDateTime date = method.apply(cleanedDateString);
-                if (date != null) {
-                    return date;
-                }
+            LocalDateTime date = tryParseWithAllFormats(cleanedDateString, parsingLocales);
+            if (date != null) {
+                return date;
             }
 
             try {
@@ -156,18 +157,39 @@ public class DateTimeFormatParser {
     }
 
 
+    @Nullable
+    private static LocalDateTime tryParseWithAllFormats(final String dateString, final List<Locale> parsingLocales) {
+        for (Locale locale : parsingLocales) {
+            LocalDateTime date = tryParseWithDateTimeZoneFormats(dateString, locale);
+            if (date == null) {
+                date = tryParseWithDateTimeOffsetFormats(dateString, locale);
+            }
+            if (date == null) {
+                date = tryParseWithDateTimeFormats(dateString, locale);
+            }
+            if (date == null) {
+                date = tryParseWithDateFormats(dateString, locale);
+            }
+            if (date != null) {
+                return date;
+            }
+        }
+        return null;
+    }
+
     /**
      * Attempt to parse the string dateString with one of the ZonedDateTime patterns
      *
      * @param dateString the string to attempt to format
+     * @param locale the locale to use for textual date/time fields
      * @return the LocalDateTime object if a formatter worked, or null otherwise
      */
     @Nullable
-    private static LocalDateTime tryParseWithDateTimeZoneFormats(final String dateString) {
+    private static LocalDateTime tryParseWithDateTimeZoneFormats(final String dateString, final Locale locale) {
         // formats with a time zone
         for (final DateTimeFormatter dtf : dateTimeZoneFormats) {
             try {
-                ZonedDateTime zdt = ZonedDateTime.parse(dateString, dtf);
+                ZonedDateTime zdt = ZonedDateTime.parse(dateString, dtf.withLocale(locale));
                 zdt = ZonedDateTime.ofInstant(zdt.toInstant(), zone);
                 return zdt.toLocalDateTime();
             } catch (DateTimeParseException ignored) {
@@ -181,14 +203,15 @@ public class DateTimeFormatParser {
      * Attempt to parse the string dateString with one of the LocalDateTime patterns
      *
      * @param dateString the string to attempt to format
+     * @param locale the locale to use for textual date/time fields
      * @return the LocalDateTime object if a formatter worked, or null otherwise
      */
     @Nullable
-    private static LocalDateTime tryParseWithDateTimeFormats(final String dateString) {
+    private static LocalDateTime tryParseWithDateTimeFormats(final String dateString, final Locale locale) {
         // formats with a date and time and no zone/offset
         for (final DateTimeFormatter dtf : dateTimeFormats) {
             try {
-                return LocalDateTime.parse(dateString, dtf);
+                return LocalDateTime.parse(dateString, dtf.withLocale(locale));
             } catch (DateTimeParseException ignored) {
                 // ignore
             }
@@ -200,14 +223,15 @@ public class DateTimeFormatParser {
      * Attempt to parse the string dateString with one of the OffsetDateTime patterns
      *
      * @param dateString the string to attempt to format
+     * @param locale the locale to use for textual date/time fields
      * @return the LocalDateTime object if a formatter worked, or null otherwise
      */
     @Nullable
-    private static LocalDateTime tryParseWithDateTimeOffsetFormats(final String dateString) {
+    private static LocalDateTime tryParseWithDateTimeOffsetFormats(final String dateString, final Locale locale) {
         // formats with a time zone offset
         for (final DateTimeFormatter dtf : dateTimeOffsetFormats) {
             try {
-                OffsetDateTime odt = OffsetDateTime.parse(dateString, dtf);
+                OffsetDateTime odt = OffsetDateTime.parse(dateString, dtf.withLocale(locale));
                 return OffsetDateTime.ofInstant(odt.toInstant(), zone).toLocalDateTime();
             } catch (DateTimeParseException ignored) {
                 // ignore
@@ -220,14 +244,15 @@ public class DateTimeFormatParser {
      * Attempt to parse the string dateString with one of the LocalDate patterns
      *
      * @param dateString the string to attempt to format
+     * @param locale the locale to use for textual date/time fields
      * @return the LocalDateTime object if a formatter worked, or null otherwise
      */
     @Nullable
-    private static LocalDateTime tryParseWithDateFormats(final String dateString) {
+    private static LocalDateTime tryParseWithDateFormats(final String dateString, final Locale locale) {
         // formats with a date but no time
         for (final DateTimeFormatter dtf : dateFormats) {
             try {
-                LocalDate d = LocalDate.parse(dateString, dtf);
+                LocalDate d = LocalDate.parse(dateString, dtf.withLocale(locale));
                 return d.atStartOfDay();
             } catch (DateTimeParseException ignored) {
                 // ignore
