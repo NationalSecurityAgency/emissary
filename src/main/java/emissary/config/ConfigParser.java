@@ -2,6 +2,7 @@ package emissary.config;
 
 import emissary.util.io.ConfigFormat;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
@@ -44,6 +45,10 @@ public final class ConfigParser {
     private static final ObjectMapper YAML_MAPPER = new ObjectMapper(
             new YAMLFactory().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION))
             .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper(
+            new JsonFactory().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION))
+            .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+            .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
 
     private final ServiceConfigGuide configG;
 
@@ -68,6 +73,16 @@ public final class ConfigParser {
     public static boolean isYamlFile(final String filename) {
         final ConfigFormat format = ConfigFormat.fromName(filename);
         return format == ConfigFormat.YAML || format == ConfigFormat.YML;
+    }
+
+    /**
+     * Whether the named config file is JSON.
+     *
+     * @param filename the config name to check
+     * @return true for {@code .json} names
+     */
+    public static boolean isJsonFile(final String filename) {
+        return ConfigFormat.fromName(filename) == ConfigFormat.JSON;
     }
 
     /**
@@ -96,6 +111,7 @@ public final class ConfigParser {
         }
         switch (format) {
             case YAML, YML -> readStructured(is, filename, YAML_MAPPER, ConfigFormat.YAML);
+            case JSON -> readStructured(is, filename, JSON_MAPPER, ConfigFormat.JSON);
             default -> {
                 is.close();
                 throw new IOException("Cannot parse " + filename + ": unknown structured config suffix");
@@ -116,7 +132,7 @@ public final class ConfigParser {
             throws IOException {
         try {
             final byte[] content = is.readAllBytes();
-            if (!hasContent(content)) {
+            if (!hasContent(content, format)) {
                 logger.debug("{} config {} has no entries", format.getDisplayName(), filename);
                 return;
             }
@@ -145,16 +161,29 @@ public final class ConfigParser {
     }
 
     /**
-     * Whether a file holds any entry. Blank or comment-only files are empty configs.
+     * Whether a file holds any entry. Blank files are empty configs; comment-only files are allowed only in YAML.
      *
      * @param content the raw file bytes
+     * @param format the config format
      * @return false when there is nothing to load
      */
-    private static boolean hasContent(final byte[] content) {
+    private static boolean hasContent(final byte[] content, final ConfigFormat format) {
         final String text = new String(content, UTF_8);
+        if (format == ConfigFormat.JSON) {
+            // Only JSON whitespace (and an optional leading BOM) may bypass parsing. In particular, '#', '//', and
+            // block comments must reach the strict JSON parser rather than being mistaken for an empty config.
+            final int start = !text.isEmpty() && text.charAt(0) == BYTE_ORDER_MARK ? 1 : 0;
+            for (int i = start; i < text.length(); i++) {
+                final char c = text.charAt(i);
+                if (c != ' ' && c != '\t' && c != '\r' && c != '\n') {
+                    return true;
+                }
+            }
+            return false;
+        }
         for (final String line : text.split("\\R", -1)) {
             final String s = line.trim();
-            // Skip an optional byte order mark, then a comment introducer
+            // Skip an optional byte order mark, then YAML's '#' comment introducer.
             final int start = !s.isEmpty() && s.charAt(0) == BYTE_ORDER_MARK ? 1 : 0;
             if (s.length() > start && s.charAt(start) != '#') {
                 return true;

@@ -20,7 +20,9 @@ public enum ConfigFormat {
     /** YAML config. */
     YAML(".yaml", true, "sequence", "YAML"),
     /** YAML config using the short suffix. */
-    YML(".yml", true, "sequence", "YAML");
+    YML(".yml", true, "sequence", "YAML"),
+    /** JSON config. */
+    JSON(".json", true, "array", "JSON");
 
     private static final List<String> SUFFIXES;
 
