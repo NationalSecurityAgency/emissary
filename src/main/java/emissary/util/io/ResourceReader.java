@@ -28,6 +28,7 @@ public class ResourceReader {
     public static final String CONFIG_SUFFIX = ConfigFormat.CFG.getSuffix();
     public static final String YAML_SUFFIX = ConfigFormat.YAML.getSuffix();
     public static final String YML_SUFFIX = ConfigFormat.YML.getSuffix();
+    public static final String TOML_SUFFIX = ConfigFormat.TOML.getSuffix();
     public static final String JSON_SUFFIX = ConfigFormat.JSON.getSuffix();
     public static final String XML_SUFFIX = ".xml";
     public static final String DATA_SUFFIX = ".dat";

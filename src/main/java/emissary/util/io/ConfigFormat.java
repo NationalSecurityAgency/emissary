@@ -21,6 +21,8 @@ public enum ConfigFormat {
     YAML(".yaml", true, "sequence", "YAML"),
     /** YAML config using the short suffix. */
     YML(".yml", true, "sequence", "YAML"),
+    /** TOML config. */
+    TOML(".toml", true, "array", "TOML"),
     /** JSON config. */
     JSON(".json", true, "array", "JSON");
 

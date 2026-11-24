@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.toml.TomlFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 import org.slf4j.Logger;
@@ -45,6 +46,8 @@ public final class ConfigParser {
     private static final ObjectMapper YAML_MAPPER = new ObjectMapper(
             new YAMLFactory().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION))
             .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+    private static final ObjectMapper TOML_MAPPER = new ObjectMapper(new TomlFactory())
+            .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper(
             new JsonFactory().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION))
             .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
@@ -73,6 +76,16 @@ public final class ConfigParser {
     public static boolean isYamlFile(final String filename) {
         final ConfigFormat format = ConfigFormat.fromName(filename);
         return format == ConfigFormat.YAML || format == ConfigFormat.YML;
+    }
+
+    /**
+     * Whether the named config file is TOML.
+     *
+     * @param filename the config name to check
+     * @return true for {@code .toml} names
+     */
+    public static boolean isTomlFile(final String filename) {
+        return ConfigFormat.fromName(filename) == ConfigFormat.TOML;
     }
 
     /**
@@ -110,6 +123,7 @@ public final class ConfigParser {
             throw new IOException("Cannot parse " + filename + ": unknown structured config suffix");
         }
         switch (format) {
+            case TOML -> readStructured(is, filename, TOML_MAPPER, ConfigFormat.TOML);
             case YAML, YML -> readStructured(is, filename, YAML_MAPPER, ConfigFormat.YAML);
             case JSON -> readStructured(is, filename, JSON_MAPPER, ConfigFormat.JSON);
             default -> {
@@ -161,7 +175,7 @@ public final class ConfigParser {
     }
 
     /**
-     * Whether a file holds any entry. Blank files are empty configs; comment-only files are allowed only in YAML.
+     * Whether a file holds any entry. Blank files are empty configs; comment-only files are allowed only in YAML/TOML.
      *
      * @param content the raw file bytes
      * @param format the config format

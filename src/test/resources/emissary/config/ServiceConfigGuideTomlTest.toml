@@ -1,0 +1,4 @@
+CLASSPATH_KEY = "from-classpath"
+
+[NESTED]
+ONE = "AAA"
