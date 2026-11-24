@@ -16,7 +16,11 @@ import java.util.Locale;
  */
 public enum ConfigFormat {
     /** Legacy line-oriented config. */
-    CFG(".cfg", false, "array", "CFG");
+    CFG(".cfg", false, "array", "CFG"),
+    /** YAML config. */
+    YAML(".yaml", true, "sequence", "YAML"),
+    /** YAML config using the short suffix. */
+    YML(".yml", true, "sequence", "YAML");
 
     private static final List<String> SUFFIXES;
 

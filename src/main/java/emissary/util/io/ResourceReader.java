@@ -26,6 +26,8 @@ public class ResourceReader {
     private static final Logger logger = LoggerFactory.getLogger(ResourceReader.class);
 
     public static final String CONFIG_SUFFIX = ConfigFormat.CFG.getSuffix();
+    public static final String YAML_SUFFIX = ConfigFormat.YAML.getSuffix();
+    public static final String YML_SUFFIX = ConfigFormat.YML.getSuffix();
     public static final String XML_SUFFIX = ".xml";
     public static final String DATA_SUFFIX = ".dat";
     public static final String JS_SUFFIX = ".js";

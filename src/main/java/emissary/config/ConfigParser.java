@@ -2,8 +2,13 @@ package emissary.config;
 
 import emissary.util.io.ConfigFormat;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +37,14 @@ public final class ConfigParser {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigParser.class);
 
+    /**
+     * A config file holds exactly one document, so a trailing token is an error rather than dropped content. Duplicate
+     * mapping keys are likewise an error; sequences represent multi-valued entries.
+     */
+    private static final ObjectMapper YAML_MAPPER = new ObjectMapper(
+            new YAMLFactory().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION))
+            .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+
     private final ServiceConfigGuide configG;
 
     /** Leading byte order mark, which is not config content. */
@@ -44,6 +57,17 @@ public final class ConfigParser {
      */
     public ConfigParser(final ServiceConfigGuide configG) {
         this.configG = configG;
+    }
+
+    /**
+     * Whether the named config file is YAML.
+     *
+     * @param filename the config name to check
+     * @return true for {@code .yaml} and {@code .yml} names
+     */
+    public static boolean isYamlFile(final String filename) {
+        final ConfigFormat format = ConfigFormat.fromName(filename);
+        return format == ConfigFormat.YAML || format == ConfigFormat.YML;
     }
 
     /**
@@ -66,7 +90,12 @@ public final class ConfigParser {
      */
     public void read(final InputStream is, final String filename) throws IOException {
         final ConfigFormat format = ConfigFormat.fromName(filename);
+        if (format == null || !format.isStructured()) {
+            is.close();
+            throw new IOException("Cannot parse " + filename + ": unknown structured config suffix");
+        }
         switch (format) {
+            case YAML, YML -> readStructured(is, filename, YAML_MAPPER, ConfigFormat.YAML);
             default -> {
                 is.close();
                 throw new IOException("Cannot parse " + filename + ": unknown structured config suffix");
@@ -83,7 +112,6 @@ public final class ConfigParser {
      * @param format the config format
      * @throws IOException on syntax errors or unsupported structure
      */
-    @SuppressWarnings("UnusedMethod")
     private void readStructured(final InputStream is, final String filename, final ObjectMapper mapper, final ConfigFormat format)
             throws IOException {
         try {
@@ -91,6 +119,22 @@ public final class ConfigParser {
             if (!hasContent(content)) {
                 logger.debug("{} config {} has no entries", format.getDisplayName(), filename);
                 return;
+            }
+            if (format == ConfigFormat.YAML) {
+                // Jackson exposes aliases as anchor-name strings, not as their referenced values. Reject them before
+                // applying any entries or directives rather than silently changing the config's meaning.
+                try (YAMLParser parser = (YAMLParser) mapper.getFactory().createParser(content)) {
+                    while (parser.nextToken() != null) {
+                        if (parser.currentToken() == JsonToken.FIELD_NAME && "<<".equals(parser.currentName())) {
+                            throw new IOException("YAML config " + filename + " contains an unsupported merge key (<<).");
+                        }
+                        if (parser.isCurrentAlias()) {
+                            throw new IOException("YAML config " + filename + ":" + parser.currentTokenLocation().getLineNr()
+                                    + ":" + parser.currentTokenLocation().getColumnNr()
+                                    + " uses an unsupported alias; write the referenced value explicitly.");
+                        }
+                    }
+                }
             }
             flattenParsed(mapper.readValue(content, Object.class), filename, format);
         } catch (JsonProcessingException e) {
