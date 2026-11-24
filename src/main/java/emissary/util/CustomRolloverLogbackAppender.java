@@ -21,6 +21,7 @@ public class CustomRolloverLogbackAppender<E> extends RollingFileAppender<E> {
             Configurator configG = ConfigUtil.getConfigInfo(getClass());
             rolloverTime = configG.findIntEntry("ROLLOVER_TIME_MINUTES", rolloverTime);
         } catch (IOException e) {
+            ConfigUtil.rethrowStrictConfigFailure(e);
             logger.error("Could not read from the config for the CustomRolloverLogbackAppender ", e);
         }
     }

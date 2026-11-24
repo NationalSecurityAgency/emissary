@@ -134,6 +134,7 @@ public class Sentinel implements Runnable {
             this.config = ConfigUtil.getConfigInfo(Sentinel.class);
             init();
         } catch (IOException e) {
+            ConfigUtil.rethrowStrictConfigFailure(e);
             logger.warn("Cannot read Sentinel.cfg, taking default values", e);
         }
     }
@@ -157,6 +158,7 @@ public class Sentinel implements Runnable {
                         logger.debug("Sentinel protocol disabled {}", protocol);
                     }
                 } catch (RuntimeException e) {
+                    ConfigUtil.rethrowStrictConfigFailure(e);
                     logger.warn("Unable to configure Sentinel Protocol[{}]", protocolConfig, e);
                 }
             }

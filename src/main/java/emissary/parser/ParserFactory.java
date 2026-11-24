@@ -104,6 +104,7 @@ public class ParserFactory {
                 makeIdEngine(idEngineClass);
             }
         } catch (IOException ex) {
+            ConfigUtil.rethrowStrictConfigFailure(ex);
             logger.error("Unable to read configuration", ex);
         }
     }

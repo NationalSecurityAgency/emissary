@@ -220,8 +220,8 @@ public interface IServiceProviderPlace {
         // Dont use KeyManipulator for this, only works when hostname/fqdn has dots
         int pos = placeLocation.lastIndexOf("/");
         String serviceClass = pos > -1 ? placeLocation.substring(pos + 1) : placeLocation;
-        configLocs.add(myPackage + DOT + serviceClass + ConfigUtil.CONFIG_FILE_ENDING);
-        configLocs.add(serviceClass + ConfigUtil.CONFIG_FILE_ENDING);
+        configLocs.add(myPackage + DOT + serviceClass);
+        configLocs.add(serviceClass);
         setConfigLocations(configLocs);
         return ConfigUtil.getConfigInfo(configLocs);
     }
