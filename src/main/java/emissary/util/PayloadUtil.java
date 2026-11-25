@@ -53,6 +53,7 @@ public class PayloadUtil {
             compactHistory = configG.findBooleanEntry("COMPACT_HISTORY", false);
             showCompletionInfo = configG.findBooleanEntry("SHOW_COMPLETION_INFO", false);
         } catch (IOException e) {
+            ConfigUtil.rethrowStrictConfigFailure(e);
             logger.error("Cannot open default config file", e);
         }
 
