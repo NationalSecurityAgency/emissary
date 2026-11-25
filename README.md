@@ -260,6 +260,12 @@ or in offline mode:
 ./emissary config --place emissary.place.sample.ToLowerPlace --offline --detailed
 ```
 
+Config loading preserves exact filenames, including extensionless files and legacy import filenames such as
+`shared.properties`. Package-qualified names may fall back to package-less `.cfg` names. Explicit filesystem paths
+do not fall back to unrelated files in the config directory. Relative paths must remain inside a configured config
+directory and may not contain `..`; absolute paths remain supported. Legacy optional-import and preference-list
+fallback behavior is preserved.
+
 #### Server (Cluster)
 
 Emissary is fun in standalone, but running cluster is more appropriate for real work.  The way to run clustered

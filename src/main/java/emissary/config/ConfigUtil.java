@@ -35,6 +35,9 @@ public class ConfigUtil {
     /** Constant string for files that end with {@value} */
     public static final String CONFIG_FILE_ENDING = ResourceReader.CONFIG_SUFFIX;
 
+    /** Supported config suffixes; discovery requires a unique candidate at each location. */
+    public static final List<String> CONFIG_FILE_ENDINGS = ResourceReader.CONFIG_SUFFIXES;
+
     /** Constant string for files that end with {@value} */
     public static final String PROP_FILE_ENDING = ResourceReader.PROP_SUFFIX;
 
@@ -270,11 +273,18 @@ public class ConfigUtil {
     /**
      * Get the config file for the specified name without package naming
      */
-    private static String getOldStyleConfigFile(final String name) {
+    @Nullable
+    private static String oldStyleName(final String name) {
+        // Package-name fallback is not a fallback for an explicit filesystem path.
+        if (name.contains("/") || name.contains("\\") || name.contains("..")) {
+            return null;
+        }
         String file = name;
-        // Chomp the file suffix
-        if (file.endsWith(CONFIG_FILE_ENDING)) {
-            file = file.substring(0, file.length() - CONFIG_FILE_ENDING.length());
+        String suffix = CONFIG_FILE_ENDING;
+        final String requested = configFileSuffix(file);
+        if (requested != null) {
+            suffix = file.substring(file.length() - requested.length());
+            file = file.substring(0, file.length() - requested.length());
         }
 
         if (file.contains("$")) {
@@ -283,7 +293,7 @@ public class ConfigUtil {
         if (file.contains(".")) {
             file = file.substring(file.lastIndexOf(".") + 1);
         }
-        return getConfigFile(file + CONFIG_FILE_ENDING);
+        return file + suffix;
     }
 
     /**
@@ -292,7 +302,7 @@ public class ConfigUtil {
     public static Configurator getConfigInfo(final Class<?> c) throws IOException {
         final String name = c.getName() + CONFIG_FILE_ENDING;
         logger.debug("Loading config for (class) {}", name);
-        return getConfigInfo(getConfigStream(name), name);
+        return getConfigInfo(resolveConfig(name));
     }
 
     /**
@@ -324,11 +334,17 @@ public class ConfigUtil {
                 c = getConfigInfo(s);
                 return c;
             } catch (IOException ex) {
+                if (isStrictConfigFailure(ex)) {
+                    throw ex;
+                }
                 String exception = ex.getMessage();
+                if (exception == null) {
+                    exception = "";
+                }
                 if (exception.contains("IMPORT_FILE")) {
                     exception = exception.replace("<none>", s);
                     logger.debug("IMPORT_FILE not found in {}", s);
-                    throw new IOException(exception);
+                    throw new IOException(exception, ex);
                 } else {
                     logger.debug("Preference {} not found", s);
                 }
@@ -344,7 +360,18 @@ public class ConfigUtil {
      */
     public static Configurator getConfigInfo(final String name) throws IOException {
         logger.debug("Loading config for (string) {}", name);
-        return getConfigInfo(getConfigStream(name), name);
+        return getConfigInfo(resolveConfig(name));
+    }
+
+    /**
+     * Load a selected resource without repeating discovery.
+     *
+     * @param source the selected config
+     * @return the config including optional flavors
+     * @throws IOException when loading fails
+     */
+    public static Configurator getConfigInfo(final ResolvedConfig source) throws IOException {
+        return getConfigInfo(source.openStream(), source.name());
     }
 
     /**
@@ -367,14 +394,19 @@ public class ConfigUtil {
     public static Configurator getConfigInfo(final InputStream is, final String name) throws IOException {
         final ServiceConfigGuide scg = new ServiceConfigGuide(is, name);
 
-        final String[] flavoredNames = addFlavors(name);
+        final boolean configFilename = configFileSuffix(name) != null;
+        final String[] flavoredNames = configFilename ? getFlavorConfigNames(name) : addFlavors(name);
         for (final String flavoredName : flavoredNames) {
             try {
                 logger.debug("Attempting flavor merge on {}", flavoredName);
-                final Configurator flavoredConfig = getConfigInfo(flavoredName);
+                final ResolvedConfig source = configFilename ? resolveLogicalConfig(flavoredName) : resolveConfig(flavoredName);
+                final Configurator flavoredConfig = getConfigInfo(source);
                 scg.merge(flavoredConfig);
                 logger.debug("Merged config with {}", flavoredName);
             } catch (IOException iox) {
+                if (isStrictConfigFailure(iox)) {
+                    throw iox;
+                }
                 logger.debug("Unable to opt import flavor config {}", flavoredName);
             }
         }
@@ -403,45 +435,200 @@ public class ConfigUtil {
      * @return an InputStream caller must close
      */
     public static InputStream getConfigStream(final String name) throws IOException {
-        // Try the new style override name first ( with package )
-        String sname = getConfigFile(name);
-        File f = new File(sname);
-        if (f.exists() && f.canRead()) {
-            logger.debug("Found config data as file {}", f.getPath());
-            return Files.newInputStream(f.toPath());
+        return resolveExactConfig(name).openStream();
+    }
+
+    /**
+     * Resolve a filename or discover a suffixless logical name. Existing exact legacy files take precedence.
+     *
+     * @param name the requested name
+     * @return the selected config resource
+     * @throws IOException when no config exists or discovery is ambiguous
+     */
+    public static ResolvedConfig resolveConfig(final String name) throws IOException {
+        if (name.startsWith("/") || configFileSuffix(name) != null) {
+            return resolveExactConfig(name);
         }
-        logger.debug("No file config found using new style {}", f.getName());
+        final ResolvedConfig exact = findNamedResource(name);
+        return exact == null ? resolveLogicalConfig(name) : exact;
+    }
 
-        // Try the classpath loader
-        final List<String> reznames = toResourceName(name);
-        for (final String rezname : reznames) {
-            final URL url = new ResourceReader().getResource(rezname);
-            if (url != null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Found config data as resource {}", url.toExternalForm());
-                }
-
-                try {
-                    return url.openStream();
-                } catch (IOException ex) {
-                    logger.warn("IOException opening stream for resource for {}", rezname);
+    /**
+     * Discover a unique suffix at the first matching directory or resource package.
+     *
+     * @param name the suffixless logical name
+     * @return the selected resource
+     * @throws IOException when no config exists or discovery is ambiguous
+     */
+    public static ResolvedConfig resolveLogicalConfig(final String name) throws IOException {
+        if (name.startsWith("/")) {
+            final Path path = Path.of(name).normalize();
+            if (path.getParent() != null) {
+                final ResolvedConfig source = discoverInDirectory(path.getParent().toString(), path.getFileName().toString());
+                if (source != null) {
+                    return new ResolvedConfig(name + source.name().substring(path.getFileName().toString().length()), source.location(),
+                            source.path());
                 }
             }
-
-            logger.debug("No config data as resource for {}", rezname);
+            throw new ConfigNotFoundException("No config stream available for " + name);
         }
-        logger.trace("No stream config found using {}", reznames);
-
-        // Try the old style override name ( no package )
-        sname = getOldStyleConfigFile(name);
-        f = new File(sname);
-        if (f.exists() && f.canRead()) {
-            logger.debug("Found config data as file old style {}", f.getPath());
-            return Files.newInputStream(f.toPath());
+        for (final String dir : getConfigDirs()) {
+            final ResolvedConfig source = discoverInDirectory(dir, name);
+            if (source != null) {
+                return source;
+            }
         }
-        logger.debug("No file config found using old style {}", f.getName());
+        for (final String resource : toResourceName(name + CONFIG_FILE_ENDING)) {
+            final String base = resource.substring(0, resource.length() - CONFIG_FILE_ENDING.length());
+            final List<ResolvedConfig> candidates = new ArrayList<>();
+            for (final String ending : CONFIG_FILE_ENDINGS) {
+                final URL url = new ResourceReader().getResource(base + ending);
+                if (url != null) {
+                    candidates.add(new ResolvedConfig(name + ending, url));
+                }
+            }
+            final ResolvedConfig source = uniqueConfig(name, candidates);
+            if (source != null) {
+                return source;
+            }
+        }
+        final String oldStyle = oldStyleName(name + CONFIG_FILE_ENDING);
+        if (oldStyle != null) {
+            final String base = oldStyle.substring(0, oldStyle.length() - CONFIG_FILE_ENDING.length());
+            for (final String dir : getConfigDirs()) {
+                final ResolvedConfig source = discoverInDirectory(dir, base);
+                if (source != null) {
+                    return new ResolvedConfig(name + source.name().substring(base.length()), source.location(), source.path());
+                }
+            }
+        }
+        return resolveExactConfig(name);
+    }
 
-        throw new IOException("No config stream available for " + name);
+    /**
+     * Get the selected config's name, including its suffix.
+     *
+     * @param name the requested name
+     * @return the selected name
+     * @throws IOException when resolution fails
+     */
+    public static String resolveConfigName(final String name) throws IOException {
+        return resolveConfig(name).name();
+    }
+
+    @Nullable
+    private static ResolvedConfig findNamedResource(final String name) throws IOException {
+        final File f = findConfigFile(name);
+        if (f != null) {
+            return new ResolvedConfig(name, f.toPath());
+        }
+        if (name.startsWith("/")) {
+            return null;
+        }
+        for (final String resource : toResourceName(name)) {
+            final URL url = new ResourceReader().getResource(resource);
+            if (url != null) {
+                return new ResolvedConfig(name, url);
+            }
+        }
+        return null;
+    }
+
+    private static ResolvedConfig resolveExactConfig(final String name) throws IOException {
+        final ResolvedConfig source = findNamedResource(name);
+        if (source != null) {
+            return source;
+        }
+        final String oldStyle = oldStyleName(name);
+        final File f = oldStyle == null ? null : findConfigFile(oldStyle);
+        if (f != null) {
+            return new ResolvedConfig(name, f.toPath());
+        }
+        throw new ConfigNotFoundException("No config stream available for " + name);
+    }
+
+    @Nullable
+    private static ResolvedConfig discoverInDirectory(final String dir, final String name) throws IOException {
+        if (name.isEmpty() || name.startsWith("/") || name.startsWith("\\") || name.contains("..")) {
+            return null;
+        }
+        final Path base = Path.of(dir).toAbsolutePath().normalize();
+        final Path stem = base.resolve(name).normalize();
+        if (!stem.startsWith(base) || stem.equals(base)) {
+            return null;
+        }
+        final String filenameStem = stem.getFileName().toString();
+        final File[] files = stem.getParent().toFile().listFiles((parent, filename) -> {
+            final String suffix = configFileSuffix(filename);
+            return suffix != null && filename.substring(0, filename.length() - suffix.length()).equals(filenameStem);
+        });
+        final List<ResolvedConfig> candidates = new ArrayList<>();
+        if (files != null) {
+            Arrays.sort(files);
+            for (final File file : files) {
+                candidates.add(new ResolvedConfig(name + file.getName().substring(filenameStem.length()), file.toPath()));
+            }
+        }
+        return uniqueConfig(name, candidates);
+    }
+
+    @Nullable
+    private static ResolvedConfig uniqueConfig(final String name, final List<ResolvedConfig> candidates) throws IOException {
+        if (candidates.size() > 1) {
+            final List<String> locations = new ArrayList<>();
+            for (final ResolvedConfig source : candidates) {
+                locations.add(source.location().toExternalForm());
+            }
+            throw new AmbiguousConfigException("Ambiguous configuration for " + name + ": " + locations);
+        }
+        return candidates.isEmpty() ? null : candidates.get(0);
+    }
+
+    /**
+     * Recognize a supported config suffix without changing its filesystem spelling.
+     *
+     * @param name the filename
+     * @return the canonical suffix, or null for a legacy nonstandard name
+     */
+    @Nullable
+    public static String configFileSuffix(final String name) {
+        final String lower = name.toLowerCase(Locale.ROOT);
+        for (final String suffix : CONFIG_FILE_ENDINGS) {
+            if (lower.endsWith(suffix)) {
+                return suffix;
+            }
+        }
+        return null;
+    }
+
+    /** Find a readable file, keeping relative names within their configured directory. */
+    @Nullable
+    private static File findConfigFile(final String name) {
+        if (name.isEmpty() || name.startsWith("\\")) {
+            return null;
+        }
+        try {
+            if (name.startsWith("/")) {
+                final File file = Path.of(name).normalize().toFile();
+                return file.exists() && file.canRead() ? file : null;
+            }
+            if (name.contains("..")) {
+                return null;
+            }
+            for (final String dir : getConfigDirs()) {
+                final Path base = Path.of(dir).toAbsolutePath().normalize();
+                final Path candidate = base.resolve(name).normalize();
+                if (candidate.startsWith(base) && !candidate.equals(base)) {
+                    final File file = candidate.toFile();
+                    if (file.exists() && file.canRead()) {
+                        return file;
+                    }
+                }
+            }
+        } catch (RuntimeException e) {
+            return null;
+        }
+        return null;
     }
 
     /**
@@ -531,6 +718,44 @@ public class ConfigUtil {
             flavoredNames[i] = base + "-" + flavor[i] + suffix;
         }
         return flavoredNames;
+    }
+
+    /**
+     * Flavor layer names for discovery, preserving arbitrary legacy filename extensions.
+     *
+     * @param name the base config name
+     * @return logical flavor names for supported suffixes, or exact legacy flavor filenames otherwise
+     */
+    @SuppressWarnings("AvoidObjectArrays")
+    public static String[] getFlavorConfigNames(final String name) {
+        final String suffix = configFileSuffix(name);
+        if (suffix == null) {
+            return addFlavors(name);
+        }
+        if (configFlavors == null || configFlavors.isEmpty()) {
+            return new String[0];
+        }
+        final String base = name.substring(0, name.length() - suffix.length());
+        final String[] flavors = configFlavors.split(",");
+        for (int i = 0; i < flavors.length; i++) {
+            flavors[i] = base + "-" + flavors[i];
+        }
+        return flavors;
+    }
+
+    /**
+     * Identify failures optional loading must not hide.
+     *
+     * @param failure the loading failure
+     * @return true for ambiguous discovery, including wrapped causes
+     */
+    public static boolean isStrictConfigFailure(final Throwable failure) {
+        for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
+            if (cause instanceof AmbiguousConfigException) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -689,6 +914,49 @@ public class ConfigUtil {
 
     /** This class is not meant to be instantiated. */
     private ConfigUtil() {}
+
+    /**
+     * Selected name and location; opening it does not repeat discovery.
+     *
+     * @param name the name including its suffix
+     * @param location the resolved location
+     * @param path the file path when the location is a file, otherwise null
+     */
+    public record ResolvedConfig(String name, URL location, @Nullable Path path) {
+        private ResolvedConfig(final String name, final URL location) {
+            this(name, location, null);
+        }
+
+        private ResolvedConfig(final String name, final Path path) throws IOException {
+            this(name, path.toUri().toURL(), path);
+        }
+
+        /**
+         * Open the selected resource.
+         *
+         * @return a stream the caller must close
+         * @throws IOException when opening fails
+         */
+        public InputStream openStream() throws IOException {
+            return path == null ? location.openStream() : Files.newInputStream(path);
+        }
+    }
+
+    static final class ConfigNotFoundException extends IOException {
+        private static final long serialVersionUID = 1L;
+
+        ConfigNotFoundException(final String message) {
+            super(message);
+        }
+    }
+
+    static final class AmbiguousConfigException extends IOException {
+        private static final long serialVersionUID = 1L;
+
+        AmbiguousConfigException(final String message) {
+            super(message);
+        }
+    }
 
     /**
      * Read a merged config setup and print the results
